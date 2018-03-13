@@ -125,7 +125,7 @@ public class OnlinePayRefundService {
                         returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
 
                         //发退款到EBS
-                        sinkSender.sendOrderRefund(returnOrderBillingDetail.getRefundNumber());
+//                        sinkSender.sendOrderRefund(returnOrderBillingDetail.getRefundNumber());
                         map.put("code", "SUCCESS");
                         map.put("number", tradeNo);
                         map.put("money", String.valueOf(money));
@@ -222,7 +222,7 @@ public class OnlinePayRefundService {
                 returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
 
                 //发退款到EBS
-                sinkSender.sendOrderRefund(returnOrderBillingDetail.getRefundNumber());
+//                sinkSender.sendOrderRefund(returnOrderBillingDetail.getRefundNumber());
                 map.put("code", "SUCCESS");
 
                 return map;

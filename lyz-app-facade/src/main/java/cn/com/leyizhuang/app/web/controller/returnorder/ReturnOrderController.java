@@ -483,8 +483,10 @@ public class ReturnOrderController {
             List<GoodsSimpleInfo> simpleInfos = param.getReturnGoodsInfo();
 
             Double returnTotalGoodsPrice = 0D;
-            //判断是否整单退的flag
-            Boolean isReturnAll = true;
+            //判断总商品数
+            int totalGoodsQty = 0;
+            //判断退商品数
+            int totalReturnQty = 0;
             //判断是否整单是产品券
             Boolean isReturnAllProCoupon = true;
             //获取原单商品信息
@@ -500,9 +502,6 @@ public class ReturnOrderController {
                                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "退货数量不可大于可退数量!", "");
                                     logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
                                     return resultDTO;
-                                    //如果订单商品数量不等于退货商品数量,整单退条件失败
-                                } else if (!simpleInfo.getQty().equals(goodsInfo.getReturnableQuantity())) {
-                                    isReturnAll = false;
                                 }
                                 ReturnOrderGoodsInfo returnOrderGoodsInfo = transform(goodsInfo, simpleInfo.getQty(), returnNo);
                                 //设置原订单可退数量 减少
@@ -510,6 +509,8 @@ public class ReturnOrderController {
                                 //设置原订单退货数量 增加
                                 goodsInfo.setReturnQuantity(goodsInfo.getReturnQuantity() + simpleInfo.getQty());
                                 goodsInfos.add(returnOrderGoodsInfo);
+                                totalGoodsQty = totalGoodsQty + goodsInfo.getReturnableQuantity();
+                                totalReturnQty = totalReturnQty + simpleInfo.getQty();
                                 //如果不是产品券就要算进退总价里,并且仅退产品券订单条件失败
                                 if (!AppGoodsLineType.PRODUCT_COUPON.equals(goodsInfo.getGoodsLineType())) {
                                     returnTotalGoodsPrice = CountUtil.add(returnTotalGoodsPrice,
@@ -642,7 +643,7 @@ public class ReturnOrderController {
                     }
                 }
                 //整单退,不退运费
-                if (isReturnAll) {
+                if (totalGoodsQty == totalReturnQty) {
                     if (customerPrePay > billingDetails.getFreight()) {
                         returnOrderBilling.setCash(hasFreight ? CountUtil.sub(customerPrePay, billingDetails.getFreight()) : customerPrePay);
                         hasFreight = false;
@@ -757,6 +758,8 @@ public class ReturnOrderController {
                     }
                     //修改取消订单处理状态
                     returnOrderService.updateReturnOrderStatus(returnOrderBaseInfo.getReturnNo(), AppReturnOrderStatus.FINISHED);
+                    //发送退单拆单消息到拆单消息队列
+                    sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
                     logger.info("cancelOrderToWms OUT,买券正常退货成功");
                 }
             }
@@ -770,8 +773,6 @@ public class ReturnOrderController {
                 //发送退货单到wms
                 callWms.sendToWmsReturnOrderAndGoods(returnNo);
             }
-            //发送退单拆单消息到拆单消息队列
-            sinkSender.sendReturnOrder(returnNo);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("createOrder OUT,退货单创建成功,出参 resultDTO:{}", resultDTO);
             return resultDTO;

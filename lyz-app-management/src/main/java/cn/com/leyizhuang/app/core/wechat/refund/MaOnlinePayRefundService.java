@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.config.onlinePay.AlipayConfig;
 import cn.com.leyizhuang.app.core.constant.OnlinePayType;
 import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
 import cn.com.leyizhuang.app.core.constant.PaymentDataStatus;
+import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.core.wechat.sign.WechatPrePay;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.remote.alipay.AlipayRefund;
@@ -55,20 +56,20 @@ public class MaOnlinePayRefundService {
      * @param money
      * @return
      */
-    public Map<String, String> wechatReturnMoney(Long userId, Integer identityType, Double money, String orderNo, String refundNo) {
-        Double totlefee = appOrderService.getAmountPayableByOrderNumber(orderNo);
+    public Map<String, String> wechatReturnMoney(Long userId, Integer identityType, Double money, String orderNumber, String returnNumber) {
+        Double totlefee = appOrderService.getAmountPayableByOrderNumber(orderNumber);
         String totlefeeFormat = CountUtil.retainTwoDecimalPlaces(totlefee);
         Double totlefeeParse = Double.parseDouble(totlefeeFormat);
         String subject = "订单退款";
 
         Map<String, String> map = new HashMap<>();
-        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, orderNo, refundNo, identityType, null,
+              PaymentDataDO paymentDataDO = new PaymentDataDO(userId, orderNumber, returnNumber, identityType, null,
                 money, PaymentDataStatus.WAIT_REFUND, OnlinePayType.WE_CHAT, subject);
         this.paymentDataService.save(paymentDataDO);
 
         try {
             Map<String, Object> resultMap = WechatPrePay.wechatRefundSign(
-                    orderNo, refundNo, new BigDecimal(totlefeeParse), new BigDecimal(money));
+                    orderNumber , returnNumber, new BigDecimal(totlefeeParse), new BigDecimal(money));
             logger.debug("******微信退款签名***** OUT, 出参 sign:{}", resultMap);
             if (resultMap != null) {
                 //状态是否成功
@@ -100,11 +101,11 @@ public class MaOnlinePayRefundService {
 
                         //创建退单退款详情实体
                         ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
-                        ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(outRefundNo);
+                        ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(returnNumber);
                         returnOrderBillingDetail.setCreateTime(new Date());
                         returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
                         returnOrderBillingDetail.setReturnNo(outRefundNo);
-                        returnOrderBillingDetail.setRefundNumber(refundNo);
+                        returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
                         returnOrderBillingDetail.setIntoAmountTime(new Date());
                         returnOrderBillingDetail.setReplyCode(map.get("number"));
                         returnOrderBillingDetail.setReturnMoney(money);
@@ -189,12 +190,13 @@ public class MaOnlinePayRefundService {
                 this.paymentDataService.updateByTradeStatusIsWaitRefund(paymentDataDO);
 
                 //创建退单退款详情实体
+                ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(refundNo);
                 ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                 Date date = new Date();
                 returnOrderBillingDetail.setCreateTime(date);
-                returnOrderBillingDetail.setRoid(null);
-                returnOrderBillingDetail.setReturnNo(response.getOutTradeNo());
-                returnOrderBillingDetail.setRefundNumber(refundNo);
+                returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                returnOrderBillingDetail.setReturnNo(refundNo);
+                returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
                 returnOrderBillingDetail.setIntoAmountTime(date);
                 returnOrderBillingDetail.setReplyCode(response.getTradeNo());
                 returnOrderBillingDetail.setReturnMoney(Double.valueOf(response.getRefundFee()));
