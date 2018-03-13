@@ -277,7 +277,8 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                             }
                             //修改取消订单处理状态
                             returnOrderService.updateReturnOrderStatus(returnOrderBaseInfo.getReturnNo(), AppReturnOrderStatus.FINISHED);
-
+                            //发送退单拆单消息到拆单消息队列
+                            sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
                             logger.info("cancelOrderToWms OUT,正常退货成功");
                         } else {
                             logger.info("getReturnOrderList OUT,正常退货失败,业务处理出现异常!");
