@@ -460,4 +460,25 @@ public class MaEmployeeRestController extends BaseRestController {
         }
     }
 
+    /**
+     * 更新导购二维码
+     * @param qrcodeUrl
+     * @return
+     */
+    @PutMapping("/update/qrcode")
+    public ResultDTO updateQrcode(String qrcodeUrl,Long empId){
+        if (qrcodeUrl == null || empId == null){
+            return  new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败，数据有误", null);
+        }
+
+        try{
+            maEmployeeService.updateQrcode(qrcodeUrl,empId);
+        }catch (Exception e){
+            logger.info("updateQrcode 更新导购二维码失败");
+            return  new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败,发送异常", null);
+        }
+
+
+        return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "保存成功", null);
+    }
 }

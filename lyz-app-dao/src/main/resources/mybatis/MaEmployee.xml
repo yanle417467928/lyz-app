@@ -20,6 +20,7 @@
         <result property="createTime" column="create_time"/>
         <result property="deliveryClerkNo" column="delivery_clerk_no"/>
         <result property="entryTime" column="entryTime"/>
+        <result property="qrCode" column="qr_code"/>
         <association property="cityId" javaType="SimpleCityParam">
             <id property="cityId" column="city_id"/>
             <result property="name" column="cname"/>
@@ -56,7 +57,7 @@
 
 
     <select id="findAllEmployee" resultMap="employeeResultMap">
-        select e.emp_id,e.login_name,e.name,e.identity_type,e.status,c.city_id,c.name cname,s.store_id,s.store_name
+        select e.emp_id,e.login_name,e.name,e.identity_type,e.status,c.city_id,c.name cname,s.store_id,s.store_name,e.qr_code
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
         LEFT  JOIN  st_store s

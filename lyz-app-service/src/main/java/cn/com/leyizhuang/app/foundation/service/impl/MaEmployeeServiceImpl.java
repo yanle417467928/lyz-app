@@ -1,9 +1,11 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.foundation.dao.AppEmployeeDAO;
 import cn.com.leyizhuang.app.foundation.dao.MaEmployeeDAO;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeType;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaEmployeeResponse;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.MaEmployeeService;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.DecorativeEmployeeDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeDetailVO;
@@ -22,6 +24,8 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
     @Autowired
     private MaEmployeeDAO maEmployeeDAO;
 
+    @Autowired
+    private AppEmployeeDAO appEmployeeDAO;
 
     @Override
     public PageInfo<EmployeeDO> queryPageVO(Integer page, Integer size){
@@ -209,5 +213,18 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
         return new PageInfo<>(pageGuideVOList);
     }
 
+    /**
+     * 更新导购二维码
+     * @param qrcodeUrl
+     * @param empId
+     */
+    @Override
+    public void updateQrcode(String qrcodeUrl , Long empId){
+        AppEmployee employeeDO = appEmployeeDAO.findById(empId);
 
+        if (employeeDO != null){
+            employeeDO.setQrCode(qrcodeUrl);
+            appEmployeeDAO.update(employeeDO);
+        }
+    }
 }
