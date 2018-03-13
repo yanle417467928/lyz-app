@@ -10,7 +10,8 @@ public enum ChargeObjType {
     CUSTOMER(1, "顾客充值"),
     STORE(2, "门店充值"),
     BOND(3, "保证金"),
-    PRODUCT_COUPON(4, "购买产品券");
+    PRODUCT_COUPON(4, "购买产品券"),
+    STORE_CREDIT(5, "装饰公司信用金");
 
 
     private int value;
