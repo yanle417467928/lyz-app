@@ -169,6 +169,6 @@ public interface AppCustomerDAO {
      * @param keywords    姓名
      * @return  顾客list
      */
-    List<FindCustomerResponse> findCustomerByCusName(@Param("storeId")Long storeId,@Param("keywords")String keywords);
+    List<FindCustomerResponse> findCustomerByCusNameOrPhone(@Param("storeId")Long storeId,@Param("keywords")String keywords);
 
 }

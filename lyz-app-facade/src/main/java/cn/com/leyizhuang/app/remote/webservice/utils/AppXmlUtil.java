@@ -129,7 +129,7 @@ public class AppXmlUtil {
                 "<return_time>" + returnTime + "</return_time>" +
                 "<sort_id></sort_id>" +
                 "<status_id>" + returnOrder.getStatusId() + "</status_id>" +
-                "<username>"+returnOrder.getDeliveryClerkNo()+"</username>" +
+                "<username>" + returnOrder.getDeliveryClerkNo() + "</username>" +
                 "<deliver_type_title>" + returnOrder.getDeliverTypeTitle() + "</deliver_type_title>" +
                 "<turn_price>" + returnOrder.getReturnPrice() + "</turn_price>" +
                 "<turn_type></turn_type>" +
@@ -273,6 +273,23 @@ public class AppXmlUtil {
         xmlStr = xmlStr.replace("null", "");
         LOGGER.info("resultStrXml OUT, 拼接结果信息返回给wms, 出参 xmlStr:{}", xmlStr);
 
+        return xmlStr;
+    }
+
+    /**
+     * 拼接结果信息返回给EBS
+     *
+     * @return xml结果
+     */
+    public static String generateResultXmlToEbs(Integer code, String message) {
+        LOGGER.info("generateResultXmlToEbs IN, 拼接结果信息返回给 EBS\n, 入参: code:{},message:{}", code, message);
+        String xmlStr = "<RESULTS><STATUS>" +
+                "<CODE>" + code + "</CODE>" +
+                "<MESSAGE>" + message + "</MESSAGE>" +
+                "</STATUS></RESULTS>";
+
+        xmlStr = xmlStr.replace("null", "");
+        LOGGER.info("generateResultXmlToEbs OUT, 拼接结果信息返回给 EBS, 出参 xmlStr:{}", xmlStr);
         return xmlStr;
     }
 

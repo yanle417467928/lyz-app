@@ -15,6 +15,7 @@ import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
@@ -50,7 +51,7 @@ import java.util.*;
  * 订单相关接口
  *
  * @author Richard
- * Created on 2017-10-23 17:02
+ *         Created on 2017-10-23 17:02
  **/
 @RestController
 @RequestMapping(value = "/app/order")
@@ -121,6 +122,11 @@ public class OrderController {
 
     @Autowired
     private GoodsPriceService goodsPriceService;
+
+    @Resource
+    private MaOrderService maOrderService;
+    @Resource
+    private  ReturnOrderService returnOrderService;
 
     /**
      * 创建订单方法
@@ -322,7 +328,7 @@ public class OrderController {
             orderGoodsInfoList = cashCouponDutchService.cashCouponDutch(cashCouponList, orderGoodsInfoList);
 
             //******** 分摊完毕 计算退货 单价 ***************************
-            orderGoodsInfoList = dutchService.countReturnPrice(orderGoodsInfoList,cashReturnAmount,CountUtil.div(billing.getLeBiQuantity(),10D),billing.getOrderDiscount());
+            orderGoodsInfoList = dutchService.countReturnPrice(orderGoodsInfoList, cashReturnAmount, CountUtil.div(billing.getLeBiQuantity(), 10D), billing.getOrderDiscount());
             //orderGoodsInfoList = dutchService.countReturnPrice(orderGoodsInfoList);
 
             //将产品券商品加入 分摊完毕的商品列表中
@@ -1097,7 +1103,7 @@ public class OrderController {
             List<OrderBaseInfo> orderBaseInfoList = orderBaseInfoLists.getList();
             //创建一个返回对象list
             List<OrderListResponse> orderListResponses = new ArrayList<>();
-            if (null != orderBaseInfoList && orderBaseInfoList.size() > 0){
+            if (null != orderBaseInfoList && orderBaseInfoList.size() > 0) {
                 //循环遍历订单列表
                 for (OrderBaseInfo orderBaseInfo : orderBaseInfoList) {
                     //创建有个存放图片地址的list
@@ -1504,6 +1510,67 @@ public class OrderController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，处理货到付款的订单业务失败", null);
             logger.warn("handleOrderRelevantBusinessAfterOnlinePayCashDelivery EXCEPTION,处理货到付款的订单业务失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * 待付款订单检查是否超时
+     *
+     * @param userId
+     * @param identityType
+     * @param orderNumber
+     * @return
+     */
+    @PostMapping(value = "/verify/timeout", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> verifyTimeout(Long userId, Integer identityType, String orderNumber) {
+        ResultDTO<Object> resultDTO;
+        logger.info("verifyTimeout CALLED,待付款订单检查是否超时，入参 userID:{}, identityType:{}, orderNumber{}", userId, identityType, orderNumber);
+
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
+            logger.info("verifyTimeout OUT,待付款订单检查是否超时失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("verifyTimeout OUT,待付款订单检查是否超时失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (!StringUtils.isNotBlank(orderNumber)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单编号不允许为空！", null);
+            logger.info("verifyTimeout OUT,待付款订单检查是否超时失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        Date date = new Date();
+        try {
+            OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
+            if(null == orderBaseInfo){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查到此订单信息！", null);
+                logger.info("verifyTimeout OUT,待付款订单检查是否超时失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (date.after(orderBaseInfo.getEffectiveEndTime())) {
+                String returnNumber = maOrderService.scanningUnpaidOrder(orderBaseInfo);
+
+                ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(returnNumber);
+                if (null != returnOrderBaseInfo){
+                    //发送退单拆单消息到拆单消息队列
+                    sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
+                }
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此订单已失效，请重新下单！", null);
+                logger.info("verifyTimeout OUT,此订单已失效，请重新下单！，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            } else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+                logger.info("verifyTimeout OUT，此订单待付款时间未超时，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，去支付失败", null);
+            logger.warn("verifyTimeout EXCEPTION,发生未知异常，待付款订单检查是否超时失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

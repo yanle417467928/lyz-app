@@ -10,6 +10,7 @@ import cn.com.leyizhuang.app.foundation.pojo.order.ReturnOrderJxPriceDifferenceR
 import cn.com.leyizhuang.app.foundation.pojo.request.ReturnDeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.collections.map.HashedMap;
 
@@ -218,7 +219,7 @@ public interface ReturnOrderService {
 
     HashedMap normalReturnOrderProcessing(String returnOrderNumber, String cityCode);
 
-    void updateReturnLogisticInfo(String driver, String returnNo);
+    void updateReturnLogisticInfo(AppEmployee employee, String returnNo);
 
     ReturnOrderBilling getReturnOrderBillingByReturnNo(String returnOrderNumber);
 
