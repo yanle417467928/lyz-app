@@ -249,7 +249,7 @@ public class OrderArriveController {
             }
 
             //判断是否有代收款
-            if (amount > 0) {
+            if (amount > 0D) {
                 //生成代收款记录
                 orderAgencyFundDO = new OrderAgencyFundDO();
                 orderAgencyFundDO.setOrderInfo(userId, orderNo, collectionAmountOrder);
