@@ -26,10 +26,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -122,14 +126,13 @@ public class EvaluationController {
      * 订单商品评价
      *
      * @param orderGoodsEvaluationRequest 订单商品评价参数
-     * @param pictures                    评价图片文件
+     * @param request                    评价图片文件
      * @return 图片地址
      */
     @PostMapping(value = "/goods/submit", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> orderEvaluationGoodsSubmit(OrderGoodsEvaluationRequest orderGoodsEvaluationRequest, @RequestParam(value = "pictures",
-            required = false) MultipartFile[] pictures) {
+    public ResultDTO<Object> orderEvaluationGoodsSubmit(OrderGoodsEvaluationRequest orderGoodsEvaluationRequest, HttpServletRequest request) {
         logger.info("orderEvaluationGoodsSubmit CALLED,订单商品评价提交,入参 orderGoodsEvaluationRequest:{}, " +
-                "pictures:{}", orderGoodsEvaluationRequest, pictures);
+                "request:{}", orderGoodsEvaluationRequest, request);
 
         ResultDTO<Object> resultDTO;
 
@@ -163,11 +166,43 @@ public class EvaluationController {
             return resultDTO;
         }
         try {
-            List<String> pictureUrls = new ArrayList<>();
-            for (MultipartFile picture : pictures) {
-                String url = FileUploadOSSUtils.uploadProfilePhoto(picture, "order/evaluation/");
-                pictureUrls.add(url);
+//            List<String> pictureUrls = new ArrayList<>();
+//            for (MultipartFile picture : pictures) {
+//                String url = FileUploadOSSUtils.uploadProfilePhoto(picture, "order/evaluation/");
+//                pictureUrls.add(url);
+//            }
+
+            /*
+             * 因为图片只能上传一张，修改传入参数为request
+             * GenerationRoad
+             */
+            StringBuilder pictureUrls = new StringBuilder();
+            CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver(
+                    request.getSession().getServletContext());
+            if (multipartResolver.isMultipart(request)) {
+                // 转换成多部分request
+                MultipartHttpServletRequest multiRequest = (MultipartHttpServletRequest) request;
+                // 取得request中的所有文件名
+                Iterator<String> iter = multiRequest.getFileNames();
+                while (iter.hasNext()) {
+                    // 取得上传文件
+                    MultipartFile f = multiRequest.getFile(iter.next());
+                    if (f != null) {
+                        // 取得当前上传文件的文件名称
+                        String myFileName = f.getOriginalFilename();
+                        // 如果名称不为“”,说明该文件存在，否则说明该文件不存在
+                        if (!"".equals(myFileName.trim())) {
+                            // 定义上传路径
+                            if(!iter.hasNext()){
+                                pictureUrls.append(FileUploadOSSUtils.uploadProfilePhoto(f, "order/evaluation/"));
+                            }else{
+                                pictureUrls.append(FileUploadOSSUtils.uploadProfilePhoto(f, "order/evaluation/")).append(",");
+                            }
+                        }
+                    }
+                }
             }
+
             GoodsEvaluation goodsEvaluation = new GoodsEvaluation();
             goodsEvaluation.setEvaluationTime(Calendar.getInstance().getTime());
             goodsEvaluation.setOrderNumber(orderGoodsEvaluationRequest.getOrderNumber());
@@ -182,7 +217,7 @@ public class EvaluationController {
                 goodsEvaluation.setEvaluationName(employee.getName());
                 goodsEvaluation.setPicUrl(employee.getPicUrl());
             }
-            goodsEvaluation.setEvaluationPictures(org.apache.commons.lang.StringUtils.strip(pictureUrls.toString(),"[]"));
+            goodsEvaluation.setEvaluationPictures(pictureUrls.toString());
             goodsEvaluation.setIsShow(Boolean.TRUE);
             orderEvaluationService.addOrderGoodsEvaluation(goodsEvaluation);
             //修改商品为已评价
