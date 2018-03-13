@@ -354,7 +354,8 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
         SELECT
             emp_id,
             name,
-            mobile
+            mobile,
+            delivery_clerk_no
         FROM emp_employee
         WHERE delivery_clerk_no = #{driver}
     </select>

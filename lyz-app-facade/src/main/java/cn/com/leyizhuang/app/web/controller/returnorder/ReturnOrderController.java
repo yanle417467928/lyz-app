@@ -483,14 +483,15 @@ public class ReturnOrderController {
             List<GoodsSimpleInfo> simpleInfos = param.getReturnGoodsInfo();
 
             Double returnTotalGoodsPrice = 0D;
-            //判断总商品数
-            int totalGoodsQty = 0;
-            //判断退商品数
-            int totalReturnQty = 0;
+
             //判断是否整单是产品券
             Boolean isReturnAllProCoupon = true;
             //获取原单商品信息
             List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderNo);
+            //判断总商品数
+            int totalGoodsQty = orderGoodsInfoList.stream().mapToInt(OrderGoodsInfo::getReturnableQuantity).sum();
+            //判断退商品数
+            int totalReturnQty = simpleInfos.stream().mapToInt(GoodsSimpleInfo::getQty).sum();
 
             if (AssertUtil.isNotEmpty(orderGoodsInfoList)) {
                 for (GoodsSimpleInfo simpleInfo : simpleInfos) {
@@ -509,8 +510,6 @@ public class ReturnOrderController {
                                 //设置原订单退货数量 增加
                                 goodsInfo.setReturnQuantity(goodsInfo.getReturnQuantity() + simpleInfo.getQty());
                                 goodsInfos.add(returnOrderGoodsInfo);
-                                totalGoodsQty = totalGoodsQty + goodsInfo.getReturnableQuantity();
-                                totalReturnQty = totalReturnQty + simpleInfo.getQty();
                                 //如果不是产品券就要算进退总价里,并且仅退产品券订单条件失败
                                 if (!AppGoodsLineType.PRODUCT_COUPON.equals(goodsInfo.getGoodsLineType())) {
                                     returnTotalGoodsPrice = CountUtil.add(returnTotalGoodsPrice,
@@ -664,7 +663,6 @@ public class ReturnOrderController {
                     }
                     if (cashPosPrice > billingDetails.getFreight()) {
                         returnOrderBilling.setCash(hasFreight ? CountUtil.sub(cashPosPrice, billingDetails.getFreight()) : cashPosPrice);
-                        hasFreight = false;
                     } else {
                         returnOrderBilling.setCash(cashPosPrice);
                     }
