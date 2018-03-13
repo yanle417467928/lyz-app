@@ -131,6 +131,19 @@ public class QrcodeRegisterRestController extends BaseRestController {
             return resultDTO;
         }
 
+        try {
+            AppCustomer customer = customerService.findByMobile(mobile);
+
+            if (customer != null && customer.getMobile().equals(mobile)) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "手机号码已注册！", null);
+                logger.info("getQrCode OUT,验证码发送失败，出参 ResultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+        } catch (UnsupportedEncodingException e) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发送未知异常，请联系管理员", null);
+            e.printStackTrace();
+        }
+
         Random random = new Random();
         String smsCode = random.nextInt(900000) + 100000 + "";
 

@@ -30,7 +30,9 @@
     <script src="https://cdn.bootcss.com/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js"></script>
     <script src="https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js"></script>
     <script src="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/js/bootstrapValidator.min.js"></script>
-
+    <script src="/javascript/devkit.js"></script>
+    <script src="https://cdn.bootcss.com/mouse0270-bootstrap-notify/3.1.7/bootstrap-notify.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-waitingfor/1.2.4/bootstrap-waitingfor.min.js"></script>
 
     <script type="text/javascript">
         document.getElementsByTagName('html')[0].style.fontSize = window.screen.width / 10 + 'px';
@@ -234,6 +236,7 @@
                         window.location.href = "/qrcode/register/success";
                     }else{
                         alert(result.message);
+                        //$notify.danger(result.message);
                         $('#qrcodeForm').bootstrapValidator('disableSubmitButtons', false);
                     }
                 }
@@ -248,6 +251,7 @@
 
         if (phone == "" || phone == undefined){
             alert("请填写手机号");
+            //$notify.warning("请填写手机号")
             return;
         }
 
@@ -255,6 +259,7 @@
         var re = new RegExp(rex);
         if (!re.test(phone)){
             alert("请填写正确的手机号");
+            //$notify.warning("请填写正确的手机号")
             return;
         }
 
@@ -273,8 +278,10 @@
             success: function(result){
                 if (0 == result.code){
                     alert("发送成功！");
+                    //$notify.success("发送成功")
                 }else{
                     alert(result.message);
+                    //$notify.danger(result.message);
                 }
             }
         })
