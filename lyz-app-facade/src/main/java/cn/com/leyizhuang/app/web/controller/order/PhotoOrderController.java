@@ -97,6 +97,7 @@ public class PhotoOrderController {
                     logger.info("submitPhotoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
+                int i = 0;
                 while (iter.hasNext()) {
                     // 取得上传文件
                     MultipartFile f = multiRequest.getFile(iter.next());
@@ -110,6 +111,10 @@ public class PhotoOrderController {
                                 photos.append(FileUploadOSSUtils.uploadProfilePhoto(f, "order/photo"));
                             }else{
                                 photos.append(FileUploadOSSUtils.uploadProfilePhoto(f, "order/photo")).append(",");
+                            }
+                            i += 1;
+                            if (i > 8 ) {
+                                break;
                             }
                         }
                     }

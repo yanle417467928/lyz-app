@@ -184,6 +184,7 @@ public class EvaluationController {
                 MultipartHttpServletRequest multiRequest = (MultipartHttpServletRequest) request;
                 // 取得request中的所有文件名
                 Iterator<String> iter = multiRequest.getFileNames();
+                int i = 0;
                 while (iter.hasNext()) {
                     // 取得上传文件
                     MultipartFile f = multiRequest.getFile(iter.next());
@@ -197,6 +198,10 @@ public class EvaluationController {
                                 pictureUrls.append(FileUploadOSSUtils.uploadProfilePhoto(f, "order/evaluation/"));
                             }else{
                                 pictureUrls.append(FileUploadOSSUtils.uploadProfilePhoto(f, "order/evaluation/")).append(",");
+                            }
+                            i += 1;
+                            if (i > 2 ) {
+                                break;
                             }
                         }
                     }
