@@ -11,6 +11,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.SelfTakeStore;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.StorePreDepositLogService;
+import cn.com.leyizhuang.common.core.exception.AppConcurrentExcp;
 import cn.com.leyizhuang.common.util.CountUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -136,14 +137,6 @@ public class AppStoreServiceImpl implements AppStoreService {
     }
 
     @Override
-    @Transactional
-    public void unlockStoreDepositByUserIdAndStoreDeposit(Long userId, Double storeDeposit) {
-        if (null != userId && null != storeDeposit) {
-            storeDAO.updateStoreDepositByUserId(userId, storeDeposit);
-        }
-    }
-
-    @Override
     @Transactional(rollbackFor = Exception.class)
     public void unlockStoreCreditByUserIdAndCredit(Long userId, Double storeCredit) {
         if (null != userId && null != storeCredit) {
@@ -216,9 +209,14 @@ public class AppStoreServiceImpl implements AppStoreService {
             storePreDeposit.setBalance(money);
             AppStore store = this.storeDAO.findAppStoreByEmpId(userId);
             storePreDeposit.setStoreId(store.getStoreId());
+            storePreDeposit.setCreateTime(new Date());
+            storePreDeposit.setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
             this.storeDAO.saveStorePreDeposit(storePreDeposit);
         } else {
-            this.storeDAO.updateStoreDepositByUserId(userId, money);
+            int row = this.storeDAO.updateStoreDepositByUserId(userId, money, storePreDeposit.getLastUpdateTime());
+            if (1 != row) {
+                throw new AppConcurrentExcp("账号余额信息过期！");
+            }
         }
         StPreDepositLogDO log = new StPreDepositLogDO();
         log.setCreateTimeAndChangeMoneyAndType(LocalDateTime.now(), money, type);

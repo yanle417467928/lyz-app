@@ -108,6 +108,9 @@
               (SELECT store_id
                FROM emp_employee
                WHERE emp_id = #{userId})
+        <if test="null != lastUpdateTime">
+            AND last_update_time = #{lastUpdateTime}
+        </if>
     </update>
 
     <update id="updateStoreCreditByUserId">
@@ -291,9 +294,9 @@
 
     <insert id="saveStorePreDeposit" parameterType="cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit">
         INSERT INTO st_pre_deposit
-        (store_id, balance)
+        (store_id, balance, last_update_time, create_time)
         VALUES
-            (#{storeId}, #{balance})
+            (#{storeId}, #{balance}, #{lastUpdateTime}, #{createTime})
     </insert>
     <select id="findAppStoreCusId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.AppStore">
