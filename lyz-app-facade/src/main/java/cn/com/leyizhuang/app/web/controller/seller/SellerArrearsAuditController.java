@@ -203,68 +203,80 @@ public class SellerArrearsAuditController {
 
                 Double collectionAmount = null == orderArrearsAuditDO.getRealMoney() ? 0D : orderArrearsAuditDO.getRealMoney();
                 Double collectionAmountOrder = null == orderTempInfo.getCollectionAmount() ? 0D : orderTempInfo.getCollectionAmount();
-                //生成代收款记录
-                OrderAgencyFundDO orderAgencyFundDO = new OrderAgencyFundDO();
-                orderAgencyFundDO.setOrderInfo(orderArrearsAuditDO.getUserId(), orderNo, collectionAmountOrder);
-                orderAgencyFundDO.setCustomerAndSeller(orderTempInfo.getCustomerName(), orderTempInfo.getCustomerPhone(),
-                        orderTempInfo.getSellerId(), orderTempInfo.getSellerName(), orderTempInfo.getSellerPhone());
-                orderAgencyFundDO.setAgencyFundInfo(orderArrearsAuditDO.getPaymentMethod(), collectionAmount, 0D, orderArrearsAuditDO.getRemarks());
-//                this.orderAgencyFundServiceImpl.save(orderAgencyFundDO);
-
-                //生成收款单号
-                String receiptNumber = OrderUtils.generateReceiptNumber(orderTempInfo.getCityId());
-
-                //创建收款记录
-                OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails(Calendar.getInstance().getTime(),
-                        orderTempInfo.getOrderId(), Calendar.getInstance().getTime(), OrderBillingPaymentType.getOrderBillingPaymentTypeByDescription(orderArrearsAuditDO.getPaymentMethod()),
-                        orderArrearsAuditDO.getPaymentMethod(), orderNo, PaymentSubjectType.DELIVERY_CLERK,
-                        PaymentSubjectType.DELIVERY_CLERK.getDescription(), collectionAmount, null, receiptNumber);
-                //paymentDetails.setConstructor(orderTempInfo.getOrderId(), "实际货币", orderArrearsAuditDO.getPaymentMethod(), orderNo, collectionAmount, "");
-//                this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
-
-                //修改订单欠款
-                OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
-                orderBillingDetails.setOrderNumber(orderNo);
-                orderBillingDetails.setArrearage(CountUtil.sub(orderTempInfo.getOwnMoney(), collectionAmount));
-                if (orderBillingDetails.getArrearage() > 0D){
-                    orderBillingDetails.setIsPayUp(false);
-                    orderBillingDetails.setPayUpTime(new Date());
-                } else {
-                    orderBillingDetails.setIsPayUp(true);
-                }
-                if (OrderBillingPaymentType.CASH.equals(paymentDetails.getPayType())) {
-                    orderBillingDetails.setDeliveryCash(collectionAmount);
-                    orderBillingDetails.setDeliveryPos(0D);
-                } else if (OrderBillingPaymentType.POS.equals(paymentDetails.getPayType())) {
-                    orderBillingDetails.setDeliveryCash(0D);
-                    orderBillingDetails.setDeliveryPos(collectionAmount);
-                }
-//                this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
 
                 //获取导购信用金
                 EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(orderTempInfo.getSellerId());
-
-                //返还信用金后导购信用金额度
-                Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable() + collectionAmount);
-
-                //修改导购信用额度
-                Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(orderTempInfo.getSellerId(), collectionAmount, empCreditMoney.getLastUpdateTime());
+                if (null == empCreditMoney) {
+                    empCreditMoney = new EmpCreditMoney();
+                    empCreditMoney.setCreditLimitAvailable(0D);
+                }
+                //生成代收款记录
+                OrderAgencyFundDO orderAgencyFundDO = null;
+                OrderBillingDetails orderBillingDetails = null;
+                OrderBillingPaymentDetails paymentDetails = null;
                 EmpCreditMoneyChangeLog empCreditMoneyChangeLog = null;
-                if (affectLine > 0) {
-                    //记录导购信用金变更日志
-                    empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
-                    empCreditMoneyChangeLog.setEmpId(userId);
-                    empCreditMoneyChangeLog.setCreateTime(new Date());
-                    empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(collectionAmount);
-                    empCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
-                    empCreditMoneyChangeLog.setReferenceNumber(orderNo);
-                    empCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
-                    empCreditMoneyChangeLog.setChangeTypeDesc("订单还款");
-                    empCreditMoneyChangeLog.setOperatorId(userId);
-                    empCreditMoneyChangeLog.setOperatorType(AppIdentityType.SELLER);
-                    //保存日志
+                String receiptNumber = null;
+                if (collectionAmount > 0D) {
+                    orderAgencyFundDO = new OrderAgencyFundDO();
+                    orderAgencyFundDO.setOrderInfo(orderArrearsAuditDO.getUserId(), orderNo, collectionAmountOrder);
+                    orderAgencyFundDO.setCustomerAndSeller(orderTempInfo.getCustomerName(), orderTempInfo.getCustomerPhone(),
+                            orderTempInfo.getSellerId(), orderTempInfo.getSellerName(), orderTempInfo.getSellerPhone());
+                    orderAgencyFundDO.setAgencyFundInfo(orderArrearsAuditDO.getPaymentMethod(), collectionAmount, 0D, orderArrearsAuditDO.getRemarks());
+
+//                this.orderAgencyFundServiceImpl.save(orderAgencyFundDO);
+
+                    //生成收款单号
+                    receiptNumber = OrderUtils.generateReceiptNumber(orderTempInfo.getCityId());
+
+                    //创建收款记录
+                    paymentDetails = new OrderBillingPaymentDetails(Calendar.getInstance().getTime(),
+                            orderTempInfo.getOrderId(), Calendar.getInstance().getTime(), OrderBillingPaymentType.getOrderBillingPaymentTypeByDescription(orderArrearsAuditDO.getPaymentMethod()),
+                            orderArrearsAuditDO.getPaymentMethod(), orderNo, PaymentSubjectType.DELIVERY_CLERK,
+                            PaymentSubjectType.DELIVERY_CLERK.getDescription(), collectionAmount, null, receiptNumber);
+                    //paymentDetails.setConstructor(orderTempInfo.getOrderId(), "实际货币", orderArrearsAuditDO.getPaymentMethod(), orderNo, collectionAmount, "");
+//                this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
+
+                    //修改订单欠款
+
+                    orderBillingDetails = new OrderBillingDetails();
+                    orderBillingDetails.setOrderNumber(orderNo);
+                    orderBillingDetails.setArrearage(CountUtil.sub(orderTempInfo.getOwnMoney(), collectionAmount));
+                    if (orderBillingDetails.getArrearage() > 0D) {
+                        orderBillingDetails.setIsPayUp(false);
+                    } else {
+                        orderBillingDetails.setIsPayUp(true);
+                        orderBillingDetails.setPayUpTime(new Date());
+                    }
+                    if (OrderBillingPaymentType.CASH.equals(paymentDetails.getPayType())) {
+                        orderBillingDetails.setDeliveryCash(collectionAmount);
+                        orderBillingDetails.setDeliveryPos(0D);
+                    } else if (OrderBillingPaymentType.POS.equals(paymentDetails.getPayType())) {
+                        orderBillingDetails.setDeliveryCash(0D);
+                        orderBillingDetails.setDeliveryPos(collectionAmount);
+                    }
+//                this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
+
+                    //返还信用金后导购信用金额度
+                    Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable() + collectionAmount);
+
+                    //修改导购信用额度
+//                    Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(orderTempInfo.getSellerId(), collectionAmount, empCreditMoney.getLastUpdateTime());
+//                    if (affectLine > 0) {
+                        //记录导购信用金变更日志
+                        empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
+                        empCreditMoneyChangeLog.setEmpId(userId);
+                        empCreditMoneyChangeLog.setCreateTime(new Date());
+                        empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(collectionAmount);
+                        empCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
+                        empCreditMoneyChangeLog.setReferenceNumber(orderNo);
+                        empCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
+                        empCreditMoneyChangeLog.setChangeTypeDesc("订单还款");
+                        empCreditMoneyChangeLog.setOperatorId(userId);
+                        empCreditMoneyChangeLog.setOperatorType(AppIdentityType.SELLER);
+                        //保存日志
 //                    appEmployeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
 
+//                    }
                 }
                 //生成订单物流详情
                 OrderDeliveryInfoDetails orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
@@ -283,10 +295,12 @@ public class SellerArrearsAuditController {
 //                this.arrearsAuditServiceImpl.updateStatusById(orderArrearsAuditDO);
 
                 this.CommonServiceImpl.sellerAudit(orderAgencyFundDO, paymentDetails, orderBillingDetails, empCreditMoneyChangeLog, orderDeliveryInfoDetails,
-                        orderBaseInfo, orderArrearsAuditDO);
+                        orderBaseInfo, orderArrearsAuditDO, orderTempInfo.getSellerId(), collectionAmount, empCreditMoney.getLastUpdateTime());
 
                 //将收款记录录入拆单消息队列
-                this.sinkSender.sendOrderReceipt(receiptNumber);
+                if (null != receiptNumber) {
+                    this.sinkSender.sendOrderReceipt(receiptNumber);
+                }
             } else {
                 orderArrearsAuditDO.setStatus(ArrearsAuditStatus.AUDIT_NO);
                 orderArrearsAuditDO.setUpdateTime(LocalDateTime.now());

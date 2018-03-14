@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-@Transactional
 public class MaCustomerServiceImpl implements MaCustomerService {
 
     @Resource
