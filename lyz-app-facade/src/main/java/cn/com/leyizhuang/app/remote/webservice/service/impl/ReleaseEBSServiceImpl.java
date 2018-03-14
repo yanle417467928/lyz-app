@@ -196,9 +196,9 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                             etaReturnAndRequireGoodsInf.setCustomerId(customerId);
                             etaReturnAndRequireGoodsInf.setCustomerNumber(customerNumber);
                             etaReturnAndRequireGoodsInf.setDiySiteCode(diySiteCode);
-                            if(null !=shipDate){
+                            if (null != shipDate) {
                                 etaReturnAndRequireGoodsInf.setShipDate(sdf.parse(shipDate));
-                            }else{
+                            } else {
                                 etaReturnAndRequireGoodsInf.setShipDate(null);
                             }
                             etaReturnAndRequireGoodsInf.setItemCode(itemCode);
@@ -225,7 +225,13 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                             //更改门店库存和可用量
                             for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
                                 Integer goodsQtyAfterChange = storeInventory.getRealIty() + quantity.intValue();
+                                if (goodsQtyAfterChange < 0) {
+                                    return AppXmlUtil.generateResultXmlToEbs(1, "商品编码为：" + itemCode + "的商品库存不足");
+                                }
                                 Integer goodsAvailableItyAfterChange = storeInventory.getAvailableIty() + quantity.intValue();
+                                if (goodsAvailableItyAfterChange < 0) {
+                                    return AppXmlUtil.generateResultXmlToEbs(1, "商品编码为：" + itemCode + "的商品可用量不足");
+                                }
                                 Integer affectLine = maStoreInventoryService.updateStoreInventoryAndAvailableIty(storeInventory.getStoreId(), goodsDO.getGid(), goodsQtyAfterChange, goodsAvailableItyAfterChange, storeInventory.getLastUpdateTime());
                                 if (affectLine > 0) {
                                     //新增门店库存变更日志
