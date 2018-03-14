@@ -356,7 +356,7 @@ public class ReturnOrderController {
                     }
                 }
                 //发送退货单到wms
-                callWms.sendToWmsReturnOrderAndGoods(returnOrderBaseInfo.getReturnNo());
+//                callWms.sendToWmsReturnOrderAndGoods(returnOrderBaseInfo.getReturnNo());
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
                 logger.info("refusedOrder OUT,拒签退货成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
