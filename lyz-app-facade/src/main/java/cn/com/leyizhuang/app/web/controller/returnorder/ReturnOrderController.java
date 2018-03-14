@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.pay.wechat.refund.OnlinePayRefundService;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.CancelOrderParametersDO;
@@ -178,17 +179,23 @@ public class ReturnOrderController {
                 //获取退单基础表信息
                 ReturnOrderBaseInfo returnOrderBaseInfo = (ReturnOrderBaseInfo) maps.get("returnOrderBaseInfo");
                 String code = (String) maps.get("code");
+                Date date = new Date();
                 if ("SUCCESS".equals(code)) {
                     //如果是待收货、门店自提单则需要返回第三方支付金额
                     if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.SELF_TAKE) || orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_RECEIVE)) {
                         if (null != orderBillingDetails.getOnlinePayType()) {
                             if (OnlinePayType.ALIPAY.equals(orderBillingDetails.getOnlinePayType())) {
                                 //支付宝退款
-                                onlinePayRefundService.alipayRefundRequest(userId, identityType, orderNumber, returnOrderBaseInfo.getReturnNo(), orderBillingDetails.getOnlinePayAmount());
-
+                                Map<String, String> map = onlinePayRefundService.alipayRefundRequest(userId, identityType, orderNumber, returnOrderBaseInfo.getReturnNo(), orderBillingDetails.getOnlinePayAmount());
+                                if ("FAILURE".equals(map.get("code"))){
+                                    returnOrderService.updateReturnOrderBaseInfoByReturnNo(returnOrderBaseInfo.getReturnNo(),AppReturnOrderStatus.PENDING_REFUND);
+                                }
                             } else if (OnlinePayType.WE_CHAT.equals(orderBillingDetails.getOnlinePayType())) {
                                 //微信退款方法类
                                 Map<String, String> map = onlinePayRefundService.wechatReturnMoney(userId, identityType, orderBillingDetails.getOnlinePayAmount(), orderNumber, returnOrderBaseInfo.getReturnNo());
+                                if ("FAILURE".equals(map.get("code"))){
+                                    returnOrderService.updateReturnOrderBaseInfoByReturnNo(returnOrderBaseInfo.getReturnNo(),AppReturnOrderStatus.PENDING_REFUND);
+                                }
                             } else if (OnlinePayType.UNION_PAY.equals(orderBillingDetails.getOnlinePayType())) {
                                 //创建退单退款详情实体
                                 ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
@@ -483,14 +490,15 @@ public class ReturnOrderController {
             List<GoodsSimpleInfo> simpleInfos = param.getReturnGoodsInfo();
 
             Double returnTotalGoodsPrice = 0D;
-            //判断总商品数
-            int totalGoodsQty = 0;
-            //判断退商品数
-            int totalReturnQty = 0;
+
             //判断是否整单是产品券
             Boolean isReturnAllProCoupon = true;
             //获取原单商品信息
             List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderNo);
+            //判断总商品数
+            int totalGoodsQty = orderGoodsInfoList.stream().mapToInt(OrderGoodsInfo::getOrderQuantity).sum();
+            //判断退商品数
+            int totalReturnQty = simpleInfos.stream().mapToInt(GoodsSimpleInfo::getQty).sum();
 
             if (AssertUtil.isNotEmpty(orderGoodsInfoList)) {
                 for (GoodsSimpleInfo simpleInfo : simpleInfos) {
@@ -509,8 +517,6 @@ public class ReturnOrderController {
                                 //设置原订单退货数量 增加
                                 goodsInfo.setReturnQuantity(goodsInfo.getReturnQuantity() + simpleInfo.getQty());
                                 goodsInfos.add(returnOrderGoodsInfo);
-                                totalGoodsQty = totalGoodsQty + goodsInfo.getReturnableQuantity();
-                                totalReturnQty = totalReturnQty + simpleInfo.getQty();
                                 //如果不是产品券就要算进退总价里,并且仅退产品券订单条件失败
                                 if (!AppGoodsLineType.PRODUCT_COUPON.equals(goodsInfo.getGoodsLineType())) {
                                     returnTotalGoodsPrice = CountUtil.add(returnTotalGoodsPrice,
@@ -645,29 +651,29 @@ public class ReturnOrderController {
                 //整单退,不退运费
                 if (totalGoodsQty == totalReturnQty) {
                     if (customerPrePay > billingDetails.getFreight()) {
-                        returnOrderBilling.setCash(hasFreight ? CountUtil.sub(customerPrePay, billingDetails.getFreight()) : customerPrePay);
+                        returnOrderBilling.setPreDeposit(hasFreight ? CountUtil.sub(customerPrePay, billingDetails.getFreight()) : customerPrePay);
                         hasFreight = false;
                     } else {
                         returnOrderBilling.setPreDeposit(customerPrePay);
                     }
                     if (storePrePay > billingDetails.getFreight()) {
-                        returnOrderBilling.setCash(hasFreight ? CountUtil.sub(storePrePay, billingDetails.getFreight()) : storePrePay);
+                        returnOrderBilling.setStPreDeposit(hasFreight ? CountUtil.sub(storePrePay, billingDetails.getFreight()) : storePrePay);
                         hasFreight = false;
                     } else {
                         returnOrderBilling.setStPreDeposit(storePrePay);
                     }
                     if (onlinePayPrice > billingDetails.getFreight()) {
-                        returnOrderBilling.setCash(hasFreight ? CountUtil.sub(onlinePayPrice, billingDetails.getFreight()) : onlinePayPrice);
+                        returnOrderBilling.setOnlinePay(hasFreight ? CountUtil.sub(onlinePayPrice, billingDetails.getFreight()) : onlinePayPrice);
                         hasFreight = false;
                     } else {
                         returnOrderBilling.setOnlinePay(onlinePayPrice);
                     }
                     if (cashPosPrice > billingDetails.getFreight()) {
                         returnOrderBilling.setCash(hasFreight ? CountUtil.sub(cashPosPrice, billingDetails.getFreight()) : cashPosPrice);
-                        hasFreight = false;
                     } else {
                         returnOrderBilling.setCash(cashPosPrice);
                     }
+                    returnOrderBaseInfo.setReturnPrice(CountUtil.add(customerPrePay, storePrePay, onlinePayPrice, cashPosPrice));
                 } else {
                     //判断退款是否小于现金支付
                     if (returnTotalGoodsPrice <= cashPosPrice) {
@@ -1179,7 +1185,6 @@ public class ReturnOrderController {
             OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderNumber);
             //如果是门店自提，只返回自提门店信息
             if (AssertUtil.isNotEmpty(orderLogisticsInfo)) {
-                orderLogisticsInfo.setDeliveryType(AppDeliveryType.RETURN_STORE);
 //                if (AppDeliveryType.SELF_TAKE.equals(orderLogisticsInfo.getDeliveryType())) {
 //                    AppIdentityType identityType1 = AppIdentityType.getAppIdentityTypeByValue(identityType);
 //                    DeliveryAddressResponse defaultDeliveryAddress = deliveryAddressService.getDefaultDeliveryAddressByUserIdAndIdentityType(userId, identityType1);
@@ -1196,9 +1201,8 @@ public class ReturnOrderController {
                     //下订单的id 是否和当前顾客的ID一致
                     if (null != orderBaseInfo) {
                         if (identityType != 2) {
-                            AppStore store = appStoreService.findStoreByUserIdAndIdentityType(userId, identityType);
+                            AppStore store = appStoreService.findByStoreCode(orderBaseInfo.getStoreCode());
                             if (store != null) {
-                                orderLogisticsInfo.setDeliveryType(AppDeliveryType.HOUSE_PICK);
                                 orderLogisticsInfo.setBookingStoreCode(store.getStoreCode());
                                 orderLogisticsInfo.setBookingStoreName(store.getStoreName());
                                 orderLogisticsInfo.setBookingStoreAddress(store.getDetailedAddress());

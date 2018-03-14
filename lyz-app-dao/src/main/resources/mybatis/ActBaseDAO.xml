@@ -185,6 +185,15 @@
 
     </select>
 
+    <select id="queryListByActBaseType" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM act_base
+        where
+        base_type = #{baseType}
+        and end_time &lt; #{now}
+    </select>
+    
     <insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
     <selectKey resultType="long" keyProperty="id" order="AFTER">
         SELECT

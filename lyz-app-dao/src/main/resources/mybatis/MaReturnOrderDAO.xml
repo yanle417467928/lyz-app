@@ -132,15 +132,12 @@
         ogi.return_qty ,
         ogi.return_price,
         ogi.sku_name,
-        ogi.sku
+        ogi.sku,
+        ogi.goods_line_type
         FROM
         ord_return_goods_info AS ogi
         WHERE
         ogi.return_no = #{returnNumber}
-        AND
-        (ogi.goods_line_type='GOODS'
-        OR
-        ogi.goods_line_type='PRESENT')
     </select>
 
     <select id="getReturnOrderProductCoupon" parameterType="java.lang.String"

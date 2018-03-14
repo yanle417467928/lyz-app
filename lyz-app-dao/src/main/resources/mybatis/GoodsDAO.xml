@@ -416,7 +416,7 @@
                                             AND (rc.rank_code = p.price_type
                                                  OR p.price_type = 'COMMON')
             INNER JOIN gds_goods g ON p.gid = g.gid
-            LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId}
+            LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId} AND m.material_list_type = 'NORMAL'
         WHERE
             c.cus_id = #{userId}
             AND g.is_hot = 1
@@ -442,7 +442,7 @@
                                             AND p.start_time &lt; NOW()
                                             AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
-            LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId} AND m.identity_type = e.identity_type
+            LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId} AND m.identity_type = e.identity_type AND m.material_list_type = 'NORMAL'
         WHERE
             e.emp_id = #{userId}
             AND g.is_hot = 1
@@ -470,7 +470,7 @@
             INNER JOIN cus_customer c ON c.cus_id = acc.user_id
             INNER JOIN gds_goods g ON g.gid = acc.gid
             INNER JOIN gds_goods_price p ON p.gid = g.gid AND c.store_id = p.store_id
-            LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId}
+            LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId} AND m.material_list_type = 'NORMAL'
             AND p.start_time &lt; NOW()
             AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             WHERE
@@ -498,7 +498,7 @@
             INNER JOIN emp_employee e ON e.emp_id = acc.user_id
             INNER JOIN gds_goods g ON g.gid = acc.gid
             INNER JOIN gds_goods_price p ON p.gid = g.gid AND e.store_id = p.store_id
-            LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId} AND m.identity_type = e.identity_type
+            LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId} AND m.identity_type = e.identity_type AND m.material_list_type = 'NORMAL'
             AND p.start_time &lt; NOW()
             AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             WHERE
@@ -533,11 +533,11 @@
             LEFT JOIN cus_rank cr ON cr.cus_id = c.cus_id
             LEFT JOIN rank_classification rc ON cr.rank_id = rc.rank_id
             INNER JOIN gds_goods_price p ON p.gid = g.gid
-                                            AND p.start_time &lt; NOW()
-                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-                                            AND (rc.rank_code = p.price_type
-                                                 OR p.price_type = 'COMMON')
-            LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId} AND m.identity_type = acg.identity_type
+                AND p.start_time &lt; NOW()
+                AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+                AND (rc.rank_code = p.price_type
+                OR p.price_type = 'COMMON')
+            LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId} AND m.identity_type = acg.identity_type AND m.material_list_type = 'NORMAL'
         WHERE
             acg.user_id = #{userId}
             AND acg.identity_type = #{type,
@@ -574,12 +574,12 @@
             LEFT JOIN cus_rank cr ON cr.cus_id = c.cus_id
             LEFT JOIN rank_classification rc ON cr.rank_id = rc.rank_id
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id
-                                            AND p.start_time &lt; NOW()
-                                            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-                                            AND (rc.rank_code = p.price_type
-                                                 OR p.price_type = 'COMMON')
+                AND p.start_time &lt; NOW()
+                AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+                AND (rc.rank_code = p.price_type
+                OR p.price_type = 'COMMON')
             INNER JOIN gds_goods g ON p.gid = g.gid
-            LEFT JOIN material_list AS m ON m.gid = p.gid AND m.user_id = #{userId}
+            LEFT JOIN material_list AS m ON m.gid = p.gid AND m.user_id = #{userId} AND m.material_list_type = 'NORMAL'
         WHERE
             c.cus_id = #{userId}
             AND (
@@ -607,7 +607,7 @@
                                             AND p.start_time &lt; NOW()
                                             AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
-            LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId} AND m.identity_type = e.identity_type
+            LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId} AND m.identity_type = e.identity_type AND m.material_list_type = 'NORMAL'
         WHERE
             e.emp_id = #{userId}
             AND (
@@ -820,7 +820,7 @@
         cus_customer c
         INNER JOIN gds_goods_price p ON c.store_id = p.store_id AND p.start_time &lt; NOW()
         AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-        LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId}
+        LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId} AND m.material_list_type = 'NORMAL'
         INNER JOIN gds_goods g ON p.gid = g.gid
         INNER JOIN gds_goods_category gc ON g.cid = gc.cid
         WHERE
@@ -859,7 +859,7 @@
         FROM
         emp_employee e
         INNER JOIN gds_goods_price p ON e.store_id = p.store_id
-        LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId} AND m.identity_type = e.identity_type
+        LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId} AND m.identity_type = e.identity_type AND m.material_list_type = 'NORMAL'
         AND p.start_time &lt; NOW()
         AND (p.end_time IS NULL OR p.end_time &gt; NOW())
         INNER JOIN gds_goods g ON p.gid = g.gid
@@ -1140,7 +1140,7 @@
             AND rc.rank_code = p.price_type
             AND p.start_time &lt; NOW()
             AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-            LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId}
+            LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId} AND m.material_list_type = 'NORMAL'
             INNER JOIN gds_goods g ON p.gid = g.gid
             INNER JOIN gds_goods_category gc ON g.cid = gc.cid
             WHERE
@@ -1148,8 +1148,7 @@
         </if>
     </select>
 
-    <select id="getGoodsBykeywordsAndCompanyAndBrandCodeAndCategoryCodeAndStoreId"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
+    <select id="getGoodsBykeywordsAndCompanyAndBrandCodeAndCategoryCodeAndStoreId" resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
         SELECT
         g.*
         FROM
@@ -1167,7 +1166,7 @@
             AND g.company_flag = #{companyCode}
         </if>
         <if test="keywords != null">
-            AND (g.sku_name LIKE concat('%', #{keywords}, '%')
+            AND  (g.sku_name LIKE concat('%', #{keywords}, '%')
             OR g.sku LIKE concat('%', #{keywords}, '%'))
         </if>
     </select>

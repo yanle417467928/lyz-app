@@ -1373,6 +1373,9 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             if (AssertUtil.isNotEmpty(appStore) && appStore.getStoreType().equals(StoreType.FX) || appStore.getStoreType().equals(StoreType.JM)) {
                 commonService.deductionOrderJxPriceDifferenceRefund(returnOrderBaseInfo, orderBaseInfo, returnOrderGoodsInfos);
             }
+
+
+
             maps.put("returnOrderBaseInfo",returnOrderBaseInfo);
             maps.put("returnOrderBilling",returnOrderBilling);
             maps.put("code", "SUCCESS");
@@ -1944,6 +1947,13 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             return returnOrderDAO.getReturnOrderBillingDetailByReturndNumber(returndNumber);
         }
         return null;
+    }
+
+    @Override
+    public void updateReturnOrderBaseInfoByReturnNo(String returnNo, AppReturnOrderStatus returnStatus) {
+        if (null != returnNo && null != returnStatus){
+            returnOrderDAO.updateReturnOrderBaseInfoByReturnNo(returnNo,returnStatus);
+        }
     }
 }
 

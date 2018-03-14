@@ -37,9 +37,6 @@ public class MaReturnOrderViewController {
     @Resource
     private MaReturnOrderService maReturnOrderService;
 
-    @Resource
-    private MaOrderService maOrderService;
-
 
     /**
      * 跳转退货单页面

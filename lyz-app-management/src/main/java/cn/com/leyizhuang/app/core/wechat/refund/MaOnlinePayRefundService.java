@@ -210,7 +210,6 @@ public class MaOnlinePayRefundService {
                 paymentDataDO.setRemarks(response.getMsg());
                 paymentDataDO.setTradeStatus(PaymentDataStatus.REFUND_FAIL);
                 this.paymentDataService.updateByTradeStatusIsWaitRefund(paymentDataDO);
-
                 map.put("code", "FAILURE");
                 map.put("msg", response.getMsg());
                 return map;

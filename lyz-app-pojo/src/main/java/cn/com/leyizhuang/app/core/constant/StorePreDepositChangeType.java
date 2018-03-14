@@ -54,6 +54,10 @@ public enum StorePreDepositChangeType {
         rechargeList.add(ALIPAY_RECHARGE);
         rechargeList.add(WECHAT_RECHARGE);
         rechargeList.add(UNIONPAY_RECHARGE);
+        rechargeList.add(ADMIN_RECHARGE);
+        rechargeList.add(ADMIN_CHANGE);
+        rechargeList.add(WITHDRAW);
+        rechargeList.add(RETURN_WITHDRAW);
         return rechargeList;
     }
 

@@ -226,4 +226,10 @@ public interface ReturnOrderService {
     List<ReturnOrderBillingDetail> getReturnOrderBillingDetailByRefundNumber(String refundNumber);
 
     List<ReturnOrderBillingDetail> getReturnOrderBillingDetailByReturndNumber(String returnNo);
+    /**
+     * 修改退单状态
+     * @param returnNo  退单号
+     * @param returnStatus  退单状态
+     */
+    void updateReturnOrderBaseInfoByReturnNo(String returnNo,AppReturnOrderStatus returnStatus);
 }

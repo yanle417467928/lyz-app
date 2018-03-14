@@ -270,6 +270,7 @@
                                     <td>退货数量</td>
                                     <td>退货单价</td>
                                     <td>退货金额</td>
+                                    <td>产品类型</td>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -281,6 +282,13 @@
                                         <td align="center">${goods.returnQty!'0'}</td>
                                         <td align="center">¥${goods.returnPrice!'0.00'}</td>
                                         <td align="center">¥${goods.totalPrice!"0.00"}</td>
+                                        <td align="center">
+                                            <#if goods.goodsLineType == 'GOODS'>本品
+                                            <#elseif goods.goodsLineType == 'PRESENT'>赠品
+                                            <#elseif goods.goodsLineType == 'PRODUCT_COUPON'>产品券
+                                            <#else>未知
+                                            </#if>
+                                        </td>
                                     </tr>
                                     </#list>
                                 </#if>

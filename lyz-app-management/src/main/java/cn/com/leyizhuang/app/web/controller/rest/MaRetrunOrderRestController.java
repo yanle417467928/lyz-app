@@ -131,7 +131,7 @@ public class MaRetrunOrderRestController extends BaseRestController {
     /**
      * 后台自提单收货
      *
-     * @param
+     * @param returnNumber
      * @return
      */
     @Transactional

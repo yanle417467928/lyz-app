@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.core.constant.ActBaseType;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO;
 import cn.com.leyizhuang.common.foundation.dao.BaseDAO;
 import org.apache.ibatis.annotations.Param;
@@ -54,6 +55,8 @@ public interface ActBaseDAO{
      */
     List<ActBaseDO> queryListByActIdsAndEndTime(@Param("actIds") List<Long> actIds,@Param("now") LocalDateTime now);
 
+    List<ActBaseDO> queryListByActBaseType(@Param("baseType") ActBaseType type);
+
     /**
      * 批量插入
      * @param trainRecordList
@@ -61,5 +64,6 @@ public interface ActBaseDAO{
     int insertBatch(List<ActBaseDO> trainRecordList);
 
     void insertActLjGoodsMapping();
+
 
 }

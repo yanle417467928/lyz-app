@@ -1,12 +1,10 @@
 package cn.com.leyizhuang.app.web.controller.views.freight;
 
 
-import cn.com.leyizhuang.app.foundation.service.MaClearTempCreditService;
-import cn.com.leyizhuang.app.foundation.service.MaEmployeeService;
+
 import cn.com.leyizhuang.app.foundation.service.MaOrderFreightService;
 import cn.com.leyizhuang.app.foundation.vo.management.freight.OrderFreightDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.freight.OrderFreightVO;
-import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideVO;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

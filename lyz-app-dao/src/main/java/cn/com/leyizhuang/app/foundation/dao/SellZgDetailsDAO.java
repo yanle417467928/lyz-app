@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.SellZgDetailsDO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,5 +14,7 @@ public interface SellZgDetailsDAO {
 
     int addOneDetail(SellZgDetailsDO DO);
 
-    List<SellZgDetailsDO> getDetailsByCusIdAndSku(Long cusId,String sku);
+    List<SellZgDetailsDO> getDetailsByCusId(@Param("cusId") Long cusId);
+
+    List<SellZgDetailsDO> getDetailsByCusIdAndSku(@Param("cusId") Long cusId, @Param("sku") String sku);
 }

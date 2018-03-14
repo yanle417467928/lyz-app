@@ -23,12 +23,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author GenerationRoad
@@ -71,10 +71,11 @@ public class OrderArriveController {
      * @date 2017/11/23
      */
     @PostMapping(value = "/confirm", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> confirmOrderArrive(Long userId, Integer identityType, String orderNo, String pickUpCode, String collectionAmount, String paymentMethod, String remarks, @RequestParam(value = "files", required = false) MultipartFile[] files) {
+    public ResultDTO<Object> confirmOrderArrive(Long userId, Integer identityType, String orderNo, String pickUpCode, String collectionAmount,
+                                                String paymentMethod, String remarks, HttpServletRequest request) {
         logger.info("confirmOrderArrive CALLED,配送员确认订单送达，入参 userId:{} identityType:{} " +
-                        "orderNo:{} pickUpCode:{} collectionAmount:{} paymentMethod:{}, remarks:{} files:{}",
-                userId, identityType, orderNo, pickUpCode, collectionAmount, paymentMethod, remarks, files);
+                        "orderNo:{} pickUpCode:{} collectionAmount:{} paymentMethod:{}, remarks:{} request:{}",
+                userId, identityType, orderNo, pickUpCode, collectionAmount, paymentMethod, remarks, request);
         ResultDTO<Object> resultDTO;
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
@@ -162,10 +163,50 @@ public class OrderArriveController {
                 return resultDTO;
             }
             //上传图片
-            String picture = "";
-            for (int i = 0; i < files.length; i++) {
-                picture += FileUploadOSSUtils.uploadProfilePhoto(files[i], "logistics/photo");
-                picture += ",";
+//            String picture = "";
+//            for (int i = 0; i < files.length; i++) {
+//                picture += FileUploadOSSUtils.uploadProfilePhoto(files[i], "logistics/photo");
+//                picture += ",";
+//            }
+            /*
+             * 因为图片只能上传一张，修改传入参数为request
+             * GenerationRoad
+             */
+            StringBuilder picture = new StringBuilder();
+            CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver(
+                    request.getSession().getServletContext());
+            if (multipartResolver.isMultipart(request)) {
+                // 转换成多部分request
+                MultipartHttpServletRequest multiRequest = (MultipartHttpServletRequest) request;
+                // 取得request中的所有文件名
+                Iterator<String> iter = multiRequest.getFileNames();
+                if (!iter.hasNext()) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "图片不能为空！", null);
+                    logger.info("submitPhotoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+                int i = 0;
+                while (iter.hasNext()) {
+                    // 取得上传文件
+                    MultipartFile f = multiRequest.getFile(iter.next());
+                    if (f != null) {
+                        // 取得当前上传文件的文件名称
+                        String myFileName = f.getOriginalFilename();
+                        // 如果名称不为“”,说明该文件存在，否则说明该文件不存在
+                        if (!"".equals(myFileName.trim())) {
+                            // 定义上传路径
+                            if(!iter.hasNext()){
+                                picture.append(FileUploadOSSUtils.uploadProfilePhoto(f, "order/photo"));
+                            }else{
+                                picture.append(FileUploadOSSUtils.uploadProfilePhoto(f, "order/photo")).append(",");
+                            }
+                            i += 1;
+                            if (i > 2 ) {
+                                break;
+                            }
+                        }
+                    }
+                }
             }
 
             OrderArrearsAuditDO orderArrearsAuditDO = null;
@@ -187,7 +228,7 @@ public class OrderArriveController {
                             orderTempInfo.getSellerName(), orderTempInfo.getSellerPhone());
                     orderArrearsAuditDO.setDistributionInfo(orderTempInfo.getShippingAddress(), LocalDateTime.now());
                     orderArrearsAuditDO.setArrearsAuditInfo(paymentMethod, amount, remarks, ArrearsAuditStatus.AUDITING);
-                    orderArrearsAuditDO.setPicture(picture);
+                    orderArrearsAuditDO.setPicture(picture.toString());
                     this.arrearsAuditServiceImpl.save(orderArrearsAuditDO);
 
 
@@ -225,16 +266,16 @@ public class OrderArriveController {
                         EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(orderTempInfo.getSellerId());
 
                         //返还信用金后导购信用金额度
-                        Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable() + amount);
+                        Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable() + ownManey);
 
                         //修改导购信用额度
-                        Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(userId, amount, empCreditMoney.getLastUpdateTime());
+                        Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(orderTempInfo.getSellerId(), ownManey, empCreditMoney.getLastUpdateTime());
                         if (affectLine > 0) {
                             //记录导购信用金变更日志
                             empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
-                            empCreditMoneyChangeLog.setEmpId(userId);
+                            empCreditMoneyChangeLog.setEmpId(orderTempInfo.getSellerId());
                             empCreditMoneyChangeLog.setCreateTime(new Date());
-                            empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(amount);
+                            empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(ownManey);
                             empCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
                             empCreditMoneyChangeLog.setReferenceNumber(orderNo);
                             empCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
@@ -249,7 +290,7 @@ public class OrderArriveController {
             }
 
             //判断是否有代收款
-            if (amount > 0) {
+            if (amount > 0D) {
                 //生成代收款记录
                 orderAgencyFundDO = new OrderAgencyFundDO();
                 orderAgencyFundDO.setOrderInfo(userId, orderNo, collectionAmountOrder);
@@ -266,7 +307,8 @@ public class OrderArriveController {
                 deliveryClerkNo = appEmployee.getDeliveryClerkNo();
             }*/
             orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
-            orderDeliveryInfoDetails.setDeliveryInfo(orderNo, LogisticStatus.CONFIRM_ARRIVAL, "确认到货！", "送达", orderTempInfo.getOperatorNo(), picture, "", "");
+            orderDeliveryInfoDetails.setDeliveryInfo(orderNo, LogisticStatus.CONFIRM_ARRIVAL, "确认到货！", "送达",
+                    orderTempInfo.getOperatorNo(), picture.toString(), "", "");
 //            this.orderDeliveryInfoDetailsServiceImpl.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
 
             //修改订单状态

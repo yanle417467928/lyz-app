@@ -224,7 +224,7 @@ public class OnlinePayRefundService {
                 //发退款到EBS
 //                sinkSender.sendOrderRefund(returnOrderBillingDetail.getRefundNumber());
                 map.put("code", "SUCCESS");
-
+                map.put("number", response.getTradeNo());
                 return map;
             } else {
                 paymentDataDO.setRemarks(response.getMsg());
