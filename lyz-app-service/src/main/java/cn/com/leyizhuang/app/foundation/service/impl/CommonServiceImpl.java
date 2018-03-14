@@ -44,6 +44,7 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -1647,15 +1648,19 @@ public class CommonServiceImpl implements CommonService {
     public void confirmOrderArrive(OrderBillingPaymentDetails paymentDetails,
                                    OrderBillingDetails orderBillingDetails, EmpCreditMoneyChangeLog empCreditMoneyChangeLog,
                                    OrderAgencyFundDO orderAgencyFundDO, OrderDeliveryInfoDetails orderDeliveryInfoDetails,
-                                   OrderBaseInfo orderBaseInfo) {
+                                   OrderBaseInfo orderBaseInfo, Long sellerId, Double ownManey, Timestamp lastUpdateTime) {
         if (null != paymentDetails) {
             this.orderService.savePaymentDetails(paymentDetails);
         }
         if (null != orderBillingDetails) {
             this.orderService.updateOwnMoneyByOrderNo(orderBillingDetails);
         }
-        if (null != empCreditMoneyChangeLog) {
-            this.employeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
+        if (ownManey > 0D){
+            //修改导购信用额度
+            Integer affectLine = this.employeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(sellerId, ownManey, lastUpdateTime);
+            if (affectLine > 0 && null != empCreditMoneyChangeLog) {
+                this.employeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
+            }
         }
         if (null != orderAgencyFundDO) {
             this.orderAgencyFundServiceImpl.save(orderAgencyFundDO);
@@ -1672,7 +1677,8 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public void sellerAudit(OrderAgencyFundDO orderAgencyFundDO, OrderBillingPaymentDetails paymentDetails, OrderBillingDetails orderBillingDetails,
                             EmpCreditMoneyChangeLog empCreditMoneyChangeLog, OrderDeliveryInfoDetails orderDeliveryInfoDetails,
-                            OrderBaseInfo orderBaseInfo, OrderArrearsAuditDO orderArrearsAuditDO) {
+                            OrderBaseInfo orderBaseInfo, OrderArrearsAuditDO orderArrearsAuditDO, Long sellerId,
+                            Double collectionAmount, Timestamp lastUpdateTime) {
 
         if (null != orderAgencyFundDO) {
             this.orderAgencyFundServiceImpl.save(orderAgencyFundDO);
@@ -1683,9 +1689,14 @@ public class CommonServiceImpl implements CommonService {
         if (null != orderBillingDetails) {
             this.orderService.updateOwnMoneyByOrderNo(orderBillingDetails);
         }
-        if (null != empCreditMoneyChangeLog) {
-            this.employeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
+        if (collectionAmount > 0D){
+            //修改导购信用额度
+            Integer affectLine = this.employeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(sellerId, collectionAmount, lastUpdateTime);
+            if (affectLine > 0 && null != empCreditMoneyChangeLog) {
+                this.employeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
+            }
         }
+
 
         if (null != orderDeliveryInfoDetails) {
             this.deliveryInfoDetailsService.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);

@@ -180,11 +180,6 @@ public class OrderArriveController {
                 MultipartHttpServletRequest multiRequest = (MultipartHttpServletRequest) request;
                 // 取得request中的所有文件名
                 Iterator<String> iter = multiRequest.getFileNames();
-                if (!iter.hasNext()) {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "图片不能为空！", null);
-                    logger.info("submitPhotoOrder OUT,拍照下单提交失败，出参 resultDTO:{}", resultDTO);
-                    return resultDTO;
-                }
                 int i = 0;
                 while (iter.hasNext()) {
                     // 取得上传文件
@@ -217,6 +212,12 @@ public class OrderArriveController {
             OrderDeliveryInfoDetails orderDeliveryInfoDetails = null;
             OrderBaseInfo orderBaseInfo = null;
             String receiptNumber = null;
+            //获取导购信用金
+            EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(orderTempInfo.getSellerId());
+            if (null == empCreditMoney) {
+                empCreditMoney = new EmpCreditMoney();
+                empCreditMoney.setCreditLimitAvailable(0D);
+            }
 
             //判断订单是否有欠款
             if (ownManey > 0) {
@@ -262,15 +263,12 @@ public class OrderArriveController {
                         }
 //                        this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
 
-                        //获取导购信用金
-                        EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(orderTempInfo.getSellerId());
-
                         //返还信用金后导购信用金额度
                         Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable() + ownManey);
 
-                        //修改导购信用额度
-                        Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(orderTempInfo.getSellerId(), ownManey, empCreditMoney.getLastUpdateTime());
-                        if (affectLine > 0) {
+//                        //修改导购信用额度
+//                        Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(orderTempInfo.getSellerId(), ownManey, empCreditMoney.getLastUpdateTime());
+//                        if (affectLine > 0) {
                             //记录导购信用金变更日志
                             empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
                             empCreditMoneyChangeLog.setEmpId(orderTempInfo.getSellerId());
@@ -284,7 +282,7 @@ public class OrderArriveController {
                             empCreditMoneyChangeLog.setOperatorType(AppIdentityType.DELIVERY_CLERK);
                             //保存日志
 //                            appEmployeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
-                        }
+//                        }
                     }
                 }
             }
@@ -319,7 +317,7 @@ public class OrderArriveController {
 //            this.appOrderServiceImpl.updateOrderStatusByOrderNo(orderBaseInfo);
 
             this.CommonServiceImpl.confirmOrderArrive(paymentDetails, orderBillingDetails, empCreditMoneyChangeLog,
-                    orderAgencyFundDO, orderDeliveryInfoDetails, orderBaseInfo);
+                    orderAgencyFundDO, orderDeliveryInfoDetails, orderBaseInfo, orderTempInfo.getSellerId(), ownManey, empCreditMoney.getLastUpdateTime());
 
             //将收款记录录入拆单消息队列
             if (null != receiptNumber) {
