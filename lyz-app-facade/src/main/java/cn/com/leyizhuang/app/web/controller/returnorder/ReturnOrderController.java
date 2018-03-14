@@ -186,13 +186,13 @@ public class ReturnOrderController {
                         if (null != orderBillingDetails.getOnlinePayType()) {
                             if (OnlinePayType.ALIPAY.equals(orderBillingDetails.getOnlinePayType())) {
                                 //支付宝退款
-                                Map<String, String> map = onlinePayRefundService.alipayRefundRequest(userId, identityType, orderNumber, returnOrderBaseInfo.getReturnNo(), orderBillingDetails.getOnlinePayAmount());
+                                Map<String, String> map = onlinePayRefundService.alipayRefundRequest(userId, identityType, orderNumber, returnOrderBaseInfo.getReturnNo(), orderBillingDetails.getOnlinePayAmount(),returnOrderBaseInfo.getRoid());
                                 if ("FAILURE".equals(map.get("code"))){
                                     returnOrderService.updateReturnOrderBaseInfoByReturnNo(returnOrderBaseInfo.getReturnNo(),AppReturnOrderStatus.PENDING_REFUND);
                                 }
                             } else if (OnlinePayType.WE_CHAT.equals(orderBillingDetails.getOnlinePayType())) {
                                 //微信退款方法类
-                                Map<String, String> map = onlinePayRefundService.wechatReturnMoney(userId, identityType, orderBillingDetails.getOnlinePayAmount(), orderNumber, returnOrderBaseInfo.getReturnNo());
+                                Map<String, String> map = onlinePayRefundService.wechatReturnMoney(userId, identityType, orderBillingDetails.getOnlinePayAmount(), orderNumber, returnOrderBaseInfo.getReturnNo(),returnOrderBaseInfo.getRoid());
                                 if ("FAILURE".equals(map.get("code"))){
                                     returnOrderService.updateReturnOrderBaseInfoByReturnNo(returnOrderBaseInfo.getReturnNo(),AppReturnOrderStatus.PENDING_REFUND);
                                 }
@@ -673,7 +673,8 @@ public class ReturnOrderController {
                     } else {
                         returnOrderBilling.setCash(cashPosPrice);
                     }
-                    returnOrderBaseInfo.setReturnPrice(CountUtil.add(customerPrePay, storePrePay, onlinePayPrice, cashPosPrice));
+                    Double totalPrice = CountUtil.add(customerPrePay, storePrePay, onlinePayPrice, cashPosPrice);
+                    returnOrderBaseInfo.setReturnPrice(CountUtil.sub(totalPrice,billingDetails.getFreight()));
                 } else {
                     //判断退款是否小于现金支付
                     if (returnTotalGoodsPrice <= cashPosPrice) {
@@ -738,13 +739,13 @@ public class ReturnOrderController {
                                 //支付宝退款
                                 onlinePayRefundService.alipayRefundRequest(
                                         returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(),
-                                        returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo(), returnOrderBilling.getOnlinePay());
+                                        returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo(), returnOrderBilling.getOnlinePay(),returnOrderBaseInfo.getRoid());
 
                             } else if (OnlinePayType.WE_CHAT.equals(returnOrderBilling.getOnlinePayType())) {
                                 //微信退款方法类
                                 onlinePayRefundService.wechatReturnMoney(
                                         returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(),
-                                        returnOrderBilling.getOnlinePay(), returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo());
+                                        returnOrderBilling.getOnlinePay(), returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo(),returnOrderBaseInfo.getRoid());
 
                             } else if (OnlinePayType.UNION_PAY.equals(returnOrderBilling.getOnlinePayType())) {
                                 //创建退单退款详情实体

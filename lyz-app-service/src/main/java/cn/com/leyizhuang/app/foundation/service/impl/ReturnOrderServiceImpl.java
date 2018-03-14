@@ -1604,7 +1604,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             ReturnOrderBilling returnOrderBilling = returnOrderDAO.getReturnOrderBillingByReturnNo(returnOrderNumber);
             if (AssertUtil.isNotEmpty(returnOrderBilling)) {
                 if (null != returnOrderBilling.getPreDeposit() && returnOrderBilling.getPreDeposit() > AppConstant.PAY_UP_LIMIT) {
-                    if (AppIdentityType.CUSTOMER.equals(returnOrderBaseInfo.getCreatorIdentityType())) {
+                    if (AppIdentityType.CUSTOMER.equals(orderBaseInfo.getCreatorIdentityType())) {
                         for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                             //获取顾客预存款
                             CustomerPreDeposit customerPreDeposit = appCustomerService.findByCusId(returnOrderBaseInfo.getCustomerId());
@@ -1653,9 +1653,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
 
                 //如果是现金退款,直接记退款明细
                 else if (null != returnOrderBilling.getCash() && returnOrderBilling.getCash() > AppConstant.PAY_UP_LIMIT) {
-                    if (AppIdentityType.CUSTOMER.equals(returnOrderBaseInfo.getCreatorIdentityType())) {
                         Double cash = returnOrderBilling.getCash();
-
                         ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                         returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
                         returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
@@ -1667,12 +1665,11 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
                         returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
                     }
-                }
 
                 //返回门店预存款
                 else if (null != returnOrderBilling.getStPreDeposit() && returnOrderBilling.getStPreDeposit() > AppConstant.PAY_UP_LIMIT) {
-                    if (AppIdentityType.SELLER.equals(returnOrderBaseInfo.getCreatorIdentityType()) ||
-                            AppIdentityType.DECORATE_MANAGER.equals(returnOrderBaseInfo.getCreatorIdentityType())) {
+                    if (AppIdentityType.SELLER.equals(orderBaseInfo.getCreatorIdentityType()) ||
+                            AppIdentityType.DECORATE_MANAGER.equals(orderBaseInfo.getCreatorIdentityType())) {
                         for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                             //获取门店预存款
                             StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(returnOrderBaseInfo.getCreatorId());
@@ -1718,7 +1715,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                     }
                     //装饰公司退门店信用额度
                     else if (null != returnOrderBilling.getStCreditMoney() && returnOrderBilling.getStCreditMoney() > AppConstant.PAY_UP_LIMIT) {
-                        if (AppIdentityType.DECORATE_MANAGER.equals(returnOrderBaseInfo.getCreatorIdentityType())) {
+                        if (AppIdentityType.DECORATE_MANAGER.equals(orderBaseInfo.getCreatorIdentityType())) {
 
                             for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                                 //查询门店信用金
@@ -1743,6 +1740,17 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                                     storeCreditMoneyChangeLog.setRemark(ReturnOrderType.NORMAL_RETURN.getDescription());
                                     //保存日志
                                     appStoreService.addStoreCreditMoneyChangeLog(storeCreditMoneyChangeLog);
+
+                                    ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                                    returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
+                                    returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                                    returnOrderBillingDetail.setReturnNo(returnOrderNumber);
+                                    returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.STORE_CREDIT_MONEY);
+                                    returnOrderBillingDetail.setReturnMoney(returnOrderBilling.getStCreditMoney());
+                                    returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
+                                    returnOrderBillingDetail.setReplyCode(null);
+                                    returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
+                                    returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
                                     break;
                                 } else {
                                     if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
