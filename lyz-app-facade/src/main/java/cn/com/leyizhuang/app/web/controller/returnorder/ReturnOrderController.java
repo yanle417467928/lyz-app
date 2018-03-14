@@ -316,7 +316,7 @@ public class ReturnOrderController {
                 List<ReturnOrderGoodsInfo> returnOrderGoodsInfos = (List<ReturnOrderGoodsInfo>) maps.get("returnOrderGoodsInfos");
 
                 //发送拆单消息到消息队列
-                sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
+//                sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
 
                 AppEmployee employee = appEmployeeService.findById(userId);
                 Date date = new Date();
