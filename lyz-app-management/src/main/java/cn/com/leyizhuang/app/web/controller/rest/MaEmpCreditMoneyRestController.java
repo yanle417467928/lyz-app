@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.core.constant.EmpCreditMoneyChangeType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.SimpleEmployeeParam;
 import cn.com.leyizhuang.app.quartz.QuartzManager;
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
@@ -62,7 +63,7 @@ public class MaEmpCreditMoneyRestController extends BaseRestController {
                 guideCreditChangeDetail.setEmpId(guideCreditMoneyDetail.getEmpId());
                 //TODO
                 //随即生成一个单号
-
+                guideCreditChangeDetail.setReferenceNumber(OrderUtils.getRefundNumber());
                 //判断修改类型
                 Long id = guideCreditMoneyDetail.getEmpId();
                 GuideCreditMoney guideCreditMoney = maEmpCreditMoneyService.findGuideCreditMoneyAvailableByEmpId(id);

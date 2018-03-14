@@ -605,4 +605,10 @@
         SET is_return = #{isReturn}
         WHERE id = #{id}
     </update>
+
+    <update id="updateReturnOrderBaseInfoByReturnNo">
+        UPDATE ord_return_base_info
+        SET return_status = #{returnStatus}
+        WHERE return_no = #{returnNo}
+    </update>
 </mapper>

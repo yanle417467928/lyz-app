@@ -248,7 +248,7 @@ public class SellerArrearsAuditController {
                 Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable() + collectionAmount);
 
                 //修改导购信用额度
-                Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(userId, collectionAmount, empCreditMoney.getLastUpdateTime());
+                Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(orderTempInfo.getSellerId(), collectionAmount, empCreditMoney.getLastUpdateTime());
                 EmpCreditMoneyChangeLog empCreditMoneyChangeLog = null;
                 if (affectLine > 0) {
                     //记录导购信用金变更日志
