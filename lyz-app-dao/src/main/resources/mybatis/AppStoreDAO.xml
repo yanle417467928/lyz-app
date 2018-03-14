@@ -234,7 +234,7 @@
         SELECT EXISTS(SELECT 1
                       FROM st_inventory
                       WHERE
-                          available_ity > #{qty} AND store_id = #{storeId} AND gid = #{gid});
+                          available_ity >= #{qty} AND store_id = #{storeId} AND gid = #{gid});
     </select>
 
     <select id="findStoreByCityId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.StoreResponse">

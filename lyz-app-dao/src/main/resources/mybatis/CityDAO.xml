@@ -99,7 +99,7 @@
     <select id="existGoodsCityInventory" resultType="java.lang.Boolean">
         SELECT EXISTS(SELECT 'X'
                       FROM city_inventory
-                      WHERE city_inventory.available_ity > #{qty} AND city_id = #{cityId} AND gid = #{gid});
+                      WHERE city_inventory.available_ity >= #{qty} AND city_id = #{cityId} AND gid = #{gid});
     </select>
 
     <select id="findCityDeliveryTimeByCityId" parameterType="java.lang.Long" resultType=
