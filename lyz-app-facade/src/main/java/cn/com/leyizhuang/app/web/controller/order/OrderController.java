@@ -903,7 +903,7 @@ public class OrderController {
 
                         //如果当前小计满足第一张券的满减条件就减去优惠券的折扣,循环判断
                         if (meetAmount >= cashCoupon.getCondition()) {
-                            Double couponDiscount = CountUtil.mul(cashCoupon.getDenomination(), aCashCouponsList.getQty());
+                            Double couponDiscount = CountUtil.mul(cashCoupon.getCondition(), aCashCouponsList.getQty());
                             cashCouponDiscount = CountUtil.add(cashCouponDiscount, couponDiscount);
                             totalOrderAmount = CountUtil.sub(totalOrderAmount, couponDiscount);
                             index++;
