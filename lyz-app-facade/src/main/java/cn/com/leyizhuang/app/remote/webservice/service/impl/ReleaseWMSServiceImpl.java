@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.core.pay.wechat.refund.OnlinePayRefundService;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.SmsUtils;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.CancelOrderParametersDO;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.WareHouseDO;
@@ -15,6 +16,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
@@ -231,7 +233,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         }
                         HashedMap maps = new HashedMap();
                         ReturnOrderBaseInfo returnOrder = returnOrderService.queryByReturnNo(header.getPoNo());
-                        if (returnOrder.getReturnType().equals(ReturnOrderType.CANCEL_RETURN)){
+                        if (returnOrder.getReturnType().equals(ReturnOrderType.REFUSED_RETURN)){
                             OrderBaseInfo orderBaseInfo = appOrderService.getOrderDetail(returnOrder.getOrderNo());
                             OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderBaseInfo.getOrderNumber());
                             ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(returnOrder.getReturnNo());
@@ -245,20 +247,25 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
 
                         ReturnOrderBaseInfo returnOrderBaseInfo = (ReturnOrderBaseInfo) maps.get("returnOrderBaseInfo");
 
+                        Boolean a = true;
                         if ("SUCCESS".equals(maps.get("code"))) {
                             if ((Boolean) maps.get("hasReturnOnlinePay")) {
                                 //返回第三方支付金额
                                 if (null != returnOrderBilling.getOnlinePay() && returnOrderBilling.getOnlinePay() > AppConstant.PAY_UP_LIMIT) {
                                     if (OnlinePayType.ALIPAY.equals(returnOrderBilling.getOnlinePayType())) {
                                         //支付宝退款
-                                        onlinePayRefundService.alipayRefundRequest(
+                                        Map<String, String> map = onlinePayRefundService.alipayRefundRequest(
                                                 returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(), returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo(), returnOrderBilling.getOnlinePay());
-
+                                        if ("FAILURE".equals(map.get("code"))){
+                                            a = false;
+                                        }
                                     } else if (OnlinePayType.WE_CHAT.equals(returnOrderBilling.getOnlinePayType())) {
                                         //微信退款方法类
-                                        onlinePayRefundService.wechatReturnMoney(
+                                        Map<String, String> map =  onlinePayRefundService.wechatReturnMoney(
                                                 returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(), returnOrderBilling.getOnlinePay(), returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo());
-
+                                        if ("FAILURE".equals(map.get("code"))){
+                                            a = false;
+                                        }
                                     } else if (OnlinePayType.UNION_PAY.equals(returnOrderBilling.getOnlinePayType())) {
                                         //创建退单退款详情实体
                                         ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
@@ -275,8 +282,13 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                                     }
                                 }
                             }
-                            //修改取消订单处理状态
-                            returnOrderService.updateReturnOrderStatus(returnOrderBaseInfo.getReturnNo(), AppReturnOrderStatus.FINISHED);
+                            if (a){
+                                //修改取消订单处理状态
+                                returnOrderService.updateReturnOrderStatus(returnOrderBaseInfo.getReturnNo(), AppReturnOrderStatus.FINISHED);
+                            }else{
+                                //修改取消订单处理状态
+                                returnOrderService.updateReturnOrderStatus(returnOrderBaseInfo.getReturnNo(), AppReturnOrderStatus.PENDING_REFUND);
+                            }
                             //发送退单拆单消息到拆单消息队列
                             sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
                             logger.info("cancelOrderToWms OUT,正常退货成功");

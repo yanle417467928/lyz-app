@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.pay.wechat.refund.OnlinePayRefundService;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.CancelOrderParametersDO;
@@ -178,17 +179,23 @@ public class ReturnOrderController {
                 //获取退单基础表信息
                 ReturnOrderBaseInfo returnOrderBaseInfo = (ReturnOrderBaseInfo) maps.get("returnOrderBaseInfo");
                 String code = (String) maps.get("code");
+                Date date = new Date();
                 if ("SUCCESS".equals(code)) {
                     //如果是待收货、门店自提单则需要返回第三方支付金额
                     if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.SELF_TAKE) || orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_RECEIVE)) {
                         if (null != orderBillingDetails.getOnlinePayType()) {
                             if (OnlinePayType.ALIPAY.equals(orderBillingDetails.getOnlinePayType())) {
                                 //支付宝退款
-                                onlinePayRefundService.alipayRefundRequest(userId, identityType, orderNumber, returnOrderBaseInfo.getReturnNo(), orderBillingDetails.getOnlinePayAmount());
-
+                                Map<String, String> map = onlinePayRefundService.alipayRefundRequest(userId, identityType, orderNumber, returnOrderBaseInfo.getReturnNo(), orderBillingDetails.getOnlinePayAmount());
+                                if ("FAILURE".equals(map.get("code"))){
+                                    returnOrderService.updateReturnOrderBaseInfoByReturnNo(returnOrderBaseInfo.getReturnNo(),AppReturnOrderStatus.PENDING_REFUND);
+                                }
                             } else if (OnlinePayType.WE_CHAT.equals(orderBillingDetails.getOnlinePayType())) {
                                 //微信退款方法类
                                 Map<String, String> map = onlinePayRefundService.wechatReturnMoney(userId, identityType, orderBillingDetails.getOnlinePayAmount(), orderNumber, returnOrderBaseInfo.getReturnNo());
+                                if ("FAILURE".equals(map.get("code"))){
+                                    returnOrderService.updateReturnOrderBaseInfoByReturnNo(returnOrderBaseInfo.getReturnNo(),AppReturnOrderStatus.PENDING_REFUND);
+                                }
                             } else if (OnlinePayType.UNION_PAY.equals(orderBillingDetails.getOnlinePayType())) {
                                 //创建退单退款详情实体
                                 ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
@@ -489,7 +496,7 @@ public class ReturnOrderController {
             //获取原单商品信息
             List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderNo);
             //判断总商品数
-            int totalGoodsQty = orderGoodsInfoList.stream().mapToInt(OrderGoodsInfo::getReturnableQuantity).sum();
+            int totalGoodsQty = orderGoodsInfoList.stream().mapToInt(OrderGoodsInfo::getOrderQuantity).sum();
             //判断退商品数
             int totalReturnQty = simpleInfos.stream().mapToInt(GoodsSimpleInfo::getQty).sum();
 

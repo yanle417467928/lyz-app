@@ -136,4 +136,11 @@ public interface ReturnOrderDAO {
     void updateReturnOrderProductCouponStatus(@Param("id") Long id, @Param("isReturn") Boolean isReturn);
 
     List<ReturnOrderBillingDetail> getReturnOrderBillingDetailByReturndNumber(String returnNumber);
+
+    /**
+     * 修改退单状态
+     * @param returnNo  退单号
+     * @param returnStatus  退单状态
+     */
+    void updateReturnOrderBaseInfoByReturnNo(@Param("returnNo")String returnNo,@Param("returnStatus")AppReturnOrderStatus returnStatus);
 }
