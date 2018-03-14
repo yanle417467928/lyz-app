@@ -28,4 +28,6 @@ public class MaReturnGoods {
     private BigDecimal returnPrice;
     //退货金额
     private BigDecimal totalPrice;
+    //退货类型
+    private AppGoodsLineType goodsLineType;
 }

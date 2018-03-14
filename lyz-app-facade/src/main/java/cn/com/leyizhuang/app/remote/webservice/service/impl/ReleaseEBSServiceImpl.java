@@ -165,26 +165,6 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                                 if (null != childNode.getChildNodes().item(0)) {
                                     quantity = Long.parseLong(childNode.getChildNodes().item(0).getNodeValue());
                                 }
-                            } else if ("EBS_TO_APP_FLAG".equalsIgnoreCase(childNode.getNodeName())) {
-                                if (null != childNode.getChildNodes().item(0)) {
-                                    ebsToAppFlag = childNode.getChildNodes().item(0).getNodeValue();
-                                }
-                            } else if ("APP_ERROR_MESSAGE".equalsIgnoreCase(childNode.getNodeName())) {
-                                if (null != childNode.getChildNodes().item(0)) {
-                                    appErrorMessage = childNode.getChildNodes().item(0).getNodeValue();
-                                }
-                            } else if ("CREATION_DATE".equalsIgnoreCase(childNode.getNodeName())) {
-                                if (null != childNode.getChildNodes().item(0)) {
-                                    creationDate = childNode.getChildNodes().item(0).getNodeValue();
-                                }
-                            } else if ("LAST_UPDATED_BY".equalsIgnoreCase(childNode.getNodeName())) {
-                                if (null != childNode.getChildNodes().item(0)) {
-                                    lastUpdatedBy = Long.parseLong(childNode.getChildNodes().item(0).getNodeValue());
-                                }
-                            } else if ("LAST_UPDATE_DATE".equalsIgnoreCase(childNode.getNodeName())) {
-                                if (null != childNode.getChildNodes().item(0)) {
-                                    lastUpdateDate = childNode.getChildNodes().item(0).getNodeValue();
-                                }
                             } else if ("ATTRIBUTE1".equalsIgnoreCase(childNode.getNodeName())) {
                                 if (null != childNode.getChildNodes().item(0)) {
                                     attribute1 = childNode.getChildNodes().item(0).getNodeValue();
@@ -221,7 +201,11 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                             etaReturnAndRequireGoodsInf.setCustomerId(customerId);
                             etaReturnAndRequireGoodsInf.setCustomerNumber(customerNumber);
                             etaReturnAndRequireGoodsInf.setDiySiteCode(diySiteCode);
-                            etaReturnAndRequireGoodsInf.setShipDate(sdf.parse(shipDate));
+                            if(null !=shipDate){
+                                etaReturnAndRequireGoodsInf.setShipDate(sdf.parse(shipDate));
+                            }else{
+                                etaReturnAndRequireGoodsInf.setShipDate(null);
+                            }
                             etaReturnAndRequireGoodsInf.setItemCode(itemCode);
                             etaReturnAndRequireGoodsInf.setQuantity(quantity);
                             etaReturnAndRequireGoodsInf.setAttribute1(attribute1);
@@ -231,7 +215,11 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                             etaReturnAndRequireGoodsInf.setAttribute5(attribute5);
                             etaReturnAndRequireGoodsInf.setEbsToAppFlag(ebsToAppFlag);
                             etaReturnAndRequireGoodsInf.setAppErrorMessage(appErrorMessage);
-                            etaReturnAndRequireGoodsInf.setCreationDate(sdf.parse(creationDate));
+                            if(null !=creationDate) {
+                                etaReturnAndRequireGoodsInf.setCreationDate(sdf.parse(creationDate));
+                            }else{
+                                etaReturnAndRequireGoodsInf.setCreationDate(null);
+                            }
                             etaReturnAndRequireGoodsInf.setLastUpdatedBy(lastUpdatedBy);
                             etaReturnAndRequireGoodsInf.setLastUpdateDate(sdf.parse(lastUpdateDate));
                             diySiteInventoryEbsService.saveReturnAndRequireGoodsInf(etaReturnAndRequireGoodsInf);

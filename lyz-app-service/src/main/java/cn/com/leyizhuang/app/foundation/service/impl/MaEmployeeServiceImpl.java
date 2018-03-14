@@ -118,8 +118,7 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
     @Override
     public DecorativeEmployeeDetailVO queryDecorativeEmployeeById(Long id){
         EmployeeDO employeeDO = this.maEmployeeDAO.queryEmployeeById(id);
-        DecorativeEmployeeDetailVO decorativeEmployeeVO=  DecorativeEmployeeDetailVO.transform(employeeDO);
-        return decorativeEmployeeVO;
+        return  DecorativeEmployeeDetailVO.transform(employeeDO);
     }
 
     @Override
