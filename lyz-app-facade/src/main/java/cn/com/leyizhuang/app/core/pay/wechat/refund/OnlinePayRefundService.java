@@ -56,7 +56,7 @@ public class OnlinePayRefundService {
      * @param money
      * @return
      */
-    public Map<String, String> wechatReturnMoney(Long userId, Integer identityType, Double money, String orderNo, String refundNo) {
+    public Map<String, String> wechatReturnMoney(Long userId, Integer identityType, Double money, String orderNo, String refundNo,Long roid) {
         Map<String, String> map = new HashMap<>();
         List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOutTradeNoAndTradeStatus(orderNo, PaymentDataStatus.TRADE_SUCCESS);
         if (AssertUtil.isEmpty(paymentDataDOList)) {
@@ -115,7 +115,7 @@ public class OnlinePayRefundService {
                         //创建退单退款详情实体
                         ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                         returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
-                        returnOrderBillingDetail.setRoid(null);
+                        returnOrderBillingDetail.setRoid(roid);
                         returnOrderBillingDetail.setReturnNo(outRefundNo);
                         returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
                         returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
@@ -158,7 +158,7 @@ public class OnlinePayRefundService {
      * @throws AlipayApiException
      * @throws IllegalAccessException
      */
-    public Map<String, String> alipayRefundRequest(Long userId, Integer identityType, String orderNo, String refundNo, double refundAmount) {
+    public Map<String, String> alipayRefundRequest(Long userId, Integer identityType, String orderNo, String refundNo, double refundAmount,Long roid) {
         //取得支付宝交易流水号
         Map<String, String> map = new HashMap<>();
         List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOutTradeNoAndTradeStatus(orderNo, PaymentDataStatus.TRADE_SUCCESS);
@@ -212,7 +212,7 @@ public class OnlinePayRefundService {
                 ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
                 Date date = new Date();
                 returnOrderBillingDetail.setCreateTime(date);
-                returnOrderBillingDetail.setRoid(null);
+                returnOrderBillingDetail.setRoid(roid);
                 returnOrderBillingDetail.setReturnNo(refundNo);
                 returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
                 returnOrderBillingDetail.setIntoAmountTime(date);
