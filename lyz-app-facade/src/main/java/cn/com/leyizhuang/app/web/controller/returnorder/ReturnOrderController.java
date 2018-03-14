@@ -215,11 +215,11 @@ public class ReturnOrderController {
                     //发送退单拆单消息到拆单消息队列
                     sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-                    logger.info("getReturnOrderList OUT,取消订单成功，出参 resultDTO:{}", resultDTO);
+                    logger.info("cancelOrder OUT,取消订单成功，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 } else {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "取消订单失败，请联系管理员！", null);
-                    logger.info("getReturnOrderList OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
+                    logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
             } else {
