@@ -17,7 +17,7 @@
       #{orderSubjectType},#{creatorIdentityType},#{creatorId},#{creatorName},#{sellDetalsFlag},#{companyFlag},#{goodsLineType})
     </insert>
 
-    <update id="update" parameterType="cn.com.leyizhuang.wechat.foundation.pojo.sell_details" >
+    <update id="update" parameterType="cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO" >
         update sell_details
         <set >
             <if test="companyId != null" >
