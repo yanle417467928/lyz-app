@@ -107,11 +107,6 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                     String itemCode = null;
                     // 数量 "正数"入库，"负数"出库
                     Long quantity = null;
-                    String ebsToAppFlag = null;
-                    String appErrorMessage = null;
-                    String creationDate = null;
-                    Long lastUpdatedBy = null;
-                    String lastUpdateDate = null;
                     String attribute1 = null;
                     String attribute2 = null;
                     String attribute3 = null;
@@ -213,15 +208,6 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                             etaReturnAndRequireGoodsInf.setAttribute3(attribute3);
                             etaReturnAndRequireGoodsInf.setAttribute4(attribute4);
                             etaReturnAndRequireGoodsInf.setAttribute5(attribute5);
-                            etaReturnAndRequireGoodsInf.setEbsToAppFlag(ebsToAppFlag);
-                            etaReturnAndRequireGoodsInf.setAppErrorMessage(appErrorMessage);
-                            if(null !=creationDate) {
-                                etaReturnAndRequireGoodsInf.setCreationDate(sdf.parse(creationDate));
-                            }else{
-                                etaReturnAndRequireGoodsInf.setCreationDate(null);
-                            }
-                            etaReturnAndRequireGoodsInf.setLastUpdatedBy(lastUpdatedBy);
-                            etaReturnAndRequireGoodsInf.setLastUpdateDate(sdf.parse(lastUpdateDate));
                             diySiteInventoryEbsService.saveReturnAndRequireGoodsInf(etaReturnAndRequireGoodsInf);
 
                             //判断门店是否存在
