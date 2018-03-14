@@ -644,19 +644,19 @@ public class ReturnOrderController {
                 //整单退,不退运费
                 if (totalGoodsQty == totalReturnQty) {
                     if (customerPrePay > billingDetails.getFreight()) {
-                        returnOrderBilling.setCash(hasFreight ? CountUtil.sub(customerPrePay, billingDetails.getFreight()) : customerPrePay);
+                        returnOrderBilling.setPreDeposit(hasFreight ? CountUtil.sub(customerPrePay, billingDetails.getFreight()) : customerPrePay);
                         hasFreight = false;
                     } else {
                         returnOrderBilling.setPreDeposit(customerPrePay);
                     }
                     if (storePrePay > billingDetails.getFreight()) {
-                        returnOrderBilling.setCash(hasFreight ? CountUtil.sub(storePrePay, billingDetails.getFreight()) : storePrePay);
+                        returnOrderBilling.setStPreDeposit(hasFreight ? CountUtil.sub(storePrePay, billingDetails.getFreight()) : storePrePay);
                         hasFreight = false;
                     } else {
                         returnOrderBilling.setStPreDeposit(storePrePay);
                     }
                     if (onlinePayPrice > billingDetails.getFreight()) {
-                        returnOrderBilling.setCash(hasFreight ? CountUtil.sub(onlinePayPrice, billingDetails.getFreight()) : onlinePayPrice);
+                        returnOrderBilling.setOnlinePay(hasFreight ? CountUtil.sub(onlinePayPrice, billingDetails.getFreight()) : onlinePayPrice);
                         hasFreight = false;
                     } else {
                         returnOrderBilling.setOnlinePay(onlinePayPrice);
@@ -666,6 +666,7 @@ public class ReturnOrderController {
                     } else {
                         returnOrderBilling.setCash(cashPosPrice);
                     }
+                    returnOrderBaseInfo.setReturnPrice(CountUtil.add(customerPrePay, storePrePay, onlinePayPrice, cashPosPrice));
                 } else {
                     //判断退款是否小于现金支付
                     if (returnTotalGoodsPrice <= cashPosPrice) {
