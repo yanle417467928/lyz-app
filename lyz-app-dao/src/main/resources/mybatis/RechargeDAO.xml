@@ -5,20 +5,20 @@
     <insert id="saveRechargeOrder" parameterType="cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder">
         INSERT INTO recharge_order (recharge_no, create_time, creator_identity_type, creator_id, recharge_account_type,
                                     recharge_account_type_desc, store_id, amount, pay_type, pay_type_desc, payment_subject_type,
-                                    payment_subject_type_desc, customer_id, pay_up_time, status)
+                                    payment_subject_type_desc, customer_id, pay_up_time, status,withdraw_no)
         VALUES
             (#{rechargeNo}, #{createTime}, #{creatorIdentityType}, #{creatorId}, #{rechargeAccountType},
                             #{rechargeAccountTypeDesc},
                             #{storeId},
                             #{amount}, #{payType}, #{payTypeDesc}, #{paymentSubjectType}, #{paymentSubjectTypeDesc},
-             #{customerId}, #{payUpTime}, #{status})
+             #{customerId}, #{payUpTime}, #{status},#{withdrawNo})
     </insert>
 
     <insert id="saveRechargeReceiptInfo"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo">
         INSERT INTO recharge_receipt_info (recharge_no, create_time, pay_time, pay_type, pay_type_desc, payment_subject_type,
                                            payment_subject_type_desc, amount, reply_code, receipt_number, recharge_account_type,
-                                           recharge_account_type_desc, charge_type, charge_type_desc)
+                                           recharge_account_type_desc, charge_type, charge_type_desc, withdraw_no)
             SELECT
                 #{rechargeNo},
                 #{createTime},
@@ -33,7 +33,8 @@
                 #{rechargeAccountType},
                 #{rechargeAccountTypeDesc},
                 #{chargeType},
-                #{chargeTypeDesc}
+                #{chargeTypeDesc},
+                #{withdrawNo}
             FROM dual
             WHERE NOT exists(SELECT receipt_number
                              FROM recharge_receipt_info

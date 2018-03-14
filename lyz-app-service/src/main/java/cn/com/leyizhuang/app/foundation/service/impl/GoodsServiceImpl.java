@@ -7,13 +7,13 @@ import cn.com.leyizhuang.app.foundation.dto.GoodsDTO;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
+import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import cn.com.leyizhuang.app.foundation.vo.management.MaBuyProductCouponGoodsResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.goods.MaGoodsVO;
-import com.github.pagehelper.Page;
+import cn.com.leyizhuang.common.util.AssertUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,8 +25,7 @@ import java.util.Set;
  * @date 2017/9/6
  */
 @Service
-@Transactional
-public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.service.GoodsService {
+public class GoodsServiceImpl implements GoodsService {
 
     private GoodsDAO goodsDAO;
 
@@ -61,6 +60,7 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
      * @date 2017/9/9
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public GoodsDO managerSaveGoods(GoodsDTO goodsDTO) {
         GoodsDO goodsDO = transform(goodsDTO);
         // goodsDAO.modify(goodsDO);
@@ -93,6 +93,7 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void batchRemove(List<Long> longs) {
         if (null != longs && longs.size() > 0) {
             goodsDAO.batchRemove(longs);
@@ -184,7 +185,7 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void addCollectGoodsByUserIdAndGoodsIdAndIdentityType(Long userId, Long goodsId, Integer identityType) {
         if (null != userId && null != identityType && null != goodsId) {
             AppIdentityType appIdentityType = AppIdentityType.getAppIdentityTypeByValue(identityType);
@@ -195,7 +196,7 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeCollectGoodsByUserIdAndGoodsIdAndIdentityType(Long userId, Long goodsId, Integer identityType) {
         if (null != userId && null != identityType && null != goodsId) {
             AppIdentityType appIdentityType = AppIdentityType.getAppIdentityTypeByValue(identityType);
@@ -405,6 +406,7 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
      * @param goodsVO
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateGoods(MaGoodsVO goodsVO) {
         GoodsDO goodsDO = GoodsDO.transform(goodsVO);
         goodsDAO.updateGoods(goodsDO);
@@ -462,6 +464,14 @@ public class GoodsServiceImpl implements cn.com.leyizhuang.app.foundation.servic
         PageHelper.startPage(page, size);
         List<GoodsDO> list = goodsDAO.getGoodsBykeywordsAndCompanyAndBrandCodeAndCategoryCodeAndStoreId(keywords,companyCode,brandCode,categoryCode,storeId);
         return new PageInfo<>(list);
+    }
+
+    @Override
+    public List<String> getGoodsSkuNameListByGoodsIdList(List<Long> noPriceGoodsIdList) {
+        if (AssertUtil.isNotEmpty(noPriceGoodsIdList)){
+            return goodsDAO.getGoodsSkuNameListByGoodsIdList(noPriceGoodsIdList);
+        }
+        return null;
     }
 
 

@@ -92,4 +92,9 @@ public class RechargeOrder {
      * 付清时间
      */
     private Date payUpTime;
+
+    /**
+     * 相关提现单号
+     */
+    private String withdrawNo;
 }

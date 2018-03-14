@@ -130,4 +130,6 @@ public interface GoodsService {
 
     PageInfo<GoodsDO> getGoodsBykeywordsAndCompanyAndBrandCodeAndCategoryCodeAndStoreId(Integer page, Integer size, String keywords,String companyCode, Long brandCode,
                                                                                           String categoryCode, Long storeId);
+
+    List<String> getGoodsSkuNameListByGoodsIdList(List<Long> noPriceGoodsIdList);
 }

@@ -6,7 +6,6 @@ import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import cn.com.leyizhuang.app.foundation.vo.management.MaBuyProductCouponGoodsResponse;
-import cn.com.leyizhuang.app.foundation.vo.management.goods.MaGoodsVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -127,9 +126,9 @@ public interface GoodsDAO {
 
     void updateGoods(GoodsDO goodsDO);
 
-    List<GoodsDO> queryGoodsPageByInfo(@Param(value ="queryGoodsInfo" ) String queryGoodsInfo);
+    List<GoodsDO> queryGoodsPageByInfo(@Param(value = "queryGoodsInfo") String queryGoodsInfo);
 
-    List<GoodsDO> screenGoodsGrid(@Param("brandCode")Long brandCode,@Param("categoryCode")String categoryCode,@Param("companyCode")String companyCode);
+    List<GoodsDO> screenGoodsGrid(@Param("brandCode") Long brandCode, @Param("categoryCode") String categoryCode, @Param("companyCode") String companyCode);
 
     List<OrderGoodsVO> findOrderGoodsVOListByCustomerIdAndGoodsIds(@Param(value = "userId") Long userId,
                                                                    @Param(value = "goodsIdSet") Set<Long> goodsIdSet);
@@ -137,40 +136,44 @@ public interface GoodsDAO {
     List<OrderGoodsVO> findOrderGoodsVOListByEmpIdAndGoodsIds(@Param(value = "userId") Long userId,
                                                               @Param(value = "goodsIdSet") Set<Long> goodsIdSet);
 
-    Boolean isExistSkuName(@Param(value = "skuName") String skuName,@Param(value = "id") Long id);
+    Boolean isExistSkuName(@Param(value = "skuName") String skuName, @Param(value = "id") Long id);
 
-    Boolean isExistSortId(@Param(value = "sortId") Long sortId,@Param(value = "id") Long id);
+    Boolean isExistSortId(@Param(value = "sortId") Long sortId, @Param(value = "id") Long id);
 
     /**
      * 后台购买产品券查询商品信息
-     * @param storeId   门店id
+     *
+     * @param storeId 门店id
      * @return
      */
     List<MaBuyProductCouponGoodsResponse> findMaStoreGoodsByStoreId(@Param("storeId") Long storeId);
 
     /**
      * 后台购买产品券条件查询商品信息
+     *
      * @param storeId
      * @param brandCode
      * @param categoryCode
      * @param companyCode
      * @return
      */
-    List<MaBuyProductCouponGoodsResponse> screenMaGoodsGrid(@Param("storeId")Long storeId,@Param("brandCode")Long brandCode,@Param("categoryCode")String categoryCode,@Param("companyCode")String companyCode);
+    List<MaBuyProductCouponGoodsResponse> screenMaGoodsGrid(@Param("storeId") Long storeId, @Param("brandCode") Long brandCode, @Param("categoryCode") String categoryCode, @Param("companyCode") String companyCode);
 
     /**
      * 搜索条件查询商品
+     *
      * @param storeId
      * @param queryGoodsInfo
      * @return
      */
-    List<MaBuyProductCouponGoodsResponse> queryGoodsPageByStoreIdAndInfo(@Param("storeId") Long storeId,@Param("queryGoodsInfo") String queryGoodsInfo);
+    List<MaBuyProductCouponGoodsResponse> queryGoodsPageByStoreIdAndInfo(@Param("storeId") Long storeId, @Param("queryGoodsInfo") String queryGoodsInfo);
 
     List<UserGoodsResponse> findGoodsListByCustomerIdAndIdentityTypeAndUserRank(@Param(value = "userId") Long userId, @Param("identityType") AppIdentityType identityType);
 
     List<GoodsDO> getGoodsBykeywordsAndCompanyAndBrandCodeAndCategoryCodeAndStoreId(
-            @Param("keywords") String keywords,@Param("companyCode") String companyCode,@Param("brandCode") Long brandCode,
-            @Param("categoryCode") String categoryCode,@Param("storeId") Long storeId
+            @Param("keywords") String keywords, @Param("companyCode") String companyCode, @Param("brandCode") Long brandCode,
+            @Param("categoryCode") String categoryCode, @Param("storeId") Long storeId
     );
 
+    List<String> getGoodsSkuNameListByGoodsIdList(@Param(value = "noPriceGoodsIdList") List<Long> noPriceGoodsIdList);
 }

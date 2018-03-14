@@ -36,7 +36,6 @@ import com.alibaba.fastjson.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +46,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 通用方法实现
@@ -461,7 +461,7 @@ public class CommonServiceImpl implements CommonService {
                 (identityType == AppIdentityType.DECORATE_MANAGER.getValue())) {
             if (null != billingDetails.getStPreDeposit() && billingDetails.getStPreDeposit() > 0) {
                 for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
-                    StorePreDeposit preDeposit = storeService.findStorePreDepositByUserIdAndIdentityType(userId,identityType);
+                    StorePreDeposit preDeposit = storeService.findStorePreDepositByUserIdAndIdentityType(userId, identityType);
                     if (null != preDeposit) {
                         if (preDeposit.getBalance() < billingDetails.getStPreDeposit()) {
                             throw new LockStorePreDepositException("导购所属门店预存款余额不足!");
@@ -606,7 +606,7 @@ public class CommonServiceImpl implements CommonService {
         //经销差价返还
         if (null != billingDetails.getJxPriceDifferenceAmount() && billingDetails.getJxPriceDifferenceAmount() > AppConstant.DOUBLE_ZERO) {
             for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
-                StorePreDeposit preDeposit = storeService.findStorePreDepositByUserIdAndIdentityType(userId,identityType);
+                StorePreDeposit preDeposit = storeService.findStorePreDepositByUserIdAndIdentityType(userId, identityType);
                 if (null != preDeposit) {
                     int affectLine = storeService.updateStoreDepositByStoreIdAndStoreDeposit(
                             preDeposit.getStoreId(), -billingDetails.getJxPriceDifferenceAmount(), preDeposit.getLastUpdateTime());
@@ -1169,13 +1169,19 @@ public class CommonServiceImpl implements CommonService {
                 productCouponGoodsList.add(couponGoodsInfo);
             }
             if (couponGoodsIdSet.size() != hasPriceCouponGoodsIdSet.size()) {
-                StringBuilder ids = new StringBuilder();
+                //StringBuilder ids = new StringBuilder();
+                List<Long> noPriceGoodsIdList = new ArrayList<>();
                 for (Long id : couponGoodsIdSet) {
                     if (!hasPriceCouponGoodsIdSet.contains(id)) {
-                        ids.append(id).append(",");
+                        noPriceGoodsIdList.add(id);
                     }
                 }
-                throw new GoodsNoPriceException("id为 '" + ids + "'的产品券商品在当前门店下没有找到价格!");
+                List<String> noPriceGoodsSkuNameList = goodsService.getGoodsSkuNameListByGoodsIdList(noPriceGoodsIdList);
+               /* for (Long id : noPriceGoodsIdList) {
+                    noPriceGoodsSkuNameList.add(productCouponList.stream().filter(p -> p.getId().equals(id)).collect(Collectors.toList()).get(0).getSkuName());
+                }*/
+
+                throw new GoodsNoPriceException("产品券商品:" + noPriceGoodsSkuNameList.toString() + "在当前门店下没有找到价格!");
             }
         }
         if (productCouponGoodsList.size() > 0) {
@@ -1208,10 +1214,10 @@ public class CommonServiceImpl implements CommonService {
                         PaymentSubjectType.SELLER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
                 billingPaymentDetails.add(details);
             }
-            if (null != orderBillingDetails.getStoreCreditMoney() && orderBillingDetails.getStoreCreditMoney()>AppConstant.DOUBLE_ZERO){
+            if (null != orderBillingDetails.getStoreCreditMoney() && orderBillingDetails.getStoreCreditMoney() > AppConstant.DOUBLE_ZERO) {
                 OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
-                details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.STORE_CREDIT_MONEY,orderBillingDetails.getStoreCreditMoney(),
-                        PaymentSubjectType.DECORATE_MANAGER,orderBaseInfo.getOrderNumber(),OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+                details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.STORE_CREDIT_MONEY, orderBillingDetails.getStoreCreditMoney(),
+                        PaymentSubjectType.DECORATE_MANAGER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
                 billingPaymentDetails.add(details);
             }
         }
@@ -1642,22 +1648,22 @@ public class CommonServiceImpl implements CommonService {
                                    OrderBillingDetails orderBillingDetails, EmpCreditMoneyChangeLog empCreditMoneyChangeLog,
                                    OrderAgencyFundDO orderAgencyFundDO, OrderDeliveryInfoDetails orderDeliveryInfoDetails,
                                    OrderBaseInfo orderBaseInfo) {
-        if (null != paymentDetails){
+        if (null != paymentDetails) {
             this.orderService.savePaymentDetails(paymentDetails);
         }
-        if (null != orderBillingDetails){
+        if (null != orderBillingDetails) {
             this.orderService.updateOwnMoneyByOrderNo(orderBillingDetails);
         }
-        if (null != empCreditMoneyChangeLog){
+        if (null != empCreditMoneyChangeLog) {
             this.employeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
         }
-        if (null != orderAgencyFundDO){
+        if (null != orderAgencyFundDO) {
             this.orderAgencyFundServiceImpl.save(orderAgencyFundDO);
         }
-        if (null != orderDeliveryInfoDetails){
+        if (null != orderDeliveryInfoDetails) {
             this.deliveryInfoDetailsService.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
         }
-        if (null != orderBaseInfo){
+        if (null != orderBaseInfo) {
             this.orderService.updateOrderStatusByOrderNo(orderBaseInfo);
         }
     }
@@ -1668,26 +1674,26 @@ public class CommonServiceImpl implements CommonService {
                             EmpCreditMoneyChangeLog empCreditMoneyChangeLog, OrderDeliveryInfoDetails orderDeliveryInfoDetails,
                             OrderBaseInfo orderBaseInfo, OrderArrearsAuditDO orderArrearsAuditDO) {
 
-        if (null != orderAgencyFundDO){
+        if (null != orderAgencyFundDO) {
             this.orderAgencyFundServiceImpl.save(orderAgencyFundDO);
         }
-        if (null != paymentDetails){
+        if (null != paymentDetails) {
             this.orderService.savePaymentDetails(paymentDetails);
         }
-        if (null != orderBillingDetails){
+        if (null != orderBillingDetails) {
             this.orderService.updateOwnMoneyByOrderNo(orderBillingDetails);
         }
-        if (null != empCreditMoneyChangeLog){
+        if (null != empCreditMoneyChangeLog) {
             this.employeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
         }
 
-        if (null != orderDeliveryInfoDetails){
+        if (null != orderDeliveryInfoDetails) {
             this.deliveryInfoDetailsService.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
         }
-        if (null != orderBaseInfo){
+        if (null != orderBaseInfo) {
             this.orderService.updateOrderStatusByOrderNo(orderBaseInfo);
         }
-        if (null != orderArrearsAuditDO){
+        if (null != orderArrearsAuditDO) {
             this.arrearsAuditServiceImpl.updateStatusById(orderArrearsAuditDO);
         }
     }

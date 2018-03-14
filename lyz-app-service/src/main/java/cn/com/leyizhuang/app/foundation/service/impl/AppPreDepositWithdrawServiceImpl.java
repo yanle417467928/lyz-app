@@ -10,6 +10,7 @@ import cn.com.leyizhuang.app.foundation.dao.CusPreDepositWithdrawDAO;
 import cn.com.leyizhuang.app.foundation.dao.StPreDepositWithdrawDAO;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
+import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.PreDepositWithdrawParam;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
@@ -227,34 +228,34 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
     }
 
     @Override
-    public PageInfo<CusPreDepositWithdraw> cusApplyList(Integer page, Integer size, Long cusId,Integer status) {
+    public PageInfo<CusPreDepositWithdraw> cusApplyList(Integer page, Integer size, Long cusId, Integer status) {
 
         PageHelper.startPage(page, size);
 
         PreDepositWithdrawStatus preDepositWithdrawStatus;
 
-        if (status == null){
+        if (status == null) {
             preDepositWithdrawStatus = null;
-        }else{
+        } else {
             preDepositWithdrawStatus = PreDepositWithdrawStatus.getPreDepositWithdrawStatusByValue(status);
         }
 
-        List<CusPreDepositWithdraw> cusPreDepositWithdraws = cusPreDepositWithdrawDAO.findByCusId(cusId,preDepositWithdrawStatus);
+        List<CusPreDepositWithdraw> cusPreDepositWithdraws = cusPreDepositWithdrawDAO.findByCusId(cusId, preDepositWithdrawStatus);
         return new PageInfo<>(cusPreDepositWithdraws);
     }
 
     @Override
-    public PageInfo<StPreDepositWithdraw> stApplyList(Integer page, Integer size, Long stId,Integer status) {
+    public PageInfo<StPreDepositWithdraw> stApplyList(Integer page, Integer size, Long stId, Integer status) {
         PageHelper.startPage(page, size);
 
         PreDepositWithdrawStatus preDepositWithdrawStatus;
 
-        if (status == null){
+        if (status == null) {
             preDepositWithdrawStatus = null;
-        }else{
+        } else {
             preDepositWithdrawStatus = PreDepositWithdrawStatus.getPreDepositWithdrawStatusByValue(status);
         }
-        List<StPreDepositWithdraw> stPreDepositWithdraws = stPreDepositWithdrawDAO.findByStId(stId,preDepositWithdrawStatus);
+        List<StPreDepositWithdraw> stPreDepositWithdraws = stPreDepositWithdrawDAO.findByStId(stId, preDepositWithdrawStatus);
         return new PageInfo<>(stPreDepositWithdraws);
     }
 
@@ -295,7 +296,31 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
             log.setChangeTypeDesc("顾客预存款提现取消");
             this.cusPreDepositLogServiceImpl.save(log);
 
-            // TODO 调预存款退款接口
+
+            //生成充值单
+            RechargeOrder rechargeOrder = new RechargeOrder();
+            rechargeOrder.setStatus(AppRechargeOrderStatus.PAID);
+            rechargeOrder.setRechargeNo(OrderUtils.generateRechargeNumber(cusPreDepositWithdraw.getCityId()));
+            rechargeOrder.setAmount(cusPreDepositWithdraw.getWithdrawAmount());
+            rechargeOrder.setPaymentSubjectType(PaymentSubjectType.CUSTOMER);
+            rechargeOrder.setPaymentSubjectTypeDesc(rechargeOrder.getPaymentSubjectType().getDescription());
+            rechargeOrder.setPayType(OrderBillingPaymentType.ALIPAY);
+            rechargeOrder.setPayTypeDesc(rechargeOrder.getPayType().getDescription());
+            rechargeOrder.setCustomerId(cusPreDepositWithdraw.getApplyCusId());
+            AppStore store = appStoreService.findStoreByUserIdAndIdentityType(cusPreDepositWithdraw.getApplyCusId(), AppIdentityType.CUSTOMER.getValue());
+            if (null != store) {
+                rechargeOrder.setStoreId(store.getStoreId());
+            }
+            rechargeOrder.setRechargeAccountType(RechargeAccountType.CUS_PREPAY);
+            rechargeOrder.setRechargeAccountTypeDesc(rechargeOrder.getRechargeAccountType().getDescription());
+            rechargeOrder.setCreatorId(rechargeOrder.getCustomerId());
+            rechargeOrder.setCreatorIdentityType(AppIdentityType.CUSTOMER);
+            rechargeOrder.setCreateTime(new Date());
+            rechargeOrder.setPayUpTime(new Date());
+            rechargeOrder.setWithdrawNo(cusPreDepositWithdraw.getApplyNo());
+            rechargeService.saveRechargeOrder(rechargeOrder);
+
+            //生成充值收款款
             RechargeReceiptInfo receiptInfo = new RechargeReceiptInfo();
             receiptInfo.setCreateTime(new Date());
             receiptInfo.setPayTime(new Date());
@@ -305,7 +330,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
             receiptInfo.setPaymentSubjectTypeDesc(receiptInfo.getPaymentSubjectType().getDescription());
             receiptInfo.setRechargeAccountTypeDesc(receiptInfo.getRechargeAccountType().getDescription());
             receiptInfo.setPayType(OrderBillingPaymentType.ALIPAY);
-            receiptInfo.setRechargeNo(OrderUtils.generateRechargeNumber(cusPreDepositWithdraw.getCityId()));
+            receiptInfo.setRechargeNo(rechargeOrder.getRechargeNo());
             receiptInfo.setPayTypeDesc(receiptInfo.getPayType().getDescription());
             receiptInfo.setWithdrawNo(cusPreDepositWithdraw.getApplyNo());
             receiptInfo.setReceiptNumber(OrderUtils.generateReceiptNumber(cusPreDepositWithdraw.getCityId()));
@@ -347,6 +372,25 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
             log.setBalance(CountUtil.add(preDeposit.getBalance(), subBalance));
             log.setChangeTypeDesc("门店预存款提现取消");
             this.storePreDepositLogService.save(log);
+
+            //生成充值单
+            RechargeOrder rechargeOrder = new RechargeOrder();
+            rechargeOrder.setStatus(AppRechargeOrderStatus.PAID);
+            rechargeOrder.setRechargeNo(OrderUtils.generateRechargeNumber(stPreDepositWithdraw.getCityId()));
+            rechargeOrder.setAmount(stPreDepositWithdraw.getWithdrawAmount());
+            rechargeOrder.setPaymentSubjectType(PaymentSubjectType.SELLER);
+            rechargeOrder.setPaymentSubjectTypeDesc(rechargeOrder.getPaymentSubjectType().getDescription());
+            rechargeOrder.setPayType(OrderBillingPaymentType.ALIPAY);
+            rechargeOrder.setPayTypeDesc(rechargeOrder.getPayType().getDescription());
+            rechargeOrder.setStoreId(stPreDepositWithdraw.getApplyStId());
+            rechargeOrder.setRechargeAccountType(RechargeAccountType.ST_PREPAY);
+            rechargeOrder.setRechargeAccountTypeDesc(rechargeOrder.getRechargeAccountType().getDescription());
+            //rechargeOrder.setCreatorId(rechargeOrder.getCustomerId());
+            rechargeOrder.setCreatorIdentityType(AppIdentityType.SELLER);
+            rechargeOrder.setCreateTime(new Date());
+            rechargeOrder.setPayUpTime(new Date());
+            rechargeOrder.setWithdrawNo(stPreDepositWithdraw.getApplyNo());
+            rechargeService.saveRechargeOrder(rechargeOrder);
 
             RechargeReceiptInfo receiptInfo = new RechargeReceiptInfo();
             receiptInfo.setCreateTime(new Date());
@@ -469,17 +513,58 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
      * @throws Exception
      */
     @Override
-    public void cusApplyreject(Long applyId, ShiroUser shiroUser) throws Exception {
+    public String cusApplyreject(Long applyId, ShiroUser shiroUser) throws Exception {
 
         CusPreDepositWithdraw apply = cusPreDepositWithdrawDAO.findById(applyId);
         if (apply != null) {
             if (apply.getStatus().equals(PreDepositWithdrawStatus.CHECKING)) {
                 // dai审核状态的单子才可以驳回
                 this.checkCusApply(apply, shiroUser, PreDepositWithdrawStatus.CHECKRETURN);
+
+                //生成充值单
+                RechargeOrder rechargeOrder = new RechargeOrder();
+                rechargeOrder.setStatus(AppRechargeOrderStatus.PAID);
+                rechargeOrder.setRechargeNo(OrderUtils.generateRechargeNumber(apply.getCityId()));
+                rechargeOrder.setAmount(apply.getWithdrawAmount());
+                rechargeOrder.setPaymentSubjectType(PaymentSubjectType.CUSTOMER);
+                rechargeOrder.setPaymentSubjectTypeDesc(rechargeOrder.getPaymentSubjectType().getDescription());
+                rechargeOrder.setPayType(OrderBillingPaymentType.ALIPAY);
+                rechargeOrder.setPayTypeDesc(rechargeOrder.getPayType().getDescription());
+                rechargeOrder.setCustomerId(apply.getApplyCusId());
+                AppStore store = appStoreService.findStoreByUserIdAndIdentityType(apply.getApplyCusId(), AppIdentityType.CUSTOMER.getValue());
+                if (null != store) {
+                    rechargeOrder.setStoreId(store.getStoreId());
+                }
+                rechargeOrder.setRechargeAccountType(RechargeAccountType.CUS_PREPAY);
+                rechargeOrder.setRechargeAccountTypeDesc(rechargeOrder.getRechargeAccountType().getDescription());
+                rechargeOrder.setCreatorId(rechargeOrder.getCustomerId());
+                rechargeOrder.setCreatorIdentityType(AppIdentityType.CUSTOMER);
+                rechargeOrder.setCreateTime(new Date());
+                rechargeOrder.setPayUpTime(new Date());
+                rechargeOrder.setWithdrawNo(apply.getApplyNo());
+                rechargeService.saveRechargeOrder(rechargeOrder);
+
+                //生成充值收款款
+                RechargeReceiptInfo receiptInfo = new RechargeReceiptInfo();
+                receiptInfo.setCreateTime(new Date());
+                receiptInfo.setPayTime(new Date());
+                receiptInfo.setAmount(apply.getWithdrawAmount());
+                receiptInfo.setPaymentSubjectType(PaymentSubjectType.CUSTOMER);
+                receiptInfo.setRechargeAccountType(RechargeAccountType.CUS_PREPAY);
+                receiptInfo.setPaymentSubjectTypeDesc(receiptInfo.getPaymentSubjectType().getDescription());
+                receiptInfo.setRechargeAccountTypeDesc(receiptInfo.getRechargeAccountType().getDescription());
+                receiptInfo.setPayType(OrderBillingPaymentType.ALIPAY);
+                receiptInfo.setRechargeNo(rechargeOrder.getRechargeNo());
+                receiptInfo.setPayTypeDesc(receiptInfo.getPayType().getDescription());
+                receiptInfo.setWithdrawNo(apply.getApplyNo());
+                receiptInfo.setReceiptNumber(OrderUtils.generateReceiptNumber(apply.getCityId()));
+                rechargeService.saveRechargeReceiptInfo(receiptInfo);
+                return receiptInfo.getRechargeNo();
             }
         } else {
             throw new Exception("预存款提现，申请单不存在！");
         }
+        return null;
     }
 
     /**
@@ -580,17 +665,53 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
      * @throws Exception
      */
     @Override
-    public void stApplyreject(Long applyId, ShiroUser shiroUser) throws Exception {
+    public String stApplyreject(Long applyId, ShiroUser shiroUser) throws Exception {
 
         StPreDepositWithdraw apply = stPreDepositWithdrawDAO.findById(applyId);
         if (apply != null) {
             if (apply.getStatus().equals(PreDepositWithdrawStatus.CHECKING)) {
                 // dai审核状态的单子才可以驳回
                 this.checkStApply(apply, shiroUser, PreDepositWithdrawStatus.CHECKRETURN);
+
+                //生成充值单
+                RechargeOrder rechargeOrder = new RechargeOrder();
+                rechargeOrder.setStatus(AppRechargeOrderStatus.PAID);
+                rechargeOrder.setRechargeNo(OrderUtils.generateRechargeNumber(apply.getCityId()));
+                rechargeOrder.setAmount(apply.getWithdrawAmount());
+                rechargeOrder.setPaymentSubjectType(PaymentSubjectType.SELLER);
+                rechargeOrder.setPaymentSubjectTypeDesc(rechargeOrder.getPaymentSubjectType().getDescription());
+                rechargeOrder.setPayType(OrderBillingPaymentType.ALIPAY);
+                rechargeOrder.setPayTypeDesc(rechargeOrder.getPayType().getDescription());
+                rechargeOrder.setStoreId(apply.getApplyStId());
+                rechargeOrder.setRechargeAccountType(RechargeAccountType.ST_PREPAY);
+                rechargeOrder.setRechargeAccountTypeDesc(rechargeOrder.getRechargeAccountType().getDescription());
+                //rechargeOrder.setCreatorId(rechargeOrder.getCustomerId());
+                rechargeOrder.setCreatorIdentityType(AppIdentityType.SELLER);
+                rechargeOrder.setCreateTime(new Date());
+                rechargeOrder.setPayUpTime(new Date());
+                rechargeOrder.setWithdrawNo(apply.getApplyNo());
+                rechargeService.saveRechargeOrder(rechargeOrder);
+
+                RechargeReceiptInfo receiptInfo = new RechargeReceiptInfo();
+                receiptInfo.setCreateTime(new Date());
+                receiptInfo.setPayTime(new Date());
+                receiptInfo.setAmount(apply.getWithdrawAmount());
+                receiptInfo.setPaymentSubjectType(PaymentSubjectType.STORE);
+                receiptInfo.setRechargeAccountType(RechargeAccountType.ST_PREPAY);
+                receiptInfo.setPaymentSubjectTypeDesc(receiptInfo.getPaymentSubjectType().getDescription());
+                receiptInfo.setRechargeAccountTypeDesc(receiptInfo.getRechargeAccountType().getDescription());
+                receiptInfo.setPayType(OrderBillingPaymentType.ALIPAY);
+                receiptInfo.setPayTypeDesc(receiptInfo.getPayType().getDescription());
+                receiptInfo.setRechargeNo(OrderUtils.generateRechargeNumber(apply.getCityId()));
+                receiptInfo.setWithdrawNo(apply.getApplyNo());
+                receiptInfo.setReceiptNumber(OrderUtils.generateReceiptNumber(apply.getCityId()));
+                rechargeService.saveRechargeReceiptInfo(receiptInfo);
+                return receiptInfo.getRechargeNo();
             }
         } else {
             throw new Exception("预存款提现，申请单不存在！");
         }
+        return null;
     }
 
     /**

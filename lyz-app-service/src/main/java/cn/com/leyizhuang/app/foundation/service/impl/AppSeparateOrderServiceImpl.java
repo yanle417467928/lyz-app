@@ -488,14 +488,15 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                 rechargeReceiptInf.setChargeType(rechargeReceiptInfo.getChargeType());
                 rechargeReceiptInf.setReceiptType(rechargeReceiptInfo.getPayType());
                 rechargeReceiptInf.setDescription(rechargeReceiptInf.getReceiptType().getDescription());
-                rechargeReceiptInf.setDiySiteCode(store.getStoreCode());
-                rechargeReceiptInf.setStoreOrgCode(store.getStoreStructureCode());
-                rechargeReceiptInf.setSobId(store.getSobId());
+                if (null != store) {
+                    rechargeReceiptInf.setDiySiteCode(store.getStoreCode());
+                    rechargeReceiptInf.setStoreOrgCode(store.getStoreStructureCode());
+                    rechargeReceiptInf.setSobId(store.getSobId());
+                }
                 rechargeReceiptInf.setReceiptDate(rechargeReceiptInfo.getPayTime());
                 if (rechargeReceiptInfo.getRechargeAccountType() == RechargeAccountType.CUS_PREPAY || rechargeReceiptInfo.getRechargeAccountType() == RechargeAccountType.PRODUCT_COUPON) {
                     rechargeReceiptInf.setUserid(rechargeOrderList.get(0).getCustomerId());
                 }
-
                 separateOrderDAO.saveRechargeReceiptInf(rechargeReceiptInf);
             }
         } else {
@@ -1010,8 +1011,8 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
             for (OrderBillingPaymentDetails billing : billingPaymentDetailsList) {
                 if ("POS".equals(billing.getPayType().getValue())) {
                     OrderBillingDetails orderBillingDetails = orderService.getOrderBillingDetail(billing.getOrderNumber());
-                    if (null!=orderBillingDetails.getStoreCash()&&orderBillingDetails.getStoreCash() < 0) {
-                        billing.setAmount(CountUtil.add(billing.getAmount(),orderBillingDetails.getStoreCash()));
+                    if (null != orderBillingDetails.getStoreCash() && orderBillingDetails.getStoreCash() < 0) {
+                        billing.setAmount(CountUtil.add(billing.getAmount(), orderBillingDetails.getStoreCash()));
                     }
                 }
                 OrderBaseInfo baseInfo = orderService.getOrderByOrderNumber(billing.getOrderNumber());

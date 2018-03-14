@@ -82,7 +82,7 @@ public interface AppPreDepositWithdrawService {
      * @param shiroUser
      * @throws Exception
      */
-    void cusApplyreject(Long applyId, ShiroUser shiroUser) throws Exception;
+    String cusApplyreject(Long applyId, ShiroUser shiroUser) throws Exception;
 
     /**
      * 顾客 打款
@@ -121,7 +121,7 @@ public interface AppPreDepositWithdrawService {
      * @param shiroUser
      * @throws Exception
      */
-    void stApplyreject(Long applyId, ShiroUser shiroUser) throws Exception;
+    String stApplyreject(Long applyId, ShiroUser shiroUser) throws Exception;
 
     /**
      * 门店 打款

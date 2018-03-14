@@ -108,7 +108,7 @@ public class CustomerController {
 
             AppCustomer customer = customerService.findByOpenId(openId);
             if (customer == null) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "您还不是乐易装的会员，先来注册一个吧！",
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "当前微信账号还没有注册，先来注册一个吧！",
                         new CustomerLoginResponse(Boolean.FALSE, null, null, null, null));
                 logger.info("customerLogin OUT,顾客登录失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
