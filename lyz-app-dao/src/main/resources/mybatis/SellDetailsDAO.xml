@@ -7,14 +7,97 @@
       `month`, store_id, seller_id,seller_name,
       customer_phone, customer_name, `number`,
       goods_grade, sku, quantity,
-      amount, single_rewards ,city_id,goods_line_id,create_time,customer_id)
+      amount, single_rewards ,city_id,goods_line_id,create_time,customer_id,order_subject_type,creator_identity_type,
+      creator_id,creator_name,company_flag,goods_line_type,sell_detals_flag)
     values ( #{companyId,jdbcType=BIGINT}, #{year,jdbcType=VARCHAR},
       #{month,jdbcType=VARCHAR}, #{storeId,jdbcType=BIGINT}, #{sellerId,jdbcType=BIGINT},#{sellerName},
       #{customerPhone,jdbcType=VARCHAR}, #{customerName,jdbcType=VARCHAR}, #{number,jdbcType=VARCHAR},
       #{goodsGrade,jdbcType=VARCHAR}, #{sku,jdbcType=VARCHAR}, #{quantity,jdbcType=INTEGER},
-      #{amount,jdbcType=DECIMAL}, #{singleRewards,jdbcType=DECIMAL},#{cityId},#{goodsLineId},#{createTime},#{customerId})
+      #{amount,jdbcType=DECIMAL}, #{singleRewards,jdbcType=DECIMAL},#{cityId},#{goodsLineId},#{createTime},#{customerId},
+      #{orderSubjectType},#{creatorIdentityType},#{creatorId},#{creatorName},#{sellDetalsFlag},#{companyFlag},#{goodsLineType})
     </insert>
 
+    <update id="update" parameterType="cn.com.leyizhuang.wechat.foundation.pojo.sell_details" >
+        update sell_details
+        <set >
+            <if test="companyId != null" >
+                company_id = #{companyId,jdbcType=BIGINT},
+            </if>
+            <if test="year != null" >
+                `year` = #{year,jdbcType=INTEGER},
+            </if>
+            <if test="month != null" >
+                `month` = #{month,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null" >
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cityId != null" >
+                city_id = #{cityId,jdbcType=BIGINT},
+            </if>
+            <if test="storeId != null" >
+                store_id = #{storeId,jdbcType=BIGINT},
+            </if>
+            <if test="sellerId != null" >
+                seller_id = #{sellerId,jdbcType=BIGINT},
+            </if>
+            <if test="sellerName != null" >
+                seller_name = #{sellerName,jdbcType=VARCHAR},
+            </if>
+            <if test="customerId != null" >
+                customer_id = #{customerId,jdbcType=BIGINT},
+            </if>
+            <if test="customerPhone != null" >
+                customer_phone = #{customerPhone,jdbcType=VARCHAR},
+            </if>
+            <if test="customerName != null" >
+                customer_name = #{customerName,jdbcType=VARCHAR},
+            </if>
+            <if test="number != null" >
+                `number` = #{number,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsGrade != null" >
+                goods_grade = #{goodsGrade,jdbcType=VARCHAR},
+            </if>
+            <if test="sku != null" >
+                sku = #{sku,jdbcType=VARCHAR},
+            </if>
+            <if test="quantity != null" >
+                quantity = #{quantity,jdbcType=INTEGER},
+            </if>
+            <if test="amount != null" >
+                amount = #{amount,jdbcType=DECIMAL},
+            </if>
+            <if test="singleRewards != null" >
+                single_rewards = #{singleRewards,jdbcType=DECIMAL},
+            </if>
+            <if test="goodsLineId != null" >
+                goods_line_id = #{goodsLineId,jdbcType=BIGINT},
+            </if>
+            <if test="sellDetalsFlag != null" >
+                sell_detals_flag = #{sellDetalsFlag,jdbcType=INTEGER},
+            </if>
+            <if test="orderSubjectType != null" >
+                order_subject_type = #{orderSubjectType,jdbcType=VARCHAR},
+            </if>
+            <if test="creatorIdentityType != null" >
+                creator_identity_type = #{creatorIdentityType,jdbcType=VARCHAR},
+            </if>
+            <if test="creatorId != null" >
+                creator_id = #{creatorId,jdbcType=BIGINT},
+            </if>
+            <if test="creatorName != null" >
+                creator_name = #{creatorName,jdbcType=VARCHAR},
+            </if>
+            <if test="companyFlag != null" >
+                company_flag = #{companyFlag,jdbcType=VARCHAR},
+            </if>
+            <if test="goodsLineType != null" >
+                goods_line_type = #{goodsLineType,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
     <select id="queryOneMonthSellDetails" resultType="cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO">
       select * from sell_details where
       `year` = #{year} and `month` = #{month}

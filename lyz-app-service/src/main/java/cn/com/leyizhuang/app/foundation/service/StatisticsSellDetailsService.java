@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service;
 
 
 import cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO;
+import cn.com.leyizhuang.app.foundation.pojo.SellZgDetailsDO;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDateTime;
@@ -57,4 +58,28 @@ public interface StatisticsSellDetailsService {
      * @param orderNo
      */
     void recordeErrorLog(String orderNo);
+
+    /****** 专供 ********/
+
+    /**
+     * 新增
+     * @param detailsDOS
+     */
+    void addZgDetailsList(List<SellZgDetailsDO> detailsDOS);
+
+    /**
+     * 返回会员专供产品累计桶数
+     * @return
+     */
+    Integer getZgTsBycusIdAndsku(Long cusId,String sku);
+
+    /**
+     * 根据专供会员id和返回专供销量结果结果
+     * @param cusId
+     * @param sku
+     * @return
+     */
+    List<SellZgDetailsDO> getZgDetailsByCusIdAndSku(Long cusId, String sku);
+
+    List<SellZgDetailsDO> getZgDetailsByCusId(Long cusId);
 }

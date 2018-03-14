@@ -18,6 +18,7 @@ public class GiftListResponseGoods {
     private Long goodsId;
     //商品名称
     private String skuName;
+    private String sku;
     //商品规格
     private String goodsSpecification;
     //封面图片路径

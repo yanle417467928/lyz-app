@@ -17,6 +17,7 @@ public interface SellDetailsDAO {
 
     int addOneDetail(SellDetailsDO DO);
 
+    void update(SellDetailsDO DO);
     /**
      * 查询某年某月销售明细
      *

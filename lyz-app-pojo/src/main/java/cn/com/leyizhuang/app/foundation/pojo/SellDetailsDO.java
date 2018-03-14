@@ -1,5 +1,8 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
+import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.AppOrderSubjectType;
 import lombok.*;
 
 import java.util.Date;
@@ -108,4 +111,40 @@ public class SellDetailsDO {
      * 单品奖励金额
      */
     private Double singleRewards;
+
+
+    /**
+     * 订单下单主体类型，装饰公司、门店
+     */
+    private AppOrderSubjectType orderSubjectType;
+
+    /**
+     * 下单人身份类型
+     */
+    private AppIdentityType creatorIdentityType;
+
+    /**
+     * 下单人id
+     */
+    private Long creatorId;
+
+    /**
+     * 下单人姓名
+     */
+    private String creatorName;
+
+    /**
+     * 订单标志： 0：下单，1：退单
+     */
+    private Integer sellDetalsFlag;
+
+    /**
+     * 公司编码
+     */
+    private String companyFlag;
+
+    /**
+     * 商品行类型
+     */
+    private AppGoodsLineType goodsLineType;
 }

@@ -213,7 +213,7 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
     }
 
     /**
-     * 记录专供销量
+     * 新增
      * @param detailsDOS
      */
     public void addZgDetailsList(List<SellZgDetailsDO> detailsDOS){
@@ -255,6 +255,14 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
         }
 
         return sellZgDetailsDAO.getDetailsByCusIdAndSku(cusId,sku);
+    }
+
+    public List<SellZgDetailsDO> getZgDetailsByCusId(Long cusId){
+        if (cusId == null){
+            return null;
+        }
+
+        return sellZgDetailsDAO.getDetailsByCusId(cusId);
     }
 
 

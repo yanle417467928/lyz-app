@@ -8,7 +8,7 @@ public enum ActBaseType {
 
     COMMON("COMMON","普通促销"),
     ACCUMULATE("ACCUMULATE","累计促销"),
-    FRIST("","首单促销"),
+    ZGFRIST("ZGFRIST","专供首单促销"),
     LADDER("LADDER","阶梯促销");
 
     private final String value;
