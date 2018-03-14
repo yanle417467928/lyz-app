@@ -1220,6 +1220,12 @@ public class CommonServiceImpl implements CommonService {
                         PaymentSubjectType.DECORATE_MANAGER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
                 billingPaymentDetails.add(details);
             }
+            if (null != orderBillingDetails.getLebiCashDiscount() && orderBillingDetails.getStoreCreditMoney() > AppConstant.DOUBLE_ZERO){
+                OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
+                details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.LE_BI, orderBillingDetails.getLebiCashDiscount(),
+                        PaymentSubjectType.CUSTOMER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+                billingPaymentDetails.add(details);
+            }
         }
         return billingPaymentDetails;
     }

@@ -184,7 +184,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                                 separateOrderMemberDiscount += (goodsInfo.getRetailPrice() - goodsInfo.getSettlementPrice()) * goodsInfo.getOrderQuantity();
                                 separateOrderPromotionDiscount += goodsInfo.getPromotionSharePrice() * goodsInfo.getOrderQuantity();
                                 separateOrderCashCouponDiscount += goodsInfo.getCashCouponSharePrice() * goodsInfo.getOrderQuantity();
-                                separateOrderLebiDiscount += goodsInfo.getLbSharePrice() * goodsInfo.getOrderQuantity();
+                               // separateOrderLebiDiscount += goodsInfo.getLbSharePrice() * goodsInfo.getOrderQuantity();
                                 separateOrderSubventionDiscount += goodsInfo.getCashReturnSharePrice() * goodsInfo.getOrderQuantity();
                             }
 
@@ -218,7 +218,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                                 - separateOrderPromotionDiscount
                                 - separateOrderCashCouponDiscount
                                 - separateOrderProductCouponDiscount
-                                - separateOrderLebiDiscount
+                                /*- separateOrderLebiDiscount*/
                                 - separateOrderSubventionDiscount;
                         orderBaseInf.setOrderAmt(separateOrderGoodsTotalPrice);
                         orderBaseInf.setRecAmt(separateOrderAmountPayable);

@@ -19,7 +19,8 @@ public enum OrderBillingPaymentType {
     CASH("CASH", "现金"),
     OTHER("OTHER", "门店其它（对公转账）"),
     TRANSFER_ACCOUNTS("TRANSFER_ACCOUNTS", "转账"),
-    STORE_CREDIT_MONEY("STORE_CREDIT_MONEY", "门店信用金");
+    STORE_CREDIT_MONEY("STORE_CREDIT_MONEY", "门店信用金"),
+    LE_BI("LE_BI", "乐币");
 
 
     private String value;

@@ -526,12 +526,13 @@ public class AppOrderServiceImpl implements AppOrderService {
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getProductCouponDiscount())
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getMemberDiscount())
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getPromotionDiscount())
-                        - OrderUtils.replaceNullWithZero(orderBillingDetails.getLebiCashDiscount())
+                        /* - OrderUtils.replaceNullWithZero(orderBillingDetails.getLebiCashDiscount())*/
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getCashCouponDiscount());
                 orderBillingDetails.setOrderAmountSubtotal(orderAmountSubtotal);
 
                 amountPayable = orderBillingDetails.getOrderAmountSubtotal()
-                        - OrderUtils.replaceNullWithZero(orderBillingDetails.getCusPreDeposit());
+                        - OrderUtils.replaceNullWithZero(orderBillingDetails.getCusPreDeposit())
+                        -OrderUtils.replaceNullWithZero(orderBillingDetails.getLebiCashDiscount());
                 orderBillingDetails.setAmountPayable(amountPayable);
                 orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable());
                 break;
