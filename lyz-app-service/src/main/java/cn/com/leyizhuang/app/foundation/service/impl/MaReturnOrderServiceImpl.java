@@ -210,7 +210,6 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
     public HashedMap returnOrderReceive(String returnNumber, MaReturnOrderDetailInfo maReturnOrderDetailInfo, MaOrdReturnBilling maOrdReturnBillingList, ShiroUser shiroUser) throws RuntimeException {
         HashedMap maps = new HashedMap();
         Date date = new Date();
-        ReturnOrderGoodsInf returnGoodsInf = new ReturnOrderGoodsInf();
         if (null == maReturnOrderDetailInfo || null == maReturnOrderDetailInfo.getStoreId()) {
             throw new RuntimeException("该订单门店ID为空,无法更新门店库存");
         }
