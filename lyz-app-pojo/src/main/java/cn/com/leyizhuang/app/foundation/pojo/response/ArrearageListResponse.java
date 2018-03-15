@@ -27,4 +27,13 @@ public class ArrearageListResponse {
      * 欠款金额
      */
     private Double arrearageMoney;
+
+    /**
+     * 代收金额
+     */
+    private Double agencyMoney;
+    /**
+     * 实收金额
+     */
+    private Double realMoney;
 }
