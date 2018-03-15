@@ -156,7 +156,7 @@ deploy:
     async:
       url: http://119.23.149.7:9999/app/wechatpay/return/async
     cert:
-      path: ${basedir}/src/main/resources/cert/apiclient_cert.p12
+      path: /cert/apiclient_cert.p12
   oss:
     cdnHosts: img-dev.leyizhuang.com.cn
     folder: lyz-app/images/
