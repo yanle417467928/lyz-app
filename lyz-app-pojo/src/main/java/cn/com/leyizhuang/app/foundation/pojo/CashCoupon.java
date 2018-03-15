@@ -42,7 +42,7 @@ public class CashCoupon implements Serializable {
     /**
      * 有效期开始时间
      */
-    @DateTimeFormat(pattern = "yyyy-mm-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date effectiveStartTime;
 
     /**
