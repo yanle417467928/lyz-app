@@ -762,14 +762,14 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
             }
 
             // 记录日志
-            CusPreDepositLogDO log = new CusPreDepositLogDO();
-            log.setCreateTimeAndChangeMoneyAndType(LocalDateTime.now(), stPreDepositWithdraw.getWithdrawAmount(), CustomerPreDepositChangeType.RETURN_WITHDRAW);
+            StPreDepositLogDO log = new StPreDepositLogDO();
+            log.setCreateTimeAndChangeMoneyAndType(LocalDateTime.now(), stPreDepositWithdraw.getWithdrawAmount(), StorePreDepositChangeType.RETURN_WITHDRAW);
             log.setUserIdAndOperatorinfo(stPreDepositWithdraw.getId(), stPreDepositWithdraw.getId(), AppIdentityType.SELLER, "");
             log.setOrderNumber(stPreDepositWithdraw.getApplyNo());
             log.setMerchantOrderNumber("");
             log.setBalance(CountUtil.add(preDeposit.getBalance(), stPreDepositWithdraw.getWithdrawAmount()));
             log.setChangeTypeDesc("门店预存款提现退回");
-            this.cusPreDepositLogServiceImpl.save(log);
+            this.storePreDepositLogService.save(log);
 
             // TODO 调预存款退款接口
 
