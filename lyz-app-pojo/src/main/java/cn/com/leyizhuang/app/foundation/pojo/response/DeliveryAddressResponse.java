@@ -32,5 +32,7 @@ public class DeliveryAddressResponse {
     private String villageName;
     //是否默认收货地址
     private Boolean isDefault;
+    //收货省
+    private String deliveryProvince;
 
 }

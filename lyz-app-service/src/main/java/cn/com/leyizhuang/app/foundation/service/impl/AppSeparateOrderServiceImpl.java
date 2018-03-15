@@ -969,13 +969,14 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
             //获取门店充值信息
             else if (withdrawRefundInfo.getWithdrawAccountType() == RechargeAccountType.ST_PREPAY) {
                 StPreDepositWithdraw stPreDepositWithdraw = stPreDepositWithdrawDAO.findByApplyNo(withdrawRefundInfo.getWithdrawNo());
-                AppStore store = storeService.findById(stPreDepositWithdraw.getApplyStId());
-                withdrawRefundInf.setDiySiteCode(store.getStoreCode());
-                withdrawRefundInf.setStoreOrgCode(store.getStoreStructureCode());
-                withdrawRefundInf.setSobId(store.getSobId());
+
+                AppStore store = storeService.findStoreByUserIdAndIdentityType(stPreDepositWithdraw.getApplyStId(), AppIdentityType.SELLER.getValue());
+                if (null != store) {
+                    withdrawRefundInf.setDiySiteCode(store.getStoreCode());
+                    withdrawRefundInf.setStoreOrgCode(store.getStoreStructureCode());
+                    withdrawRefundInf.setSobId(store.getSobId());
+                }
             }
-
-
             //保存提现退款接口信息
             separateOrderDAO.saveWithdrawRefundInf(withdrawRefundInf);
         }

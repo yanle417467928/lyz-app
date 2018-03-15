@@ -32,6 +32,7 @@
             delivery_street  delivery_street,
             residence_name   village_name,
             detailed_address detailed_address,
+            delivery_province deliveryProvince,
             is_default
         FROM delivery_address
         WHERE user_id = #{userId}
@@ -49,6 +50,7 @@
             delivery_street  delivery_street,
             residence_name   village_name,
             detailed_address detailed_address,
+            delivery_province deliveryProvince,
             is_default
         FROM delivery_address
         WHERE user_id = #{userId}
@@ -58,11 +60,11 @@
     <insert id="addDeliveryAddress" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.DeliveryAddressDO">
         INSERT INTO delivery_address
         (
-            user_id, identity_type, receiver, receiver_phone, delivery_city, DELIVERY_COUNTY, DELIVERY_STREET,
-            DETAILED_ADDRESS, residence_name, STATUS, is_default)
+            user_id, identity_type, receiver, receiver_phone, delivery_province, delivery_city, delivery_county, delivery_street,
+            detailed_address, residence_name, STATUS, is_default)
         VALUES
             (#{userId}, #{identityType}, #{receiver}, #{receiverPhone},
-                        #{deliveryCity}, #{deliveryCounty},
+                        #{deliveryProvince}, #{deliveryCity}, #{deliveryCounty},
                         #{deliveryStreet},
                         #{detailedAddress}, #{residenceName}, #{status}, #{isDefault})
     </insert>
@@ -115,6 +117,7 @@
             delivery_street  delivery_street,
             residence_name   village_name,
             detailed_address detailed_address,
+            delivery_province deliveryProvince,
             is_default
         FROM delivery_address
         WHERE user_id = #{userId}
@@ -141,6 +144,7 @@
             delivery_street  delivery_street,
             residence_name   village_name,
             detailed_address detailed_address,
+            delivery_province deliveryProvince,
             is_default
         FROM delivery_address
         WHERE user_id = #{userId}

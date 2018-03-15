@@ -257,6 +257,7 @@
         </if>
         <if test="null != identityType and identityType.toString() == 'SELLER'">
             obi.creator_id = #{userId} AND obi.creator_identity_type = #{identityType}
+            AND orbi.creator_id = #{userId} AND orbi.creator_identityType = #{identityType}
         </if>
         <if test="null != identityType and identityType.toString() == 'DECORATE_MANAGER'">
             obi.creator_id = #{userId} AND obi.creator_identity_type = #{identityType}
