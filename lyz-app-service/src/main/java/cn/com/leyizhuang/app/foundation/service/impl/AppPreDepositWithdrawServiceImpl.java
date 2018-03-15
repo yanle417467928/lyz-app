@@ -757,14 +757,14 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
         if (status.equals(PreDepositWithdrawStatus.CHECKRETURN)) {
             // 申请退回
             StorePreDeposit preDeposit = appStoreService.findStorePreDepositByEmpId(stPreDepositWithdraw.getApplyStId());
-            int row = appStoreDAO.updateStoreDepositByUserIdAndStoreDeposit(stPreDepositWithdraw.getApplyStId(), stPreDepositWithdraw.getWithdrawAmount(), preDeposit.getLastUpdateTime());
+            int row = appStoreDAO.updateStoreDepositByUserIdAndStoreDeposit(stPreDepositWithdraw.getApplyStId(), -stPreDepositWithdraw.getWithdrawAmount(), preDeposit.getLastUpdateTime());
             if (1 != row) {
                 throw new RuntimeException("提现申请失败");
             }
 
             // 记录日志
             StPreDepositLogDO log = new StPreDepositLogDO();
-            log.setCreateTimeAndChangeMoneyAndType(LocalDateTime.now(), stPreDepositWithdraw.getWithdrawAmount(), StorePreDepositChangeType.RETURN_WITHDRAW);
+            log.setCreateTimeAndChangeMoneyAndType(LocalDateTime.now(), -stPreDepositWithdraw.getWithdrawAmount(), StorePreDepositChangeType.RETURN_WITHDRAW);
             log.setUserIdAndOperatorinfo(stPreDepositWithdraw.getId(), stPreDepositWithdraw.getId(), AppIdentityType.SELLER, "");
             log.setOrderNumber(stPreDepositWithdraw.getApplyNo());
             log.setMerchantOrderNumber("");
