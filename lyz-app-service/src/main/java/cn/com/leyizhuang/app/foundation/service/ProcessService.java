@@ -34,7 +34,7 @@ public interface ProcessService {
     void saveProcessAndGoods(Long pID, Long gID);
 
     //查询所有工序目录
-    List<ProcessResponse> queryAllList();
+    List<ProcessResponse> queryAllListByCityId(Long cityId);
 
     List<UserGoodsResponse> queryByProcessIdAndUserId(Long userId, Long processId, Integer identityType);
 }

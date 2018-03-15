@@ -100,11 +100,12 @@
         WHERE gid = #{gid}
     </delete>
 
-    <select id="queryAllList" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ProcessResponse">
+    <select id="queryAllListByCityId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ProcessResponse">
         SELECT
         prc_id id,
         process_name
         FROM gds_process
+        WHERE city_id = #{cityId}
     </select>
 
     <select id="queryByProcessIdAndEmployeeId"

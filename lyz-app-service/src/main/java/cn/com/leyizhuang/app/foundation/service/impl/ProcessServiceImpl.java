@@ -71,8 +71,8 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public List<ProcessResponse> queryAllList() {
-        return this.processDAO.queryAllList();
+    public List<ProcessResponse> queryAllListByCityId(Long cityId) {
+        return this.processDAO.queryAllListByCityId(cityId);
     }
 
     @Override
