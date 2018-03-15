@@ -997,10 +997,16 @@ public class MaOrderServiceImpl implements MaOrderService {
         orderBaseInfo.setCityName(city.getName());
         //设置订单创建时间
         Calendar calendar = Calendar.getInstance();
-        //订单号
-        orderBaseInfo.setOrderNumber(orderNumber);
         //创建时间
         orderBaseInfo.setCreateTime(calendar.getTime());
+        //计算失效时间
+        calendar.setTime(calendar.getTime());
+        calendar.add(Calendar.MONTH, 6);
+        //设置失效时间
+        orderBaseInfo.setEffectiveEndTime(calendar.getTime());
+        //订单号
+        orderBaseInfo.setOrderNumber(orderNumber);
+
         //下单人id
         orderBaseInfo.setCreatorId(appEmployee.getEmpId());
         //下单人姓名

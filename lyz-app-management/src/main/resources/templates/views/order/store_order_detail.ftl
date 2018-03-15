@@ -206,11 +206,6 @@
                     <br>
                     <b></b>
                     <br>
-                <#if maOrderDetail.deliveryType = 'HOUSE_DELIVERY'>
-                    <b>是否主家收货:</b>
-                    <spanp class="span"><#if maOrderDetail.isOwnerReceiving>是<#else>否</#if></spanp>
-                    <br>
-                </#if>
                 </div>
             </div>
         </div>
