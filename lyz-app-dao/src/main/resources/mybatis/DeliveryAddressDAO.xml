@@ -117,6 +117,7 @@
             delivery_street  delivery_street,
             residence_name   village_name,
             detailed_address detailed_address,
+            delivery_province deliveryProvince,
             is_default
         FROM delivery_address
         WHERE user_id = #{userId}
@@ -143,6 +144,7 @@
             delivery_street  delivery_street,
             residence_name   village_name,
             detailed_address detailed_address,
+            delivery_province deliveryProvince,
             is_default
         FROM delivery_address
         WHERE user_id = #{userId}

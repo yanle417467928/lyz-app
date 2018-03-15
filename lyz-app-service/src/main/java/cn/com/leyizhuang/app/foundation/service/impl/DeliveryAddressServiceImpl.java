@@ -98,6 +98,7 @@ public class DeliveryAddressServiceImpl implements DeliveryAddressService {
             deliveryAddressDO.setIdentityType(identityType);
             deliveryAddressDO.setReceiver(deliveryAddress.getDeliveryName());
             deliveryAddressDO.setReceiverPhone(deliveryAddress.getDeliveryPhone());
+            deliveryAddressDO.setDeliveryProvince(deliveryAddress.getDeliveryProvince());
             deliveryAddressDO.setDeliveryCity(deliveryAddress.getDeliveryCity());
             deliveryAddressDO.setDeliveryCounty(deliveryAddress.getDeliveryCounty());
             deliveryAddressDO.setDeliveryStreet(deliveryAddress.getDeliveryStreet());
