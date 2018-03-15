@@ -44,6 +44,7 @@ public class TestClient {
     @Resource
     private ReturnOrderDeliveryDetailsService returnOrderDeliveryDetailsService;
 
+
     public static void main(String[] args) throws Exception {
 //       String STRTABLE = "tbw_send_task_m";
 //       String STRTABLE = "tbw_om_d";
@@ -193,7 +194,7 @@ public class TestClient {
 //        newUser.setCustomerProfessionDesc(null != professions ? professions.stream().filter(p -> p.getTitle().equals("DG")).collect(Collectors.toList()).get(0).getDescription() : "");
 //
 //        System.out.println(newUser);
-//        onlinePayRefundService.wechatReturnMoney(1L, 6, 0.01D, "CD_XN20180111095243410278", "T201803101111512678");
+        onlinePayRefundService.wechatReturnMoney(128L, 6, 70D, "CD_XN20180315145706348560", "T20180315150003738", 1333L);
 //
 //
 //        separateOrderService.separateOrderRefund("TK_20180311115824685");
@@ -204,5 +205,7 @@ public class TestClient {
         returnOrderDeliveryDetail.setWarehouseNo("123");
         returnOrderDeliveryDetail.setPickersNumber("11111");
 //        returnOrderDeliveryDetailsService.addReturnOrderDeliveryInfoDetails(returnOrderDeliveryDetail);
+
+        separateOrderService.separateOrderRefund("T20180315150003738");
     }
 }
