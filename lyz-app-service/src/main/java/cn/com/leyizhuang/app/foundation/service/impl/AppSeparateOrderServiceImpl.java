@@ -184,7 +184,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                                 separateOrderMemberDiscount += (goodsInfo.getRetailPrice() - goodsInfo.getSettlementPrice()) * goodsInfo.getOrderQuantity();
                                 separateOrderPromotionDiscount += goodsInfo.getPromotionSharePrice() * goodsInfo.getOrderQuantity();
                                 separateOrderCashCouponDiscount += goodsInfo.getCashCouponSharePrice() * goodsInfo.getOrderQuantity();
-                               // separateOrderLebiDiscount += goodsInfo.getLbSharePrice() * goodsInfo.getOrderQuantity();
+                                // separateOrderLebiDiscount += goodsInfo.getLbSharePrice() * goodsInfo.getOrderQuantity();
                                 separateOrderSubventionDiscount += goodsInfo.getCashReturnSharePrice() * goodsInfo.getOrderQuantity();
                             }
 
@@ -747,7 +747,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                 supportService.saveSeparateReturnOrderRelevantInf(returnOrderParamMap, returnOrderCouponInfList, returnOrderRefundInfList, jxPriceDifferenceRefundInfList);
 
             } else {
-                throw new RuntimeException("为找到原主单信息,退单拆单失败!");
+                throw new RuntimeException("未找到原主单信息,退单拆单失败!");
             }
 
         }
@@ -1061,24 +1061,29 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     }
 
     @Override
-    public void separateOrderRefund(String refundNumber) {
-        if (null != refundNumber) {
-            List<ReturnOrderBillingDetail> returnOrderBillingDetailList = returnOrderService.
-                    getReturnOrderBillingDetailByRefundNumber(refundNumber);
-            if (null != returnOrderBillingDetailList && returnOrderBillingDetailList.size() == 1) {
-                for (ReturnOrderBillingDetail billingDetail : returnOrderBillingDetailList) {
+    public void separateOrderRefund(String returnNumber) {
 
-                    ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(billingDetail.getReturnNo());
-                    OrderBaseInfo orderBaseInfo = orderService.getOrderByOrderNumber(null != returnOrderBaseInfo ? returnOrderBaseInfo.getOrderNo() : null);
-                    if (null != orderBaseInfo) {
+        //************************************ 生成退单退款信息 begin ******************************************
+        //查找主退单信息
+        ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(returnNumber);
+        if (null != returnOrderBaseInfo) {
+            //查找主退单对应的主订单信息
+            OrderBaseInfo orderBaseInfo = orderService.getOrderByOrderNumber(returnOrderBaseInfo.getOrderNo());
+            if (null != orderBaseInfo) {
+                List<ReturnOrderRefundInf> returnOrderRefundInfList = new ArrayList<>(10);
+                List<ReturnOrderBillingDetail> returnOrderBillingDetailList = returnOrderService.
+                        getReturnOrderBillingDetailByRoid(returnOrderBaseInfo.getRoid());
+                if (null != returnOrderBillingDetailList && returnOrderBillingDetailList.size() > 0) {
+                    for (ReturnOrderBillingDetail billingDetail : returnOrderBillingDetailList) {
+
                         ReturnOrderRefundInf refundInf = new ReturnOrderRefundInf();
                         refundInf.setAmount(billingDetail.getReturnMoney());
                         refundInf.setCreateTime(billingDetail.getCreateTime());
                         refundInf.setDiySiteCode(orderBaseInfo.getStoreCode());
                         refundInf.setMainOrderNumber(orderBaseInfo.getOrderNumber());
-                        refundInf.setMainReturnNumber(null != returnOrderBaseInfo ? returnOrderBaseInfo.getReturnNo() : null);
+                        refundInf.setMainReturnNumber(returnOrderBaseInfo.getReturnNo());
                         refundInf.setStoreOrgCode(orderBaseInfo.getStoreStructureCode());
-                        refundInf.setUserId(null != (returnOrderBaseInfo != null ? returnOrderBaseInfo.getCreatorIdentityType() : null) && returnOrderBaseInfo.getCreatorIdentityType() == AppIdentityType.SELLER ?
+                        refundInf.setUserId(null != returnOrderBaseInfo.getCreatorIdentityType() && returnOrderBaseInfo.getCreatorIdentityType() == AppIdentityType.SELLER ?
                                 returnOrderBaseInfo.getCustomerId() : returnOrderBaseInfo.getCreatorId());
                         refundInf.setRefundDate(billingDetail.getIntoAmountTime());
                         refundInf.setRefundNumber(billingDetail.getRefundNumber());
@@ -1106,6 +1111,29 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         this.supportService.saveOrderRefundInf(refundInf);
                     }
                 }
+                //************************************ 生成退单退款信息 end ********************************************
+
+                //******************************* 生成退订单退经销差价信息 begin ***************************************
+                List<ReturnOrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfList = new ArrayList<>(20);
+                List<ReturnOrderJxPriceDifferenceRefundDetails> detailsList = returnOrderService.
+                        getReturnOrderJxPriceDifferenceRefundDetailsByReturnNumber(returnNumber);
+                if (AssertUtil.isNotEmpty(detailsList)) {
+                    for (ReturnOrderJxPriceDifferenceRefundDetails details : detailsList) {
+                        ReturnOrderJxPriceDifferenceRefundInf inf = new ReturnOrderJxPriceDifferenceRefundInf();
+                        inf.setAmount(details.getAmount());
+                        inf.setCreateTime(details.getCreateTime());
+                        inf.setMainReturnNumber(returnOrderBaseInfo.getReturnNo());
+                        inf.setMainOrderNumber(returnOrderBaseInfo.getOrderNo());
+                        inf.setRefundDate(returnOrderBaseInfo.getReturnTime());
+                        inf.setSku(details.getSku());
+                        inf.setSobId(orderBaseInfo.getSobId());
+                        inf.setStoreOrgCode(orderBaseInfo.getStoreStructureCode());
+                        inf.setDiySiteCode(details.getStoreCode());
+                        inf.setRefundNumber(details.getRefundNumber());
+                        separateOrderDAO.saveOrderJxPriceDifferenceRefundInf(inf);
+                    }
+                }
+                //******************************* 生成退订单退经销差价信息 end ***************************************
             }
         }
     }
