@@ -134,7 +134,6 @@
                                     <td>
                                         <div>
                                             <span>
-                                                <#if maOrderDetail.isOwnerReceiving>是<#else>否</#if>
                                             </span>
                                         </div>
                                     </td>
@@ -249,7 +248,6 @@
                                     <td>
                                         <div>
                                             <span>
-                                                <#if maOrderDetail.isOwnerReceiving>是<#else>否</#if>
                                             </span>
                                         </div>
                                     </td>

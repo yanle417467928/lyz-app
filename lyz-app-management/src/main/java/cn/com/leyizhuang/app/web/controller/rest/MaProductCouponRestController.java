@@ -18,6 +18,7 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -55,6 +56,17 @@ public class MaProductCouponRestController extends BaseRestController {
             if (productCoupon == null) {
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "产品券数据不正确！", null);
             }
+            Date effectiveStartTime = productCoupon.getEffectiveStartTime();
+            Date effectiveEndTime = productCoupon.getEffectiveEndTime();
+            Calendar aCalendar = Calendar.getInstance();
+            aCalendar.setTime(effectiveStartTime);
+            int startDay = aCalendar.get(Calendar.DAY_OF_YEAR);
+            aCalendar.setTime(effectiveEndTime);
+            int endDay = aCalendar.get(Calendar.DAY_OF_YEAR);
+            int differDay = endDay - startDay;
+            if (1 > differDay || differDay > 180) {
+                return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "结束效日期应在开始日期后6个月范围之内", null);
+            }
             productCoupon.setCreateTime(new Date());
             productCoupon.setRemainingQuantity(productCoupon.getInitialQuantity());
             productCouponService.addProductCoupon(productCoupon);
@@ -91,27 +103,27 @@ public class MaProductCouponRestController extends BaseRestController {
     }
 
     @PostMapping(value = "/send")
-    public ResultDTO<?> send(Long customerId, Long productCouponId,Long sellerId, Integer qty) throws IOException {
+    public ResultDTO<?> send(Long customerId, Long productCouponId, Long sellerId, Integer qty) throws IOException {
 
-        if (customerId == null || productCouponId == null || sellerId == null ||qty == 0) {
+        if (customerId == null || productCouponId == null || sellerId == null || qty == 0) {
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发送失败,参数有误", null);
         }
 
-        productCouponSendService.send(customerId,productCouponId,sellerId,qty);
+        productCouponSendService.send(customerId, productCouponId, sellerId, qty);
         return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "发券成功", null);
     }
 
     @PostMapping(value = "/sendBatch")
-    public ResultDTO<?> sendBatch(String customerIds, Long productCouponId,Long sellerId, Integer qty) throws IOException {
+    public ResultDTO<?> sendBatch(String customerIds, Long productCouponId, Long sellerId, Integer qty) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
         JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, Long.class);
         List<Long> idList = objectMapper.readValue(customerIds, javaType1);
 
-        if(idList == null || idList == null || sellerId == null || qty == 0){
+        if (idList == null || idList == null || sellerId == null || qty == 0) {
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发送失败", null);
         }
 
-        return productCouponSendService.sendBatch(idList,productCouponId,sellerId,qty);
+        return productCouponSendService.sendBatch(idList, productCouponId, sellerId, qty);
     }
 }

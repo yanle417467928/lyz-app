@@ -61,7 +61,6 @@ public class MaEmpCreditMoneyRestController extends BaseRestController {
                 guideCreditChangeDetail.setOperatorId(shiroUser.getId());
                 guideCreditChangeDetail.setOperatorName(shiroUser.getName());
                 guideCreditChangeDetail.setEmpId(guideCreditMoneyDetail.getEmpId());
-                //TODO
                 //随即生成一个单号
                 guideCreditChangeDetail.setReferenceNumber(OrderUtils.getRefundNumber());
                 //判断修改类型
