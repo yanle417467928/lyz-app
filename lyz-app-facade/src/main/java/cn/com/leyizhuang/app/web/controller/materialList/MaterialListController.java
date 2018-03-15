@@ -7,7 +7,10 @@ import cn.com.leyizhuang.app.foundation.pojo.QuickOrderRelationDO;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
-import cn.com.leyizhuang.app.foundation.pojo.response.materialList.*;
+import cn.com.leyizhuang.app.foundation.pojo.response.materialList.CouponMaterialListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.materialList.MaterialCustomerCouponResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.materialList.MaterialWorkerAuditResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -299,11 +302,12 @@ public class MaterialListController {
             }else {
                 listResponses = materialListServiceImpl.findCustomerMaterialListByUserIdAndIdentityType(userId, appIdentityType);
             }
-            if (null != listResponses && !listResponses.isEmpty()) {
-                for (CouponMaterialListResponse couponMaterialListResponse : listResponses) {
-                    couponMaterialListResponse.setRetailPrice(0.00);
-                }
-            }
+            //产品券不显示价格
+//            if (null != listResponses && !listResponses.isEmpty()) {
+//                for (CouponMaterialListResponse couponMaterialListResponse : listResponses) {
+//                    couponMaterialListResponse.setRetailPrice(0.00);
+//                }
+//            }
             materialCustomerCouponResponse.setCouponsList(listResponses);
         }
 //        List<MaterialListType> materialListTypes = new ArrayList<MaterialListType>();

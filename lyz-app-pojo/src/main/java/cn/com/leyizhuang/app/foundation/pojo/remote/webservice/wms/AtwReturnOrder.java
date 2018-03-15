@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms;
 
 import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.SalesConsult;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
@@ -142,9 +143,9 @@ public class AtwReturnOrder {
         atwReturnOrder.setOrderNumber(baseInfo.getOrderNo());
         //如果是退货到店则收货信息设置为导购信息
         if (AppDeliveryType.RETURN_STORE.equals(logisticInfo.getDeliveryType())) {
-            atwReturnOrder.setRejecter(salesConsult.getConsultName());
+            atwReturnOrder.setRejecter(null == salesConsult?"":salesConsult.getConsultName());
             atwReturnOrder.setRejecterAddress(store.getDetailedAddress());
-            atwReturnOrder.setRejecterPhone(salesConsult.getConsultMobilePhone());
+            atwReturnOrder.setRejecterPhone(null == salesConsult?"":salesConsult.getConsultMobilePhone());
         } else {
             atwReturnOrder.setRejecter(logisticInfo.getRejecter());
             atwReturnOrder.setRejecterAddress(logisticInfo.getDetailedAddress());

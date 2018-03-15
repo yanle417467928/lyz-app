@@ -69,7 +69,9 @@
         SELECT
             oaa.customer_name customerName,
             oaa.ord_no orderNumber,
-            obd.arrearage arrearageMoney
+            obd.arrearage arrearageMoney,
+            oaa.agency_money agencyMoney,
+            oaa.real_money realMoney
         FROM
             ord_arrears_audit AS oaa
         INNER JOIN ord_billing_details AS obd ON obd.ord_no = oaa.ord_no

@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.ReturnOrderJxPriceDifferenceRefundDetails;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder;
 import cn.com.leyizhuang.app.foundation.pojo.request.ReturnDeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
@@ -150,7 +151,7 @@ public interface ReturnOrderService {
      * @throws OrderSaveException 订单异常
      */
     void saveReturnOrderRelevantInfo(ReturnOrderBaseInfo returnOrderBaseInfo, ReturnOrderLogisticInfo returnOrderLogisticInfo, List<ReturnOrderGoodsInfo> returnOrderGoodsInfos,
-                                     ReturnOrderBilling returnOrderBilling, List<ReturnOrderProductCoupon> productCouponList, List<OrderGoodsInfo> orderGoodsInfoList)
+                                     ReturnOrderBilling returnOrderBilling, List<ReturnOrderProductCoupon> productCouponList, List<OrderGoodsInfo> orderGoodsInfoList,AtwReturnOrder atwReturnOrder)
             throws OrderSaveException;
 
     ReturnOrderLogisticInfo getReturnOrderLogisticeInfo(String returnNumber);

@@ -633,7 +633,7 @@ public class OrderController {
             totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
 
             goodsSettlement.put("totalQty", goodsQty + giftQty + couponQty);
-            goodsSettlement.put("totalPrice", totalPrice);
+            goodsSettlement.put("totalPrice", CountUtil.add(totalPrice, proCouponDiscount));
             goodsSettlement.put("totalGoodsInfo", goodsInfo);
             goodsSettlement.put("orderDiscount", orderDiscount);
             goodsSettlement.put("proCouponDiscount", proCouponDiscount);
