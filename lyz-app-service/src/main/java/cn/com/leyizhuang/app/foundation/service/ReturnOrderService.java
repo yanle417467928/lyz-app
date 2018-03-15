@@ -219,6 +219,8 @@ public interface ReturnOrderService {
 
     HashedMap normalReturnOrderProcessing(String returnOrderNumber, String cityCode);
 
+    HashedMap couponReturnOrderProcessing(String returnOrderNumber, String cityCode);
+
     void updateReturnLogisticInfo(AppEmployee employee, String returnNo);
 
     ReturnOrderBilling getReturnOrderBillingByReturnNo(String returnOrderNumber);

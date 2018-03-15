@@ -864,7 +864,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public HashedMap refusedOrder(String orderNumber, OrderBaseInfo orderBaseInfo,
-                                            OrderBillingDetails orderBillingDetails,ReturnOrderBaseInfo returnOrderBaseInfo ,List<ReturnOrderGoodsInfo> returnOrderGoodsInfos) {
+                                  OrderBillingDetails orderBillingDetails, ReturnOrderBaseInfo returnOrderBaseInfo, List<ReturnOrderGoodsInfo> returnOrderGoodsInfos) {
         HashedMap maps = new HashedMap();
         Date date = new Date();
         try {
@@ -1386,11 +1386,12 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             throw new RuntimeException();
         }
     }
+
     //保存退货信息
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Map<Object, Object> saveRefusedOrder(Long userId, Integer identityType, String orderNumber, String reasonInfo,
-                                            String remarksInfo, OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails, String returnPic) {
+                                                String remarksInfo, OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails, String returnPic) {
         Map<Object, Object> maps = new HashedMap();
         try {
             //获取退单号
@@ -1491,13 +1492,100 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
 
             //修改订单状态为拒签,物流状态拒签
             appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.REJECTED, LogisticStatus.REJECT, orderBaseInfo.getOrderNumber());
-            maps.put("returnOrderGoodsInfos",returnOrderGoodsInfos);
+            maps.put("returnOrderGoodsInfos", returnOrderGoodsInfos);
             maps.put("returnOrderBaseInfo", returnOrderBaseInfo);
             maps.put("code", "SUCCESS");
             return maps;
         } catch (Exception e) {
             e.printStackTrace();
             logger.info("异常错误", e);
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public HashedMap couponReturnOrderProcessing(String returnOrderNumber, String cityCode) {
+
+        HashedMap maps = new HashedMap(5);
+        try {
+            //查询主退单
+            ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderDAO.queryByReturnNo(returnOrderNumber);
+
+            //查原订单
+            OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(returnOrderBaseInfo.getOrderNo());
+
+            //*******************************买券退金额款项*********************************
+            ReturnOrderBilling returnOrderBilling = returnOrderDAO.getReturnOrderBillingByReturnNo(returnOrderNumber);
+            if (AssertUtil.isNotEmpty(returnOrderBilling)) {
+
+                //如果是现金退款,直接记退款明细
+                if (null != returnOrderBilling.getCash() && returnOrderBilling.getCash() > AppConstant.PAY_UP_LIMIT) {
+
+                    Double cash = returnOrderBilling.getCash();
+                    ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                    returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
+                    returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                    returnOrderBillingDetail.setReturnNo(returnOrderNumber);
+                    returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.CASH);
+                    returnOrderBillingDetail.setReturnMoney(cash);
+                    returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
+                    returnOrderBillingDetail.setReplyCode(null);
+                    returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
+                    returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
+                }
+
+                //返回门店预存款
+                else if (null != returnOrderBilling.getStPreDeposit() && returnOrderBilling.getStPreDeposit() > AppConstant.PAY_UP_LIMIT) {
+                    for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                        //获取门店预存款
+                        StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(orderBaseInfo.getSalesConsultId());
+                        //返还预存款后门店预存款金额
+                        Double stPreDeposit = (storePreDeposit.getBalance() + returnOrderBilling.getStPreDeposit());
+                        //修改门店预存款
+                        Integer affectLine = storePreDepositLogService.updateStPreDepositByStoreIdAndVersion(stPreDeposit, storePreDeposit.getStoreId(), storePreDeposit.getLastUpdateTime());
+                        if (affectLine > 0) {
+                            //记录门店预存款变更日志
+                            StPreDepositLogDO stPreDepositLogDO = new StPreDepositLogDO();
+                            stPreDepositLogDO.setCreateTime(LocalDateTime.now());
+                            stPreDepositLogDO.setChangeMoney(returnOrderBilling.getStPreDeposit());
+                            stPreDepositLogDO.setRemarks("买券订单退还门店预存款");
+                            stPreDepositLogDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                            stPreDepositLogDO.setChangeType(StorePreDepositChangeType.RETURN_ORDER);
+                            stPreDepositLogDO.setStoreId(storePreDeposit.getStoreId());
+                            stPreDepositLogDO.setOperatorId(returnOrderBaseInfo.getCreatorId());
+                            stPreDepositLogDO.setOperatorType(returnOrderBaseInfo.getCreatorIdentityType());
+                            stPreDepositLogDO.setBalance(stPreDeposit);
+                            stPreDepositLogDO.setDetailReason(ReturnOrderType.NORMAL_RETURN.getDescription());
+                            stPreDepositLogDO.setTransferTime(LocalDateTime.now());
+                            //保存日志
+                            storePreDepositLogService.save(stPreDepositLogDO);
+
+                            ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                            returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
+                            returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                            returnOrderBillingDetail.setReturnNo(returnOrderNumber);
+                            returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.ST_PREPAY);
+                            returnOrderBillingDetail.setReturnMoney(returnOrderBilling.getStPreDeposit());
+                            returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
+                            returnOrderBillingDetail.setReplyCode(null);
+                            returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
+                            returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
+                            break;
+                        } else {
+                            if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                logger.info("refusedOrder OUT,买券退券订单失败，退门店预存款失败");
+                                throw new SystemBusyException("系统繁忙，请稍后再试!");
+                            }
+                        }
+                    }
+                }
+            }
+            maps.put("code", "SUCCESS");
+            return maps;
+        } catch (Exception e) {
+            e.printStackTrace();
+            maps.put("code", "FAILURE");
             throw new RuntimeException();
         }
     }

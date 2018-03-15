@@ -252,13 +252,15 @@
         INNER JOIN ord_base_info obi ON obi.ord_no = orbi.ord_no
         WHERE
         <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
-            obi.creator_id = #{userId} or orbi.creator_id = #{userId}
+            ((obi.creator_id = #{userId} or orbi.creator_id = #{userId}) AND obi.creator_identity_type = #{identityType})
+            OR (obi.customer_id = #{userId} or orbi.cus_id = #{userId})
         </if>
         <if test="null != identityType and identityType.toString() == 'SELLER'">
-            obi.creator_id = #{userId}
+            obi.creator_id = #{userId} AND obi.creator_identity_type = #{identityType}
+            AND orbi.creator_id = #{userId} AND orbi.creator_identityType = #{identityType}
         </if>
         <if test="null != identityType and identityType.toString() == 'DECORATE_MANAGER'">
-            obi.creator_id = #{userId}
+            obi.creator_id = #{userId} AND obi.creator_identity_type = #{identityType}
         </if>
         ORDER BY orbi.return_time DESC
     </select>
