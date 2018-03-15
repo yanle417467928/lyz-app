@@ -184,7 +184,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                                 separateOrderMemberDiscount += (goodsInfo.getRetailPrice() - goodsInfo.getSettlementPrice()) * goodsInfo.getOrderQuantity();
                                 separateOrderPromotionDiscount += goodsInfo.getPromotionSharePrice() * goodsInfo.getOrderQuantity();
                                 separateOrderCashCouponDiscount += goodsInfo.getCashCouponSharePrice() * goodsInfo.getOrderQuantity();
-                                separateOrderLebiDiscount += goodsInfo.getLbSharePrice() * goodsInfo.getOrderQuantity();
+                               // separateOrderLebiDiscount += goodsInfo.getLbSharePrice() * goodsInfo.getOrderQuantity();
                                 separateOrderSubventionDiscount += goodsInfo.getCashReturnSharePrice() * goodsInfo.getOrderQuantity();
                             }
 
@@ -218,7 +218,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                                 - separateOrderPromotionDiscount
                                 - separateOrderCashCouponDiscount
                                 - separateOrderProductCouponDiscount
-                                - separateOrderLebiDiscount
+                                /*- separateOrderLebiDiscount*/
                                 - separateOrderSubventionDiscount;
                         orderBaseInf.setOrderAmt(separateOrderGoodsTotalPrice);
                         orderBaseInf.setRecAmt(separateOrderAmountPayable);
@@ -608,7 +608,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         returnOrderBaseInf.setMainReturnNumber(returnOrderBaseInfo.getReturnNo());
                         returnOrderBaseInf.setReturnNumber(OrderUtils.generateSeparateReturnOrderNumber(flag, returnOrderBaseInfo.getReturnNo()));
                         returnOrderBaseInf.setOrderTypeId(orderBaseInf.getOrderTypeId());
-                        returnOrderBaseInf.setRefundAmount(returnOrderBaseInfo.getReturnPrice());
+                        //returnOrderBaseInf.setRefundAmount(returnOrderBaseInfo.getReturnPrice());
                         returnOrderBaseInf.setReturnDate(returnOrderBaseInfo.getReturnTime());
                         returnOrderBaseInf.setReturnType(returnOrderBaseInfo.getReturnType());
                         returnOrderBaseInf.setRtFullFlag(returnOrderBaseInfo.getReturnType() == ReturnOrderType.NORMAL_RETURN ? AppWhetherFlag.N : AppWhetherFlag.Y);
@@ -623,6 +623,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         }
 
                         //创建分退单产品信息
+                        Double refundAmount = 0D;
                         List<ReturnOrderGoodsInf> returnOrderGoodsInfList = new ArrayList<>(20);
                         if (null != separateReturnOrderGoodsInfoList && separateReturnOrderGoodsInfoList.size() > 0) {
                             for (ReturnOrderGoodsInfo returnGoodsInfo : separateReturnOrderGoodsInfoList) {
@@ -645,6 +646,8 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                                 returnOrderGoodsInfList.add(returnGoodsInf);
                             }
                         }
+                        refundAmount = returnOrderGoodsInfList.stream().mapToDouble(p -> p.getQuantity() * p.getReturnPrice()).sum();
+                        returnOrderBaseInf.setRefundAmount(refundAmount);
                         returnOrderParamMap.put(returnOrderBaseInf, returnOrderGoodsInfList);
                     } else {
                         throw new RuntimeException("未找到原分单信息,退单拆单失败!");

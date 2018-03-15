@@ -107,11 +107,6 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                     String itemCode = null;
                     // 数量 "正数"入库，"负数"出库
                     Long quantity = null;
-                    String ebsToAppFlag = null;
-                    String appErrorMessage = null;
-                    String creationDate = null;
-                    Long lastUpdatedBy = null;
-                    String lastUpdateDate = null;
                     String attribute1 = null;
                     String attribute2 = null;
                     String attribute3 = null;
@@ -201,9 +196,9 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                             etaReturnAndRequireGoodsInf.setCustomerId(customerId);
                             etaReturnAndRequireGoodsInf.setCustomerNumber(customerNumber);
                             etaReturnAndRequireGoodsInf.setDiySiteCode(diySiteCode);
-                            if(null !=shipDate){
+                            if (null != shipDate) {
                                 etaReturnAndRequireGoodsInf.setShipDate(sdf.parse(shipDate));
-                            }else{
+                            } else {
                                 etaReturnAndRequireGoodsInf.setShipDate(null);
                             }
                             etaReturnAndRequireGoodsInf.setItemCode(itemCode);
@@ -213,15 +208,6 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                             etaReturnAndRequireGoodsInf.setAttribute3(attribute3);
                             etaReturnAndRequireGoodsInf.setAttribute4(attribute4);
                             etaReturnAndRequireGoodsInf.setAttribute5(attribute5);
-                            etaReturnAndRequireGoodsInf.setEbsToAppFlag(ebsToAppFlag);
-                            etaReturnAndRequireGoodsInf.setAppErrorMessage(appErrorMessage);
-                            if(null !=creationDate) {
-                                etaReturnAndRequireGoodsInf.setCreationDate(sdf.parse(creationDate));
-                            }else{
-                                etaReturnAndRequireGoodsInf.setCreationDate(null);
-                            }
-                            etaReturnAndRequireGoodsInf.setLastUpdatedBy(lastUpdatedBy);
-                            etaReturnAndRequireGoodsInf.setLastUpdateDate(sdf.parse(lastUpdateDate));
                             diySiteInventoryEbsService.saveReturnAndRequireGoodsInf(etaReturnAndRequireGoodsInf);
 
                             //判断门店是否存在
@@ -239,7 +225,13 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                             //更改门店库存和可用量
                             for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
                                 Integer goodsQtyAfterChange = storeInventory.getRealIty() + quantity.intValue();
+                                if (goodsQtyAfterChange < 0) {
+                                    return AppXmlUtil.generateResultXmlToEbs(1, "商品编码为：" + itemCode + "的商品库存不足");
+                                }
                                 Integer goodsAvailableItyAfterChange = storeInventory.getAvailableIty() + quantity.intValue();
+                                if (goodsAvailableItyAfterChange < 0) {
+                                    return AppXmlUtil.generateResultXmlToEbs(1, "商品编码为：" + itemCode + "的商品可用量不足");
+                                }
                                 Integer affectLine = maStoreInventoryService.updateStoreInventoryAndAvailableIty(storeInventory.getStoreId(), goodsDO.getGid(), goodsQtyAfterChange, goodsAvailableItyAfterChange, storeInventory.getLastUpdateTime());
                                 if (affectLine > 0) {
                                     //新增门店库存变更日志

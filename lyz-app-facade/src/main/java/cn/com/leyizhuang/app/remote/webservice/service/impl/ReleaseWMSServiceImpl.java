@@ -255,14 +255,14 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                                     if (OnlinePayType.ALIPAY.equals(returnOrderBilling.getOnlinePayType())) {
                                         //支付宝退款
                                         Map<String, String> map = onlinePayRefundService.alipayRefundRequest(
-                                                returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(), returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo(), returnOrderBilling.getOnlinePay());
+                                                returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(), returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo(), returnOrderBilling.getOnlinePay(),returnOrderBaseInfo.getRoid());
                                         if ("FAILURE".equals(map.get("code"))){
                                             a = false;
                                         }
                                     } else if (OnlinePayType.WE_CHAT.equals(returnOrderBilling.getOnlinePayType())) {
                                         //微信退款方法类
                                         Map<String, String> map =  onlinePayRefundService.wechatReturnMoney(
-                                                returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(), returnOrderBilling.getOnlinePay(), returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo());
+                                                returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(), returnOrderBilling.getOnlinePay(), returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo(),returnOrderBaseInfo.getRoid());
                                         if ("FAILURE".equals(map.get("code"))){
                                             a = false;
                                         }
@@ -426,10 +426,10 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                                 if (null != orderBillingDetails.getOnlinePayType()) {
                                     if (OnlinePayType.ALIPAY.equals(orderBillingDetails.getOnlinePayType())) {
                                         //支付宝退款
-                                        onlinePayRefundService.alipayRefundRequest(cancelOrderParametersDO.getUserId(), cancelOrderParametersDO.getIdentityType(), cancelOrderParametersDO.getOrderNumber(), returnOrderBaseInfo.getReturnNo(), orderBillingDetails.getOnlinePayAmount());
+                                        onlinePayRefundService.alipayRefundRequest(cancelOrderParametersDO.getUserId(), cancelOrderParametersDO.getIdentityType(), cancelOrderParametersDO.getOrderNumber(), returnOrderBaseInfo.getReturnNo(), orderBillingDetails.getOnlinePayAmount(),returnOrderBaseInfo.getRoid());
                                     } else if (OnlinePayType.WE_CHAT.equals(orderBillingDetails.getOnlinePayType())) {
                                         //微信退款方法类
-                                        onlinePayRefundService.wechatReturnMoney(cancelOrderParametersDO.getUserId(), cancelOrderParametersDO.getIdentityType(), orderBillingDetails.getOnlinePayAmount(), cancelOrderParametersDO.getOrderNumber(), returnOrderBaseInfo.getReturnNo());
+                                        onlinePayRefundService.wechatReturnMoney(cancelOrderParametersDO.getUserId(), cancelOrderParametersDO.getIdentityType(), orderBillingDetails.getOnlinePayAmount(), cancelOrderParametersDO.getOrderNumber(), returnOrderBaseInfo.getReturnNo(),returnOrderBaseInfo.getRoid());
                                     } else if (OnlinePayType.UNION_PAY.equals(orderBillingDetails.getOnlinePayType())) {
                                         //创建退单退款详情实体
                                         ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();

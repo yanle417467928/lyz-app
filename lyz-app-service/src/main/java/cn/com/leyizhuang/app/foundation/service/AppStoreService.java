@@ -41,8 +41,6 @@ public interface AppStoreService {
 
     int lockStoreInventoryByUserIdAndIdentityTypeAndInventory(Long userId, Integer identityType, Map<Long, Integer> storeInventory);
 
-    void unlockStoreDepositByUserIdAndStoreDeposit(Long userId, Double storeDeposit);
-
     void unlockStoreCreditByUserIdAndCredit(Long userId, Double storeCredit);
 
     void unlockStoreSubventionByUserIdAndSubvention(Long userId, Double storeSubvention);

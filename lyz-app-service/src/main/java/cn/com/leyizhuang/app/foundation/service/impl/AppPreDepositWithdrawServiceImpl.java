@@ -382,10 +382,10 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
             rechargeOrder.setPaymentSubjectTypeDesc(rechargeOrder.getPaymentSubjectType().getDescription());
             rechargeOrder.setPayType(OrderBillingPaymentType.ALIPAY);
             rechargeOrder.setPayTypeDesc(rechargeOrder.getPayType().getDescription());
-            rechargeOrder.setStoreId(stPreDepositWithdraw.getApplyStId());
+            rechargeOrder.setStoreId(preDeposit.getStoreId());
             rechargeOrder.setRechargeAccountType(RechargeAccountType.ST_PREPAY);
             rechargeOrder.setRechargeAccountTypeDesc(rechargeOrder.getRechargeAccountType().getDescription());
-            //rechargeOrder.setCreatorId(rechargeOrder.getCustomerId());
+            rechargeOrder.setCreatorId(stPreDepositWithdraw.getApplyStId());
             rechargeOrder.setCreatorIdentityType(AppIdentityType.SELLER);
             rechargeOrder.setCreateTime(new Date());
             rechargeOrder.setPayUpTime(new Date());
@@ -402,7 +402,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
             receiptInfo.setRechargeAccountTypeDesc(receiptInfo.getRechargeAccountType().getDescription());
             receiptInfo.setPayType(OrderBillingPaymentType.ALIPAY);
             receiptInfo.setPayTypeDesc(receiptInfo.getPayType().getDescription());
-            receiptInfo.setRechargeNo(OrderUtils.generateRechargeNumber(stPreDepositWithdraw.getCityId()));
+            receiptInfo.setRechargeNo(rechargeOrder.getRechargeNo());
             receiptInfo.setWithdrawNo(stPreDepositWithdraw.getApplyNo());
             receiptInfo.setReceiptNumber(OrderUtils.generateReceiptNumber(stPreDepositWithdraw.getCityId()));
             rechargeService.saveRechargeReceiptInfo(receiptInfo);
@@ -682,10 +682,11 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
                 rechargeOrder.setPaymentSubjectTypeDesc(rechargeOrder.getPaymentSubjectType().getDescription());
                 rechargeOrder.setPayType(OrderBillingPaymentType.ALIPAY);
                 rechargeOrder.setPayTypeDesc(rechargeOrder.getPayType().getDescription());
-                rechargeOrder.setStoreId(apply.getApplyStId());
+                AppStore store = appStoreService.findStoreByUserIdAndIdentityType(apply.getApplyStId(), AppIdentityType.SELLER.getValue());
+                rechargeOrder.setStoreId(store.getStoreId());
                 rechargeOrder.setRechargeAccountType(RechargeAccountType.ST_PREPAY);
                 rechargeOrder.setRechargeAccountTypeDesc(rechargeOrder.getRechargeAccountType().getDescription());
-                //rechargeOrder.setCreatorId(rechargeOrder.getCustomerId());
+                rechargeOrder.setCreatorId(apply.getApplyStId());
                 rechargeOrder.setCreatorIdentityType(AppIdentityType.SELLER);
                 rechargeOrder.setCreateTime(new Date());
                 rechargeOrder.setPayUpTime(new Date());
@@ -702,7 +703,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
                 receiptInfo.setRechargeAccountTypeDesc(receiptInfo.getRechargeAccountType().getDescription());
                 receiptInfo.setPayType(OrderBillingPaymentType.ALIPAY);
                 receiptInfo.setPayTypeDesc(receiptInfo.getPayType().getDescription());
-                receiptInfo.setRechargeNo(OrderUtils.generateRechargeNumber(apply.getCityId()));
+                receiptInfo.setRechargeNo(rechargeOrder.getRechargeNo());
                 receiptInfo.setWithdrawNo(apply.getApplyNo());
                 receiptInfo.setReceiptNumber(OrderUtils.generateReceiptNumber(apply.getCityId()));
                 rechargeService.saveRechargeReceiptInfo(receiptInfo);

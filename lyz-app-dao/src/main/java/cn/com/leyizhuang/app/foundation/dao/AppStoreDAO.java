@@ -49,7 +49,7 @@ public interface AppStoreDAO {
     int updateStoreInventoryByCustomerIdAndGoodsIdAndInventory(
             @Param("userId") Long userId, @Param("gid") Long index, @Param("qty") Integer integer);
 
-    void updateStoreDepositByUserId(@Param("userId") Long userId, @Param("deposit") Double storeDeposit);
+    int updateStoreDepositByUserId(@Param("userId") Long userId, @Param("deposit") Double storeDeposit, @Param("lastUpdateTime") Timestamp lastUpdateTime);
 
     void updateStoreCreditByUserId(@Param("userId") Long userId, @Param("credit") Double storeCredit);
 

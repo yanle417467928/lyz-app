@@ -22,6 +22,7 @@ import cn.com.leyizhuang.app.foundation.vo.UserVO;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
@@ -104,10 +105,11 @@ public interface CommonService {
 
     void confirmOrderArrive(OrderBillingPaymentDetails paymentDetails, OrderBillingDetails orderBillingDetails,
                             EmpCreditMoneyChangeLog empCreditMoneyChangeLog, OrderAgencyFundDO orderAgencyFundDO, OrderDeliveryInfoDetails orderDeliveryInfoDetails,
-                            OrderBaseInfo orderBaseInfo);
+                            OrderBaseInfo orderBaseInfo, Long sellerId, Double ownManey, Timestamp lastUpdateTime);
 
     void sellerAudit(OrderAgencyFundDO orderAgencyFundDO, OrderBillingPaymentDetails paymentDetails, OrderBillingDetails orderBillingDetails,
                      EmpCreditMoneyChangeLog empCreditMoneyChangeLog, OrderDeliveryInfoDetails orderDeliveryInfoDetails,
-                     OrderBaseInfo orderBaseInfo, OrderArrearsAuditDO orderArrearsAuditDO);
+                     OrderBaseInfo orderBaseInfo, OrderArrearsAuditDO orderArrearsAuditDO, Long sellerId,
+                     Double collectionAmount, Timestamp lastUpdateTime);
 
 }
