@@ -199,9 +199,8 @@ public class WechatUtil {
         //指定读取证书格式为PKCS12
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
         //读取本机存放的PKCS12证书文件
-        String replacePath = FilePathUtil.getRealFilePath(AppApplicationConstant.wechatApiClinetCert);
-        logger.info("refundBySslPost OUT,出参: certPath:{}", replacePath);
-        FileInputStream instream = new FileInputStream(new File(replacePath));
+        System.out.println(AppApplicationConstant.wechatApiClinetCert);
+        FileInputStream instream = new FileInputStream(new File(AppApplicationConstant.wechatApiClinetCert));
         logger.info("*********************refundBySslPost OUT***************************,出参: file:{}", new File(AppApplicationConstant.wechatApiClinetCert));
         try {
             //指定PKCS12的密码(商户ID)
