@@ -741,12 +741,6 @@ public class ReturnOrderController {
                         }
                     }
                 }
-            } else {
-                if (!isReturnAllProCoupon) {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单缺少账单支付信息!", "");
-                    logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
-                    return resultDTO;
-                }
             }
 
             returnOrderService.saveReturnOrderRelevantInfo(returnOrderBaseInfo, returnOrderLogisticInfo, goodsInfos, returnOrderBilling,

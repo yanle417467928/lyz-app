@@ -25,8 +25,9 @@ public class AppConstant {
     public static final int ORDER_EFFECTIVE_MINUTE = 60;
     /**
      * RMB对乐币比率
+     *  2018-03-15 因为业务需求暂时不开放乐币,设置比率为负,可关闭页面显示.
      */
-    public static final Double RMB_TO_LEBI_RATIO = 10.00;
+    public static final Double RMB_TO_LEBI_RATIO = -10.00;
 
     /**
      * 乐观锁重试次数

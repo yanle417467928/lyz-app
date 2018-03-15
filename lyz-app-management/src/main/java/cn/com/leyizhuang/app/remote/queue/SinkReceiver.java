@@ -229,16 +229,13 @@ public class SinkReceiver {
                 break;
             case ORDER_REFUND:
                 try {
-                    String refundNumber = objectMapper.readValue(message.getContent(), String.class);
-                    Boolean isExist = separateOrderService.isReceiptExist(refundNumber);
-                    if (isExist) {
-                        log.info("该退款单已拆单，不能重复拆单!");
-                    } else {
-                        //拆单
-                        separateOrderService.separateOrderRefund(refundNumber);
-                        //发送订单退款信息到EBS
-                        separateOrderService.sendReturnOrderRefundInf(refundNumber);
-                    }
+                    String returnNumber = objectMapper.readValue(message.getContent(), String.class);
+                    //拆退款信息和经销差价
+                    separateOrderService.separateOrderRefund(returnNumber);
+                    //发送订单退款信息到EBS
+                    separateOrderService.sendReturnOrderRefundInf(returnNumber);
+                    //发送经退单销差价扣除信息
+                    separateOrderService.sendReturnOrderJxPriceDifferenceRefundInf(returnNumber);
                 } catch (IOException e) {
                     log.warn("消息格式错误!");
                     e.printStackTrace();

@@ -41,7 +41,7 @@ public interface ProcessDAO {
     void findProcessAndGoodsByName(@Param("processName") String processName);
 
     //查询所有工序目录/
-    List<ProcessResponse> queryAllList();
+    List<ProcessResponse> queryAllListByCityId(Long cityId);
 
     List<UserGoodsResponse> queryByProcessIdAndEmployeeId(@Param("userId") Long userId, @Param("processId") Long processId);
 
