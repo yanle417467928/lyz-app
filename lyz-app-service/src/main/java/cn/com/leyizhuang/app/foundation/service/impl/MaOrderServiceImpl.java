@@ -376,6 +376,11 @@ public class MaOrderServiceImpl implements MaOrderService {
         this.maOrderDAO.updateOrderArrearsAudit(orderNumber, date);
     }
 
+    @Override
+    public List<OrderBaseInfo> scanningUnpaidOrder(String findDate) {
+        return maOrderDAO.scanningUnpaidOrder(findDate);
+    }
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -1097,6 +1102,8 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Async
     public String scanningUnpaidOrder(OrderBaseInfo orderBaseInfo) {
         Date date = new Date();
+        //获取错误信息
+        TimingTaskErrorMessageDO timingTaskErrorMessageDO = null;
         try {
             //获取退单号
             String returnNumber = OrderUtils.getReturnNumber();
@@ -1108,7 +1115,7 @@ public class MaOrderServiceImpl implements MaOrderService {
 
 
             //获取错误信息
-            TimingTaskErrorMessageDO timingTaskErrorMessageDO = timingTaskErrorMessageDAO.findTimingTaskErrorMessageByOrderNumber(orderBaseInfo.getOrderNumber());
+            timingTaskErrorMessageDO = timingTaskErrorMessageDAO.findTimingTaskErrorMessageByOrderNumber(orderBaseInfo.getOrderNumber());
 
             //记录退单头信息
             returnOrderBaseInfo.setOrderId(orderBaseInfo.getId());
@@ -1173,8 +1180,14 @@ public class MaOrderServiceImpl implements MaOrderService {
                     for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                         //获取现有城市库存量
                         CityInventory cityInventory = cityService.findCityInventoryByCityIdAndGoodsId(orderBaseInfo.getCityId(), orderGoodsInfo.getGid());
-                        //退还城市库存量
-                        Integer affectLine = cityService.updateCityInventoryByEmployeeIdAndGoodsIdAndInventoryAndVersion(orderBaseInfo.getSalesConsultId(), orderGoodsInfo.getGid(), orderGoodsInfo.getOrderQuantity(), cityInventory.getLastUpdateTime());
+                        Integer affectLine = 0;
+                        if (orderBaseInfo.getCreatorIdentityType().equals(AppIdentityType.DECORATE_MANAGER)){
+                            //退还城市库存量
+                            affectLine = cityService.updateCityInventoryByEmployeeIdAndGoodsIdAndInventoryAndVersion(orderBaseInfo.getCreatorId(), orderGoodsInfo.getGid(), orderGoodsInfo.getOrderQuantity(), cityInventory.getLastUpdateTime());
+                        }else {
+                            //退还城市库存量
+                             affectLine = cityService.updateCityInventoryByEmployeeIdAndGoodsIdAndInventoryAndVersion(orderBaseInfo.getSalesConsultId(), orderGoodsInfo.getGid(), orderGoodsInfo.getOrderQuantity(), cityInventory.getLastUpdateTime());
+                        }
                         if (affectLine > 0) {
                             //记录城市库存变更日志
                             CityInventoryAvailableQtyChangeLog cityInventoryAvailableQtyChangeLog = new CityInventoryAvailableQtyChangeLog();
@@ -1694,11 +1707,17 @@ public class MaOrderServiceImpl implements MaOrderService {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             System.out.println("异常错误，待付款超时订单处理失败，订单号：" + orderBaseInfo.getOrderNumber());
-            TimingTaskErrorMessageDO timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
-            timingTaskErrorMessageDO.setMessage(e.getMessage());
-            timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
-            timingTaskErrorMessageDO.setRecordTime(date);
-            timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
+            if (null  == timingTaskErrorMessageDO) {
+                timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
+                timingTaskErrorMessageDO.setMessage(e.getMessage());
+                timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                timingTaskErrorMessageDO.setRecordTime(date);
+                timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
+            }else{
+                timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店现金返利失败，请稍后再试!");
+                timingTaskErrorMessageDO.setRecordTime(date);
+                timingTaskErrorMessageDAO.updateTimingTaskErrorMessageByOrderNo(timingTaskErrorMessageDO);
+            }
             throw new RuntimeException();
         }
 

@@ -41,7 +41,7 @@ import java.util.*;
 /**
  * Created by caiyu on 2017/12/4.
  */
-@Service
+@Service("returnOrderService")
 public class ReturnOrderServiceImpl implements ReturnOrderService {
     private static final Logger logger = LoggerFactory.getLogger(ReturnOrderServiceImpl.class);
     @Resource

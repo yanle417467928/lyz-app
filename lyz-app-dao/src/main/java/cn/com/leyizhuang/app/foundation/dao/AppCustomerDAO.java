@@ -171,4 +171,9 @@ public interface AppCustomerDAO {
      */
     List<FindCustomerResponse> findCustomerByCusNameOrPhone(@Param("storeId")Long storeId,@Param("keywords")String keywords);
 
+    /**
+     * 修改顾客类型
+     * @param userId 用户id
+     */
+    void updateCustomerTypeByUserId(@Param("userId")Long userId);
 }

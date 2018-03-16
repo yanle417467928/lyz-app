@@ -23,16 +23,13 @@ import java.util.*;
 public class ScanningUnpaidOrderTask implements Job {
 
     @Resource
-    private MaOrderDAO maOrderDAO;
-    @Resource
     private MaSinkSender maSinkSender;
-    @Resource
-    private ReturnOrderService returnOrderService;
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         System.out.println(new Date() + "：开始扫描待付款订单");
-        MaOrderService MaOrderService = (MaOrderService) ApplicationContextUtil.getBean("maOrderService");
+        MaOrderService maOrderService = (MaOrderService) ApplicationContextUtil.getBean("maOrderService");
+        ReturnOrderService returnOrderService = (ReturnOrderService) ApplicationContextUtil.getBean("returnOrderService");
 
 
 
@@ -43,11 +40,11 @@ public class ScanningUnpaidOrderTask implements Job {
         String findDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime());
 
         //获取所有待付款订单
-        List<OrderBaseInfo> orderBaseInfoList = maOrderDAO.scanningUnpaidOrder(findDate);
+        List<OrderBaseInfo> orderBaseInfoList = maOrderService.scanningUnpaidOrder(findDate);
         if (null != orderBaseInfoList && orderBaseInfoList.size() > 0) {
             for (OrderBaseInfo orderBaseInfo : orderBaseInfoList) {
                 if (date.after(orderBaseInfo.getEffectiveEndTime())) {
-                    String returnNumber = MaOrderService.scanningUnpaidOrder(orderBaseInfo);
+                    String returnNumber = maOrderService.scanningUnpaidOrder(orderBaseInfo);
 
                     ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(returnNumber);
                     if (null != returnOrderBaseInfo){
