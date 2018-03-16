@@ -1,11 +1,8 @@
-# 通用配置
-server:
-  port: 9999
-  display-name: 乐易装APP接口服务层
-
-
+################################################### 通用配置 #########################################################
 
 spring:
+  application:
+      name: lyz-app-facade
   profiles:
     active: dev
   datasource:
@@ -34,9 +31,7 @@ spring:
   http:
     encoding:
       force: true
-  application:
-    name: lyz-app-facade
-  jersey:
+ jersey:
     application-path:
   cloud:
     stream:
@@ -72,8 +67,10 @@ task:
     keep-alive: 120
 
 ---
-# 开发环境配置
+################################################ 开发环境配置 ############################################
 server:
+    port: 9999
+    display-name: 乐易装APP接口服务层
   undertow:
     worker-threads: 10
     buffer-size: 1024
@@ -123,7 +120,10 @@ deploy:
     newUrl: http://ebs.leyizhuang.com.cn:10001/ebs/
 
 ---
-# 测试环境配置
+############################################### 测试环境配置 ##################################################
+server:
+  port: 9999
+  display-name: 乐易装APP接口服务层
 spring:
   profiles: test
   datasource:
@@ -167,46 +167,49 @@ deploy:
     url: http://erptest.zghuarun.com:8030/webservices/SOAProvider/plsql/cux_app_webservice_pkg/?wsdl
     newUrl: http://ebs.leyizhuang.com.cn:10001/ebs/
 ---
-# 生产环境配置
+################################################ 生产环境配置 ################################################
+server:
+  port: 8080
+  display-name: 乐易装APP接口服务层
 spring:
   profiles: prod
   datasource:
       druid:
         config:
           url: jdbc:mysql://rm-wz9805x7ngck809dg.mysql.rds.aliyuncs.com:3306/lyz_app_prd?useUnicode=true&autoReconnect=true&useSSL=true
-          username: root
-          password: root
+          username: magpie
+          password: LEyizhuang2017
           initial-size: 10
           max-active: 20
           min-idle: 10
           max-wait: 60000
   rabbitmq:
-    host: 119.23.149.7
+    host: 120.77.57.124
     port: 5672
     username: guest
     password: guest
 eureka:
   client:
     service-url:
-      defaultZone: http://119.23.149.7:1111/eureka/,http://119.23.149.7:2222/eureka/
+      defaultZone: http://120.77.57.124:1111/eureka/,http://120.77.57.124:2222/eureka/
 
 deploy:
   image-path: /mnt/root/images/goods
   alipay:
     url:
     async:
-      url: http://119.23.149.7:9999/app/alipay/return/async
+      url: http://app.leyizhuang.com.cn/app/alipay/return/async
   wechat:
     async:
-      url: http://119.23.149.7:9999/app/wechatpay/return/async
+      url: http://app.leyizhuang.com.cn/app/wechatpay/return/async
     cert:
       path: ${basedir}/src/main/resources/cert/apiclient_cert.p12
   oss:
-    cdnHosts: img-dev.leyizhuang.com.cn
+    cdnHosts: img1.leyizhuang.com.cn,img2.leyizhuang.com.cn,img3.leyizhuang.com.cn,img4.leyizhuang.com.cn,img5.leyizhuang.com.cn
     folder: lyz-app/images/
-    bucket: leyizhuang-dev
+    bucket: leyizhuang
   wms:
-    url: http://120.76.214.99:8199/WmsInterServer.asmx?wsdl
+    url: http://120.76.23.226:8199/WmsInterServer.asmx?wsdl
   ebs:
     url: http://erptest.zghuarun.com:8030/webservices/SOAProvider/plsql/cux_app_webservice_pkg/?wsdl
     newUrl: http://ebs.leyizhuang.com.cn:10001/ebs/
