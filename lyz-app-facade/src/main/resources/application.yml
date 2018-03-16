@@ -1,5 +1,4 @@
 ################################################### 通用配置 #########################################################
-
 spring:
   application:
       name: lyz-app-facade
@@ -31,7 +30,7 @@ spring:
   http:
     encoding:
       force: true
- jersey:
+  jersey:
     application-path:
   cloud:
     stream:
@@ -69,8 +68,8 @@ task:
 ---
 ################################################ 开发环境配置 ############################################
 server:
-    port: 9999
-    display-name: 乐易装APP接口服务层
+  port: 9999
+  display-name: 乐易装APP接口服务层
   undertow:
     worker-threads: 10
     buffer-size: 1024
