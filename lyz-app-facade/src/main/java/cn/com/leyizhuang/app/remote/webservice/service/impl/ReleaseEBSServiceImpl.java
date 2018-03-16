@@ -185,6 +185,59 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                     }
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     try {
+                        //判断门店是否存在
+                        AppStore appStore = appStoreService.findByStoreCode(diySiteCode);
+                        if (appStore == null) {
+                            return AppXmlUtil.generateResultXmlToEbs(1, "门店编码为：" + diySiteCode + " 的门店不存在或者不可用");
+                        }
+                        //根据门店编码和商品sku查询门店库存
+                        StoreInventory storeInventory = appStoreService.findStoreInventoryByStoreCodeAndGoodsSku(diySiteCode, itemCode);
+                        if (null == storeInventory) {
+                            return AppXmlUtil.generateResultXmlToEbs(1, "商品编码为：" + itemCode + "的商品不存在或者不可用");
+                        }
+
+                        GoodsDO goodsDO = goodsService.queryBySku(itemCode);
+                        //更改门店库存和可用量
+                        for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
+                            Integer goodsQtyAfterChange = storeInventory.getRealIty() + quantity.intValue();
+                            if (goodsQtyAfterChange < 0) {
+                                return AppXmlUtil.generateResultXmlToEbs(1, "商品编码为：" + itemCode + "的商品库存不足");
+                            }
+                            Integer goodsAvailableItyAfterChange = storeInventory.getAvailableIty() + quantity.intValue();
+                            if (goodsAvailableItyAfterChange < 0) {
+                                return AppXmlUtil.generateResultXmlToEbs(1, "商品编码为：" + itemCode + "的商品可用量不足");
+                            }
+                            Integer affectLine = maStoreInventoryService.updateStoreInventoryAndAvailableIty(storeInventory.getStoreId(), goodsDO.getGid(), goodsQtyAfterChange, goodsAvailableItyAfterChange, storeInventory.getLastUpdateTime());
+                            if (affectLine > 0) {
+                                //新增门店库存变更日志
+                                StoreInventoryAvailableQtyChangeLog iLog = new StoreInventoryAvailableQtyChangeLog();
+                                iLog.setAfterChangeQty(goodsAvailableItyAfterChange);
+                                iLog.setChangeQty(quantity.intValue());
+                                iLog.setChangeTime(new Date());
+                                if (quantity > 0) {
+                                    iLog.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_IMPORT_GOODS);
+                                    iLog.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.STORE_IMPORT_GOODS.getDescription());
+                                } else {
+                                    iLog.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS);
+                                    iLog.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS.getDescription());
+                                }
+                                iLog.setCityId(storeInventory.getCityId());
+                                iLog.setCityName(storeInventory.getCityName());
+                                iLog.setStoreId(storeInventory.getStoreId());
+                                iLog.setStoreCode(storeInventory.getStoreCode());
+                                iLog.setStoreName(storeInventory.getStoreName());
+                                iLog.setGid(goodsDO.getGid());
+                                iLog.setSku(itemCode);
+                                iLog.setSkuName(goodsDO.getSkuName());
+                                iLog.setReferenceNumber(transNumber);
+                                appStoreService.addStoreInventoryAvailableQtyChangeLog(iLog);
+                                break;
+                            } else {
+                                if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                    throw new SystemBusyException("系统繁忙，请稍后再试!");
+                                }
+                            }
+                        }
                         //查询该信息是否发送过
                         EtaReturnAndRequireGoodsInf etaReturnAndRequireGoodsInf = diySiteInventoryEbsService.findByTransId(transId);
                         if (null == etaReturnAndRequireGoodsInf) {
@@ -209,60 +262,6 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                             etaReturnAndRequireGoodsInf.setAttribute4(attribute4);
                             etaReturnAndRequireGoodsInf.setAttribute5(attribute5);
                             diySiteInventoryEbsService.saveReturnAndRequireGoodsInf(etaReturnAndRequireGoodsInf);
-
-                            //判断门店是否存在
-                            AppStore appStore = appStoreService.findByStoreCode(diySiteCode);
-                            if (appStore == null) {
-                                return AppXmlUtil.generateResultXmlToEbs(1, "门店编码为：" + diySiteCode + " 的门店不存在或者不可用");
-                            }
-
-                            //根据门店编码和商品sku查询门店库存
-                            StoreInventory storeInventory = appStoreService.findStoreInventoryByStoreCodeAndGoodsSku(diySiteCode, itemCode);
-                            if (null == storeInventory) {
-                                return AppXmlUtil.generateResultXmlToEbs(1, "商品编码为：" + itemCode + "的商品不存在或者不可用");
-                            }
-                            GoodsDO goodsDO = goodsService.queryBySku(itemCode);
-                            //更改门店库存和可用量
-                            for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
-                                Integer goodsQtyAfterChange = storeInventory.getRealIty() + quantity.intValue();
-                                if (goodsQtyAfterChange < 0) {
-                                    return AppXmlUtil.generateResultXmlToEbs(1, "商品编码为：" + itemCode + "的商品库存不足");
-                                }
-                                Integer goodsAvailableItyAfterChange = storeInventory.getAvailableIty() + quantity.intValue();
-                                if (goodsAvailableItyAfterChange < 0) {
-                                    return AppXmlUtil.generateResultXmlToEbs(1, "商品编码为：" + itemCode + "的商品可用量不足");
-                                }
-                                Integer affectLine = maStoreInventoryService.updateStoreInventoryAndAvailableIty(storeInventory.getStoreId(), goodsDO.getGid(), goodsQtyAfterChange, goodsAvailableItyAfterChange, storeInventory.getLastUpdateTime());
-                                if (affectLine > 0) {
-                                    //新增门店库存变更日志
-                                    StoreInventoryAvailableQtyChangeLog iLog = new StoreInventoryAvailableQtyChangeLog();
-                                    iLog.setAfterChangeQty(goodsAvailableItyAfterChange);
-                                    iLog.setChangeQty(quantity.intValue());
-                                    iLog.setChangeTime(new Date());
-                                    if (quantity > 0) {
-                                        iLog.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_IMPORT_GOODS);
-                                        iLog.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.STORE_IMPORT_GOODS.getDescription());
-                                    } else {
-                                        iLog.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS);
-                                        iLog.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS.getDescription());
-                                    }
-                                    iLog.setCityId(storeInventory.getCityId());
-                                    iLog.setCityName(storeInventory.getCityName());
-                                    iLog.setStoreId(storeInventory.getStoreId());
-                                    iLog.setStoreCode(storeInventory.getStoreCode());
-                                    iLog.setStoreName(storeInventory.getStoreName());
-                                    iLog.setGid(goodsDO.getGid());
-                                    iLog.setSku(itemCode);
-                                    iLog.setSkuName(goodsDO.getSkuName());
-                                    iLog.setReferenceNumber(transNumber);
-                                    appStoreService.addStoreInventoryAvailableQtyChangeLog(iLog);
-                                    break;
-                                } else {
-                                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                        throw new SystemBusyException("系统繁忙，请稍后再试!");
-                                    }
-                                }
-                            }
                         } else {
                             return AppXmlUtil.generateResultXmlToEbs(1, "事物编码重复：" + transId);
                         }
