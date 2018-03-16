@@ -446,7 +446,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                                 //修改取消订单处理状态
                                 cancelOrderParametersService.updateCancelStatusByOrderNumber(orderResultEnter.getOrderNo());
                                 //发送退单拆单消息到拆单消息队列
-                        sinkSender.sendOrderRefund(returnOrderBaseInfo.getReturnNo());
+                        sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
                                 logger.info("cancelOrderToWms OUT,取消订单成功");
                                 return AppXmlUtil.resultStrXml(0, "NORMAL");
                     } else {
