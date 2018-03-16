@@ -225,9 +225,9 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
             //得到订单头商品信息
             OrderGoodsInfo orderGoodsInfo = appOrderService.getOrderGoodsInfoById(returnOrderGoodsInfo.getOrderGoodsId());
             //更改订单头商品已退数量和可退数量
-            Integer returnQuantity = orderGoodsInfo.getReturnQuantity() + returnOrderGoodsInfo.getReturnQty();
-            Integer returnableQuantity = orderGoodsInfo.getReturnableQuantity() - returnOrderGoodsInfo.getReturnQty();
-            returnOrderService.updateReturnableQuantityAndReturnQuantityById(returnQuantity, returnableQuantity, returnOrderGoodsInfo.getOrderGoodsId());
+            //Integer returnQuantity = orderGoodsInfo.getReturnQuantity() + returnOrderGoodsInfo.getReturnQty();
+            //Integer returnableQuantity = orderGoodsInfo.getReturnableQuantity() - returnOrderGoodsInfo.getReturnQty();
+            //returnOrderService.updateReturnableQuantityAndReturnQuantityById(returnQuantity, returnableQuantity, returnOrderGoodsInfo.getOrderGoodsId());
             for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                 //更新门店库存数量及可用量
                 Integer goodsQtyAfterChange = storeInventory.getRealIty() + returnOrderGoodsInfo.getReturnQty();
