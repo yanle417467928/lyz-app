@@ -203,7 +203,7 @@ deploy:
     async:
       url: http://app.leyizhuang.com.cn/app/wechatpay/return/async
     cert:
-      path: ${basedir}/src/main/resources/cert/apiclient_cert.p12
+      path: /mnt/root/cert/apiclient_cert.p12
   oss:
     cdnHosts: img1.leyizhuang.com.cn,img2.leyizhuang.com.cn,img3.leyizhuang.com.cn,img4.leyizhuang.com.cn,img5.leyizhuang.com.cn
     folder: lyz-app/images/
