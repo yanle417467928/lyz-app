@@ -767,8 +767,6 @@ public class ReturnOrderController {
 
                     //修改取消订单处理状态
                     returnOrderService.updateReturnOrderStatus(returnNo, AppReturnOrderStatus.FINISHED);
-                    //发送退单拆单消息到拆单消息队列
-                    sinkSender.sendReturnOrder(returnNo);
                     logger.info("cancelOrderToWms OUT,买券正常退货成功");
                 }
             }
@@ -777,6 +775,8 @@ public class ReturnOrderController {
                 //发送退货单到wms
                 callWms.sendToWmsReturnOrderAndGoods(returnNo);
             }
+            //发送退单拆单消息到拆单消息队列
+            sinkSender.sendReturnOrder(returnNo);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("createOrder OUT,退货单创建成功,出参 resultDTO:{}", resultDTO);
             return resultDTO;

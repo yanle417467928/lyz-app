@@ -157,9 +157,9 @@
         FROM material_list m
             LEFT JOIN emp_employee c ON c.emp_id = m.user_id
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id AND m.gid = p.gid
-               AND p.start_time &lt; NOW()
-               AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-               AND p.price_type = 'COMMON'
+        AND p.start_time &lt; NOW()
+        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+        AND p.price_type = 'COMMON'
         WHERE m.user_id = #{userId}
               AND m.identity_type = #{identityType}
               AND m.material_list_type = 'AUDIT_TRANSFORM'
@@ -198,8 +198,14 @@
             m.goods_specification,
             m.cover_image_uri,
             m.goods_unit,
-            m.qty
+        m.qty,
+        p.retail_price
         FROM material_list m
+        LEFT JOIN emp_employee c ON c.emp_id = m.user_id
+        INNER JOIN gds_goods_price p ON c.store_id = p.store_id AND m.gid = p.gid
+        AND p.start_time &lt; NOW()
+        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+        AND p.price_type = 'COMMON'
         WHERE m.user_id = #{userId}
               AND m.identity_type = #{identityType}
               AND m.material_list_type = 'COUPON_TRANSFORM'
@@ -212,13 +218,19 @@
         SELECT DISTINCT
             m.id,
             m.gid goodsId,
-            m.cus_id,
+        m.user_id cusId,
             m.sku_name,
             m.goods_specification,
             m.cover_image_uri,
             m.goods_unit,
-            m.qty
+        m.qty,
+        p.retail_price
         FROM material_list m
+        LEFT JOIN cus_customer c ON c.cus_id = m.user_id
+        INNER JOIN gds_goods_price p ON c.store_id = p.store_id AND m.gid = p.gid
+        AND p.start_time &lt; NOW()
+        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+        AND p.price_type = 'COMMON'
         WHERE m.user_id = #{userId}
               AND m.identity_type = #{identityType}
               AND m.material_list_type = 'COUPON_TRANSFORM'
@@ -244,7 +256,8 @@
     </delete>
 
 
-    <select id="findByUserIdAndIdentityTypeAndMaterialListType" resultType="cn.com.leyizhuang.app.foundation.pojo.response.materialList.PhotoOrderMaterialListResponse">
+    <select id="findByUserIdAndIdentityTypeAndMaterialListType"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.materialList.PhotoOrderMaterialListResponse">
         <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
             SELECT DISTINCT m.id,m.gid goodsId, m.sku_name, m.goods_specification, m.cover_image_uri, m.goods_unit,
             m.qty,p.retail_price,m.audit_no photoOrderNo
@@ -259,7 +272,7 @@
             OR p.price_type = 'COMMON')
             WHERE m.user_id = #{userId} AND m.identity_type = #{identityType}
             AND m.cus_id IS NULL
-            <if test="null != list" >
+            <if test="null != list">
                 AND m.material_list_type in
                 <foreach collection="list" item="item" open="(" close=")" separator=",">
                     #{item}
@@ -278,7 +291,7 @@
             AND p.price_type = 'COMMON'
             WHERE m.user_id = #{userId} AND m.identity_type = #{identityType}
             AND m.cus_id IS NULL
-            <if test="null != list" >
+            <if test="null != list">
                 AND m.material_list_type in
                 <foreach collection="list" item="item" open="(" close=")" separator=",">
                     #{item}
