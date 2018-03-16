@@ -215,5 +215,7 @@ public interface MaOrderDAO {
 
     MaOrderArrearsAudit getArrearsAuditInfo(String orderNumber);
 
+    MaOrderArrearsAudit getArrearsAuditInfoById(Long id);
+
     void  updateOrderArrearsAudit(@Param(value = "orderNumber") String orderNumber,@Param(value = "repaymentTime") Date repaymentTime);
 }

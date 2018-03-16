@@ -191,6 +191,10 @@
                                     <td>-¥${orderBillingDetail.cashCouponDiscount!'0.00'}</td>
                                 </tr>
                                 <tr>
+                                    <th>产品劵折扣</th>
+                                    <td>-¥${orderBillingDetail.productCouponDiscount!'0.00'}</td>
+                                </tr>
+                                <tr>
                                     <th>促销折扣</th>
                                     <td>-¥${orderBillingDetail.promotionDiscount!'0.00'}</td>
                                 </tr>

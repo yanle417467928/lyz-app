@@ -144,6 +144,11 @@
             checkbox: true,
             title: '选择'
         }, {
+            field: 'id',
+            title: '门店',
+            align: 'center',
+            visible:false
+        }, {
             field: 'storeName',
             title: '门店',
             align: 'center'
@@ -155,7 +160,7 @@
                 if (null == value) {
                     return '<a class="scan" href="#">' + '未知' + '</a>';
                 } else {
-                    return '<a class="scan" href="/views/admin/order/arrearsAndRepaymentsOrderDetail/' + value + '">' + value + '</a>';
+                    return '<a class="scan" href="/views/admin/order/arrearsAndRepaymentsOrderDetail?id=' + row.id +'&orderNumber='+ value+'">' + value + '</a>';
                 }
             }
         }, {
@@ -168,7 +173,7 @@
             align: 'center',
         }, {
             field: 'createTime',
-            title: '订单创建时间',
+            title: '创建时间',
             align: 'center',
             formatter: function (value, row, index) {
                 if (null == value) {

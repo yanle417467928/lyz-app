@@ -617,6 +617,11 @@ public class MaOrderServiceImpl implements MaOrderService {
     }
 
     @Override
+    public MaOrderArrearsAudit getArrearsAuditInfoById(Long id) {
+        return this.maOrderDAO.getArrearsAuditInfoById(id);
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public List<String> arrearsOrderRepayment(MaOrderAmount maOrderAmount, GuideCreditChangeDetail guideCreditChangeDetail) {
         // 更新订单支付信息

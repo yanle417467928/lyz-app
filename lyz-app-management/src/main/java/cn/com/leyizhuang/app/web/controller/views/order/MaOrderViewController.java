@@ -20,6 +20,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import java.text.DateFormat;
@@ -304,8 +305,8 @@ public class MaOrderViewController {
      *
      * @return 订单审核欠款还款详情页面
      */
-    @GetMapping(value = "/arrearsAndRepaymentsOrderDetail/{orderNumber}")
-    public String arrearsAndRepaymentsOrderDetail(ModelMap map, @PathVariable(value = "orderNumber") String orderNumber) {
+    @GetMapping(value = "/arrearsAndRepaymentsOrderDetail")
+    public String arrearsAndRepaymentsOrderDetail(ModelMap map, @RequestParam(value = "orderNumber") String orderNumber, @RequestParam(value = "id") Long id) {
         logger.info("arrearsAndRepaymentsOrderDetail CALLED,欠款还款订单详情，入参 orderaNumber:{}", orderNumber);
         if (!StringUtils.isBlank(orderNumber)) {
             //获取订单基本信息
@@ -313,7 +314,7 @@ public class MaOrderViewController {
             //查询订单是否还清
             Boolean isPayUp = maOrderService.isPayUp(orderNumber);
             //查询审核订单信息
-            MaOrderArrearsAudit maOrderArrearsAudit = maOrderService.getArrearsAuditInfo(orderNumber);
+            MaOrderArrearsAudit maOrderArrearsAudit = maOrderService.getArrearsAuditInfoById(id);
             //查询订单商品信息
             List<MaOrderGoodsDetailResponse> maOrderGoodsDetailResponseList = maOrderService.getOrderGoodsDetailResponseList(orderNumber);
             //获取订单账目明细

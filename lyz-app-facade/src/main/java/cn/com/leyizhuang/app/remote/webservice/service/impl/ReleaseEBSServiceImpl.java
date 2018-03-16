@@ -185,6 +185,16 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                     }
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     try {
+                        //判断门店是否存在
+                        AppStore appStore = appStoreService.findByStoreCode(diySiteCode);
+                        if (appStore == null) {
+                            return AppXmlUtil.generateResultXmlToEbs(1, "门店编码为：" + diySiteCode + " 的门店不存在或者不可用");
+                        }
+                        //根据门店编码和商品sku查询门店库存
+                        StoreInventory storeInventory = appStoreService.findStoreInventoryByStoreCodeAndGoodsSku(diySiteCode, itemCode);
+                        if (null == storeInventory) {
+                            return AppXmlUtil.generateResultXmlToEbs(1, "商品编码为：" + itemCode + "的商品不存在或者不可用");
+                        }
                         //查询该信息是否发送过
                         EtaReturnAndRequireGoodsInf etaReturnAndRequireGoodsInf = diySiteInventoryEbsService.findByTransId(transId);
                         if (null == etaReturnAndRequireGoodsInf) {
@@ -210,17 +220,6 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                             etaReturnAndRequireGoodsInf.setAttribute5(attribute5);
                             diySiteInventoryEbsService.saveReturnAndRequireGoodsInf(etaReturnAndRequireGoodsInf);
 
-                            //判断门店是否存在
-                            AppStore appStore = appStoreService.findByStoreCode(diySiteCode);
-                            if (appStore == null) {
-                                return AppXmlUtil.generateResultXmlToEbs(1, "门店编码为：" + diySiteCode + " 的门店不存在或者不可用");
-                            }
-
-                            //根据门店编码和商品sku查询门店库存
-                            StoreInventory storeInventory = appStoreService.findStoreInventoryByStoreCodeAndGoodsSku(diySiteCode, itemCode);
-                            if (null == storeInventory) {
-                                return AppXmlUtil.generateResultXmlToEbs(1, "商品编码为：" + itemCode + "的商品不存在或者不可用");
-                            }
                             GoodsDO goodsDO = goodsService.queryBySku(itemCode);
                             //更改门店库存和可用量
                             for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
