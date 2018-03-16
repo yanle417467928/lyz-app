@@ -146,13 +146,18 @@ public interface AppCustomerService {
      * @param mobile    电话号码
      * @return  顾客list
      */
-    List<FindCustomerResponse> findCustomerByCusPhone(@Param("cityId")Long cityId, @Param("mobile")String mobile);
+    List<FindCustomerResponse> findCustomerByCusPhone(Long cityId, String mobile);
     /**
      * 导购代下单根据姓名查询顾客
      * @param storeId    门店id
      * @param keywords    姓名
      * @return  顾客list
      */
-    List<FindCustomerResponse> findCustomerByCusNameOrPhone(@Param("storeId")Long storeId,@Param("keywords")String keywords);
+    List<FindCustomerResponse> findCustomerByCusNameOrPhone(Long storeId,String keywords);
+    /**
+     * 修改顾客类型
+     * @param userId 用户id
+     */
+    void updateCustomerTypeByUserId(Long userId);
 
 }

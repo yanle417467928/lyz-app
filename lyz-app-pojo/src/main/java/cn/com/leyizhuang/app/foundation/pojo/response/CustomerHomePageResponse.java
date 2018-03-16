@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
+import cn.com.leyizhuang.app.core.constant.AppCustomerType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -72,6 +73,14 @@ public class CustomerHomePageResponse implements Serializable {
      * 产品券数量
      */
     private Integer productCouponQty;
+    /**
+     * 顾客类型
+     */
+    private String customerType;
+
+    public void setType(AppCustomerType customerType) {
+        this.customerType = customerType.getDescription();
+    }
 
 
 }

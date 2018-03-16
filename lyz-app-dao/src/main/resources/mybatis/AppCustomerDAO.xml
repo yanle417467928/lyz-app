@@ -275,7 +275,8 @@
             pd.balance,
             lb.quantity lb,
             c.last_sign_time,
-            c.city_id
+            c.city_id,
+            c.customer_type customerType
         FROM cus_customer c
             LEFT JOIN emp_employee e ON e.emp_id = c.sales_consult_id
             LEFT JOIN cus_pre_deposit pd ON pd.cus_id = c.cus_id
@@ -822,4 +823,11 @@
         store_id = #{storeId}
         AND (`name` LIKE concat('%', #{keywords}, '%') OR mobile LIKE concat('%', #{keywords}, '%'))
     </select>
+
+    <update id="updateCustomerTypeByUserId">
+        UPDATE cus_customer
+        SET customer_type = 'MEMBER'
+        WHERE
+            cus_id = #{userId}
+    </update>
 </mapper>

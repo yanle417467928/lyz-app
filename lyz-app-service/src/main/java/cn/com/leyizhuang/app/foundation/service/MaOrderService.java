@@ -392,4 +392,10 @@ public interface MaOrderService {
      * @return
      */
     void updateOrderArrearsAudit(String orderNumber,Date date);
+
+    /**
+     * 定时查找待付款订单
+     * @return
+     */
+    List<OrderBaseInfo> scanningUnpaidOrder(String findDate);
 }

@@ -925,7 +925,46 @@ public class CustomerController {
             logger.warn("{}", e);
             return resultDTO;
         }
+    }
 
+    /**
+     * 修改顾客类型
+     * @param userId    用户id
+     * @param identityType  用户类型
+     * @return
+     */
+    @PostMapping(value = "/update/type", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> updateCustomerType(Long userId,Integer identityType){
+        logger.info("updateCustomerType CALLED,修改顾客类型，入参 userId {},identityType{}", userId, identityType);
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("updateCustomerType OUT,修改顾客类型失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType || 6 != identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误",
+                    null);
+            logger.info("updateCustomerType OUT,修改顾客类型失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            AppCustomer customer = customerService.findById(userId);
+            if (customer.getCustomerType().equals(AppCustomerType.MEMBER)){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此顾客已经是会员，修改顾客类型失败！", null);
+                logger.info("updateCustomerType OUT,修改顾客类型失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            customerService.updateCustomerTypeByUserId(userId);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            logger.info("updateCustomerType OUT修改顾客类型成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }catch (Exception e){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，修改顾客类型失败", null);
+            logger.warn("updateCustomerType OUT,修改顾客类型失败,出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
     }
 }
 
