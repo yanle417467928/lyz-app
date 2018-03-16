@@ -1,7 +1,5 @@
 ################################################### 通用配置 #########################################################
-server:
-  port: 9999
-  display-name: 乐易装APP接口服务层
+
 spring:
   application:
       name: lyz-app-facade
@@ -71,6 +69,8 @@ task:
 ---
 ################################################ 开发环境配置 ############################################
 server:
+    port: 9999
+    display-name: 乐易装APP接口服务层
   undertow:
     worker-threads: 10
     buffer-size: 1024
@@ -121,6 +121,9 @@ deploy:
 
 ---
 ############################################### 测试环境配置 ##################################################
+server:
+  port: 9999
+  display-name: 乐易装APP接口服务层
 spring:
   profiles: test
   datasource:
@@ -165,6 +168,9 @@ deploy:
     newUrl: http://ebs.leyizhuang.com.cn:10001/ebs/
 ---
 ################################################ 生产环境配置 ################################################
+server:
+  port: 8080
+  display-name: 乐易装APP接口服务层
 spring:
   profiles: prod
   datasource:
