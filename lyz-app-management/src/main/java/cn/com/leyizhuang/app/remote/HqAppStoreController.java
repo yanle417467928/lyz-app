@@ -118,6 +118,7 @@ public class HqAppStoreController {
                     appStore.setDetailedAddress(hqAppStoreDTO.getDetailedAddress());
                     appStore.setEnable(hqAppStoreDTO.getEnable());
                     appStore.setIsSelfDelivery(hqAppStoreDTO.getIsSelfDelivery());
+                    appStore.setIsOpenDelivery(hqAppStoreDTO.getIsOpenDelivery());
                     appStoreService.saveStore(appStore);
                     logger.warn("addStore EXCEPTION,同步添加门店信息成功，出参 resultDTO:{}", appStore);
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
@@ -177,6 +178,7 @@ public class HqAppStoreController {
                 appStore.setDetailedAddress(hqAppStoreDTO.getDetailedAddress());
                 appStore.setEnable(hqAppStoreDTO.getEnable());
                 appStore.setIsSelfDelivery(hqAppStoreDTO.getIsSelfDelivery());
+                appStore.setIsOpenDelivery(hqAppStoreDTO.getIsOpenDelivery());
                 appStoreService.modifyStore(appStore);
                 logger.warn("同步修改门店信息成功！，出参 resultDTO:{}",appStore);
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);

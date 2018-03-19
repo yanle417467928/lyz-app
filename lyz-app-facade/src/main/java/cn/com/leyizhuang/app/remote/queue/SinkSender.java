@@ -104,6 +104,7 @@ public class SinkSender {
      *
      * @param refundNumber 在队列的接受方,第一个传退款单据号,第二个传退货单
      */
+    @Deprecated
     public void sendOrderRefund(String refundNumber) {
         log.info("refundNumber,发送订单退款信息到拆单队列,Begin\n 退款单号:{}", refundNumber);
         if (StringUtils.isNotBlank(refundNumber)) {
