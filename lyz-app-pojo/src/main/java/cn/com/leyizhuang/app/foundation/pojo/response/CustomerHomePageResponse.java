@@ -78,7 +78,7 @@ public class CustomerHomePageResponse implements Serializable {
      */
     private String customerType;
 
-    public void setType(AppCustomerType customerType) {
+    public void setCustomerType(AppCustomerType customerType) {
         this.customerType = customerType.getDescription();
     }
 
