@@ -154,8 +154,7 @@
                     <b></b>
                     <spanp class="span"></spanp>
                     <br>
-                    <b>是否主家收货:</b>
-                    <spanp class="span"><#if maOrderDetail.isOwnerReceiving>是<#else>否</#if></spanp>
+                    <b></b>
                     <br>
                     <b>收货人:</b>
                     <spanp class="span">${maOrderDetail.receiverPhone!""}</spanp>

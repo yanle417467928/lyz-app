@@ -68,14 +68,4 @@ public class EtaReturnAndRequireGoodsInf {
 
     private String attribute5;
 
-    private String ebsToAppFlag;
-
-    private String appErrorMessage;
-
-    private Date creationDate;
-
-    private Long lastUpdatedBy;
-
-    private Date lastUpdateDate;
-
 }

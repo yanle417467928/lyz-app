@@ -769,8 +769,9 @@
     <select id="findArrearsAndAgencyOrderList"
             resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaAgencyAndArrearsOrderVO">
         SELECT
+        oaa.id,
         obi.ord_no orderNumber,
-        obi.create_time createTime,
+        oaa.create_time createTime,
         obi.creator_name creatorName,
         obi.customer_name customerName,
         s.store_name storeName,
@@ -787,13 +788,14 @@
         WHERE
         1=1
         ORDER BY
-        obi.create_time DESC
+        oaa.create_time DESC
     </select>
 
 
     <select id="findMaAgencyAndArrearsOrderListByScreen" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaAgencyAndArrearsOrderVO">
         SELECT
+        oaa.id,
         obi.ord_no orderNumber,
         obi.create_time createTime,
         obi.creator_name creatorName,
@@ -852,6 +854,7 @@
     <select id="findMaAgencyAndArrearsOrderListByInfo"
             resultType="cn.com.leyizhuang.app.foundation.vo.management.order.MaAgencyAndArrearsOrderVO">
     SELECT
+        oaa.id,
         obi.ord_no orderNumber,
         obi.create_time createTime,
         obi.creator_name creatorName,
@@ -930,6 +933,39 @@
         picture
         FROM ord_arrears_audit
         WHERE ord_no = #{orderNumber}
+    </select>
+
+
+    <select id="getArrearsAuditInfoById" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderArrearsAudit">
+        SELECT
+        id,
+        user_id,
+        ord_no               orderNumber,
+        customer_name,
+        customer_phone,
+        seller_id,
+        seller_name,
+        seller_phone,
+        distribution_address distributionAddress,
+        distribution_time    distributionTime,
+        agency_money,
+        order_money,
+        real_money,
+        payment_method,
+        status,
+        cash_money,
+        pos_money,
+        alipay_money,
+        wechat_money,
+        remarks,
+        create_time,
+        update_time,
+        whether_repayments   whetherRepayments,
+        repayment_time       repaymentTime,
+        picture
+        FROM ord_arrears_audit
+        WHERE id = #{id}
     </select>
 
 

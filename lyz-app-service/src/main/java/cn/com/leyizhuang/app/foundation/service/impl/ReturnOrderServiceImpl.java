@@ -14,6 +14,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturningOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.request.ReturnDeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
@@ -40,7 +41,7 @@ import java.util.*;
 /**
  * Created by caiyu on 2017/12/4.
  */
-@Service
+@Service("returnOrderService")
 public class ReturnOrderServiceImpl implements ReturnOrderService {
     private static final Logger logger = LoggerFactory.getLogger(ReturnOrderServiceImpl.class);
     @Resource
@@ -143,7 +144,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
     @Transactional(rollbackFor = Exception.class)
     public void saveReturnOrderRelevantInfo(ReturnOrderBaseInfo returnOrderBaseInfo, ReturnOrderLogisticInfo returnOrderLogisticInfo,
                                             List<ReturnOrderGoodsInfo> returnOrderGoodsInfos, ReturnOrderBilling returnOrderBilling,
-                                            List<ReturnOrderProductCoupon> productCouponList, List<OrderGoodsInfo> orderGoodsInfoList) throws OrderSaveException {
+                                            List<ReturnOrderProductCoupon> productCouponList, List<OrderGoodsInfo> orderGoodsInfoList,AtwReturnOrder atwReturnOrder) throws OrderSaveException {
 
         if (null != returnOrderBaseInfo) {
             returnOrderDAO.saveReturnOrderBaseInfo(returnOrderBaseInfo);
@@ -178,6 +179,9 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //修改这个数量
                         orderDAO.updateOrderGoodsInfo(orderGoodsInfo);
                     }
+                }
+                if (null != atwReturnOrder) {
+                        appToWmsOrderService.saveAtwReturnOrder(atwReturnOrder);
                 }
             } else {
                 throw new OrderSaveException("退单主键生成失败!");
@@ -1800,9 +1804,8 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                                 }
                             }
                         }
-                    }
-                    //装饰公司退门店信用额度
-                    else if (null != returnOrderBilling.getStCreditMoney() && returnOrderBilling.getStCreditMoney() > AppConstant.PAY_UP_LIMIT) {
+                    }//装饰公司退门店信用额度
+                    if (null != returnOrderBilling.getStCreditMoney() && returnOrderBilling.getStCreditMoney() > AppConstant.PAY_UP_LIMIT) {
                         if (AppIdentityType.DECORATE_MANAGER.equals(orderBaseInfo.getCreatorIdentityType())) {
 
                             for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
@@ -1851,41 +1854,41 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                     }
 
                     //装饰公司退门店现金返利
-                    else if (null != returnOrderBilling.getStSubvention() && returnOrderBilling.getStSubvention() > AppConstant.PAY_UP_LIMIT) {
-                        if (AppIdentityType.DECORATE_MANAGER.equals(returnOrderBaseInfo.getCreatorIdentityType())) {
-                            for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
-                                //获取门店现金返利
-                                StoreSubvention storeSubvention = appStoreService.findStoreSubventionByEmpId(returnOrderBaseInfo.getCreatorId());
-                                //返还后门店现金返利余额
-                                Double subvention = (storeSubvention.getBalance() + returnOrderBilling.getStSubvention());
-                                //修改门店现金返利
-                                Integer affectLine = appStoreService.updateStoreSubventionByUserIdAndVersion(
-                                        returnOrderBilling.getStSubvention(), returnOrderBaseInfo.getCreatorId(), storeSubvention.getLastUpdateTime());
-                                if (affectLine > 0) {
-                                    //记录门店现金返利变更日志
-                                    StoreSubventionChangeLog storeSubventionChangeLog = new StoreSubventionChangeLog();
-                                    storeSubventionChangeLog.setStoreId(storeSubvention.getStoreId());
-                                    storeSubventionChangeLog.setCreateTime(Calendar.getInstance().getTime());
-                                    storeSubventionChangeLog.setChangeAmount(returnOrderBilling.getStSubvention());
-                                    storeSubventionChangeLog.setBalance(subvention);
-                                    storeSubventionChangeLog.setReferenceNumber(orderBaseInfo.getOrderNumber());
-                                    storeSubventionChangeLog.setChangeType(StoreSubventionChangeType.RETURN_ORDER);
-                                    storeSubventionChangeLog.setChangeTypeDesc(StoreSubventionChangeType.RETURN_ORDER.getDescription());
-                                    storeSubventionChangeLog.setOperatorId(returnOrderBaseInfo.getCreatorId());
-                                    storeSubventionChangeLog.setOperatorType(returnOrderBaseInfo.getCreatorIdentityType());
-                                    storeSubventionChangeLog.setRemark(ReturnOrderType.NORMAL_RETURN.getDescription());
-                                    //保存日志
-                                    appStoreService.addStoreSubventionChangeLog(storeSubventionChangeLog);
-                                    break;
-                                } else {
-                                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                        logger.info("refusedOrder OUT,正常退货失败，修改门店现金返利失败");
-                                        throw new SystemBusyException("系统繁忙，请稍后再试!");
-                                    }
-                                }
-                            }
-                        }
-                    }
+//                    else if (null != returnOrderBilling.getStSubvention() && returnOrderBilling.getStSubvention() > AppConstant.PAY_UP_LIMIT) {
+//                        if (AppIdentityType.DECORATE_MANAGER.equals(returnOrderBaseInfo.getCreatorIdentityType())) {
+//                            for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+//                                //获取门店现金返利
+//                                StoreSubvention storeSubvention = appStoreService.findStoreSubventionByEmpId(returnOrderBaseInfo.getCreatorId());
+//                                //返还后门店现金返利余额
+//                                Double subvention = (storeSubvention.getBalance() + returnOrderBilling.getStSubvention());
+//                                //修改门店现金返利
+//                                Integer affectLine = appStoreService.updateStoreSubventionByUserIdAndVersion(
+//                                        returnOrderBilling.getStSubvention(), returnOrderBaseInfo.getCreatorId(), storeSubvention.getLastUpdateTime());
+//                                if (affectLine > 0) {
+//                                    //记录门店现金返利变更日志
+//                                    StoreSubventionChangeLog storeSubventionChangeLog = new StoreSubventionChangeLog();
+//                                    storeSubventionChangeLog.setStoreId(storeSubvention.getStoreId());
+//                                    storeSubventionChangeLog.setCreateTime(Calendar.getInstance().getTime());
+//                                    storeSubventionChangeLog.setChangeAmount(returnOrderBilling.getStSubvention());
+//                                    storeSubventionChangeLog.setBalance(subvention);
+//                                    storeSubventionChangeLog.setReferenceNumber(orderBaseInfo.getOrderNumber());
+//                                    storeSubventionChangeLog.setChangeType(StoreSubventionChangeType.RETURN_ORDER);
+//                                    storeSubventionChangeLog.setChangeTypeDesc(StoreSubventionChangeType.RETURN_ORDER.getDescription());
+//                                    storeSubventionChangeLog.setOperatorId(returnOrderBaseInfo.getCreatorId());
+//                                    storeSubventionChangeLog.setOperatorType(returnOrderBaseInfo.getCreatorIdentityType());
+//                                    storeSubventionChangeLog.setRemark(ReturnOrderType.NORMAL_RETURN.getDescription());
+//                                    //保存日志
+//                                    appStoreService.addStoreSubventionChangeLog(storeSubventionChangeLog);
+//                                    break;
+//                                } else {
+//                                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+//                                        logger.info("refusedOrder OUT,正常退货失败，修改门店现金返利失败");
+//                                        throw new SystemBusyException("系统繁忙，请稍后再试!");
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
                 }
                 //******************判断是否是三个月以前的单子,如果是就退预存款****************************
 

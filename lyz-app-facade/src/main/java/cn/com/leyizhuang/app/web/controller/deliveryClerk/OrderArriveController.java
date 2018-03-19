@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.deliveryClerk;
 
 import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.utils.SmsUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
 import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoney;
@@ -10,9 +11,11 @@ import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderArrearageInfoResponse;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.foundation.service.impl.SmsAccountServiceImpl;
 import cn.com.leyizhuang.app.remote.queue.SinkSender;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
+import cn.com.leyizhuang.common.foundation.pojo.SmsAccount;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.CountUtil;
 import org.slf4j.Logger;
@@ -27,6 +30,8 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -60,6 +65,9 @@ public class OrderArriveController {
 
     @Autowired
     private CommonService CommonServiceImpl;
+
+    @Autowired
+    private SmsAccountServiceImpl smsAccountService;
 
     /**
      * @param
@@ -232,6 +240,28 @@ public class OrderArriveController {
                     orderArrearsAuditDO.setPicture(picture.toString());
                     this.arrearsAuditServiceImpl.save(orderArrearsAuditDO);
 
+                    //短信提醒
+                    String info = "您有新的欠款审核单，请及时处理。谢谢！";
+                    String content = "";
+                    try {
+                        content = URLEncoder.encode(info, "GB2312");
+                        System.err.println(content);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        logger.info("confirmOrderArrive EXCEPTION，提醒短信发送失败");
+                        logger.warn("{}", e);
+                    }
+                    SmsAccount account = smsAccountService.findOne();
+                    String returnCode;
+                    try {
+                        returnCode = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(), orderTempInfo.getSellerPhone(), content);
+                    } catch (IOException e) {
+                        logger.info("confirmOrderArrive EXCEPTION，提醒短信发送失败");
+                        logger.warn("{}", e);
+                    } catch (Exception e) {
+                        logger.info("confirmOrderArrive EXCEPTION，提醒短信发送失败");
+                        logger.warn("{}", e);
+                    }
 
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "欠款审核提交成功,正在审核中!", null);
                     logger.info("confirmOrderArrive OUT,配送员确认订单送达申请欠款审核，出参 resultDTO:{}", resultDTO);

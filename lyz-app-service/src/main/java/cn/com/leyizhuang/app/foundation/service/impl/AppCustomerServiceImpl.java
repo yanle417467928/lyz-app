@@ -614,4 +614,11 @@ public class AppCustomerServiceImpl implements AppCustomerService {
             return null;
         }
     }
+
+    @Override
+    public void updateCustomerTypeByUserId(Long userId) {
+        if (null != userId){
+            customerDAO.updateCustomerTypeByUserId(userId);
+        }
+    }
 }

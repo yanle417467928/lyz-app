@@ -58,14 +58,9 @@ public class MaProductCouponRestController extends BaseRestController {
             }
             Date effectiveStartTime = productCoupon.getEffectiveStartTime();
             Date effectiveEndTime = productCoupon.getEffectiveEndTime();
-            Calendar aCalendar = Calendar.getInstance();
-            aCalendar.setTime(effectiveStartTime);
-            int startDay = aCalendar.get(Calendar.DAY_OF_YEAR);
-            aCalendar.setTime(effectiveEndTime);
-            int endDay = aCalendar.get(Calendar.DAY_OF_YEAR);
-            int differDay = endDay - startDay;
+            int differDay = (int)((effectiveEndTime.getTime() - effectiveStartTime.getTime()) / (1000*3600*24));
             if (1 > differDay || differDay > 180) {
-                return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "结束效日期应在开始日期后6个月范围之内", null);
+                return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "结束效日期应在开始日期后1天至6个月范围之内", null);
             }
             productCoupon.setCreateTime(new Date());
             productCoupon.setRemainingQuantity(productCoupon.getInitialQuantity());

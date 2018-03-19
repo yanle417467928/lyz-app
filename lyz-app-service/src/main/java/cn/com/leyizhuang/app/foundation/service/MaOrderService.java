@@ -376,6 +376,14 @@ public interface MaOrderService {
      */
     MaOrderArrearsAudit getArrearsAuditInfo(String orderNumber);
 
+    /**
+     * 查询订单审核信息
+     *
+     * @param id
+     * @return
+     */
+    MaOrderArrearsAudit getArrearsAuditInfoById(Long id);
+
 
     /**
      * 更新欠款审核表
@@ -384,4 +392,10 @@ public interface MaOrderService {
      * @return
      */
     void updateOrderArrearsAudit(String orderNumber,Date date);
+
+    /**
+     * 定时查找待付款订单
+     * @return
+     */
+    List<OrderBaseInfo> scanningUnpaidOrder(String findDate);
 }

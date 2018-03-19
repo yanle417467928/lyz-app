@@ -9,6 +9,7 @@
         <module>lyz-app-service</module>
         <module>lyz-app-management</module>
         <module>lyz-app-facade</module>
+        <module>lyz-app-quartz-cluster</module>
     </modules>
     <parent>
         <groupId>cn.com.leyizhuang</groupId>

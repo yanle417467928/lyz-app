@@ -16,6 +16,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MaAgencyAndArrearsOrderVO {
+    private Long id;
     /**
      * 门店
      */

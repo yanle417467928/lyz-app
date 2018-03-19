@@ -435,6 +435,7 @@ public class OrderController {
             Double totalPrice = 0.00;
             Double memberDiscount = 0.00;
             Double orderDiscount = 0.00;
+            Double proCouponDiscount = 0D;
             //运费暂时还没出算法
             Double freight = 0.00;
             Double totalOrderAmount = 0.00;
@@ -561,11 +562,12 @@ public class OrderController {
                     for (GoodsIdQtyParam goodsIdQtyParam : couponList) {
                         if (orderGoodsSimpleResponse.getId().equals(goodsIdQtyParam.getId())) {
                             orderGoodsSimpleResponse.setGoodsQty(goodsIdQtyParam.getQty());
-                            orderGoodsSimpleResponse.setRetailPrice(0D);
                             break;
                         }
                     }
                     orderGoodsSimpleResponse.setGoodsLineType(AppGoodsLineType.PRODUCT_COUPON.getValue());
+                    //算产品券总金额
+                    proCouponDiscount = CountUtil.add(proCouponDiscount, CountUtil.mul(orderGoodsSimpleResponse.getRetailPrice(), orderGoodsSimpleResponse.getGoodsQty()));
                 }
                 //合并商品和赠品集合
                 if (AssertUtil.isNotEmpty(goodsInfo)) {
@@ -631,9 +633,10 @@ public class OrderController {
             totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
 
             goodsSettlement.put("totalQty", goodsQty + giftQty + couponQty);
-            goodsSettlement.put("totalPrice", totalPrice);
+            goodsSettlement.put("totalPrice", CountUtil.add(totalPrice, proCouponDiscount));
             goodsSettlement.put("totalGoodsInfo", goodsInfo);
             goodsSettlement.put("orderDiscount", orderDiscount);
+            goodsSettlement.put("proCouponDiscount", proCouponDiscount);
             goodsSettlement.put("memberDiscount", memberDiscount);
             goodsSettlement.put("freight", freight);
             goodsSettlement.put("totalOrderAmount", totalOrderAmount);

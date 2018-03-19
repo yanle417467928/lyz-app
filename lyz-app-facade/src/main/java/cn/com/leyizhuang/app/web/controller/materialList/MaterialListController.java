@@ -7,7 +7,10 @@ import cn.com.leyizhuang.app.foundation.pojo.QuickOrderRelationDO;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
-import cn.com.leyizhuang.app.foundation.pojo.response.materialList.*;
+import cn.com.leyizhuang.app.foundation.pojo.response.materialList.CouponMaterialListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.materialList.MaterialCustomerCouponResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.materialList.MaterialWorkerAuditResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -288,22 +291,22 @@ public class MaterialListController {
             List<CouponMaterialListResponse> listResponses = null;
             if (identityType == 0){
                 listResponses = materialListServiceImpl.findGuideMaterialListByUserIdAndCusIdAndIdentityType(userId,appIdentityType);
-
-                if (null != listResponses && !listResponses.isEmpty()) {
-                    //集合对象中都是同一个顾客，所以取其中一个顾客Id
-                    AppCustomer appCustomer = customerService.findById(listResponses.get(0).getCusId());
-                    //设置返回信息
-                    materialCustomerCouponResponse.setMobile(appCustomer.getMobile());
-                    materialCustomerCouponResponse.setCustomer(appCustomer.getName());
-                }
-            }else {
+            } else {
                 listResponses = materialListServiceImpl.findCustomerMaterialListByUserIdAndIdentityType(userId, appIdentityType);
             }
             if (null != listResponses && !listResponses.isEmpty()) {
-                for (CouponMaterialListResponse couponMaterialListResponse : listResponses) {
-                    couponMaterialListResponse.setRetailPrice(0.00);
-                }
+                //集合对象中都是同一个顾客，所以取其中一个顾客Id
+                AppCustomer appCustomer = customerService.findById(listResponses.get(0).getCusId());
+                //设置返回信息
+                materialCustomerCouponResponse.setMobile(appCustomer.getMobile());
+                materialCustomerCouponResponse.setCustomer(appCustomer.getName());
             }
+            //产品券不显示价格
+//            if (null != listResponses && !listResponses.isEmpty()) {
+//                for (CouponMaterialListResponse couponMaterialListResponse : listResponses) {
+//                    couponMaterialListResponse.setRetailPrice(0.00);
+//                }
+//            }
             materialCustomerCouponResponse.setCouponsList(listResponses);
         }
 //        List<MaterialListType> materialListTypes = new ArrayList<MaterialListType>();

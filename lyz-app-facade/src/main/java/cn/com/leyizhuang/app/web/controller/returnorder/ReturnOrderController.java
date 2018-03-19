@@ -50,10 +50,10 @@ import java.util.Map;
 
 /**
  * @author Jerry.Ren
- * Notes: 退货单接口
- * Created with IntelliJ IDEA.
- * Date: 2017/12/4.
- * Time: 9:34.
+ *         Notes: 退货单接口
+ *         Created with IntelliJ IDEA.
+ *         Date: 2017/12/4.
+ *         Time: 9:34.
  */
 
 @RestController
@@ -188,15 +188,15 @@ public class ReturnOrderController {
                         if (null != orderBillingDetails.getOnlinePayType()) {
                             if (OnlinePayType.ALIPAY.equals(orderBillingDetails.getOnlinePayType())) {
                                 //支付宝退款
-                                Map<String, String> map = onlinePayRefundService.alipayRefundRequest(userId, identityType, orderNumber, returnOrderBaseInfo.getReturnNo(), orderBillingDetails.getOnlinePayAmount(),returnOrderBaseInfo.getRoid());
-                                if ("FAILURE".equals(map.get("code"))){
-                                    returnOrderService.updateReturnOrderBaseInfoByReturnNo(returnOrderBaseInfo.getReturnNo(),AppReturnOrderStatus.PENDING_REFUND);
+                                Map<String, String> map = onlinePayRefundService.alipayRefundRequest(userId, identityType, orderNumber, returnOrderBaseInfo.getReturnNo(), orderBillingDetails.getOnlinePayAmount(), returnOrderBaseInfo.getRoid());
+                                if ("FAILURE".equals(map.get("code"))) {
+                                    returnOrderService.updateReturnOrderBaseInfoByReturnNo(returnOrderBaseInfo.getReturnNo(), AppReturnOrderStatus.PENDING_REFUND);
                                 }
                             } else if (OnlinePayType.WE_CHAT.equals(orderBillingDetails.getOnlinePayType())) {
                                 //微信退款方法类
-                                Map<String, String> map = onlinePayRefundService.wechatReturnMoney(userId, identityType, orderBillingDetails.getOnlinePayAmount(), orderNumber, returnOrderBaseInfo.getReturnNo(),returnOrderBaseInfo.getRoid());
-                                if ("FAILURE".equals(map.get("code"))){
-                                    returnOrderService.updateReturnOrderBaseInfoByReturnNo(returnOrderBaseInfo.getReturnNo(),AppReturnOrderStatus.PENDING_REFUND);
+                                Map<String, String> map = onlinePayRefundService.wechatReturnMoney(userId, identityType, orderBillingDetails.getOnlinePayAmount(), orderNumber, returnOrderBaseInfo.getReturnNo(), returnOrderBaseInfo.getRoid());
+                                if ("FAILURE".equals(map.get("code"))) {
+                                    returnOrderService.updateReturnOrderBaseInfoByReturnNo(returnOrderBaseInfo.getReturnNo(), AppReturnOrderStatus.PENDING_REFUND);
                                 }
                             } else if (OnlinePayType.UNION_PAY.equals(orderBillingDetails.getOnlinePayType())) {
                                 //创建退单退款详情实体
@@ -328,7 +328,7 @@ public class ReturnOrderController {
                 atwReturnOrder.setDiySiteId(null);
                 atwReturnOrder.setDiySiteTitle(null);
                 atwReturnOrder.setDiySiteTel(null);
-                atwReturnOrder.setRemarkInfo("拒签退货: "+ returnOrderBaseInfo.getReasonInfo());
+                atwReturnOrder.setRemarkInfo("拒签退货: " + returnOrderBaseInfo.getReasonInfo());
                 atwReturnOrder.setOrderNumber(orderNumber);
                 atwReturnOrder.setReturnNumber(returnOrderBaseInfo.getReturnNo());
                 atwReturnOrder.setReturnTime(date);
@@ -699,7 +699,7 @@ public class ReturnOrderController {
                         }
                     }
                     Double totalPrice = CountUtil.add(customerPrePay, storePrePay, onlinePayPrice, cashPosPrice);
-                    returnOrderBaseInfo.setReturnPrice(CountUtil.sub(totalPrice,billingDetails.getFreight()));
+                    returnOrderBaseInfo.setReturnPrice(CountUtil.sub(totalPrice, billingDetails.getFreight()));
                 } else {
                     //判断退款是否小于现金支付
                     if (returnTotalGoodsPrice <= cashPosPrice) {
@@ -741,10 +741,23 @@ public class ReturnOrderController {
                         }
                     }
                 }
+            } else {
+                if (!isReturnAllProCoupon) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单缺少账单支付信息!", "");
+                    logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
             }
-
+            AtwReturnOrder atwReturnOrder = null;
+            //只有配送单退货才发WMS.
+            if (AppDeliveryType.HOUSE_DELIVERY.equals(order.getDeliveryType())) {
+                //保存发送wms退货单头
+                AppStore appStore = appStoreService.findStoreByUserIdAndIdentityType(userId, identityType);
+                SalesConsult salesConsult = appEmployeeService.findSellerByUserIdAndIdentityType(userId, identityType);
+                atwReturnOrder = AtwReturnOrder.transform(returnOrderBaseInfo, returnOrderLogisticInfo, appStore, order, goodsInfos.size(), salesConsult);
+            }
             returnOrderService.saveReturnOrderRelevantInfo(returnOrderBaseInfo, returnOrderLogisticInfo, goodsInfos, returnOrderBilling,
-                    productCouponList, orderGoodsInfoList);
+                    productCouponList, orderGoodsInfoList,atwReturnOrder);
             //如果是买券订单直接处理退款退货
             if (AppOrderType.COUPON.equals(order.getOrderType())) {
                 City city = cityService.findById(order.getCityId());
@@ -761,11 +774,6 @@ public class ReturnOrderController {
             }
             //只有配送单退货才发WMS.
             if (AppDeliveryType.HOUSE_DELIVERY.equals(order.getDeliveryType())) {
-                //保存发送wms退货单头
-                AppStore appStore = appStoreService.findStoreByUserIdAndIdentityType(userId, identityType);
-                SalesConsult salesConsult = appEmployeeService.findSellerByUserIdAndIdentityType(userId, identityType);
-                AtwReturnOrder atwReturnOrder = AtwReturnOrder.transform(returnOrderBaseInfo, returnOrderLogisticInfo, appStore, order, goodsInfos.size(), salesConsult);
-                appToWmsOrderService.saveAtwReturnOrder(atwReturnOrder);
                 //发送退货单到wms
                 callWms.sendToWmsReturnOrderAndGoods(returnNo);
             }
