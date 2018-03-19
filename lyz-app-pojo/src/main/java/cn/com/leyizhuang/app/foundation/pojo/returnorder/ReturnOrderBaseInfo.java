@@ -112,4 +112,9 @@ public class ReturnOrderBaseInfo {
      */
     private AppReturnOrderStatus returnStatus;
 
+    /**
+     * 此订单是否在出货后记录销量数据到 sell_details 表
+     */
+    private Boolean isRecordSales = false;
+
 }

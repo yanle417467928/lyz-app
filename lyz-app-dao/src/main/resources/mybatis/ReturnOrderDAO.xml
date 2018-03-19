@@ -28,7 +28,8 @@
         reason_info,
             return_pic,
         ord_type orderType,
-        return_status
+        return_status,
+        is_record_sales isRecordSales
         FROM ord_return_base_info
         WHERE
         return_no = #{returnNo}
@@ -43,7 +44,7 @@
         creator_name,
         creator_identityType, creator_phone, store_id, store_code, store_structure_code, cus_id, cus_name, cus_phone,
         cus_type, reason_info, return_pic, ord_type,
-         return_status)
+         return_status,is_record_sales)
         VALUES
             (#{orderId}, #{orderNo}, #{orderTime},
                          #{returnTime}, #{returnNo}, #{returnType},
@@ -51,7 +52,7 @@
         #{creatorId}, #{creatorName,}, #{creatorIdentityType},
         #{creatorPhone}, #{storeId}, #{storeCode}, #{storeStructureCode},
         #{customerId}, #{customerName}, #{customerPhone}, #{customerType}, #{reasonInfo},
-        #{returnPrice}, #{orderType}, #{returnStatus})
+        #{returnPrice}, #{orderType}, #{returnStatus},#{isRecordSales})
     </insert>
 
     <update id="modifyReturnOrderBaseInfo"
@@ -85,8 +86,8 @@
             <if test="null != creatorId">
                 creator_id = #{creatorId},
             </if>
-            <if test="null != creatorName,">
-                creator_name, = #{creatorName,},
+            <if test="null != creatorName">
+                creator_name = #{creatorName},
             </if>
             <if test="null != creatorIdentityType">
                 creator_identityType = #{creatorIdentityType},
@@ -95,13 +96,13 @@
                 creator_phone = #{creatorPhone},
             </if>
             <if test="null != storeId">
-                store_id = #{storeId}
+                store_id = #{storeId},
             </if>
             <if test="null != storeCode">
-                store_code = #{storeCode}
+                store_code = #{storeCode},
             </if>
             <if test="null != storeStructureCode">
-                store_structure_code = #{storeStructureCode}
+                store_structure_code = #{storeStructureCode},
             </if>
             <if test="null != customerId">
                 cus_id = #{customerId},
@@ -123,6 +124,9 @@
             </if>
             <if test="null != returnStatus">
                 return_status = #{returnStatus},
+            </if>
+            <if test="null != isRecordSales">
+                is_record_sales = #{isRecordSales},
             </if>
         </set>
         WHERE roid = #{roid}

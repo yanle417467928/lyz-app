@@ -12,7 +12,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class GiftListResponseGoods {
+public class GiftListResponseGoods{
 
     //商品id
     private Long goodsId;
@@ -36,5 +36,8 @@ public class GiftListResponseGoods {
      */
     private AppGoodsLineType goodsType;
 
+    public Integer getQty() {
+        return qty;
+    }
 
 }

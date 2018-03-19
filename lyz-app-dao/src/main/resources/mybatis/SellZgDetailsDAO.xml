@@ -1,17 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.SellZgDetailsDAO">
-    <insert id="addOneDetail" parameterType="cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO">
+    <insert id="addOneDetail" parameterType="cn.com.leyizhuang.app.foundation.pojo.SellZgDetailsDO">
             INSERT INTO  sell_zg_details
-            (company_id, "year", "month", create_time, city_id, store_id, seller_id
+            (company_id, `year`, `month`, create_time, city_id, store_id, seller_id
             , customer_id, number, goods_id, sku, quantity, amount, goods_line_id)
             VALUES
             (#{companyId},#{year},#{month},#{createTime},#{cityId},#{storeId},#{sellerId},#{customerId},#{number}
             ,#{goodsId},#{sku},#{quantity},#{amount},#{goodsLineId})
-        </insert>
+    </insert>
 
-    <update id="update" parameterType="cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO">
-        UPDATE SET
+    <insert id="addSellZgCusTimes" parameterType="cn.com.leyizhuang.app.foundation.pojo.SellZgCusTimes">
+        INSERT INTO sell_zg_cus_times
+        (cus_id,sku,times,act_base_type)
+        VALUES
+        (#{cusId},#{sku},#{times},#{actBaseType})
+    </insert>
+
+    <update id="update" parameterType="cn.com.leyizhuang.app.foundation.pojo.SellZgDetailsDO">
+        UPDATE sell_zg_details
         <set>
             <if test="companyId != null">
                 company_id = #{companyId},
@@ -56,17 +63,46 @@
                 goods_line_id = #{goodsLineId}
             </if>
         </set>
-
+        WHERE id = #{id}
     </update>
 
-    <select id="getDetailsByCusId">
+    <update id="updateSellZgCusTimes" parameterType="cn.com.leyizhuang.app.foundation.pojo.SellZgCusTimes">
+        UPDATE sell_zg_cus_times
+        <set>
+            <if test="times != null">
+                times = #{times},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="getDetailsByCusId" resultType="cn.com.leyizhuang.app.foundation.pojo.SellZgDetailsDO">
         SELECT  * from sell_zg_details
         where customer_id = #{cusId}
     </select>
 
-    <select id="getDetailsByCusIdAndSku">
+    <select id="getDetailsByCusIdAndSku" resultType="cn.com.leyizhuang.app.foundation.pojo.SellZgDetailsDO">
             SELECT  * from sell_zg_details
-            where customer_id = #{CusId} and sku = #{sku}
-        </select>
+            where customer_id = #{cusId} and sku = #{sku}
+    </select>
 
+    <select id="getQtyByCusIdAndSku" resultType="java.lang.Integer">
+        SELECT  sum(s.quantity) from sell_zg_details s
+        where customer_id = #{cusId} and sku = #{sku}
+    </select>
+
+    <select id="isExitByNumberAndGoodsLineId" resultType="java.lang.Boolean">
+        SELECT EXISTS (
+        select 1 from sell_zg_details where `number` = #{number} and goods_line_id = #{lineId}
+        )
+    </select>
+
+    <select id="getTimesByCusIdAndSku" resultType="cn.com.leyizhuang.app.foundation.pojo.SellZgCusTimes">
+        SELECT * FROM sell_zg_cus_times
+        where cus_id = #{cusId}
+        <if test="sku != null">
+            and sku = #{sku}
+        </if>
+        and act_base_type = #{actBaseType}
+    </select>
 </mapper>

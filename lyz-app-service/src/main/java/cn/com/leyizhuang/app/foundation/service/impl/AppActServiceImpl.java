@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.foundation.dao.*;
+import cn.com.leyizhuang.app.foundation.pojo.SellZgCusTimes;
 import cn.com.leyizhuang.app.foundation.pojo.SellZgDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.activity.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
@@ -101,9 +102,9 @@ public class AppActServiceImpl implements AppActService {
      * @return
      */
     @Override
-    public List<PromotionsGiftListResponse> countGift(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList) throws UnsupportedEncodingException {
+    public List<PromotionsGiftListResponse> countGift(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList,Long cusId) throws UnsupportedEncodingException {
         List<PromotionsGiftListResponse> giftList = new ArrayList<>();
-        PromotionsListResponse actResultInfos = countAct(userId, userType, goodsInfoList);
+        PromotionsListResponse actResultInfos = countAct(userId, userType, goodsInfoList,cusId);
 
         if (actResultInfos != null && actResultInfos.getPromotionGiftList() != null) {
             giftList = actResultInfos.getPromotionGiftList();
@@ -120,9 +121,10 @@ public class AppActServiceImpl implements AppActService {
      * @param goodsInfoList
      * @return
      */
-    public List<PromotionDiscountListResponse> countDiscount(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList) throws UnsupportedEncodingException {
+    @Override
+    public List<PromotionDiscountListResponse> countDiscount(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList,Long cusId) throws UnsupportedEncodingException {
         List<PromotionDiscountListResponse> discountList = new ArrayList<>();
-        PromotionsListResponse actResultInfos = countAct(userId, userType, goodsInfoList);
+        PromotionsListResponse actResultInfos = countAct(userId, userType, goodsInfoList,cusId);
         if (actResultInfos != null && actResultInfos.getPromotionDiscountList() != null) {
             discountList = actResultInfos.getPromotionDiscountList();
         }
@@ -138,7 +140,9 @@ public class AppActServiceImpl implements AppActService {
      * @param goodsInfoList 本品集合
      * @return
      */
-    public PromotionsListResponse countAct(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList) throws UnsupportedEncodingException {
+    @Override
+    @Transactional
+    public PromotionsListResponse countAct(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList,Long cusId) throws UnsupportedEncodingException {
         //*****促销结果*****
         PromotionsListResponse result = new PromotionsListResponse();
         List<PromotionDiscountListResponse> proDiscountList = new ArrayList<>();
@@ -176,6 +180,12 @@ public class AppActServiceImpl implements AppActService {
                 return result;
             }
 
+            /** 计算专供促销 **/
+            List<PromotionsGiftListResponse> zgGiftResponse = this.countZgPromotion(cusId,goodsIdList,goodsPool);
+            if (zgGiftResponse != null && zgGiftResponse.size() > 0){
+                proGiftList.addAll(zgGiftResponse);
+            }
+
             actList = this.getActList(customer, skus);
             customerType = customer.getCustomerType();
         } else if (userType.getValue() == 0) {
@@ -183,6 +193,12 @@ public class AppActServiceImpl implements AppActService {
             AppEmployee employee = appEmployeeService.findById(userId);
             if (employee == null) {
                 return result;
+            }
+
+            /** 计算专供促销 **/
+            List<PromotionsGiftListResponse> zgGiftResponse = this.countZgPromotion(cusId,goodsIdList,goodsPool);
+            if (zgGiftResponse != null && zgGiftResponse.size() > 0){
+                proGiftList.addAll(zgGiftResponse);
             }
 
             actList = this.getActList(employee, skus);
@@ -735,54 +751,81 @@ public class AppActServiceImpl implements AppActService {
 
         //判断会员身份
         CustomerRankInfoResponse customerRankInfoResponse = appCustomerService.findCusRankinfoByCusId(cusId);
+        AppCustomer appCustomer = null;
+        try {
+            appCustomer = appCustomerService.findById(cusId);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            logger.info("计算专供促销，顾客id:"+cusId+"找不到顾客信息");
+        }
 
         if (customerRankInfoResponse == null){
             // 非专供会员 不能参与专供促销
-
             return null;
+        }
+
+        // 根据用户购买产品id 返回专供产品
+        List<GiftListResponseGoods> goodsZGList = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserId(goodsIdList,cusId,AppIdentityType.CUSTOMER);
+
+        if (goodsZGList == null || goodsZGList.size() == 0){
+            // 无专供产品
+            return giftListResponseList;
         }
 
         // 获取专供会员 专供产品销量
         List<SellZgDetailsDO> sellZgDetailsDOList = statisticsSellDetailsService.getZgDetailsByCusId(cusId);
 
         if (sellZgDetailsDOList == null || sellZgDetailsDOList.size() == 0){
-            //TODO 首单专供 享受首单促销
+            // 首单专供 享受首单促销
 
-        }else{
-            // 非首单享受 累积促销
-            List<ActBaseDO> actBaseDOList = actBaseDAO.queryListByActBaseType(ActBaseType.ACCUMULATE);
+            //查看是否享受过首单促销记录
+            SellZgCusTimes sellZgCusTimes = statisticsSellDetailsService.getTimesByCusIdAndSku(cusId,null,ActBaseType.ZGFRIST);
+            if (sellZgCusTimes == null){
+                // 首单
+                List<ActBaseDO> zgFirstList = actBaseDAO.queryZgFirstList(appCustomer.getStoreId(),LocalDateTime.now());
 
-            if (actBaseDOList != null || actBaseDOList.size() > 0){
-                ActBaseDO actBaseDO = actBaseDOList.get(0);
+                if (zgFirstList != null && zgFirstList.size() > 0){
+                    ActBaseDO actBaseDO = zgFirstList.get(0);
+                    // 促销条件数量
+                    Integer fullQty = actBaseDO.getFullNumber();
+                    // 赠送数量
+                    Integer sentQty = actBaseDO.getGiftChooseNumber();
 
-                // 参与促销需要累积数量
-                Integer accumulateQty = actBaseDO.getFullNumber();
-                // 赠送产品数量
-                Integer sentQty = actBaseDO.getGiftChooseNumber();
+                    /** 首单促销  专供产品满足数量为fullQty个的产品，选择一个单价最高的产品，送sentQty个**/
 
-                // 根据用户购买产品id 返回专供产品
-                List<GiftListResponseGoods> goodsZGList = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserId(goodsIdList,cusId,AppIdentityType.CUSTOMER);
+                    List<GiftListResponseGoods> enjoyActGoodsList = new ArrayList();
+                    for (GiftListResponseGoods zgGoods : goodsZGList){
+                        OrderGoodsSimpleResponse orderGoodsSimpleResponse = goodsPool.get(zgGoods.getSku());
+                        // 判断数量
+                        if (orderGoodsSimpleResponse.getGoodsQty() >= fullQty){
 
-                if (goodsZGList == null || goodsZGList.size() == 0){
-                    // 无专供产品
-                    return null;
-                }
+                            zgGoods.setRetailPrice(orderGoodsSimpleResponse.getRetailPrice());
+                            enjoyActGoodsList.add(zgGoods);
+                        }
+                    }
 
-                // 循环遍历专供产品 找到符合促销条件的产品
-                for (GiftListResponseGoods zgGoods : goodsZGList){
+                    if (enjoyActGoodsList.size() > 0 ){
+                        // 排序 按价格正序
 
-                    // 得到专供产品的桶数
-                    Integer saledQty = statisticsSellDetailsService.getZgTsBycusIdAndsku(cusId,zgGoods.getSku());
+                        Collections.sort(enjoyActGoodsList, new Comparator<GiftListResponseGoods>() {
+                            @Override
+                            public int compare(GiftListResponseGoods s1, GiftListResponseGoods s2) {
+                                return (int)(s1.getRetailPrice()-(s2.getRetailPrice()));
+                            }
+                        });
 
-                    // 拿到用户买的产品
-                    OrderGoodsSimpleResponse orderGoodsSimpleResponse = goodsPool.get(zgGoods.getSku());
-                    Integer currentQty = orderGoodsSimpleResponse.getGoodsQty();
-                    Integer sumQty = saledQty + currentQty;
+                        // 拿到赠品样本
+                        GiftListResponseGoods giftTemplate = enjoyActGoodsList.get(enjoyActGoodsList.size()-1);
 
-                    // 向下取整 得出参与次数
-                    int enjoyTimes = (int) Math.floor(sumQty / accumulateQty);
+                        OrderGoodsSimpleResponse orderGoodsSimpleResponse = goodsPool.get(giftTemplate.getSku());
+                        Integer remainQty = orderGoodsSimpleResponse.getGoodsQty() - fullQty;
 
-                    if (enjoyTimes > 0){
+                        if (remainQty == 0){
+                            goodsPool.remove(giftTemplate.getSku());
+                        }else if (remainQty > 0){
+                            orderGoodsSimpleResponse.setGoodsQty(remainQty);
+                            goodsPool.put(giftTemplate.getSku(),orderGoodsSimpleResponse);
+                        }
 
                         // 创建一个促销结果
                         PromotionsGiftListResponse response = new PromotionsGiftListResponse();
@@ -790,8 +833,122 @@ public class AppActServiceImpl implements AppActService {
                         response.setPromotionId(actBaseDO.getId());
                         response.setPromotionTitle(actBaseDO.getTitle());
                         response.setIsGiftOptionalQty(actBaseDO.getIsGiftOptionalQty());
-                        response.setMaxChooseNumber(actBaseDO.getGiftChooseNumber() * enjoyTimes);
-                        response.setEnjoyTimes(enjoyTimes);
+                        response.setMaxChooseNumber(actBaseDO.getGiftChooseNumber() * 1);
+                        response.setEnjoyTimes(1);
+
+                        // 创建赠品list
+                        List<GiftListResponseGoods> giftList = new ArrayList<>();
+                        GiftListResponseGoods gift = new GiftListResponseGoods();
+
+                        gift.setGoodsId(giftTemplate.getGoodsId());
+                        gift.setSku(giftTemplate.getSku());
+                        gift.setSkuName(giftTemplate.getSkuName());
+                        gift.setQty(actBaseDO.getGiftChooseNumber() * 1);
+                        gift.setRetailPrice(0D);
+                        gift.setCoverImageUri(giftTemplate.getCoverImageUri());
+                        gift.setGoodsUnit(giftTemplate.getGoodsUnit());
+                        gift.setGoodsType(AppGoodsLineType.PRESENT);
+                        gift.setGoodsSpecification(giftTemplate.getGoodsSpecification());
+
+                        giftList.add(gift);
+                        response.setGiftList(giftList);
+                        giftListResponseList.add(response);
+                        logger.info("专供促销："+response.getPromotionTitle());
+
+                        // 记录
+                        SellZgCusTimes sellZgCusTimes1 = new SellZgCusTimes();
+                        sellZgCusTimes1.setCusId(cusId);
+                        sellZgCusTimes1.setSku(gift.getSku());
+                        sellZgCusTimes1.setTimes(1);
+                        sellZgCusTimes1.setActBaseType(ActBaseType.ZGFRIST);
+
+                        statisticsSellDetailsService.addSellZgCusTimes(sellZgCusTimes1);
+                    }
+                }
+            }
+
+        }
+
+        // 享受 累积促销
+        List<ActBaseDO> actBaseDOList = actBaseDAO.queryZgList(appCustomer.getStoreId(),LocalDateTime.now());
+
+        if (actBaseDOList != null && actBaseDOList.size() > 0){
+            ActBaseDO actBaseDO = actBaseDOList.get(0);
+
+            // 参与促销需要累积数量
+            Integer accumulateQty = actBaseDO.getFullNumber();
+            // 赠送产品数量
+            Integer sentQty = actBaseDO.getGiftChooseNumber();
+
+
+            // 循环遍历专供产品 找到符合促销条件的产品
+            for (GiftListResponseGoods zgGoods : goodsZGList){
+
+                // 得到专供产品的桶数
+                Integer saledQty = statisticsSellDetailsService.getZgTsBycusIdAndsku(cusId,zgGoods.getSku());
+
+                // 拿到用户买的产品
+                OrderGoodsSimpleResponse orderGoodsSimpleResponse = goodsPool.get(zgGoods.getSku());
+
+                if (orderGoodsSimpleResponse != null){
+                    Integer currentQty = orderGoodsSimpleResponse.getGoodsQty();
+                    Integer sumQty = saledQty + currentQty;
+
+                    // 向下取整 得出参与次数
+                    int enjoyTimes = (int) Math.floor(sumQty / accumulateQty);
+                    // 当单产品 参与促销次数 enjoyTimes - enjoiedTimes
+                    int currentEnjoyTimes = 0;
+                    // 已经参与的次数
+                    int enjoiedTimes = 0;
+
+                    //取得用户参与专供累积促销的记录
+                    SellZgCusTimes sellZgCusTimes = statisticsSellDetailsService.getTimesByCusIdAndSku(cusId,zgGoods.getSku(),ActBaseType.ACCUMULATE);
+
+                    if(sellZgCusTimes != null){
+                        /**验证用户有没有重复参与**/
+                        enjoiedTimes = sellZgCusTimes.getTimes();
+
+                        if (enjoyTimes > enjoiedTimes){
+                            sellZgCusTimes.setTimes(enjoiedTimes+enjoyTimes);
+                            statisticsSellDetailsService.updateSellZgCusTimes(sellZgCusTimes);
+                        }else{
+                            // 不能参与
+                            continue;
+                        }
+
+                    }else {
+                        if (enjoyTimes > 0){
+                            //新增一条参与记录
+                            SellZgCusTimes sellZgCusTimes1 = new SellZgCusTimes();
+                            sellZgCusTimes1.setCusId(cusId);
+                            sellZgCusTimes1.setSku(zgGoods.getSku());
+                            sellZgCusTimes1.setTimes(enjoyTimes);
+                            sellZgCusTimes1.setActBaseType(ActBaseType.ACCUMULATE);
+
+                            statisticsSellDetailsService.addSellZgCusTimes(sellZgCusTimes1);
+                        }
+                    }
+
+                    currentEnjoyTimes = enjoyTimes - enjoiedTimes;
+                    if (currentEnjoyTimes > 0){
+
+                        //Integer remainQty = currentQty - ((enjoyTimes * accumulateQty) - saledQty);
+                        Integer remainQty = sumQty % accumulateQty;
+                        if (remainQty == 0){
+                            goodsPool.remove(zgGoods.getSku());
+                        }else if (remainQty > 0){
+                            orderGoodsSimpleResponse.setGoodsQty(remainQty);
+                            goodsPool.put(zgGoods.getSku(),orderGoodsSimpleResponse);
+                        }
+
+                        // 创建一个促销结果
+                        PromotionsGiftListResponse response = new PromotionsGiftListResponse();
+
+                        response.setPromotionId(actBaseDO.getId());
+                        response.setPromotionTitle(actBaseDO.getTitle());
+                        response.setIsGiftOptionalQty(actBaseDO.getIsGiftOptionalQty());
+                        response.setMaxChooseNumber(actBaseDO.getGiftChooseNumber() * currentEnjoyTimes);
+                        response.setEnjoyTimes(currentEnjoyTimes);
 
                         // 创建赠品list
                         List<GiftListResponseGoods> giftList = new ArrayList<>();
@@ -800,17 +957,18 @@ public class AppActServiceImpl implements AppActService {
                         gift.setGoodsId(zgGoods.getGoodsId());
                         gift.setSku(zgGoods.getSku());
                         gift.setSkuName(zgGoods.getSkuName());
-                        gift.setQty(actBaseDO.getGiftChooseNumber() * enjoyTimes);
+                        gift.setQty(actBaseDO.getGiftChooseNumber() * currentEnjoyTimes);
                         gift.setRetailPrice(0D);
                         gift.setCoverImageUri(orderGoodsSimpleResponse.getCoverImageUri());
                         gift.setGoodsUnit(orderGoodsSimpleResponse.getGoodsUnit());
                         gift.setGoodsType(AppGoodsLineType.PRESENT);
                         gift.setGoodsSpecification(orderGoodsSimpleResponse.getGoodsSpecification());
 
-                        giftListResponseList.add(response);
+                        giftList.add(gift);
+                        response.setGiftList(giftList);
 
-                    }else{
-                        return  null;
+                        giftListResponseList.add(response);
+                        logger.info("专供促销："+response.getPromotionTitle());
                     }
                 }
 

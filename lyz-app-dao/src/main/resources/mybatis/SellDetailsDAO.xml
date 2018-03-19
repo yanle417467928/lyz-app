@@ -5,7 +5,7 @@
     <insert id="addOneDetail" parameterType="cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO">
     insert into sell_details ( company_id, `year`,
       `month`, store_id, seller_id,seller_name,
-      customer_phone, customer_name, `number`,
+      customer_phone, customer_name, number,
       goods_grade, sku, quantity,
       amount, single_rewards ,city_id,goods_line_id,create_time,customer_id,order_subject_type,creator_identity_type,
       creator_id,creator_name,company_flag,goods_line_type,sell_detals_flag)
@@ -14,7 +14,7 @@
       #{customerPhone,jdbcType=VARCHAR}, #{customerName,jdbcType=VARCHAR}, #{number,jdbcType=VARCHAR},
       #{goodsGrade,jdbcType=VARCHAR}, #{sku,jdbcType=VARCHAR}, #{quantity,jdbcType=INTEGER},
       #{amount,jdbcType=DECIMAL}, #{singleRewards,jdbcType=DECIMAL},#{cityId},#{goodsLineId},#{createTime},#{customerId},
-      #{orderSubjectType},#{creatorIdentityType},#{creatorId},#{creatorName},#{sellDetalsFlag},#{companyFlag},#{goodsLineType})
+      #{orderSubjectType},#{creatorIdentityType},#{creatorId},#{creatorName},#{companyFlag},#{goodsLineType},#{sellDetalsFlag})
     </insert>
 
     <update id="update" parameterType="cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO" >

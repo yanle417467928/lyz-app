@@ -1,9 +1,10 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 
+import cn.com.leyizhuang.app.core.constant.ActBaseType;
 import cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO;
+import cn.com.leyizhuang.app.foundation.pojo.SellZgCusTimes;
 import cn.com.leyizhuang.app.foundation.pojo.SellZgDetailsDO;
-import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -82,4 +83,10 @@ public interface StatisticsSellDetailsService {
     List<SellZgDetailsDO> getZgDetailsByCusIdAndSku(Long cusId, String sku);
 
     List<SellZgDetailsDO> getZgDetailsByCusId(Long cusId);
+
+    SellZgCusTimes getTimesByCusIdAndSku(Long cusId, String sku, ActBaseType actBaseType);
+
+    void updateSellZgCusTimes(SellZgCusTimes sellZgCusTimes);
+
+    void addSellZgCusTimes(SellZgCusTimes sellZgCusTimes);
 }

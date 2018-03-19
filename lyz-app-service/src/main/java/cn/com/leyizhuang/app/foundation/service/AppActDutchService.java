@@ -21,7 +21,7 @@ public interface AppActDutchService {
      * @param orderGoodsInfoList
      * @return
      */
-    List<OrderGoodsInfo> addGoodsDetailsAndDutch(Long userId, AppIdentityType identityType, List<PromotionSimpleInfo> promotionSimpleInfoList, List<OrderGoodsInfo> orderGoodsInfoList) throws UnsupportedEncodingException;
+    List<OrderGoodsInfo> addGoodsDetailsAndDutch(Long userId, AppIdentityType identityType, List<PromotionSimpleInfo> promotionSimpleInfoList, List<OrderGoodsInfo> orderGoodsInfoList,Long cusId) throws UnsupportedEncodingException;
 
     /**
      * 计算并 设置退货单价
