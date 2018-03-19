@@ -15,6 +15,7 @@ public class SiteMeshFilter extends ConfigurableSiteMeshFilter {
                 .addExcludedPath("/sitemash/template")
                 .addExcludedPath("/login")
                 .addExcludedPath("/druid/**")
-                .addExcludedPath("/qrcode/register/**");
+                .addExcludedPath("/qrcode/register/**")
+                .addExcludedPath("/rest/employees/create/qrcode/all");
     }
 }

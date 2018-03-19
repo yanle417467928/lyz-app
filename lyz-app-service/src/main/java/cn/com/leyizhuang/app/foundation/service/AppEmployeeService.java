@@ -81,4 +81,6 @@ public interface AppEmployeeService {
     Integer unlockGuideCreditByUserIdAndGuideCreditAndVersion( Long userId, Double guideCredit, Date version);
 
     AppEmployee findDeliveryByClerkNo(String driver);
+
+    List<AppEmployee> findQrcodeIsNull();
 }

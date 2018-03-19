@@ -58,7 +58,9 @@ public class ShiroConfiguration {
         filterChainDefinitionMap.put("/login", "anon");
         filterChainDefinitionMap.put("/druid/**", "anon");
         filterChainDefinitionMap.put("/remote/**", "anon");
+        filterChainDefinitionMap.put("/rest/employees/create/qrcode/all", "anon");
         filterChainDefinitionMap.put("/**", "user");
+
         factoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return factoryBean;
     }

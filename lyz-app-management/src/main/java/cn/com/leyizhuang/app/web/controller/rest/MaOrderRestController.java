@@ -992,7 +992,6 @@ public class MaOrderRestController extends BaseRestController {
             //**************** 2、持久化订单相关实体信息 ****************
             maOrderService.createMaOrderBusiness(0, sellerId, orderBillingDetails, orderBaseInfo, orderGoodsInfoList, paymentDetails, null, orderLogisticsInfo, user.getUid(), rechargeReceiptInfoList, rechargeOrderList);
 
-
             //将该订单入拆单消息队列
             maSinkSender.sendRechargeReceipt(orderBaseInfo.getOrderNumber());
 

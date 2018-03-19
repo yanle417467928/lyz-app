@@ -359,4 +359,9 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
         FROM emp_employee
         WHERE delivery_clerk_no = #{driver}
     </select>
+
+    <select id="findQrcodeIsNull" resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee">
+        SELECT  * FROM emp_employee where qr_code is NULL or qr_code = ""
+
+    </select>
 </mapper>

@@ -62,7 +62,7 @@ public class StatisticsSellDetailsContrller {
      * @return
      */
     @PostMapping(value = "/rank", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> statisticsSellDetaisRank(Long sellerId, String flag) {
+    public ResultDTO<Object> statisticsSellDetaisRank(Long sellerId, String flag,String rankType) {
         logger.info("获取销量排名，入参 sellerId:{} flag:{}", sellerId, flag);
 
         ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "无数据", "");
@@ -91,9 +91,13 @@ public class StatisticsSellDetailsContrller {
         reponseList.add(rankReponse2);
         reponseList.add(rankReponse3);
 
-        if (flag.equals("FGS")) {
+        if (flag.equals("FGS") && rankType.equals("TS")) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", reponseList);
-        } else if (flag.equals("JT")) {
+        } else if (flag.equals("FGS")  && rankType.equals("HYS")) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", reponseList);
+        }else if (flag.equals("JT")  && rankType.equals("TS")) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", reponseList);
+        }else if (flag.equals("JT") && rankType.equals("HYS")) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", reponseList);
         } else {
 

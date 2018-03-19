@@ -84,4 +84,6 @@ public interface AppEmployeeDAO {
     SalesConsult findSellerByCustomerId(Long userId);
 
     AppEmployee findDeliveryByClerkNo(String driver);
+
+    List<AppEmployee> findQrcodeIsNull();
 }

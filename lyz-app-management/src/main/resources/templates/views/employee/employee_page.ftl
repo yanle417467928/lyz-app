@@ -253,7 +253,8 @@
                 title: '上传二维码',
                 align: 'center',
                 formatter: function (value, row, index) {
-                        return '<buttun class="btn-sm btn-success" onclick="$qrcode.open(' + value + ')">上传二维码</buttun>';
+                        return '<buttun class="btn-sm btn-success" onclick="$qrcode.open(' + value + ')">上传二维码</buttun>' +
+                                '<buttun class="btn-sm btn-success" onclick="$qrcode.create(' + value + ')">生成二维码</buttun>';
                 }
             },
         ]);
@@ -645,8 +646,32 @@
             $("#empId").val("");
             $("#coverImageBox").html("");
             $("#coverImg").val("");
+        },
+        create: function (id) {
+            $.ajax({
+                url: '/rest/employees/create/qrcode?empId=' + id,
+                method: 'POST',
+                error: function () {
+                    clearTimeout($global.timer);
+                    $loading.close();
+                    $global.timer = null;
+                    $notify.danger('网络异常，请稍后重试或联系管理员');
+                },
+                success: function (result) {
+                    clearTimeout($global.timer);
+                    if (result.code == 0){
+                        $notify.success("生成成功！")
+                        $("#qrcodeModal").modal('hide');
+                        $("#dataGrid").bootstrapTable('destroy');
+                        initDateGird('/rest/employees/page/grid');
+                    }else {
+                        $notify.warning(result.message);
+                    }
+                }
+            });
         }
     }
+
 
     function uploadSuccess(result) {
         if (result.code == 0){

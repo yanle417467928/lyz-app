@@ -1,10 +1,15 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
+import cn.com.leyizhuang.app.core.utils.oss.exception.ImageClientException;
+import cn.com.leyizhuang.app.core.utils.oss.utils.ImageClientUtils;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeType;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaEmployeeResponse;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
 import cn.com.leyizhuang.app.foundation.service.MaEmployeeService;
+import cn.com.leyizhuang.app.foundation.service.QrcodeProduceService;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideVO;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeVO;
@@ -12,12 +17,16 @@ import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.apache.shiro.authc.AuthenticationToken;
+import com.google.zxing.WriterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.URL;
 import java.util.List;
 
 @RestController
@@ -28,8 +37,17 @@ public class MaEmployeeRestController extends BaseRestController {
 
     private final Logger logger = LoggerFactory.getLogger(MaEmployeeRestController.class);
 
+    @Value("${deploy.lyz.qrcodeRegister}")
+    private String qrcodeRegisterUrl;
+
     @Autowired
     private MaEmployeeService maEmployeeService;
+
+    @Autowired
+    private AppEmployeeService appEmployeeService;
+
+    @Autowired
+    private QrcodeProduceService qrcodeProduceService;
 
     /**
      * 显示所有员工信息
@@ -439,7 +457,7 @@ public class MaEmployeeRestController extends BaseRestController {
      * @return
      */
     @GetMapping(value = "/select/seller/{sellerQueryConditions}")
-    public GridDataVO<MaEmployeeResponse> selectSellerBySellerNameOrSellerPhone(Integer offset, Integer size, String keywords,@PathVariable(value = "sellerQueryConditions") String sellerQueryConditions) {
+    public GridDataVO<MaEmployeeResponse> selectSellerBySellerNameOrSellerPhone(Integer offset, Integer size, String keywords, @PathVariable(value = "sellerQueryConditions") String sellerQueryConditions) {
         logger.info("selectSellerBySellerNameOrSellerPhone 后台购买产品券条件查询导购,入参 offset:{},size:{},keywords:{},sellerQueryConditions:{}", offset, size, keywords, sellerQueryConditions);
         try {
             Long cityId = null;
@@ -447,7 +465,7 @@ public class MaEmployeeRestController extends BaseRestController {
             size = getSize(size);
             Integer page = getPage(offset, size);
             PageHelper.startPage(page, size);
-            List<MaEmployeeResponse> employeeDOList = this.maEmployeeService.findEmployeeByCityIdAndStoreIdAndSellerNameAndSellerPhone(sellerQueryConditions,cityId, storeId);
+            List<MaEmployeeResponse> employeeDOList = this.maEmployeeService.findEmployeeByCityIdAndStoreIdAndSellerNameAndSellerPhone(sellerQueryConditions, cityId, storeId);
             PageInfo<MaEmployeeResponse> maEmployeeDOPageInfo = new PageInfo<>(employeeDOList);
             List<MaEmployeeResponse> EmployeeDOList = maEmployeeDOPageInfo.getList();
             logger.warn("selectSellerBySellerNameOrSellerPhone ,后台购买产品券条件查询导购成功", EmployeeDOList.size());
@@ -462,23 +480,146 @@ public class MaEmployeeRestController extends BaseRestController {
 
     /**
      * 更新导购二维码
+     *
      * @param qrcodeUrl
      * @return
      */
     @PutMapping("/update/qrcode")
-    public ResultDTO updateQrcode(String qrcodeUrl,Long empId){
-        if (qrcodeUrl == null || empId == null){
-            return  new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败，数据有误", null);
+    public ResultDTO updateQrcode(String qrcodeUrl, Long empId) {
+        if (qrcodeUrl == null || empId == null) {
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败，数据有误", null);
         }
 
-        try{
-            maEmployeeService.updateQrcode(qrcodeUrl,empId);
-        }catch (Exception e){
+        try {
+            maEmployeeService.updateQrcode(qrcodeUrl, empId);
+        } catch (Exception e) {
             logger.info("updateQrcode 更新导购二维码失败");
-            return  new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败,发送异常", null);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败,发送异常", null);
         }
 
 
         return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "保存成功", null);
     }
+
+    /**
+     * 为导购生成二维码
+     *
+     * @param empId
+     * @return
+     */
+    @PostMapping("/create/qrcode")
+    public ResultDTO createQrcode(Long empId) {
+        if (empId == null) {
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "失败，数据有误", null);
+        }
+
+        AppEmployee employeeDetailVO = appEmployeeService.findById(empId);
+        String photo = employeeDetailVO.getPicUrl();
+        String registerUrl = qrcodeRegisterUrl+"/qrcode/register/" + empId;
+
+
+        try {
+            File qrcodeFile = null;
+            File photoFile = null;
+            if (photo == null || photo.equals("") || !photo.contains("http://")){
+                qrcodeFile = qrcodeProduceService.createQrcode(registerUrl);
+            }else{
+                URL url = new URL(photo);
+                photoFile = qrcodeProduceService.urlToFile(url);
+                qrcodeFile = qrcodeProduceService.createQrcode(registerUrl,photoFile);
+
+                if (photoFile.exists()){
+                    photoFile.delete();
+                }
+            }
+
+            // 上传二维码
+            String picUrl = null;
+            if (qrcodeFile.exists()) {
+
+                InputStream stream = new FileInputStream(qrcodeFile);
+                try {
+                    picUrl = ImageClientUtils.getInstance().uploadImage(stream,qrcodeFile.length(),qrcodeFile.getName(),"seller/qrcode/");
+                } catch (ImageClientException e) {
+                    e.printStackTrace();
+                    return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,
+                            "二维码上传失败", null);
+                }finally {
+                    stream.close();
+                }
+
+                String url = ImageClientUtils.getInstance().getAbsProjectImagePath(picUrl);
+                // 保存二维码url信息
+                employeeDetailVO.setQrCode(url);
+                appEmployeeService.update(employeeDetailVO);
+
+                //删除文件
+                if (qrcodeFile.exists()){
+                    qrcodeFile.delete();
+                }
+            } else {
+                //删除文件
+                if (qrcodeFile.exists()){
+                    qrcodeFile.delete();
+                }
+                return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,
+                        "二维码上传失败", null);
+
+            }
+            /*FileUploadOSSUtils.uploadProfilePhoto(file, "profile/photo/");*/
+            if (null != picUrl || "".equals(picUrl)) {
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, picUrl);
+            } else {
+                return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,
+                        "图片上传失败", null);
+            }
+
+
+        } catch (WriterException e) {
+            e.printStackTrace();
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "生成失败，发送异常", null);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "生成失败，发送异常", null);
+        }
+    }
+
+    /**
+     * 为所有无二维码导购生成二维码
+     * @return
+     */
+    @GetMapping("/create/qrcode/all")
+    public ResultDTO createQrcodeAll(HttpServletResponse response) {
+        ResultDTO resultDTO = null;
+        // 返回二维码为空的导购
+        List<AppEmployee> appEmployeeList = appEmployeeService.findQrcodeIsNull();
+        try {
+
+
+
+            PrintWriter out = response.getWriter();
+
+            out.println("开始生成所有无二维码导购二维码！》》》》》》》》》》》》");
+            for (AppEmployee appEmployee : appEmployeeList){
+
+                resultDTO = this.createQrcode(appEmployee.getEmpId());
+                if (resultDTO.getCode().equals(0)){
+                    out.println(appEmployee.getName()+"：二维码生成成功！");
+                }else{
+                    out.println(appEmployee.getName()+"：二维码生成 失败失败！！！");
+                }
+                out.flush();
+            }
+            out.println("生成完毕 共 ："+appEmployeeList.size()+"个");
+
+            out.flush();
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        return resultDTO;
+    }
+
 }
