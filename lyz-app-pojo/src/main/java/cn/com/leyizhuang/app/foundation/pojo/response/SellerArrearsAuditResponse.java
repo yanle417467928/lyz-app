@@ -32,6 +32,16 @@ public class SellerArrearsAuditResponse {
     private Double arrearsMoney;
     //收款方式
     private String paymentMethod;
+
+    /**
+     * 代收金额
+     */
+    private Double agencyMoney;
+    /**
+     * 实收金额
+     */
+    private Double realMoney;
+
     //状态
     private String status;
     public void setStatus(ArrearsAuditStatus arrearsAuditStatus) {

@@ -53,7 +53,8 @@
         SELECT oa.id, oa.ord_no orderNumber, oa.customer_name customerName, oa.customer_phone customerPhone,
         (oa.order_money - oa.real_money) arrearsMoney, oa.create_time createTime,
         oa.payment_method paymentMethod, oa.status, oa.order_money orderMoney,
-        e.name deliveryName, e.mobile deliveryPhone
+        e.name deliveryName, e.mobile deliveryPhone,oa.agency_money agencyMoney,
+        oa.real_money realMoney
         FROM ord_arrears_audit oa
         LEFT JOIN emp_employee e ON e.emp_id = oa.user_id
         WHERE oa.seller_id = #{sellerId}

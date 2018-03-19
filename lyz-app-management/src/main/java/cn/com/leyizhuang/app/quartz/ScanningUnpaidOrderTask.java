@@ -9,6 +9,8 @@ import cn.com.leyizhuang.app.foundation.service.ReturnOrderService;
 import cn.com.leyizhuang.app.remote.queue.MaSinkSender;
 import org.quartz.*;
 import org.quartz.Calendar;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -22,14 +24,11 @@ import java.util.*;
 @Component
 public class ScanningUnpaidOrderTask implements Job {
 
-    @Resource
-    private MaSinkSender maSinkSender;
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         System.out.println(new Date() + "：开始扫描待付款订单");
         MaOrderService maOrderService = (MaOrderService) ApplicationContextUtil.getBean("maOrderService");
-        ReturnOrderService returnOrderService = (ReturnOrderService) ApplicationContextUtil.getBean("returnOrderService");
 
 
 
@@ -44,13 +43,9 @@ public class ScanningUnpaidOrderTask implements Job {
         if (null != orderBaseInfoList && orderBaseInfoList.size() > 0) {
             for (OrderBaseInfo orderBaseInfo : orderBaseInfoList) {
                 if (date.after(orderBaseInfo.getEffectiveEndTime())) {
-                    String returnNumber = maOrderService.scanningUnpaidOrder(orderBaseInfo);
-
-                    ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(returnNumber);
-                    if (null != returnOrderBaseInfo){
-                        //发送退单拆单消息到拆单消息队列
-                        maSinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
-                    }
+                    System.out.println(new Date() + "：开始处理超时待付款订单： "+orderBaseInfo.getOrderNumber());
+                    maOrderService.scanningUnpaidOrder(orderBaseInfo);
+                    System.out.println(new Date() + "：处理超时待付款订单完毕： "+orderBaseInfo.getOrderNumber());
                 } else {
                     System.out.println(new Date() + "：未查询到待付款超时订单，订单号：");
                 }
