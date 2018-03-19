@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
+import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
 import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
@@ -437,6 +438,61 @@ public class MaStoreRestController extends BaseRestController {
         } catch (Exception e) {
             e.printStackTrace();
             logger.warn("findStoresListByStoreId EXCEPTION,发生未知错误，后台查询门店列表(下拉框)失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
+    /**
+     * @title   后台查询装饰公司列表(下拉框)
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/3/16
+     */
+    @GetMapping(value = "/findZSStoresListByStoreId")
+    public List<SimpleStoreParam> findZSStoresListByStoreId() {
+        logger.info("findZSStoresListByStoreId 后台查询装饰公司列表(下拉框)");
+        try {
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            List<StoreType> storeTypes = new ArrayList<>();
+            storeTypes.add(StoreType.ZS);
+            List<SimpleStoreParam> storesList = this.maStoreService.findStoresListByStoreIdAndStoreType(storeIds, storeTypes);
+            logger.info("findZSStoresListByStoreId ,后台查询装饰公司列表(下拉框)成功", storesList.size());
+            return storesList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("findZSStoresListByStoreId EXCEPTION,发生未知错误，后台查询装饰公司列表(下拉框)失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
+    /**
+     * @title   后台查询非装饰公司列表(下拉框)
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/3/16
+     */
+    @GetMapping(value = "/findStoresListByStoreIdAndStoreType")
+    public List<SimpleStoreParam> findStoresListByStoreIdAndStoreType() {
+        logger.info("findStoresListByStoreIdAndStoreType 后台查询非装饰公司列表(下拉框)");
+        try {
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            List<StoreType> storeTypes = StoreType.getNotZsType();
+            List<SimpleStoreParam> storesList = this.maStoreService.findStoresListByStoreIdAndStoreType(storeIds, storeTypes);
+            logger.info("findStoresListByStoreIdAndStoreType ,后台查询非装饰公司列表(下拉框)成功", storesList.size());
+            return storesList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("findStoresListByStoreIdAndStoreType EXCEPTION,发生未知错误，后台查询非装饰公司列表(下拉框)失败");
             logger.warn("{}", e);
             return null;
         }

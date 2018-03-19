@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.core.constant;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -36,5 +38,14 @@ public enum StoreType {
             }
         }
         return null;
+    }
+
+    public static List<StoreType> getNotZsType(){
+        List<StoreType> storeTypes = new ArrayList<>();
+        storeTypes.add(StoreType.ZY);
+        storeTypes.add(StoreType.JM);
+        storeTypes.add(StoreType.FX);
+        storeTypes.add(StoreType.FXCK);
+        return storeTypes;
     }
 }
