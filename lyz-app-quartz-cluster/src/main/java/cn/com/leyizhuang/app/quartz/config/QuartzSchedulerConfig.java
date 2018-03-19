@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.quartz.config;
 
+import cn.com.leyizhuang.app.foundation.service.MaClearTempCreditService;
+import cn.com.leyizhuang.app.quartz.job.ClearTempCreditScheduleTask;
 import cn.com.leyizhuang.app.quartz.job.Job1;
 import cn.com.leyizhuang.app.quartz.job.Job2;
 import org.apache.tomcat.jdbc.pool.DataSource;
@@ -37,8 +39,10 @@ import java.util.Properties;
 public class QuartzSchedulerConfig {
 
     @Resource
-
     private DataSource dataSource;
+    @Resource
+    private MaClearTempCreditService maClearTempCreditService;
+
 
     private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(QuartzSchedulerConfig.class);
     private static final String QUARTZ_PROPERTIES_NAME = "/quartz.properties";
@@ -97,6 +101,24 @@ public class QuartzSchedulerConfig {
     public JobDetailFactoryBean job2Detail() {
         JobDetailFactoryBean jobDetailFactoryBean = new JobDetailFactoryBean();
         jobDetailFactoryBean.setJobClass(Job2.class);
+        jobDetailFactoryBean.setDurability(true);
+        return jobDetailFactoryBean;
+    }
+
+
+    @Bean(name = "clearTempCreditTrigger")
+    public CronTriggerFactoryBean clearTempCreditTrigger(@Qualifier("clearTempCreditDetail") JobDetail jobDetail) {
+        CronTriggerFactoryBean cronTriggerFactoryBean = new CronTriggerFactoryBean();
+        cronTriggerFactoryBean.setJobDetail(jobDetail);
+        String clearTempCreditCron =maClearTempCreditService.getCron(1L);
+        cronTriggerFactoryBean.setCronExpression(clearTempCreditCron);
+        return cronTriggerFactoryBean;
+    }
+
+    @Bean(name = "clearTempCreditDetail")
+    public JobDetailFactoryBean clearTempCreditDetail() {
+        JobDetailFactoryBean jobDetailFactoryBean = new JobDetailFactoryBean();
+        jobDetailFactoryBean.setJobClass(ClearTempCreditScheduleTask.class);
         jobDetailFactoryBean.setDurability(true);
         return jobDetailFactoryBean;
     }

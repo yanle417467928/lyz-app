@@ -42,7 +42,7 @@ public class HqAppEmployeeController {
     private CityService cityService;
 
 
-    @PostMapping(value = "sync")
+    @PostMapping(value = "/sync")
     public ResultDTO<String> employeeSync(@RequestBody HqAppEmployeeDTO employeeDTO) {
         logger.warn("employeeSync CALLED,同步新增员工信息，入参 employeeDTO:{}", employeeDTO);
         if (null != employeeDTO) {

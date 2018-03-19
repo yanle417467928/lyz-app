@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
 import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
@@ -111,5 +112,9 @@ public interface MaStoreDAO {
     List<SimpleStoreParam> findStoresListByStoreId(@Param("list") List<Long> storeIds);
 
     AppStore findAppStoreByStoreId(Long storeId);
+
+    List<SimpleStoreParam> findStoresListByStoreIdAndStoreType(@Param("list") List<Long> storeIds, @Param("storeTypes")List<StoreType> storeTypes);
+
+    Long findCityIdByStoreId(Long storeId);
 
 }

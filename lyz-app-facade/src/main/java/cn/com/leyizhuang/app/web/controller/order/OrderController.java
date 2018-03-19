@@ -1555,13 +1555,7 @@ public class OrderController {
                 return resultDTO;
             }
             if (date.after(orderBaseInfo.getEffectiveEndTime())) {
-                String returnNumber = maOrderService.scanningUnpaidOrder(orderBaseInfo);
-
-                ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(returnNumber);
-                if (null != returnOrderBaseInfo){
-                    //发送退单拆单消息到拆单消息队列
-                    sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
-                }
+                maOrderService.scanningUnpaidOrder(orderBaseInfo);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此订单已失效，请重新下单！", null);
                 logger.info("verifyTimeout OUT,此订单已失效，请重新下单！，出参 resultDTO:{}", resultDTO);
                 return resultDTO;

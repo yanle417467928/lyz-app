@@ -226,6 +226,15 @@ public class OrderUtils {
     }
 
 
+    /**
+     * @title   生成拍照单号
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/3/19
+     */
     public static String generatePhotoOrderNumber(Long cityId) {
         if (null != cityId) {
             City city = cityService.findById(cityId);
@@ -253,5 +262,37 @@ public class OrderUtils {
     public static void main(String[] args) {
         String orderNumber = OrderUtils.generateOrderNumber(1L);
         System.out.println(orderNumber);
+    }
+
+    /**
+     * @title   生成装饰公司信用金账单单号
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/3/19
+     */
+    public static String generateCreditBillingNo(Long cityId) {
+        if (null != cityId) {
+            City city = cityService.findById(cityId);
+            StringBuilder orderNumberTemp = new StringBuilder();
+            if (null != city && null != city.getBriefSpell()) {
+                String orderNumber = city.getBriefSpell();
+                orderNumberTemp.append(orderNumber);
+            } else {
+                orderNumberTemp.append("MR");
+            }
+            orderNumberTemp.append("_DC");
+            Calendar calendar = Calendar.getInstance();
+            Date date = calendar.getTime();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+            String timeStamp = sdf.format(date);
+            orderNumberTemp.append(timeStamp);
+            Random random = new Random();
+            orderNumberTemp.append(random.nextInt(900) + 100);
+            return orderNumberTemp.toString();
+        }
+        return null;
     }
 }

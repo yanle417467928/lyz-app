@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.foundation.dto.StorePreDepositDTO;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
@@ -119,4 +120,8 @@ public interface MaStoreService {
     AppStore findAppStoreByStoreId(Long storeId);
 
     StorePreDeposit findByStoreId(Long storeId);
+
+    List<SimpleStoreParam> findStoresListByStoreIdAndStoreType(List<Long> storeIds, List<StoreType> storeTypes);
+
+    Long findCityIdByStoreId(Long storeId);
 }
