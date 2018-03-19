@@ -18,8 +18,7 @@ public class testSellDetails {
 
     @Test
     public void testInsert(){
-        String orderNo = "XN_123321";
+        statisticsSellDetailsService.addOrderSellDetails("CD_XN20180319095037659959");
 
-        statisticsSellDetailsService.recordeErrorLog(orderNo);
     }
 }

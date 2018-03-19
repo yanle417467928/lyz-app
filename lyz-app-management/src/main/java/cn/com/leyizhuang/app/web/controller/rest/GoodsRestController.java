@@ -439,7 +439,7 @@ public class GoodsRestController extends BaseRestController {
             orderGoodsSimpleResponseList.add(orderGoodsSimpleResponse);
         }
         //查询所有符合条件的促销
-        PromotionsListResponse promotionsListResponse = appActService.countAct(sellerId, AppIdentityType.SELLER, orderGoodsSimpleResponseList);
+        PromotionsListResponse promotionsListResponse = appActService.countAct(sellerId, AppIdentityType.SELLER, orderGoodsSimpleResponseList,customerId);
         if (promotionsListResponse == null) {
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"无促销活动可参加！",null);
         }

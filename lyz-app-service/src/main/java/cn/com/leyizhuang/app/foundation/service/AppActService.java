@@ -46,13 +46,13 @@ public interface AppActService {
     int insertBatch();
 
     /*获取全部促销结果*/
-    PromotionsListResponse countAct(Long userId , AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList) throws UnsupportedEncodingException;
+    PromotionsListResponse countAct(Long userId , AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList,Long cusId) throws UnsupportedEncodingException;
 
     /*获取赠品促销结果*/
-    List<PromotionsGiftListResponse> countGift(Long userId , AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList) throws UnsupportedEncodingException;
+    List<PromotionsGiftListResponse> countGift(Long userId , AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList,Long cusId) throws UnsupportedEncodingException;
 
     /*获取优惠结果*/
-    List<PromotionDiscountListResponse> countDiscount(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList) throws UnsupportedEncodingException;
+    List<PromotionDiscountListResponse> countDiscount(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList,Long cusId) throws UnsupportedEncodingException;
 
     /*检查促销是否过期*/
     Boolean checkActOutTime(List<Long> actIdList);

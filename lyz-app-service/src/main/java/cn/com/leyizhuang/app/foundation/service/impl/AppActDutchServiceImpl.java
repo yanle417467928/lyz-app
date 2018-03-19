@@ -1,9 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
-import cn.com.leyizhuang.app.core.constant.ActConditionType;
-import cn.com.leyizhuang.app.core.constant.AppCustomerType;
-import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
-import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.exception.DutchException;
 import cn.com.leyizhuang.app.foundation.dao.ActBaseDAO;
 import cn.com.leyizhuang.app.foundation.dao.ActGoodsMappingDAO;
@@ -13,14 +10,12 @@ import cn.com.leyizhuang.app.foundation.pojo.activity.ActGoodsMappingDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
-import cn.com.leyizhuang.app.foundation.service.AppActDutchService;
-import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
-import cn.com.leyizhuang.app.foundation.service.AppOrderService;
-import cn.com.leyizhuang.app.foundation.service.GoodsService;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import cn.com.leyizhuang.common.util.CountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -53,6 +48,9 @@ public class AppActDutchServiceImpl implements AppActDutchService {
     @Resource
     private OrderDAO orderDAO;
 
+    @Autowired
+    private StatisticsSellDetailsService statisticsSellDetailsService;
+
     /**
      * 新增明细 分摊金额
      *
@@ -62,7 +60,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
      * @param orderGoodsInfoList
      * @return
      */
-    public List<OrderGoodsInfo> addGoodsDetailsAndDutch(Long userId, AppIdentityType identityType, List<PromotionSimpleInfo> promotionSimpleInfoList, List<OrderGoodsInfo> orderGoodsInfoList) throws UnsupportedEncodingException {
+    public List<OrderGoodsInfo> addGoodsDetailsAndDutch(Long userId, AppIdentityType identityType, List<PromotionSimpleInfo> promotionSimpleInfoList, List<OrderGoodsInfo> orderGoodsInfoList,Long cusId) throws UnsupportedEncodingException {
 
         // 最终商品明细集合
         List<OrderGoodsInfo> finallyOrderGoodsInfo = new ArrayList<>();
@@ -99,8 +97,19 @@ public class AppActDutchServiceImpl implements AppActDutchService {
         // 得到促销基础类集合
         List<ActBaseDO> actBaseList = actBaseDAO.queryByIdList(actIds);
 
+        List<ActBaseDO> actBaseListSort = new ArrayList<>();
+        /** 排序将专供促销放到前面 优先分摊 否则会分摊出错**/
+        for (int i = actBaseList.size()-1 ; i > 0  ; i--){
+            ActBaseDO act = actBaseList.get(i);
+            if (act.getBaseType().equals(ActBaseType.ACCUMULATE) || act.getBaseType().equals(ActBaseType.ZGFRIST)){
+                actBaseListSort.add(act);
+                actBaseList.remove(i);
+            }
+        }
+        actBaseListSort.addAll(actBaseList);
+
         // 算满数量
-        for (ActBaseDO act : actBaseList) {
+        for (ActBaseDO act : actBaseListSort) {
             // 前端返回的促销简单信息
             PromotionSimpleInfo promotionSimpleInfo = promotionMap.get(act.getId());
             // 参与此促销的次数
@@ -108,7 +117,179 @@ public class AppActDutchServiceImpl implements AppActDutchService {
             // 创建一个新的明细集合
             List<OrderGoodsInfo> newOrderGoodsInfoList = new ArrayList<>();
 
-            if (act.getConditionType().equals(ActConditionType.FQTY)) {
+
+            /** 分摊专供促销 优先分摊专供促销**/
+            if (act.getBaseType().equals(ActBaseType.ZGFRIST) && act.getConditionType().equals(ActConditionType.FQTY)) {
+                // 首单促销
+
+                // 本品总价
+                Double goodsTotalPrice = 0.00;
+                // 赠品总价
+                Double giftTotalPrice = 0.00;
+
+                // 促销条件数量
+                Integer fullQty = act.getFullNumber();
+                // 赠送数量
+                Integer sentQty = act.getGiftChooseNumber();
+
+                // 赠品 一般赠品只有一种
+                List<GoodsIdQtyParam> giftList = promotionSimpleInfo.getPresentInfo();
+
+                if (giftList != null && giftList.size() > 0){
+                    Set<Long> giftIdsList = new HashSet<>();
+                    for (GoodsIdQtyParam param : giftList){
+                        giftIdsList.add(param.getId());
+                    }
+
+                    // 根据用户身份 返回有价格信息的赠品集合
+                    List<OrderGoodsVO> giftGoodsVOList = goodsService.findOrderGoodsVOListByUserIdAndIdentityTypeAndGoodsIds(
+                            userId, identityType.getValue(), giftIdsList);
+
+                    // 设置数量 新增赠品明细
+                    for (OrderGoodsVO goods : giftGoodsVOList) {
+                        for (GoodsIdQtyParam param : giftList) {
+                            if (goods.getGid().equals(param.getId())) {
+                                goods.setQty(param.getQty());
+                                break;
+                            }
+                        }
+
+                        // 首先生成一条赠品明细行
+                        OrderGoodsInfo giftDetailLine = this.createOneLine(orderGoodsInfoList.get(0), goods, act, AppGoodsLineType.PRESENT);
+                        newOrderGoodsInfoList.add(giftDetailLine);
+                        //orderService.saveOrderGoodsInfo(giftDetailLine);
+
+                        giftTotalPrice = CountUtil.add(this.returnCountPrice(giftDetailLine, identityType, customerType), giftTotalPrice);
+
+                        //扣除本品
+                        OrderGoodsInfo orderGoodsInfo = orderGoodsInfoMap.get(goods.getSku());
+
+                        if (orderGoodsInfo == null){
+                            //  抛异常
+                            throw new DutchException("分摊异常，找不到本品");
+                        }else {
+                            Integer remainQty = orderGoodsInfo.getOrderQuantity() - fullQty;
+
+                            // 克隆一个本品对象
+                            OrderGoodsInfo newGoodsInfo = orderGoodsInfo.clone();
+                            newGoodsInfo.setId(null);
+                            newGoodsInfo.setOrderQuantity(fullQty);
+                            newGoodsInfo.setReturnableQuantity(fullQty);
+                            newGoodsInfo.setPromotionId(act.getId().toString());
+                            newOrderGoodsInfoList.add(newGoodsInfo);
+
+                            goodsTotalPrice = CountUtil.add(CountUtil.mul(this.returnCountPrice(orderGoodsInfo, identityType, customerType),fullQty),goodsTotalPrice);
+
+                            if (remainQty == 0){
+                                orderGoodsInfoMap.remove(goods.getSku());
+                            }else if (remainQty > 0){
+                                orderGoodsInfo.setOrderQuantity(remainQty);
+                                orderGoodsInfo.setReturnableQuantity(remainQty);
+                                orderGoodsInfoMap.put(goods.getSku(),orderGoodsInfo);
+                            }
+                        }
+
+
+                    }
+
+                    //计算分摊
+                    finallyOrderGoodsInfo.addAll(this.countDutchPrice(newOrderGoodsInfoList, CountUtil.add(goodsTotalPrice, giftTotalPrice), CountUtil.sub(giftTotalPrice), identityType, customerType));
+
+                }
+
+
+
+            }
+
+            if (act.getBaseType().equals(ActBaseType.ACCUMULATE) && act.getConditionType().equals(ActConditionType.FQTY)) {
+                // 累计促销
+
+                // 本品总价
+                Double goodsTotalPrice = 0.00;
+                // 赠品总价
+                Double giftTotalPrice = 0.00;
+
+                // 促销条件数量
+                Integer fullQty = act.getFullNumber();
+                // 赠送数量
+                Integer sentQty = act.getGiftChooseNumber();
+
+                // 赠品 一般赠品只有一种
+                List<GoodsIdQtyParam> giftList = promotionSimpleInfo.getPresentInfo();
+
+                if (giftList != null && giftList.size() > 0){
+                    Set<Long> giftIdsList = new HashSet<>();
+                    for (GoodsIdQtyParam param : giftList){
+                        giftIdsList.add(param.getId());
+                    }
+
+                    // 根据用户身份 返回有价格信息的赠品集合
+                    List<OrderGoodsVO> giftGoodsVOList = goodsService.findOrderGoodsVOListByUserIdAndIdentityTypeAndGoodsIds(
+                            userId, identityType.getValue(), giftIdsList);
+
+                    // 设置数量 新增赠品明细
+                    for (OrderGoodsVO goods : giftGoodsVOList) {
+                        for (GoodsIdQtyParam param : giftList) {
+                            if (goods.getGid().equals(param.getId())) {
+                                goods.setQty(param.getQty());
+                                break;
+                            }
+                        }
+
+                        // 首先生成一条赠品明细行
+                        OrderGoodsInfo giftDetailLine = this.createOneLine(orderGoodsInfoList.get(0), goods, act, AppGoodsLineType.PRESENT);
+                        newOrderGoodsInfoList.add(giftDetailLine);
+                        //orderService.saveOrderGoodsInfo(giftDetailLine);
+
+                        giftTotalPrice = CountUtil.add(this.returnCountPrice(giftDetailLine, identityType, customerType), giftTotalPrice);
+
+                        //扣除本品
+                        OrderGoodsInfo orderGoodsInfo = orderGoodsInfoMap.get(goods.getSku());
+
+                        if (orderGoodsInfo == null){
+                            //  抛异常
+                            throw new DutchException("分摊异常，找不到本品");
+                        }else {
+                            // 得到专供产品的桶数
+                            Integer saledQty = statisticsSellDetailsService.getZgTsBycusIdAndsku(cusId,orderGoodsInfo.getSku());
+
+                            Integer sumQty = saledQty + orderGoodsInfo.getOrderQuantity();
+                            // 向下取整 得出参与次数
+                            int zgEnjoyTimes = (int) Math.floor(sumQty / fullQty);
+
+                            if (zgEnjoyTimes > 0){
+                                Integer remainQty = sumQty % fullQty;
+
+                                // 克隆一个本品对象
+                                OrderGoodsInfo newGoodsInfo = orderGoodsInfo.clone();
+                                newGoodsInfo.setId(null);
+                                newGoodsInfo.setOrderQuantity(orderGoodsInfo.getOrderQuantity()-remainQty);
+                                newGoodsInfo.setReturnableQuantity(orderGoodsInfo.getOrderQuantity()-remainQty);
+                                newGoodsInfo.setPromotionId(act.getId().toString());
+                                newOrderGoodsInfoList.add(newGoodsInfo);
+
+                                goodsTotalPrice = CountUtil.add(CountUtil.mul(this.returnCountPrice(orderGoodsInfo, identityType, customerType),orderGoodsInfo.getOrderQuantity()-remainQty),goodsTotalPrice);
+
+                                if (remainQty == 0){
+                                    orderGoodsInfoMap.remove(goods.getSku());
+                                }else if (remainQty > 0){
+                                    orderGoodsInfo.setOrderQuantity(remainQty);
+                                    orderGoodsInfo.setReturnableQuantity(remainQty);
+                                    orderGoodsInfoMap.put(goods.getSku(),orderGoodsInfo);
+                                }
+
+
+                            }
+                        }
+                    }
+
+                    //计算分摊
+                    finallyOrderGoodsInfo.addAll(this.countDutchPrice(newOrderGoodsInfoList, CountUtil.add(goodsTotalPrice, giftTotalPrice), CountUtil.sub(giftTotalPrice), identityType, customerType));
+
+                }
+            }
+
+            if (act.getBaseType().equals(ActBaseType.COMMON) && act.getConditionType().equals(ActConditionType.FQTY)) {
                 List<ActGoodsMappingDO> goodsMappingList = actGoodsMappingDAO.queryListByActId(act.getId());
 
                 List<GoodsIdQtyParam> goodsIdQtyParams = promotionSimpleInfo.getPresentInfo();
@@ -185,11 +366,15 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                                 OrderGoodsInfo goods = itEntry.getValue();
                                 Integer sellQty = goods.getOrderQuantity();
 
-                                if (sellQty > act.getFullNumber()){
+                                if (sellQty >= act.getFullNumber()){
                                     // 满足促销数量条件
 
                                     // 计算单品参与次数 向下取整
-                                    Integer singleEnjoyTimes = (int) Math.floor(Double.valueOf(sellQty)/Double.valueOf(act.getFullNumber()));;
+                                    Integer singleEnjoyTimes = (int) Math.floor(Double.valueOf(sellQty)/Double.valueOf(act.getFullNumber()));
+
+                                    if(singleEnjoyTimes >= enjoyTimes){
+                                        singleEnjoyTimes = enjoyTimes;
+                                    }
 
                                     // 消耗单品数量
                                     Integer singleQty = act.getFullNumber()*singleEnjoyTimes;
@@ -202,13 +387,13 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                                     newGoodsInfo.setPromotionId(act.getId().toString());
                                     newOrderGoodsInfoList.add(newGoodsInfo);
 
+                                    goodsTotalPrice = CountUtil.add(CountUtil.mul(this.returnCountPrice(goods, identityType, customerType) ,singleQty), goodsTotalPrice);
+
                                     OrderGoodsInfo oldGoodsInfo = orderGoodsInfoMap.get(goods.getSku());
                                     Integer oldNum = oldGoodsInfo.getOrderQuantity();
                                     oldGoodsInfo.setOrderQuantity(oldNum - singleQty);
                                     oldGoodsInfo.setReturnableQuantity(oldNum - singleQty);
                                     orderGoodsInfoMap.put(goods.getSku(), oldGoodsInfo);
-
-                                    goodsTotalPrice = CountUtil.add(CountUtil.mul(this.returnCountPrice(goods, identityType, customerType) ,singleQty), goodsTotalPrice);
 
                                     enjoyTimes = enjoyTimes - singleEnjoyTimes;
                                 }
@@ -367,7 +552,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
             // 创建一个新的明细集合
             List<OrderGoodsInfo> newOrderGoodsInfoList = new ArrayList<>();
 
-            if (act.getConditionType().equals(ActConditionType.FAMO)) {
+            if (act.getBaseType().equals(ActBaseType.COMMON) && act.getConditionType().equals(ActConditionType.FAMO)) {
                 List<String> skus = actGoodsMappingDAO.querySkusByActId(act.getId());
 
                 // 本品总价
@@ -668,6 +853,9 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                 }else{
                     // 最后一个 倒扣  (商品总价 - 所以折扣 - 已退款) / 数量
                     returnPrice = CountUtil.div(CountUtil.sub(totalPrice,totalCashCouponPrice,totalCashReturnPrice,promotionDiscont,totalReturnPrice),goodsInfo.getOrderQuantity());
+                    if (returnPrice > goodsInfo.getSettlementPrice()){
+                        returnPrice = goodsInfo.getSettlementPrice();
+                    }
                 }
 
                 // 如果推货价出现负数 则设置为0

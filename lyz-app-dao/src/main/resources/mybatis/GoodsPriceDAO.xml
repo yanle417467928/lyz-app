@@ -152,6 +152,7 @@
         g.goods_specification,
         g.cover_image_uri,
         g.goods_unit,
+        g.sku,
         gp.retail_price
         FROM
         cus_customer c

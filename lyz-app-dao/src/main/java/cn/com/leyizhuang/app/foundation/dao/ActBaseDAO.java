@@ -55,7 +55,11 @@ public interface ActBaseDAO{
      */
     List<ActBaseDO> queryListByActIdsAndEndTime(@Param("actIds") List<Long> actIds,@Param("now") LocalDateTime now);
 
-    List<ActBaseDO> queryListByActBaseType(@Param("baseType") ActBaseType type);
+    List<ActBaseDO> queryListByActBaseType(@Param("baseType") ActBaseType type,@Param("now") LocalDateTime now);
+
+    List<ActBaseDO> queryZgList(@Param("storeId") Long storeId,@Param("now") LocalDateTime now);
+
+    List<ActBaseDO> queryZgFirstList(@Param("storeId") Long storeId,@Param("now") LocalDateTime now);
 
     /**
      * 批量插入

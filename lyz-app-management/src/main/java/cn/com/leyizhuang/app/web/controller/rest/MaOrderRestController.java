@@ -983,7 +983,7 @@ public class MaOrderRestController extends BaseRestController {
 
             //********* 开始计算分摊 促销分摊可能产生新的行记录 所以优先分摊 ****************
             List<OrderGoodsInfo> orderGoodsInfoList;
-            orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(sellerId, AppIdentityType.getAppIdentityTypeByValue(0), giftList, support.getOrderGoodsInfoList());
+            orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(sellerId, AppIdentityType.getAppIdentityTypeByValue(0), giftList, support.getOrderGoodsInfoList(),customerId);
 
             //******** 分摊完毕 计算退货 单价 ***************************
             orderGoodsInfoList = dutchService.countReturnPrice(orderGoodsInfoList);

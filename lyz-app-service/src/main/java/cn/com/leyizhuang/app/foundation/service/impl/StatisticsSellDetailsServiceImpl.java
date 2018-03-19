@@ -1,28 +1,35 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.constant.ActBaseType;
+import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.SellDetailsDAO;
 import cn.com.leyizhuang.app.foundation.dao.SellZgDetailsDAO;
 import cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.SellDetailsErrorLogDO;
+import cn.com.leyizhuang.app.foundation.pojo.SellZgCusTimes;
 import cn.com.leyizhuang.app.foundation.pojo.SellZgDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.response.CustomerRankInfoResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
-import cn.com.leyizhuang.app.foundation.service.AppOrderService;
-import cn.com.leyizhuang.app.foundation.service.ReturnOrderService;
-import cn.com.leyizhuang.app.foundation.service.StatisticsSellDetailsService;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.io.UnsupportedEncodingException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -44,6 +51,12 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
 
     @Resource
     private ReturnOrderService returnOrderService;
+
+    @Resource
+    private AppCustomerService appCustomerService;
+
+    @Resource
+    private GoodsPriceService goodsPriceService;
 
     @Override
     public List<SellDetailsDO> statisticsCurrentDetails() {
@@ -75,6 +88,11 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
     public void addOrderSellDetails(String orderNumber){
         if (StringUtils.isNotBlank(orderNumber)){
            OrderBaseInfo orderBaseInfo = orderService.getOrderByOrderNumber(orderNumber);
+
+           /**打上标记 标识已经记录销量**/
+           orderBaseInfo.setIsRecordSales(true);
+           orderService.updateOrderBaseInfo(orderBaseInfo);
+
            List<OrderGoodsInfo> orderGoodsInfos = orderService.getOrderGoodsInfoByOrderNumber(orderNumber);
 
            if (orderBaseInfo != null && orderBaseInfo != null && orderGoodsInfos.size() > 0){
@@ -87,6 +105,7 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
                Integer year = localDateTime.getYear();
                Integer month = localDateTime.getMonthValue();
 
+               List<Long> goodsIds = new ArrayList<>();
                for (OrderGoodsInfo goodsInfo : orderGoodsInfos){
                    // 检查明细是否已经记录
                    Boolean isExit = sellDetailsDAO.isExitByNumberAndGoodsLineId(orderNumber,goodsInfo.getId());
@@ -108,12 +127,24 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
                        detailsDO.setNumber(orderBaseInfo.getOrderNumber());
                        detailsDO.setSku(goodsInfo.getSku());
                        detailsDO.setQuantity(goodsInfo.getOrderQuantity());
-                       detailsDO.setAmount(goodsInfo.getSettlementPrice());
+                       detailsDO.setAmount(goodsInfo.getReturnPrice());
                        detailsDO.setGoodsLineId(goodsInfo.getId());
+                       detailsDO.setOrderSubjectType(orderBaseInfo.getOrderSubjectType());
+                       detailsDO.setCreatorIdentityType(orderBaseInfo.getCreatorIdentityType());
+                       detailsDO.setCreatorId(orderBaseInfo.getCreatorId());
+                       detailsDO.setCreatorName(orderBaseInfo.getCreatorName());
+                       detailsDO.setSellDetalsFlag(0);
+                       detailsDO.setCompanyFlag(goodsInfo.getCompanyFlag());
+                       detailsDO.setGoodsLineType(goodsInfo.getGoodsLineType());
 
                        sellDetailsDAO.addOneDetail(detailsDO);
+
                    }
+                   goodsIds.add(goodsInfo.getGid());
                }
+
+               /*** 记录专供销量 ****/
+               this.recordZgSales(orderBaseInfo,goodsIds,orderGoodsInfos);
 
            }else{
                logger.info("订单："+orderNumber+"数据异常，生成销量明细失败！");
@@ -128,6 +159,10 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
     public void addReturnOrderSellDetails(String returnOrderNumber){
         if (StringUtils.isNotBlank(returnOrderNumber)){
             ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(returnOrderNumber);
+
+            returnOrderBaseInfo.setIsRecordSales(true);
+            returnOrderService.modifyReturnOrderBaseInfo(returnOrderBaseInfo);
+
             List<ReturnOrderGoodsInfo> returnOrderGoodsInfos = returnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnOrderNumber);
             // 订单信息
             OrderBaseInfo orderBaseInfo = orderService.getOrderByOrderNumber(returnOrderBaseInfo.getOrderNo());
@@ -164,8 +199,15 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
                         detailsDO.setNumber(returnOrderNumber);
                         detailsDO.setSku(goodsInfo.getSku());
                         detailsDO.setQuantity(goodsInfo.getReturnQty());
-                        detailsDO.setAmount(-goodsInfo.getSettlementPrice());
+                        detailsDO.setAmount(-goodsInfo.getReturnPrice());
                         detailsDO.setGoodsLineId(goodsInfo.getId());
+                        detailsDO.setOrderSubjectType(orderBaseInfo.getOrderSubjectType());
+                        detailsDO.setCreatorIdentityType(orderBaseInfo.getCreatorIdentityType());
+                        detailsDO.setCreatorId(orderBaseInfo.getCreatorId());
+                        detailsDO.setCreatorName(orderBaseInfo.getCreatorName());
+                        detailsDO.setSellDetalsFlag(1);
+                        detailsDO.setCompanyFlag(goodsInfo.getCompanyFlag());
+                        detailsDO.setGoodsLineType(goodsInfo.getGoodsLineType());
 
                         sellDetailsDAO.addOneDetail(detailsDO);
                     }
@@ -212,6 +254,8 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
         }
     }
 
+    /******************************** 专供销量 *********************************************/
+
     /**
      * 新增
      * @param detailsDOS
@@ -224,6 +268,83 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
         }
     }
 
+    private Boolean recordZgSales(OrderBaseInfo orderBaseInfo,List<Long> goodsIds,List<OrderGoodsInfo> orderGoodsInfoList){
+        Long cusId = orderBaseInfo.getCustomerId();
+        //判断会员身份
+        CustomerRankInfoResponse customerRankInfoResponse = appCustomerService.findCusRankinfoByCusId(cusId);
+        AppCustomer appCustomer = null;
+        try {
+            appCustomer = appCustomerService.findById(cusId);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            logger.info("计算专供促销，顾客id:"+cusId+"找不到顾客信息");
+        }
+
+        if (customerRankInfoResponse == null){
+            // 非专供会员 不能参与专供促销
+            return false;
+        }
+
+        // 根据用户购买产品id 返回专供产品
+        List<GiftListResponseGoods> goodsZGList = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserId(goodsIds,cusId, AppIdentityType.CUSTOMER);
+
+        if (goodsZGList == null || goodsZGList.size() == 0){
+            // 无专供产品
+            return false;
+        }
+
+        Date createDate = orderBaseInfo.getCreateTime();
+        //date 转 localDateTime
+        Instant instant = createDate.toInstant();
+        ZoneId zoneId = ZoneId.systemDefault();
+        LocalDateTime localDateTime = instant.atZone(zoneId).toLocalDateTime();
+
+        Integer year = localDateTime.getYear();
+        Integer month = localDateTime.getMonthValue();
+
+        for ( GiftListResponseGoods zgGoods : goodsZGList){
+            for (OrderGoodsInfo goodsInfo : orderGoodsInfoList){
+                if (zgGoods.getSku().equals(goodsInfo.getSku())){
+
+                    if (goodsInfo.getGoodsLineType().equals(AppGoodsLineType.PRESENT)){
+                        // 赠品则不记录销量
+                        continue;
+                    }
+
+                    SellZgDetailsDO detailsDO = new SellZgDetailsDO();
+
+                    detailsDO.setCompanyId(orderBaseInfo.getSobId());
+                    detailsDO.setYear(year);
+                    detailsDO.setMonth(month);
+                    detailsDO.setCreateTime(new Date());
+                    detailsDO.setCityId(orderBaseInfo.getCityId());
+                    detailsDO.setStoreId(orderBaseInfo.getStoreOrgId());
+                    detailsDO.setSellerId(orderBaseInfo.getSalesConsultId());
+                    detailsDO.setSellerName(orderBaseInfo.getSalesConsultName());
+                    detailsDO.setCustomerId(orderBaseInfo.getCustomerId());
+                    detailsDO.setCustomerPhone(orderBaseInfo.getCustomerPhone());
+                    detailsDO.setCustomerName(orderBaseInfo.getCustomerName());
+                    detailsDO.setNumber(orderBaseInfo.getOrderNumber());
+                    detailsDO.setGoodsId(goodsInfo.getGid());
+                    detailsDO.setSku(goodsInfo.getSku());
+                    detailsDO.setQuantity(goodsInfo.getOrderQuantity());
+                    detailsDO.setAmount(goodsInfo.getReturnPrice());
+                    detailsDO.setGoodsLineId(goodsInfo.getId());
+
+                    // 检查是否已经记录
+
+                    Boolean exitFlag = sellZgDetailsDAO.isExitByNumberAndGoodsLineId(orderBaseInfo.getOrderNumber(),goodsInfo.getId());
+                    if(!exitFlag){
+                        sellZgDetailsDAO.addOneDetail(detailsDO);
+                    }
+
+                }
+            }
+        }
+
+        return true;
+    }
+
     /**
      * 返回会员专供产品累计桶数
      * @return
@@ -231,15 +352,15 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
     public Integer getZgTsBycusIdAndsku(Long cusId,String sku){
         Integer totalQty = 0;
 
-        List<SellZgDetailsDO> sellZgDetailsDOS = sellZgDetailsDAO.getDetailsByCusIdAndSku(cusId,sku);
-        if (sellZgDetailsDOS == null){
-            return totalQty;
-        }
+        if (cusId == null || sku == null || sku.equals("")){
 
-        for (SellZgDetailsDO detailsDO : sellZgDetailsDOS){
-            totalQty += detailsDO.getQuantity();
-        }
+        }else{
+            totalQty = sellZgDetailsDAO.getQtyByCusIdAndSku(cusId,sku);
 
+            if (totalQty == null){
+                totalQty = 0;
+            }
+        }
         return  totalQty;
     }
 
@@ -265,5 +386,24 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
         return sellZgDetailsDAO.getDetailsByCusId(cusId);
     }
 
+    public SellZgCusTimes getTimesByCusIdAndSku(Long cusId,String sku,ActBaseType actBaseType){
+        if (cusId == null){
+            return null;
+        }
+
+        return sellZgDetailsDAO.getTimesByCusIdAndSku(cusId,sku,actBaseType);
+    }
+
+    public void updateSellZgCusTimes(SellZgCusTimes sellZgCusTimes){
+        if (sellZgCusTimes != null){
+            sellZgDetailsDAO.updateSellZgCusTimes(sellZgCusTimes);
+        }
+    }
+
+    public void addSellZgCusTimes(SellZgCusTimes sellZgCusTimes){
+        if (sellZgCusTimes != null){
+            sellZgDetailsDAO.addSellZgCusTimes(sellZgCusTimes);
+        }
+    }
 
 }

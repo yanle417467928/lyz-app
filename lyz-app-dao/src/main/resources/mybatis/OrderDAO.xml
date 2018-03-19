@@ -537,7 +537,7 @@
          delivery_type, order_subject_type, creator_identity_type, creator_id, creator_name, creator_phone,
          store_id, store_code, store_structure_code, sales_consult_id, sales_consult_name, sales_consult_phone,
          customer_id, customer_name, customer_phone, total_goods_price, is_evaluated, audit_no,
-         remark, city_id, city_name, customer_type, store_org_id, sob_id, sales_number
+         remark, city_id, city_name, customer_type, store_org_id, sob_id, sales_number,is_record_sales
         )
         VALUES
             (
@@ -550,7 +550,7 @@
                 #{salesConsultPhone}, #{customerId}, #{customerName}, #{customerPhone}, #{totalGoodsPrice},
                                                                       #{isEvaluated}, #{auditNo}, #{remark}, #{cityId},
                                                                       #{cityName}, #{customerType}, #{storeOrgId},
-                                                                      #{sobId}, #{salesNumber}
+                                                                      #{sobId}, #{salesNumber},#{isRecordSales}
             )
     </insert>
 
@@ -640,7 +640,10 @@
                 pick_up_code = #{pickUpCode},
             </if>
             <if test="null != isEvaluated ">
-                is_evaluated = #{isEvaluated}
+                is_evaluated = #{isEvaluated},
+            </if>
+            <if test="null != isRecordSales">
+                is_record_sales = #{isRecordSales}
             </if>
         </set>
         WHERE ord_no = #{orderNumber}

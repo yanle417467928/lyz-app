@@ -313,7 +313,7 @@ public class OrderController {
             List<OrderGoodsInfo> orderGoodsInfoList;
 
             /********* 开始计算分摊 促销分摊可能产生新的行记录 所以优先分摊 ******************/
-            orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(orderParam.getUserId(), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, support.getPureOrderGoodsInfo());
+            orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(orderParam.getUserId(), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, support.getPureOrderGoodsInfo(),orderParam.getCustomerId());
 
             //******** 分摊现乐币 策略：每个商品 按单价占比 分摊 *********************
             // 乐币暂时不分摊
@@ -577,7 +577,7 @@ public class OrderController {
 
             //计算订单金额小计
             //********* 计算促销立减金额 *************
-            List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsInfo);
+            List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsInfo,customer.getCusId());
             for (PromotionDiscountListResponse discountResponse : discountListResponseList) {
                 orderDiscount = CountUtil.add(orderDiscount, discountResponse.getDiscountPrice());
                 PromotionSimpleInfo promotionSimpleInfo = new PromotionSimpleInfo();
