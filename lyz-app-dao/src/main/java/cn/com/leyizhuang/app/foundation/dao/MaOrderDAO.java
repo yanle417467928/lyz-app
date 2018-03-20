@@ -29,7 +29,7 @@ public interface MaOrderDAO {
      *
      * @return 订单列表
      */
-    List<MaOrderVO> findMaOrderVOAll();
+    List<MaOrderVO> findMaOrderVOAll( @Param("list") List<Long> storeIds);
 
     /**
      * 分页查看城市门店订单
@@ -37,7 +37,7 @@ public interface MaOrderDAO {
      * @param cityId 城市id
      * @return 订单列表
      */
-    List<MaOrderVO> findMaOrderVOByCityId(@Param("cityId") Long cityId);
+    List<MaOrderVO> findMaOrderVOByCityId(@Param("cityId") Long cityId,@Param("list") List<Long> storeIds);
 
     /**
      * 分页查看门店订单
@@ -73,14 +73,14 @@ public interface MaOrderDAO {
      * @param maOrderVORequest 查询条件参数类
      * @return 订单列表
      */
-    List<MaOrderVO> findMaOrderVOByCondition(MaOrderVORequest maOrderVORequest);
+    List<MaOrderVO> findMaOrderVOByCondition(MaOrderVORequest maOrderVORequest,@Param("list") List<Long> storeIds);
 
     /**
      * 分页查看装饰公司所有订单列表
      *
      * @return 订单列表
      */
-    List<MaOrderVO> findCompanyOrderAll();
+    List<MaOrderVO> findCompanyOrderAll(@Param("list") List<Long> storeIds);
 
     /**
      * 根据订单号模糊查询装饰公司订单
@@ -96,7 +96,7 @@ public interface MaOrderDAO {
      * @param maCompanyOrderVORequest 查询条件参数类
      * @return 订单列表
      */
-    List<MaOrderVO> findCompanyOrderByCondition(MaCompanyOrderVORequest maCompanyOrderVORequest);
+    List<MaOrderVO> findCompanyOrderByCondition(MaCompanyOrderVORequest maCompanyOrderVORequest,@Param("list") List<Long> storeIds);
 
     /**
      * 获取待发货订单列表

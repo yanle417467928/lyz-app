@@ -3,12 +3,14 @@ package cn.com.leyizhuang.app.web.controller.rest;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
+import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.MaOrderService;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -27,6 +29,8 @@ public class MaCompanyOrderRestController extends BaseRestController {
 
     @Resource
     private MaOrderService maOrderService;
+    @Autowired
+    private AdminUserStoreService adminUserStoreService;
 
     /**
      * 后台分页查询装饰公司所有订单
@@ -40,10 +44,14 @@ public class MaCompanyOrderRestController extends BaseRestController {
     public GridDataVO<MaOrderVO> restOrderPageGird(Integer offset, Integer size, String keywords) {
         logger.info("restOrderPageGird 后台分页查询装饰公司所有订单 ,入参offsetL:{}, size:{}, kewords:{}", offset, size, keywords);
         try {
+
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+
             size = getSize(size);
             Integer page = getPage(offset, size);
             PageHelper.startPage(page, size);
-            List<MaOrderVO> maOrderVOList = this.maOrderService.findCompanyOrderAll();
+            List<MaOrderVO> maOrderVOList = this.maOrderService.findCompanyOrderAll(storeIds);
             PageInfo<MaOrderVO> maOrderVOPageInfo = new PageInfo<>(maOrderVOList);
             List<MaOrderVO> orderVOList = maOrderVOPageInfo.getList();
             logger.info("restOrderPageGird ,后台分页查询装饰公司所有订单成功", orderVOList.size());
@@ -98,10 +106,12 @@ public class MaCompanyOrderRestController extends BaseRestController {
     public GridDataVO<MaOrderVO> findOrderByCondition(Integer offset, Integer size, String keywords, MaCompanyOrderVORequest maCompanyOrderVORequest) {
         logger.info("findOrderByCondition 多条件分页查询装饰公司订单列表 ,入参 offsetL:{}, size:{}, kewords:{}, maOrderVORequest:{}",offset, size, keywords, maCompanyOrderVORequest);
         try {
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
             size = getSize(size);
             Integer page = getPage(offset, size);
             PageHelper.startPage(page, size);
-            List<MaOrderVO> maOrderVOList = this.maOrderService.findCompanyOrderByCondition(maCompanyOrderVORequest);
+            List<MaOrderVO> maOrderVOList = this.maOrderService.findCompanyOrderByCondition(maCompanyOrderVORequest,storeIds);
             PageInfo<MaOrderVO> maOrderVOPageInfo = new PageInfo<>(maOrderVOList);
             List<MaOrderVO> orderVOList = maOrderVOPageInfo.getList();
             logger.info("getOrderByStoreIdAndCityIdAndDeliveryType ,多条件分页查询装饰公司订单列表成功", orderVOList.size());

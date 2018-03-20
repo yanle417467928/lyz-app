@@ -8,6 +8,7 @@ import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeType;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaEmployeeResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
+import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.MaEmployeeService;
 import cn.com.leyizhuang.app.foundation.service.QrcodeProduceService;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeDetailVO;
@@ -49,6 +50,8 @@ public class MaEmployeeRestController extends BaseRestController {
     @Autowired
     private QrcodeProduceService qrcodeProduceService;
 
+    @Autowired
+    private AdminUserStoreService adminUserStoreService;
     /**
      * 显示所有员工信息
      *
@@ -379,7 +382,9 @@ public class MaEmployeeRestController extends BaseRestController {
             size = getSize(size);
             Integer page = getPage(offset, size);
             PageHelper.startPage(page, size);
-            List<MaEmployeeResponse> employeeDOList = this.maEmployeeService.findMaEmployeeByCityIdAndStoreId(null, null);
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            List<MaEmployeeResponse> employeeDOList = this.maEmployeeService.findMaEmployeeByCityIdAndStoreId(storeIds);
 
             PageInfo<MaEmployeeResponse> maEmployeeDOPageInfo = new PageInfo<>(employeeDOList);
             List<MaEmployeeResponse> EmployeeDOList = maEmployeeDOPageInfo.getList();

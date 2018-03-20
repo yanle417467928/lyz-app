@@ -95,6 +95,9 @@ public class MaOrderRestController extends BaseRestController {
     @Resource
     private AppOrderService appOrderService;
 
+    @Autowired
+    private AdminUserStoreService adminUserStoreService;
+
 
     /**
      * 后台分页查询所有订单
@@ -108,10 +111,13 @@ public class MaOrderRestController extends BaseRestController {
     public GridDataVO<MaOrderVO> restOrderPageGird(Integer offset, Integer size, String keywords) {
         logger.warn("restOrderPageGird 后台分页获取所有订单列表 ,入参offsetL:{}, size:{}, kewords:{}", offset, size, keywords);
         try {
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+
             size = getSize(size);
             Integer page = getPage(offset, size);
             PageHelper.startPage(page, size);
-            List<MaOrderVO> maOrderVOList = this.maOrderService.findMaOrderVOAll();
+            List<MaOrderVO> maOrderVOList = this.maOrderService.findMaOrderVOAll(storeIds);
             PageInfo<MaOrderVO> maOrderVOPageInfo = new PageInfo<>(maOrderVOList);
             List<MaOrderVO> orderVOList = maOrderVOPageInfo.getList();
             logger.warn("restOrderPageGird ,后台分页获取所有订单列表成功", orderVOList.size());
@@ -137,10 +143,13 @@ public class MaOrderRestController extends BaseRestController {
     public GridDataVO<MaOrderVO> getOrderByCityId(Integer offset, Integer size, String keywords, @PathVariable(value = "cityId") Long cityId) {
         logger.warn("getOrderByCityId 分页查询城市订单列表 ,入参 offsetL:{}, size:{}, kewords:{}, cityId:{}", offset, size, keywords, cityId);
         try {
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+
             size = getSize(size);
             Integer page = getPage(offset, size);
             PageHelper.startPage(page, size);
-            List<MaOrderVO> maOrderVOList = this.maOrderService.findMaOrderVOByCityId(cityId);
+            List<MaOrderVO> maOrderVOList = this.maOrderService.findMaOrderVOByCityId(cityId,storeIds);
             PageInfo<MaOrderVO> maOrderVOPageInfo = new PageInfo<>(maOrderVOList);
             List<MaOrderVO> orderVOList = maOrderVOPageInfo.getList();
             logger.warn("getOrderByCityId ,分页查询城市订单列表成功", orderVOList.size());
@@ -195,6 +204,9 @@ public class MaOrderRestController extends BaseRestController {
     public GridDataVO<MaOrderVO> findOrderByCondition(Integer offset, Integer size, String keywords, MaOrderVORequest maOrderVORequest, @RequestParam(value = "deliveryType") String deliveryType) {
         logger.warn("findOrderByCondition 多条件分页查询订单列表 ,入参 offsetL:{}, size:{}, kewords:{}, maOrderVORequest:{}", offset, size, keywords, maOrderVORequest);
         try {
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+
             size = getSize(size);
             Integer page = getPage(offset, size);
             PageHelper.startPage(page, size);
@@ -207,7 +219,7 @@ public class MaOrderRestController extends BaseRestController {
             } else if ("PRODUCT_COUPON".equals(deliveryType)) {
                 maOrderVORequest.setAppDeliveryType(AppDeliveryType.PRODUCT_COUPON);
             }
-            List<MaOrderVO> maOrderVOList = this.maOrderService.findMaOrderVOByCondition(maOrderVORequest);
+            List<MaOrderVO> maOrderVOList = this.maOrderService.findMaOrderVOByCondition(maOrderVORequest,storeIds);
             PageInfo<MaOrderVO> maOrderVOPageInfo = new PageInfo<>(maOrderVOList);
             List<MaOrderVO> orderVOList = maOrderVOPageInfo.getList();
             logger.warn("getOrderByStoreIdAndCityIdAndDeliveryType ,根据配送方式分页查询订单列表成功", orderVOList.size());

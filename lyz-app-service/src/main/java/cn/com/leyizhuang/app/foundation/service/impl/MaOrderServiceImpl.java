@@ -133,13 +133,13 @@ public class MaOrderServiceImpl implements MaOrderService {
     private AppSeparateOrderService separateOrderService;
 
     @Override
-    public List<MaOrderVO> findMaOrderVOAll() {
-        return maOrderDAO.findMaOrderVOAll();
+    public List<MaOrderVO> findMaOrderVOAll(List<Long> storeIds) {
+        return maOrderDAO.findMaOrderVOAll(storeIds);
     }
 
     @Override
-    public List<MaOrderVO> findMaOrderVOByCityId(Long cityId) {
-        return maOrderDAO.findMaOrderVOByCityId(cityId);
+    public List<MaOrderVO> findMaOrderVOByCityId(Long cityId,List<Long> storeIds) {
+        return maOrderDAO.findMaOrderVOByCityId(cityId,storeIds);
     }
 
     @Override
@@ -158,13 +158,13 @@ public class MaOrderServiceImpl implements MaOrderService {
     }
 
     @Override
-    public List<MaOrderVO> findMaOrderVOByCondition(MaOrderVORequest maOrderVORequest) {
-        return maOrderDAO.findMaOrderVOByCondition(maOrderVORequest);
+    public List<MaOrderVO> findMaOrderVOByCondition(MaOrderVORequest maOrderVORequest,List<Long> storeIds) {
+        return maOrderDAO.findMaOrderVOByCondition(maOrderVORequest,storeIds);
     }
 
     @Override
-    public List<MaOrderVO> findCompanyOrderAll() {
-        return maOrderDAO.findCompanyOrderAll();
+    public List<MaOrderVO> findCompanyOrderAll(List<Long> storeIds) {
+        return maOrderDAO.findCompanyOrderAll(storeIds);
     }
 
     @Override
@@ -173,8 +173,8 @@ public class MaOrderServiceImpl implements MaOrderService {
     }
 
     @Override
-    public List<MaOrderVO> findCompanyOrderByCondition(MaCompanyOrderVORequest maCompanyOrderVORequest) {
-        return maOrderDAO.findCompanyOrderByCondition(maCompanyOrderVORequest);
+    public List<MaOrderVO> findCompanyOrderByCondition(MaCompanyOrderVORequest maCompanyOrderVORequest,List<Long> storeIds) {
+        return maOrderDAO.findCompanyOrderByCondition(maCompanyOrderVORequest,storeIds);
     }
 
     @Override

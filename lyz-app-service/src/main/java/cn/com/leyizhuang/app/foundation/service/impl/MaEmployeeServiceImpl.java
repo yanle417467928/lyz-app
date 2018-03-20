@@ -184,8 +184,8 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
     }
 
     @Override
-    public List<MaEmployeeResponse> findMaEmployeeByCityIdAndStoreId(Long cityId, Long storeId) {
-        return this.maEmployeeDAO.findEmployeeByCityIdAndStoreId(cityId, storeId);
+    public List<MaEmployeeResponse> findMaEmployeeByCityIdAndStoreId(List<Long> storeIds) {
+        return this.maEmployeeDAO.findEmployeeByCityIdAndStoreId(storeIds);
     }
 
     /**

@@ -33,7 +33,7 @@ public interface MaOrderService {
      *
      * @return 订单列表
      */
-    List<MaOrderVO> findMaOrderVOAll();
+    List<MaOrderVO> findMaOrderVOAll(List<Long> storeIds);
 
     /**
      * 分页查看城市订单
@@ -41,7 +41,7 @@ public interface MaOrderService {
      * @param cityId 城市id
      * @return 订单列表
      */
-    List<MaOrderVO> findMaOrderVOByCityId(Long cityId);
+    List<MaOrderVO> findMaOrderVOByCityId(Long cityId,List<Long> storeIds);
 
     /**
      * 分页查看门店订单
@@ -75,14 +75,14 @@ public interface MaOrderService {
      * @param maOrderVORequest 查询条件参数类
      * @return 订单列表
      */
-    List<MaOrderVO> findMaOrderVOByCondition(MaOrderVORequest maOrderVORequest);
+    List<MaOrderVO> findMaOrderVOByCondition(MaOrderVORequest maOrderVORequest,List<Long> storeIds);
 
     /**
      * 分页查看装饰公司所有订单列表
      *
      * @return 订单列表
      */
-    List<MaOrderVO> findCompanyOrderAll();
+    List<MaOrderVO> findCompanyOrderAll(List<Long> storeIds);
 
     /**
      * 根据订单号模糊查询装饰公司订单
@@ -98,7 +98,7 @@ public interface MaOrderService {
      * @param maCompanyOrderVORequest 查询条件参数类
      * @return 订单列表
      */
-    List<MaOrderVO> findCompanyOrderByCondition(MaCompanyOrderVORequest maCompanyOrderVORequest);
+    List<MaOrderVO> findCompanyOrderByCondition(MaCompanyOrderVORequest maCompanyOrderVORequest,List<Long> storeIds);
 
     /**
      * 获取待发货订单列表

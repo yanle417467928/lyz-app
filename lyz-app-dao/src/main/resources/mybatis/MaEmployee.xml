@@ -343,12 +343,10 @@
         INNER JOIN st_pre_deposit AS spd ON spd.store_id = ee.store_id
         WHERE
          1 = 1
-        <if test="cityId != null and cityId != -1">
-          AND  ee.city_id = #{cityId}
-        </if>
-        <if test="storeId != null and storeId != -1">
-        AND ee.store_id = #{storeId}
-        </if>
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
     </select>
 
     <select id="findEmployeeByCityIdAndStoreIdAndSellerNameAndSellerPhone"  resultType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaEmployeeResponse">

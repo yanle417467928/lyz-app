@@ -19,6 +19,10 @@
         LEFT JOIN st_store AS s ON s.store_code = obi.store_code
          WHERE
         obi.order_subject_type = 'STORE'
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         ORDER BY
             obi.create_time DESC
     </select>
@@ -41,6 +45,10 @@
         WHERE
         obi.order_subject_type = 'STORE'
 	    AND obi.city_id = #{cityId}
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         ORDER BY
         obi.create_time DESC
     </select>
@@ -172,6 +180,10 @@
         <if test="receiverPhone != null and receiverPhone != ''">
             AND oli.receiver_phone LIKE concat(concat('%',#{receiverPhone}),'%')
         </if>
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         ORDER BY
         obi.create_time DESC
     </select>
@@ -193,6 +205,10 @@
         LEFT JOIN st_store AS s ON s.store_code = obi.store_code
         WHERE
         obi.order_subject_type = 'FIT'
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         ORDER BY
         obi.create_time DESC
     </select>
@@ -265,6 +281,10 @@
         <if test="receiverPhone != null and receiverPhone != ''">
             AND oli.receiver_phone LIKE concat(concat('%',#{receiverPhone}),'%')
         </if>
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         ORDER BY
         obi.create_time DESC
     </select>
