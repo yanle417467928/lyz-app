@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActStoreDO;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
+import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.AppActService;
 import cn.com.leyizhuang.app.foundation.service.CityService;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
@@ -40,6 +41,9 @@ public class MaActViewsController extends BaseController{
     @Autowired
     private MaStoreService maStoreService;
 
+    @Autowired
+    private AdminUserStoreService adminUserStoreService;
+
 
     @GetMapping("/page")
     public String acticityPage(HttpServletRequest request, ModelMap map){ return "/views/activity/activity_page";}
@@ -53,10 +57,11 @@ public class MaActViewsController extends BaseController{
             List<City> cityList = cityService.findAll();
             map.addAttribute("cityList",cityList);
 
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
             // 城市下门店
             ActBaseDO actBaseDO = (ActBaseDO) map.get("actBaseDO");
             Long cityId = actBaseDO.getCityId();
-            List<SimpleStoreParam> stores = maStoreService.findStoresListByCityId(cityId);
+            List<SimpleStoreParam> stores = maStoreService.findStoresListByCityId(cityId,storeIds);
             List<ActStoreDO> actStoreDOList = (List<ActStoreDO>) map.get("actStoresDO");
 
             for (SimpleStoreParam VO : stores) {
@@ -86,11 +91,11 @@ public class MaActViewsController extends BaseController{
         appActService.getModelMapByActBaseId(map,id);
         List<City> cityList = cityService.findAll();
         map.addAttribute("cityList",cityList);
-
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
         // 城市下门店
         ActBaseDO actBaseDO = (ActBaseDO) map.get("actBaseDO");
         Long cityId = actBaseDO.getCityId();
-        List<SimpleStoreParam> stores = maStoreService.findStoresListByCityId(cityId);
+        List<SimpleStoreParam> stores = maStoreService.findStoresListByCityId(cityId,storeIds);
         List<ActStoreDO> actStoreDOList = (List<ActStoreDO>) map.get("actStoresDO");
 
         for (SimpleStoreParam VO : stores) {

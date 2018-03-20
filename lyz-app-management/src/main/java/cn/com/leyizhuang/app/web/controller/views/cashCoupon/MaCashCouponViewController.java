@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.web.controller.views.cashCoupon;
 
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
+import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.CashCouponService;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
 import org.slf4j.Logger;
@@ -34,6 +35,9 @@ public class MaCashCouponViewController {
     @Autowired
     private MaStoreService maStoreService;
 
+    @Autowired
+    private AdminUserStoreService adminUserStoreService;
+
     @GetMapping("/page")
     public String page(HttpServletRequest request, ModelMap map){ return "/views/cashCoupon/cashCoupon_page"; }
 
@@ -49,10 +53,10 @@ public class MaCashCouponViewController {
         List<CashCouponCompany> cashCouponCompanyList = cashCouponService.queryCompanyByCcid(ccid);
         List<CashCouponBrand> cashCouponBrandList = cashCouponService.queryBrandByCcid(ccid);
         List<CashCouponGoods> cashCouponGoodsList = cashCouponService.queryGoodsByCcid(ccid);
-
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
         // 城市下门店
         Long cityId = cashCoupon.getCityId();
-        List<SimpleStoreParam> stores = maStoreService.findStoresListByCityId(cityId);
+        List<SimpleStoreParam> stores = maStoreService.findStoresListByCityId(cityId,storeIds);
 
         for (SimpleStoreParam VO : stores) {
             if(cashCouponStoreList == null || cashCouponStoreList.size() == 0){
