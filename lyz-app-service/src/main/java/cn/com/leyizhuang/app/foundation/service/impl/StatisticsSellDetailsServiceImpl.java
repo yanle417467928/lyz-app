@@ -406,4 +406,8 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
         }
     }
 
+
+    /**
+     * 统计个人总销量
+     */
 }

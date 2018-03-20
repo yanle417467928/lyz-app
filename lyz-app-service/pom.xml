@@ -71,6 +71,22 @@
             <version>1.3.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>cn.com.leyizhuang</groupId>  <!--自定义-->
+            <artifactId>lyz-app-qrcode</artifactId>    <!--自定义-->
+            <version>1.0-SNAPSHOT</version> <!--自定义-->
+            <scope>system</scope> <!--system，类似provided，需要显式提供依赖的jar以后，Maven就不会在Repository中查找它-->
+            <systemPath>${basedir}/src/main/resources/lib/qrcode2.1.0.jar
+            </systemPath> <!--项目根目录下的lib文件夹下-->
+        </dependency>
+        <dependency>
+            <groupId>cn.com.leyizhuang</groupId>  <!--自定义-->
+            <artifactId>lyz-app-zxing</artifactId>    <!--自定义-->
+            <version>1.0-SNAPSHOT</version> <!--自定义-->
+            <scope>system</scope> <!--system，类似provided，需要显式提供依赖的jar以后，Maven就不会在Repository中查找它-->
+            <systemPath>${basedir}/src/main/resources/lib/zxing3.2.1.jar
+            </systemPath> <!--项目根目录下的lib文件夹下-->
+        </dependency>
     </dependencies>
 
 </project>

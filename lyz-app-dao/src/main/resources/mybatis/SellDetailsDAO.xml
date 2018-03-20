@@ -111,14 +111,14 @@
 
     <select id="getCustomerSellDetailsOrderByCreateTimeDescLimit4" resultType="java.lang.String">
         select DISTINCT `NUMBER` from sell_details
-        where customer_id = #{cusId} and seller_id = #{sellerId} and `number` like CONCAT('CD_XN','%' ) and create_time > #{dateTime}
+        where customer_id = #{cusId} and seller_id = #{sellerId} and `number` like CONCAT('_XN','%' ) and create_time > #{dateTime}
         ORDER BY create_time DESC
         limit 4
     </select>
 
     <select id="getSellDetailsFrequencyBycusIdAndSellerIdAndCreateTime" resultType="java.lang.String">
         select DISTINCT `month` from sell_details
-        where customer_id = #{cusId} and seller_id = #{sellerId} and `number` like CONCAT('CD_XN','%' ) and create_time > #{dateTime}
+        where customer_id = #{cusId} and seller_id = #{sellerId} and `number` like CONCAT('_XN','%' ) and create_time > #{dateTime}
         GROUP BY NUMBER
         ORDER BY create_time DESC
     </select>
