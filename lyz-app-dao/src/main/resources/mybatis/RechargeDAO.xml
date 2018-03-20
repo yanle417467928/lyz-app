@@ -91,4 +91,28 @@
         FROM recharge_order
         WHERE recharge_no = #{rechargeNo}
     </select>
+
+    <select id="findCreditRechargeReceiptInfoByRechargeNo" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo">
+        SELECT
+        id,
+        recharge_no,
+        create_time,
+        pay_time,
+        pay_type,
+        pay_type_desc,
+        payment_subject_type,
+        payment_subject_type_desc,
+        amount,
+        reply_code,
+        receipt_number,
+        recharge_account_type,
+        recharge_account_type_desc,
+        charge_type,
+        charge_type_desc
+        FROM recharge_receipt_info
+        WHERE receipt_number = #{receiptNumber};
+    </select>
+
+
 </mapper>

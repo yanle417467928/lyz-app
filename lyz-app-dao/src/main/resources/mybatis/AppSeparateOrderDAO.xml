@@ -1201,4 +1201,40 @@
         WHERE receipt_number = #{receiptNumber}
     </select>
 
+
+    <select id="isCreditRechargeReceiptExist" parameterType="java.lang.String" resultType="java.lang.Boolean">
+        SELECT exists(SELECT 1
+        FROM inter_ate_recharge_receipt_inf
+        WHERE receipt_number = #{receiptNumber})
+    </select>
+
+    <select id="getCreditRechargeReceiptInfByReceiptNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.RechargeReceiptInf">
+        SELECT
+        receipt_id,
+        charge_number,
+        sob_id,
+        charge_obj,
+        charge_type,
+        receiptType,
+        userid,
+        store_org_code,
+        diy_site_code,
+        receipt_date,
+        amount,
+        description,
+        attribute1,
+        attribute2,
+        attribute3,
+        attribute4,
+        attribute5,
+        create_time,
+        send_flag,
+        error_msg,
+        send_time,
+        receipt_number
+        FROM inter_ate_recharge_receipt_inf
+        WHERE receipt_number = #{receiptNumber}
+    </select>
+
 </mapper>

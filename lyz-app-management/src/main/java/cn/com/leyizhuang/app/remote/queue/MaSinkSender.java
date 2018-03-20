@@ -116,4 +116,35 @@ public class MaSinkSender {
         }
         log.info("sendOrderReceipt,发送订单退款信息到拆单队列,End", JSON.toJSONString(refundNumber));
     }
+
+    /**
+     * @title   装饰公司信用金收款
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/3/20
+     */
+    public void sendCreditRechargeReceipt(String receiptNumber) {
+        log.info("sendCreditRechargeReceipt,发送装饰公司信用金收款信息到拆单队列,Begin\n 收款单号:{}", receiptNumber);
+        if (StringUtils.isNotBlank(receiptNumber)) {
+            MqMessage message = new MqMessage();
+            message.setType(MqMessageType.CREDIT_RECHARGE_RECEIPT);
+            message.setContent(JSON.toJSONString(receiptNumber));
+            orderChannel.sendOrder().send(MessageBuilder.withPayload(message).build());
+        }
+        log.info("sendCreditRechargeReceipt,发送装饰公司信用金收款信息到拆单队列,End", JSON.toJSONString(receiptNumber));
+    }
+
+    public void sendWithdrawRefund(String refundNumber) {
+        log.info("sendWithdrawRefund,发送提现退款到拆单队列,Begin\n 退款单号:{}", refundNumber);
+        if (StringUtils.isNotBlank(refundNumber)) {
+            MqMessage message = new MqMessage();
+            message.setType(MqMessageType.WITHDRAW_REFUND);
+            message.setContent(JSON.toJSONString(refundNumber));
+            orderChannel.sendOrder().send(MessageBuilder.withPayload(message).build());
+        }
+        log.info("sendWithdrawRefund,发送提现退款到拆单队列,End", JSON.toJSONString(refundNumber));
+    }
 }

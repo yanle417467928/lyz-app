@@ -11,7 +11,8 @@ public enum StoreCreditMoneyChangeType {
     PLACE_ORDER("PLACE_ORDER", "订单消费"),
     RETURN_ORDER("RETURN_ORDER","退单返还"),
     CANCEL_ORDER("CANCEL_ORDER","取消订单返还"),
-    ADMIN_RECHARGE("ADMIN_RECHARGE","管理员修改");
+    ADMIN_RECHARGE("ADMIN_RECHARGE","管理员修改"),
+    REPAYMENT("REPAYMENT","账单还款");
 
     private final String value;
     private final String description;

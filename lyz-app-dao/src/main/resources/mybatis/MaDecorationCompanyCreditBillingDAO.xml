@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaDecorationCompanyCreditBillingDAO">
+
+    <select id="getDecorationCompanyCreditOrder" resultType="cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsVO">
+        SELECT * FROM (
+            SELECT ol.create_time createTime, oi.ord_no orderNumber, od.st_credit_money creditMoney,
+                s.store_name storeName, oi.creator_name creatorName,
+                IF(og.delivery_type = 'HOUSE_DELIVERY', og.shipping_address, og.booking_store_address) deliveryAddress
+            FROM ord_base_info oi
+            INNER JOIN ord_billing_details od ON oi.ord_no = od.ord_no
+            INNER JOIN ord_delivery_info_details ol ON oi.ord_no = ol.order_no AND ol.logistic_status = 'SEALED_CAR'
+            INNER JOIN st_store s ON s.store_id = oi.store_id
+            INNER JOIN ord_logistics_info og ON og.ord_no = oi.ord_no
+            LEFT JOIN decoration_company_credit_billing_details dcd ON dcd.order_number = oi.ord_no
+            WHERE oi.order_subject_type = 'FIT'
+            AND (oi.`status` = 'FINISHED'
+            OR oi.`status` = 'CLOSED'
+            OR oi.`status` = 'CANCELED'
+            OR oi.`status` = 'REJECTED'
+            OR oi.`status` = 'CANCELING')
+            AND od.st_credit_money != 0
+            AND oi.store_id = #{storeId}
+            <if test="null != startTime and '' != startTime">
+                AND ol.create_time &gt; #{startTime}
+            </if>
+            <if test="null != endTime and '' != endTime">
+                AND ol.create_time &lt; #{endTime}
+            </if>
+            <if test="null != keywords and '' != keywords">
+                AND oi.ord_no LIKE concat(concat('%',#{keywords}),'%')
+            </if>
+            AND dcd.order_number IS NULL
+            <!--AND oi.ord_no NOT IN
+            <foreach collection="list" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>-->
+            UNION
+            SELECT ord.create_time createTime, ori.return_no orderNumber, orb.st_credit_money creditMoney,
+                s.store_name storeName, ori.creator_name creatorName,
+                IF(orl.delivery_type = 'HOUSE_PICK', orl.return_full_address, orl.return_store_address) deliveryAddress
+            FROM ord_return_base_info ori
+            INNER JOIN ord_return_billing orb ON ori.return_no = orb.return_no
+            INNER JOIN ord_return_delivery_detail ord ON ori.return_no = ord.return_no AND ord.return_logistic_status = 'AGAIN_ON_SALE'
+            INNER JOIN st_store s ON s.store_id = ori.store_id
+            INNER JOIN ord_return_logistic_info orl ON ori.return_no = orl.return_no
+            INNER JOIN ord_base_info oi ON ori.ord_no = oi.ord_no AND oi.order_subject_type = 'FIT'
+            LEFT JOIN decoration_company_credit_billing_details dcd ON dcd.order_number = ori.ord_no
+            WHERE  ori.return_status = 'FINISHED'
+            AND orb.st_credit_money != 0
+            AND ori.store_id = #{storeId}
+            <if test="null != startTime and '' != startTime">
+                AND ord.create_time &gt; #{startTime}
+            </if>
+            <if test="null != endTime and '' != endTime">
+                AND ord.create_time &lt; #{endTime}
+            </if>
+            <if test="null != keywords and '' != keywords">
+                AND ori.return_no LIKE concat(concat('%',#{keywords}),'%')
+            </if>
+            AND dcd.order_number IS NULL
+            <!--AND ori.return_no NOT IN
+            <foreach collection="list" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>-->
+            ) temp
+        GROUP BY orderNumber
+        ORDER BY createTime ASC
+    </select>
+
+    <select id="getBillAllCreditMoney" resultType="java.lang.Double">
+        SELECT SUM(temp.creditMoney) FROM (
+            SELECT SUM(od.st_credit_money) creditMoney
+            FROM ord_base_info oi
+            INNER JOIN ord_billing_details od ON oi.ord_no = od.ord_no
+            LEFT JOIN decoration_company_credit_billing_details dcd ON dcd.order_number = oi.ord_no
+            WHERE oi.store_id = #{storeId}
+            AND dcd.order_number IS NULL
+            AND oi.ord_no IN
+            <foreach collection="list" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+            UNION
+            SELECT SUM(orb.st_credit_money) creditMoney
+            FROM ord_return_base_info ori
+            INNER JOIN ord_return_billing orb ON ori.return_no = orb.return_no
+            LEFT JOIN decoration_company_credit_billing_details dcd ON dcd.order_number = ori.ord_no
+            WHERE ori.store_id = #{storeId}
+            AND dcd.order_number IS NULL
+            AND ori.return_no IN
+            <foreach collection="list" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        ) temp
+
+    </select>
+
+    <insert id="saveCreditBillingDO" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorationCompanyCreditBillingDO">
+        INSERT INTO decoration_company_credit_billing
+        (store_id, store_name, start_time, end_time, bill_name, bill_amount, repaid_amount, is_pay_off, operation_id,
+        pay_off_operation_id, credit_billing_no, create_time, update_time)
+        VALUES
+        (#{storeId}, #{storeName}, #{startTime}, #{endTime}, #{billName}, #{billAmount}, #{repaidAmount}, #{isPayOff}, #{operationId},
+        #{payOffOperationId}, #{creditBillingNo}, #{createTime}, #{updateTime})
+    </insert>
+
+    <insert id="saveCreditBillingDetailsDO" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsDO">
+        INSERT INTO decoration_company_credit_billing_details
+        (store_id, credit_billing_no, order_number, creator_id, creator_name, order_time, delivery_address, credit_money)
+        VALUES
+        (#{storeId}, #{creditBillingNo}, #{orderNumber}, #{creatorId}, #{creatorName}, #{orderTime}, #{deliveryAddress}, #{creditMoney})
+    </insert>
+
+    <insert id="batchSaveCreditBillingDetailsDO" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsDO">
+        INSERT INTO decoration_company_credit_billing_details
+        (store_id, credit_billing_no, order_number, creator_id, creator_name, order_time, delivery_address, credit_money)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.storeId}, #{item.creditBillingNo}, #{item.orderNumber}, #{item.creatorId}, #{item.creatorName}, #{item.orderTime}, #{item.deliveryAddress}, #{item.creditMoney})
+        </foreach>
+
+    </insert>
+
+
+    <select id="getCreditBillingDetailsByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsDO">
+        SELECT * FROM (
+        SELECT ol.create_time orderTime, oi.ord_no orderNumber, od.st_credit_money creditMoney,
+        oi.store_id storeId, oi.creator_name creatorName, oi.creator_id creatorId,
+        IF(og.delivery_type = 'HOUSE_DELIVERY', og.shipping_address, og.booking_store_address) deliveryAddress
+        FROM ord_base_info oi
+        INNER JOIN ord_billing_details od ON oi.ord_no = od.ord_no
+        INNER JOIN ord_delivery_info_details ol ON oi.ord_no = ol.order_no AND ol.logistic_status = 'SEALED_CAR'
+        INNER JOIN ord_logistics_info og ON og.ord_no = oi.ord_no
+        LEFT JOIN decoration_company_credit_billing_details dcd ON dcd.order_number = oi.ord_no
+        WHERE oi.order_subject_type = 'FIT'
+        AND (oi.`status` = 'FINISHED'
+        OR oi.`status` = 'CLOSED'
+        OR oi.`status` = 'CANCELED'
+        OR oi.`status` = 'REJECTED'
+        OR oi.`status` = 'CANCELING')
+        AND od.st_credit_money != 0
+        AND oi.store_id = #{storeId}
+        AND dcd.order_number IS NULL
+        AND oi.ord_no IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        UNION
+        SELECT ord.create_time createTime, ori.return_no orderNumber, orb.st_credit_money creditMoney,
+        ori.store_id storeId, ori.creator_name creatorName, ori.creator_id creatorId,
+        IF(orl.delivery_type = 'HOUSE_PICK', orl.return_full_address, orl.return_store_address) deliveryAddress
+        FROM ord_return_base_info ori
+        INNER JOIN ord_return_billing orb ON ori.return_no = orb.return_no
+        INNER JOIN ord_return_delivery_detail ord ON ori.return_no = ord.return_no AND ord.return_logistic_status = 'AGAIN_ON_SALE'
+        INNER JOIN ord_return_logistic_info orl ON ori.return_no = orl.return_no
+        INNER JOIN ord_base_info oi ON ori.ord_no = oi.ord_no AND oi.order_subject_type = 'FIT'
+        LEFT JOIN decoration_company_credit_billing_details dcd ON dcd.order_number = ori.ord_no
+        WHERE  ori.return_status = 'FINISHED'
+        AND orb.st_credit_money != 0
+        AND ori.store_id = #{storeId}
+        AND dcd.order_number IS NULL
+        AND ori.return_no IN
+         <foreach collection="list" item="item" open="(" close=")" separator=",">
+             #{item}
+         </foreach>
+        ) temp
+        GROUP BY orderNumber
+    </select>
+
+    <select id="getDecorationCompanyCreditBilling" resultType="cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingVO">
+      SELECT id, store_name, CONCAT(DATE_FORMAT(start_time,'%y/%m/%d'),'~', DATE_FORMAT(end_time,'%y/%m/%d')) cycleTime, bill_name, bill_amount, repaid_amount,
+        is_pay_off, credit_billing_no, create_time
+      FROM decoration_company_credit_billing
+      WHERE 1=1
+        <if test="null != storeId and -1 != storeId">
+          AND store_id = #{storeId}
+        </if>
+        <if test="null != startTime and '' != startTime">
+            AND create_time &gt; #{startTime}
+        </if>
+        <if test="null != endTime and '' != endTime">
+            AND create_time &lt; #{endTime}
+        </if>
+        <if test="null != isPayOff and '' != isPayOff">
+            AND is_pay_off = #{isPayOff}
+        </if>
+        <if test="null != keywords and '' != keywords">
+            AND credit_billing_no LIKE concat(concat('%',#{keywords}),'%')
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="getDecorationCompanyCreditBillingById"  parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingVO">
+        SELECT id, store_name, CONCAT(DATE_FORMAT(start_time,'%y/%m/%d'),'~', DATE_FORMAT(end_time,'%y/%m/%d')) cycleTime, bill_name, bill_amount, repaid_amount,
+        is_pay_off, credit_billing_no, create_time, update_time
+        FROM decoration_company_credit_billing
+        WHERE id = #{id}
+    </select>
+
+    <select id="getDecorationCompanyCreditBillingDetailsByCreditBillingNo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsVO">
+        SELECT creator_name, order_time createTime, delivery_address, credit_money, order_number
+        FROM decoration_company_credit_billing_details
+        WHERE credit_billing_no = #{creditBillingNo}
+    </select>
+
+    <update id="updateCreditBillingDetails" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorationCompanyCreditBillingDO">
+        UPDATE decoration_company_credit_billing
+        SET repaid_amount = #{repaidAmount},
+          is_pay_off = #{isPayOff},
+          pay_off_operation_id = #{payOffOperationId},
+          update_time = now()
+        WHERE id = #{id}
+    </update>
+
+    <select id="getCreditBillingById"  parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorationCompanyCreditBillingDO">
+        SELECT id, store_id, bill_amount, repaid_amount, is_pay_off, credit_billing_no, pay_off_operation_id
+        FROM decoration_company_credit_billing
+        WHERE id = #{id}
+    </select>
+
+    <select id="getCreditBillingByCreditBillingNo"  parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorationCompanyCreditBillingDO">
+        SELECT id, store_id, bill_amount, repaid_amount, is_pay_off, credit_billing_no, pay_off_operation_id
+        FROM decoration_company_credit_billing
+        WHERE credit_billing_no = #{creditBillingNo}
+    </select>
+
+</mapper>

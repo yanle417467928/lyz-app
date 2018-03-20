@@ -13,7 +13,8 @@ public enum RechargeAccountType {
     CUS_PREPAY("CUS_PREPAY", "顾客预存款"),
     ST_PREPAY("ST_PREPAY", "门店预存款"),
     PRODUCT_COUPON("PRODUCT_COUPON", "产品券"),
-    BOND("BOND", "保证金");
+    BOND("BOND", "保证金"),
+    ST_CREDIT("ST_CREDIT", "装饰公司信用金");
 
     private String value;
 
