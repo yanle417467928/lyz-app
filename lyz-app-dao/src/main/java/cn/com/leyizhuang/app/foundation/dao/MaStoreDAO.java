@@ -24,11 +24,11 @@ public interface MaStoreDAO {
 
     List<StoreVO> findAllVO();
 
-    List<SimpleStoreParam> findStoresList();
+    List<SimpleStoreParam> findStoresList(@Param("list") List<Long> storeIds);
 
-    List<SimpleStoreParam> findAllStorelist();
+    List<SimpleStoreParam> findAllStorelist(@Param("list") List<Long> storeIds);
 
-    List<SimpleStoreParam> findStoresListByCityId(Long cityId);
+    List<SimpleStoreParam> findStoresListByCityId(Long cityId,@Param("list") List<Long> storeIds);
 
     List<SimpleStoreParam> findStoresListByCityIdExcludeStoreId(@Param("cityId") Long cityId,@Param("storeId") Long storeId);
 
@@ -66,14 +66,14 @@ public interface MaStoreDAO {
      * 获取装饰公司门店列表
      * @return  门店列表
      */
-    List<StoreVO> findDecorativeCompanyList();
+    List<StoreVO> findDecorativeCompanyList(@Param("list") List<Long> storeIds);
 
     /**
      * 根据城市获取装饰公司门店列表
      * @param cityId    城市id
      * @return  门店列表
      */
-    List<StoreVO> findCompanyStoresListByCityId(@Param("cityId") Long cityId);
+    List<StoreVO> findCompanyStoresListByCityId(@Param("cityId") Long cityId,@Param("list") List<Long> storeIds);
 
     /**
      * 根据城市获取支持门店自提门店列表

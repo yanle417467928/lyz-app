@@ -23,11 +23,11 @@ public interface MaStoreService {
 
     PageInfo<StoreVO> queryPageVO(Integer page, Integer size);
 
-    List<SimpleStoreParam> findStoreList();
+    List<SimpleStoreParam> findStoreList(List<Long> storeIds);
 
-    List<SimpleStoreParam> findAllStorelist();
+    List<SimpleStoreParam> findAllStorelist(List<Long> storeIds);
 
-    List<SimpleStoreParam> findStoresListByCityId(Long cityId);
+    List<SimpleStoreParam> findStoresListByCityId(Long cityId,List<Long> storeIds);
 
     List<SimpleStoreParam> findStoresListByCityIdExcludeStoreId(Long cityId,Long storeId);
 
@@ -65,14 +65,14 @@ public interface MaStoreService {
      * 获取装饰公司门店列表
      * @return  门店列表
      */
-    List<StoreVO> findDecorativeCompanyList();
+    List<StoreVO> findDecorativeCompanyList(List<Long> storeIds);
 
     /**
      * 根据城市获取装饰公司门店列表
      * @param cityId    城市id
      * @return  门店列表
      */
-    List<StoreVO> findCompanyStoresListByCityId(Long cityId);
+    List<StoreVO> findCompanyStoresListByCityId(Long cityId,List<Long> storeIds);
 
     /**
      * 根据城市获取支持门店自提门店列表

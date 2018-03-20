@@ -131,6 +131,10 @@
         WHERE c.city_id = #{cityId}
          AND
          s.store_type!="ZS"
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
     </select>
 
     <select id="findStoresListByCityIdExcludeStoreId"
@@ -167,6 +171,11 @@
         st_store s
         WHERE
          s.store_type!="ZS"
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        ORDER BY
     </select>
 
 
@@ -176,6 +185,10 @@
         s.store_name
         FROM
         st_store s
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
     </select>
 
 
@@ -462,6 +475,10 @@
         WHERE c.city_id = #{cityId}
         AND
         s.store_type = 'ZS'
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
     </select>
 
     <select id="findDecorativeCompanyList" resultType="cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO">
@@ -472,6 +489,10 @@
         st_store s
         WHERE
         s.store_type = 'ZS'
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
     </select>
 
     <select id="findSelfDeliveryStoresListByCityId" parameterType="java.lang.Long"

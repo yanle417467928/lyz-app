@@ -51,7 +51,7 @@ public interface MaEmployeeService {
      * 后台购买产品券选择导购查询
      * @return
      */
-    List<MaEmployeeResponse> findMaEmployeeByCityIdAndStoreId (Long cityId, Long storeId);
+    List<MaEmployeeResponse> findMaEmployeeByCityIdAndStoreId (List<Long> storeIds);
 
     /**
      * 后台购买产品券条件查询导购

@@ -47,15 +47,15 @@ public class MaStoreServiceImpl implements MaStoreService {
     }
 
     @Override
-    public List<SimpleStoreParam> findStoreList() {
-        List<SimpleStoreParam> allStoreList = this.mastoreDAO.findStoresList();
+    public List<SimpleStoreParam> findStoreList(List<Long> storeIds) {
+        List<SimpleStoreParam> allStoreList = this.mastoreDAO.findStoresList(storeIds);
         return allStoreList;
     }
 
 
     @Override
-    public List<SimpleStoreParam> findAllStorelist() {
-        List<SimpleStoreParam> allStoreList = this.mastoreDAO.findAllStorelist();
+    public List<SimpleStoreParam> findAllStorelist(List<Long> storeIds) {
+        List<SimpleStoreParam> allStoreList = this.mastoreDAO.findAllStorelist(storeIds);
         return allStoreList;
     }
 
@@ -67,8 +67,8 @@ public class MaStoreServiceImpl implements MaStoreService {
     }
 
     @Override
-    public List<SimpleStoreParam> findStoresListByCityId(Long cityId) {
-        List<SimpleStoreParam> storeList = this.mastoreDAO.findStoresListByCityId(cityId);
+    public List<SimpleStoreParam> findStoresListByCityId(Long cityId,List<Long> storeIds) {
+        List<SimpleStoreParam> storeList = this.mastoreDAO.findStoresListByCityId(cityId,storeIds);
         return storeList;
     }
 
@@ -196,13 +196,13 @@ public class MaStoreServiceImpl implements MaStoreService {
     }
 
     @Override
-    public List<StoreVO> findDecorativeCompanyList() {
-        return mastoreDAO.findDecorativeCompanyList();
+    public List<StoreVO> findDecorativeCompanyList(List<Long> storeIds) {
+        return mastoreDAO.findDecorativeCompanyList(storeIds);
     }
 
     @Override
-    public List<StoreVO> findCompanyStoresListByCityId(Long cityId) {
-        return mastoreDAO.findCompanyStoresListByCityId(cityId);
+    public List<StoreVO> findCompanyStoresListByCityId(Long cityId,List<Long> storeIds) {
+        return mastoreDAO.findCompanyStoresListByCityId(cityId,storeIds);
     }
 
     @Override

@@ -95,7 +95,9 @@ public class MaStoreRestController extends BaseRestController {
     public List<SimpleStoreParam> findAllStorelist() {
         logger.info("findAllStorelist 后台查询所有门店列表(下拉框)(包括装饰公司)");
         try {
-            List<SimpleStoreParam> allStoresList = this.maStoreService.findAllStorelist();
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            List<SimpleStoreParam> allStoresList = this.maStoreService.findAllStorelist(storeIds);
             logger.info("findAllStorelist ,后台查询所有门店列表(下拉框)(包括装饰公司)成功", allStoresList.size());
             return allStoresList;
         } catch (Exception e) {
@@ -115,7 +117,10 @@ public class MaStoreRestController extends BaseRestController {
     public List<SimpleStoreParam> findStoresList() {
         logger.info("findStoresList 后台查询门店列表(下拉框)");
         try {
-            List<SimpleStoreParam> storesList = this.maStoreService.findStoreList();
+
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            List<SimpleStoreParam> storesList = this.maStoreService.findStoreList(storeIds);
             logger.info("findStoresList ,后台查询门店列表(下拉框)成功", storesList.size());
             return storesList;
         } catch (Exception e) {
@@ -149,7 +154,7 @@ public class MaStoreRestController extends BaseRestController {
 
 
     /**
-     * 查询该城市ID的门店列表(下拉框)
+     * 查询该城市ID的装饰公司门店列表(下拉框)
      *
      * @param cityId
      * @return
@@ -158,7 +163,9 @@ public class MaStoreRestController extends BaseRestController {
     public List<SimpleStoreParam> findStoresListByCityId(@PathVariable(value = "cityId") Long cityId) {
         logger.info("findStoresListByCityId 后台查询该城市ID的门店列表(下拉框) 入参 cityId:{}", cityId);
         try {
-            List<SimpleStoreParam> storesList = this.maStoreService.findStoresListByCityId(cityId);
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            List<SimpleStoreParam> storesList = this.maStoreService.findStoresListByCityId(cityId,storeIds);
             logger.info("findStoresListByCityId ,后台查询该城市ID的门店列表(下拉框)成功", storesList.size());
             return storesList;
         } catch (Exception e) {
@@ -178,7 +185,9 @@ public class MaStoreRestController extends BaseRestController {
     public List<StoreVO> findDecorativeCompanyList() {
         logger.info("findDecorativeCompanyList 后台查询装饰公司门店列表(下拉框)");
         try {
-            List<StoreVO> allDecorativeCompanyList = this.maStoreService.findDecorativeCompanyList();
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            List<StoreVO> allDecorativeCompanyList = this.maStoreService.findDecorativeCompanyList(storeIds);
             logger.info("findDecorativeCompanyList ,后台查询装饰公司门店列表(下拉框)成功", allDecorativeCompanyList.size());
             return allDecorativeCompanyList;
         } catch (Exception e) {
@@ -240,7 +249,9 @@ public class MaStoreRestController extends BaseRestController {
     public List<StoreVO> findCompanyStoresListByCityId(@PathVariable(value = "cityId") Long cityId) {
         logger.info("findCompanyStoresListByCityId 查询该城市ID的装饰公司门店列表(下拉框) 入参 cityId:{}", cityId);
         try {
-            List<StoreVO> storesList = this.maStoreService.findCompanyStoresListByCityId(cityId);
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            List<StoreVO> storesList = this.maStoreService.findCompanyStoresListByCityId(cityId,storeIds);
             logger.info("findCompanyStoresListByCityId , 查询该城市ID的装饰公司门店列表(下拉框)成功", storesList.size());
             return storesList;
         } catch (Exception e) {

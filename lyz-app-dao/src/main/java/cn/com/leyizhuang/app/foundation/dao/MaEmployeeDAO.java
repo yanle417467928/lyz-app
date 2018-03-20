@@ -51,7 +51,7 @@ public interface MaEmployeeDAO {
      *
      * @return
      */
-    List<MaEmployeeResponse> findEmployeeByCityIdAndStoreId(@Param(value = "cityId") Long cityId, @Param(value = "storeId") Long storeId);
+    List<MaEmployeeResponse> findEmployeeByCityIdAndStoreId(@Param("list") List<Long> storeIds);
 
     /**
      * 后台购买产品券条件查询导购
