@@ -103,7 +103,6 @@ public class StatisticsSellDetailsContrller {
 
         }
 
-
         return resultDTO;
     }
 }

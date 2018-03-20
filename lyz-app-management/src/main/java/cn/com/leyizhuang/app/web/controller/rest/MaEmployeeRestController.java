@@ -595,8 +595,6 @@ public class MaEmployeeRestController extends BaseRestController {
         List<AppEmployee> appEmployeeList = appEmployeeService.findQrcodeIsNull();
         try {
 
-
-
             PrintWriter out = response.getWriter();
 
             out.println("开始生成所有无二维码导购二维码！》》》》》》》》》》》》");
