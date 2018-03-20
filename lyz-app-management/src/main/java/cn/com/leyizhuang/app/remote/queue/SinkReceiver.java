@@ -212,7 +212,7 @@ public class SinkReceiver {
                     String receiptNumber = objectMapper.readValue(message.getContent(), String.class);
                     Boolean isExist = separateOrderService.isReceiptExist(receiptNumber);
                     if (isExist) {
-                        log.info("该充值单已拆单，不能重复拆单!");
+                        log.info("该订单收款已拆单，不能重复拆单!");
                     } else {
                         //拆单
                         separateOrderService.separateOrderReceipt(receiptNumber);
@@ -236,6 +236,28 @@ public class SinkReceiver {
                     separateOrderService.sendReturnOrderRefundInf(returnNumber);
                     //发送经退单销差价扣除信息
                     separateOrderService.sendReturnOrderJxPriceDifferenceRefundInf(returnNumber);
+                } catch (IOException e) {
+                    log.warn("消息格式错误!");
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    log.warn("{}", e);
+                    e.printStackTrace();
+                }
+                break;
+            case CREDIT_RECHARGE_RECEIPT:
+                try {
+                    String receiptNumber = objectMapper.readValue(message.getContent(), String.class);
+                    Boolean isExist = separateOrderService.isCreditRechargeReceiptExist(receiptNumber);
+                    if (isExist) {
+                        log.info("该订单收款已拆单，不能重复拆单!");
+                    } else {
+                        //拆单
+                        separateOrderService.separateCreditRechargeReceipt(receiptNumber);
+
+                        //发送充值收款信息
+                        log.info("收款二次传ebs");
+                        separateOrderService.sendCreditRechargeReceiptInf(receiptNumber);
+                    }
                 } catch (IOException e) {
                     log.warn("消息格式错误!");
                     e.printStackTrace();

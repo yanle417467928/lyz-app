@@ -21,7 +21,8 @@ public enum MqMessageType {
     SELL_RETURN_ORDER_DETAILS("SELL_RETURN_ORDER_DETAILS", "发送退单销量明细到后台"),
     ORDER_RECEIVE("ORDER_RECEIVE", "自提单发货"),
     RETURN_ORDER_RECEIPT("RETURN_ORDER_RECEIPT", "自提单退单收货"),
-    WITHDRAW_REFUND("WITHDRAW_REFUND", "提现退款");
+    WITHDRAW_REFUND("WITHDRAW_REFUND", "提现退款"),
+    CREDIT_RECHARGE_RECEIPT("CREDIT_RECHARGE_RECEIPT", "信用金充值");
 
     private String value;
 

@@ -120,4 +120,12 @@ public interface AppSeparateOrderService {
     void separateOrderRefund(String returnNumber);
 
     void saveOrderRefundInf(ReturnOrderRefundInf refundInf);
+
+    Boolean isCreditRechargeReceiptExist(String receiptNumber);
+
+    void separateCreditRechargeReceipt(String receiptNumber);
+
+    void sendCreditRechargeReceiptInf(String receiptNumber);
+
+
 }
