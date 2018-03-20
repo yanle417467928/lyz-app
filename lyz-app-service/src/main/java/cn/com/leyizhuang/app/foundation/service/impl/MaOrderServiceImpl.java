@@ -840,8 +840,8 @@ public class MaOrderServiceImpl implements MaOrderService {
                     if (affectLine > 0) {
                         StPreDepositLogDO log = new StPreDepositLogDO();
                         log.setStoreId(preDeposit.getStoreId());
-                        log.setChangeMoney(billingDetails.getStPreDeposit());
-                        log.setBalance(preDeposit.getBalance() - billingDetails.getStPreDeposit());
+                        log.setChangeMoney(CountUtil.sub(0,billingDetails.getStPreDeposit()));
+                        log.setBalance(CountUtil.sub(preDeposit.getBalance(),billingDetails.getStPreDeposit()));
                         log.setCreateTime(LocalDateTime.now());
                         log.setOrderNumber(orderNumber);
                         log.setOperatorId(userId);
