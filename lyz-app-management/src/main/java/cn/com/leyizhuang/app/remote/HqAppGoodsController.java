@@ -54,26 +54,26 @@ public class HqAppGoodsController {
             logger.warn("addGoods OUT,同步存储商品信息失败，出参 resultDTO:{}", hqAppGoodsDTO.getMaterialsCode());
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "物料条码不能为空！", null);
         }
-        if (StringUtils.isBlank(hqAppGoodsDTO.getGoodsSpecification())) {
+/*        if (StringUtils.isBlank(hqAppGoodsDTO.getGoodsSpecification())) {
             logger.warn("addGoods OUT,同步存储商品信息失败，出参 resultDTO:{}", hqAppGoodsDTO.getGoodsSpecification());
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "物料规格不能为空！", null);
-        }
+        }*/
         if (StringUtils.isBlank(hqAppGoodsDTO.getGoodsUnit())) {
             logger.warn("addGoods OUT,同步存储商品信息失败，出参 resultDTO:{}", hqAppGoodsDTO.getGoodsUnit());
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "物料单位不能为空！", null);
         }
-        if (StringUtils.isBlank(hqAppGoodsDTO.getBrdName())) {
+/*        if (StringUtils.isBlank(hqAppGoodsDTO.getBrdName())) {
             logger.warn("addGoods OUT,同步存储商品信息失败，出参 resultDTO:{}", hqAppGoodsDTO.getBrdName());
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品品牌不能为空！", null);
-        }
+        }*/
         if (null == hqAppGoodsDTO.getPhysicalClassify()) {
             logger.warn("addGoods OUT,同步存储商品信息失败，出参 resultDTO:{}", hqAppGoodsDTO.getPhysicalClassify());
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "物理分类不能为空！", null);
         }
-        if (StringUtils.isBlank(hqAppGoodsDTO.getTypeName())) {
+/*        if (StringUtils.isBlank(hqAppGoodsDTO.getTypeName())) {
             logger.warn("addGoods OUT,同步存储商品信息失败，出参 resultDTO:{}", hqAppGoodsDTO.getTypeName());
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "物料类型不能为空！", null);
-        }
+        }*/
         if (null == hqAppGoodsDTO.getMaterialsEnable()) {
             logger.warn("addGoods OUT,同步存储商品信息失败，出参 resultDTO:{}", hqAppGoodsDTO.getMaterialsEnable());
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "物料状态不能为空！", null);
@@ -82,10 +82,10 @@ public class HqAppGoodsController {
             logger.warn("addGoods OUT,同步存储商品信息失败，出参 resultDTO:{}", hqAppGoodsDTO.getCompanyFlag());
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "公司标识不能为空！", null);
         }
-        if (null == hqAppGoodsDTO.getCreateTime()) {
+       /* if (null == hqAppGoodsDTO.getCreateTime()) {
             logger.warn("addGoods OUT,同步存储商品信息失败，出参 resultDTO:{}", hqAppGoodsDTO.getCreateTime());
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "创建时间不能为空！", null);
-        }
+        }*/
 
         try {
             GoodsDO goodsDO = goodsService.queryBySku(hqAppGoodsDTO.getSku());
@@ -108,7 +108,9 @@ public class HqAppGoodsController {
                 goods.setIsNew(hqAppGoodsDTO.getIsNew());
                 goods.setSortId(hqAppGoodsDTO.getSortId());
                 goods.setIsColorMixing(hqAppGoodsDTO.getIsColorMixing());
-                goods.setCreateTime(sdf.parse(hqAppGoodsDTO.getCreateTime()));
+                if(null != hqAppGoodsDTO.getCreateTime()){
+                    goods.setCreateTime(sdf.parse(hqAppGoodsDTO.getCreateTime()));
+                }
                 goods.setMaterialsCode(hqAppGoodsDTO.getMaterialsCode());
                 goods.setPhysicalClassify(hqAppGoodsDTO.getPhysicalClassify());
                 goods.setMaterialsEnable(hqAppGoodsDTO.getMaterialsEnable());
@@ -119,7 +121,7 @@ public class HqAppGoodsController {
                 goods.setMaterialsName(hqAppGoodsDTO.getMaterialsName());
 
                 goodsService.saveSynchronize(goods);
-                logger.warn("addGoods OUT,同步存储商品信息成功！",goods);
+                logger.warn("addGoods OUT,同步存储商品信息成功！", goods);
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             } else {
                 logger.warn("addGoods OUT,同步存储商品信息失败，该SKU商品已存在！");
@@ -184,48 +186,48 @@ public class HqAppGoodsController {
                 if (null != hqAppGoodsDTO.getIsIndexRecommend()) {
                     goodsDO.setIsIndexRecommend(hqAppGoodsDTO.getIsIndexRecommend());
                 }
-                if (null != hqAppGoodsDTO.getIsHot()){
+                if (null != hqAppGoodsDTO.getIsHot()) {
                     goodsDO.setIsHot(hqAppGoodsDTO.getIsHot());
                 }
-                if (null != hqAppGoodsDTO.getIsNew()){
+                if (null != hqAppGoodsDTO.getIsNew()) {
                     goodsDO.setIsNew(hqAppGoodsDTO.getIsNew());
                 }
-                if (null != hqAppGoodsDTO.getSortId()){
+                if (null != hqAppGoodsDTO.getSortId()) {
                     goodsDO.setSortId(hqAppGoodsDTO.getSortId());
                 }
-                if (null != hqAppGoodsDTO.getIsColorMixing()){
+                if (null != hqAppGoodsDTO.getIsColorMixing()) {
                     goodsDO.setIsColorMixing(hqAppGoodsDTO.getIsColorMixing());
                 }
-                if (null != hqAppGoodsDTO.getCreateTime()){
+                if (null != hqAppGoodsDTO.getCreateTime()) {
                     goodsDO.setCreateTime(sdf.parse(hqAppGoodsDTO.getCreateTime()));
                 }
-                if (!StringUtils.isBlank(hqAppGoodsDTO.getMaterialsCode())){
+                if (!StringUtils.isBlank(hqAppGoodsDTO.getMaterialsCode())) {
                     goodsDO.setMaterialsCode(hqAppGoodsDTO.getMaterialsCode());
                 }
-                if (null != hqAppGoodsDTO.getPhysicalClassify()){
+                if (null != hqAppGoodsDTO.getPhysicalClassify()) {
                     goodsDO.setPhysicalClassify(hqAppGoodsDTO.getPhysicalClassify());
                 }
-                if (null != hqAppGoodsDTO.getMaterialsEnable()){
+                if (null != hqAppGoodsDTO.getMaterialsEnable()) {
                     goodsDO.setMaterialsEnable(hqAppGoodsDTO.getMaterialsEnable());
                 }
-                if (!StringUtils.isBlank(hqAppGoodsDTO.getCompanyFlag())){
+                if (!StringUtils.isBlank(hqAppGoodsDTO.getCompanyFlag())) {
                     goodsDO.setCompanyFlag(hqAppGoodsDTO.getCompanyFlag());
                 }
-                if (!StringUtils.isBlank(hqAppGoodsDTO.getGoodsDetial())){
+                if (!StringUtils.isBlank(hqAppGoodsDTO.getGoodsDetial())) {
                     goodsDO.setGoodsDetial(hqAppGoodsDTO.getGoodsDetial());
                 }
-                if (!StringUtils.isBlank(hqAppGoodsDTO.getSearchKeyword())){
+                if (!StringUtils.isBlank(hqAppGoodsDTO.getSearchKeyword())) {
                     goodsDO.setSearchKeyword(hqAppGoodsDTO.getSearchKeyword());
                 }
-                if (!StringUtils.isBlank(hqAppGoodsDTO.getProductGrade())){
+                if (!StringUtils.isBlank(hqAppGoodsDTO.getProductGrade())) {
                     goodsDO.setProductGrade(hqAppGoodsDTO.getProductGrade());
                 }
-                if (!StringUtils.isBlank(hqAppGoodsDTO.getMaterialsName())){
+                if (!StringUtils.isBlank(hqAppGoodsDTO.getMaterialsName())) {
                     goodsDO.setMaterialsName(hqAppGoodsDTO.getMaterialsName());
                 }
 
                 goodsService.modifySynchronize(goodsDO);
-                logger.warn("updateGoods OUT,同步修改商品信息成功！",goodsDO);
+                logger.warn("updateGoods OUT,同步修改商品信息成功！", goodsDO);
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             } else {
                 logger.warn("updateGoods OUT,同步修改商品信息失败，该SKU商品已存在！");
@@ -240,24 +242,43 @@ public class HqAppGoodsController {
 
     /**
      * HQ-APP同步删除商品信息
-     * @param sku   物料编码
-     * @return  成功或失败
+     *
+     * @param sku 物料编码
+     * @return 成功或失败
      */
     @PostMapping(value = "/delete")
-    public ResultDTO<String> deleteGoods(String sku){
+    public ResultDTO<String> deleteGoods(String sku) {
         logger.warn("deleteGoods CALLED,同步删除商品信息，入参 sku:{}", sku);
-        if (StringUtils.isBlank(sku)){
+        if (StringUtils.isBlank(sku)) {
             logger.warn("deleteGoods OUT,同步删除商品信息失败，出参 sku:{}", sku);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "物料编号不能为空！", null);
         }
-        try{
+        try {
             goodsService.deleteSynchronize(sku);
             logger.warn("deleteGoods OUT,同步删除商品信息成功！");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             logger.warn("deleteGoods EXCEPTION,同步删除商品信息失败，出参 e:{}", e);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，同步删除商品信息失败", null);
+        }
+    }
+
+
+    /**
+     * HQ-APP同步商品信息
+     *
+     * @param hqAppGoodsDTO
+     * @return 成功或失败
+     */
+    @PostMapping(value = "/sync")
+    public ResultDTO<String> synchGoods(@RequestBody HqAppGoodsDTO hqAppGoodsDTO) {
+        logger.warn("synchGoods CALLED,同步商品信息，入参 hqAppGoodsDTO:{}", hqAppGoodsDTO);
+        GoodsDO goodsDO = goodsService.queryBySku(hqAppGoodsDTO.getSku());
+        if (null == goodsDO) {
+            return this.addGoods(hqAppGoodsDTO);
+        } else {
+            return this.updateGoods(hqAppGoodsDTO);
         }
     }
 }
