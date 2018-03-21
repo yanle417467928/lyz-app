@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.foundation.dto.CusPreDepositDTO;
 import cn.com.leyizhuang.app.foundation.dto.StorePreDepositDTO;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorationCompanyCreditBillingDO;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 
@@ -41,4 +42,11 @@ public interface RechargeService {
     RechargeOrder createStoreRechargeOrder(Integer identityType, Long storeId, Double money, String rechargeNo, OrderBillingPaymentType payType);
 
     RechargeReceiptInfo createStorePayRechargeReceiptInfo(Integer identityType, StorePreDepositDTO storePreDepositDTO, String rechargeNo, AppStore store);
+
+    RechargeReceiptInfo createCreditRechargeReceiptInfo(DecorationCompanyCreditBillingDO creditBillingDO, Double amount, String paymentType);
+
+    RechargeOrder createCreditRechargeOrder(DecorationCompanyCreditBillingDO creditBillingDO, Double amount, String paymentType);
+
+    List<RechargeReceiptInfo> findRechargeReceiptInfoByReceiptNumber(String receiptNumber);
+
 }

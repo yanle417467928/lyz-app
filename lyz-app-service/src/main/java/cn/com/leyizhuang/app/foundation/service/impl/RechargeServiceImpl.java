@@ -10,12 +10,15 @@ import cn.com.leyizhuang.app.foundation.dto.StorePreDepositDTO;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
+import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorationCompanyCreditBillingDO;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.CityService;
+import cn.com.leyizhuang.app.foundation.service.MaStoreService;
 import cn.com.leyizhuang.app.foundation.service.RechargeService;
 import org.apache.shiro.SecurityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +43,9 @@ public class RechargeServiceImpl implements RechargeService {
 
     @Resource
     private CityService cityService;
+
+    @Autowired
+    private MaStoreService maStoreService;
 
 
     @Override
@@ -280,6 +286,56 @@ public class RechargeServiceImpl implements RechargeService {
         receiptInfo.setReceiptNumber(OrderUtils.generateReceiptNumber(store.getCityId()));
         receiptInfo.setReplyCode(storePreDepositDTO.getMerchantOrderNumber());
         return receiptInfo;
+    }
+
+    @Override
+    public RechargeReceiptInfo createCreditRechargeReceiptInfo(DecorationCompanyCreditBillingDO creditBillingDO, Double amount, String paymentType) {
+        RechargeReceiptInfo receiptInfo = new RechargeReceiptInfo();
+        receiptInfo.setCreateTime(new Date());
+        receiptInfo.setPayTime(new Date());
+
+        receiptInfo.setAmount(amount);
+        receiptInfo.setPaymentSubjectType(PaymentSubjectType.DECORATE_MANAGER);
+        receiptInfo.setRechargeAccountType(RechargeAccountType.ST_CREDIT);
+        receiptInfo.setPaymentSubjectTypeDesc(receiptInfo.getPaymentSubjectType().getDescription());
+        receiptInfo.setRechargeAccountTypeDesc(receiptInfo.getRechargeAccountType().getDescription());
+        receiptInfo.setPayType(OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(paymentType));
+        receiptInfo.setPayTypeDesc(OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(paymentType).getDescription());
+        receiptInfo.setRechargeNo(creditBillingDO.getCreditBillingNo());
+        Long cityId = this.maStoreService.findCityIdByStoreId(creditBillingDO.getStoreId());
+        receiptInfo.setReceiptNumber(OrderUtils.generateReceiptNumber(cityId));
+        receiptInfo.setReplyCode("");
+        return receiptInfo;
+    }
+
+    @Override
+    public RechargeOrder createCreditRechargeOrder(DecorationCompanyCreditBillingDO creditBillingDO, Double amount, String paymentType) {
+        RechargeOrder rechargeOrder = new RechargeOrder();
+        rechargeOrder.setCreateTime(new Date());
+        //获取登录用户ID
+        ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
+        rechargeOrder.setCreatorId(shiroUser.getId());
+        rechargeOrder.setCreatorIdentityType(AppIdentityType.DECORATE_MANAGER);
+        rechargeOrder.setRechargeAccountType(RechargeAccountType.ST_CREDIT);
+        rechargeOrder.setStoreId(creditBillingDO.getStoreId());
+        rechargeOrder.setPaymentSubjectType(PaymentSubjectType.DECORATE_MANAGER);
+        rechargeOrder.setPaymentSubjectTypeDesc(rechargeOrder.getPaymentSubjectType().getDescription());
+        rechargeOrder.setRechargeAccountTypeDesc(rechargeOrder.getRechargeAccountType().getDescription());
+        rechargeOrder.setAmount(amount);
+        rechargeOrder.setRechargeNo(creditBillingDO.getCreditBillingNo());
+        rechargeOrder.setPayType(OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(paymentType));
+        rechargeOrder.setPayTypeDesc(OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(paymentType).getDescription());
+        rechargeOrder.setStatus(AppRechargeOrderStatus.PAID);
+        rechargeOrder.setPayUpTime(new Date());
+        return rechargeOrder;
+    }
+
+    @Override
+    public List<RechargeReceiptInfo> findRechargeReceiptInfoByReceiptNumber(String receiptNumber) {
+        if (null != receiptNumber) {
+            return rechargeDAO.findCreditRechargeReceiptInfoByRechargeNo(receiptNumber);
+        }
+        return null;
     }
 
 }

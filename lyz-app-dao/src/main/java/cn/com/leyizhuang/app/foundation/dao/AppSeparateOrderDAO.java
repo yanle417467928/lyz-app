@@ -181,4 +181,8 @@ public interface AppSeparateOrderDAO {
 
     List<OrderReceiptInf> getOrderReceiptInfByReceiptNumber(String receiptNumber);
 
+    Boolean isCreditRechargeReceiptExist(String receiptNumber);
+
+    List<RechargeReceiptInf> getCreditRechargeReceiptInfByReceiptNumber(String receiptNumber);
+
 }

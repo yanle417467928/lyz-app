@@ -56,12 +56,12 @@
          sort_id, company_flag, materials_code, physical_classify, materials_enable, goods_detail, search_keyword,
          product_grade, materials_name)
         VALUES
-            (#{createTime}, #{brdId}, #{brdName}, #{cId}, #{categoryName}, #{gtid}, #{typeName}, #{sku}, #{skuName},
+            (#{createTime}, #{brdId}, #{brandName}, #{cid}, #{categoryName}, #{gtid}, #{typeName}, #{sku}, #{skuName},
                             #{coverImageUri}, #{rotationImageUri}, #{goodsSpecification}, #{goodsUnit},
                                                                    #{isIndexRecommend}, #{isHot},
                                                                    #{isNew}, #{isColorMixing}, #{sortId},
                                                                    #{companyFlag}, #{materialsCode},
-                                                                   #{goodsPhysicalClassify}, #{materialsEnable},
+                                                                   #{physicalClassify}, #{materialsEnable},
              #{goodsDetial}, #{searchKeyword}, #{productGrade}, #{materialsName})
     </insert>
 
@@ -75,8 +75,8 @@
             <if test="null != brdId">
                 brd_id = #{brdId},
             </if>
-            <if test="null != brdName">
-                brand_name = #{brdName},
+            <if test="null != brandName">
+                brand_name = #{brandName},
             </if>
             <if test="null != cId">
                 cid = #{cId},
@@ -123,8 +123,8 @@
             <if test="null != materialsCode">
                 materials_code = #{materialsCode},
             </if>
-            <if test="null != goodsPhysicalClassify">
-                physical_classify = #{goodsPhysicalClassify},
+            <if test="null != physicalClassify">
+                physical_classify = #{physicalClassify},
             </if>
             <if test="null != materialsEnable">
                 materials_enable = #{materialsEnable},
