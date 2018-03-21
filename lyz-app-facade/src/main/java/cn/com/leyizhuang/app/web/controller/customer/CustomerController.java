@@ -325,7 +325,7 @@ public class CustomerController {
                     return resultDTO;
                 }
                 customer.setStoreId(store.getStoreId());
-                customer.setSalesConsultId(0L);
+                //customer.setSalesConsultId(0L);
                 customer.setCustomerType(AppCustomerType.RETAIL);
                 customer.setBindingTime(new Date());
                 customerService.update(customer);
