@@ -42,6 +42,9 @@ public class MaGoodsVO {
     //产品分类名称
     private String categoryName;
 
+    //品牌id
+    private Long brdId;
+
     //品牌名称
     private String brdName;
 
@@ -90,6 +93,7 @@ public class MaGoodsVO {
         if (null != goodsDO) {
             MaGoodsVO goodsVO = new MaGoodsVO();
             goodsVO.setId(goodsDO.getGid());
+            goodsVO.setBrdId(goodsDO.getBrdId());
             goodsVO.setSkuName(goodsDO.getSkuName());
             goodsVO.setSku(goodsDO.getSku());
             goodsVO.setBrdName(goodsDO.getBrandName());

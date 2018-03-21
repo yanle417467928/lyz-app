@@ -226,4 +226,19 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
             appEmployeeDAO.update(employeeDO);
         }
     }
+
+    /**
+     * 更新导购头像
+     * @param url
+     * @param empId
+     */
+    @Override
+    public void updatePhoto(String url , Long empId){
+        AppEmployee employeeDO = appEmployeeDAO.findById(empId);
+
+        if (employeeDO != null){
+            employeeDO.setPicUrl(url);
+            appEmployeeDAO.update(employeeDO);
+        }
+    }
 }

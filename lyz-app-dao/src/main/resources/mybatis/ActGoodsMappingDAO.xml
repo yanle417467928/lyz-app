@@ -70,6 +70,10 @@
         WHERE act_id = #{actId}
     </select>
 
+    <select id="queryGidByActId" parameterType="java.lang.Long" resultType="java.lang.Long">
+        SELECT DISTINCT g.gid from act_goods_mapping g where g.act_id = #{actId}
+    </select>
+
     <insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
         <selectKey resultType="long" keyProperty="id" order="AFTER">
             SELECT

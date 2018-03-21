@@ -108,6 +108,7 @@ public class GoodsDO {
             goodsDO.setGid(goodsVO.getId());
             goodsDO.setSkuName(goodsVO.getSkuName());
             goodsDO.setSku(goodsVO.getSku());
+            goodsDO.setBrdId(goodsVO.getBrdId());
             goodsDO.setBrandName(goodsVO.getBrdName());
             goodsDO.setGoodsUnit(goodsVO.getGoodsUnit());
             goodsDO.setCategoryName(goodsVO.getCategoryName());

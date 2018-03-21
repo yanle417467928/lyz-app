@@ -78,8 +78,8 @@
             <if test="null != brandName">
                 brand_name = #{brandName},
             </if>
-            <if test="null != cId">
-                cid = #{cId},
+            <if test="null != cid">
+                cid = #{cid},
             </if>
             <if test="null != categoryName">
                 category_name = #{categoryName},
@@ -963,6 +963,18 @@
         <set>
             <if test="null != cid">
                 cid = #{cid},
+            </if>
+            <if test="null != typeName">
+                type_name = #{typeName},
+            </if>
+            <if test="null != brdId">
+                brd_id = #{brdId},
+            </if>
+            <if test="null != brandName">
+                brand_name = #{brandName},
+            </if>
+            <if test="null != goodsSpecification">
+                goods_specification = #{goodsSpecification},
             </if>
             <if test="null != categoryName">
                 category_name = #{categoryName},

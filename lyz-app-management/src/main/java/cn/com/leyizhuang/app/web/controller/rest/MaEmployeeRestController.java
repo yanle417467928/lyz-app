@@ -507,6 +507,30 @@ public class MaEmployeeRestController extends BaseRestController {
     }
 
     /**
+     * 更新导购头像
+     *
+     * @param url
+     * @return
+     */
+    @PutMapping("/update/photo")
+    public ResultDTO updatePhoto(String url, Long empId) {
+        if (url == null || empId == null) {
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败，数据有误", null);
+        }
+
+        try {
+            maEmployeeService.updatePhoto(url,empId);
+        } catch (Exception e) {
+            logger.info("updatePhoto 更新导购头像失败");
+            logger.info(e.getMessage());
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败,发送异常", null);
+        }
+
+
+        return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "保存成功", null);
+    }
+
+    /**
      * 为导购生成二维码
      *
      * @param empId
@@ -582,9 +606,11 @@ public class MaEmployeeRestController extends BaseRestController {
 
         } catch (WriterException e) {
             e.printStackTrace();
+            logger.info(e.getMessage());
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "生成失败，发送异常", null);
         } catch (IOException e) {
             e.printStackTrace();
+            logger.info(e.getMessage());
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "生成失败，发送异常", null);
         }
     }
@@ -619,6 +645,7 @@ public class MaEmployeeRestController extends BaseRestController {
             out.close();
         } catch (IOException e) {
             e.printStackTrace();
+            logger.info(e.getMessage());
         }
 
 

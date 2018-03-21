@@ -64,7 +64,7 @@
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="id" type="text" class="form-control" id="id" readonly
                                            placeholder="商品ID"
-                                           value="${(goodsVO.id)!''}">
+                                           value="${(goodsVO.id)?c}">
                                 </div>
                             </div>
                         </div>
@@ -110,6 +110,36 @@
                                     <input name="skuName" type="text" class="form-control" id="skuName"
                                            placeholder="电商名称"
                                            value="${(goodsVO.skuName)!''}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group">
+                                <label for="goodsSpecification">商品规格
+                                    <i class="fa fa-question-circle i-tooltip hidden-xs" data-toggle="tooltip"
+                                       data-content="输入商品规格"></i>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+                                    <input name="goodsSpecification" type="text" class="form-control" id="goodsSpecification"
+                                           placeholder="商品规格"
+                                           value="${(goodsVO.goodsSpecification)!''}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group">
+                                <label for="brdName">商品品牌
+                                    <i class="fa fa-question-circle i-tooltip hidden-xs" data-toggle="tooltip"
+                                       data-content="输入商品品牌"></i>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+                                    <select id="brdName" name="brdId" class="form-control"
+                                            data-live-search="true">
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -182,6 +212,22 @@
                                             低档
                                         </option>
                                     </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group">
+                                <label for="typeName">类型名称
+                                    <i class="fa fa-question-circle i-tooltip hidden-xs" data-toggle="tooltip"
+                                       data-content="输入类型名称"></i>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+                                    <input name="typeName" type="text" class="form-control" id="typeName"
+                                           placeholder="类型名称"
+                                           value="${(goodsVO.typeName)!''}">
                                 </div>
                             </div>
                         </div>
@@ -268,59 +314,13 @@
                     </div>
                 </div>
             </div>
-
-            <!-- =================================下面是弹框======================================= -->
-            <div class="modal modal-primary fade" id="modal-primary">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title">正在添加信息</h4>
-                        </div>
-                        <div class="modal-body">
-                            <p id="primaryTitle">正在执行添加操作，您可以点击确认继续，点击关闭则退出。</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" id="primaryCloseBtn" class="btn btn-outline pull-left"
-                                    data-dismiss="modal">关闭
-                            </button>
-                            <button type="button" id="modalAddBtn" class="btn btn-outline">确认添加</button>
-                        </div>
-                    </div>
-                    <!-- /.modal-content -->
-                </div>
-                <!-- /.modal-dialog -->
-            </div>
-            <!-- /.modal -->
-            <div class="modal modal-danger fade" id="modal-danger">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title">正在删除信息</h4>
-                        </div>
-                        <div class="modal-body">
-                            <p id="dangerTitle">是否将此职位信息从数据中移除，点击确认继续，点击关闭取消操作。</p>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-outline pull-left" id="modalCloseBtn"
-                                    data-dismiss="modal">关闭
-                            </button>
-                            <button type="button" id="modalDelBtn" class="btn btn-outline">确定，我要删除</button>
-                        </div>
-                    </div>
-                    <!-- /.modal-content -->
-                </div>
-                <!-- /.modal-dialog -->
-            </div>
         </form>
     </div>
 </section>
 
 <script>
     var categoryName;
+    var brandId;
     $(function () {
         //初始化编辑器
         var id = $('#id')
@@ -333,9 +333,11 @@
             allowFileManager: true
         });
         categoryName = '${(goodsVO.categoryName)!''}';
+        brandId = '${(goodsVO.brdId)!''}';
         findGoodsCategorySelection();
+        findGoodsBrandSelection();
         var coverImageUri = '${(goodsVO.coverImageUri)!''}';
-        if (coverImageUri != null&& coverImageUri != '') {
+        if (coverImageUri != null && coverImageUri != '') {
             $('#coverImg').val(coverImageUri);
             $('#coverImageBox').html('<img  src="' + coverImageUri + '"' + ' class="img-rounded" style="height: 100px;width: 100px;" >');
         }
@@ -519,6 +521,29 @@
                 })
                 $("#goodsCategoryCode").append(goodsCategory);
                 $("#goodsCategoryCode").val(categoryName);
+            }
+        });
+    }
+
+
+    function findGoodsBrandSelection() {
+        var brdName = "";
+        $.ajax({
+            url: '/rest/goodsBrand/page/brandGrid',
+            method: 'GET',
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    brdName += "<option value=" + item.brdId + ">" + item.brandName + "</option>";
+                })
+                $("#brdName").append(brdName);
+                $("#brdName").val(brandId);
             }
         });
     }
