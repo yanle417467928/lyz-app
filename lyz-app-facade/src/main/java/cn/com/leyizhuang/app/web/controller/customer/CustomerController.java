@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -130,7 +129,7 @@ public class CustomerController {
             //判断是否是专供会员
             CustomerRankInfoResponse rankInfo = this.customerService.findCusRankinfoByCusId(customer.getCusId());
             String rankCode = null;
-            if (null != rankInfo && null != rankInfo.getRankCode() && !("".equals(rankInfo.getRankCode()))){
+            if (null != rankInfo && null != rankInfo.getRankCode() && !("".equals(rankInfo.getRankCode()))) {
                 rankCode = rankInfo.getRankCode();
             }
 
@@ -199,6 +198,9 @@ public class CustomerController {
                     phoneUser.setOpenId(registryParam.getOpenId());
                     phoneUser.setNickName(registryParam.getNickName());
                     phoneUser.setPicUrl(registryParam.getPicUrl());
+                    if (null != phoneUser.getName() && !"".equals(phoneUser.getName())) {
+                        phoneUser.setName(registryParam.getName());
+                    }
                     customerService.update(phoneUser);
                     String accessToken = JwtUtils.createJWT(String.valueOf(phoneUser.getCusId()), String.valueOf(phoneUser.getMobile()),
                             JwtConstant.EXPPIRES_SECOND * 1000);
@@ -929,12 +931,13 @@ public class CustomerController {
 
     /**
      * 修改顾客类型
-     * @param userId    用户id
-     * @param identityType  用户类型
+     *
+     * @param userId       用户id
+     * @param identityType 用户类型
      * @return
      */
     @PostMapping(value = "/update/type", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> updateCustomerType(Long userId,Integer identityType){
+    public ResultDTO<Object> updateCustomerType(Long userId, Integer identityType) {
         logger.info("updateCustomerType CALLED,修改顾客类型，入参 userId {},identityType{}", userId, identityType);
         ResultDTO<Object> resultDTO;
         if (null == userId) {
@@ -950,7 +953,7 @@ public class CustomerController {
         }
         try {
             AppCustomer customer = customerService.findById(userId);
-            if (customer.getCustomerType().equals(AppCustomerType.MEMBER)){
+            if (customer.getCustomerType().equals(AppCustomerType.MEMBER)) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此顾客已经是会员，修改顾客类型失败！", null);
                 logger.info("updateCustomerType OUT,修改顾客类型失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -959,7 +962,7 @@ public class CustomerController {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("updateCustomerType OUT修改顾客类型成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
-        }catch (Exception e){
+        } catch (Exception e) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，修改顾客类型失败", null);
             logger.warn("updateCustomerType OUT,修改顾客类型失败,出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
