@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.GoodsBrandType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.GoodsDAO;
 import cn.com.leyizhuang.app.foundation.dto.GoodsDTO;
@@ -408,6 +409,8 @@ public class GoodsServiceImpl implements GoodsService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateGoods(MaGoodsVO goodsVO) {
+        GoodsBrandType goodsBrandType = GoodsBrandType.getGoodsBrandTypeByValue(goodsVO.getBrdId().intValue());
+        goodsVO.setBrdName(goodsBrandType.getDescription());
         GoodsDO goodsDO = GoodsDO.transform(goodsVO);
         goodsDAO.updateGoods(goodsDO);
     }
