@@ -177,19 +177,21 @@ public class MaDecorationCompanyCreditBillingRestController extends BaseRestCont
                     Boolean flag = this.maDecorationCompanyCreditBillingService.repaymentCreditBilling(creditBillingDTO.getId(), creditBillingDTO.getAmount(), creditBillingDTO.getPaymentType());
                     if (flag) {
                         DecorationCompanyCreditBillingDO creditBillingDO = this.maDecorationCompanyCreditBillingService.getCreditBillingById(creditBillingDTO.getId());
-
+//生成充值单
+                        RechargeOrder rechargeOrder = rechargeService.createCreditRechargeOrder(creditBillingDO, creditBillingDTO.getAmount(), creditBillingDTO.getPaymentType());
                         if (creditBillingDTO.getAmount() > 0) {
 
-                            //生成充值单
-                            RechargeOrder rechargeOrder = rechargeService.createCreditRechargeOrder(creditBillingDO, creditBillingDTO.getAmount(), creditBillingDTO.getPaymentType());
+                            rechargeOrder.setRechargeNo(creditBillingDO.getCreditBillingNo());
                             rechargeService.saveRechargeOrder(rechargeOrder);
                             //创建充值单收款
-                            RechargeReceiptInfo receiptInfo = rechargeService.createCreditRechargeReceiptInfo(creditBillingDO, creditBillingDTO.getAmount(), creditBillingDTO.getPaymentType());
+                            RechargeReceiptInfo receiptInfo = rechargeService.createCreditRechargeReceiptInfo(creditBillingDO, creditBillingDTO, creditBillingDTO.getPaymentType());
                             rechargeService.saveRechargeReceiptInfo(receiptInfo);
 
                             //将收款记录入拆单消息队列
                             sinkSender.sendCreditRechargeReceipt(receiptInfo.getReceiptNumber());
                         } else {
+                            rechargeOrder.setWithdrawNo(creditBillingDO.getCreditBillingNo());
+                            rechargeService.saveRechargeOrder(rechargeOrder);
                             //生成提现退款信息
                             WithdrawRefundInfo withdrawRefundInfo = new WithdrawRefundInfo();
                             withdrawRefundInfo.setCreateTime(new Date());
@@ -202,6 +204,7 @@ public class MaDecorationCompanyCreditBillingRestController extends BaseRestCont
                             withdrawRefundInfo.setWithdrawAmount(CountUtil.mul(creditBillingDTO.getAmount(), -1));
                             withdrawRefundInfo.setWithdrawSubjectType(PaymentSubjectType.DECORATE_MANAGER);
                             withdrawRefundInfo.setWithdrawSubjectTypeDesc(withdrawRefundInfo.getWithdrawSubjectType().getDescription());
+                            withdrawRefundInfo.setWithdrawType(creditBillingDTO.getBankCode());
                             withdrawService.saveWithdrawRefundInfo(withdrawRefundInfo);
 
                             //提现退款接口信息发送EBS

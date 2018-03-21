@@ -62,7 +62,7 @@ public class RechargeReceiptInf implements Serializable {
     /**
      * 充值类型（银行清单）
      */
-    private ChargeType chargeType;
+    private String chargeType;
 
     /**
      * 收款方式

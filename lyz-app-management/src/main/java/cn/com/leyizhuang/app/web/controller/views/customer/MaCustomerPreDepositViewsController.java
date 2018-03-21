@@ -1,7 +1,9 @@
 package cn.com.leyizhuang.app.web.controller.views.customer;
 
 import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
+import cn.com.leyizhuang.app.foundation.service.BankService;
 import cn.com.leyizhuang.app.foundation.service.MaCustomerService;
+import cn.com.leyizhuang.app.foundation.vo.management.BankVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
@@ -30,6 +32,9 @@ public class MaCustomerPreDepositViewsController extends BaseController {
 
     @Autowired
     private MaCustomerService maCustomerService;
+
+    @Autowired
+    private BankService bankService;
 
     /**
      * @title   跳转顾客预存款列表
@@ -70,6 +75,8 @@ public class MaCustomerPreDepositViewsController extends BaseController {
             paymentTypes.add(OrderBillingPaymentType.TRANSFER_ACCOUNTS);
             map.addAttribute("paymentTypes", paymentTypes);
             map.addAttribute("customerPreDepositVO", customerPreDepositVO);
+            List<BankVO> bankVOS = this.bankService.findBankByIsEnable();
+            map.addAttribute("bankVOS", bankVOS);
         }
         return "/views/customer/customer_pre_deposit_edit";
     }
