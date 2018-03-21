@@ -151,7 +151,7 @@
                     <div class="row">
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
-                                <label for="exampleInputFile">上传二维码</label>
+                                <label for="exampleInputFile">上传头像</label>
                                 <input id="uploadQrcodeBtn" type="file" name="file" multiple class="file-loading">
                             </div>
                         </div>
@@ -253,8 +253,10 @@
                 title: '上传二维码',
                 align: 'center',
                 formatter: function (value, row, index) {
-                        return '<buttun class="btn-sm btn-success" onclick="$qrcode.open(' + value + ')">上传二维码</buttun>' +
-                                '<buttun class="btn-sm btn-success" onclick="$qrcode.create(' + value + ')">生成二维码</buttun>';
+//                        return '<buttun class="btn-sm btn-success" onclick="$qrcode.open(' + value + ')">上传二维码</buttun>' +
+//                                '<buttun class="btn-sm btn-success" onclick="$qrcode.create(' + value + ')">生成二维码</buttun>';
+                    return '<buttun class="btn-sm btn-primary" onclick="$qrcode.open(' + value + ')">上传头像</buttun>' +
+                            '<buttun class="btn-sm btn-success" onclick="$qrcode.create(' + value + ')">生成二维码</buttun>';
                 }
             },
         ]);
@@ -631,17 +633,17 @@
             var picUrl = $('#coverImg').val();
 
             if (empId == null || empId == "" || empId == undefined){
-                $notify.warning("保存失败，请重新上传二维码");
+                $notify.warning("保存失败，请重新上传");
                 return false;
             }
             if (picUrl == null || picUrl == "" || picUrl == undefined){
-                $notify.warning("保存失败，请重新上传二维码")
+                $notify.warning("保存失败，请重新上传")
                 return false;
             }
 
-            var data = {"qrcodeUrl":picUrl,"empId":empId}
+            var data = {"url":picUrl,"empId":empId}
 
-            $http.PUT("/rest/employees/update/qrcode",data,uploadSuccess);
+            $http.PUT("/rest/employees/update/photo",data,uploadSuccess);
 
             $("#empId").val("");
             $("#coverImageBox").html("");
