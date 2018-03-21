@@ -4,9 +4,11 @@ import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.AppSellerType;
 import cn.com.leyizhuang.app.core.constant.SexType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
+import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.CityService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.utils.Base64Utils;
@@ -41,6 +43,8 @@ public class HqAppEmployeeController {
     @Resource
     private CityService cityService;
 
+    @Resource
+    private AppStoreService appStoreService;
 
     @PostMapping(value = "/sync")
     public ResultDTO<String> employeeSync(@RequestBody HqAppEmployeeDTO employeeDTO) {
@@ -84,6 +88,9 @@ public class HqAppEmployeeController {
             employee.setBirthday(employeeDTO.getBirthday());
             employee.setSex(employeeDTO.getSex() ? SexType.MALE : SexType.FEMALE);
             employee.setStatus(employeeDTO.getStatus() != 0);
+            employee.setPicUrl(employeeDTO.getPicUrl());
+            employee.setManagerId(employeeDTO.getManagerId());
+            employee.setCreateTime(employeeDTO.getCreateTime());
             switch (employeeDTO.getPositionType()) {
                 case "DG":
                     employee.setIdentityType(AppIdentityType.SELLER);
@@ -112,7 +119,13 @@ public class HqAppEmployeeController {
                 logger.warn("employeeSync OUT,同步新增员工信息失败，出参 city:{}", city);
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此城市不允许为空！", null);
             }
+            AppStore store = appStoreService.findByStoreCode(employeeDTO.getStoreCode());
+            if (null == store) {
+                logger.warn("employeeSync OUT,同步新增员工信息失败，出参 store:{}", store);
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此门店不允许为空！", null);
+            }
             employee.setCityId(city.getCityId());
+            employee.setStoreId(store.getStoreId());
             String salt = employee.generateSalt();
             employee.setSalt(salt);
             try {
@@ -152,6 +165,9 @@ public class HqAppEmployeeController {
             employee.setBirthday(employeeDTO.getBirthday());
             employee.setSex(employeeDTO.getSex() ? SexType.MALE : SexType.FEMALE);
             employee.setStatus(employeeDTO.getStatus() != 0);
+            employee.setPicUrl(employeeDTO.getPicUrl());
+            employee.setManagerId(employeeDTO.getManagerId());
+            employee.setCreateTime(employeeDTO.getCreateTime());
             switch (employeeDTO.getPositionType()) {
                 case "DG":
                     employee.setIdentityType(AppIdentityType.SELLER);
@@ -180,7 +196,13 @@ public class HqAppEmployeeController {
                 logger.warn("employeeSync OUT,同步修改员工信息失败，出参 city:{}", city);
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此城市不允许为空！", null);
             }
+            AppStore store = appStoreService.findByStoreCode(employeeDTO.getStoreCode());
+            if (null == store) {
+                logger.warn("employeeSync OUT,同步新增员工信息失败，出参 store:{}", store);
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此门店不允许为空！", null);
+            }
             employee.setCityId(city.getCityId());
+            employee.setStoreId(store.getStoreId());
             String salt = employee.generateSalt();
             employee.setSalt(salt);
             try {

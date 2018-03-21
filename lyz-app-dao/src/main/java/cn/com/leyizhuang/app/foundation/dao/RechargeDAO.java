@@ -30,4 +30,7 @@ public interface RechargeDAO {
     List<RechargeReceiptInfo> findRechargeReceiptInfoByRechargeNo(String rechargeNo);
 
     List<RechargeOrder> findRechargeOrderByRechargeNo(String rechargeNo);
+
+    List<RechargeReceiptInfo> findCreditRechargeReceiptInfoByRechargeNo(String receiptNumber);
+
 }

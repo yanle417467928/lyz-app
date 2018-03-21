@@ -332,7 +332,7 @@
             fileManagerJson: '/rest/goods/updateGoodsDetial',
             allowFileManager: true
         });
-        categoryName = '${(goodsVO.categoryName)}';
+        categoryName = '${(goodsVO.categoryName)!''}';
         findGoodsCategorySelection();
         var coverImageUri = '${(goodsVO.coverImageUri)!''}';
         if (coverImageUri != null&& coverImageUri != '') {
@@ -400,7 +400,7 @@
                             data: function () {
                                 return {
                                     skuName: $('#skuName').val(),
-                                    id: $('#id').val(),
+                                    id: $('#id').val().replace(/,/g, ''),
                                 }
                             }
                         },
@@ -435,7 +435,7 @@
                             data: function () {
                                 return {
                                     sortId: $('#sortId').val(),
-                                    id: $('#id').val(),
+                                    id: $('#id').val().replace(/,/g, ''),
                                 }
                             }
                         },
@@ -465,6 +465,7 @@
             $.each(origin, function () {
                 data[this.name] = this.value;
             });
+            data['id'] = $('#id').val().replace(/,/g, '');
             if (null === $global.timer) {
                 $global.timer = setTimeout($loading.show, 2000);
                 var url = '/rest/goods/update';

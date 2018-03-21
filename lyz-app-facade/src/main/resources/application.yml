@@ -95,7 +95,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://119.23.149.7:1111/eureka/,http://119.23.149.7:2222/eureka/
+      defaultZone: http://127.0.0.1:1111/eureka/,http://127.0.0.1:2222/eureka/
 
 deploy:
   image-path: src/main/resources/static/images

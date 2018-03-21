@@ -154,7 +154,7 @@ public class MaStoreRestController extends BaseRestController {
 
 
     /**
-     * 查询该城市ID的装饰公司门店列表(下拉框)
+     * 查询该城市ID的门店列表(下拉框)
      *
      * @param cityId
      * @return
