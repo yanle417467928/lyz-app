@@ -175,6 +175,7 @@
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
+
     </select>
 
 
