@@ -107,7 +107,8 @@
 
         INSERT INTO inter_atw_return_order_header (create_time, diy_site_address,diy_site_id, diy_site_tel,
         diy_site_title, order_number, remark_info,
-        return_number, return_time, status_id, deliver_type_title, shopping_address,
+        return_number, return_time, status_id, deliver_type_title, shopping_address, province, city, disctrict,
+        subdistrict, residence_name,
         seller_real_name, goods_line_quantity, creator, creator_phone, rejecter,
         rejecter_phone, rejecter_address, delivery_clerk_no)
             SELECT
@@ -123,6 +124,11 @@
                 #{statusId},
                 #{deliverTypeTitle},
                 #{shoppingAddress},
+        #{province},
+        #{city},
+        #{disctrict},
+        #{subdistrict},
+        #{residenceName},
         #{sellerRealName},
         #{goodsLineQuantity},
         #{creator},

@@ -134,6 +134,11 @@ public class AppXmlUtil {
                 "<turn_price>" + returnOrder.getReturnPrice() + "</turn_price>" +
                 "<turn_type></turn_type>" +
                 "<shopping_address>" + returnOrder.getShoppingAddress() + "</shopping_address>" +
+                "<province>" + returnOrder.getProvince() + "</province>" +
+                "<city>" + returnOrder.getCity() + "</city>" +
+                "<disctrict>" + returnOrder.getDisctrict() + "</disctrict>" +
+                "<subdistrict>" + returnOrder.getSubdistrict() + "</subdistrict>" +
+                "<residence_name>" + returnOrder.getResidenceName() + "</residence_name>" +
                 "<seller_real_name>" + returnOrder.getSellerRealName() + "</seller_real_name>" +
                 "<goods_line_quantity>" + returnOrder.getGoodsLineQuantity() + "</goods_line_quantity>" +
                 "<creator>" + returnOrder.getCreator() + "</creator>" +
