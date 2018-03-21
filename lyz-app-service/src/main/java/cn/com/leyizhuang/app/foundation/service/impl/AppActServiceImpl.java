@@ -74,6 +74,44 @@ public class AppActServiceImpl implements AppActService {
         return actBaseDAO.queryList();
     }
 
+    @Override
+    public List<ActBaseDO> queryValidListByStoreId(Long storeId){
+
+        if (storeId == null){
+            return null;
+        }
+
+        return actBaseDAO.queryValidListByStoreId(storeId,LocalDateTime.now());
+    }
+
+    @Override
+    public List<PromotionListViewResponse> queryValidRepListByStoreId(Long userId , AppIdentityType identityType,Long storeId){
+        if (storeId == null){
+            return null;
+        }
+
+        List<ActBaseDO> actBaseDOList = actBaseDAO.queryValidListByStoreId(storeId,LocalDateTime.now());
+        List<PromotionListViewResponse> viewResponses = new ArrayList<>();
+
+        for (ActBaseDO actBaseDO : actBaseDOList){
+            PromotionListViewResponse viewResponse = new PromotionListViewResponse();
+
+            viewResponse.setCityId(actBaseDO.getCityId());
+            viewResponse.setPromotionId(actBaseDO.getId());
+            viewResponse.setPromotionTitle(actBaseDO.getTitle());
+            viewResponse.setPicUrl(actBaseDO.getPicUrl());
+
+            // 查询出参与促销的商品
+            List<Long> gidList =  actGoodsMappingDAO.queryGidByActId(actBaseDO.getId());
+
+            List<GiftListResponseGoods> goodsListResponseGoods = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserIdAndIdentityType(
+                    gidList, userId, identityType);
+            viewResponse.setGoodsList(goodsListResponseGoods);
+            viewResponses.add(viewResponse);
+        }
+
+        return viewResponses;
+    }
 
     /**
      * 检查促销是否过期 未过期：true; 过期：false

@@ -65,4 +65,6 @@ public interface MaEmployeeService {
     PageInfo<GuideVO> queryGuideRepaymentPage(Integer page, Integer size);
 
     void updateQrcode(String qrcodeUrl , Long empId);
+
+    void updatePhoto(String url , Long empId);
 }

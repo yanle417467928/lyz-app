@@ -6,10 +6,7 @@ import cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActGiftDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActGoodsMappingDO;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActStoreDO;
-import cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.PromotionDiscountListResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.PromotionsGiftListResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.PromotionsListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import com.github.pagehelper.PageInfo;
 import org.springframework.ui.ModelMap;
 
@@ -23,6 +20,10 @@ import java.util.List;
 public interface AppActService {
 
     List<ActBaseDO> queryList();
+
+    List<ActBaseDO> queryValidListByStoreId(Long storeId);
+
+    List<PromotionListViewResponse> queryValidRepListByStoreId(Long userId , AppIdentityType identityType, Long storeId);
 
     PageInfo<ActBaseDO> queryPageVO(Integer page, Integer size ,String keywords,String status);
 
