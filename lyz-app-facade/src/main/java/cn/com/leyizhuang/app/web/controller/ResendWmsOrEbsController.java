@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -51,7 +52,7 @@ public class ResendWmsOrEbsController {
         ResultDTO<Object> resultDTO;
         logger.info("retransmissionToWms CALLED,重传订单到wms，入参 method:{}, orderNumber:{}", method, orderNumber);
         if (null == method) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "传输方式不能为空!", null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "传输方式不能为空!", WmsInterfaceMethodType.values());
             logger.info("retransmissionToWms OUT,重传订单到wms，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
@@ -69,6 +70,9 @@ public class ResendWmsOrEbsController {
                     return resultDTO;
                 }
                 iCallWms.sendToWmsRequisitionOrderAndGoods(orderNumber);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "重传成功!", null);
+                logger.info("retransmissionToWms OUT,重传订单到wms，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
             } else if (WmsInterfaceMethodType.RE_ORDER.getValue().equals(method)) {
                 List<AtwRequisitionOrderGoods> requisitionOrderGoodsList = appToWmsOrderService.findAtwRequisitionOrderGoodsByOrderNo(orderNumber);
                 if (AssertUtil.isEmpty(requisitionOrderGoodsList)) {
@@ -77,6 +81,9 @@ public class ResendWmsOrEbsController {
                     return resultDTO;
                 }
                 iCallWms.sendToWmsReturnOrderAndGoods(orderNumber);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "重传成功!", null);
+                logger.info("retransmissionToWms OUT,重传订单到wms，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
             } else if (WmsInterfaceMethodType.C_ORDER.getValue().equals(method)) {
                 AtwCancelOrderRequest atwCancelOrderRequest = appToWmsOrderService.findAtwCancelOrderByOrderNo(orderNumber);
                 if (atwCancelOrderRequest.getSendFlag()) {
@@ -85,6 +92,9 @@ public class ResendWmsOrEbsController {
                     return resultDTO;
                 }
                 iCallWms.sendToWmsCancelOrder(orderNumber);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "重传成功!", null);
+                logger.info("retransmissionToWms OUT,重传订单到wms，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
             } else if (WmsInterfaceMethodType.C_RE_ORDER.getValue().equals(method)) {
                 AtwCancelReturnOrderRequest cancelReturnOrderRequest = appToWmsOrderService.findAtwCancelReturnOrderByReturnNo(orderNumber);
                 if (cancelReturnOrderRequest.getSendFlag()) {
@@ -93,6 +103,9 @@ public class ResendWmsOrEbsController {
                     return resultDTO;
                 }
                 iCallWms.sendToWmsCancelReturnOrder(orderNumber);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "重传成功!", null);
+                logger.info("retransmissionToWms OUT,重传订单到wms，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
             } else if (WmsInterfaceMethodType.RE_ORDER_ENTER.getValue().equals(method)) {
                 AtwReturnOrderCheckEnter atwReturnOrderCheckEnter = appToWmsOrderService.findAtwReturnOrderCheckEnterByReturnNo(orderNumber);
                 if (atwReturnOrderCheckEnter.getSendFlag()) {
@@ -101,8 +114,17 @@ public class ResendWmsOrEbsController {
                     return resultDTO;
                 }
                 iCallWms.sendToWmsReturnOrderCheck(orderNumber);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "重传成功!", null);
+                logger.info("retransmissionToWms OUT,重传订单到wms，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
             }
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "重传成功!", null);
+            List<String> typeList = new ArrayList<>();
+            typeList.add(WmsInterfaceMethodType.ORDER.toString());
+            typeList.add(WmsInterfaceMethodType.RE_ORDER.toString());
+            typeList.add(WmsInterfaceMethodType.C_ORDER.toString());
+            typeList.add(WmsInterfaceMethodType.C_RE_ORDER.toString());
+            typeList.add(WmsInterfaceMethodType.RE_ORDER_ENTER.toString());
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "传输方式不正确!请选择:", typeList);
             logger.info("retransmissionToWms OUT,重传订单到wms，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {

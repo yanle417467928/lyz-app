@@ -1,7 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms;
 
 import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
-import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.SalesConsult;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
@@ -73,6 +72,27 @@ public class AtwReturnOrder {
      * 原订单配送方式
      */
     private String deliverTypeTitle;
+
+    /**
+     * 省
+     */
+    private String province;
+    /**
+     * 街道
+     */
+    private String subdistrict;
+    /**
+     * 小区名
+     */
+    private String residenceName;
+    /**
+     * 城市
+     */
+    private String city;
+    /**
+     * 行政区划
+     */
+    private String disctrict;
     /**
      * 退款金额
      */
@@ -157,6 +177,11 @@ public class AtwReturnOrder {
         atwReturnOrder.setReturnTime(baseInfo.getReturnTime());
         atwReturnOrder.setSellerRealName(orderBaseInfo.getSalesConsultName());
         atwReturnOrder.setShoppingAddress(logisticInfo.getReturnFullAddress());
+//        atwReturnOrder.setProvince();
+        atwReturnOrder.setCity(logisticInfo.getDeliveryCity());
+        atwReturnOrder.setDisctrict(logisticInfo.getDeliveryCounty());
+        atwReturnOrder.setSubdistrict(logisticInfo.getDeliveryStreet());
+        atwReturnOrder.setResidenceName(logisticInfo.getResidenceName());
         atwReturnOrder.setStatusId(baseInfo.getReturnStatus().getValue());
 
         return atwReturnOrder;
