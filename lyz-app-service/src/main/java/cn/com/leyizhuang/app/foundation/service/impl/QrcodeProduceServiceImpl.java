@@ -6,6 +6,7 @@ import com.google.zxing.WriterException;
 import me.luzhuo.qrcode2.encode.*;
 import me.luzhuo.qrcode2.utils.QRUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ClassUtils;
 import sun.net.www.protocol.http.HttpURLConnection;
 
 import java.io.*;
@@ -21,7 +22,7 @@ public class QrcodeProduceServiceImpl implements QrcodeProduceService {
     private static int width = 340; // 二维码图片宽度
     private static int height = 340; // 二维码图片高度
     private static File savefile = new File("C:\\我的电脑\\" + File.separator + System.currentTimeMillis() + ".png"); // 保存文件
-    private static File basemapfile =  new File("lyz-app-management\\src\\main\\resources\\static\\images\\base.png"); // 底图
+    private static File basemapfile =  new File(ClassUtils.getDefaultClassLoader().getResource("").getPath()+"\\src\\main\\resources\\static\\images\\base.png"); // 底图
     private static File logofile = new File("C:\\我的电脑\\logo.jpg"); // logo
 
 
@@ -59,7 +60,7 @@ public class QrcodeProduceServiceImpl implements QrcodeProduceService {
      * @return
      */
     public File createQrcode(String url) throws WriterException, IOException{
-        String savePath = "lyz-app-management\\src\\main\\resources\\static\\images";
+        String savePath = ClassUtils.getDefaultClassLoader().getResource("").getPath()+"\\src\\main\\resources\\static\\images";
         String fileName = File.separator + System.currentTimeMillis()+".png";
         savefile = new File(savePath+fileName);
         // 计算底图的尺寸, 可以根据底图的尺寸计算二维码的大小, 没有该需求则不需要

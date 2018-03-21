@@ -99,6 +99,9 @@ public class ActBaseDO{
     // 促销状态
     private ActStatusType status;
 
+    //图片地址
+    private String picUrl;
+
     // 排序号
     private Integer sortId;
 

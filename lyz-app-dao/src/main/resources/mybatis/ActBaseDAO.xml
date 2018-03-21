@@ -214,6 +214,13 @@
         and a.status = 'PUBLISH'
     </select>
 
+    <select id="queryValidListByStoreId" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM act_base a RIGHT JOIN (SELECT  DISTINCT act_id FROM  act_stores = #{storeId}) s ON a.id = s.act_id
+        where a.status = 'PUBLISH' and a.end_time &gt; #{now}
+    </select>
+
     <insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
     <selectKey resultType="long" keyProperty="id" order="AFTER">
         SELECT
@@ -231,7 +238,6 @@
         #{item.isDouble,jdbcType=BIT}, #{item.giftChooseNumber,jdbcType=INTEGER}, #{item.fullAmount,jdbcType=DECIMAL},
         #{item.fullNumber,jdbcType=INTEGER},#{item.sortId,jdbcType=INTEGER})
     </foreach>
-
 </insert>
 
 </mapper>

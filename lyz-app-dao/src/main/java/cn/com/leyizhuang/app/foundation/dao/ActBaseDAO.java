@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.websocket.server.PathParam;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -22,6 +23,8 @@ public interface ActBaseDAO{
     void update(ActBaseDO actBaseDO);
 
     List<ActBaseDO> queryList();
+
+    List<ActBaseDO> queryValidListByStoreId(@Param("storeId") Long storeId,@Param("now") LocalDateTime now);
 
     ActBaseDO queryById(@Param("id") Long id);
 

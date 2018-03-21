@@ -522,6 +522,7 @@ public class MaEmployeeRestController extends BaseRestController {
             maEmployeeService.updatePhoto(url,empId);
         } catch (Exception e) {
             logger.info("updatePhoto 更新导购头像失败");
+            logger.info(e.getMessage());
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "保存失败,发送异常", null);
         }
 
@@ -605,9 +606,11 @@ public class MaEmployeeRestController extends BaseRestController {
 
         } catch (WriterException e) {
             e.printStackTrace();
+            logger.info(e.getMessage());
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "生成失败，发送异常", null);
         } catch (IOException e) {
             e.printStackTrace();
+            logger.info(e.getMessage());
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "生成失败，发送异常", null);
         }
     }
@@ -642,6 +645,7 @@ public class MaEmployeeRestController extends BaseRestController {
             out.close();
         } catch (IOException e) {
             e.printStackTrace();
+            logger.info(e.getMessage());
         }
 
 
