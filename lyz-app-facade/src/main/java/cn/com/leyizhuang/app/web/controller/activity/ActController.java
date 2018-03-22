@@ -2,8 +2,13 @@ package cn.com.leyizhuang.app.web.controller.activity;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.PromotionListViewResponse;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.AppActService;
+import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
+import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
 import cn.com.leyizhuang.app.web.controller.order.OrderController;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -14,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +38,12 @@ public class ActController {
     @Autowired
     private AppActService actService;
 
+    @Autowired
+    private AppCustomerService appCustomerService;
+
+    @Autowired
+    private AppEmployeeService appEmployeeService;
+
     @RequestMapping("/query/list")
     public Map<String,Object> queryActBaseDOList() {
         Map<String,Object> res = new HashMap<>();
@@ -47,11 +59,36 @@ public class ActController {
     }
 
     @PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getValidActivityList(Long userId , Integer identityType,Long storeId){
+    public ResultDTO<Object> getValidActivityList(Long userId , Integer identityType){
+        Long storeId = null;
 
-        if (userId == null || identityType == null || storeId == null){
+        if (userId == null || identityType == null){
             new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "获取促销失败，数据有误！", "");
         }
+
+        if (identityType.equals(0)){
+            AppEmployee employ = appEmployeeService.findById(userId);
+
+            storeId = employ == null ? null : employ.getStoreId();
+        }else if(identityType.equals(6)){
+            try {
+                AppCustomer customer = appCustomerService.findById(userId);
+
+                storeId = customer == null ? null : customer.getStoreId();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+                logger.info(e.getMessage());
+                logger.info("getValidActivityList 促销列表报错 导购信息错误");
+            }
+
+        }else {
+            new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "获取促销失败，数据有误！", "");
+        }
+
+        if (storeId == null){
+            new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "获取促销失败，数据有误！", "");
+        }
+
         List<PromotionListViewResponse> promotionListViewResponseList = new ArrayList<>();
         try {
             // 查询出该门店下发布 并且未过期的促销

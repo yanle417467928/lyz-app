@@ -1,1 +1,9 @@
-扫码失败，请再试一次
+<head>
+
+</head>
+<body>
+
+<h1><#if message??>${message!''}</#if></h1>
+
+
+</body>

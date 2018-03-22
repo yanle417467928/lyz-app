@@ -178,6 +178,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
         if (null != userId && null != goodsMoney) {
             Map<String, Object> lbMap = new HashMap<>(2);
             Integer qty = customerDAO.findLeBiQuantityByUserId(userId);
+            qty = null == qty ? 0 : qty;
             Double rebate = CountUtil.div(qty, AppConstant.RMB_TO_LEBI_RATIO);
             if (rebate >= goodsMoney) {
                 rebate = goodsMoney;

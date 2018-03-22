@@ -149,10 +149,11 @@
             <div class="modal-body">
                 <div class="user-block">
                     <div class="row">
-                        <div class="col-md-6 col-xs-12">
+                        <div class="col-md-12 col-xs-12">
                             <div class="form-group">
                                 <label for="exampleInputFile">上传头像</label>
                                 <input id="uploadQrcodeBtn" type="file" name="file" multiple class="file-loading">
+                                <p class="help-block">支持jpg、jpeg、png格式，大小不超过2.0M</p>
                             </div>
                         </div>
                     </div>
@@ -704,15 +705,19 @@
             dropZoneEnabled: false,//是否显示拖拽区域
             //minImageWidth: 50, //图片的最小宽度
             //minImageHeight: 50,//图片的最小高度
-            //maxImageWidth: 1000,//图片的最大宽度
-            //maxImageHeight: 1000,//图片的最大高度
-            //maxFileSize:0,//单位为kb，如果为0表示不限制文件大小
+            //maxImageWidth: 500,//图片的最大宽度
+            //maxImageHeight: 500,//图片的最大高度
+            maxFileSize:2048,//单位为kb，如果为0表示不限制文件大小
             maxFileCount: 1,//表示允许同时上传的最大文件个数
             enctype: 'multipart/form-data',
             validateInitialCount: true,
             previewFileIcon: "<iclass='glyphicon glyphicon-king'></i>",
             msgFilesTooMany: "选择上传的文件数量({n}) 超过允许的最大数值{m}！"
         }).on('filebatchselected', function (event, data, id, index) {
+            if (data.length == 0) {
+                $notify.warning("图片大小或格式不正确，请检查")
+                return;
+            }
             $(this).fileinput("upload");
         }).on("fileuploaded", function (event, data) {
             if (data.response.code == 0) {
