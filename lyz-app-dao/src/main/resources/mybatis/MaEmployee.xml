@@ -66,10 +66,6 @@
          e.identity_type!='DECORATE_MANAGER'
         AND
         e.identity_type!='DECORATE_EMPLOYEE'
-        AND s.store_id IN
-        <foreach collection="list" item="item" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
         order by  emp_id asc
     </select>
 
@@ -270,11 +266,7 @@
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
         LEFT JOIN  st_store s ON e.store_id = s.store_id
-        RIGHT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.emp_id
-        WHERE s.store_id IN
-        <foreach collection="list" item="item" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
+        LEFT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.emp_id
         ORDER BY
         ecm.id
         ASC
@@ -286,7 +278,7 @@
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
         LEFT JOIN  st_store s ON e.store_id = s.store_id
-        RIGHT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.emp_id
+        LEFT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.emp_id
         WHERE
         e.emp_id = #{id}
     </select>
@@ -297,7 +289,7 @@
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
         LEFT JOIN  st_store s ON e.store_id = s.store_id
-        RIGHT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.emp_id
+        LEFT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.emp_id
         WHERE
         1=1
         <if test="null != cityId">
@@ -319,7 +311,7 @@
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
         LEFT JOIN  st_store s ON e.store_id = s.store_id
-        RIGHT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.emp_id
+        LEFT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.emp_id
         WHERE
         e.login_name LIKE CONCAT('%' ,#{queryGuideVOByInfo},'%')
         OR

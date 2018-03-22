@@ -42,7 +42,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="oid" type="hidden" class="form-control" id="oid" readonly
-                                           value="${(orderFreightVO.id)!''}">
+                                           value="${(orderFreightVO.id)?c}">
                                     <input name="city" type="text" class="form-control" id="city" readonly
                                            value="${(orderFreightVO.cityName)!''}">
                                 </div>

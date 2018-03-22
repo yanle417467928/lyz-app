@@ -31,24 +31,32 @@
     </resultMap>
 
     <update id="update" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoney">
-        UPDATE
-        emp_credit_money
-        <set>
-            <if test="null != creditLimit">
-                credit_limit = #{creditLimit},
-            </if>
-            <if test="null != tempCreditLimit">
+    UPDATE
+    emp_credit_money
+    <set>
+        <if test="null != creditLimit">
+            credit_limit = #{creditLimit},
+        </if>
+        <if test="null != tempCreditLimit">
 
-                temp_credit_limit = #{tempCreditLimit},
-            </if>
-            <if test="null != creditLimitAvailable">
-                credit_limit_available = #{creditLimitAvailable},
-            </if>
-        </set>
-        WHERE emp_id = #{empId}
-        AND
-        last_update_time = #{lastUpdateTime}
-    </update>
+            temp_credit_limit = #{tempCreditLimit},
+        </if>
+        <if test="null != creditLimitAvailable">
+            credit_limit_available = #{creditLimitAvailable},
+        </if>
+    </set>
+    WHERE emp_id = #{empId}
+    AND
+    last_update_time = #{lastUpdateTime}
+</update>
+
+
+    <insert id="saveEmpCreditMoney" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoney">
+        INSERT emp_credit_money
+        (create_time,emp_id,credit_limit,temp_credit_limit,credit_limit_available,last_update_time)
+         VALUES
+         (#{createTime},#{empId}, #{creditLimit},#{tempCreditLimit},#{creditLimitAvailable},#{lastUpdateTime})
+    </insert>
 
     <update id="clearTempCreditLimit" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoneyDetail">
         UPDATE

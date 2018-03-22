@@ -38,7 +38,8 @@ public class MaGuideViewsController extends BaseController {
     }
 
     /**
-     *编辑员工额度页面
+     * 编辑员工额度页面
+     *
      * @param map
      * @param id
      * @return
@@ -47,49 +48,46 @@ public class MaGuideViewsController extends BaseController {
     public String creditEditPage(ModelMap map, @PathVariable(value = "id") Long id) {
         if (!id.equals(0L)) {
             GuideVO guideVO = this.maEmployeeService.queryGuideVOById(id);
-            if (null == guideVO) {
-                logger.warn("跳转修改资源页面失败，Resource(id = {}) == null", id);
-                error404();
-                return "/error/404";
-            } else {
-                map.addAttribute("guideVO",guideVO);
-            }
+            map.addAttribute("guideVO", guideVO);
         }
         return "/views/employee/guide_edit";
     }
 
 
     /**
-     *额度改变明细页面
+     * 额度改变明细页面
+     *
      * @param map
      * @param id
      * @return
      */
     @GetMapping(value = "/creditChangesList/{id}")
-    public String empCreditMoneyChangesListPage (ModelMap map, @PathVariable(value = "id") Long id) {
+    public String empCreditMoneyChangesListPage(ModelMap map, @PathVariable(value = "id") Long id) {
         if (id.equals(0L)) {
             return "/error/404";
         } else {
-            map.addAttribute("guideId",id);
+            map.addAttribute("guideId", id);
         }
         return "/views/employee/guideCreditMoneyChanges_page";
     }
 
     /**
      * 跳转导购清零额度设置页面
+     *
      * @param map
      * @return
      */
-     @RequestMapping(value = "/clearTimeEdit")
-     public String clearTimePage(ModelMap map) {
-        String cron = maClearTempCreditService.getCron((long)1);
-        map.addAttribute("cron",cron);
+    @RequestMapping(value = "/clearTimeEdit")
+    public String clearTimePage(ModelMap map) {
+        String cron = maClearTempCreditService.getCron((long) 1);
+        map.addAttribute("cron", cron);
         return "/views/employee/guideClearTime_edit";
     }
 
 
     /**
      * 跳转导购欠款审核页面
+     *
      * @param
      * @return
      */
@@ -100,6 +98,7 @@ public class MaGuideViewsController extends BaseController {
 
     /**
      * 跳转导购欠款还款页面
+     *
      * @param
      * @return
      */

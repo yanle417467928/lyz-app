@@ -272,7 +272,7 @@ public class MaEmployeeRestController extends BaseRestController {
             Integer page = getPage(offset, size);
             //查询登录用户门店权限的门店ID
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
-            PageInfo<GuideVO> guideVOPage = this.maEmployeeService.queryGuideVOPage(page, size, storeIds);
+            PageInfo<GuideVO> guideVOPage = this.maEmployeeService.queryGuideVOPage(page, size);
             List<GuideVO> guideVOList = guideVOPage.getList();
             logger.info("restGuideVOPageGird ,后台显示导购列表成功", guideVOList.size());
             return new GridDataVO<GuideVO>().transform(guideVOList, guideVOPage.getTotal());

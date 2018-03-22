@@ -36,7 +36,7 @@ public interface MaEmployeeDAO {
 
     List<EmployeeDO> findDecorativeEmpByCondition(@Param(value = "enabled") String enabled, @Param(value = "diyId") String diyId, @Param(value = "identityType") String identityType);
 
-    List<GuideVO> findAllGuide(@Param("list") List<Long> storeIds);
+    List<GuideVO> findAllGuide();
 
     GuideVO queryGuideVOById(Long id);
 

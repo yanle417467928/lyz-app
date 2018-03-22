@@ -37,7 +37,7 @@ public interface MaEmployeeService {
 
     PageInfo<EmployeeDO> findDecorativeEmpByCondition(Integer page, Integer size,String enabled,String diyId,String identityType);
 
-    PageInfo<GuideVO> queryGuideVOPage(Integer page, Integer size, List<Long> storeIds);
+    PageInfo<GuideVO> queryGuideVOPage(Integer page, Integer size);
 
     GuideVO queryGuideVOById(Long id);
 
