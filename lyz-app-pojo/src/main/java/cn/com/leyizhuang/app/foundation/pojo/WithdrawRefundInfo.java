@@ -72,4 +72,7 @@ public class WithdrawRefundInfo {
      */
     private String withdrawAccountTypeDesc;
 
+    //提现类型（银行清单）
+    private String withdrawType;
+
 }

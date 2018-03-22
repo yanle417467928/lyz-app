@@ -33,5 +33,10 @@ public class SellDetailsRankReponse {
      */
     private Integer finishQty;
 
+    /**
+     * 组织名称 ： 分公司名称 或者 门店名称
+     */
+    private String organizationName;
+
 
 }

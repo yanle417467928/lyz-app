@@ -71,7 +71,7 @@ public class RechargeReceiptInfo {
     /**
      * 充值银行
      */
-    private ChargeType chargeType;
+    private String chargeType;
 
     /**
      * 充值银行描述

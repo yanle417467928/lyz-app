@@ -33,4 +33,6 @@ public interface RechargeDAO {
 
     List<RechargeReceiptInfo> findCreditRechargeReceiptInfoByRechargeNo(String receiptNumber);
 
+    List<RechargeOrder> findRechargeOrderByWithdrawNo(String withdrawNo);
+
 }

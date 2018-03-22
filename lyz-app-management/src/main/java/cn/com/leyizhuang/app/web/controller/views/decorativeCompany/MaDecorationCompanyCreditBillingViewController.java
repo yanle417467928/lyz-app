@@ -1,7 +1,9 @@
 package cn.com.leyizhuang.app.web.controller.views.decorativeCompany;
 
 import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
+import cn.com.leyizhuang.app.foundation.service.BankService;
 import cn.com.leyizhuang.app.foundation.service.MaDecorationCompanyCreditBillingService;
+import cn.com.leyizhuang.app.foundation.vo.management.BankVO;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsVO;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingVO;
 import cn.com.leyizhuang.app.web.controller.BaseController;
@@ -31,6 +33,9 @@ public class MaDecorationCompanyCreditBillingViewController extends BaseControll
 
     @Autowired
     private MaDecorationCompanyCreditBillingService maDecorationCompanyCreditBillingService;
+
+    @Autowired
+    private BankService bankService;
 
     /**
      * @title   跳转装饰公司账单获取页面
@@ -86,6 +91,8 @@ public class MaDecorationCompanyCreditBillingViewController extends BaseControll
             paymentTypes.add(OrderBillingPaymentType.CASH);
             paymentTypes.add(OrderBillingPaymentType.POS);
             map.addAttribute("paymentTypes", paymentTypes);
+            List<BankVO> bankVOS = this.bankService.findBankByIsEnable();
+            map.addAttribute("bankVOS", bankVOS);
         }
         return "/views/creditBilling/credit_billing_details";
     }

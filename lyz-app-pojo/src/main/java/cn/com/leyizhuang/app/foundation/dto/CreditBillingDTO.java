@@ -15,4 +15,5 @@ public class CreditBillingDTO {
     private Long id;
     private Double amount;
     private String paymentType;
+    private String bankCode;
 }

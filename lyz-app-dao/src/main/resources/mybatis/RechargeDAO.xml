@@ -114,5 +114,29 @@
         WHERE receipt_number = #{receiptNumber};
     </select>
 
+    <select id="findRechargeOrderByWithdrawNo" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder">
+        SELECT
+        id,
+        recharge_no,
+        create_time,
+        creator_identity_type,
+        creator_id,
+        recharge_account_type,
+        recharge_account_type_desc,
+        customer_id,
+        store_id,
+        amount,
+        pay_type,
+        pay_type_desc,
+        payment_subject_type,
+        payment_subject_type_desc,
+        pay_up_time,
+        status,
+        withdraw_no
+        FROM recharge_order
+        WHERE withdraw_no = #{withdrawNo}
+    </select>
+
 
 </mapper>

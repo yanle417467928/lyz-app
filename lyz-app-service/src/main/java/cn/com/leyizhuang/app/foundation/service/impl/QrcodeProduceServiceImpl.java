@@ -5,6 +5,9 @@ import cn.com.leyizhuang.app.foundation.service.QrcodeProduceService;
 import com.google.zxing.WriterException;
 import me.luzhuo.qrcode2.encode.*;
 import me.luzhuo.qrcode2.utils.QRUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ClassUtils;
 import sun.net.www.protocol.http.HttpURLConnection;
@@ -18,13 +21,15 @@ import java.net.URL;
 @Service
 public class QrcodeProduceServiceImpl implements QrcodeProduceService {
 
+    @Value("${deploy.lyz.baseUrl}")
+    private String baseUrl;
+
     private static String contents = "http://eqtest.leyizhuang.com.cn:8089/qrcode/register/24"; // 二维码内容
     private static int width = 340; // 二维码图片宽度
     private static int height = 340; // 二维码图片高度
     private static File savefile = new File("C:\\我的电脑\\" + File.separator + System.currentTimeMillis() + ".png"); // 保存文件
-    private static File basemapfile =  new File(ClassUtils.getDefaultClassLoader().getResource("").getPath()+"\\src\\main\\resources\\static\\images\\base.png"); // 底图
+    private static File basemapfile =  new File("\\base.png"); // 底图
     private static File logofile = new File("C:\\我的电脑\\logo.jpg"); // logo
-
 
     public static void main(String[] args) throws WriterException, IOException {
         // 计算底图的尺寸, 可以根据底图的尺寸计算二维码的大小, 没有该需求则不需要
@@ -60,11 +65,21 @@ public class QrcodeProduceServiceImpl implements QrcodeProduceService {
      * @return
      */
     public File createQrcode(String url) throws WriterException, IOException{
-        String savePath = ClassUtils.getDefaultClassLoader().getResource("").getPath()+"\\src\\main\\resources\\static\\images";
+        File baseFile = new File(baseUrl+"base.png");
+        String savePath = baseUrl;
         String fileName = File.separator + System.currentTimeMillis()+".png";
         savefile = new File(savePath+fileName);
+        if(!savefile.exists())
+        {
+            try {
+                savefile.createNewFile();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
         // 计算底图的尺寸, 可以根据底图的尺寸计算二维码的大小, 没有该需求则不需要
-        int[] size = QRUtils.getImageFilePxSize(basemapfile);
+        int[] size = QRUtils.getImageFilePxSize(baseFile);
         if(size == null) return null;
         width = size[0]; height = size[1];
 
@@ -72,7 +87,7 @@ public class QrcodeProduceServiceImpl implements QrcodeProduceService {
         QRCode qrcode = new QRCode().createQRCode(url);
         QRStyle qrstyle = new QRStyle(qrcode, QRStyle.QRStyles.Default);
         QRMatrix qrMatrix = new QRMatrix().createMatrix(qrcode, width, height, qrstyle);
-        QRGraphical qrGraphical = new QRGraphical().decode(qrMatrix, basemapfile);
+        QRGraphical qrGraphical = new QRGraphical().decode(qrMatrix, baseFile);
         new QRWriteToFile().writeToFile(qrGraphical, savefile);
 
         return  savefile;
@@ -87,11 +102,21 @@ public class QrcodeProduceServiceImpl implements QrcodeProduceService {
      * @throws IOException
      */
     public File createQrcode(String url,File logo) throws WriterException, IOException{
-        String savePath = "lyz-app-management\\src\\main\\resources\\static\\images";
+        File baseFile = new File(baseUrl+"base.png");
+        String savePath = baseUrl;
         String fileName = File.separator + System.currentTimeMillis()+".png";
         savefile = new File(savePath+fileName);
+        if(!savefile.exists())
+        {
+            try {
+                savefile.createNewFile();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
         // 计算底图的尺寸, 可以根据底图的尺寸计算二维码的大小, 没有该需求则不需要
-        int[] size = QRUtils.getImageFilePxSize(basemapfile);
+        int[] size = QRUtils.getImageFilePxSize(baseFile);
         if(size == null) return null;
         width = size[0]; height = size[1];
 
@@ -99,14 +124,14 @@ public class QrcodeProduceServiceImpl implements QrcodeProduceService {
         QRCode qrcode = new QRCode().createQRCode(url);
         QRStyle qrstyle = new QRStyle(qrcode, QRStyle.QRStyles.Default);
         QRMatrix qrMatrix = new QRMatrix().createMatrix(qrcode, width, height, qrstyle);
-        QRGraphical qrGraphical = new QRGraphical().decode(qrMatrix, basemapfile);
+        QRGraphical qrGraphical = new QRGraphical().decode(qrMatrix, baseFile);
         new QRWriteToFile().writeToFile(qrGraphical, savefile, logo);
 
         return  savefile;
     }
 
     public File urlToFile(URL url) throws IOException {
-        String savePath = "lyz-app-management\\src\\main\\resources\\static\\images";
+        String savePath = baseUrl;
         String fileName = File.separator + System.currentTimeMillis()+".png";
         File file = new File(savePath+fileName);
 

@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.core.constant.AppRechargeOrderStatus;
 import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
+import cn.com.leyizhuang.app.foundation.dto.CreditBillingDTO;
 import cn.com.leyizhuang.app.foundation.dto.CusPreDepositDTO;
 import cn.com.leyizhuang.app.foundation.dto.StorePreDepositDTO;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
@@ -43,10 +44,12 @@ public interface RechargeService {
 
     RechargeReceiptInfo createStorePayRechargeReceiptInfo(Integer identityType, StorePreDepositDTO storePreDepositDTO, String rechargeNo, AppStore store);
 
-    RechargeReceiptInfo createCreditRechargeReceiptInfo(DecorationCompanyCreditBillingDO creditBillingDO, Double amount, String paymentType);
+    RechargeReceiptInfo createCreditRechargeReceiptInfo(DecorationCompanyCreditBillingDO creditBillingDO, CreditBillingDTO creditBillingDTO, String paymentType);
 
     RechargeOrder createCreditRechargeOrder(DecorationCompanyCreditBillingDO creditBillingDO, Double amount, String paymentType);
 
     List<RechargeReceiptInfo> findRechargeReceiptInfoByReceiptNumber(String receiptNumber);
+
+    List<RechargeOrder> findRechargeOrderByWithdrawNo(String withdrawNo);
 
 }

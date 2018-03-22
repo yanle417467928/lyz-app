@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.RechargeDAO;
+import cn.com.leyizhuang.app.foundation.dto.CreditBillingDTO;
 import cn.com.leyizhuang.app.foundation.dto.CusPreDepositDTO;
 import cn.com.leyizhuang.app.foundation.dto.StorePreDepositDTO;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
@@ -177,7 +178,7 @@ public class RechargeServiceImpl implements RechargeService {
         } else {
             receiptInfo.setPayTime(new Date());
         }
-
+        receiptInfo.setChargeType(cusPreDepositDTO.getBankCode());
         receiptInfo.setAmount(cusPreDepositDTO.getChangeMoney());
         if (identityType == AppIdentityType.CUSTOMER.getValue()) {
                 receiptInfo.setPaymentSubjectType(PaymentSubjectType.CUSTOMER);
@@ -220,7 +221,7 @@ public class RechargeServiceImpl implements RechargeService {
         rechargeOrder.setPaymentSubjectTypeDesc(rechargeOrder.getPaymentSubjectType().getDescription());
         rechargeOrder.setRechargeAccountTypeDesc(rechargeOrder.getRechargeAccountType().getDescription());
         rechargeOrder.setAmount(money);
-        rechargeOrder.setRechargeNo(rechargeNo);
+//        rechargeOrder.setRechargeNo(rechargeNo);
         rechargeOrder.setPayType(payType);
         rechargeOrder.setPayTypeDesc(rechargeOrder.getPayType().getDescription());
         rechargeOrder.setStatus(AppRechargeOrderStatus.PAID);
@@ -249,7 +250,7 @@ public class RechargeServiceImpl implements RechargeService {
         rechargeOrder.setPaymentSubjectTypeDesc(rechargeOrder.getPaymentSubjectType().getDescription());
         rechargeOrder.setRechargeAccountTypeDesc(rechargeOrder.getRechargeAccountType().getDescription());
         rechargeOrder.setAmount(money);
-        rechargeOrder.setRechargeNo(rechargeNo);
+//        rechargeOrder.setRechargeNo(rechargeNo);
         rechargeOrder.setPayType(payType);
         rechargeOrder.setPayTypeDesc(rechargeOrder.getPayType().getDescription());
         rechargeOrder.setStatus(AppRechargeOrderStatus.PAID);
@@ -266,7 +267,7 @@ public class RechargeServiceImpl implements RechargeService {
         } else {
             receiptInfo.setPayTime(new Date());
         }
-
+        receiptInfo.setChargeType(storePreDepositDTO.getBankCode());
         receiptInfo.setAmount(storePreDepositDTO.getChangeMoney());
         if (identityType == AppIdentityType.CUSTOMER.getValue()) {
             receiptInfo.setPaymentSubjectType(PaymentSubjectType.CUSTOMER);
@@ -289,12 +290,12 @@ public class RechargeServiceImpl implements RechargeService {
     }
 
     @Override
-    public RechargeReceiptInfo createCreditRechargeReceiptInfo(DecorationCompanyCreditBillingDO creditBillingDO, Double amount, String paymentType) {
+    public RechargeReceiptInfo createCreditRechargeReceiptInfo(DecorationCompanyCreditBillingDO creditBillingDO, CreditBillingDTO creditBillingDTO, String paymentType) {
         RechargeReceiptInfo receiptInfo = new RechargeReceiptInfo();
         receiptInfo.setCreateTime(new Date());
         receiptInfo.setPayTime(new Date());
 
-        receiptInfo.setAmount(amount);
+        receiptInfo.setAmount(creditBillingDTO.getAmount());
         receiptInfo.setPaymentSubjectType(PaymentSubjectType.DECORATE_MANAGER);
         receiptInfo.setRechargeAccountType(RechargeAccountType.ST_CREDIT);
         receiptInfo.setPaymentSubjectTypeDesc(receiptInfo.getPaymentSubjectType().getDescription());
@@ -305,6 +306,7 @@ public class RechargeServiceImpl implements RechargeService {
         Long cityId = this.maStoreService.findCityIdByStoreId(creditBillingDO.getStoreId());
         receiptInfo.setReceiptNumber(OrderUtils.generateReceiptNumber(cityId));
         receiptInfo.setReplyCode("");
+        receiptInfo.setChargeType(creditBillingDTO.getBankCode());
         return receiptInfo;
     }
 
@@ -322,7 +324,7 @@ public class RechargeServiceImpl implements RechargeService {
         rechargeOrder.setPaymentSubjectTypeDesc(rechargeOrder.getPaymentSubjectType().getDescription());
         rechargeOrder.setRechargeAccountTypeDesc(rechargeOrder.getRechargeAccountType().getDescription());
         rechargeOrder.setAmount(amount);
-        rechargeOrder.setRechargeNo(creditBillingDO.getCreditBillingNo());
+//        rechargeOrder.setRechargeNo(creditBillingDO.getCreditBillingNo());
         rechargeOrder.setPayType(OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(paymentType));
         rechargeOrder.setPayTypeDesc(OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(paymentType).getDescription());
         rechargeOrder.setStatus(AppRechargeOrderStatus.PAID);
@@ -334,6 +336,14 @@ public class RechargeServiceImpl implements RechargeService {
     public List<RechargeReceiptInfo> findRechargeReceiptInfoByReceiptNumber(String receiptNumber) {
         if (null != receiptNumber) {
             return rechargeDAO.findCreditRechargeReceiptInfoByRechargeNo(receiptNumber);
+        }
+        return null;
+    }
+
+    @Override
+    public List<RechargeOrder> findRechargeOrderByWithdrawNo(String withdrawNo) {
+        if (null != withdrawNo) {
+            return rechargeDAO.findRechargeOrderByWithdrawNo(withdrawNo);
         }
         return null;
     }

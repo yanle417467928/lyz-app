@@ -276,6 +276,21 @@
                                 </div>
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="name" style="margin-top: 8%">收款银行</label>
+                                    </div><div class="col-md-7">
+                                    <select class="form-control selectpicker" name="bankCode" id="bankCode" data-live-search="true">
+                                        <if bankVOS??>
+                                        <#list bankVOS as bank>
+                                            <option value="${bank.code}">${bank.bankName}(${bank.bankAccount})</option>
+                                        </#list>
+                                        </if>
+                                    </select>
+                                </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-success "

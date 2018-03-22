@@ -2,7 +2,9 @@ package cn.com.leyizhuang.app.web.controller.views.store;
 
 import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
 import cn.com.leyizhuang.app.core.constant.StoreType;
+import cn.com.leyizhuang.app.foundation.service.BankService;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
+import cn.com.leyizhuang.app.foundation.vo.management.BankVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import cn.com.leyizhuang.app.web.controller.views.customer.MaCustomerPreDepositViewsController;
@@ -31,6 +33,9 @@ public class MaStorePreDepositViewsController extends BaseController {
 
     @Autowired
     private MaStoreService maStoreService;
+
+    @Autowired
+    private BankService bankService;
 
     /**
      * @title 跳转门店预存款列表
@@ -72,6 +77,8 @@ public class MaStorePreDepositViewsController extends BaseController {
             paymentTypes.add(OrderBillingPaymentType.TRANSFER_ACCOUNTS);
             map.addAttribute("paymentTypes", paymentTypes);
             map.addAttribute("storePreDepositVO", storePreDepositVO);
+            List<BankVO> bankVOS = this.bankService.findBankByIsEnable();
+            map.addAttribute("bankVOS", bankVOS);
         }
         return "/views/store/store_pre_deposit_edit";
     }

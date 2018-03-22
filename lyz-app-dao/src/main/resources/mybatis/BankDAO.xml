@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.BankDAO">
+
+    <select id="findBankByIsEnable" resultType="cn.com.leyizhuang.app.foundation.vo.management.BankVO">
+        SELECT id, bank_name, bank_account, code
+        FROM bank
+        WHERE is_enable IS TRUE
+    </select>
+
+    <select id="findBankById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.management.BankDO">
+        SELECT id, bank_name, bank_account, code, is_enable, opening_bank, create_time
+        FROM bank
+        WHERE id = #{id}
+    </select>
+
+</mapper>
