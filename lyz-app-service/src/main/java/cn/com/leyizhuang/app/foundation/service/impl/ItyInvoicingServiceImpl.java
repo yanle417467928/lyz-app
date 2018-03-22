@@ -28,18 +28,16 @@ public class ItyInvoicingServiceImpl implements ItyInvoicingService {
 
     @Override
     public PageInfo<InvoicingVO> queryPage(Integer offset, Integer size, String keywords, InvoicingQuery selectParam) {
-        PageHelper.startPage(offset, size);
+
         List<InvoicingVO> invoicingCityVOS;
-        List<InvoicingVO> invoicingStoreVOS;
         if (StringUtils.isNotBlank(keywords)) {
-            invoicingCityVOS = invoicingDAO.queryCityInventoryChangeLogList(keywords);
-            invoicingStoreVOS = invoicingDAO.queryStoreInventoryChangeLogList(keywords);
+            PageHelper.startPage(offset, size);
+            invoicingCityVOS = invoicingDAO.queryInventoryChangeLogList(keywords);
         } else {
-            invoicingCityVOS = invoicingDAO.queryInvoicingCityBySelectParam(selectParam);
-            invoicingStoreVOS = invoicingDAO.queryInvoicingStoreBySelectParam(selectParam);
+            PageHelper.startPage(offset, size);
+            invoicingCityVOS = invoicingDAO.queryInvoicingBySelectParam(selectParam);
         }
-        invoicingCityVOS.addAll(invoicingStoreVOS);
-//        invoicingCityVOS.sort((o1, o2) -> o1.getChangeDate().compareTo(o2.getChangeDate()));
+        invoicingCityVOS.sort((o1, o2) -> o2.getChangeDate().compareTo(o1.getChangeDate()));
         return new PageInfo<>(invoicingCityVOS);
     }
 }

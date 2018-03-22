@@ -160,7 +160,7 @@
             title: 'ID',
             align: 'center'
         }, {
-            field: 'changeType',
+            field: 'changType',
             title: '变动类型',
             align: 'center'
         }, {

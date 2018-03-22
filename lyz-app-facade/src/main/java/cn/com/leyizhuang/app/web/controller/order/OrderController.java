@@ -15,7 +15,6 @@ import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
-import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
@@ -453,6 +452,11 @@ public class OrderController {
             boolean isShowSalesNumber = false;
             if (identityType == 6) {
                 customer = appCustomerService.findById(userId);
+                if (null == customer) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "数据发生异常!请联系客服", null);
+                    logger.info("enterOrder OUT,用户确认订单计算商品价格明细失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
                 cityId = customer.getCityId();
             } else if (identityType == 0) {
                 if (null == goodsSimpleRequest.getCustomerId()) {
@@ -462,7 +466,11 @@ public class OrderController {
                 }
                 Long customerId = goodsSimpleRequest.getCustomerId();
                 customer = appCustomerService.findById(customerId);
-
+                if (null == customer) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "数据发生异常!请联系客服", null);
+                    logger.info("enterOrder OUT,用户确认订单计算商品价格明细失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
                 //是否显示纸质销售单号
                 AppEmployee appEmployee = appEmployeeService.findById(userId);
                 cityId = appEmployee.getCityId();

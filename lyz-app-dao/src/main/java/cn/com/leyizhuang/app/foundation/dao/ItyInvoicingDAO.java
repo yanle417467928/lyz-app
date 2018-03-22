@@ -24,7 +24,7 @@ public interface ItyInvoicingDAO {
      * @param keywords
      * @return
      */
-    List<InvoicingVO> queryCityInventoryChangeLogList(@Param("keywords") String keywords);
+    List<InvoicingVO> queryInventoryChangeLogList(@Param("keywords") String keywords);
 
     /**
      * 获取门店库存变动日志
@@ -40,7 +40,7 @@ public interface ItyInvoicingDAO {
      * @param selectParam
      * @return
      */
-    List<InvoicingVO> queryInvoicingCityBySelectParam(InvoicingQuery selectParam);
+    List<InvoicingVO> queryInvoicingBySelectParam(InvoicingQuery selectParam);
 
     /**
      * 根据门店名称查询库存变动
