@@ -180,6 +180,16 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
         }
         PageHelper.startPage(page, size);
         List<GuideVO> pageGuideVOList = this.maEmployeeDAO.queryGuideVOByCondition(cityId,storeId);
+        for(GuideVO guideVO:pageGuideVOList){
+            GuideCreditMoney guideCreditMoney=  guideVO.getGuideCreditMoney();
+            if(null == guideCreditMoney){
+                GuideCreditMoney guideCreditMoney1 = new  GuideCreditMoney();
+                guideCreditMoney1.setTempCreditLimit(BigDecimal.ZERO);
+                guideCreditMoney1.setCreditLimitAvailable(BigDecimal.ZERO);
+                guideCreditMoney1.setCreditLimit(BigDecimal.ZERO);
+                guideVO.setGuideCreditMoney(guideCreditMoney1);
+            }
+        }
         return new PageInfo<>(pageGuideVOList);
     }
 
@@ -187,6 +197,16 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
     public PageInfo<GuideVO> queryGuideVOByInfo(Integer page, Integer size,String queryGuideVOInfo){
         PageHelper.startPage(page, size);
         List<GuideVO> pageGuideVOList = this.maEmployeeDAO.queryGuideVOByInfo(queryGuideVOInfo);
+        for(GuideVO guideVO:pageGuideVOList){
+            GuideCreditMoney guideCreditMoney=  guideVO.getGuideCreditMoney();
+            if(null == guideCreditMoney){
+                GuideCreditMoney guideCreditMoney1 = new  GuideCreditMoney();
+                guideCreditMoney1.setTempCreditLimit(BigDecimal.ZERO);
+                guideCreditMoney1.setCreditLimitAvailable(BigDecimal.ZERO);
+                guideCreditMoney1.setCreditLimit(BigDecimal.ZERO);
+                guideVO.setGuideCreditMoney(guideCreditMoney1);
+            }
+        }
         return new PageInfo<>(pageGuideVOList);
     }
 

@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.views.employee;
 
 
+import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoney;
 import cn.com.leyizhuang.app.foundation.service.MaClearTempCreditService;
 import cn.com.leyizhuang.app.foundation.service.MaEmployeeService;
 import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideVO;
@@ -13,6 +14,9 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.math.BigDecimal;
+import java.util.Date;
 
 
 @Controller
@@ -48,6 +52,14 @@ public class MaGuideViewsController extends BaseController {
     public String creditEditPage(ModelMap map, @PathVariable(value = "id") Long id) {
         if (!id.equals(0L)) {
             GuideVO guideVO = this.maEmployeeService.queryGuideVOById(id);
+            if (null ==guideVO.getGuideCreditMoney()){
+                GuideCreditMoney guideCreditMoney = new GuideCreditMoney();
+                guideCreditMoney.setCreditLimitAvailable(BigDecimal.ZERO);
+                guideCreditMoney.setTempCreditLimit(BigDecimal.ZERO);
+                guideCreditMoney.setCreditLimit(BigDecimal.ZERO);
+                guideCreditMoney.setLastUpdateTime(new Date());
+                guideVO.setGuideCreditMoney(guideCreditMoney);
+            }
             map.addAttribute("guideVO", guideVO);
         }
         return "/views/employee/guide_edit";
