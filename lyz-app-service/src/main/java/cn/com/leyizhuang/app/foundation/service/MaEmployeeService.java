@@ -12,7 +12,7 @@ import com.github.pagehelper.PageInfo;
 import java.util.List;
 
 public interface MaEmployeeService {
-    PageInfo<EmployeeDO> queryPageVO(Integer page, Integer size);
+    PageInfo<EmployeeDO> queryPageVO(Integer page, Integer size, List<Long> storeIds);
 
     EmployeeDetailVO queryEmployeeById(Long id);
 
@@ -37,7 +37,7 @@ public interface MaEmployeeService {
 
     PageInfo<EmployeeDO> findDecorativeEmpByCondition(Integer page, Integer size,String enabled,String diyId,String identityType);
 
-    PageInfo<GuideVO> queryGuideVOPage(Integer page, Integer size);
+    PageInfo<GuideVO> queryGuideVOPage(Integer page, Integer size, List<Long> storeIds);
 
     GuideVO queryGuideVOById(Long id);
 

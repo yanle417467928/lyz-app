@@ -1,11 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
-import cn.com.leyizhuang.app.core.constant.AppReturnOrderStatus;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.MaReturnGoods;
-import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.*;
-import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -24,7 +20,7 @@ public interface MaReturnOrderDAO {
      *
      * @return 订单列表
      */
-    List<MaReturnOrderInfo> findMaReturnOrderList();
+    List<MaReturnOrderInfo> findMaReturnOrderList(@Param("list") List<Long> storeIds);
 
     List<MaReturnOrderInfo> findMaReturnOrderListByScreen(@Param(value = "storeId") Long storeId, @Param(value = "status") String status);
 

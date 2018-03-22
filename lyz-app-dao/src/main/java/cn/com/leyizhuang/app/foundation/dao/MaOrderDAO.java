@@ -4,16 +4,13 @@ import cn.com.leyizhuang.app.foundation.pojo.management.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderShipping;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
-import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.management.order.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;
 
@@ -165,7 +162,7 @@ public interface MaOrderDAO {
     MaOrderDeliveryInfoResponse getDeliveryInfoByOrderNumber(@Param("orderNumber") String orderNmber);
 
 
-    List<MaSelfTakeOrderVO> findSelfTakeOrderList();
+    List<MaSelfTakeOrderVO> findSelfTakeOrderList(@Param("list") List<Long> storeIds);
 
     List<MaSelfTakeOrderVO> findSelfTakeOrderListByScreen(@Param("cityId")Long cityId,@Param("storeId")Long storeId,@Param("status")Integer status,@Param("isPayUp")Integer isPayUp);
 
@@ -194,7 +191,7 @@ public interface MaOrderDAO {
 
     MaOrderReceiveInf queryOrderReceiveInf(String orderNumber);
 
-    List<MaAgencyAndArrearsOrderVO> findArrearsAndAgencyOrderList();
+    List<MaAgencyAndArrearsOrderVO> findArrearsAndAgencyOrderList(@Param("list") List<Long> storeIds);
 
 
     List<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByScreen(@Param("cityId")Long cityId,@Param("storeId")Long storeId,@Param("status")Integer status,@Param("isPayUp")Integer isPayUp);

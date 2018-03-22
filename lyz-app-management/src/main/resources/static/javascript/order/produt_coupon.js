@@ -46,7 +46,7 @@ function findCitylist() {
 function findStorelist() {
     var store = "";
     $.ajax({
-        url: '/rest/stores/findAllStorelist',
+        url: '/rest/stores/findStoresListByStoreId',
         method: 'GET',
         error: function () {
             clearTimeout($global.timer);
@@ -121,7 +121,7 @@ function findStoreByCity(cityId) {
     var cityId = $("#cityId").val();
     var store = "";
     $.ajax({
-        url: '/rest/stores/findStoresListByCityId/' + cityId,
+        url: '/rest/stores/findStoresListByCityIdAndStoreId/' + cityId,
         method: 'GET',
         error: function () {
             clearTimeout($global.timer);

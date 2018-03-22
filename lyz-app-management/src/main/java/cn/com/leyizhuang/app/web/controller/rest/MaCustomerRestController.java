@@ -2,8 +2,9 @@ package cn.com.leyizhuang.app.web.controller.rest;
 
 
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
-import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
+import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
+import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.MaCustomerService;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerVO;
@@ -12,9 +13,6 @@ import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ValidatorResultDTO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +35,8 @@ public class MaCustomerRestController extends BaseRestController {
     @Autowired
     private MaCustomerService maCustomerService;
 
+    @Autowired
+    private AdminUserStoreService adminUserStoreService;
     /**
      * 初始化顾客页面
      *
@@ -51,7 +51,10 @@ public class MaCustomerRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<CustomerDO> custmersPage = this.maCustomerService.queryPageVO(page, size);
+
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<CustomerDO> custmersPage = this.maCustomerService.queryPageVO(page, size, storeIds);
             List<CustomerDO> custmersList = custmersPage.getList();
             List<CustomerVO> custmersVOList = CustomerVO.transform(custmersList);
             logger.info("restCustomersPageGird ,后台初始化顾客页面列表成功", custmersVOList.size());

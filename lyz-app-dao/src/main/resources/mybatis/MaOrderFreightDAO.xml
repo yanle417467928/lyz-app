@@ -82,6 +82,10 @@
         obi.delivery_type="HOUSE_DELIVERY"
         AND
         obi.status="UNPAID"
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         ORDER BY obi.create_time
         DESC
     </select>

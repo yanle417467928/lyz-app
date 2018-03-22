@@ -66,6 +66,10 @@
          e.identity_type!='DECORATE_MANAGER'
         AND
         e.identity_type!='DECORATE_EMPLOYEE'
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         order by  emp_id asc
     </select>
 
@@ -267,6 +271,10 @@
         LEFT JOIN city c on e.city_id = c.city_id
         LEFT JOIN  st_store s ON e.store_id = s.store_id
         RIGHT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.emp_id
+        WHERE s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         ORDER BY
         ecm.id
         ASC

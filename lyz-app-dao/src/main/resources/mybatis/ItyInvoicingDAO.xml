@@ -96,11 +96,17 @@
         DATE_FORMAT(change_time,'%Y-%m-%d %H:%i:%s') changeDate,
         reference_number referenceOrder
         from st_inventory_available_qty_change_log
+        WHERE
+        (1 = 1)
         <if test="null != keywords">
-            WHERE st_inventory_available_qty_change_log.sku_name LIKE concat('%',#{keywords},'%')
+            AND st_inventory_available_qty_change_log.sku_name LIKE concat('%',#{keywords},'%')
             OR st_inventory_available_qty_change_log.sku LIKE concat('%',#{keywords},'%')
             OR st_inventory_available_qty_change_log.reference_number LIKE concat('%',#{keywords},'%')
         </if>
+        AND st_inventory_available_qty_change_log.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         ORDER BY changeDate DESC
     </select>
 
@@ -127,6 +133,10 @@
         <if test="endDateTime != null">
             AND change_time &lt;= #{endDateTime}
         </if>
+        AND st_inventory_available_qty_change_log.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         ORDER BY change_time DESC
     </select>
 

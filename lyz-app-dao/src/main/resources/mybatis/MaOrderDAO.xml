@@ -506,6 +506,10 @@
         obi.order_subject_type = 'STORE'
         AND
         obi.delivery_type= 'SELF_TAKE'
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         ORDER BY
         obi.create_time DESC
     </select>
@@ -807,6 +811,10 @@
         ord_billing_details obd ON obi.ord_no =obd.ord_no
         WHERE
         1=1
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         ORDER BY
         oaa.create_time DESC
     </select>

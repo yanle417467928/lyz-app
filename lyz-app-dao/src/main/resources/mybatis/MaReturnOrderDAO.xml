@@ -20,6 +20,10 @@
         st_store AS s ON s.store_id = orbi.store_id
         WHERE
           1=1
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
           ORDER BY
            orbi.return_time
            DESC

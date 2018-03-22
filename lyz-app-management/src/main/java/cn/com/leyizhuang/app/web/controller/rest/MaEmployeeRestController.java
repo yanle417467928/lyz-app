@@ -7,13 +7,13 @@ import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeType;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaEmployeeResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
-import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
 import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
+import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
 import cn.com.leyizhuang.app.foundation.service.MaEmployeeService;
 import cn.com.leyizhuang.app.foundation.service.QrcodeProduceService;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeDetailVO;
-import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideVO;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeVO;
+import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageHelper;
@@ -66,7 +66,9 @@ public class MaEmployeeRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<EmployeeDO> employeesPage = this.maEmployeeService.queryPageVO(page, size);
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<EmployeeDO> employeesPage = this.maEmployeeService.queryPageVO(page, size, storeIds);
             List<EmployeeDO> employeesList = employeesPage.getList();
             List<EmployeeVO> employeesVOList = EmployeeVO.transform(employeesList);
             logger.info("restEmployeesPageGird ,后台获取所有员工信息列表成功", employeesVOList.size());
@@ -268,7 +270,9 @@ public class MaEmployeeRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<GuideVO> guideVOPage = this.maEmployeeService.queryGuideVOPage(page, size);
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<GuideVO> guideVOPage = this.maEmployeeService.queryGuideVOPage(page, size, storeIds);
             List<GuideVO> guideVOList = guideVOPage.getList();
             logger.info("restGuideVOPageGird ,后台显示导购列表成功", guideVOList.size());
             return new GridDataVO<GuideVO>().transform(guideVOList, guideVOPage.getTotal());

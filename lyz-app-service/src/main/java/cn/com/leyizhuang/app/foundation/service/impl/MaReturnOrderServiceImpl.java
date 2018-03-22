@@ -14,23 +14,17 @@ import cn.com.leyizhuang.app.foundation.pojo.management.customer.MaCustomerPreDe
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyCredit;
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.MaReturnGoods;
-import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderTempInfo;
-import cn.com.leyizhuang.app.foundation.pojo.management.order.MaPaymentData;
 import cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.*;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventoryChange;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderGoodsInf;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderRefundInf;
-import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBillingDetail;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO;
-import cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -82,9 +76,9 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
     private AppOrderService appOrderService;
 
     @Override
-    public PageInfo<MaReturnOrderInfo> findMaReturnOrderList(Integer page, Integer size) {
+    public PageInfo<MaReturnOrderInfo> findMaReturnOrderList(Integer page, Integer size, List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<MaReturnOrderInfo> maReturnOrderInfoList = maReturnOrderDAO.findMaReturnOrderList();
+        List<MaReturnOrderInfo> maReturnOrderInfoList = maReturnOrderDAO.findMaReturnOrderList(storeIds);
         return new PageInfo<>(maReturnOrderInfoList);
     }
 

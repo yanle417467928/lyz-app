@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface MaEmployeeDAO {
 
-    List<EmployeeDO> findAllEmployee();
+    List<EmployeeDO> findAllEmployee(@Param("list") List<Long> storeIds);
 
     EmployeeDO queryEmployeeById(Long id);
 
@@ -36,7 +36,7 @@ public interface MaEmployeeDAO {
 
     List<EmployeeDO> findDecorativeEmpByCondition(@Param(value = "enabled") String enabled, @Param(value = "diyId") String diyId, @Param(value = "identityType") String identityType);
 
-    List<GuideVO> findAllGuide();
+    List<GuideVO> findAllGuide(@Param("list") List<Long> storeIds);
 
     GuideVO queryGuideVOById(Long id);
 

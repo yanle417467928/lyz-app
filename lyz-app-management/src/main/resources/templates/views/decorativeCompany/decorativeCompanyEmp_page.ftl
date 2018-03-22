@@ -332,7 +332,7 @@
         $("#queryEmpInfo").val('');
         var company;
         $.ajax({
-            url: '/rest/decorativeInfo/findDecorativeCompany',
+            url: '/rest/stores/findZSStoresListByStoreId',
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);

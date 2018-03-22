@@ -14,7 +14,7 @@ import java.util.List;
 
 public interface MaCustomerService {
 
-    PageInfo<CustomerDO> queryPageVO(Integer page, Integer size);
+    PageInfo<CustomerDO> queryPageVO(Integer page, Integer size, List<Long> storeIds);
 
     CustomerDO queryCustomerVOById(Long cusId);
 

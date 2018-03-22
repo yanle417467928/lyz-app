@@ -28,9 +28,9 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
     private AppEmployeeDAO appEmployeeDAO;
 
     @Override
-    public PageInfo<EmployeeDO> queryPageVO(Integer page, Integer size){
+    public PageInfo<EmployeeDO> queryPageVO(Integer page, Integer size, List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<EmployeeDO> pageEmployeeList = this.maEmployeeDAO.findAllEmployee();
+        List<EmployeeDO> pageEmployeeList = this.maEmployeeDAO.findAllEmployee(storeIds);
         return new PageInfo<>(pageEmployeeList);
     }
 
@@ -145,9 +145,9 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
     }
 
     @Override
-    public PageInfo<GuideVO> queryGuideVOPage(Integer page, Integer size){
+    public PageInfo<GuideVO> queryGuideVOPage(Integer page, Integer size, List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<GuideVO> pageGuideVOList = this.maEmployeeDAO.findAllGuide();
+        List<GuideVO> pageGuideVOList = this.maEmployeeDAO.findAllGuide(storeIds);
         return new PageInfo<>(pageGuideVOList);
     }
 

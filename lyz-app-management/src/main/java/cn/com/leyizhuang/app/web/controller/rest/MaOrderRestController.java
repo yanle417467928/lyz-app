@@ -2,25 +2,23 @@ package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.EmpCreditMoneyChangeType;
-import cn.com.leyizhuang.app.core.constant.*;
-import cn.com.leyizhuang.app.core.constant.remote.webservice.ebs.ChargeObjType;
 import cn.com.leyizhuang.app.core.exception.*;
 import cn.com.leyizhuang.app.core.utils.IpUtil;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
+import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.management.User;
 import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditChangeDetail;
+import cn.com.leyizhuang.app.foundation.pojo.management.order.MaActGoodsMapping;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderAmount;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderTempInfo;
-import cn.com.leyizhuang.app.foundation.pojo.city.City;
-import cn.com.leyizhuang.app.foundation.pojo.management.order.MaActGoodsMapping;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.RechargeReceiptInf;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
@@ -28,7 +26,6 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
-import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideCreditChangeDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaAgencyAndArrearsOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingDetailResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDeliveryInfoResponse;
@@ -50,10 +47,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -354,7 +349,9 @@ public class MaOrderRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<MaSelfTakeOrderVO> maSelfTakeOrderVOPageInfo = this.maOrderService.findSelfTakeOrderList(page, size);
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<MaSelfTakeOrderVO> maSelfTakeOrderVOPageInfo = this.maOrderService.findSelfTakeOrderList(page, size, storeIds);
             List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maSelfTakeOrderVOPageInfo.getList();
             logger.info("restSelfTakeOrderPageGird ,后台分页获取所有自提订单列表成功", (maSelfTakeOrderVOList == null) ? 0 : maSelfTakeOrderVOList.size());
             return new GridDataVO<MaSelfTakeOrderVO>().transform(maSelfTakeOrderVOList, maSelfTakeOrderVOPageInfo.getTotal());
@@ -634,7 +631,9 @@ public class MaOrderRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<MaAgencyAndArrearsOrderVO> arrearsAndAgencyOrderVOPageInfo = this.maOrderService.findArrearsAndAgencyOrderList(page, size);
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<MaAgencyAndArrearsOrderVO> arrearsAndAgencyOrderVOPageInfo = this.maOrderService.findArrearsAndAgencyOrderList(page, size, storeIds);
             List<MaAgencyAndArrearsOrderVO> arrearsAndAgencyOrderVOList = arrearsAndAgencyOrderVOPageInfo.getList();
             logger.info("restarrearsAndAgencyOrderPageGird ,后台分页查询所有欠款与还款订单", (arrearsAndAgencyOrderVOList == null) ? 0 : arrearsAndAgencyOrderVOList.size());
             return new GridDataVO<MaAgencyAndArrearsOrderVO>().transform(arrearsAndAgencyOrderVOList, arrearsAndAgencyOrderVOPageInfo.getTotal());

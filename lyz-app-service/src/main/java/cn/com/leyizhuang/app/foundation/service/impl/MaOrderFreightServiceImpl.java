@@ -4,7 +4,6 @@ import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.MaOrderFreightDAO;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.OrderFreightChange;
-import cn.com.leyizhuang.app.foundation.pojo.management.order.SimpleOrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.service.MaOrderFreightService;
 import cn.com.leyizhuang.app.foundation.vo.management.freight.OrderFreightChangeVO;
 import cn.com.leyizhuang.app.foundation.vo.management.freight.OrderFreightDetailVO;
@@ -26,9 +25,9 @@ public class MaOrderFreightServiceImpl implements MaOrderFreightService {
     private MaOrderFreightDAO maOrderFreightDAO;
 
     @Override
-    public PageInfo<OrderFreightVO> queryPageVO(Integer page, Integer size) {
+    public PageInfo<OrderFreightVO> queryPageVO(Integer page, Integer size, List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<OrderFreightVO> orderFreightPageList = this.maOrderFreightDAO.findAllOrderFreight();
+        List<OrderFreightVO> orderFreightPageList = this.maOrderFreightDAO.findAllOrderFreight(storeIds);
         return new PageInfo<>(orderFreightPageList);
     }
 

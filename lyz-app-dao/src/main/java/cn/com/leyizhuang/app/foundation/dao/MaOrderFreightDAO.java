@@ -1,7 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.management.order.OrderFreightChange;
-import cn.com.leyizhuang.app.foundation.pojo.management.order.SimpleOrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.vo.management.freight.OrderFreightChangeVO;
 import cn.com.leyizhuang.app.foundation.vo.management.freight.OrderFreightDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.freight.OrderFreightVO;
@@ -13,7 +12,7 @@ import java.util.List;
 
 @Repository
 public interface MaOrderFreightDAO {
-    List<OrderFreightVO> findAllOrderFreight();
+    List<OrderFreightVO> findAllOrderFreight(@Param("list") List<Long> storeIds);
 
     List<OrderFreightVO> queryOrderFreightVOByStoreId(Long storeId);
 

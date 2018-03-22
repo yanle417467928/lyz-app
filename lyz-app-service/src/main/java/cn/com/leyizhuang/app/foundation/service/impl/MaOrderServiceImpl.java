@@ -2,7 +2,6 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.core.constant.*;
-import cn.com.leyizhuang.app.core.constant.remote.webservice.ebs.ChargeObjType;
 import cn.com.leyizhuang.app.core.exception.LockStorePreDepositException;
 import cn.com.leyizhuang.app.core.exception.OrderPayableAmountException;
 import cn.com.leyizhuang.app.core.exception.OrderSaveException;
@@ -21,7 +20,6 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
-import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyCredit;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsShippingInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideAvailableCreditChange;
 import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditChangeDetail;
@@ -33,11 +31,8 @@ import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderRe
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderReceiptInf;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.RechargeReceiptInf;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
-import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
@@ -52,9 +47,7 @@ import cn.com.leyizhuang.common.util.CountUtil;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import org.apache.commons.collections.map.HashedMap;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -223,9 +216,9 @@ public class MaOrderServiceImpl implements MaOrderService {
     }
 
     @Override
-    public PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderList(Integer page, Integer size) {
+    public PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderList(Integer page, Integer size, List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maOrderDAO.findSelfTakeOrderList();
+        List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maOrderDAO.findSelfTakeOrderList(storeIds);
         return new PageInfo<>(maSelfTakeOrderVOList);
     }
 
@@ -470,9 +463,9 @@ public class MaOrderServiceImpl implements MaOrderService {
 
 
     @Override
-    public PageInfo<MaAgencyAndArrearsOrderVO> findArrearsAndAgencyOrderList(Integer page, Integer size) {
+    public PageInfo<MaAgencyAndArrearsOrderVO> findArrearsAndAgencyOrderList(Integer page, Integer size, List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<MaAgencyAndArrearsOrderVO> arrearsAndAgencyOrderVOList = maOrderDAO.findArrearsAndAgencyOrderList();
+        List<MaAgencyAndArrearsOrderVO> arrearsAndAgencyOrderVOList = maOrderDAO.findArrearsAndAgencyOrderList(storeIds);
         return new PageInfo<>(arrearsAndAgencyOrderVOList);
     }
 
