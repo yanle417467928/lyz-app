@@ -60,8 +60,12 @@ public class AdminUserStoreServiceImpl implements AdminUserStoreService {
 
     @Override
     public List<Long> findStoreIdByUid(Long uid) {
-
-        return this.adminUserStoreDAO.findStoreIdByUid(uid);
+        List<Long> storeIds = new ArrayList<>();
+        storeIds = this.adminUserStoreDAO.findStoreIdByUid(uid);
+        if(null == storeIds || storeIds.size() == 0) {
+            storeIds.add(-1L);
+        }
+        return storeIds;
     }
 
     @Override
@@ -72,6 +76,9 @@ public class AdminUserStoreServiceImpl implements AdminUserStoreService {
         if (null != shiroUser) {
             //查询登录用户门店权限的门店ID
             storeIds = this.adminUserStoreDAO.findStoreIdByUid(shiroUser.getId());
+        }
+        if(null == storeIds || storeIds.size() == 0) {
+            storeIds.add(-1L);
         }
         return storeIds;
     }
