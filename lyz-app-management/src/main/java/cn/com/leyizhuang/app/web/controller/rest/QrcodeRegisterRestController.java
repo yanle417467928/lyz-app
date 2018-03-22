@@ -91,7 +91,7 @@ public class QrcodeRegisterRestController extends BaseRestController {
 
                 AppCustomer newCustomer = new AppCustomer();
 
-                if (workNumber.equals(appEmployee.getLoginName())) {
+                if (workNumber.equalsIgnoreCase(appEmployee.getLoginName())) {
                     // 有推荐码 设置为会员
                     newCustomer.setCustomerType(AppCustomerType.MEMBER);
                 } else {

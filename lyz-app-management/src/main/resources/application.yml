@@ -181,7 +181,7 @@ deploy:
     url: http://erptest.zghuarun.com:8030/webservices/SOAProvider/plsql/cux_app_webservice_pkg/?wsdl
     newUrl: http://ebs.leyizhuang.com.cn:10001/ebs/
   lyz:
-      qrcodeRegister: http://wechat.leyizhuang.com.cn:8089
+      qrcodeRegister: http://eqtest.leyizhuang.com.cn:8089
       baseUrl: /mnt/root/qrcode/
 ---
 ############################################## 生产环境配置 ##################################################

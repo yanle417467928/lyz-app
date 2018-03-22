@@ -74,27 +74,57 @@ public class StatisticsSellDetailsContrller {
         rankReponse.setName("张三");
         rankReponse.setFinishQty(3000);
         rankReponse.setRank(1);
+        rankReponse.setOrganizationName("公司1");
 
         SellDetailsRankReponse rankReponse2 = new SellDetailsRankReponse();
         rankReponse2.setId(2L);
         rankReponse2.setName("张三2");
         rankReponse2.setFinishQty(2000);
         rankReponse2.setRank(2);
+        rankReponse2.setOrganizationName("公司2");
 
         SellDetailsRankReponse rankReponse3 = new SellDetailsRankReponse();
         rankReponse3.setId(3L);
         rankReponse3.setName("张三3");
         rankReponse3.setFinishQty(1000);
         rankReponse3.setRank(3);
+        rankReponse3.setOrganizationName("公司3");
 
         reponseList.add(rankReponse);
         reponseList.add(rankReponse2);
         reponseList.add(rankReponse3);
 
+        List<SellDetailsRankReponse> reponseList2 = new ArrayList<>();
+
+        SellDetailsRankReponse rankReponse4 = new SellDetailsRankReponse();
+        rankReponse4.setId(1L);
+        rankReponse4.setName("张三");
+        rankReponse4.setFinishQty(3000);
+        rankReponse4.setRank(1);
+        rankReponse4.setOrganizationName("门店1");
+
+        SellDetailsRankReponse rankReponse5 = new SellDetailsRankReponse();
+        rankReponse5.setId(2L);
+        rankReponse5.setName("张三2");
+        rankReponse5.setFinishQty(2000);
+        rankReponse5.setRank(2);
+        rankReponse5.setOrganizationName("门店2");
+
+        SellDetailsRankReponse rankReponse6 = new SellDetailsRankReponse();
+        rankReponse6.setId(3L);
+        rankReponse6.setName("张三3");
+        rankReponse6.setFinishQty(1000);
+        rankReponse6.setRank(3);
+        rankReponse6.setOrganizationName("门店3");
+
+        reponseList2.add(rankReponse4);
+        reponseList2.add(rankReponse5);
+        reponseList2.add(rankReponse6);
+
         if (flag.equals("FGS") && rankType.equals("TS")) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", reponseList);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", reponseList2);
         } else if (flag.equals("FGS")  && rankType.equals("HYS")) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", reponseList);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", reponseList2);
         }else if (flag.equals("JT")  && rankType.equals("TS")) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", reponseList);
         }else if (flag.equals("JT") && rankType.equals("HYS")) {

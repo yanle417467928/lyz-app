@@ -151,7 +151,9 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
 
                 // 创建库存变化日志
                 StoreInventoryAvailableQtyChangeLog iLog = new StoreInventoryAvailableQtyChangeLog();
-                iLog.setAfterChangeQty(storeInventory.getAvailableIty());
+                iLog.setCityId(from.getCityId());
+                iLog.setCityName(from.getCity());
+                iLog.setAfterChangeQty(availableIty);
                 iLog.setChangeQty(goods.getRealQty());
                 iLog.setChangeTime(new Date());
                 iLog.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_ALLOCATE_OUTBOUND);
@@ -214,6 +216,8 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
 
                 // 创建库存变化日志
                 StoreInventoryAvailableQtyChangeLog iLog = new StoreInventoryAvailableQtyChangeLog();
+                iLog.setCityId(to.getCityId());
+                iLog.setCityName(to.getCity());
                 iLog.setAfterChangeQty(storeInventory.getAvailableIty()+detail.getRealQty());
                 iLog.setChangeQty(detail.getRealQty());
                 iLog.setChangeTime(new Date());
