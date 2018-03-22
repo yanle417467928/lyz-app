@@ -176,7 +176,7 @@
                                 <#list creditBillingDetailsVOS as creditBillingDetails>
                                     <tr>
                                         <td>${creditBillingVO.storeName!""}</td>
-                                        <td><a class="scan" href="/views/admin/order/detail/${creditBillingDetails.orderNumber!''}">${creditBillingDetails.orderNumber!""}</a></td>
+                                        <td><#--<a class="scan" href="/views/admin/order/detail/${creditBillingDetails.orderNumber!''}">-->${creditBillingDetails.orderNumber!""}<#--</a>--></td>
                                         <td>${creditBillingDetails.creatorName!""}</td>
                                         <td>${creditBillingDetails.createTime!""}</td>
                                         <td>${creditBillingDetails.deliveryAddress!""}</td>
