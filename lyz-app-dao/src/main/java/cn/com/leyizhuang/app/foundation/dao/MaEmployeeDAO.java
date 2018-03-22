@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface MaEmployeeDAO {
 
-    List<EmployeeDO> findAllEmployee();
+    List<EmployeeDO> findAllEmployee(@Param("list") List<Long> storeIds);
 
     EmployeeDO queryEmployeeById(Long id);
 

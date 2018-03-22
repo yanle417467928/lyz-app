@@ -55,7 +55,7 @@
                             <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
                         </button>
                         <select name="selectCity" id="selectCity" class="form-control select" style="width:auto;"
-                                title="选择城市">
+                                title="选择城市" onchange="findStoreListByCity(this.value)">
                             <option value="-1">选择城市</option>
                         </select>
                         <select name="selectFromName" id="selectFromName" class="form-control select"
@@ -274,7 +274,7 @@
         var fromName = $("#selectFromName");
         var toName = $("#selectToName");
         $.ajax({
-            url: '/rest/stores/findStorelist',
+            url: '/rest/stores/findStoresListByStoreId',
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);
@@ -296,6 +296,42 @@
             }
         });
     }
+
+    function findStoreListByCity(cityId) {
+        initSelect("#storeCode", "选择门店");
+        if (cityId == -1) {
+            findStorelist();
+            return false;
+        }
+        ;
+        var store;
+        $.ajax({
+            url: '/rest/stores/findStoresListByCityIdAndStoreId/' + cityId,
+            method: 'GET',
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
+                });
+                $("#store").append(store);
+                $('#store').selectpicker('refresh');
+                $('#store').selectpicker('render');
+            }
+        });
+    }
+
+    function initSelect(select, optionName) {
+        $(select).empty();
+        var selectOption = "<option value=-1>" + optionName + "</option>";
+        $(select).append(selectOption);
+    }
+
     var $page = {
         information: {
             show: function (id) {

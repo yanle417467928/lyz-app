@@ -44,7 +44,12 @@
         s.store_name
         FROM
         cus_customer c
-        LEFT JOIN st_store s ON c.store_id = s.store_id ORDER BY c.create_time DESC
+        LEFT JOIN st_store s ON c.store_id = s.store_id
+        WHERE s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        ORDER BY c.create_time DESC
     </select>
     <select id="queryCustomerVOById" parameterType="java.lang.Long" resultMap="customerVoResultMap">
         SELECT

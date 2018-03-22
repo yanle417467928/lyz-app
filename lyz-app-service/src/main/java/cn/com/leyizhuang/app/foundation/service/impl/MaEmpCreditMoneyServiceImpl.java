@@ -26,21 +26,27 @@ public class MaEmpCreditMoneyServiceImpl implements MaEmpCreditMoneyService {
     private MaEmpCreditMoneyDAO maEmpCreditMoneyDAO;
 
     @Override
+    public void saveEmpCreditMoney(GuideCreditMoney guideCreditMoney) {
+        this.maEmpCreditMoneyDAO.saveEmpCreditMoney(guideCreditMoney);
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void update(GuideCreditMoneyDetail guideCreditMoneyDetail, GuideCreditChangeDetail guideCreditChangeDetail) throws RuntimeException {
+        //判断新增还是修改导购额度
 
-        //得到更新后的可用额度
-        BigDecimal creditLimitChangeAmount = guideCreditMoneyDetail.getCreditLimit().subtract(guideCreditMoneyDetail.getOriginalCreditLimit());
-        BigDecimal tempCreditLimitChangeAmount = guideCreditMoneyDetail.getTempCreditLimit().subtract(guideCreditMoneyDetail.getOriginalTempCreditLimit());
-        BigDecimal allChangeAmount = creditLimitChangeAmount.add(tempCreditLimitChangeAmount);
-        guideCreditMoneyDetail.setCreditLimitAvailable(guideCreditMoneyDetail.getOriginalCreditLimitAvailable().add(allChangeAmount));
-        //更新导购信用金
         GuideCreditMoney guideCreditMoney = new GuideCreditMoney();
         guideCreditMoney.setCreditLimit(guideCreditMoneyDetail.getCreditLimit());
         guideCreditMoney.setCreditLimitAvailable(guideCreditMoneyDetail.getCreditLimitAvailable());
         guideCreditMoney.setEmpId(guideCreditMoneyDetail.getEmpId());
         guideCreditMoney.setTempCreditLimit(guideCreditMoneyDetail.getTempCreditLimit());
         guideCreditMoney.setLastUpdateTime(guideCreditMoneyDetail.getLastUpdateTime());
+        //得到更新后的可用额度
+        BigDecimal creditLimitChangeAmount = guideCreditMoneyDetail.getCreditLimit().subtract(guideCreditMoneyDetail.getOriginalCreditLimit());
+        BigDecimal tempCreditLimitChangeAmount = guideCreditMoneyDetail.getTempCreditLimit().subtract(guideCreditMoneyDetail.getOriginalTempCreditLimit());
+        BigDecimal allChangeAmount = creditLimitChangeAmount.add(tempCreditLimitChangeAmount);
+        guideCreditMoneyDetail.setCreditLimitAvailable(guideCreditMoneyDetail.getOriginalCreditLimitAvailable().add(allChangeAmount));
+        //更新导购信用金
         for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
             Integer affectLine = this.maEmpCreditMoneyDAO.update(guideCreditMoney);
             //更新变更详情父表与子表
@@ -53,6 +59,7 @@ public class MaEmpCreditMoneyServiceImpl implements MaEmpCreditMoneyService {
                 }
             }
         }
+
     }
 
     @Override

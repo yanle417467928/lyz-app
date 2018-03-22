@@ -31,5 +31,7 @@ public class GuideCreditMoney {
     private BigDecimal creditLimitAvailable;
     //上次修改时间
     private Date lastUpdateTime;
+    //上次修改时间
+    private Date createTime;
 
 }

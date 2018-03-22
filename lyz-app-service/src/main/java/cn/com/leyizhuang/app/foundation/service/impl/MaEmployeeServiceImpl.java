@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.foundation.dao.AppEmployeeDAO;
 import cn.com.leyizhuang.app.foundation.dao.MaEmployeeDAO;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeType;
+import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaEmployeeResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.MaEmployeeService;
@@ -16,6 +17,7 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 @Service
@@ -28,9 +30,9 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
     private AppEmployeeDAO appEmployeeDAO;
 
     @Override
-    public PageInfo<EmployeeDO> queryPageVO(Integer page, Integer size){
+    public PageInfo<EmployeeDO> queryPageVO(Integer page, Integer size, List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<EmployeeDO> pageEmployeeList = this.maEmployeeDAO.findAllEmployee();
+        List<EmployeeDO> pageEmployeeList = this.maEmployeeDAO.findAllEmployee(storeIds);
         return new PageInfo<>(pageEmployeeList);
     }
 
@@ -145,9 +147,19 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
     }
 
     @Override
-    public PageInfo<GuideVO> queryGuideVOPage(Integer page, Integer size){
+    public PageInfo<GuideVO> queryGuideVOPage(Integer page, Integer size) {
         PageHelper.startPage(page, size);
         List<GuideVO> pageGuideVOList = this.maEmployeeDAO.findAllGuide();
+        for(GuideVO guideVO:pageGuideVOList){
+            GuideCreditMoney guideCreditMoney=  guideVO.getGuideCreditMoney();
+            if(null == guideCreditMoney){
+                GuideCreditMoney guideCreditMoney1 = new  GuideCreditMoney();
+                guideCreditMoney1.setTempCreditLimit(BigDecimal.ZERO);
+                guideCreditMoney1.setCreditLimitAvailable(BigDecimal.ZERO);
+                guideCreditMoney1.setCreditLimit(BigDecimal.ZERO);
+                guideVO.setGuideCreditMoney(guideCreditMoney1);
+            }
+        }
         return new PageInfo<>(pageGuideVOList);
     }
 
@@ -168,6 +180,16 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
         }
         PageHelper.startPage(page, size);
         List<GuideVO> pageGuideVOList = this.maEmployeeDAO.queryGuideVOByCondition(cityId,storeId);
+        for(GuideVO guideVO:pageGuideVOList){
+            GuideCreditMoney guideCreditMoney=  guideVO.getGuideCreditMoney();
+            if(null == guideCreditMoney){
+                GuideCreditMoney guideCreditMoney1 = new  GuideCreditMoney();
+                guideCreditMoney1.setTempCreditLimit(BigDecimal.ZERO);
+                guideCreditMoney1.setCreditLimitAvailable(BigDecimal.ZERO);
+                guideCreditMoney1.setCreditLimit(BigDecimal.ZERO);
+                guideVO.setGuideCreditMoney(guideCreditMoney1);
+            }
+        }
         return new PageInfo<>(pageGuideVOList);
     }
 
@@ -175,6 +197,16 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
     public PageInfo<GuideVO> queryGuideVOByInfo(Integer page, Integer size,String queryGuideVOInfo){
         PageHelper.startPage(page, size);
         List<GuideVO> pageGuideVOList = this.maEmployeeDAO.queryGuideVOByInfo(queryGuideVOInfo);
+        for(GuideVO guideVO:pageGuideVOList){
+            GuideCreditMoney guideCreditMoney=  guideVO.getGuideCreditMoney();
+            if(null == guideCreditMoney){
+                GuideCreditMoney guideCreditMoney1 = new  GuideCreditMoney();
+                guideCreditMoney1.setTempCreditLimit(BigDecimal.ZERO);
+                guideCreditMoney1.setCreditLimitAvailable(BigDecimal.ZERO);
+                guideCreditMoney1.setCreditLimit(BigDecimal.ZERO);
+                guideVO.setGuideCreditMoney(guideCreditMoney1);
+            }
+        }
         return new PageInfo<>(pageGuideVOList);
     }
 

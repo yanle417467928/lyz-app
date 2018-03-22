@@ -21,7 +21,6 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.sql.Timestamp;
@@ -41,9 +40,9 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     private MaCusLebiLogService maCusLebiLogService;
 
     @Override
-    public PageInfo<CustomerDO> queryPageVO(Integer page, Integer size) {
+    public PageInfo<CustomerDO> queryPageVO(Integer page, Integer size, List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<CustomerDO> CustmoerList = maCustomerDAO.findAllVO();
+        List<CustomerDO> CustmoerList = maCustomerDAO.findAllVO(storeIds);
         return new PageInfo<>(CustmoerList);
     }
 

@@ -183,7 +183,7 @@
     function findStorelist() {
         var store = "";
         $.ajax({
-            url: '/rest/stores/findStorelist',
+            url: '/rest/stores/findStoresListByStoreId',
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);
@@ -512,7 +512,7 @@
       /*  initSelect("#guideCode", "选择导购")*/
         var store;
         $.ajax({
-            url: '/rest/stores/findStoresListByCityId/' + cityId,
+            url: '/rest/stores/findStoresListByCityIdAndStoreId/' + cityId,
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);

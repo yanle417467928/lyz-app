@@ -12,7 +12,7 @@ import com.github.pagehelper.PageInfo;
 import java.util.List;
 
 public interface MaEmployeeService {
-    PageInfo<EmployeeDO> queryPageVO(Integer page, Integer size);
+    PageInfo<EmployeeDO> queryPageVO(Integer page, Integer size, List<Long> storeIds);
 
     EmployeeDetailVO queryEmployeeById(Long id);
 

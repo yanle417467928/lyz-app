@@ -11,7 +11,6 @@ import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
-import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
@@ -172,7 +171,7 @@ public interface MaOrderService {
     MaOrderDeliveryInfoResponse getDeliveryInfoByOrderNumber(String orderNmber);
 
 
-    PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderList(Integer page, Integer size);
+    PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderList(Integer page, Integer size, List<Long> storeIds);
 
     PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderListByScreen(Integer page, Integer size, Long cityId, Long storeId, Integer status, Integer isPayUp);
 
@@ -247,7 +246,7 @@ public interface MaOrderService {
     void sendOrderReceiveInfAndRecord(String orderNumber);
 
 
-    PageInfo<MaAgencyAndArrearsOrderVO> findArrearsAndAgencyOrderList(Integer page, Integer size);
+    PageInfo<MaAgencyAndArrearsOrderVO> findArrearsAndAgencyOrderList(Integer page, Integer size, List<Long> storeIds);
 
 
     PageInfo<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByScreen(Integer page, Integer size, Long cityId, Long storeId, Integer status, Integer isPayUp);

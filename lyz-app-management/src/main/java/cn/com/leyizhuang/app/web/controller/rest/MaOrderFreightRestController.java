@@ -2,7 +2,7 @@ package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.OrderFreightChange;
-import cn.com.leyizhuang.app.foundation.pojo.management.order.SimpleOrderBillingDetails;
+import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.MaOrderFreightService;
 import cn.com.leyizhuang.app.foundation.vo.management.freight.OrderFreightChangeVO;
 import cn.com.leyizhuang.app.foundation.vo.management.freight.OrderFreightDetailVO;
@@ -30,6 +30,8 @@ public class MaOrderFreightRestController extends BaseRestController {
 
     @Autowired
     private MaOrderFreightService maOrderFreightService;
+    @Autowired
+    private AdminUserStoreService adminUserStoreService;
 
     /**
      * 初始化订单运费列表
@@ -45,7 +47,9 @@ public class MaOrderFreightRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<OrderFreightVO> orderFreightPage = this.maOrderFreightService.queryPageVO(page, size);
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<OrderFreightVO> orderFreightPage = this.maOrderFreightService.queryPageVO(page, size, storeIds);
             List<OrderFreightVO> orderFreightPageList = orderFreightPage.getList();
             logger.info("getOrderFreightVOList ,后台初始化订单运费列表成功", orderFreightPageList.size());
             return new GridDataVO<OrderFreightVO>().transform(orderFreightPageList, orderFreightPage.getTotal());

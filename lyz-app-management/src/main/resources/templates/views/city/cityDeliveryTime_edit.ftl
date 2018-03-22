@@ -41,9 +41,9 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="id" type="hidden" class="form-control" id="id" readonly
-                                           value="${cityDeliveryTimeVO.id!''}">
+                                           value="${cityDeliveryTimeVO.id?c}">
                                     <input name="cityId" type="text" class="form-control" id="cityId" readonly
-                                           value="${cityDeliveryTimeVO.cityId!''}">
+                                           value="${cityDeliveryTimeVO.cityId?c}">
                                 </div>
                             </div>
                         </div>

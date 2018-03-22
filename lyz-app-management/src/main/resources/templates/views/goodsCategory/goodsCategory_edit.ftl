@@ -41,7 +41,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="id" type="text" class="form-control" id="id" readonly
-                                           value="${goodsCategoryVO.id}">
+                                           value="${goodsCategoryVO.id?c}">
                                 </div>
                             </div>
                         </div>
@@ -92,7 +92,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="sortId" type="text" class="form-control" id="sortId"
-                                           value="${goodsCategoryVO.sortId}">
+                                           value="${goodsCategoryVO.sortId?c}">
                                 </div>
                             </div>
                         </div>

@@ -4,6 +4,8 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.invoicing.InvoicingQuery;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.invoicing.InvoicingVO;
 import com.github.pagehelper.PageInfo;
 
+import java.util.List;
+
 /**
  * @author Jerry.Ren
  * Notes:
@@ -22,5 +24,5 @@ public interface ItyInvoicingService {
      * @param keywords
      * @return
      */
-    PageInfo<InvoicingVO> queryPage(Integer offset, Integer size, String keywords, InvoicingQuery selectParam);
+    PageInfo<InvoicingVO> queryPage(Integer offset, Integer size, String keywords, InvoicingQuery selectParam, List<Long> storeIds);
 }

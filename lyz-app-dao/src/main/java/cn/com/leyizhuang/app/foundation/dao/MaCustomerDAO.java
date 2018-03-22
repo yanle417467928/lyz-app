@@ -15,7 +15,7 @@ import java.util.List;
 
 @Repository
 public interface MaCustomerDAO {
-    List<CustomerDO> findAllVO();
+    List<CustomerDO> findAllVO(@Param("list") List<Long> storeIds);
 
     CustomerDO queryCustomerVOById(Long cusId);
 

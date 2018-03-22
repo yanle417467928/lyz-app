@@ -185,7 +185,8 @@
         s.store_name
         FROM
         st_store s
-        AND s.store_id IN
+        WHERE
+         s.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>

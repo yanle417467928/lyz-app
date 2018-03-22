@@ -1,18 +1,16 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
-import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
-import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.core.wechat.refund.MaOnlinePayRefundService;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaPaymentData;
 import cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaOrdReturnBilling;
-import cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaOrdReturnBillingDetail;
 import cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaReturnOrderDetailInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaReturnOrderInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
+import cn.com.leyizhuang.app.foundation.service.MaOrderService;
+import cn.com.leyizhuang.app.foundation.service.MaReturnOrderService;
 import cn.com.leyizhuang.app.remote.queue.MaSinkSender;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -24,8 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -49,6 +45,8 @@ public class MaRetrunOrderRestController extends BaseRestController {
     @Resource
     private MaOrderService maOrderService;
 
+    @Resource
+    private AdminUserStoreService adminUserStoreService;
     /**
      * 退货单列表
      *
@@ -63,7 +61,9 @@ public class MaRetrunOrderRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<MaReturnOrderInfo> returnOrderInfoPageInfo = this.maReturnOrderService.findMaReturnOrderList(page, size);
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<MaReturnOrderInfo> returnOrderInfoPageInfo = this.maReturnOrderService.findMaReturnOrderList(page, size, storeIds);
             List<MaReturnOrderInfo> returnOrderList = returnOrderInfoPageInfo.getList();
             logger.info("restReturnOrderPageGird ,后台分页查询退货订单成功", (returnOrderList == null) ? 0 : returnOrderList.size());
             return new GridDataVO<MaReturnOrderInfo>().transform(returnOrderList, returnOrderInfoPageInfo.getTotal());

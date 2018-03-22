@@ -1,9 +1,9 @@
 package cn.com.leyizhuang.app.core.constant;
 
 /**
- * 产品行类型
+ * 商品品牌类型
  *
- * @author Richard
+ * @author liuh
  * Created on 2017-12-11 10:39
  **/
 public enum GoodsBrandType {

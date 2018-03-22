@@ -113,7 +113,7 @@
     function findStoreSelection() {
         var store = "";
         $.ajax({
-            url: '/rest/stores/findStorelist',
+            url: '/rest/stores/findStoresListByStoreId',
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);
@@ -247,7 +247,7 @@
         };
         var store;
         $.ajax({
-            url: '/rest/stores/findStoresListByCityId/' + cityId,
+            url: '/rest/stores/findStoresListByCityIdAndStoreId/' + cityId,
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);
