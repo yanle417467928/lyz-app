@@ -52,4 +52,7 @@ public class StorePreDepositDTO implements Serializable{
      */
     @Length(min = 0, max = 50, message = "'备注'的长度必须在0~50字之间")
     private String remarks;
+
+    //提现类型（银行清单）
+    private String bankCode;
 }

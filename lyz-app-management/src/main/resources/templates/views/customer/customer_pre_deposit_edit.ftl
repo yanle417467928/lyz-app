@@ -270,6 +270,24 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-xs-12 col-md-6">
+                            <div class="form-group">
+                                <label for="bankCode">
+                                    收款银行
+                                    <i class="fa fa-question-circle i-tooltip" data-toggle="tooltip"
+                                       data-content="选择收款银行"></i>
+                                </label>
+                                <select class="form-control select" name="bankCode" id="bankCode" data-live-search="true">
+                                    <if bankVOS??>
+                                    <#list bankVOS as bank>
+                                        <option value="${bank.code}">${bank.bankName}(${bank.bankAccount})</option>
+                                    </#list>
+                                    </if>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="row">
                         <div class="col-xs-12 col-md-8"></div>

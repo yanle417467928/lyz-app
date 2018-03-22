@@ -5,7 +5,7 @@
     <insert id="saveWithdrawRefundInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.WithdrawRefundInfo">
         INSERT INTO withdraw_refund_info (withdraw_no, create_time, withdraw_channel, withdraw_channel_desc, withdraw_subject_type,
                                           withdraw_subject_type_desc, withdraw_amount, reply_code, refund_number, withdraw_account_type,
-                                          withdraw_account_type_desc)
+                                          withdraw_account_type_desc, withdraw_type)
             SELECT
                 #{withdrawNo},
                 #{createTime},
@@ -17,7 +17,8 @@
                 #{replyCode},
                 #{refundNumber},
                 #{withdrawAccountType},
-                #{withdrawAccountTypeDesc}
+                #{withdrawAccountTypeDesc},
+                #{withdrawType}
             FROM dual
             WHERE NOT exists(SELECT 1
                              FROM withdraw_refund_info
@@ -38,7 +39,8 @@
             reply_code,
             refund_number,
             withdraw_account_type,
-            withdraw_account_type_desc
+            withdraw_account_type_desc,
+            withdraw_type
         FROM withdraw_refund_info
         WHERE refund_number = #{refundNo}
     </select>

@@ -295,4 +295,37 @@ public class OrderUtils {
         }
         return null;
     }
+
+    /**
+     * @title   钱包变更单号
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/3/21
+     */
+    public static String generateChangeNumber(Long cityId) {
+        if (null != cityId) {
+            City city = cityService.findById(cityId);
+            StringBuilder orderNumberTemp = new StringBuilder();
+
+            if (null != city && null != city.getBriefSpell()) {
+                String orderNumber = city.getBriefSpell();
+                orderNumberTemp.append(orderNumber);
+            } else {
+                orderNumberTemp.append("MR");
+            }
+            orderNumberTemp.append("_BG");
+            Calendar calendar = Calendar.getInstance();
+            Date date = calendar.getTime();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+            String timeStamp = sdf.format(date);
+            orderNumberTemp.append(timeStamp);
+            Random random = new Random();
+            orderNumberTemp.append(random.nextInt(900000) + 100000);
+            return orderNumberTemp.toString();
+        }
+        return null;
+    }
 }

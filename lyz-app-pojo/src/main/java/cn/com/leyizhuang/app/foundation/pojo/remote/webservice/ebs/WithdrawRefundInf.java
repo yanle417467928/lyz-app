@@ -60,7 +60,7 @@ public class WithdrawRefundInf implements Serializable {
     /**
      * 充值类型（银行清单）
      */
-    private OrderBillingPaymentType withdrawType;
+    private String withdrawType;
 
     /**
      * 收款方式

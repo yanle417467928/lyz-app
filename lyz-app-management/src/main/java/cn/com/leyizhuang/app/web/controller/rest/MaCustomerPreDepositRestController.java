@@ -1,22 +1,22 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
-import cn.com.leyizhuang.app.core.constant.AppIdentityType;
-import cn.com.leyizhuang.app.core.constant.AppRechargeOrderStatus;
-import cn.com.leyizhuang.app.core.constant.CustomerPreDepositChangeType;
-import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
+import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dto.CusPreDepositDTO;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
+import cn.com.leyizhuang.app.foundation.pojo.WithdrawRefundInfo;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.MaCustomerService;
 import cn.com.leyizhuang.app.foundation.service.RechargeService;
+import cn.com.leyizhuang.app.foundation.service.WithdrawService;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
 import cn.com.leyizhuang.app.remote.queue.MaSinkSender;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import cn.com.leyizhuang.common.util.CountUtil;
 import com.github.pagehelper.PageInfo;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
@@ -55,6 +55,9 @@ public class MaCustomerPreDepositRestController extends BaseRestController {
     @Autowired
     private MaSinkSender sinkSender;
 
+    @Autowired
+    private WithdrawService withdrawService;
+
     /**
      * @title   获取顾客预存款列表
      * @descripe
@@ -92,7 +95,7 @@ public class MaCustomerPreDepositRestController extends BaseRestController {
                     try {
                         Long cityId = this.maCustomerService.findCityIdByCusId(cusPreDepositDTO.getCusId());
                         //生成单号
-                        String rechargeNo = OrderUtils.generateRechargeNumber(cityId);
+                        String rechargeNo = OrderUtils.generateChangeNumber(cityId);
 
                         cusPreDepositDTO.setChangeType(CustomerPreDepositChangeType.ADMIN_CHANGE);
                         this.maCustomerService.changeCusPredepositByCusId(cusPreDepositDTO);
@@ -100,15 +103,37 @@ public class MaCustomerPreDepositRestController extends BaseRestController {
                         RechargeOrder rechargeOrder = rechargeService.createCusRechargeOrder(AppIdentityType.CUSTOMER.getValue(), cusPreDepositDTO.getCusId(),
                                 cusPreDepositDTO.getChangeMoney(), rechargeNo, cusPreDepositDTO.getPayType());
 
+                        if (cusPreDepositDTO.getChangeMoney() > 0) {
+                            rechargeOrder.setRechargeNo(rechargeNo);
+                            rechargeService.saveRechargeOrder(rechargeOrder);
 
-                        rechargeService.saveRechargeOrder(rechargeOrder);
+                            //创建充值单收款
+                            RechargeReceiptInfo receiptInfo = rechargeService.createCusPayRechargeReceiptInfo(AppIdentityType.CUSTOMER.getValue(), cusPreDepositDTO, rechargeNo);
+                            rechargeService.saveRechargeReceiptInfo(receiptInfo);
 
-                        //创建充值单收款
-                        RechargeReceiptInfo receiptInfo = rechargeService.createCusPayRechargeReceiptInfo(AppIdentityType.CUSTOMER.getValue(), cusPreDepositDTO, rechargeNo);
-                        rechargeService.saveRechargeReceiptInfo(receiptInfo);
+                            //将收款记录入拆单消息队列
+                            sinkSender.sendRechargeReceipt(rechargeNo);
+                        } else {
+                            rechargeOrder.setWithdrawNo(rechargeNo);
+                            rechargeService.saveRechargeOrder(rechargeOrder);
+                            //生成提现退款信息
+                            WithdrawRefundInfo withdrawRefundInfo = new WithdrawRefundInfo();
+                            withdrawRefundInfo.setCreateTime(new Date());
+                            withdrawRefundInfo.setWithdrawNo(rechargeNo);
+                            withdrawRefundInfo.setRefundNumber(OrderUtils.getRefundNumber());
+                            withdrawRefundInfo.setWithdrawChannel(cusPreDepositDTO.getPayType());
+                            withdrawRefundInfo.setWithdrawChannelDesc(cusPreDepositDTO.getChangeType().getDescription());
+                            withdrawRefundInfo.setWithdrawAccountType(RechargeAccountType.ST_PREPAY);
+                            withdrawRefundInfo.setWithdrawAccountTypeDesc(withdrawRefundInfo.getWithdrawAccountType().getDescription());
+                            withdrawRefundInfo.setWithdrawAmount(CountUtil.mul(cusPreDepositDTO.getChangeMoney(), -1));
+                            withdrawRefundInfo.setWithdrawSubjectType(PaymentSubjectType.DECORATE_MANAGER);
+                            withdrawRefundInfo.setWithdrawSubjectTypeDesc(withdrawRefundInfo.getWithdrawSubjectType().getDescription());
+                            withdrawRefundInfo.setWithdrawType(cusPreDepositDTO.getBankCode());
+                            withdrawService.saveWithdrawRefundInfo(withdrawRefundInfo);
 
-                        //将收款记录入拆单消息队列
-                        sinkSender.sendRechargeReceipt(rechargeNo);
+                            //提现退款接口信息发送EBS
+                            sinkSender.sendWithdrawRefund(withdrawRefundInfo.getRefundNumber());
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                         List<ObjectError> allErrors = result.getAllErrors();

@@ -969,6 +969,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
             }
             withdrawRefundInf.setDescription(withdrawRefundInfo.getWithdrawChannel().getDescription());
             withdrawRefundInf.setRefundDate(withdrawRefundInfo.getCreateTime());
+            withdrawRefundInf.setWithdrawType(withdrawRefundInfo.getWithdrawType());
 
             //获取充值顾客信息
             if (withdrawRefundInfo.getWithdrawAccountType() == RechargeAccountType.CUS_PREPAY) {
@@ -983,8 +984,13 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
             //获取门店充值信息
             else if (withdrawRefundInfo.getWithdrawAccountType() == RechargeAccountType.ST_PREPAY) {
                 StPreDepositWithdraw stPreDepositWithdraw = stPreDepositWithdrawDAO.findByApplyNo(withdrawRefundInfo.getWithdrawNo());
-
-                AppStore store = storeService.findStoreByUserIdAndIdentityType(stPreDepositWithdraw.getApplyStId(), AppIdentityType.SELLER.getValue());
+                AppStore store = null;
+                if (null != stPreDepositWithdraw) {
+                    store = storeService.findStoreByUserIdAndIdentityType(stPreDepositWithdraw.getApplyStId(), AppIdentityType.SELLER.getValue());
+                } else{
+                    List<RechargeOrder> rechargeOrderList = rechargeService.findRechargeOrderByWithdrawNo(withdrawRefundInfo.getWithdrawNo());
+                    store = storeService.findById(rechargeOrderList.get(0).getStoreId());
+                }
                 if (null != store) {
                     withdrawRefundInf.setDiySiteCode(store.getStoreCode());
                     withdrawRefundInf.setStoreOrgCode(store.getStoreStructureCode());
