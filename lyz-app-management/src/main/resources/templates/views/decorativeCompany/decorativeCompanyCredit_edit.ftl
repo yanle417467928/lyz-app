@@ -86,7 +86,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="cid" type="hidden" class="form-control" id="cid"
-                                           value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.credit??>${decorativeCompanyVO.credit.cid!''}</#if></#if>" />
+                                           value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.credit??>${decorativeCompanyVO.credit.cid?c}</#if></#if>" />
                                     <input name="creditLastUpdateTime" type="hidden" class="form-control"
                                            id="creditLastUpdateTime"
                                            value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.credit??>${decorativeCompanyVO.credit.creditLastUpdateTime?string("yyyy-MM-dd HH:mm:ss")}</#if></#if>" />
@@ -105,7 +105,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="sid" type="hidden" class="form-control" id="sid"
-                                           value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.sponsorship??>${decorativeCompanyVO.sponsorship.sid!''}</#if></#if>"/>
+                                           value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.sponsorship??>${decorativeCompanyVO.sponsorship.sid?c}</#if></#if>"/>
                                     <input name="sponsorshipLastUpdateTime" type="hidden" class="form-control"
                                            id="sponsorshipLastUpdateTime"
                                            value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.sponsorship??>${decorativeCompanyVO.sponsorship.sponsorshipLastUpdateTime?string("yyyy-MM-dd HH:mm:ss")}</#if></#if>"/>

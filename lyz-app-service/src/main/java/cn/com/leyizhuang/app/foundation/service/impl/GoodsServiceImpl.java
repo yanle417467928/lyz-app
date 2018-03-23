@@ -1,20 +1,22 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
-import cn.com.leyizhuang.app.core.constant.GoodsBrandType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.GoodsDAO;
 import cn.com.leyizhuang.app.foundation.dto.GoodsDTO;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsBrand;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
+import cn.com.leyizhuang.app.foundation.service.MaGoodsBrandService;
 import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import cn.com.leyizhuang.app.foundation.vo.management.MaBuyProductCouponGoodsResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.goods.MaGoodsVO;
 import cn.com.leyizhuang.common.util.AssertUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,11 +30,12 @@ import java.util.Set;
 @Service
 public class GoodsServiceImpl implements GoodsService {
 
+    @Autowired
     private GoodsDAO goodsDAO;
 
-    public GoodsServiceImpl(GoodsDAO goodsDAO) {
-        this.goodsDAO = goodsDAO;
-    }
+    @Autowired
+    private MaGoodsBrandService maGoodsBrandService;
+
 
     /**
      * @param page
@@ -74,7 +77,7 @@ public class GoodsServiceImpl implements GoodsService {
             List<UserGoodsResponse> userGoodsResponseList;
             if (identityType == 6) {
                 PageHelper.startPage(page, size);
-                 userGoodsResponseList = goodsDAO.findGoodsListByCategoryCodeAndCustomerIdAndIdentityType(categoryCode, userId);
+                userGoodsResponseList = goodsDAO.findGoodsListByCategoryCodeAndCustomerIdAndIdentityType(categoryCode, userId);
                 return new PageInfo<>(userGoodsResponseList);
             } else {
                 PageHelper.startPage(page, size);
@@ -147,7 +150,7 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public PageInfo<UserGoodsResponse> findGoodsListByIsHotAndUserIdAndIdentityType(Long userId, Integer identityType,Integer page, Integer size) {
+    public PageInfo<UserGoodsResponse> findGoodsListByIsHotAndUserIdAndIdentityType(Long userId, Integer identityType, Integer page, Integer size) {
         if (null != userId && null != identityType) {
             if (identityType == 6) {
                 PageHelper.startPage(page, size);
@@ -155,7 +158,7 @@ public class GoodsServiceImpl implements GoodsService {
                 return new PageInfo<>(userGoodsResponseList);
             } else {
                 PageHelper.startPage(page, size);
-                List<UserGoodsResponse> userGoodsResponseList =  goodsDAO.findGoodsListByIsHotAndEmployeeIdAndIdentityType(userId);
+                List<UserGoodsResponse> userGoodsResponseList = goodsDAO.findGoodsListByIsHotAndEmployeeIdAndIdentityType(userId);
                 return new PageInfo<>(userGoodsResponseList);
             }
         }
@@ -409,6 +412,11 @@ public class GoodsServiceImpl implements GoodsService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateGoods(MaGoodsVO goodsVO) {
+        Long brdId = goodsVO.getBrdId();
+        if (null != brdId) {
+            GoodsBrand goodsBrand = maGoodsBrandService.queryGoodsBrandVOById(brdId);
+            goodsVO.setBrdName(goodsBrand.getBrandName());
+        }
         GoodsDO goodsDO = GoodsDO.transform(goodsVO);
         goodsDAO.updateGoods(goodsDO);
     }
@@ -460,16 +468,16 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public PageInfo<GoodsDO> getGoodsBykeywordsAndCompanyAndBrandCodeAndCategoryCodeAndStoreId(Integer page, Integer size, String keywords,String companyCode, Long brandCode,
-                                                                                                 String categoryCode, Long storeId) {
+    public PageInfo<GoodsDO> getGoodsBykeywordsAndCompanyAndBrandCodeAndCategoryCodeAndStoreId(Integer page, Integer size, String keywords, String companyCode, Long brandCode,
+                                                                                               String categoryCode, Long storeId) {
         PageHelper.startPage(page, size);
-        List<GoodsDO> list = goodsDAO.getGoodsBykeywordsAndCompanyAndBrandCodeAndCategoryCodeAndStoreId(keywords,companyCode,brandCode,categoryCode,storeId);
+        List<GoodsDO> list = goodsDAO.getGoodsBykeywordsAndCompanyAndBrandCodeAndCategoryCodeAndStoreId(keywords, companyCode, brandCode, categoryCode, storeId);
         return new PageInfo<>(list);
     }
 
     @Override
     public List<String> getGoodsSkuNameListByGoodsIdList(List<Long> noPriceGoodsIdList) {
-        if (AssertUtil.isNotEmpty(noPriceGoodsIdList)){
+        if (AssertUtil.isNotEmpty(noPriceGoodsIdList)) {
             return goodsDAO.getGoodsSkuNameListByGoodsIdList(noPriceGoodsIdList);
         }
         return null;

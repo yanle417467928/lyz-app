@@ -209,7 +209,7 @@
                                 <tr class="text-center">
                                     <td>${being.sku!''}</td>
                                     <td>${being.skuName!''}</td>
-                                    <td>${being.orderQty!''}</td>
+                                    <td>${being.orderQty?c}</td>
                                     <td> ¥ ${being.returnPrice!''}</td>
                                     <td> ¥ ${being.settlementPrice!''}</td>
                                 </tr>
