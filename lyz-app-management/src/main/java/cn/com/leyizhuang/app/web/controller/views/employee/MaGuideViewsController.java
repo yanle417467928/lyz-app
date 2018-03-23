@@ -57,7 +57,6 @@ public class MaGuideViewsController extends BaseController {
                 guideCreditMoney.setCreditLimitAvailable(BigDecimal.ZERO);
                 guideCreditMoney.setTempCreditLimit(BigDecimal.ZERO);
                 guideCreditMoney.setCreditLimit(BigDecimal.ZERO);
-                guideCreditMoney.setLastUpdateTime(new Date());
                 guideVO.setGuideCreditMoney(guideCreditMoney);
             }
             map.addAttribute("guideVO", guideVO);
