@@ -39,11 +39,11 @@ public class CustomerLeBiVariationLog {
     /**
      * 变动数量
      */
-    private int variationQuantity;
+    private Integer variationQuantity;
     /**
      * 变动后乐币数量
      */
-    private int afterVariationQuantity;
+    private Integer afterVariationQuantity;
     /**
      * 乐币使用订单号
      */

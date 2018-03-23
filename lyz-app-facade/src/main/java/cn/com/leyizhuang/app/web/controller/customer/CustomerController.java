@@ -583,10 +583,18 @@ public class CustomerController {
                 logger.info("addCustomerLeBiQuantity OUT,顾客签到增加乐币失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            commonService.customerSign(userId, identityType);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-            //logger.info("addCustomerLeBiQuantity OUT,顾客签到增加乐币成功，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
+            CustomerPreDeposit preDeposit = customerService.findCustomerPreDepositByCustomerId(appCustomer.getCusId());
+            if (null != preDeposit) {
+                commonService.customerSign(userId, identityType);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+                //logger.info("addCustomerLeBiQuantity OUT,顾客签到增加乐币成功，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            } else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该顾客没有乐币账户，签到失败！", null);
+                logger.warn("id为{}的顾客:{}没有乐币账户!", appCustomer.getCusId(), appCustomer.getName());
+                return resultDTO;
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，顾客签到增加乐币失败", null);

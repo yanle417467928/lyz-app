@@ -176,4 +176,6 @@ public interface AppCustomerDAO {
      * @param userId 用户id
      */
     void updateCustomerTypeByUserId(@Param("userId")Long userId);
+
+    CustomerPreDeposit findCustomerPreDepositByCustomerId(@Param(value = "cusId") Long cusId);
 }

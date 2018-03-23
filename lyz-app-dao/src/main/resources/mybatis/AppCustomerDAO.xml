@@ -270,10 +270,10 @@
             c.nick_name,
             c.mobile,
             c.light,
-            e.name      guideName,
-            e.mobile    guideMobile,
+            e.name          guideName,
+            e.mobile        guideMobile,
             pd.balance,
-            lb.quantity lb,
+            lb.quantity     lb,
             c.last_sign_time,
             c.city_id,
             c.customer_type customerType
@@ -791,37 +791,47 @@
         WHERE cus_id = #{userId}
     </update>
 
-    <select id="findCusRankinfoByCusId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.response.CustomerRankInfoResponse">
+    <select id="findCusRankinfoByCusId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.CustomerRankInfoResponse">
         SELECT
-          c.cus_id, c.name, c.mobile, rc.rank_name, rc.rank_code, rc.city_id, cr.number, cr.create_time
+            c.cus_id,
+            c.name,
+            c.mobile,
+            rc.rank_name,
+            rc.rank_code,
+            rc.city_id,
+            cr.number,
+            cr.create_time
         FROM cus_customer c
-        INNER JOIN cus_rank cr ON cr.cus_id = c.cus_id
-        INNER JOIN rank_classification rc ON cr.rank_id = rc.rank_id
+            INNER JOIN cus_rank cr ON cr.cus_id = c.cus_id
+            INNER JOIN rank_classification rc ON cr.rank_id = rc.rank_id
         WHERE c.cus_id = #{cusId}
     </select>
 
-    <select id="findCustomerByCusPhone" resultType="cn.com.leyizhuang.app.foundation.pojo.response.FindCustomerResponse">
+    <select id="findCustomerByCusPhone"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.FindCustomerResponse">
         SELECT
             cus_id cusId,
-	        mobile cusPhone,
-	        `name` cusName
+            mobile cusPhone,
+            `name` cusName
         FROM
             cus_customer
         WHERE
             city_id = #{cityId}
-        AND mobile = #{mobile}
+            AND mobile = #{mobile}
     </select>
 
-    <select id="findCustomerByCusNameOrPhone" resultType="cn.com.leyizhuang.app.foundation.pojo.response.FindCustomerResponse">
+    <select id="findCustomerByCusNameOrPhone"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.FindCustomerResponse">
         SELECT
-        cus_id cusId,
-        mobile cusPhone,
-        `name` cusName
+            cus_id cusId,
+            mobile cusPhone,
+            `name` cusName
         FROM
-        cus_customer
+            cus_customer
         WHERE
-        store_id = #{storeId}
-        AND (`name` LIKE concat('%', #{keywords}, '%') OR mobile LIKE concat('%', #{keywords}, '%'))
+            store_id = #{storeId}
+            AND (`name` LIKE concat('%', #{keywords}, '%') OR mobile LIKE concat('%', #{keywords}, '%'))
     </select>
 
     <update id="updateCustomerTypeByUserId">
@@ -830,4 +840,17 @@
         WHERE
             cus_id = #{userId}
     </update>
+
+
+    <select id="findCustomerPreDepositByCustomerId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit">
+        SELECT
+            id,
+            last_update_time,
+            cus_id,
+            balance,
+            create_time
+        FROM cus_pre_deposit
+        WHERE cus_id = #{cusId}
+    </select>
 </mapper>
