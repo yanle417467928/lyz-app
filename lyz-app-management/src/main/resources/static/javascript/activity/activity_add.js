@@ -26,6 +26,8 @@ $(function () {
     $("select").each(function () {
         $(this).selectpicker('refresh');
     })
+
+    initFileInput("uploadQrcodeBtn",1);
 })
 
 function findCityList() {
@@ -443,8 +445,15 @@ function formValidate() {
                     }
                 }
             }
+
         }
     }).on('success.form.bv', function (e) {
+        var coverImg = $("#coverImg").val();
+
+        if (coverImg == "" || coverImg == undefined){
+            $notify.danger('请上传图片');
+            return false;
+        }
 
         // 目标对象
         var target = "";
@@ -773,3 +782,42 @@ function starAndEndDatetimepiker(startDateId,endDateId){
     });
 }
 
+function initFileInput(ctrlName, type) {
+    var control = $('#' + ctrlName);
+    control.fileinput({
+        language: 'zh', //设置语言
+        uploadUrl: "/rest/goods/uploadQrcode", //上传的地址
+        allowedFileExtensions: ['jpg', 'gif', 'png'],//接收的文件后缀
+        //uploadExtraData:{"id": 1, "fileName":'123.mp3'},
+        uploadAsync: true, //默认异步上传
+        showUpload: false, //是否显示上传按钮
+        showRemove: true, //显示移除按钮
+        showPreview: false, //是否显示预览
+        showCaption: true,//是否显示标题
+        browseClass: "btn btn-primary", //按钮样式
+        dropZoneEnabled: false,//是否显示拖拽区域
+        minImageWidth: 300, //图片的最小宽度
+        minImageHeight:180,//图片的最小高度
+        maxImageWidth: 400,//图片的最大宽度
+        maxImageHeight: 220,//图片的最大高度
+        maxFileSize:2048,//单位为kb，如果为0表示不限制文件大小
+        maxFileCount: 1,//表示允许同时上传的最大文件个数
+        enctype: 'multipart/form-data',
+        validateInitialCount: true,
+        previewFileIcon: "<iclass='glyphicon glyphicon-king'></i>",
+        msgFilesTooMany: "选择上传的文件数量({n}) 超过允许的最大数值{m}！"
+    }).on('filebatchselected', function (event, data, id, index) {
+        if (data.length == 0) {
+            $notify.warning("图片大小或格式不正确，请检查")
+            return;
+        }
+        $(this).fileinput("upload");
+    }).on("fileuploaded", function (event, data) {
+        if (data.response.code == 0) {
+            if (1 == type) {
+                $('#coverImageBox').html('<img  src="' + data.response.content + '"' + ' class="img-rounded" style="height: 100px;width: 100px;" />')
+                $('#coverImg').val(data.response.content);
+            }
+        }
+    });
+}

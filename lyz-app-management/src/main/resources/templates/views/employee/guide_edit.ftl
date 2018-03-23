@@ -42,7 +42,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="empId" type="text" class="form-control" id="id" readonly
-                                           value="${guideVO.id!''}">
+                                           value="${guideVO.id?c}">
                                 </div>
                             </div>
                         </div>
@@ -107,7 +107,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="lastUpdateTime" type="text" class="form-control" id="lastUpdateTime" readonly
-                                           value="<#if guideVO??><#if guideVO.guideCreditMoney??>${guideVO.guideCreditMoney.lastUpdateTime?string("yyyy-MM-dd HH:mm:ss")}</#if></#if>">
+                                           value="<#if guideVO??><#if guideVO.guideCreditMoney??><#if guideVO.guideCreditMoney.lastUpdateTime??>${guideVO.guideCreditMoney.lastUpdateTime?string("yyyy-MM-dd HH:mm:ss")}</#if></#if></#if>">
                                 </div>
                             </div>
                         </div>
@@ -251,7 +251,7 @@
                 }, creditLimitAvailable: {
                     message: '可用额度校验失败',
                     validators: {
-                        notEmpty: {
+                       notEmpty: {
                             message: '可用额度不能为空'
                         },
                         regexp: {

@@ -41,7 +41,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="storeId" type="text" class="form-control" id="storeId" readonly
-                                           value="${store.storeId}">
+                                           value="${store.storeId?c}">
                                 </div>
                             </div>
                         </div>

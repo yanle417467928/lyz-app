@@ -32,8 +32,6 @@
     </resultMap>
 
 
-
-
     <resultMap id="guideResultMap" type="GuideVO">
         <id property="id" column="emp_id" jdbcType="BIGINT"/>
         <result property="loginName" column="login_name"/>
@@ -66,10 +64,6 @@
          e.identity_type!='DECORATE_MANAGER'
         AND
         e.identity_type!='DECORATE_EMPLOYEE'
-        AND s.store_id IN
-        <foreach collection="list" item="item" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
         order by  emp_id asc
     </select>
 
@@ -93,7 +87,8 @@
         order by  emp_id asc
     </select>
 
-    <select id="findEmpTypeByStoreId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO">
+    <select id="findEmpTypeByStoreId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO">
         select DISTINCT e.identity_type
         from emp_employee e
         WHERE
@@ -106,7 +101,8 @@
         emp_id asc
     </select>
 
-    <select id="findEmpTypeByCityId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO">
+    <select id="findEmpTypeByCityId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO">
         select DISTINCT e.identity_type
         from emp_employee e
         WHERE
@@ -118,7 +114,7 @@
         order by  emp_id asc
     </select>
 
-    <select id="findEmpTypeList"  resultType="cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO">
+    <select id="findEmpTypeList" resultType="cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO">
         select DISTINCT e.identity_type
         from emp_employee e
         WHERE
@@ -132,10 +128,10 @@
         select e.emp_id,e.login_name,e.name,e.identity_type,e.status,c.city_id,c.name cname,s.store_id,s.store_name
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
-        LEFT  JOIN  st_store s ON e.store_id = s.store_id
+        LEFT JOIN st_store s ON e.store_id = s.store_id
         where e.store_id = #{storeId}
         <if test="null != identityType">
-          AND
+            AND
             e.identity_type=#{identityType}
         </if>
         <if test="null != enabled">
@@ -146,15 +142,15 @@
         e.identity_type!='DECORATE_MANAGER'
         AND
         e.identity_type!='DECORATE_EMPLOYEE'
-        order by  emp_id asc
+        order by emp_id asc
     </select>
 
 
-    <select id="queryPageVOByCityCondition"  resultMap="employeeResultMap">
+    <select id="queryPageVOByCityCondition" resultMap="employeeResultMap">
         select e.emp_id,e.login_name,e.name,e.identity_type,e.status,c.city_id,c.name cname,s.store_id,s.store_name
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
-        LEFT  JOIN  st_store s ON e.store_id = s.store_id
+        LEFT JOIN st_store s ON e.store_id = s.store_id
         where
         1=1
         <if test="null != cityId">
@@ -173,9 +169,8 @@
         e.identity_type!='DECORATE_MANAGER'
         AND
         e.identity_type!='DECORATE_EMPLOYEE'
-        order by  emp_id asc
+        order by emp_id asc
     </select>
-
 
 
     <select id="queryPageVOByType" resultMap="employeeResultMap">
@@ -243,24 +238,24 @@
         select e.emp_id,e.login_name,e.name,e.identity_type,e.status,c.city_id,c.name cname,s.store_id,s.store_name
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
-        LEFT  JOIN  st_store s ON e.store_id = s.store_id
+        LEFT JOIN st_store s ON e.store_id = s.store_id
         where
         (e.identity_type='DECORATE_MANAGER'
         OR
         e.identity_type='DECORATE_EMPLOYEE')
         <if test="null != diyId">
-        AND
-        e.store_id = #{diyId}
+            AND
+            e.store_id = #{diyId}
         </if>
         <if test="null != identityType">
-        AND
-        e.identity_type=#{identityType}
+            AND
+            e.identity_type=#{identityType}
         </if>
         <if test="null != enabled">
-        AND
-          e.status=#{enabled}
+            AND
+            e.status=#{enabled}
         </if>
-        order by  emp_id asc
+        order by emp_id asc
     </select>
 
 
@@ -270,13 +265,11 @@
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
         LEFT JOIN  st_store s ON e.store_id = s.store_id
-        RIGHT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.emp_id
-        WHERE s.store_id IN
-        <foreach collection="list" item="item" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
+        LEFT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.emp_id
+        WHERE
+        e.identity_type='SELLER'
         ORDER BY
-        ecm.id
+        e.emp_id
         ASC
     </select>
 
@@ -286,8 +279,10 @@
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
         LEFT JOIN  st_store s ON e.store_id = s.store_id
-        RIGHT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.emp_id
+        LEFT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.emp_id
         WHERE
+        e.identity_type='SELLER'
+        AND
         e.emp_id = #{id}
     </select>
 
@@ -296,10 +291,10 @@
         s.store_name,e.emp_id,ecm.id,ecm.credit_limit_available ,ecm.temp_credit_limit
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
-        LEFT JOIN  st_store s ON e.store_id = s.store_id
-        RIGHT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.emp_id
+        LEFT JOIN st_store s ON e.store_id = s.store_id
+        LEFT JOIN emp_credit_money ecm ON e.emp_id =ecm.emp_id
         WHERE
-        1=1
+        e.identity_type='SELLER'
         <if test="null != cityId">
             AND
             c.city_id=#{cityId}
@@ -309,7 +304,7 @@
             s.store_id=#{storeId}
         </if>
         ORDER BY
-        ecm.id
+        e.emp_id
         ASC
     </select>
 
@@ -319,23 +314,27 @@
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
         LEFT JOIN  st_store s ON e.store_id = s.store_id
-        RIGHT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.emp_id
+        LEFT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.emp_id
         WHERE
+          e.identity_type='SELLER'
+          AND
         e.login_name LIKE CONCAT('%' ,#{queryGuideVOByInfo},'%')
         OR
         e.name LIKE CONCAT('%' ,#{queryGuideVOByInfo},'%')
         ORDER BY
-        ecm.id
+        e.emp_id
         ASC
     </select>
 
-    <select id="findEmployeeDOByEmpId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO">
+    <select id="findEmployeeDOByEmpId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO">
         SELECT emp_id,identity_type
         FROM emp_employee
         WHERE emp_id = #{id}
     </select>
 
-    <select id="findEmployeeByCityIdAndStoreId"  resultType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaEmployeeResponse">
+    <select id="findEmployeeByCityIdAndStoreId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaEmployeeResponse">
         SELECT
         ee.emp_id,
         ee.`name`,
@@ -350,14 +349,15 @@
         INNER JOIN st_store AS ss ON ee.store_id = ss.store_id
         INNER JOIN st_pre_deposit AS spd ON spd.store_id = ee.store_id
         WHERE
-         1 = 1
+        1 = 1
         AND s.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
     </select>
 
-    <select id="findEmployeeByCityIdAndStoreIdAndSellerNameAndSellerPhone"  resultType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaEmployeeResponse">
+    <select id="findEmployeeByCityIdAndStoreIdAndSellerNameAndSellerPhone"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaEmployeeResponse">
         SELECT
         ee.emp_id,
         ee.`name`,
@@ -372,9 +372,10 @@
         INNER JOIN st_pre_deposit AS spd ON spd.store_id = ee.store_id
         WHERE
         1 = 1
-        AND  (ee.`name` LIKE CONCAT('%' ,#{sellerQueryConditions},'%') OR ee.mobile LIKE CONCAT('%' ,#{sellerQueryConditions},'%') )
+        AND (ee.`name` LIKE CONCAT('%' ,#{sellerQueryConditions},'%') OR ee.mobile LIKE CONCAT('%'
+        ,#{sellerQueryConditions},'%') )
         <if test="cityId != null and cityId != -1">
-            AND  ee.city_id = #{cityId}
+            AND ee.city_id = #{cityId}
         </if>
         <if test="storeId != null and storeId != -1">
             AND ee.store_id = #{storeId}

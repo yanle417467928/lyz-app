@@ -41,9 +41,23 @@
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1-1">
                 <form id="activity_form">
-                    <input type="hidden" name="id" value="<#if actBaseDO??>${actBaseDO.id?c}</#if>" >
-                    <input type="hidden" name="createTime" value="<#if actBaseDO??>${(actBaseDO.createTime)?replace("T"," ")!""}</#if>">
+                    <input type="hidden" name="id" value="<#if actBaseDO??>${actBaseDO.id?c}</#if>">
+                    <input type="hidden" name="createTime"
+                           value="<#if actBaseDO??>${(actBaseDO.createTime)?replace("T"," ")!""}</#if>">
                     <input type="hidden" name="status" value="<#if actBaseDO??>${actBaseDO.status!""}</#if>">
+
+                    <div class="row" style="height: 150px">
+                        <div class="col-md-6 col-xs-6">
+                            <div class="form-group">
+                                <label for="title">
+                                    促销图片
+                                </label>
+                                <div class="form-group" id='coverImageShow'>
+                                    <img src="<#if actBaseDO??>${actBaseDO.picUrl!''}</#if>" width="180" height="100">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
@@ -65,7 +79,8 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="actCode" type="text" class="form-control" id="nickName"
-                                           placeholder="系统自动生成" readonly="readonly" value="<#if actBaseDO??>${actBaseDO.actCode!""}</#if>">
+                                           placeholder="系统自动生成" readonly="readonly"
+                                           value="<#if actBaseDO??>${actBaseDO.actCode!""}</#if>">
                                 </div>
                             </div>
                         </div>
@@ -79,7 +94,8 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                                     <input name="beginTime" type="text" class="form-control" id="beginTime"
-                                           readonly placeholder="开始日期" value="<#if actBaseDO??>${(actBaseDO.beginTime)?replace("T"," ")!""}</#if>">
+                                           readonly placeholder="开始日期"
+                                           value="<#if actBaseDO??>${(actBaseDO.beginTime)?replace("T"," ")!""}</#if>">
                                 </div>
                             </div>
                         </div>
@@ -91,7 +107,8 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                                     <input name="endTime" type="text" class="form-control" id="endTime"
-                                           readonly placeholder="结束日期" value="<#if actBaseDO??>${(actBaseDO.endTime)?replace("T"," ")!""}</#if>">
+                                           readonly placeholder="结束日期"
+                                           value="<#if actBaseDO??>${(actBaseDO.endTime)?replace("T"," ")!""}</#if>">
                                 </div>
                             </div>
                         </div>
@@ -103,9 +120,12 @@
                                     目标对象
                                 </label>
                                 <div class="input-group">
-                                    <input name="target" value="6" type="checkbox" class="flat-red" <#if actBaseDO??><#if actBaseDO.actTarget?? && actBaseDO.actTarget?contains('6')>checked</#if></#if>>顾客
-                                    <input name="target" value="0" type="checkbox" class="flat-red" <#if actBaseDO??><#if actBaseDO.actTarget?? && actBaseDO.actTarget?contains('0')>checked</#if></#if>>导购
-                                    <input name="target" value="2" type="checkbox" class="flat-red" <#if actBaseDO??><#if actBaseDO.actTarget?? && actBaseDO.actTarget?contains('2')>checked</#if></#if>>装饰公司经理
+                                    <input name="target" value="6" type="checkbox"
+                                           class="flat-red" <#if actBaseDO??><#if actBaseDO.actTarget?? && actBaseDO.actTarget?contains('6')>checked</#if></#if>>顾客
+                                    <input name="target" value="0" type="checkbox"
+                                           class="flat-red" <#if actBaseDO??><#if actBaseDO.actTarget?? && actBaseDO.actTarget?contains('0')>checked</#if></#if>>导购
+                                    <input name="target" value="2" type="checkbox"
+                                           class="flat-red" <#if actBaseDO??><#if actBaseDO.actTarget?? && actBaseDO.actTarget?contains('2')>checked</#if></#if>>装饰公司经理
                                 </div>
 
                             </div>
@@ -117,10 +137,13 @@
                                 </label>
                                 <div class="input-group">
 
-                                    <input id="isReturnable" type="checkbox" class="flat-red" <#if actBaseDO??><#if actBaseDO.isReturnable?? && actBaseDO.isReturnable = true>checked</#if></#if>>可退货
-                                    <input id="isDouble" type="checkbox" class="flat-red" <#if actBaseDO??><#if actBaseDO.isDouble?? && actBaseDO.isDouble == true >checked</#if></#if>>可叠加享受
+                                    <input id="isReturnable" type="checkbox"
+                                           class="flat-red" <#if actBaseDO??><#if actBaseDO.isReturnable?? && actBaseDO.isReturnable = true>checked</#if></#if>>可退货
+                                    <input id="isDouble" type="checkbox"
+                                           class="flat-red" <#if actBaseDO??><#if actBaseDO.isDouble?? && actBaseDO.isDouble == true >checked</#if></#if>>可叠加享受
 
-                                    <input id="isGcOrder" type="checkbox" class="flat-red" <#if actBaseDO??><#if actBaseDO.isGcOrder?? && actBaseDO.isGcOrder == true>checked</#if></#if>>工程单可享受
+                                    <input id="isGcOrder" type="checkbox"
+                                           class="flat-red" <#if actBaseDO??><#if actBaseDO.isGcOrder?? && actBaseDO.isGcOrder == true>checked</#if></#if>>工程单可享受
 
                                 </div>
                             </div>
@@ -177,11 +200,11 @@
                                         <#list stores as item>
                                             <label id='${item.storeId}'
 
-                                            <#if item.isSelected == true>
+                                                <#if item.isSelected == true>
                                                    class='label label-success'
-                                            <#else>
+                                                <#else>
                                                    class='label label-default'
-                                            </#if>
+                                                </#if>
                                                    onclick='checkStore(this)'>${item.storeName}</label>
                                         </#list>
                                     </#if>
@@ -242,7 +265,8 @@
                                     <h3 class="box-title">选择本品</h3>
 
                                     <div class="box-tools">
-                                        <button type="button" class="btn btn-primary btn-xs" onclick="openGoodsModal('selectedGoodsTable')">
+                                        <button type="button" class="btn btn-primary btn-xs"
+                                                onclick="openGoodsModal('selectedGoodsTable')">
                                             选择商品
                                         </button>
 
@@ -255,7 +279,7 @@
                                 </div>
                                 <!-- /.box-header -->
                                 <div class="box-body table-responsive no-padding">
-                                    <table class="table table-bordered" >
+                                    <table class="table table-bordered">
                                         <thead>
                                         <tr>
 
@@ -270,9 +294,12 @@
                                         <#if actGoodsMappingDO??>
                                             <#list actGoodsMappingDO as item>
                                             <tr>
-                                                <td><input id="gid" type='text'  value="${item.gid?c}" style="width:90%;border: none;" readonly /></td>
-                                                <td><input id='sku' type='text' value="${item.sku!''}" style='width:90%;border: none;' readonly></td>
-                                                <td><input id='title' type='text' value='${item.goodsTitile!''}' style='width:90%;border: none;' readonly></td>
+                                                <td><input id="gid" type='text' value="${item.gid?c}"
+                                                           style="width:90%;border: none;" readonly/></td>
+                                                <td><input id='sku' type='text' value="${item.sku!''}"
+                                                           style='width:90%;border: none;' readonly></td>
+                                                <td><input id='title' type='text' value='${item.goodsTitile!''}'
+                                                           style='width:90%;border: none;' readonly></td>
                                                 <td><input id='qty' type='number' value='${item.qty?c}'></td>
                                                 <td><a href='#' onclick='del_goods_comb(this);'>删除</td>
                                             </tr>
@@ -288,14 +315,16 @@
 
                                         <div class="col-xs-12 col-md-1">
                                             <div class="input-group">
-                                                <input id="is_goods_optional_qty" type="checkbox" class="flat-red" <#if actBaseDO??><#if actBaseDO.isGoodsOptionalQty?? && actBaseDO.isGoodsOptionalQty = true>checked</#if></#if>>任选数量
+                                                <input id="is_goods_optional_qty" type="checkbox"
+                                                       class="flat-red" <#if actBaseDO??><#if actBaseDO.isGoodsOptionalQty?? && actBaseDO.isGoodsOptionalQty = true>checked</#if></#if>>任选数量
                                             </div>
                                         </div>
                                         <div id="goods_optional_qty_div" style="display: none;">
                                             <div class="col-xs-12 col-md-2">
                                                 <div class="input-group">
                                                     <input name="fullNumber" type="number" class="form-control"
-                                                           id="fullNumber" placeholder="总数量" value="<#if actBaseDO??><#if actBaseDO.fullNumber??>${actBaseDO.fullNumber?c}</#if></#if>">
+                                                           id="fullNumber" placeholder="总数量"
+                                                           value="<#if actBaseDO??><#if actBaseDO.fullNumber??>${actBaseDO.fullNumber?c}</#if></#if>">
                                                 </div>
                                             </div>
                                         </div>
@@ -316,7 +345,8 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-cny"></i></span>
-                                    <input name="fullAmount" type="number" class="form-control" id="fullAmount" value="<#if actBaseDO?? && actBaseDO.fullAmount??>${actBaseDO.fullAmount?c}</#if>">
+                                    <input name="fullAmount" type="number" class="form-control" id="fullAmount"
+                                           value="<#if actBaseDO?? && actBaseDO.fullAmount??>${actBaseDO.fullAmount?c}</#if>">
                                 </div>
                             </div>
                         </div>
@@ -331,7 +361,8 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-cny"></i></span>
-                                    <input name="subAmount" type="number" class="form-control" id="subAmount" value="<#if actSubAmountDO?? && actSubAmountDO.subAmount??>${actSubAmountDO.subAmount?c}</#if>">
+                                    <input name="subAmount" type="number" class="form-control" id="subAmount"
+                                           value="<#if actSubAmountDO?? && actSubAmountDO.subAmount??>${actSubAmountDO.subAmount?c}</#if>">
                                 </div>
                             </div>
                         </div>
@@ -346,7 +377,8 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-cny"></i></span>
-                                    <input name="discount" type="text" class="form-control" id="discount" value="<#if actSubAmountDO?? && actSubAmountDO.discount??>${actSubAmountDO.discount?c}</#if>">
+                                    <input name="discount" type="text" class="form-control" id="discount"
+                                           value="<#if actSubAmountDO?? && actSubAmountDO.discount??>${actSubAmountDO.discount?c}</#if>">
                                 </div>
                             </div>
                         </div>
@@ -360,7 +392,8 @@
                                     <h3 class="box-title">选择赠品</h3>
 
                                     <div class="box-tools">
-                                        <button type="button" class="btn btn-primary btn-xs" onclick="openGoodsModal('selectedGiftTable')">
+                                        <button type="button" class="btn btn-primary btn-xs"
+                                                onclick="openGoodsModal('selectedGiftTable')">
                                             选择赠品
                                         </button>
 
@@ -373,7 +406,7 @@
                                 </div>
                                 <!-- /.box-header -->
                                 <div class="box-body table-responsive no-padding">
-                                    <table class="table table-bordered" >
+                                    <table class="table table-bordered">
                                         <thead>
                                         <tr>
                                             <th>GID</th>
@@ -387,9 +420,12 @@
                                         <#if actGiftDetailsDO??>
                                             <#list actGiftDetailsDO as item>
                                             <tr>
-                                                <td><input id="gid" type='text'  value="${item.giftId?c}" style="width:90%;border: none;" readonly /></td>
-                                                <td><input id='sku' type='text' value="${item.giftSku!''}" style='width:90%;border: none;' readonly></td>
-                                                <td><input id='title' type='text' value='${item.giftTitle!''}' style='width:90%;border: none;' readonly></td>
+                                                <td><input id="gid" type='text' value="${item.giftId?c}"
+                                                           style="width:90%;border: none;" readonly/></td>
+                                                <td><input id='sku' type='text' value="${item.giftSku!''}"
+                                                           style='width:90%;border: none;' readonly></td>
+                                                <td><input id='title' type='text' value='${item.giftTitle!''}'
+                                                           style='width:90%;border: none;' readonly></td>
                                                 <td><input id='qty' type='number' value='${item.giftFixedQty?c}'></td>
                                                 <td><a href='#' onclick='del_goods_comb(this);'>删除</td>
                                             </tr>
@@ -406,14 +442,16 @@
 
                                         <div class="col-xs-12 col-md-1">
                                             <div class="input-group">
-                                                <input id="is_gift_optional_qty" type="checkbox" class="flat-red" onclick="clickGiftFixedQty(this)" <#if actBaseDO??><#if actBaseDO.isGiftOptionalQty?? && actBaseDO.isGiftOptionalQty = true>checked</#if></#if>>任选数量
+                                                <input id="is_gift_optional_qty" type="checkbox" class="flat-red"
+                                                       onclick="clickGiftFixedQty(this)" <#if actBaseDO??><#if actBaseDO.isGiftOptionalQty?? && actBaseDO.isGiftOptionalQty = true>checked</#if></#if>>任选数量
                                             </div>
                                         </div>
                                         <div id="gift_optional_qty_div" style="display: none;">
                                             <div class="col-xs-12 col-md-2">
                                                 <div class="input-group">
                                                     <input name="giftChooseNumber" type="number" class="form-control"
-                                                           id="giftChooseNumber" placeholder="赠品最大可选数量" value="<#if actBaseDO??><#if actBaseDO.giftChooseNumber??>${actBaseDO.giftChooseNumber?c}</#if></#if>">
+                                                           id="giftChooseNumber" placeholder="赠品最大可选数量"
+                                                           value="<#if actBaseDO??><#if actBaseDO.giftChooseNumber??>${actBaseDO.giftChooseNumber?c}</#if></#if>">
                                                 </div>
                                             </div>
                                         </div>
@@ -434,13 +472,14 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-cny"></i></span>
-                                    <input name="addAmount" type="number" class="form-control" id="addAmount" value="<#if actBaseDO?? && actBaseDO.addAmount??>${actBaseDO.addAmount?c}</#if>">
+                                    <input name="addAmount" type="number" class="form-control" id="addAmount"
+                                           value="<#if actBaseDO?? && actBaseDO.addAmount??>${actBaseDO.addAmount?c}</#if>">
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="row" id="fullAmount_div" >
+                    <div class="row" id="fullAmount_div">
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
                                 <label for="title">
@@ -448,7 +487,8 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="sortId" type="number" class="form-control" id="sortId" value="<#if actBaseDO??>${actBaseDO.sortId?c}</#if>">
+                                    <input name="sortId" type="number" class="form-control" id="sortId"
+                                           value="<#if actBaseDO??>${actBaseDO.sortId?c}</#if>">
                                 </div>
                             </div>
                         </div>
@@ -540,20 +580,20 @@
     $(function () {
 
         // 填充促销类型select
-        var baseTypeVal =  "<#if actBaseDO??>${actBaseDO.baseType!""}</#if>"
+        var baseTypeVal = "<#if actBaseDO??>${actBaseDO.baseType!""}</#if>"
         var conditionTypeVal = "<#if actBaseDO??>${actBaseDO.conditionType!""}</#if>"
         var resultTypeVal = "<#if actBaseDO??>${actBaseDO.promotionType!""}</#if>"
 
-        if(baseTypeVal != ""){
+        if (baseTypeVal != "") {
             $("#baseType").val(baseTypeVal);
         }
 
-        if(conditionTypeVal != ""){
-            $("#conditionType option[value='"+conditionTypeVal+"']").prop("selected",true);
+        if (conditionTypeVal != "") {
+            $("#conditionType option[value='" + conditionTypeVal + "']").prop("selected", true);
         }
 
-        if(resultTypeVal != null){
-            $("#resultType option[value='"+resultTypeVal+"']").prop("selected",true);
+        if (resultTypeVal != null) {
+            $("#resultType option[value='" + resultTypeVal + "']").prop("selected", true);
         }
         // js改变selectpicker值 需要refresh才生效
         $("select").each(function () {
@@ -564,9 +604,9 @@
         clickGoodsFixedQty();
         clickGiftFixedQty();
         // 当前促销状态 如果已经发布 不能修改
-        var status =  "<#if actBaseDO??>${actBaseDO.status!""}</#if>"
+        var status = "<#if actBaseDO??>${actBaseDO.status!""}</#if>"
 
-        if(status == 'PUBLISH'){
+        if (status == 'PUBLISH') {
             // 隐藏保存按钮
             $("#saveBtn").hide();
         }

@@ -111,7 +111,7 @@ public class NoticePushUtils {
         AppConditions cdt = new AppConditions();
         List<String> appIdList = new ArrayList<String>();
         appIdList.add(AppConstant.APP_ID);
-        message.setConditions(cdt);
+        message.setAppIdList(appIdList);
 
         IPushResult ret = push.pushMessageToApp(message, "任务别名_toApp");
         System.out.println(ret.getResponse().toString());

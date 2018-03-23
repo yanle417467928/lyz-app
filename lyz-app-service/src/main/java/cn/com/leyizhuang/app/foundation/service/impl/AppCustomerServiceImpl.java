@@ -622,4 +622,12 @@ public class AppCustomerServiceImpl implements AppCustomerService {
             customerDAO.updateCustomerTypeByUserId(userId);
         }
     }
+
+    @Override
+    public CustomerPreDeposit findCustomerPreDepositByCustomerId(Long cusId) {
+        if (null != cusId){
+           return customerDAO.findCustomerPreDepositByCustomerId(cusId);
+        }
+        return null;
+    }
 }

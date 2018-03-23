@@ -409,8 +409,6 @@ public class GoodsServiceImpl implements GoodsService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateGoods(MaGoodsVO goodsVO) {
-        GoodsBrandType goodsBrandType = GoodsBrandType.getGoodsBrandTypeByValue(goodsVO.getBrdId().intValue());
-        goodsVO.setBrdName(goodsBrandType.getDescription());
         GoodsDO goodsDO = GoodsDO.transform(goodsVO);
         goodsDAO.updateGoods(goodsDO);
     }

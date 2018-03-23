@@ -2,16 +2,17 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.service.QrcodeProduceService;
 
+import cn.com.leyizhuang.common.util.ImageUtil;
 import com.google.zxing.WriterException;
 import me.luzhuo.qrcode2.encode.*;
 import me.luzhuo.qrcode2.utils.QRUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
+
 import org.springframework.stereotype.Service;
-import org.springframework.util.ClassUtils;
 import sun.net.www.protocol.http.HttpURLConnection;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
 
@@ -125,7 +126,34 @@ public class QrcodeProduceServiceImpl implements QrcodeProduceService {
         QRStyle qrstyle = new QRStyle(qrcode, QRStyle.QRStyles.Default);
         QRMatrix qrMatrix = new QRMatrix().createMatrix(qrcode, width, height, qrstyle);
         QRGraphical qrGraphical = new QRGraphical().decode(qrMatrix, baseFile);
+
+        /**
+         * 现将logo 等比裁剪
+         */
+//        BufferedImage bufferedimage = null;
+//        try {
+//            bufferedimage= ImageIO.read(logo);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        int startWidth = 0;
+//        int startHeight = 0;
+//        int width = bufferedimage.getWidth();
+//        int height = bufferedimage.getHeight();
+//
+//        if (height > width){
+//            startHeight = (height-width)/2;
+//            height = width;
+//
+//        }else if (width > height){
+//            startWidth = (width - height)/2;
+//            width = height;
+//        }
+//        new ImageUtil().cutImage(baseUrl+logo.getName(), baseUrl,startWidth, startHeight, width, height);
+//        File thumb_logo = new File(baseUrl+"cut__"+logo.getName());
+
         new QRWriteToFile().writeToFile(qrGraphical, savefile, logo);
+
 
         return  savefile;
     }
@@ -173,4 +201,5 @@ public class QrcodeProduceServiceImpl implements QrcodeProduceService {
         bos.close();
         return bos.toByteArray();
     }
+
 }
