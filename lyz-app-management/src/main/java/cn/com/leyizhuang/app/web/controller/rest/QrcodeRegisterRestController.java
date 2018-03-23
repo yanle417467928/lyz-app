@@ -91,7 +91,11 @@ public class QrcodeRegisterRestController extends BaseRestController {
 
                 AppCustomer newCustomer = new AppCustomer();
 
-                if (workNumber.equalsIgnoreCase(appEmployee.getLoginName().trim())) {
+                workNumber = workNumber.trim();
+
+                // 输入工号 “-” 后面的号码也可以
+                if (workNumber.equalsIgnoreCase(appEmployee.getLoginName())
+                        || appEmployee.getLoginName().contains(workNumber) ) {
                     // 有推荐码 设置为会员
                     newCustomer.setCustomerType(AppCustomerType.MEMBER);
                 } else {

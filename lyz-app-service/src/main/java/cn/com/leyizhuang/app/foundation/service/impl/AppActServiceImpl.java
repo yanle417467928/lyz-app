@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.foundation.pojo.SellZgCusTimes;
 import cn.com.leyizhuang.app.foundation.pojo.SellZgDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.activity.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
+import cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
@@ -65,6 +66,9 @@ public class AppActServiceImpl implements AppActService {
     @Autowired
     private CityService cityService;
 
+    @Autowired
+    private MaterialListService materialListServiceImpl;
+
 
     @Autowired
     private StatisticsSellDetailsService statisticsSellDetailsService;
@@ -93,6 +97,9 @@ public class AppActServiceImpl implements AppActService {
         List<ActBaseDO> actBaseDOList = actBaseDAO.queryValidListByStoreId(storeId,LocalDateTime.now());
         List<PromotionListViewResponse> viewResponses = new ArrayList<>();
 
+        // 设置购物车已选数量
+        List<NormalMaterialListResponse> normalMaterialListRespons = this.materialListServiceImpl.findByUserIdAndIdentityType(userId, identityType.getValue());
+
         for (ActBaseDO actBaseDO : actBaseDOList){
             PromotionListViewResponse viewResponse = new PromotionListViewResponse();
 
@@ -106,6 +113,18 @@ public class AppActServiceImpl implements AppActService {
 
             List<GiftListResponseGoods> goodsListResponseGoods = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserIdAndIdentityType(
                     gidList, userId, identityType);
+
+            for (NormalMaterialListResponse response : normalMaterialListRespons){
+                for (GiftListResponseGoods goods : goodsListResponseGoods){
+                    if (response.getGoodsId().equals(goods.getGoodsId())){
+                        goods.setQty(response.getQty());
+                        continue;
+                    }else{
+                        goods.setQty(0);
+                    }
+                }
+            }
+
             viewResponse.setGoodsList(goodsListResponseGoods);
             viewResponses.add(viewResponse);
         }

@@ -113,6 +113,7 @@
                         <div class="form-group" >
                             <label for="workNumber">推荐码</label>
                             <input type="text" class="form-control" id="workNumber" name="workNumber" placeholder="输入推荐码成为会员">
+                            <p class="help-block">可仅输入“-”后的号码 </p>
                         </div>
                     </div>
                     <!-- /.box-body -->
