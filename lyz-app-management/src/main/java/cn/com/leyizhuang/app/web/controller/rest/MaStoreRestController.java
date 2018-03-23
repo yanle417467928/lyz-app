@@ -509,4 +509,30 @@ public class MaStoreRestController extends BaseRestController {
         }
     }
 
+    /**
+     * @title   后台查询该城市ID和门店类型的门店列表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/3/23
+     */
+    @GetMapping(value = "/findStoresListByCityIdAndStoreType")
+    public List<SimpleStoreParam> findStoresListByCityIdAndStoreType(Long cityId, String storeType) {
+        logger.info("findStoresListByCityIdAndStoreType 后台查询该城市ID和门店类型的门店列表(下拉框) 入参 cityId:{},storeType{}", cityId,storeType);
+        try {
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            List<SimpleStoreParam> storesList = this.maStoreService.findStoresListByCityIdAndStoreType(cityId, storeType, storeIds);
+            logger.info("findStoresListByCityIdAndStoreType ,后台查询该城市ID和门店类型的门店列表(下拉框)成功", storesList);
+            return storesList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("findStoresListByCityIdAndStoreType EXCEPTION,发生未知错误，后台查询该城市ID和门店类型的门店列表(下拉框)失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
 }

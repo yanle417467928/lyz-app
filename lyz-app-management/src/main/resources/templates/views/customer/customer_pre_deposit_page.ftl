@@ -146,7 +146,7 @@
 <script>
 
     $(function () {
-        findCitylist()
+        findCitylist();
         findStorelist();
         initDateGird(null,null,null);
     });
