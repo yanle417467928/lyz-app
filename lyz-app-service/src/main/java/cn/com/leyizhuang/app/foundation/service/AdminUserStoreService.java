@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.foundation.pojo.management.AdminUserStoreDO;
 import cn.com.leyizhuang.app.foundation.vo.management.AdminUserStoreVO;
 
@@ -49,5 +50,7 @@ public interface AdminUserStoreService {
      * @date 2018/2/28
      */
     List<Long> findStoreIdList();
+
+    List<Long> findStoreIdByUidAndStoreType(List<StoreType> storeTypes);
 
 }

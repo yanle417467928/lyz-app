@@ -33,5 +33,6 @@ public class GuideCreditMoney {
     private Date lastUpdateTime;
     //上次修改时间
     private Date createTime;
-
+    //是否激活
+    private Boolean isActive;
 }

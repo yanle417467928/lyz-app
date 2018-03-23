@@ -22,4 +22,10 @@ public class GetuiTest {
         NoticePushUtils.pushApplyArrearageInfo(1L);
         return "success";
     }
+
+    @RequestMapping(value = "/test/pushToAll",method = RequestMethod.GET)
+    public String testPushToAll(){
+        NoticePushUtils.pushMessageToApp();
+        return "success";
+    }
 }

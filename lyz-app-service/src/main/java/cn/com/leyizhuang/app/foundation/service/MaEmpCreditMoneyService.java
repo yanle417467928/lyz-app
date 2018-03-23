@@ -17,7 +17,7 @@ public interface MaEmpCreditMoneyService {
 
     void update(GuideCreditMoneyDetail guideCreditMoneyDetail,GuideCreditChangeDetail guideCreditChangeDetail);
 
-    void saveEmpCreditMoney(GuideCreditMoney guideCreditMoney);
+    void saveEmpCreditMoney(GuideCreditMoneyDetail guideCreditMoneyDetail,GuideCreditChangeDetail guideCreditChangeDetail);
 
     int updateGuideCreditMoneyByRepayment(Long sellerId, BigDecimal availableCreditMoney,Date lastUpdateTime);
 

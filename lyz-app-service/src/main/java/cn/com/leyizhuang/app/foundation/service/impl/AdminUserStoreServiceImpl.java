@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
+import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.foundation.dao.AdminUserStoreDAO;
 import cn.com.leyizhuang.app.foundation.pojo.management.AdminUserStoreDO;
 import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
@@ -60,8 +61,12 @@ public class AdminUserStoreServiceImpl implements AdminUserStoreService {
 
     @Override
     public List<Long> findStoreIdByUid(Long uid) {
-
-        return this.adminUserStoreDAO.findStoreIdByUid(uid);
+        List<Long> storeIds = new ArrayList<>();
+        storeIds = this.adminUserStoreDAO.findStoreIdByUid(uid);
+        if(null == storeIds || storeIds.size() == 0) {
+            storeIds.add(-1L);
+        }
+        return storeIds;
     }
 
     @Override
@@ -72,6 +77,9 @@ public class AdminUserStoreServiceImpl implements AdminUserStoreService {
         if (null != shiroUser) {
             //查询登录用户门店权限的门店ID
             storeIds = this.adminUserStoreDAO.findStoreIdByUid(shiroUser.getId());
+        }
+        if(null == storeIds || storeIds.size() == 0) {
+            storeIds.add(-1L);
         }
         return storeIds;
     }
@@ -97,5 +105,20 @@ public class AdminUserStoreServiceImpl implements AdminUserStoreService {
             }
         }
         return list;
+    }
+
+    @Override
+    public List<Long> findStoreIdByUidAndStoreType(List<StoreType> storeTypes) {
+        //获取登录用户ID
+        ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
+        List<Long> storeIds = new ArrayList<>();
+        if (null != shiroUser) {
+            //查询登录用户门店权限的门店ID
+            storeIds = this.adminUserStoreDAO.findStoreIdByUidAndStoreType(shiroUser.getId(), storeTypes);
+        }
+        if(null == storeIds || storeIds.size() == 0) {
+            storeIds.add(-1L);
+        }
+        return storeIds;
     }
 }

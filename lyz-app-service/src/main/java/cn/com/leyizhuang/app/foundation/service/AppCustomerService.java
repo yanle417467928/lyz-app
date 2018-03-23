@@ -160,4 +160,5 @@ public interface AppCustomerService {
      */
     void updateCustomerTypeByUserId(Long userId);
 
+    CustomerPreDeposit findCustomerPreDepositByCustomerId(Long cusId);
 }
