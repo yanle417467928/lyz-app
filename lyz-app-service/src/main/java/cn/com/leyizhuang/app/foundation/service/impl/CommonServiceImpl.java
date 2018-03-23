@@ -47,7 +47,6 @@ import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * 通用方法实现
@@ -1280,7 +1279,8 @@ public class CommonServiceImpl implements CommonService {
         if (AssertUtil.isNotEmpty(detailsList)) {
             for (ReturnOrderGoodsInfo goodsInfo : goodsInfos) {
                 for (OrderJxPriceDifferenceReturnDetails details : detailsList) {
-                    if (goodsInfo.getSku().equals(details.getSku())) {
+                    if (goodsInfo.getSku().equals(details.getSku()) &&
+                            AppGoodsLineType.GOODS.equals(goodsInfo.getGoodsLineType())) {
                         Double returnGoodsJxPriceAmount = CountUtil.mul(goodsInfo.getReturnQty(), details.getUnitPrice());
                         jxPrice = CountUtil.add(jxPrice, returnGoodsJxPriceAmount);
                         ReturnOrderJxPriceDifferenceRefundDetails returnDetails = new ReturnOrderJxPriceDifferenceRefundDetails();
