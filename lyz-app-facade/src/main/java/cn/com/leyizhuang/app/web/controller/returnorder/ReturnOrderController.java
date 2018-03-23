@@ -1129,9 +1129,8 @@ public class ReturnOrderController {
                         }
                     }
                 }
-                // TODO returnPriority
                 //按照退货优先级排个序
-//                returnOrderGoodsList.sort((o1, o2) -> o2.getReturnPriority().compareTo(o1.getReturnPriority()));
+                returnOrderGoodsList.sort((o1, o2) -> o2.getReturnPriority().compareTo(o1.getReturnPriority()));
             }
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,

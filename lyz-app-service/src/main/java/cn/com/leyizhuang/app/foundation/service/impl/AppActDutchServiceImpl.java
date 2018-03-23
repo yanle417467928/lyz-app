@@ -742,7 +742,11 @@ public class AppActDutchServiceImpl implements AppActDutchService {
         result.setLbSharePrice(0D);
         result.setCashCouponSharePrice(0D);
         result.setCashReturnSharePrice(0D);
-        result.setReturnPriority(2);
+        if (lineType.equals(AppGoodsLineType.PRESENT)){
+            result.setReturnPriority(2);
+        }else {
+            result.setReturnPriority(1);
+        }
         result.setShippingQuantity(0);
         result.setReturnQuantity(0);
         result.setReturnableQuantity(goods.getQty());
