@@ -151,13 +151,12 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
         PageHelper.startPage(page, size);
         List<GuideVO> pageGuideVOList = this.maEmployeeDAO.findAllGuide();
         for(GuideVO guideVO:pageGuideVOList){
-            GuideCreditMoney guideCreditMoney=  guideVO.getGuideCreditMoney();
-            if(null == guideCreditMoney){
-                GuideCreditMoney guideCreditMoney1 = new  GuideCreditMoney();
-                guideCreditMoney1.setTempCreditLimit(BigDecimal.ZERO);
-                guideCreditMoney1.setCreditLimitAvailable(BigDecimal.ZERO);
-                guideCreditMoney1.setCreditLimit(BigDecimal.ZERO);
-                guideVO.setGuideCreditMoney(guideCreditMoney1);
+            if(null == guideVO.getGuideCreditMoney()){
+                GuideCreditMoney guideCreditMoney = new  GuideCreditMoney();
+                guideCreditMoney.setTempCreditLimit(BigDecimal.ZERO);
+                guideCreditMoney.setCreditLimitAvailable(BigDecimal.ZERO);
+                guideCreditMoney.setCreditLimit(BigDecimal.ZERO);
+                guideVO.setGuideCreditMoney(guideCreditMoney);
             }
         }
         return new PageInfo<>(pageGuideVOList);
@@ -181,13 +180,12 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
         PageHelper.startPage(page, size);
         List<GuideVO> pageGuideVOList = this.maEmployeeDAO.queryGuideVOByCondition(cityId,storeId);
         for(GuideVO guideVO:pageGuideVOList){
-            GuideCreditMoney guideCreditMoney=  guideVO.getGuideCreditMoney();
-            if(null == guideCreditMoney){
-                GuideCreditMoney guideCreditMoney1 = new  GuideCreditMoney();
-                guideCreditMoney1.setTempCreditLimit(BigDecimal.ZERO);
-                guideCreditMoney1.setCreditLimitAvailable(BigDecimal.ZERO);
-                guideCreditMoney1.setCreditLimit(BigDecimal.ZERO);
-                guideVO.setGuideCreditMoney(guideCreditMoney1);
+            if(null == guideVO.getGuideCreditMoney()){
+                GuideCreditMoney guideCreditMoney = new  GuideCreditMoney();
+                guideCreditMoney.setTempCreditLimit(BigDecimal.ZERO);
+                guideCreditMoney.setCreditLimitAvailable(BigDecimal.ZERO);
+                guideCreditMoney.setCreditLimit(BigDecimal.ZERO);
+                guideVO.setGuideCreditMoney(guideCreditMoney);
             }
         }
         return new PageInfo<>(pageGuideVOList);
@@ -198,13 +196,12 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
         PageHelper.startPage(page, size);
         List<GuideVO> pageGuideVOList = this.maEmployeeDAO.queryGuideVOByInfo(queryGuideVOInfo);
         for(GuideVO guideVO:pageGuideVOList){
-            GuideCreditMoney guideCreditMoney=  guideVO.getGuideCreditMoney();
-            if(null == guideCreditMoney){
-                GuideCreditMoney guideCreditMoney1 = new  GuideCreditMoney();
-                guideCreditMoney1.setTempCreditLimit(BigDecimal.ZERO);
-                guideCreditMoney1.setCreditLimitAvailable(BigDecimal.ZERO);
-                guideCreditMoney1.setCreditLimit(BigDecimal.ZERO);
-                guideVO.setGuideCreditMoney(guideCreditMoney1);
+            if(null == guideVO.getGuideCreditMoney()){
+                GuideCreditMoney guideCreditMoney = new  GuideCreditMoney();
+                guideCreditMoney.setTempCreditLimit(BigDecimal.ZERO);
+                guideCreditMoney.setCreditLimitAvailable(BigDecimal.ZERO);
+                guideCreditMoney.setCreditLimit(BigDecimal.ZERO);
+                guideVO.setGuideCreditMoney(guideCreditMoney);
             }
         }
         return new PageInfo<>(pageGuideVOList);

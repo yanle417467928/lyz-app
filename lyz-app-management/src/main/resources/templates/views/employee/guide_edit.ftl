@@ -107,7 +107,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="lastUpdateTime" type="text" class="form-control" id="lastUpdateTime" readonly
-                                           value="<#if guideVO??><#if guideVO.guideCreditMoney??>${guideVO.guideCreditMoney.lastUpdateTime?string("yyyy-MM-dd HH:mm:ss")}</#if></#if>">
+                                           value="<#if guideVO??><#if guideVO.guideCreditMoney??><#if guideVO.guideCreditMoney.lastUpdateTime??>${guideVO.guideCreditMoney.lastUpdateTime?string("yyyy-MM-dd HH:mm:ss")}</#if></#if></#if>">
                                 </div>
                             </div>
                         </div>
@@ -221,9 +221,9 @@
                 }, creditLimit: {
                     message: '固定额度校验失败',
                     validators: {
-                     /*   notEmpty: {
+                        notEmpty: {
                             message: '固定额度不能为空'
-                        },*/
+                        },
                         regexp: {
                             regexp: /^((\d{1,3}(,\d{3})*)|(\d+))(\.\d{1,2})?$/,
                             message: '固定额度只能输入数字'
@@ -236,9 +236,9 @@
                 }, tempCreditLimit: {
                     message: '临时额度校验失败',
                     validators: {
-                     /*   notEmpty: {
+                        notEmpty: {
                             message: '临时额度不能为空'
-                        },*/
+                        },
                         regexp: {
                             regexp: /^((\d{1,3}(,\d{3})*)|(\d+))(\.\d{1,2})?$/,
                             message: '临时额度只能输入数字'
@@ -251,9 +251,9 @@
                 }, creditLimitAvailable: {
                     message: '可用额度校验失败',
                     validators: {
-                   /*     notEmpty: {
+                       notEmpty: {
                             message: '可用额度不能为空'
-                        },*/
+                        },
                         regexp: {
                             regexp: /^([-]?)((\d{1,3}(,\d{3})*)|(\d+))(\.\d{1,2})?$/,
                             message: '可用额度只能输入数字'

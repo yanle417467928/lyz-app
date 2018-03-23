@@ -38,7 +38,6 @@
             credit_limit = #{creditLimit},
         </if>
         <if test="null != tempCreditLimit">
-
             temp_credit_limit = #{tempCreditLimit},
         </if>
         <if test="null != creditLimitAvailable">
@@ -53,9 +52,9 @@
 
     <insert id="saveEmpCreditMoney" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoney">
         INSERT emp_credit_money
-        (create_time,emp_id,credit_limit,temp_credit_limit,credit_limit_available,last_update_time)
+        (create_time,emp_id,credit_limit,temp_credit_limit,credit_limit_available,last_update_time,is_active)
          VALUES
-         (#{createTime},#{empId}, #{creditLimit},#{tempCreditLimit},#{creditLimitAvailable},#{lastUpdateTime})
+         (#{createTime},#{empId}, #{creditLimit},#{tempCreditLimit},#{creditLimitAvailable},#{lastUpdateTime},#{isActive})
     </insert>
 
     <update id="clearTempCreditLimit" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoneyDetail">
