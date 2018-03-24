@@ -1,7 +1,7 @@
-package cn.com.leyizhuang.app.foundation.dao.Transferdao;
+package cn.com.leyizhuang.app.foundation.dao.transferdao;
 
 
-import cn.com.leyizhuang.app.foundation.datatransferPojo.TdOrderGoods;
+import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

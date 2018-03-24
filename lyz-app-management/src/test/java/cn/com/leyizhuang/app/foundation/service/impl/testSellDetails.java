@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
-import cn.com.leyizhuang.app.foundation.dao.Transferdao.TransferDAO;
+import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
 import cn.com.leyizhuang.app.foundation.datatransferPojo.TdOrderGoods;
 import org.junit.Test;
 import org.junit.runner.RunWith;
