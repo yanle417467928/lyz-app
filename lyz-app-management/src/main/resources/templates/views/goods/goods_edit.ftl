@@ -169,7 +169,7 @@
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="sortId" type="text" class="form-control" id="sortId"
                                            placeholder="排序号"
-                                           value="${(goodsVO.sortId)!''}">
+                                           value="${(goodsVO.sortId)?c}">
                                 </div>
                             </div>
                         </div>
@@ -333,7 +333,7 @@
             allowFileManager: true
         });
         categoryName = '${(goodsVO.categoryName)!''}';
-        brandId = '${(goodsVO.brdId)!''}';
+        brandId = '${(goodsVO.brdId)?c}';
         findGoodsCategorySelection();
         findGoodsBrandSelection();
         var coverImageUri = '${(goodsVO.coverImageUri)!''}';

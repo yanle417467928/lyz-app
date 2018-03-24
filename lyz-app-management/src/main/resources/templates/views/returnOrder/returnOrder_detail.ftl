@@ -234,9 +234,9 @@
                                 <#if maReturnOrderDetailVO?? && (maReturnOrderDetailVO.returnOrderProductCouponList)??&&(maReturnOrderDetailVO.returnOrderProductCouponList)?size gt 0>
                                     <#list (maReturnOrderDetailVO.returnOrderProductCouponList) as returnOrderProductCoupon>
                                     <tr>
-                                        <td align="center">${returnOrderProductCoupon.pcid!''}</td>
+                                        <td align="center">${returnOrderProductCoupon.pcid?c}</td>
                                         <td align="center">${returnOrderProductCoupon.sku!''}</td>
-                                        <td align="center">${returnOrderProductCoupon.returnQty!''}</td>
+                                        <td align="center">${returnOrderProductCoupon.returnQty?c}</td>
                                         <td align="center">
                                             <#if (returnOrderProductCoupon.isReturn)??&& returnOrderProductCoupon.isReturn?c=='true'>
                                                 是
