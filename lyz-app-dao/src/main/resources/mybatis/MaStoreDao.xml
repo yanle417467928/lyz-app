@@ -353,10 +353,11 @@
         s.store_id,
         s.create_time,
         c.name,
-        s.sales_manager
+        ee.name sales_manager
         FROM
         st_store s
         LEFT JOIN city c ON s.city_code = c.code
+        LEFT  JOIN emp_employee ee ON  ee.emp_id = s.sales_manager
         WHERE s.store_id=#{storeId}
         AND
          s.store_type="ZS"

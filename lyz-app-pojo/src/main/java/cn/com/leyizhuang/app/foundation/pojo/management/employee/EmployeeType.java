@@ -27,13 +27,14 @@ public class EmployeeType implements Serializable {
         if (null != employeeDO) {
             EmployeeType employeeType = new EmployeeType();
             employeeType.setEmpId(employeeDO.getEmpId());
-            if("SELLER".equals(employeeDO.getIdentityType())){
+            String identityType = employeeDO.getIdentityType().toString();
+            if("SELLER".equals(identityType)){
                 employeeType.setIdentityType("导购");
-            }else if("DELIVERY_CLERK".equals(employeeDO.getIdentityType())){
+            }else if("DELIVERY_CLERK".equals(identityType)){
                 employeeType.setIdentityType("配送员");
-            }else if("DECORATE_MANAGER".equals(employeeDO.getIdentityType())){
+            }else if("DECORATE_MANAGER".equals(identityType)){
                 employeeType.setIdentityType("装饰经理");
-            }else if("DECORATE_EMPLOYEE".equals(employeeDO.getIdentityType())){
+            }else if("DECORATE_EMPLOYEE".equals(identityType)){
                 employeeType.setIdentityType("装饰工人");
             }else{
                 employeeType.setIdentityType("");
