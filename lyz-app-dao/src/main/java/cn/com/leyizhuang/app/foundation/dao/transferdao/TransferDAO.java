@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOwnMoneyRecord;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public interface TransferDAO {
 
     List<TdOrderGoods> getTdOrderGoods();
 
-    List<String> findNewOrderNumber();
+    List<OrderBaseInfo> findNewOrderNumber();
 
     List<TdOwnMoneyRecord> findOwnMoneyRecordByOrderNumber(String orderNumber);
 

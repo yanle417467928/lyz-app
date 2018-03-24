@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOwnMoneyRecord;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferService;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
@@ -32,12 +33,12 @@ public class DataTransferServiceImpl implements DataTransferService {
 
     @Override
     public void TransferArrearsAudit() {
-        List<String> orderNumberList = this.transferDAO.findNewOrderNumber();
+        List<OrderBaseInfo> orderNumberList = this.transferDAO.findNewOrderNumber();
         if (null == orderNumberList && orderNumberList.size() == 0) {
             return;
         }
         for (int i = 0; i < orderNumberList.size(); i++) {
-            String orderNumber = orderNumberList.get(i);
+            String orderNumber = orderNumberList.get(i).getOrderNumber();
             Boolean exist = this.transferDAO.existArrearsAudit(orderNumber);
             if (exist) {
                 return;
