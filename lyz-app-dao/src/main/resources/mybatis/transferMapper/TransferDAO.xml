@@ -5,13 +5,13 @@
         SELECT ord_no FROM ord_base_info
     </select>
 
-    <select id="findOwnMoneyRecordByOrderNumber" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.datatransfer.pojo.TdOwnMoneyRecord">
+    <select id="findOwnMoneyRecordByOrderNumber" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOwnMoneyRecord">
         SELECT owned, payed, money, pos, create_time, ispassed, is_payed
         FROM td_own_money_record_copy
         WHERE order_number = #{orderNumber}
     </select>
 
-    <select id="findOrderByOrderNumber" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.datatransfer.pojo.TdOrder">
+    <select id="findOrderByOrderNumber" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder">
         SELECT real_user_real_name, real_user_username, seller_real_name, seller_username, shipping_address,
         FROM td_order_copy
         WHERE main_order_number = #{orderNumber}
