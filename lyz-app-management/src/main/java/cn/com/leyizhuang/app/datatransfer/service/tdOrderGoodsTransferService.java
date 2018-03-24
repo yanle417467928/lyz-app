@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.datatransfer.service;
 
-import cn.com.leyizhuang.app.datatransfer.pojo.TdOrderGoods;
+import cn.com.leyizhuang.app.foundation.datatransferPojo.TdOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 
 /**

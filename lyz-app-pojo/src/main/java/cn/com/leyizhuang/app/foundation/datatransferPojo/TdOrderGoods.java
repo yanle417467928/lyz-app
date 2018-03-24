@@ -1,4 +1,4 @@
-package cn.com.leyizhuang.app.datatransfer.pojo;
+package cn.com.leyizhuang.app.foundation.datatransferPojo;
 
 import lombok.*;
 
