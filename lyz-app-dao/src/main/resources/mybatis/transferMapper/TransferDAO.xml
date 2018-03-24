@@ -35,8 +35,8 @@
         GROUP BY mobile
     </select>
 
-    <select id="findOrderDataByOrderNumber" parameterType="java.lang.String" resultType="java.lang.Double">
-        SELECT agency_refund
+    <select id="findOrderDataByOrderNumber" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderData">
+        SELECT *
         FROM td_order_data_copy
         WHERE main_order_number = #{orderNumber}
         GROUP BY main_order_number

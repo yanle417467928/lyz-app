@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.datatransfer.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
+import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderData;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOwnMoneyRecord;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
@@ -54,7 +55,7 @@ public class DataTransferServiceImpl implements DataTransferService {
 
                     return;
                 }
-                Double agencyRefund = this.transferDAO.findOrderDataByOrderNumber(orderNumber);
+                TdOrderData agencyRefund = this.transferDAO.findOrderDataByOrderNumber(orderNumber);
                 if (null == agencyRefund) {
 
                     return;
@@ -83,7 +84,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                 auditDO.setSellerphone(order.getSellerUsername());
                 auditDO.setDistributionAddress(order.getShippingAddress());
                 auditDO.setDistributionTime(TimeTransformUtils.UDateToLocalDateTime(ownMoneyRecord.getCreateTime()));
-                auditDO.setAgencyMoney(agencyRefund);
+                auditDO.setAgencyMoney(agencyRefund.getAgencyRefund());
                 auditDO.setOrderMoney(ownMoneyRecord.getOwned());
                 auditDO.setRealMoney(ownMoneyRecord.getPayed());
                 if (null != ownMoneyRecord.getMoney() && ownMoneyRecord.getMoney() > 0D){
@@ -107,5 +108,23 @@ public class DataTransferServiceImpl implements DataTransferService {
                 this.transferDAO.insertArrearsAudit(auditDO);
             }
         }
+    }
+
+    @Override
+    public void TransferCoupon() {
+        List<OrderBaseInfo> orderNumberList = this.transferDAO.findNewOrderNumber();
+        if (null == orderNumberList && orderNumberList.size() == 0) {
+            return;
+        }
+
+        for (int i = 0; i < orderNumberList.size(); i++) {
+            String orderNumber = orderNumberList.get(i).getOrderNumber();
+            TdOrderData orderData = this.transferDAO.findOrderDataByOrderNumber(orderNumber);
+            if(null != orderData && null != orderData.getCashCouponFee() && orderData.getCashCouponFee() > 0){
+
+            }
+
+        }
+
     }
 }

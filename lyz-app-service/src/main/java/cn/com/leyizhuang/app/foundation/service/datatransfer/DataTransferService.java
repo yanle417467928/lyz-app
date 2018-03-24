@@ -6,4 +6,6 @@ package cn.com.leyizhuang.app.foundation.service.datatransfer;
 public interface DataTransferService {
 
     void TransferArrearsAudit();
+
+    void TransferCoupon();
 }
