@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.dao.transferdao;
 
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
+import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderData;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOwnMoneyRecord;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
@@ -29,7 +30,7 @@ public interface TransferDAO {
 
     Long findEmployeeByMobile(String phone);
 
-    Double findOrderDataByOrderNumber(String orderNumber);
+    TdOrderData findOrderDataByOrderNumber(String orderNumber);
 
     Boolean existArrearsAudit(String orderNumber);
 

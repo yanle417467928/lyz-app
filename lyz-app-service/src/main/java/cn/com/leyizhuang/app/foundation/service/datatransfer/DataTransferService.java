@@ -18,4 +18,6 @@ public interface DataTransferService {
     List<TdDeliveryInfoDetails> queryTdOrderListBySize(int size);
 
     List<TdDeliveryInfoDetails> queryOrderGoodsListByOrderNumber(Long id);
+
+    void TransferCoupon();
 }
