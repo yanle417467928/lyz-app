@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.datatransfer.impl;
 
+import cn.com.leyizhuang.app.core.constant.CouponGetType;
+import cn.com.leyizhuang.app.core.constant.OrderCouponType;
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderData;
@@ -7,6 +9,7 @@ import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOwnMoneyRecord;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferService;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
@@ -121,6 +124,14 @@ public class DataTransferServiceImpl implements DataTransferService {
             String orderNumber = orderNumberList.get(i).getOrderNumber();
             TdOrderData orderData = this.transferDAO.findOrderDataByOrderNumber(orderNumber);
             if(null != orderData && null != orderData.getCashCouponFee() && orderData.getCashCouponFee() > 0){
+                OrderCouponInfo orderCouponInfo = new OrderCouponInfo();
+                orderCouponInfo.setOid(orderNumberList.get(i).getId());
+                orderCouponInfo.setOrderNumber(orderNumber);
+                orderCouponInfo.setCouponType(OrderCouponType.CASH_COUPON);
+                orderCouponInfo.setPurchasePrice(0D);
+                orderCouponInfo.setCostPrice(orderData.getCashCouponFee());
+                orderCouponInfo.setGetType(CouponGetType.HISTORY_IMPORT);
+
 
             }
 
