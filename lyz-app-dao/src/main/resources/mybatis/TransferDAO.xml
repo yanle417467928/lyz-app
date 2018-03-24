@@ -3,6 +3,7 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO">
 
     <select id="getTdOrderGoods" resultType="cn.com.leyizhuang.app.foundation.datatransferPojo.TdOrderGoods">
-        SELECT * from td_order_goods
+        SELECT * from td_order_goods g RIGHT JOIN td_order o
+        where g.td_order_id = o.id
     </select>
 </mapper>
