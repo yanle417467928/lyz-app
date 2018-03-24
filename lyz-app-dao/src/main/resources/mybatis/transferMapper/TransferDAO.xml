@@ -1,5 +1,65 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.datatransfer.dao.TransferDAO">
+    <select id="findNewOrderNumber" resultType="java.lang.String">
+        SELECT ord_no FROM ord_base_info
+    </select>
+
+    <select id="findOwnMoneyRecordByOrderNumber" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.datatransfer.pojo.TdOwnMoneyRecord">
+        SELECT owned, payed, money, pos, create_time, ispassed, is_payed
+        FROM td_own_money_record_copy
+        WHERE order_number = #{orderNumber}
+    </select>
+
+    <select id="findOrderByOrderNumber" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.datatransfer.pojo.TdOrder">
+        SELECT real_user_real_name, real_user_username, seller_real_name, seller_username, shipping_address,
+        FROM td_order_copy
+        WHERE main_order_number = #{orderNumber}
+    </select>
+
+    <insert id="insertArrearsAudit" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO">
+        INSERT INTO ord_arrears_audit
+        (user_id, customer_name, customer_phone, seller_name, seller_phone, ord_no, agency_money, order_money,
+        real_money, cash_money, pos_money, alipay_money, wechat_money, payment_method, distribution_address,
+        distribution_time, remarks, status, create_time, seller_id, picture, whether_repayments, repayment_time)
+        VALUES
+        (#{userId}, #{customerName}, #{customerPhone}, #{sellerName}, #{sellerphone}, #{orderNumber}, #{agencyMoney}, #{orderMoney},
+        #{realMoney}, #{cashMoney}, #{posMoney}, #{alipayMoney}, #{wechatMoney}, #{paymentMethod},#{distributionAddress},
+        #{distributionTime}, #{remarks}, #{status}, #{createTime}, #{sellerId}, #{picture}, #{whetherRepayments}, #{repaymentTime})
+    </insert>
+
+    <select id="findEmployeeByMobile" parameterType="java.lang.String" resultType="java.lang.Long">
+        SELECT emp_id
+        FROM emp_employee
+        WHERE mobile = #{phone}
+        GROUP BY mobile
+    </select>
+
+    <select id="findOrderDataByOrderNumber" parameterType="java.lang.String" resultType="java.lang.Double">
+        SELECT agency_refund
+        FROM td_order_data_copy
+        WHERE main_order_number = #{orderNumber}
+        GROUP BY main_order_number
+    </select>
+
+    <select id="existArrearsAudit" parameterType="java.lang.String" resultType="java.lang.Boolean">
+        SELECT EXISTS (SELECT id FROM ord_arrears_audit WHERE ord_no = #{orderNumber})
+    </select>
+
+    <select id="findDeliveryInfoByOrderNumber" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT * FROM (SELECT id,op_user,sub_order_number
+            FROM td_delivery_info_detail
+            WHERE sub_order_number = #{orderNumber}
+            ORDER BY id DESC) t
+        GROUP BY t.sub_order_number
+    </select>
+
+    <select id="findDeliveryInfoByClerkNo" parameterType="java.lang.String" resultType="java.lang.Long">
+        SELECT emp_id
+        FROM emp_employee
+        WHERE delivery_clerk_no = #{clerkNo}
+        GROUP BY emp_id
+    </select>
+
 
 </mapper>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaReportDownloadDAO">
+    <select id="findReceiptsReportDOAll" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.ReceiptsReportDO">
+        SELECT obi.city_name cityName, st.store_name storeName, st.store_type storeType, obpd.pay_time payTime,
+            obpd.pay_type payType, obpd.amount money, obi.ord_no orderNumber, IF(obpd.pay_type = 'POS',obd.store_pos_number,null) remarks
+         FROM
+        ord_billing_payment_details obpd
+        INNER JOIN ord_base_info obi ON obi.ord_no = obpd.ord_no
+        INNER JOIN st_store st ON st.store_id = obi.store_id
+        INNER JOIN ord_billing_details obd ON obd.ord_no = obi.ord_no
+        WHERE 1=1
+            <if test="null != cityId and cityId != -1">
+                AND obi.city_id = #{cityId}
+            </if>
+            <if test="null != storeId and storeId != -1">
+                AND obi.store_id = #{storeId}
+            </if>
+            <if test="null != storeType and storeType != ''">
+                AND st.store_type = #{storeType}
+            </if>
+            <if test="null != startTime and startTime != ''">
+                AND obpd.pay_time &gt; #{startTime}
+            </if>
+            <if test="null != endTime and endTime != ''">
+                AND obpd.pay_time &lt; #{endTime}
+            </if>
+            <if test="null != payType and payType != ''">
+                AND obpd.pay_type = #{payType}
+            </if>
+            <if test="null != keywords and keywords != ''">
+                AND obi.ord_no LIKE concat(concat('%',#{keywords}),'%')
+            </if>
+            AND obi.store_id IN
+            <foreach collection="list" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        UNION
+        SELECT obi.city_name cityName, st.store_name storeName, st.store_type storeType, orbd.create_time payTime,
+            orbd.return_pay_type payType, orbd.return_money money, orbi.return_no orderNumber, NULL remarks
+        FROM ord_return_billing_detail orbd
+        INNER JOIN ord_return_base_info orbi ON orbi.return_no = orbd.return_no
+        INNER JOIN st_store st ON st.store_id = orbi.store_id
+        INNER JOIN ord_base_info obi ON obi.ord_no = orbi.ord_no
+        WHERE 1 = 1
+            <if test="null != cityId and cityId != -1">
+                AND obi.city_id = 1
+            </if>
+            <if test="null != storeId and storeId != -1">
+                AND obi.store_id = #{storeId}
+            </if>
+           <if test="null != storeType and storeType != ''">
+                AND st.store_type = #{storeType}
+            </if>
+            <if test="null != startTime and startTime != ''">
+                AND orbd.create_time &gt; #{startTime}
+            </if>
+            <if test="null != endTime and endTime != ''">
+                AND orbd.create_time &lt; #{endTime}
+            </if>
+            <if test="null != payType and payType != ''">
+                AND orbd.return_pay_type = #{payType}
+            </if>
+            <if test="null != keywords and keywords != ''">
+                AND orbi.return_no LIKE concat(concat('%',#{keywords}),'%')
+            </if>
+            AND obi.store_id IN
+            <foreach collection="list" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        ORDER BY payTime
+    </select>
+
+</mapper>
