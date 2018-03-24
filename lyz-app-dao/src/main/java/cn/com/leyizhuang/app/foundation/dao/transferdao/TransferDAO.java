@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao.transferdao;
 
 
+import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOwnMoneyRecord;
@@ -36,4 +37,11 @@ public interface TransferDAO {
 
     Long findDeliveryInfoByClerkNo(String clerkNo);
 
+    List<TdDeliveryInfoDetails> queryDeliveryTimeSeqBySize(int size);
+
+    TdDeliveryInfoDetails queryDeliveryInfoDetailByOrderNumber(String orderNo);
+
+    List<TdDeliveryInfoDetails> queryTdOrderListBySize(int size);
+
+    List<TdDeliveryInfoDetails> queryOrderGoodsListByOrderNumber(Long id);
 }

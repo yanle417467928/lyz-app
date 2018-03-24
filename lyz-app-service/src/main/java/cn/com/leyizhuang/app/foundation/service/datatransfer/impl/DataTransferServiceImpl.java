@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.datatransfer.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
+import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOwnMoneyRecord;
@@ -11,6 +12,7 @@ import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferService
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,6 +23,7 @@ import java.util.List;
  * @author Richard
  * @date 2018/3/24
  */
+@Service
 public class DataTransferServiceImpl implements DataTransferService {
 
     @Autowired
@@ -107,5 +110,25 @@ public class DataTransferServiceImpl implements DataTransferService {
                 this.transferDAO.insertArrearsAudit(auditDO);
             }
         }
+    }
+
+    @Override
+    public List<TdDeliveryInfoDetails> queryDeliveryTimeSeqBySize(int size) {
+        return transferDAO.queryDeliveryTimeSeqBySize(size);
+    }
+
+    @Override
+    public TdDeliveryInfoDetails queryDeliveryInfoDetailByOrderNumber(String orderNo) {
+        return transferDAO.queryDeliveryInfoDetailByOrderNumber(orderNo);
+    }
+
+    @Override
+    public List<TdDeliveryInfoDetails> queryTdOrderListBySize(int size) {
+        return transferDAO.queryTdOrderListBySize(size);
+    }
+
+    @Override
+    public List<TdDeliveryInfoDetails> queryOrderGoodsListByOrderNumber(Long id) {
+        return transferDAO.queryOrderGoodsListByOrderNumber(id);
     }
 }
