@@ -1317,7 +1317,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                                 break;
                             } else {
                                 if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                    logger.info("refusedOrder OUT,正常退货失败，退还第三方支付转预存款失败");
+                                    logger.info("refusedOrder OUT,拒签退货失败，退还第三方支付转预存款失败");
                                     throw new SystemBusyException("系统繁忙，请稍后再试!");
                                 }
                             }
@@ -1361,7 +1361,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                                 break;
                             } else {
                                 if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                    logger.info("refusedOrder OUT,正常退货失败，退还第三方支付转预存款失败");
+                                    logger.info("refusedOrder OUT,拒签退货失败，退还第三方支付转预存款失败");
                                     throw new SystemBusyException("系统繁忙，请稍后再试!");
                                 }
                             }
