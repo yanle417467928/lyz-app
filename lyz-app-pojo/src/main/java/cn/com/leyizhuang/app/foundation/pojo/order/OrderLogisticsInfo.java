@@ -74,6 +74,10 @@ public class OrderLogisticsInfo {
      */
     private String shippingAddress;
     /**
+     * 收货省
+     */
+    private String deliveryProvince;
+    /**
      * 收货城市
      */
     private String deliveryCity;

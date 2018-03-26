@@ -177,7 +177,7 @@ public class AtwReturnOrder {
         atwReturnOrder.setReturnTime(baseInfo.getReturnTime());
         atwReturnOrder.setSellerRealName(orderBaseInfo.getSalesConsultName());
         atwReturnOrder.setShoppingAddress(logisticInfo.getReturnFullAddress());
-//        atwReturnOrder.setProvince();
+        atwReturnOrder.setProvince(logisticInfo.getDeliveryProvince());
         atwReturnOrder.setCity(logisticInfo.getDeliveryCity());
         atwReturnOrder.setDisctrict(logisticInfo.getDeliveryCounty());
         atwReturnOrder.setSubdistrict(logisticInfo.getDeliveryStreet());
