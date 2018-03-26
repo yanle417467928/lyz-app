@@ -188,13 +188,13 @@
         (roid, return_no, delivery_type, return_store_code, return_store_name, return_store_address, delivery_time,
          delivery_clerk_no,
          delivery_clerk_id, delivery_clerk_name, rejecter, rejecter_phone, return_full_address, residence_name,
-         delivery_city,
+        delivery_province, delivery_city,
          delivery_county, delivery_street, detailed_address)
         VALUES
             (#{roid}, #{returnNO}, #{deliveryType}, #{returnStoreCode}, #{returnStoreName}, #{returnStoreAddress},
                       #{deliveryTime}, #{deliveryClerkNo},
                       #{deliveryClerkId}, #{deliveryClerkName}, #{rejecter}, #{rejecterPhone}, #{returnFullAddress},
-             #{residenceName}, #{deliveryCity},
+        #{residenceName},#{deliveryProvince}, #{deliveryCity},
              #{deliveryCounty}, #{deliveryStreet}, #{detailedAddress})
     </insert>
 

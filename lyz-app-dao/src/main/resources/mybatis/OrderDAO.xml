@@ -557,12 +557,14 @@
     <insert id="saveOrderLogisticsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo">
         INSERT INTO ord_logistics_info (oid, ord_no, delivery_type, booking_store_code, booking_store_name, booking_store_address, delivery_time,
                                         delivery_clerk_no, delivery_clerk_id, delivery_clerk_name, warehouse, is_owner_receiving, receiver,
-                                        receiver_phone, shipping_address, residence_name, delivery_city, delivery_county, delivery_street,
+        receiver_phone, shipping_address, residence_name,delivery_province, delivery_city, delivery_county,
+        delivery_street,
                                         detailed_address)
         VALUES (#{oid}, #{ordNo}, #{deliveryType}, #{bookingStoreCode}, #{bookingStoreName},
                         #{bookingStoreAddress}, #{deliveryTime}, #{deliveryClerkNo}, #{deliveryClerkId},
                         #{deliveryClerkName}, #{warehouse}, #{isOwnerReceiving},
-                #{receiver}, #{receiverPhone}, #{shippingAddress}, #{residenceName}, #{deliveryCity}, #{deliveryCounty},
+        #{receiver}, #{receiverPhone}, #{shippingAddress}, #{residenceName},#{deliveryProvince}, #{deliveryCity},
+        #{deliveryCounty},
                 #{deliveryStreet}, #{detailedAddress})
     </insert>
     <insert id="saveOrderGoodsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo"

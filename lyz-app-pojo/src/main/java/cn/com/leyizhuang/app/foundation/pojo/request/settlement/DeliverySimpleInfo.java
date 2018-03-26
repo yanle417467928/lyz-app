@@ -1,11 +1,8 @@
 package cn.com.leyizhuang.app.foundation.pojo.request.settlement;
 
-import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.
@@ -52,6 +49,10 @@ public class DeliverySimpleInfo implements Serializable {
      * 收货人电话
      */
     private String receiverPhone;
+    /**
+     * 收货省
+     */
+    private String deliveryProvince;
     /**
      *  收货城市
      */

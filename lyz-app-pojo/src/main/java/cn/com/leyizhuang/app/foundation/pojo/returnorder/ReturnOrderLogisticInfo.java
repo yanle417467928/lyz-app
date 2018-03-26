@@ -75,6 +75,10 @@ public class ReturnOrderLogisticInfo {
      */
     private String returnFullAddress;
     /**
+     * 退货省
+     */
+    private String deliveryProvince;
+    /**
      * 退货城市
      */
     private String deliveryCity;

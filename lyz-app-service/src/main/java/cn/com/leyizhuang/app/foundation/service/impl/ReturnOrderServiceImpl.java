@@ -126,12 +126,14 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             returnOrderLogisticInfo.setDeliveryTime(returnDeliveryInfo.getDeliveryTime());
             returnOrderLogisticInfo.setRejecter(returnDeliveryInfo.getRejecter());
             returnOrderLogisticInfo.setRejecterPhone(returnDeliveryInfo.getRejecterPhone());
+            returnOrderLogisticInfo.setDeliveryProvince(returnDeliveryInfo.getDeliveryProvince());
             returnOrderLogisticInfo.setDeliveryCity(returnDeliveryInfo.getDeliveryCity());
             returnOrderLogisticInfo.setDeliveryCounty(returnDeliveryInfo.getDeliveryCounty());
             returnOrderLogisticInfo.setDeliveryStreet(returnDeliveryInfo.getDeliveryStreet());
             returnOrderLogisticInfo.setResidenceName(returnDeliveryInfo.getResidenceName());
             returnOrderLogisticInfo.setDetailedAddress(returnDeliveryInfo.getDetailedAddress());
-            returnOrderLogisticInfo.setReturnFullAddress(returnDeliveryInfo.getDeliveryCity() +
+            returnOrderLogisticInfo.setReturnFullAddress(returnDeliveryInfo.getDeliveryProvince() +
+                    returnDeliveryInfo.getDeliveryCity() +
                     returnDeliveryInfo.getDeliveryCounty() +
                     returnDeliveryInfo.getDeliveryStreet() +
                     returnDeliveryInfo.getResidenceName() +
@@ -1317,7 +1319,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                                 break;
                             } else {
                                 if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                    logger.info("refusedOrder OUT,正常退货失败，退还第三方支付转预存款失败");
+                                    logger.info("refusedOrder OUT,拒签退货失败，退还第三方支付转预存款失败");
                                     throw new SystemBusyException("系统繁忙，请稍后再试!");
                                 }
                             }
@@ -1361,7 +1363,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                                 break;
                             } else {
                                 if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                    logger.info("refusedOrder OUT,正常退货失败，退还第三方支付转预存款失败");
+                                    logger.info("refusedOrder OUT,拒签退货失败，退还第三方支付转预存款失败");
                                     throw new SystemBusyException("系统繁忙，请稍后再试!");
                                 }
                             }

@@ -189,7 +189,7 @@ public class AtwRequisitionOrder {
         requisitionOrder.setCity(orderBaseInfo.getCityName());
         requisitionOrder.setDetailAddress(logisticsInfo.getDetailedAddress());
         requisitionOrder.setDisctrict(logisticsInfo.getDeliveryCounty());
-//        requisitionOrder.setProvince();
+        requisitionOrder.setProvince(logisticsInfo.getDeliveryProvince());
         requisitionOrder.setResidenceName(logisticsInfo.getResidenceName());
         requisitionOrder.setOrderTime(orderBaseInfo.getCreateTime());
         requisitionOrder.setSubdistrict(logisticsInfo.getDeliveryStreet());

@@ -3,8 +3,12 @@ package cn.com.leyizhuang.app.foundation.dao.transferdao;
 
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdDeliveryInfoDetails;
+import cn.com.leyizhuang.app.foundation.pojo.CashCoupon;
+import cn.com.leyizhuang.app.foundation.pojo.CashCouponCompany;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderData;
+import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderLogistics;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
@@ -12,6 +16,8 @@ import org.apache.ibatis.annotations.Param;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOwnMoneyRecord;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -46,6 +52,10 @@ public interface TransferDAO {
 
     Long findDeliveryInfoByClerkNo(String clerkNo);
 
+    List<TdOrderLogistics> queryOrderLogistcs(int size);
+
+    void saveOrderLogisticsInfo(OrderLogisticsInfo orderLogisticsInfo);
+
     List<TdDeliveryInfoDetails> queryDeliveryTimeSeqBySize(int size);
 
     TdDeliveryInfoDetails queryDeliveryInfoDetailByOrderNumber(String orderNo);
@@ -59,4 +69,14 @@ public interface TransferDAO {
     AppEmployee findStoreEmployeeById(Long sellerId);
 
     AppCustomer findCustomerById(Long userId);
+    OrderBaseInfo findNewOrderByOrderNumber(String orderNumber);
+
+    void addCashCoupon(CashCoupon cashCoupon);
+
+    void addCustomerCashCoupon(CustomerCashCoupon customerCashCoupon);
+
+    void addCashCouponCompany(CashCouponCompany cashCouponCompany);
+
+    void saveOrderCouponInfo(OrderCouponInfo orderCouponInfo);
+
 }
