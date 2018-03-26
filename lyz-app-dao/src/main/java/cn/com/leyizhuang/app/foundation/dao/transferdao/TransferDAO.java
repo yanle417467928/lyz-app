@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOwnMoneyRecord;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -34,5 +35,9 @@ public interface TransferDAO {
     String findDeliveryInfoByOrderNumber(String orderNumber);
 
     Long findDeliveryInfoByClerkNo(String clerkNo);
+
+    List<TdOrderGoods> findTdorderGoodsByTdOrderId(@Param("tdOrderId") Long tdOrderId);
+
+    Boolean isExitTdOrderGoodsLine(@Param("orderNo") String orderNo,@Param("gid") Long gid,@Param("goodsLineType") String goodsLineType);
 
 }

@@ -12,7 +12,7 @@
     </select>
 
     <select id="findOrderByOrderNumber" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder">
-        SELECT real_user_real_name, real_user_username, seller_real_name, seller_username, shipping_address,
+        SELECT *
         FROM td_order_copy
         WHERE main_order_number = #{orderNumber}
     </select>
@@ -61,5 +61,18 @@
         GROUP BY emp_id
     </select>
 
+    <select id="getTdOrderGoods" resultType="cn.com.leyizhuang.app.foundation.datatransferPojo.TdOrderGoods">
+        SELECT * from td_order_goods_copy g RIGHT JOIN td_order o
+        where g.td_order_id = o.id
+    </select>
+    
+    <select id="findTdorderGoodsByTdOrderId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.datatransferPojo.TdOrderGoods">
+        select * from td_order_goods_copy where td_order_id = #{tdOrderId};
+    </select>
 
+    <select id="isExitTdOrderGoodsLine" resultType="java.lang.Boolean">
+        SELECT EXISTS (
+                select 1 from ord_goods_info where ord_no = #{orderNo} and gid = #{gid} and goods_line_type = #{goodsLineType}
+        )
+    </select>
 </mapper>

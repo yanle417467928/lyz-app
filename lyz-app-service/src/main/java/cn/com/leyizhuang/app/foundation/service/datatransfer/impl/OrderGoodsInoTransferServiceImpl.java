@@ -1,11 +1,19 @@
 package cn.com.leyizhuang.app.foundation.service.datatransfer.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
+import cn.com.leyizhuang.app.foundation.dao.GoodsDAO;
+import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
+import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.service.datatransfer.OrderGoodsTransferService;
+import cn.com.leyizhuang.app.foundation.service.impl.AppActServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +22,66 @@ import java.util.List;
  * 订单商品转换类
  * Created by panjie on 2018/3/24.
  */
-public class OrderGoodsInoTransferServiceImpl {
+public class OrderGoodsInoTransferServiceImpl  implements OrderGoodsTransferService {
+
+    private static final Logger logger = LoggerFactory.getLogger(OrderGoodsInoTransferServiceImpl.class);
+
+    @Autowired
+    private TransferDAO transferDAO;
+
+    @Autowired
+    private OrderDAO orderDAO;
+
+    @Autowired
+    private GoodsDAO goodsDAO;
+
+
+    public void transferAll(){
+
+        // 获取所有主单号
+        List<String> mainOrderList = transferDAO.findNewOrderNumber();
+
+        for (String mainOrderNo : mainOrderList){
+            // 根据主单号 找到旧订单分单
+            List<TdOrder> tdOrders = transferDAO.findOrderByOrderNumber(mainOrderNo);
+
+            // 新订单
+            OrderBaseInfo orderBaseInfo = orderDAO.findByOrderNumber(mainOrderNo);
+
+            // 新订单商品记录
+            List<OrderGoodsInfo> orderGoodsInfoList = new ArrayList<>();
+
+            for (TdOrder order : tdOrders){
+                // 找到分单下的商品
+
+                List<TdOrderGoods> tdOrderGoodsList  = transferDAO.findTdorderGoodsByTdOrderId(order.getId());
+
+                // 转换每一个商品
+                for (TdOrderGoods tdOrderGoods : tdOrderGoodsList){
+                    // 找到新商品
+                    GoodsDO goodsDO = goodsDAO.queryBySku(tdOrderGoods.getSku());
+
+                    List<OrderGoodsInfo> orderGoodsInfoList1 = this.transferOne(tdOrderGoods,order,orderBaseInfo,goodsDO);
+
+                    orderGoodsInfoList.addAll(orderGoodsInfoList1);
+
+                }
+            }
+
+            // 插入
+            for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList){
+                // 检查是否存在
+                Boolean flag = transferDAO.isExitTdOrderGoodsLine(orderGoodsInfo.getOrderNumber(),orderGoodsInfo.getGid(),orderGoodsInfo.getGoodsLineType().getValue());
+
+                if (!flag){
+                    orderDAO.saveOrderGoodsInfo(orderGoodsInfo);
+                }
+            }
+        }
+
+
+    }
+
 
     public List<OrderGoodsInfo> transferOne(TdOrderGoods tdOrderGoods, TdOrder tdOrder, OrderBaseInfo orderBaseInfo, GoodsDO goodsDO) {
 
@@ -113,6 +180,7 @@ public class OrderGoodsInoTransferServiceImpl {
             goodsInfo2.setIsEvaluation(false);
             goodsInfo2.setCoverImageUri(tdOrderGoods.getGoodsCoverImageUri());
 
+            goodsInfoList.add(goodsInfo2);
         }
         return goodsInfoList;
     }
