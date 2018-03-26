@@ -2,7 +2,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO">
 
-<mapper namespace="cn.com.leyizhuang.app.datatransfer.dao.TransferDAO">
     <select id="findNewOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
         SELECT ord_no orderNumber, oid id FROM ord_base_info
     </select>
@@ -14,7 +13,7 @@
     </select>
 
     <select id="findOrderByOrderNumber" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder">
-        SELECT real_user_real_name, real_user_username, seller_real_name, seller_username, shipping_address,
+        SELECT real_user_real_name, real_user_username, seller_real_name, seller_username, shipping_address
         FROM td_order_copy
         WHERE main_order_number = #{orderNumber}
     </select>

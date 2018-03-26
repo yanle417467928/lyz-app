@@ -40,8 +40,6 @@ public class DataTransferServiceImpl implements DataTransferService {
     @Resource
     private TransferDAO transferDAO;
 
-    @Autowired
-    private TransferDAO transferDAO;
 
     public OrderGoodsInfo transferOne(TdOrderGoods tdOrderGoods){
         OrderGoodsInfo goodsInfo = new OrderGoodsInfo();
