@@ -42,4 +42,6 @@ public class TdDeliveryInfoDetails {
     private Integer quantity;
 
     private Double difTotal;
+
+    private Long statusId;
 }

@@ -2,23 +2,16 @@ package cn.com.leyizhuang.app.foundation.dao.transferdao;
 
 
 import cn.com.leyizhuang.app.core.constant.OrderCouponType;
-import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.*;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.*;
 import cn.com.leyizhuang.app.foundation.pojo.CashCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.CashCouponCompany;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon;
+import cn.com.leyizhuang.app.foundation.pojo.datatransfer.*;
+import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
+import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
-import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
-import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import org.apache.ibatis.annotations.Param;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -99,4 +92,6 @@ public interface TransferDAO {
     List<OrderCouponInfo> findCouponInfoListByType(@Param("orderNumber")String orderNumber, @Param("type") OrderCouponType type);
 
     TdOrderDeliveryTimeSeqDetail findDeliveryStatusByMainOrderNumber(String mainOrderNumber);
+
+    List<TdOrderData> queryTdOrderDataListBySize(int size);
 }

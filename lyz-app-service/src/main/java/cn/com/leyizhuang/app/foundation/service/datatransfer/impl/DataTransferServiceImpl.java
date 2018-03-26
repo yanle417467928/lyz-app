@@ -1,47 +1,28 @@
 package cn.com.leyizhuang.app.foundation.service.datatransfer.impl;
 
-import cn.com.leyizhuang.app.core.constant.OnlinePayType;
-import cn.com.leyizhuang.app.foundation.dao.TimingTaskErrorMessageDAO;
-import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.*;
-import cn.com.leyizhuang.app.foundation.pojo.TimingTaskErrorMessageDO;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
-import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.*;
 import cn.com.leyizhuang.app.core.constant.AppCashCouponType;
 import cn.com.leyizhuang.app.core.constant.CouponGetType;
+import cn.com.leyizhuang.app.core.constant.OnlinePayType;
 import cn.com.leyizhuang.app.core.constant.OrderCouponType;
-import cn.com.leyizhuang.app.foundation.pojo.CashCoupon;
-import cn.com.leyizhuang.app.foundation.pojo.CashCouponCompany;
-import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderData;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOwnMoneyRecord;
+import cn.com.leyizhuang.app.foundation.dao.TimingTaskErrorMessageDAO;
+import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
+import cn.com.leyizhuang.app.foundation.pojo.*;
+import cn.com.leyizhuang.app.foundation.pojo.datatransfer.*;
+import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
-import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
-import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferService;
-import cn.com.leyizhuang.common.util.CountUtil;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
+import cn.com.leyizhuang.common.util.CountUtil;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 订单商品转换类
@@ -424,5 +405,10 @@ public class DataTransferServiceImpl implements DataTransferService {
             return transferDAO.findCustomerById(userId);
         }
         return null;
+    }
+
+    @Override
+    public List<TdOrderData> queryTdOrderDataListBySize(int size) {
+        return transferDAO.queryTdOrderDataListBySize(size);
     }
 }
