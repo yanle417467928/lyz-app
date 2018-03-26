@@ -166,5 +166,8 @@ public class TdOrderGoods {
     // 分类树
     private String categoryTree;
 
+    private Long tdOrderId;
+
+    private Long presentedListId;
 
 }
