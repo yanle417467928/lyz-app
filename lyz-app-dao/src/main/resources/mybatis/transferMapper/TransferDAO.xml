@@ -92,6 +92,42 @@
         tdc.order_time > '2017-10-01 00:00:00'
          LIMIT #{size}, 1000;
     </select>
+    <select id="findNewOrderByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
+        SELECT * FROM ord_base_info WHERE ord_no = #{orderNumber}
+    </select>
+
+    <insert id="addCashCoupon" parameterType="cn.com.leyizhuang.app.foundation.pojo.CashCoupon" useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO cp_cash_coupon
+        (create_time, `condition`, denomination, effective_start_time, effective_end_time, description, initial_quantity, remaining_quantity,
+        title, city_id , city_name , `type` ,is_specified_store,sort_id,`status`)
+        VALUES
+        (#{createTime}, #{condition}, #{denomination}, #{effectiveStartTime}, #{effectiveEndTime}, #{description}, #{initialQuantity}, #{remainingQuantity}, #{title}
+        ,#{cityId} ,#{cityName} ,#{type} , #{isSpecifiedStore} ,#{sortId},#{status})
+    </insert>
+
+    <insert id="addCustomerCashCoupon" parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon" useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO cus_customer_cash_coupon
+        (cus_id, ccid, qty, get_time, is_used, use_time, use_ord_no, down_time, status, `condition`, denomination,effective_start_time,
+        effective_end_time, descripttion, title,city_id , city_name , `type` ,is_specified_store,last_update_time)
+        VALUES
+        (#{cusId}, #{ccid}, #{qty}, #{getTime}, #{isUsed}, #{useTime}, #{useOrderNumber}, #{downTime}, #{status}, #{condition},
+        #{denomination}, #{effectiveStartTime}, #{effectiveEndTime}, #{description}, #{title},#{cityId} ,#{cityName} ,#{type} , #{isSpecifiedStore}, #{lastUpdateTime})
+    </insert>
+
+    <insert id="addCashCouponCompany" parameterType="import cn.com.leyizhuang.app.foundation.pojo.CashCouponCompany">
+        INSERT INTO cp_cash_coupon_company
+        (ccid,company_id,company_name,company_flag)
+        VALUES
+        (#{item.ccid},#{item.companyId},#{item.companyName},#{item.companyFlag})
+    </insert>
+
+    <insert id="saveOrderCouponInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo">
+        INSERT INTO ord_coupon_info (oid, ord_no, coupon_type, coupon_id, purchase_price, cost_price, get_type, sku)
+        VALUES (#{oid}, #{orderNumber}, #{couponType}, #{couponId}, #{purchasePrice}, #{costPrice}, #{getType}, #{sku});
+    </insert>
+
 
     <select id="getTdOrderGoods" resultType="cn.com.leyizhuang.app.foundation.datatransferPojo.TdOrderGoods">
         SELECT *

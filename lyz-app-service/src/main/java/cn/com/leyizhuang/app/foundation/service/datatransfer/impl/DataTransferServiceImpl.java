@@ -2,10 +2,14 @@ package cn.com.leyizhuang.app.foundation.service.datatransfer.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
+import cn.com.leyizhuang.app.core.constant.AppCashCouponType;
 import cn.com.leyizhuang.app.core.constant.CouponGetType;
 import cn.com.leyizhuang.app.core.constant.OrderCouponType;
 import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
+import cn.com.leyizhuang.app.foundation.pojo.CashCoupon;
+import cn.com.leyizhuang.app.foundation.pojo.CashCouponCompany;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderLogistics;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
@@ -29,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -183,15 +188,60 @@ public class DataTransferServiceImpl implements DataTransferService {
             String orderNumber = orderNumberList.get(i).getOrderNumber();
             TdOrderData orderData = this.transferDAO.findOrderDataByOrderNumber(orderNumber);
             if(null != orderData && null != orderData.getCashCouponFee() && orderData.getCashCouponFee() > 0){
+                OrderBaseInfo orderBaseInfo = this.transferDAO.findNewOrderByOrderNumber(orderNumber);
+
+                CashCoupon cashCoupon = new CashCoupon();
+                cashCoupon.setCreateTime(new Date());
+                cashCoupon.setDenomination(orderData.getCashCouponFee());
+                cashCoupon.setEffectiveStartTime(new Date());
+                cashCoupon.setDescription("无条件使用");
+                cashCoupon.setInitialQuantity(1);
+                cashCoupon.setRemainingQuantity(0);
+                cashCoupon.setTitle("优惠券");
+                cashCoupon.setCityId(orderBaseInfo.getCityId());
+                cashCoupon.setCityName(orderBaseInfo.getCityName());
+                cashCoupon.setType(AppCashCouponType.COMPANY);
+                cashCoupon.setIsSpecifiedStore(false);
+                cashCoupon.setStatus(true);
+                cashCoupon.setSortId(999);
+                this.transferDAO.addCashCoupon(cashCoupon);
+
+                CashCouponCompany cashCouponCompany = new CashCouponCompany();
+                cashCouponCompany.setCcid(cashCoupon.getId());
+                cashCouponCompany.setCompanyName("华润");
+                cashCouponCompany.setCompanyFlag("HR");
+                this.transferDAO.addCashCouponCompany(cashCouponCompany);
+
+                CustomerCashCoupon customerCashCoupon = new CustomerCashCoupon();
+                customerCashCoupon.setCusId(orderBaseInfo.getCustomerId());
+                customerCashCoupon.setCcid(cashCoupon.getId());
+                customerCashCoupon.setQty(1);
+                customerCashCoupon.setIsUsed(true);
+                customerCashCoupon.setUseTime(orderBaseInfo.getCreateTime());
+                customerCashCoupon.setUseOrderNumber(orderNumber);
+                customerCashCoupon.setGetTime(orderBaseInfo.getCreateTime());
+                customerCashCoupon.setDenomination(orderData.getCashCouponFee());
+                customerCashCoupon.setPurchasePrice(0D);
+                customerCashCoupon.setEffectiveStartTime(new Date());
+                customerCashCoupon.setDescription("无条件使用");
+                customerCashCoupon.setTitle("优惠券");
+                customerCashCoupon.setStatus(true);
+                customerCashCoupon.setGetType(CouponGetType.MANUAL_GRANT);
+                customerCashCoupon.setCityId(orderBaseInfo.getCityId());
+                customerCashCoupon.setCityName(orderBaseInfo.getCityName());
+                customerCashCoupon.setType(AppCashCouponType.COMPANY);
+                customerCashCoupon.setIsSpecifiedStore(false);
+                this.transferDAO.addCustomerCashCoupon(customerCashCoupon);
+
                 OrderCouponInfo orderCouponInfo = new OrderCouponInfo();
                 orderCouponInfo.setOid(orderNumberList.get(i).getId());
                 orderCouponInfo.setOrderNumber(orderNumber);
+                orderCouponInfo.setCouponId(customerCashCoupon.getId());
                 orderCouponInfo.setCouponType(OrderCouponType.CASH_COUPON);
                 orderCouponInfo.setPurchasePrice(0D);
                 orderCouponInfo.setCostPrice(orderData.getCashCouponFee());
-                orderCouponInfo.setGetType(CouponGetType.HISTORY_IMPORT);
-
-
+                orderCouponInfo.setGetType(CouponGetType.MANUAL_GRANT);
+                this.transferDAO.saveOrderCouponInfo(orderCouponInfo);
             }
 
         }
