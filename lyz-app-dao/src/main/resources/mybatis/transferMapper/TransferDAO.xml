@@ -275,4 +275,10 @@
         (#{customerId}, #{sellerId}, #{storeId}, #{goodsId}, #{quantity}, #{getType},#{getTime}, #{getOrderNumber}, #{buyPrice}, #{effectiveStartTime},
         #{effectiveEndTime},#{isUsed}, #{useTime}, #{useOrderNumber}, #{goodsLineId}, #{disableTime}, #{status}, #{lastUpdateTime})
     </insert>
+
+    <select id="existOrderBillingDetails" parameterType="java.lang.String" resultType="java.lang.Boolean">
+        SELECT EXISTS(SELECT id
+        FROM ord_billing_details
+        WHERE ord_no = #{orderNumber})
+    </select>
 </mapper>

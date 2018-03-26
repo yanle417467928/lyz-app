@@ -179,4 +179,11 @@ public class DataTransferController {
         log.info("订单导入job处理完成,当前时间:{}", new Date());
         return "success";
     }
+
+    @RequestMapping(value = "/data/transfer/orderbilling", method = RequestMethod.GET)
+    public String dataTransferOrderBillingDeatails() {
+        log.info("开始处理订单账单导入,当前时间:{}", new Date());
+        dataTransferService.transferOrderBillingDetails();
+        return "success";
+    }
 }

@@ -95,4 +95,6 @@ public interface TransferDAO {
 
     void addCustomerProductCoupon(CustomerProductCoupon customerProductCoupon);
 
+
+    Boolean existOrderBillingDetails(String orderNumber);
 }

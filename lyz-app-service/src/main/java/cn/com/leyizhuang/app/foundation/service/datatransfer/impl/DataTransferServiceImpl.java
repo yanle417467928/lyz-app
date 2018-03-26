@@ -1,7 +1,10 @@
 package cn.com.leyizhuang.app.foundation.service.datatransfer.impl;
 
 import cn.com.leyizhuang.app.core.constant.OnlinePayType;
+import cn.com.leyizhuang.app.foundation.dao.TimingTaskErrorMessageDAO;
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
+import cn.com.leyizhuang.app.foundation.pojo.TimingTaskErrorMessageDO;
+import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.*;
 import cn.com.leyizhuang.app.core.constant.AppCashCouponType;
@@ -51,6 +54,9 @@ public class DataTransferServiceImpl implements DataTransferService {
 
     @Resource
     private TransferDAO transferDAO;
+
+    @Resource
+    private TimingTaskErrorMessageDAO timingTaskErrorMessageDAO;
 
     public OrderGoodsInfo transferOne(TdOrderGoods tdOrderGoods) {
         OrderGoodsInfo goodsInfo = new OrderGoodsInfo();
@@ -309,6 +315,77 @@ public class DataTransferServiceImpl implements DataTransferService {
 
     @Override
     public void transferOrderBillingDetails() {
+        List<OrderBaseInfo> orderBaseInfoList = this.transferDAO.findNewOrderNumber();
+        TimingTaskErrorMessageDO timingTaskErrorMessageDO = null;
+        if (null != orderBaseInfoList && orderBaseInfoList.size() > 0) {
+            for (OrderBaseInfo orderBaseInfo : orderBaseInfoList) {
+                TdOrderData tdOrderData = this.transferDAO.findOrderDataByOrderNumber(orderBaseInfo.getOrderNumber());
+                TdOwnMoneyRecord tdOwnMoneyRecord = this.transferDAO.getOwnMoneyRecordByOrderNumber(orderBaseInfo.getOrderNumber());
+                //获取错误信息
+                timingTaskErrorMessageDO = timingTaskErrorMessageDAO.findTimingTaskErrorMessageByOrderNumber(orderBaseInfo.getOrderNumber());
+                try {
+                    Boolean b = this.transferDAO.existOrderBillingDetails(orderBaseInfo.getOrderNumber());
+                    if (b){
+                        throw new Exception("此订单号账单已生成请检查！订单号："+ orderBaseInfo.getOrderNumber());
+                    }
+                    OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
+                    orderBillingDetails.setOid(orderBaseInfo.getId());
+                    orderBillingDetails.setCreateTime(tdOrderData.getCreateTime());
+                    orderBillingDetails.setOrderNumber(tdOrderData.getMainOrderNumber());
+                    orderBillingDetails.setTotalGoodsPrice(tdOrderData.getTotalGoodsPrice());
+                    orderBillingDetails.setMemberDiscount(tdOrderData.getMemberDiscount());
+                    orderBillingDetails.setPromotionDiscount(tdOrderData.getActivitySub());
+                    orderBillingDetails.setFreight(tdOrderData.getDeliveryFee());
+                    orderBillingDetails.setUpstairsFee(0D);
+                    orderBillingDetails.setLebiCashDiscount(0D);
+                    orderBillingDetails.setLebiQuantity(0);
+                    orderBillingDetails.setCashCouponDiscount(tdOrderData.getCashCouponFee());
+                    orderBillingDetails.setProductCouponDiscount(tdOrderData.getProCouponFee());
+                    orderBillingDetails.setCusPreDeposit(0D);
+                    orderBillingDetails.setOnlinePayType(OnlinePayType.NO);
+                    orderBillingDetails.setOnlinePayAmount(0D);
+                    orderBillingDetails.setOnlinePayTime(null);
+                    Double stPreDepsit = CountUtil.add(tdOrderData.getBalanceUsed() == null ? 0D : tdOrderData.getBalanceUsed(), tdOrderData.getOnlinePay() == null ? 0D : tdOrderData.getOnlinePay());
+                    orderBillingDetails.setStPreDeposit(stPreDepsit);
+                    orderBillingDetails.setEmpCreditMoney(tdOrderData.getLeftPrice());
+                    orderBillingDetails.setStoreCreditMoney(0D);
+                    orderBillingDetails.setStoreSubvention(0D);
+                    Double totalGoodsPrice = CountUtil.sub(tdOrderData.getTotalGoodsPrice() == null ? 0D : tdOrderData.getTotalGoodsPrice(), tdOrderData.getMemberDiscount() == null ? 0D : tdOrderData.getMemberDiscount(),
+                            tdOrderData.getActivitySub() == null ? 0D : tdOrderData.getActivitySub(), tdOrderData.getCashCouponFee() == null ? 0D : tdOrderData.getCashCouponFee(), tdOrderData.getProCouponFee() == null ? 0D : tdOrderData.getProCouponFee());
+                    Double orderAmountSubTotal = CountUtil.add(totalGoodsPrice == null ? 0d : totalGoodsPrice, tdOrderData.getDeliveryFee());
+                    orderBillingDetails.setOrderAmountSubtotal(orderAmountSubTotal);
+                    orderBillingDetails.setAmountPayable(CountUtil.sub(orderAmountSubTotal, stPreDepsit));
+                    orderBillingDetails.setCollectionAmount(tdOrderData.getAgencyRefund());
+                    orderBillingDetails.setArrearage(tdOrderData.getDue());
+                    orderBillingDetails.setIsOwnerReceiving(Boolean.FALSE);
+                    orderBillingDetails.setIsPayUp(tdOwnMoneyRecord.getIsPayed());
+                    if (tdOwnMoneyRecord.getIsPayed()) {
+                        orderBillingDetails.setPayUpTime(new Date());
+                    } else {
+                        orderBillingDetails.setPayUpTime(null);
+                    }
+                    orderBillingDetails.setJxPriceDifferenceAmount(0D);
+                    orderBillingDetails.setStoreCash(tdOrderData.getSellerCash());
+                    orderBillingDetails.setStoreOtherMoney(tdOrderData.getSellerOther());
+                    orderBillingDetails.setStorePosMoney(tdOrderData.getSellerPos());
+                    orderBillingDetails.setStorePosNumber(tdOwnMoneyRecord.getSerialNumber());
+                    orderBillingDetails.setDeliveryCash(tdOrderData.getDeliveryCash());
+                    orderBillingDetails.setDeliveryPos(tdOrderData.getDeliveryPos());
+
+                    this.transferDAO.saveOrderBillingDetails(orderBillingDetails);
+                }catch (Exception e){
+                    System.out.println(e);
+                    System.out.println("订单账单创建失败请检查，订单号："+orderBaseInfo.getOrderNumber());
+                    if (null  == timingTaskErrorMessageDO) {
+                        timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
+                        timingTaskErrorMessageDO.setMessage("订单账单创建失败请检查，订单号："+orderBaseInfo.getOrderNumber());
+                        timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
+                        timingTaskErrorMessageDO.setRecordTime(new Date());
+                        timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
+                    }
+                }
+            }
+        }
 
     }
 
