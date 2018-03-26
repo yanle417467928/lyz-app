@@ -3,17 +3,34 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO">
 
     <select id="findNewOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
-        SELECT ord_no orderNumber, oid id FROM ord_base_info
+        SELECT
+            ord_no orderNumber,
+            oid    id
+        FROM ord_base_info
     </select>
 
-    <select id="findOwnMoneyRecordByOrderNumber" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOwnMoneyRecord">
-        SELECT owned, payed, money, pos, create_time, ispassed, is_payed
+    <select id="findOwnMoneyRecordByOrderNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOwnMoneyRecord">
+        SELECT
+            owned,
+            payed,
+            money,
+            pos,
+            create_time,
+            ispassed,
+            is_payed
         FROM td_own_money_record_copy
         WHERE order_number = #{orderNumber}
     </select>
 
-    <select id="findOrderByOrderNumber" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder">
-        SELECT real_user_real_name, real_user_username, seller_real_name, seller_username, shipping_address
+    <select id="findOrderByOrderNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder">
+        SELECT
+            real_user_real_name,
+            real_user_username,
+            seller_real_name,
+            seller_username,
+            shipping_address
         FROM td_order_copy
         WHERE main_order_number = #{orderNumber}
     </select>
@@ -21,12 +38,16 @@
     <insert id="insertArrearsAudit" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO">
         INSERT INTO ord_arrears_audit
         (user_id, customer_name, customer_phone, seller_name, seller_phone, ord_no, agency_money, order_money,
-        real_money, cash_money, pos_money, alipay_money, wechat_money, payment_method, distribution_address,
-        distribution_time, remarks, status, create_time, seller_id, picture, whether_repayments, repayment_time)
+         real_money, cash_money, pos_money, alipay_money, wechat_money, payment_method, distribution_address,
+         distribution_time, remarks, status, create_time, seller_id, picture, whether_repayments, repayment_time)
         VALUES
-        (#{userId}, #{customerName}, #{customerPhone}, #{sellerName}, #{sellerphone}, #{orderNumber}, #{agencyMoney}, #{orderMoney},
-        #{realMoney}, #{cashMoney}, #{posMoney}, #{alipayMoney}, #{wechatMoney}, #{paymentMethod},#{distributionAddress},
-        #{distributionTime}, #{remarks}, #{status}, #{createTime}, #{sellerId}, #{picture}, #{whetherRepayments}, #{repaymentTime})
+            (#{userId}, #{customerName}, #{customerPhone}, #{sellerName}, #{sellerphone}, #{orderNumber},
+                        #{agencyMoney}, #{orderMoney},
+                        #{realMoney}, #{cashMoney}, #{posMoney}, #{alipayMoney}, #{wechatMoney}, #{paymentMethod},
+                                                                 #{distributionAddress},
+                                                                 #{distributionTime}, #{remarks}, #{status},
+                                                                 #{createTime}, #{sellerId}, #{picture},
+             #{whetherRepayments}, #{repaymentTime})
     </insert>
 
     <select id="findEmployeeByMobile" parameterType="java.lang.String" resultType="java.lang.Long">
@@ -36,7 +57,8 @@
         GROUP BY mobile
     </select>
 
-    <select id="findOrderDataByOrderNumber" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderData">
+    <select id="findOrderDataByOrderNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderData">
         SELECT *
         FROM td_order_data_copy
         WHERE main_order_number = #{orderNumber}
@@ -44,14 +66,20 @@
     </select>
 
     <select id="existArrearsAudit" parameterType="java.lang.String" resultType="java.lang.Boolean">
-        SELECT EXISTS (SELECT id FROM ord_arrears_audit WHERE ord_no = #{orderNumber})
+        SELECT EXISTS(SELECT id
+                      FROM ord_arrears_audit
+                      WHERE ord_no = #{orderNumber})
     </select>
 
     <select id="findDeliveryInfoByOrderNumber" parameterType="java.lang.String" resultType="java.lang.String">
-        SELECT * FROM (SELECT id,op_user,sub_order_number
-            FROM td_delivery_info_detail
-            WHERE sub_order_number = #{orderNumber}
-            ORDER BY id DESC) t
+        SELECT *
+        FROM (SELECT
+                  id,
+                  op_user,
+                  sub_order_number
+              FROM td_delivery_info_detail
+              WHERE sub_order_number = #{orderNumber}
+              ORDER BY id DESC) t
         GROUP BY t.sub_order_number
     </select>
 
@@ -63,7 +91,7 @@
     </select>
 
 
-    <select id="getTdOrderGoods" resultType="cn.com.leyizhuang.app.foundation.datatransferPojo.TdOrderGoods">
+    <select id="getTdOrderGoods" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods">
         SELECT *
         FROM td_order_goods
     </select>
@@ -116,16 +144,18 @@
         GROUP BY main_order_number;
     </select>
 
-    <select id="getMainOrderInfoByMainOrderNumber" parameterType="java.lang.Long"
+    <select id="getMainOrderInfoByMainOrderNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder">
         SELECT
             main_order_number,
+            order_time,
             pay_time,
             status_id,
             deliver_type_title,
             is_seller_order,
             user_id,
             username,
+            seller_id,
             diy_site_code,
             seller_real_name,
             seller_username,
@@ -133,10 +163,47 @@
             real_user_username,
             remark,
             city,
-            paper_sales_number
+            paper_sales_number,
+            sum(total_goods_price) total_goods_price
         FROM
             td_order_copy
         WHERE main_order_number = #{mainOrderNumber}
         GROUP BY main_order_number
+    </select>
+
+    <select id="findFitEmployeeInfoById" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee">
+        SELECT
+            e.emp_id,
+            e.`name`,
+            e.mobile
+        FROM
+            fit_employee_copy c
+            INNER JOIN emp_employee e ON c.mobile = e.mobile
+        WHERE c.id = #{userId}
+    </select>
+
+    <select id="findStoreEmployeeById" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee">
+        SELECT
+            e.emp_id,
+            e.`name`,
+            e.mobile
+        FROM
+            td_user_copy c
+            INNER JOIN emp_employee e ON c.username = e.mobile
+        WHERE c.id = #{sellerId}
+    </select>
+
+    <select id="findCustomerById" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer">
+        SELECT
+            e.cus_id,
+            e.`name`,
+            e.mobile
+        FROM
+            td_user_copy c
+            INNER JOIN cus_customer e ON c.username = e.mobile
+        WHERE c.id = #{userId}
     </select>
 </mapper>

@@ -6,6 +6,8 @@ import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderData;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import org.apache.ibatis.annotations.Param;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOwnMoneyRecord;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
@@ -51,4 +53,10 @@ public interface TransferDAO {
     List<TdDeliveryInfoDetails> queryTdOrderListBySize(int size);
 
     List<TdDeliveryInfoDetails> queryOrderGoodsListByOrderNumber(Long id);
+
+    AppEmployee findFitEmployeeInfoById(Long userId);
+
+    AppEmployee findStoreEmployeeById(Long sellerId);
+
+    AppCustomer findCustomerById(Long userId);
 }

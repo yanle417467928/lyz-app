@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdDeliveryInfoDetails;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 
 import java.util.List;
 
@@ -28,4 +30,10 @@ public interface DataTransferService {
     List<TdDeliveryInfoDetails> queryOrderGoodsListByOrderNumber(Long id);
 
     void TransferCoupon();
+
+    AppEmployee findFitEmployeeInfoById(Long userId);
+
+    AppEmployee findStoreEmployeeById(Long sellerId);
+
+    AppCustomer findCustomerById(Long userId);
 }

@@ -14,6 +14,8 @@ import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferService;
 import org.springframework.stereotype.Service;
 
@@ -186,5 +188,29 @@ public class DataTransferServiceImpl implements DataTransferService {
 
         }
 
+    }
+
+    @Override
+    public AppEmployee findFitEmployeeInfoById(Long userId) {
+        if (null != userId){
+            return transferDAO.findFitEmployeeInfoById(userId);
+        }
+        return null;
+    }
+
+    @Override
+    public AppEmployee findStoreEmployeeById(Long sellerId) {
+        if (null != sellerId){
+            return transferDAO.findStoreEmployeeById(sellerId);
+        }
+        return null;
+    }
+
+    @Override
+    public AppCustomer findCustomerById(Long userId) {
+        if (null != userId){
+            return transferDAO.findCustomerById(userId);
+        }
+        return null;
     }
 }
