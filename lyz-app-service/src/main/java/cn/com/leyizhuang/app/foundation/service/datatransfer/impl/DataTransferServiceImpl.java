@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.datatransfer.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
+import cn.com.leyizhuang.app.foundation.pojo.datatransfer.*;
 import cn.com.leyizhuang.app.core.constant.AppCashCouponType;
 import cn.com.leyizhuang.app.core.constant.CouponGetType;
 import cn.com.leyizhuang.app.core.constant.OrderCouponType;
@@ -10,12 +10,7 @@ import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
 import cn.com.leyizhuang.app.foundation.pojo.CashCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.CashCouponCompany;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdDeliveryInfoDetails;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderLogistics;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderData;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOwnMoneyRecord;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo;
@@ -79,6 +74,14 @@ public class DataTransferServiceImpl implements DataTransferService {
     @Override
     public void saveOrderLogisticsInfo(OrderLogisticsInfo orderLogisticsInfo) {
             transferDAO.saveOrderLogisticsInfo(orderLogisticsInfo);
+    }
+
+    @Override
+    public TdOrderDeliveryTimeSeqDetail findDeliveryStatusByMainOrderNumber(String mainOrderNumber) {
+        if (null != mainOrderNumber){
+           return transferDAO.findDeliveryStatusByMainOrderNumber(mainOrderNumber);
+        }
+        return null;
     }
 
     @Override
