@@ -2,12 +2,19 @@ package cn.com.leyizhuang.app.foundation.dao.transferdao;
 
 
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
+import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdDeliveryInfoDetails;
+import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
+import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderData;
+import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderLogistics;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods;
+import org.apache.ibatis.annotations.Param;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOwnMoneyRecord;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
-import org.apache.ibatis.annotations.Param;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -18,7 +25,10 @@ public interface TransferDAO {
 
     List<TdOrderGoods> getTdOrderGoods();
 
-    List<String> findNewOrderNumber();
+    List<String> getTransferStoreMainOrderNumber(Date startTime, Date endTime);
+
+    TdOrder getMainOrderInfoByMainOrderNumber(@Param(value = "mainOrderNumber") String mainOrderNumber);
+    List<OrderBaseInfo> findNewOrderNumber();
 
     List<TdOwnMoneyRecord> findOwnMoneyRecordByOrderNumber(String orderNumber);
 
@@ -28,7 +38,7 @@ public interface TransferDAO {
 
     Long findEmployeeByMobile(String phone);
 
-    Double findOrderDataByOrderNumber(String orderNumber);
+    TdOrderData findOrderDataByOrderNumber(String orderNumber);
 
     Boolean existArrearsAudit(String orderNumber);
 
@@ -40,4 +50,15 @@ public interface TransferDAO {
 
     Boolean isExitTdOrderGoodsLine(@Param("orderNo") String orderNo,@Param("gid") Long gid,@Param("goodsLineType") String goodsLineType);
 
+    List<TdOrderLogistics> queryOrderLogistcs(int size);
+
+    void saveOrderLogisticsInfo(OrderLogisticsInfo orderLogisticsInfo);
+
+    List<TdDeliveryInfoDetails> queryDeliveryTimeSeqBySize(int size);
+
+    TdDeliveryInfoDetails queryDeliveryInfoDetailByOrderNumber(String orderNo);
+
+    List<TdDeliveryInfoDetails> queryTdOrderListBySize(int size);
+
+    List<TdDeliveryInfoDetails> queryOrderGoodsListByOrderNumber(Long id);
 }

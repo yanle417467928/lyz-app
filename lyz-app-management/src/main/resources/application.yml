@@ -56,7 +56,7 @@ spring:
             destination: sendDetailsToHQ
 
 mybatis:
-  mapper-locations: classpath:mybatis/*.xml
+  mapper-locations: classpath:mybatis/**/*.xml
   type-aliases-package: cn.com.leyizhuang.app.foundation
   configuration:
     map-underscore-to-camel-case: true
