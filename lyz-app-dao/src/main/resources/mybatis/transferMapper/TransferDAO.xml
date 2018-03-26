@@ -224,7 +224,8 @@
             real_user_username,
             remark,
             city,
-            paper_sales_number
+            paper_sales_number,
+            sum(total_goods_price) total_goods_price
         FROM
             td_order_copy
         WHERE main_order_number = #{mainOrderNumber}
