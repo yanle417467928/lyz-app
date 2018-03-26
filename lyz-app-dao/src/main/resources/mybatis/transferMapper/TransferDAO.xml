@@ -205,7 +205,7 @@
         GROUP BY main_order_number;
     </select>
 
-    <select id="getMainOrderInfoByMainOrderNumber" parameterType="java.lang.Long"
+    <select id="getMainOrderInfoByMainOrderNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder">
         SELECT
             main_order_number,
