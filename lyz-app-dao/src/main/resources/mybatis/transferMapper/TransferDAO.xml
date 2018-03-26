@@ -139,7 +139,7 @@
         #{denomination}, #{effectiveStartTime}, #{effectiveEndTime}, #{description}, #{title},#{cityId} ,#{cityName} ,#{type} , #{isSpecifiedStore}, #{lastUpdateTime})
     </insert>
 
-    <insert id="addCashCouponCompany" parameterType="import cn.com.leyizhuang.app.foundation.pojo.CashCouponCompany">
+    <insert id="addCashCouponCompany" parameterType="cn.com.leyizhuang.app.foundation.pojo.CashCouponCompany">
         INSERT INTO cp_cash_coupon_company
         (ccid,company_id,company_name,company_flag)
         VALUES
@@ -152,7 +152,7 @@
     </insert>
 
 
-    <select id="getTdOrderGoods" resultType="cn.com.leyizhuang.app.foundation.datatransferPojo.TdOrderGoods">
+    <select id="getTdOrderGoods" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods">
         SELECT *
         FROM td_order_goods
     </select>
