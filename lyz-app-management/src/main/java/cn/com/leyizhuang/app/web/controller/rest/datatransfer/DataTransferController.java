@@ -180,6 +180,45 @@ public class DataTransferController {
         return "success";
     }
 
+    @RequestMapping(value = "/data/transfer/arrearsAudit", method = RequestMethod.GET)
+    public String transferArrearsAudit() {
+        log.info("开始处理订单审核信息导入job,当前时间:{}", new Date());
+        // *********************** 订单迁移处理 ***************
+        List<OrderBaseInfo> orderNumberList = this.dataTransferService.findNewOrderNumber();
+        if (null != orderNumberList && orderNumberList.size() > 0) {
+            for (int i = 0; i < orderNumberList.size(); i++) {
+                String orderNumber = orderNumberList.get(i).getOrderNumber();
+                try {
+                    this.dataTransferService.transferArrearsAudit(orderNumber);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        }
+        log.info("订单审核信息导入job处理完成,当前时间:{}", new Date());
+        return "success";
+    }
+
+    @RequestMapping(value = "/data/transfer/orderCoupon", method = RequestMethod.GET)
+    public String transferCoupon() {
+        log.info("开始处理订单卷信息导入job,当前时间:{}", new Date());
+        // *********************** 订单迁移处理 ***************
+        List<OrderBaseInfo> orderNumberList = this.dataTransferService.findNewOrderNumber();
+        if (null != orderNumberList && orderNumberList.size() > 0) {
+            for (int i = 0; i < orderNumberList.size(); i++) {
+                try {
+                    this.dataTransferService.transferCoupon(orderNumberList.get(i));
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        }
+        log.info("订单卷信息导入job处理完成,当前时间:{}", new Date());
+        return "success";
+    }
+
     @RequestMapping(value = "/data/transfer/orderbilling", method = RequestMethod.GET)
     public String dataTransferOrderBillingDeatails() {
         log.info("开始处理订单账单导入,当前时间:{}", new Date());

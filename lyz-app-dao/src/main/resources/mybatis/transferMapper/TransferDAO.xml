@@ -281,4 +281,10 @@
         FROM ord_billing_details
         WHERE ord_no = #{orderNumber})
     </select>
+
+    <select id="findCouponInfoListByType" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo">
+        SELECT id, purchase_price
+        FROM ord_coupon_info
+        WHERE ord_no = #{orderNumber} AND coupon_type = #{type}
+    </select>
 </mapper>

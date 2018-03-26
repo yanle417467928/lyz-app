@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao.transferdao;
 
 
+import cn.com.leyizhuang.app.core.constant.OrderCouponType;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.*;
 import cn.com.leyizhuang.app.foundation.pojo.CashCoupon;
@@ -97,4 +98,6 @@ public interface TransferDAO {
 
 
     Boolean existOrderBillingDetails(String orderNumber);
+    List<OrderCouponInfo> findCouponInfoListByType(@Param("orderNumber")String orderNumber, @Param("type") OrderCouponType type);
+
 }
