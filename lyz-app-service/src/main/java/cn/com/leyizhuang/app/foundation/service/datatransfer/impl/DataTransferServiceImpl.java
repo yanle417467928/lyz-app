@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service.datatransfer.impl;
 
+import cn.com.leyizhuang.app.core.constant.OnlinePayType;
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
 import cn.com.leyizhuang.app.core.constant.AppCashCouponType;
@@ -16,6 +17,7 @@ import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderData;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOwnMoneyRecord;
+import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo;
@@ -24,11 +26,13 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferService;
+import cn.com.leyizhuang.common.util.CountUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
+
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,22 +54,22 @@ public class DataTransferServiceImpl implements DataTransferService {
     @Resource
     private TransferDAO transferDAO;
 
-    public OrderGoodsInfo transferOne(TdOrderGoods tdOrderGoods){
+    public OrderGoodsInfo transferOne(TdOrderGoods tdOrderGoods) {
         OrderGoodsInfo goodsInfo = new OrderGoodsInfo();
         return goodsInfo;
     }
 
     @Override
     public List<String> getTransferStoreMainOrderNumber(Date startTime, Date endTime) {
-        if (null != startTime && null != endTime){
-            return transferDAO.getTransferStoreMainOrderNumber(startTime,endTime);
+        if (null != startTime && null != endTime) {
+            return transferDAO.getTransferStoreMainOrderNumber(startTime, endTime);
         }
         return null;
     }
 
     @Override
     public TdOrder getMainOrderInfoByMainOrderNumber(String mainOrderNumber) {
-        if (null != mainOrderNumber){
+        if (null != mainOrderNumber) {
             return transferDAO.getMainOrderInfoByMainOrderNumber(mainOrderNumber);
         }
         return null;
@@ -78,7 +82,7 @@ public class DataTransferServiceImpl implements DataTransferService {
 
     @Override
     public void saveOrderLogisticsInfo(OrderLogisticsInfo orderLogisticsInfo) {
-            transferDAO.saveOrderLogisticsInfo(orderLogisticsInfo);
+        transferDAO.saveOrderLogisticsInfo(orderLogisticsInfo);
     }
 
     @Override
@@ -98,6 +102,10 @@ public class DataTransferServiceImpl implements DataTransferService {
                 return;
             }
             for (int j = 0; j < ownMoneyRecords.size(); j++) {
+                Boolean exists = this.transferDAO.existArrearsAudit(orderNumber);
+                if (exists) {
+                    return;
+                }
                 TdOwnMoneyRecord ownMoneyRecord = ownMoneyRecords.get(j);
                 List<TdOrder> orders = this.transferDAO.findOrderByOrderNumber(orderNumber);
                 if (null == orders && orders.size() == 0) {
@@ -136,7 +144,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                 auditDO.setAgencyMoney(agencyRefund.getAgencyRefund());
                 auditDO.setOrderMoney(ownMoneyRecord.getOwned());
                 auditDO.setRealMoney(ownMoneyRecord.getPayed());
-                if (null != ownMoneyRecord.getMoney() && ownMoneyRecord.getMoney() > 0D){
+                if (null != ownMoneyRecord.getMoney() && ownMoneyRecord.getMoney() > 0D) {
                     auditDO.setPaymentMethod("现金");
                 } else {
                     auditDO.setPaymentMethod("POS");
@@ -189,7 +197,7 @@ public class DataTransferServiceImpl implements DataTransferService {
         for (int i = 0; i < orderNumberList.size(); i++) {
             String orderNumber = orderNumberList.get(i).getOrderNumber();
             TdOrderData orderData = this.transferDAO.findOrderDataByOrderNumber(orderNumber);
-            if(null != orderData && null != orderData.getCashCouponFee() && orderData.getCashCouponFee() > 0){
+            if (null != orderData && null != orderData.getCashCouponFee() && orderData.getCashCouponFee() > 0) {
                 OrderBaseInfo orderBaseInfo = this.transferDAO.findNewOrderByOrderNumber(orderNumber);
 
                 CashCoupon cashCoupon = new CashCoupon();
@@ -251,8 +259,64 @@ public class DataTransferServiceImpl implements DataTransferService {
     }
 
     @Override
+    public void transferOrderBillingDetails() {
+        List<OrderBaseInfo> orderBaseInfoList = this.transferDAO.findNewOrderNumber();
+        if (null != orderBaseInfoList && orderBaseInfoList.size() > 0) {
+            for (OrderBaseInfo orderBaseInfo : orderBaseInfoList) {
+                TdOrderData tdOrderData = this.transferDAO.findOrderDataByOrderNumber(orderBaseInfo.getOrderNumber());
+                TdOwnMoneyRecord tdOwnMoneyRecord = this.transferDAO.getOwnMoneyRecordByOrderNumber(orderBaseInfo.getOrderNumber());
+                OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
+                orderBillingDetails.setOid(orderBaseInfo.getId());
+                orderBillingDetails.setCreateTime(tdOrderData.getCreateTime());
+                orderBillingDetails.setOrderNumber(tdOrderData.getMainOrderNumber());
+                orderBillingDetails.setTotalGoodsPrice(tdOrderData.getTotalGoodsPrice());
+                orderBillingDetails.setMemberDiscount(tdOrderData.getMemberDiscount());
+                orderBillingDetails.setPromotionDiscount(tdOrderData.getActivitySub());
+                orderBillingDetails.setFreight(tdOrderData.getDeliveryFee());
+                orderBillingDetails.setUpstairsFee(0D);
+                orderBillingDetails.setLebiCashDiscount(0D);
+                orderBillingDetails.setLebiQuantity(0);
+                orderBillingDetails.setCashCouponDiscount(tdOrderData.getCashCouponFee());
+                orderBillingDetails.setProductCouponDiscount(tdOrderData.getProCouponFee());
+                orderBillingDetails.setCusPreDeposit(0D);
+                orderBillingDetails.setOnlinePayType(OnlinePayType.NO);
+                orderBillingDetails.setOnlinePayAmount(0D);
+                orderBillingDetails.setOnlinePayTime(null);
+                Double stPreDepsit = CountUtil.add(tdOrderData.getBalanceUsed() == null ? 0D : tdOrderData.getBalanceUsed(), tdOrderData.getOnlinePay() == null ? 0D : tdOrderData.getOnlinePay());
+                orderBillingDetails.setStPreDeposit(stPreDepsit);
+                orderBillingDetails.setEmpCreditMoney(tdOrderData.getLeftPrice());
+                orderBillingDetails.setStoreCreditMoney(0D);
+                orderBillingDetails.setStoreSubvention(0D);
+                Double totalGoodsPrice = CountUtil.sub(tdOrderData.getTotalGoodsPrice() == null ? 0D : tdOrderData.getTotalGoodsPrice(), tdOrderData.getMemberDiscount() == null ? 0D : tdOrderData.getMemberDiscount(),
+                        tdOrderData.getActivitySub() == null ? 0D : tdOrderData.getActivitySub(), tdOrderData.getCashCouponFee() == null ? 0D : tdOrderData.getCashCouponFee(), tdOrderData.getProCouponFee() == null ? 0D : tdOrderData.getProCouponFee());
+                Double orderAmountSubTotal = CountUtil.add(totalGoodsPrice == null ? 0d : totalGoodsPrice, tdOrderData.getDeliveryFee());
+                orderBillingDetails.setOrderAmountSubtotal(orderAmountSubTotal);
+                orderBillingDetails.setAmountPayable(CountUtil.sub(orderAmountSubTotal, stPreDepsit));
+                orderBillingDetails.setCollectionAmount(tdOrderData.getAgencyRefund());
+                orderBillingDetails.setArrearage(tdOrderData.getDue());
+                orderBillingDetails.setIsOwnerReceiving(Boolean.FALSE);
+                orderBillingDetails.setIsPayUp(tdOwnMoneyRecord.getIsPayed());
+                if (tdOwnMoneyRecord.getIsPayed()) {
+                    orderBillingDetails.setPayUpTime(new Date());
+                } else {
+                    orderBillingDetails.setPayUpTime(null);
+                }
+                orderBillingDetails.setJxPriceDifferenceAmount(0D);
+                orderBillingDetails.setStoreCash(tdOrderData.getSellerCash());
+                orderBillingDetails.setStoreOtherMoney(tdOrderData.getSellerOther());
+                orderBillingDetails.setStorePosMoney(tdOrderData.getSellerPos());
+                orderBillingDetails.setStorePosNumber(tdOwnMoneyRecord.getSerialNumber());
+                orderBillingDetails.setDeliveryCash(tdOrderData.getDeliveryCash());
+                orderBillingDetails.setDeliveryPos(tdOrderData.getDeliveryPos());
+                this.transferDAO.saveOrderBillingDetails(orderBillingDetails);
+
+            }
+        }
+    }
+
+    @Override
     public AppEmployee findFitEmployeeInfoById(Long userId) {
-        if (null != userId){
+        if (null != userId) {
             return transferDAO.findFitEmployeeInfoById(userId);
         }
         return null;
@@ -260,7 +324,7 @@ public class DataTransferServiceImpl implements DataTransferService {
 
     @Override
     public AppEmployee findStoreEmployeeById(Long sellerId) {
-        if (null != sellerId){
+        if (null != sellerId) {
             return transferDAO.findStoreEmployeeById(sellerId);
         }
         return null;
@@ -268,7 +332,7 @@ public class DataTransferServiceImpl implements DataTransferService {
 
     @Override
     public AppCustomer findCustomerById(Long userId) {
-        if (null != userId){
+        if (null != userId) {
             return transferDAO.findCustomerById(userId);
         }
         return null;

@@ -12,6 +12,7 @@ import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderLogistics;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import org.apache.ibatis.annotations.Param;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOwnMoneyRecord;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
@@ -79,4 +80,8 @@ public interface TransferDAO {
 
     void saveOrderCouponInfo(OrderCouponInfo orderCouponInfo);
 
+
+    TdOwnMoneyRecord getOwnMoneyRecordByOrderNumber(String orderNumber);
+
+    void saveOrderBillingDetails(OrderBillingDetails orderBillingDetails);
 }
