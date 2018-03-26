@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.web.controller.rest.datatransfer;
 
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferService;
+import cn.com.leyizhuang.app.foundation.service.datatransfer.OrderGoodsTransferService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +22,9 @@ public class DataTransferController {
 
     @Resource
     private DataTransferService dataTransferService;
+
+    @Resource
+    private OrderGoodsTransferService orderGoodsTransferService;
 
     @RequestMapping(value = "/data/transfer",method = RequestMethod.GET)
     public String dataTransfer(){
@@ -43,5 +47,11 @@ public class DataTransferController {
 
 
         return "success";
+    }
+
+    @RequestMapping(value = "/data/transfer/orderGoodsInfo",method = RequestMethod.GET)
+    public void orderGoodsInfoTransfer(){
+
+        orderGoodsTransferService.transferAll();
     }
 }

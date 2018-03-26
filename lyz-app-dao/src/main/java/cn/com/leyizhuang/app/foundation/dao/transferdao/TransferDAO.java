@@ -28,6 +28,7 @@ public interface TransferDAO {
     List<String> getTransferStoreMainOrderNumber(Date startTime, Date endTime);
 
     TdOrder getMainOrderInfoByMainOrderNumber(@Param(value = "mainOrderNumber") String mainOrderNumber);
+
     List<OrderBaseInfo> findNewOrderNumber();
 
     List<TdOwnMoneyRecord> findOwnMoneyRecordByOrderNumber(String orderNumber);
@@ -61,4 +62,6 @@ public interface TransferDAO {
     List<TdDeliveryInfoDetails> queryTdOrderListBySize(int size);
 
     List<TdDeliveryInfoDetails> queryOrderGoodsListByOrderNumber(Long id);
+
+    List<OrderBaseInfo> findNewOrderNumberTest();
 }

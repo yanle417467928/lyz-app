@@ -666,7 +666,8 @@
                         $notify.success("生成成功！")
                         $("#qrcodeModal").modal('hide');
                         $("#dataGrid").bootstrapTable('destroy');
-                        initDateGird('/rest/employees/page/grid');
+                        //initDateGird('/rest/employees/page/grid');
+                        findEmpByCondition();
                     }else {
                         $notify.warning(result.message);
                     }
@@ -681,7 +682,8 @@
             $notify.success("保存成功！")
             $("#qrcodeModal").modal('hide');
             $("#dataGrid").bootstrapTable('destroy');
-            initDateGird('/rest/employees/page/grid');
+            //initDateGird('/rest/employees/page/grid');
+            findEmpByCondition();
         }else {
             $notify.warning(result.message);
         }

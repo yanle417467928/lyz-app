@@ -93,10 +93,7 @@
          LIMIT #{size}, 1000;
     </select>
 
-    <select id="getTdOrderGoods" resultType="cn.com.leyizhuang.app.foundation.datatransferPojo.TdOrderGoods">
-        SELECT *
-        FROM td_order_goods
-    </select>
+
 
     <select id="queryDeliveryTimeSeqBySize" parameterType="java.lang.Integer"
             resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdDeliveryInfoDetails">
@@ -181,12 +178,12 @@
         #{receiver}, #{receiverPhone}, #{shippingAddress}, #{residenceName}, #{deliveryCity}, #{deliveryCounty},
         #{deliveryStreet}, #{detailedAddress})
     </insert>
-    <select id="getTdOrderGoods" resultType="cn.com.leyizhuang.app.foundation.datatransferPojo.TdOrderGoods">
+    <select id="getTdOrderGoods" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods">
         SELECT * from td_order_goods_copy g RIGHT JOIN td_order o
         where g.td_order_id = o.id
     </select>
 
-    <select id="findTdorderGoodsByTdOrderId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.datatransferPojo.TdOrderGoods">
+    <select id="findTdorderGoodsByTdOrderId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods">
         select * from td_order_goods_copy where td_order_id = #{tdOrderId};
     </select>
 
@@ -194,5 +191,9 @@
         SELECT EXISTS (
                 select 1 from ord_goods_info where ord_no = #{orderNo} and gid = #{gid} and goods_line_type = #{goodsLineType}
         )
+    </select>
+
+    <select id="findNewOrderNumberTest" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
+        SELECT main_order_number orderNumber, id id FROM td_order_copy
     </select>
 </mapper>

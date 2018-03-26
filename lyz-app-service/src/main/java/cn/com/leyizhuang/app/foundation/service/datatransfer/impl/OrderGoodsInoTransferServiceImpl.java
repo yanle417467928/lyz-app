@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.datatransfer.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
+import cn.com.leyizhuang.app.core.exception.DutchException;
 import cn.com.leyizhuang.app.foundation.dao.GoodsDAO;
 import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
@@ -11,9 +12,11 @@ import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.OrderGoodsTransferService;
 import cn.com.leyizhuang.app.foundation.service.impl.AppActServiceImpl;
+import cn.com.leyizhuang.common.util.CountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +25,8 @@ import java.util.List;
  * 订单商品转换类
  * Created by panjie on 2018/3/24.
  */
-public class OrderGoodsInoTransferServiceImpl  implements OrderGoodsTransferService {
+@Service
+public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferService {
 
     private static final Logger logger = LoggerFactory.getLogger(OrderGoodsInoTransferServiceImpl.class);
 
@@ -36,32 +40,32 @@ public class OrderGoodsInoTransferServiceImpl  implements OrderGoodsTransferServ
     private GoodsDAO goodsDAO;
 
 
-    public void transferAll(){
+    public void transferAll() {
 
         // 获取所有主单号
-        List<String> mainOrderList = transferDAO.findNewOrderNumber();
+        List<OrderBaseInfo> orderList = transferDAO.findNewOrderNumber();
 
-        for (String mainOrderNo : mainOrderList){
+        //List<OrderBaseInfo> orderList = transferDAO.findNewOrderNumberTest();
+
+        for (OrderBaseInfo orderBaseInfo : orderList) {
             // 根据主单号 找到旧订单分单
-            List<TdOrder> tdOrders = transferDAO.findOrderByOrderNumber(mainOrderNo);
+            List<TdOrder> tdOrders = transferDAO.findOrderByOrderNumber(orderBaseInfo.getOrderNumber());
 
-            // 新订单
-            OrderBaseInfo orderBaseInfo = orderDAO.findByOrderNumber(mainOrderNo);
 
             // 新订单商品记录
             List<OrderGoodsInfo> orderGoodsInfoList = new ArrayList<>();
 
-            for (TdOrder order : tdOrders){
+            for (TdOrder order : tdOrders) {
                 // 找到分单下的商品
 
-                List<TdOrderGoods> tdOrderGoodsList  = transferDAO.findTdorderGoodsByTdOrderId(order.getId());
+                List<TdOrderGoods> tdOrderGoodsList = transferDAO.findTdorderGoodsByTdOrderId(order.getId());
 
                 // 转换每一个商品
-                for (TdOrderGoods tdOrderGoods : tdOrderGoodsList){
+                for (TdOrderGoods tdOrderGoods : tdOrderGoodsList) {
                     // 找到新商品
                     GoodsDO goodsDO = goodsDAO.queryBySku(tdOrderGoods.getSku());
 
-                    List<OrderGoodsInfo> orderGoodsInfoList1 = this.transferOne(tdOrderGoods,order,orderBaseInfo,goodsDO);
+                    List<OrderGoodsInfo> orderGoodsInfoList1 = this.transferOne(tdOrderGoods, order, orderBaseInfo, goodsDO);
 
                     orderGoodsInfoList.addAll(orderGoodsInfoList1);
 
@@ -69,11 +73,11 @@ public class OrderGoodsInoTransferServiceImpl  implements OrderGoodsTransferServ
             }
 
             // 插入
-            for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList){
+            for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
                 // 检查是否存在
-                Boolean flag = transferDAO.isExitTdOrderGoodsLine(orderGoodsInfo.getOrderNumber(),orderGoodsInfo.getGid(),orderGoodsInfo.getGoodsLineType().getValue());
+                Boolean flag = transferDAO.isExitTdOrderGoodsLine(orderGoodsInfo.getOrderNumber(), orderGoodsInfo.getGid(), orderGoodsInfo.getGoodsLineType().getValue());
 
-                if (!flag){
+                if (!flag) {
                     orderDAO.saveOrderGoodsInfo(orderGoodsInfo);
                 }
             }
@@ -126,7 +130,7 @@ public class OrderGoodsInoTransferServiceImpl  implements OrderGoodsTransferServ
         if (status <= 4) {
             goodsInfo.setShippingQuantity(0);
         } else {
-            goodsInfo.setShippingQuantity(Integer.valueOf((int)(oderQty - couponNumber)));
+            goodsInfo.setShippingQuantity(Integer.valueOf((int) (oderQty - couponNumber)));
         }
 
         goodsInfo.setReturnQuantity(0);
@@ -183,5 +187,77 @@ public class OrderGoodsInoTransferServiceImpl  implements OrderGoodsTransferServ
             goodsInfoList.add(goodsInfo2);
         }
         return goodsInfoList;
+    }
+
+    private List<OrderGoodsInfo> dutch(List<OrderGoodsInfo> orderGoodsInfoList, TdOrder order) {
+
+        Double totalPrice = 0D;
+        Double totalActivitySubPrice = order.getActivitySubPrice() == null ? 0 : order.getActivitySubPrice();
+        Double totalCashCoupon = order.getCashCoupon();
+        List<OrderGoodsInfo> dutchOrderGoodsList = new ArrayList<>();
+
+        for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
+            if (!orderGoodsInfo.getGoodsLineType().equals(AppGoodsLineType.PRODUCT_COUPON)) {
+                dutchOrderGoodsList.add(orderGoodsInfo);
+
+                totalPrice = CountUtil.add(totalPrice,CountUtil.mul(orderGoodsInfo.getSettlementPrice(),orderGoodsInfo.getOrderQuantity()));
+                if (orderGoodsInfo.getGoodsLineType().equals(AppGoodsLineType.PRESENT)) {
+                    totalActivitySubPrice = CountUtil.add(totalActivitySubPrice, CountUtil.mul(orderGoodsInfo.getSettlementPrice(),orderGoodsInfo.getOrderQuantity()));
+                }
+            }
+        }
+
+        orderGoodsInfoList.removeAll(dutchOrderGoodsList);
+        try {
+            orderGoodsInfoList.addAll(this.dutchPrice(orderGoodsInfoList,totalPrice,totalActivitySubPrice,totalCashCoupon));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        return orderGoodsInfoList;
+    }
+
+    public List<OrderGoodsInfo> dutchPrice(List<OrderGoodsInfo> goodsInfs, Double totalPrice, Double activitySubPrice, Double cashCouponPrice) throws Exception {
+        Double dutchedPrice = 0.00;
+        Double cashCouponDutchedPrice = 0.00;
+
+        if (activitySubPrice == 0.00 && cashCouponPrice == 0.00){
+            return goodsInfs;
+        }
+
+        for (int i = 0; i < goodsInfs.size(); i++) {
+            OrderGoodsInfo goods = goodsInfs.get(i);
+
+            Double price = goods.getPromotionSharePrice();
+
+            Double dutchPrice = 0.00;
+            Double cashCouponDutchPrice = 0.00;
+
+            if (i != (goodsInfs.size() - 1)) {
+                dutchPrice = CountUtil.mul2((price / totalPrice), activitySubPrice);
+                goods.setPromotionSharePrice(dutchPrice);
+
+                cashCouponDutchPrice = CountUtil.mul2(((price / totalPrice)), cashCouponDutchedPrice);
+                goods.setCashCouponSharePrice(cashCouponDutchPrice);
+
+                // 记录
+                dutchedPrice += CountUtil.mul(dutchPrice, goods.getOrderQuantity());
+                cashCouponDutchedPrice += CountUtil.mul(cashCouponDutchPrice,goods.getOrderQuantity());
+
+
+            } else {
+                dutchPrice = CountUtil.sub(activitySubPrice, dutchedPrice);
+                cashCouponDutchPrice = CountUtil.sub(cashCouponPrice,cashCouponDutchedPrice);
+
+                goods.setPromotionSharePrice(CountUtil.div((dutchPrice), goods.getOrderQuantity()));
+                goods.setCashCouponSharePrice(CountUtil.div(cashCouponDutchPrice,goods.getOrderQuantity()));
+            }
+
+            Double returnPrice = CountUtil.div(goods.getSettlementPrice(),dutchedPrice,cashCouponDutchPrice);
+            goods.setReturnPrice(returnPrice);
+        }
+
+        return goodsInfs;
     }
 }
