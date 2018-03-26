@@ -192,6 +192,7 @@ public class DataTransferController {
                     this.dataTransferService.transferArrearsAudit(orderNumber);
                 }catch (Exception e){
                     e.printStackTrace();
+                    log.info("订单卷信息导入错误,订单号:{}", orderNumber);
                 }
 
             }
@@ -211,6 +212,7 @@ public class DataTransferController {
                     this.dataTransferService.transferCoupon(orderNumberList.get(i));
                 }catch (Exception e){
                     e.printStackTrace();
+                    log.info("订单卷信息导入错误,订单号:{}", orderNumberList.get(i).getOrderNumber());
                 }
 
             }
