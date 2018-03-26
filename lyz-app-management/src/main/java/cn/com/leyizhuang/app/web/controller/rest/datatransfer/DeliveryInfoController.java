@@ -1,10 +1,13 @@
 package cn.com.leyizhuang.app.web.controller.rest.datatransfer;
 
+import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdDeliveryInfoDetails;
+import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderLogistics;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderJxPriceDifferenceReturnDetails;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.OrderDeliveryInfoDetailsService;
@@ -41,6 +44,18 @@ public class DeliveryInfoController {
         int size = 0;
         for (int i = 0; i < 200; i++) {
             Boolean hasNotDatas = this.saveOrderDeliveryInfoDetails(size);
+            if (hasNotDatas) {
+                return;
+            }
+            size += 1000;
+        }
+    }
+
+    @RequestMapping("/app/resend/wms/test/logistcsInfo")
+    public void transformOrderLogistcs() {
+        int size = 0;
+        for (int i = 0; i < 200; i++) {
+            Boolean hasNotDatas = this.saveOrderLogistcs(size);
             if (hasNotDatas) {
                 return;
             }
@@ -144,5 +159,38 @@ public class DeliveryInfoController {
             return true;
         }
         return false;
+    }
+
+
+    public Boolean saveOrderLogistcs(int size) {
+        List<TdOrderLogistics> tdOrderLogisticsList = dataTransferService.queryOrderLogistcs(size);
+        if (null == tdOrderLogisticsList && tdOrderLogisticsList.size() == 0) {
+            return false;
+        }
+        for (TdOrderLogistics tdOrderLogistics : tdOrderLogisticsList) {
+            OrderLogisticsInfo orderLogisticsInfo = new OrderLogisticsInfo();
+            orderLogisticsInfo.setDeliveryType(AppDeliveryType.getAppDeliveryTypeByDescription(tdOrderLogistics.getDeliverTypeTitle()));
+            orderLogisticsInfo.setBookingStoreAddress(tdOrderLogistics.getDetailedAddress());
+            orderLogisticsInfo.setBookingStoreName(tdOrderLogistics.getDiySiteName());
+            orderLogisticsInfo.setBookingStoreCode(tdOrderLogistics.getDiySiteCode());
+            orderLogisticsInfo.setOrdNo(tdOrderLogistics.getMainOrderNumber());
+            orderLogisticsInfo.setDeliveryCity(tdOrderLogistics.getCity());
+            orderLogisticsInfo.setDeliveryCounty(tdOrderLogistics.getDisctrict());
+            orderLogisticsInfo.setDeliveryStreet(tdOrderLogistics.getSubdistrict());
+            orderLogisticsInfo.setReceiver(tdOrderLogistics.getShippingName());
+            orderLogisticsInfo.setReceiverPhone(tdOrderLogistics.getShippingPhone());
+            orderLogisticsInfo.setResidenceName(null);
+            orderLogisticsInfo.setShippingAddress(tdOrderLogistics.getShippingAddress());
+            orderLogisticsInfo.setDeliveryClerkId(tdOrderLogistics.getEmpId());
+            orderLogisticsInfo.setDeliveryClerkName(tdOrderLogistics.getName());
+            orderLogisticsInfo.setDeliveryClerkNo(tdOrderLogistics.getDriver());
+            orderLogisticsInfo.setDeliveryClerkPhone(tdOrderLogistics.getMobile());
+            orderLogisticsInfo.setDeliveryTime(tdOrderLogistics.getDeliveryDate());
+            orderLogisticsInfo.setIsOwnerReceiving(false);
+            orderLogisticsInfo.setWarehouse(tdOrderLogistics.getWhNo());
+            orderLogisticsInfo.setOid(tdOrderLogistics.getOid());
+            dataTransferService.saveOrderLogisticsInfo(orderLogisticsInfo);
+        }
+        return true;
     }
 }

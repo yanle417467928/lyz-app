@@ -33,6 +33,15 @@ public enum AppDeliveryType {
         return null;
     }
 
+    public static AppDeliveryType getAppDeliveryTypeByDescription(String description) {
+        for (AppDeliveryType appDeliveryType : AppDeliveryType.values()) {
+            if (Objects.equals(description, appDeliveryType.getDescription())) {
+                return appDeliveryType;
+            }
+        }
+        return null;
+    }
+
     public String getValue() {
         return value;
     }

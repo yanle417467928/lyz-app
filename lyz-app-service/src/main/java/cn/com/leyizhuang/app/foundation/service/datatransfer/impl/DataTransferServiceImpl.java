@@ -4,8 +4,10 @@ import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
 import cn.com.leyizhuang.app.core.constant.CouponGetType;
 import cn.com.leyizhuang.app.core.constant.OrderCouponType;
+import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdDeliveryInfoDetails;
+import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderLogistics;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderData;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods;
@@ -14,6 +16,7 @@ import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferService;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +43,6 @@ public class DataTransferServiceImpl implements DataTransferService {
     @Resource
     private TransferDAO transferDAO;
 
-
     public OrderGoodsInfo transferOne(TdOrderGoods tdOrderGoods){
         OrderGoodsInfo goodsInfo = new OrderGoodsInfo();
         return goodsInfo;
@@ -62,7 +64,15 @@ public class DataTransferServiceImpl implements DataTransferService {
         return null;
     }
 
+    @Override
+    public List<TdOrderLogistics> queryOrderLogistcs(int size) {
+        return transferDAO.queryOrderLogistcs(size);
+    }
 
+    @Override
+    public void saveOrderLogisticsInfo(OrderLogisticsInfo orderLogisticsInfo) {
+            transferDAO.saveOrderLogisticsInfo(orderLogisticsInfo);
+    }
 
     @Override
     public void TransferArrearsAudit() {

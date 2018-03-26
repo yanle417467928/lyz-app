@@ -62,6 +62,36 @@
         GROUP BY emp_id
     </select>
 
+    <select id="queryOrderLogistcs" parameterType="java.lang.Integer" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderLogistics">
+        SELECT
+        tdc.id oid,
+        tdc.main_order_number,
+        tdc.deliver_type_title,
+        tdc.diy_site_code,
+        tdc.diy_site_name,
+        ss.detailed_address,
+        tdc.delivery_date,
+        tdi.driver,
+        ee.emp_id,
+        ee. NAME,
+        ee.mobile,
+        tdi.wh_no,
+        tdc.shipping_name,
+        tdc.shipping_phone,
+        tdc.shipping_address,
+        tdc.city,
+        tdc.disctrict,
+        tdc.subdistrict,
+        tdc.detail_address
+        FROM
+        td_delivery_info tdi
+        LEFT JOIN td_order_copy tdc ON tdi.order_number = tdc.main_order_number
+        LEFT JOIN st_store ss ON ss.store_code = tdc.diy_site_code
+        LEFT JOIN emp_employee ee ON ee.delivery_clerk_no = tdi.driver
+        WHERE
+        tdc.order_time > '2017-10-01 00:00:00'
+         LIMIT #{size}, 1000;
+    </select>
 
     <select id="getTdOrderGoods" resultType="cn.com.leyizhuang.app.foundation.datatransferPojo.TdOrderGoods">
         SELECT *
@@ -139,4 +169,16 @@
         WHERE main_order_number = #{mainOrderNumber}
         GROUP BY main_order_number
     </select>
+
+    <insert id="saveOrderLogisticsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo">
+        INSERT INTO ord_logistics_info (oid, ord_no, delivery_type, booking_store_code, booking_store_name, booking_store_address, delivery_time,
+        delivery_clerk_no, delivery_clerk_id, delivery_clerk_name,delivery_clerk_phone ,warehouse, is_owner_receiving, receiver,
+        receiver_phone, shipping_address, residence_name, delivery_city, delivery_county, delivery_street,
+        detailed_address)
+        VALUES (#{oid}, #{ordNo}, #{deliveryType}, #{bookingStoreCode}, #{bookingStoreName},
+        #{bookingStoreAddress}, #{deliveryTime}, #{deliveryClerkNo}, #{deliveryClerkId},
+        #{deliveryClerkName}, #{deliveryClerkPhone}, #{warehouse}, #{isOwnerReceiving},
+        #{receiver}, #{receiverPhone}, #{shippingAddress}, #{residenceName}, #{deliveryCity}, #{deliveryCounty},
+        #{deliveryStreet}, #{detailedAddress})
+    </insert>
 </mapper>
