@@ -57,8 +57,7 @@
         GROUP BY mobile
     </select>
 
-    <select id="findOrderDataByOrderNumber" parameterType="java.lang.String"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderData">
+    <select id="findOrderDataByOrderNumber" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderData">
         SELECT *
         FROM td_order_data_copy
         WHERE main_order_number = #{orderNumber}
@@ -72,14 +71,10 @@
     </select>
 
     <select id="findDeliveryInfoByOrderNumber" parameterType="java.lang.String" resultType="java.lang.String">
-        SELECT *
-        FROM (SELECT
-                  id,
-                  op_user,
-                  sub_order_number
-              FROM td_delivery_info_detail
-              WHERE sub_order_number = #{orderNumber}
-              ORDER BY id DESC) t
+        SELECT t.op_user FROM (SELECT id,op_user,sub_order_number
+            FROM td_delivery_info_detail
+            WHERE sub_order_number = #{orderNumber}
+            ORDER BY id DESC) t
         GROUP BY t.sub_order_number
     </select>
 
@@ -157,7 +152,7 @@
     </insert>
 
 
-    <select id="getTdOrderGoods" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods">
+    <select id="getTdOrderGoods" resultType="cn.com.leyizhuang.app.foundation.datatransferPojo.TdOrderGoods">
         SELECT *
         FROM td_order_goods
     </select>
@@ -165,7 +160,7 @@
     <select id="queryDeliveryTimeSeqBySize" parameterType="java.lang.Integer"
             resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdDeliveryInfoDetails">
         SELECT *
-        FROM td_order_delivery_time_seq_detail_copy
+        FROM td_order_delivery_time_seq_detail
         WHERE operation_time &gt; '2017-10-01 00:00:00'
         LIMIT #{size}, 1000;
     </select>
@@ -176,7 +171,7 @@
             driver,
             task_no,
             wh_no
-        FROM td_delivery_info_copy
+        FROM td_delivery_info
         WHERE begin_dt &gt; '2017-10-01 00:00:00'
               AND order_number = #{orderNo}
     </select>
@@ -210,18 +205,16 @@
         GROUP BY main_order_number;
     </select>
 
-    <select id="getMainOrderInfoByMainOrderNumber" parameterType="java.lang.String"
+    <select id="getMainOrderInfoByMainOrderNumber" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder">
         SELECT
             main_order_number,
-            order_time,
             pay_time,
             status_id,
             deliver_type_title,
             is_seller_order,
             user_id,
             username,
-            seller_id,
             diy_site_code,
             seller_real_name,
             seller_username,
@@ -229,48 +222,11 @@
             real_user_username,
             remark,
             city,
-            paper_sales_number,
-            sum(total_goods_price) total_goods_price
+            paper_sales_number
         FROM
             td_order_copy
         WHERE main_order_number = #{mainOrderNumber}
         GROUP BY main_order_number
-    </select>
-
-    <select id="findFitEmployeeInfoById" parameterType="java.lang.Long"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee">
-        SELECT
-            e.emp_id,
-            e.`name`,
-            e.mobile
-        FROM
-            fit_employee_copy c
-            INNER JOIN emp_employee e ON c.mobile = e.mobile
-        WHERE c.id = #{userId}
-    </select>
-
-    <select id="findStoreEmployeeById" parameterType="java.lang.Long"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee">
-        SELECT
-            e.emp_id,
-            e.`name`,
-            e.mobile
-        FROM
-            td_user_copy c
-            INNER JOIN emp_employee e ON c.username = e.mobile
-        WHERE c.id = #{sellerId}
-    </select>
-
-    <select id="findCustomerById" parameterType="java.lang.Long"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer">
-        SELECT
-            e.cus_id,
-            e.`name`,
-            e.mobile
-        FROM
-            td_user_copy c
-            INNER JOIN cus_customer e ON c.username = e.mobile
-        WHERE c.id = #{userId}
     </select>
 
     <insert id="saveOrderLogisticsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo">
@@ -283,32 +239,5 @@
         #{deliveryClerkName}, #{deliveryClerkPhone}, #{warehouse}, #{isOwnerReceiving},
         #{receiver}, #{receiverPhone}, #{shippingAddress}, #{residenceName}, #{deliveryCity}, #{deliveryCounty},
         #{deliveryStreet}, #{detailedAddress})
-    </insert>
-
-    <select id="getOwnMoneyRecordByOrderNumber" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOwnMoneyRecord">
-        SELECT is_pay_up, serial_number
-        FROM td_own_money_record_copy
-        WHERE order_number = #{orderNumber}
-        GROUP BY order_number
-    </select>
-
-    <insert id="saveOrderBillingDetails"
-            parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails">
-        INSERT INTO ord_billing_details (create_time, oid, ord_no, total_goods_price, member_discount, promotion_discount, freight, upstairs_fee,
-        lebi_quantity, lebi_cash_discount, cash_coupon_discount, product_coupon_discount, cus_pre_deposit,
-        online_pay_type, online_pay_amount, st_pre_deposit, emp_credit_money, st_credit_money,
-        st_subvention, order_amount_subtotal, amount_payable, collection_amount, arrearage, is_owner_receiving,
-        online_pay_time, pay_up_time, is_pay_up, store_cash, store_other_money, store_pos_money, store_pos_number)
-        VALUES
-        (#{createTime}, #{oid}, #{orderNumber}, #{totalGoodsPrice}, #{memberDiscount}, #{promotionDiscount},
-        #{freight},
-        #{upstairsFee}, #{lebiQuantity}, #{lebiCashDiscount}, #{cashCouponDiscount},
-        #{productCouponDiscount}, #{cusPreDeposit},
-        #{onlinePayType}, #{onlinePayAmount}, #{stPreDeposit}, #{empCreditMoney}, #{storeCreditMoney},
-        #{storeSubvention}, #{orderAmountSubtotal},
-        #{amountPayable}, #{collectionAmount}, #{arrearage}, #{isOwnerReceiving}, #{onlinePayTime},
-        #{payUpTime}, #{isPayUp}, #{storeCash}, #{storeOtherMoney}, #{storePosMoney},
-        #{storePosNumber}
-        )
     </insert>
 </mapper>
