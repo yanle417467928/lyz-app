@@ -12,6 +12,7 @@ import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferService;
+import cn.com.leyizhuang.app.foundation.service.datatransfer.OrderBillingTransferService;
 import com.tinify.Exception;
 import lombok.extern.slf4j.Slf4j;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.OrderGoodsTransferService;
@@ -41,6 +42,9 @@ public class DataTransferController {
 
     @Resource
     private OrderGoodsTransferService orderGoodsTransferService;
+
+    @Resource
+    private OrderBillingTransferService orderBillingTransferService;
 
     @Resource
     private AppStoreService storeService;
@@ -555,7 +559,15 @@ public class DataTransferController {
     public String dataTransferOrderBillingDeatails() {
         log.info("开始处理订单账单导入,当前时间:{}", new Date());
         Integer num = dataTransferService.transferOrderBillingDetails();
-        log.info("开始处理订单账单导入单数num:{}", num);
+        log.info("处理订单账单导入结束单数num:{}", num);
+        return "success";
+    }
+
+    @RequestMapping(value = "/data/transfer/orderbilling/async", method = RequestMethod.GET)
+    public String dataTransferOrderBillingDeatailsAsync() {
+        log.info("开始处理订单账单导入,当前时间:{}", new Date());
+        orderBillingTransferService.transferOrderBillingDetails();
+        log.info("处理订单账单导入结束!");
         return "success";
     }
 
