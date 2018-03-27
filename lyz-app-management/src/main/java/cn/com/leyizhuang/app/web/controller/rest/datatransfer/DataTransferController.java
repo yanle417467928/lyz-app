@@ -35,8 +35,6 @@ public class DataTransferController {
     @Resource
     private OrderGoodsTransferService orderGoodsTransferService;
 
-    @RequestMapping(value = "/data/transfer",method = RequestMethod.GET)
-    public String dataTransfer(){
     @Resource
     private AppStoreService storeService;
 

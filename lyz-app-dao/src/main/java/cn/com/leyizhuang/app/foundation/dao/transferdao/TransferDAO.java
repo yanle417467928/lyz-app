@@ -35,6 +35,8 @@ public interface TransferDAO {
 
     List<TdOrder> findOrderByOrderNumber(String orderNumber);
 
+    List<TdOrder> findOrderAllFieldByOrderNumber(String orderNumber);
+
     int insertArrearsAudit(OrderArrearsAuditDO orderArrearsAuditDO);
 
     Long findEmployeeByMobile(String phone);

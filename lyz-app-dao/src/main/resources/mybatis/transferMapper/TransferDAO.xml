@@ -35,6 +35,14 @@
         WHERE main_order_number = #{orderNumber}
     </select>
 
+    <select id="findOrderAllFieldByOrderNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder">
+        SELECT
+        *
+        FROM td_order_copy
+        WHERE main_order_number = #{orderNumber}
+    </select>
+
     <insert id="insertArrearsAudit" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO">
         INSERT INTO ord_arrears_audit
         (user_id, customer_name, customer_phone, seller_name, seller_phone, ord_no, agency_money, order_money,
@@ -150,13 +158,6 @@
         INSERT INTO ord_coupon_info (oid, ord_no, coupon_type, coupon_id, purchase_price, cost_price, get_type, sku)
         VALUES (#{oid}, #{orderNumber}, #{couponType}, #{couponId}, #{purchasePrice}, #{costPrice}, #{getType}, #{sku});
     </insert>
-
-
-    <select id="getTdOrderGoods" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods">
-        SELECT *
-        FROM td_order_goods
-    </select>
-
 
     <select id="queryDeliveryTimeSeqBySize" parameterType="java.lang.Integer"
             resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdDeliveryInfoDetails">

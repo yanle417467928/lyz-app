@@ -23,8 +23,8 @@ public class StatisticsSellDetailsContrller {
     private static final Logger logger = LoggerFactory.getLogger(StatisticsSellDetailsContrller.class);
 
     /**
-     * 导购个人销量统计
-     * flag : TS ：桶数；HYS：活跃数
+     * 导购当月 个人销量统计
+     * flag : TS ：桶数；HYS：活跃数 ; XKF :新开发高端会员数
      *
      * @return
      */
@@ -45,8 +45,8 @@ public class StatisticsSellDetailsContrller {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", sellDetailsResponse);
             } else if (flag.equals("HYS")) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", sellDetailsResponse);
-            } else {
-
+            } else if(flag.equals("XKF")) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", sellDetailsResponse);
             }
 
         }

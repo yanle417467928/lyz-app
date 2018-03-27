@@ -218,3 +218,6 @@ deploy:
   ebs:
     url: http://erptest.zghuarun.com:8030/webservices/SOAProvider/plsql/cux_app_webservice_pkg/?wsdl
     newUrl: http://ebs.leyizhuang.com.cn:10001/ebs/
+  lyz:
+    qrcodeRegister: http://admin.leyizhuang.com.cn
+    baseUrl: /mnt/root/qrcode/
