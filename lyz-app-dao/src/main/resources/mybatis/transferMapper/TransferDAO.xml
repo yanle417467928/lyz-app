@@ -283,13 +283,13 @@
     </insert>
 
     <select id="findOrderInfoByOrderNumber" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder">
-        SELECT id, order_number
+        SELECT id, order_number,jx_total_price
         FROM td_order_copy
         WHERE main_order_number = #{orderNumber}
     </select>
 
     <select id="getTdOrderGoodsByOrderNumber" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods">
-        SELECT coupon_number, sku, goods_title, real_price
+        SELECT coupon_number, sku, goods_title, real_price,price
         FROM td_order_goods_copy
         WHERE td_order_id = #{id}
     </select>
