@@ -24,11 +24,11 @@ public interface MaEmployeeDAO {
 
     List<EmployeeDO> findEmpTypeList();
 
-    List<EmployeeDO> queryPageVOByStoreCondition(@Param(value = "identityType") String identityType, @Param(value = "storeId") Long storeId, @Param(value = "enabled") String enabled);
+    List<EmployeeDO> queryPageVOByStoreCondition(@Param(value = "identityType") String identityType, @Param(value = "storeId") Long storeId, @Param(value = "enabled") String enabled,@Param("list") List<Long> storeIds);
 
-    List<EmployeeDO> queryPageVOByCityCondition(@Param(value = "identityType") String identityType, @Param(value = "cityId") Long cityId, @Param(value = "enabled") String enabled);
+    List<EmployeeDO> queryPageVOByCityCondition(@Param(value = "identityType") String identityType, @Param(value = "cityId") Long cityId, @Param(value = "enabled") String enabled,@Param("list") List<Long> storeIds);
 
-    List<EmployeeDO> findEmployeeByInfo(String queryEmpInfo);
+    List<EmployeeDO> findEmployeeByInfo(@Param(value = "queryEmpInfo") String queryEmpInfo,@Param("list") List<Long> storeIds);
 
     List<EmployeeDO> queryDecorativeEmpPageVO();
 
@@ -36,13 +36,13 @@ public interface MaEmployeeDAO {
 
     List<EmployeeDO> findDecorativeEmpByCondition(@Param(value = "enabled") String enabled, @Param(value = "diyId") String diyId, @Param(value = "identityType") String identityType);
 
-    List<GuideVO> findAllGuide();
+    List<GuideVO> findAllGuide(@Param("list") List<Long> storeIds);
 
     GuideVO queryGuideVOById(Long id);
 
-    List<GuideVO> queryGuideVOByCondition(@Param(value = "cityId") Long cityId, @Param(value = "storeId") Long storeId);
+    List<GuideVO> queryGuideVOByCondition(@Param(value = "cityId") Long cityId, @Param(value = "storeId") Long storeId,@Param("list") List<Long> storeIds);
 
-    List<GuideVO> queryGuideVOByInfo(String queryGuideVOInfo);
+    List<GuideVO> queryGuideVOByInfo(@Param("queryGuideVOInfo")String queryGuideVOInfo,@Param("list") List<Long> storeIds);
 
     EmployeeDO findEmployeeDOByEmpId(Long id);
 

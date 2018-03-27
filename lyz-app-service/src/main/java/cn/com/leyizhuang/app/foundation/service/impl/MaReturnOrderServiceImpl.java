@@ -84,7 +84,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
 
 
     @Override
-    public PageInfo<MaReturnOrderInfo> findMaReturnOrderListByScreen(Integer page, Integer size, Long storeId, String status) {
+    public PageInfo<MaReturnOrderInfo> findMaReturnOrderListByScreen(Integer page, Integer size, Long storeId, String status, List<Long> storeIds) {
         PageHelper.startPage(page, size);
         if (storeId == -1) {
             storeId = null;
@@ -92,15 +92,15 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
         if ("-1".equals(status)) {
             status = null;
         }
-        List<MaReturnOrderInfo> maReturnOrderList = maReturnOrderDAO.findMaReturnOrderListByScreen(storeId, status);
+        List<MaReturnOrderInfo> maReturnOrderList = maReturnOrderDAO.findMaReturnOrderListByScreen(storeId, status,storeIds);
         return new PageInfo<>(maReturnOrderList);
     }
 
 
     @Override
-    public PageInfo<MaReturnOrderInfo> findMaReturnOrderPageGirdByInfo(Integer page, Integer size, String info) {
+    public PageInfo<MaReturnOrderInfo> findMaReturnOrderPageGirdByInfo(Integer page, Integer size, String info, List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<MaReturnOrderInfo> maReturnOrderInfoList = maReturnOrderDAO.findMaReturnOrderPageGirdByInfo(info);
+        List<MaReturnOrderInfo> maReturnOrderInfoList = maReturnOrderDAO.findMaReturnOrderPageGirdByInfo(info,storeIds);
         return new PageInfo<>(maReturnOrderInfoList);
     }
 

@@ -23,9 +23,9 @@ public interface MaEmployeeService {
 
     List<EmployeeType> findEmpTypeByCityId( Long cityId);
 
-    PageInfo<EmployeeDO> queryPageVOByCondition(Integer page, Integer size,String identityType,Long storeId,Long cityId,String enabled);
+    PageInfo<EmployeeDO> queryPageVOByCondition(Integer page, Integer size,String identityType,Long storeId,Long cityId,String enabled, List<Long> storeIds);
 
-    PageInfo<EmployeeDO> queryPageVOByInfo(Integer page, Integer size,String queryEmpInfo);
+    PageInfo<EmployeeDO> queryPageVOByInfo(Integer page, Integer size,String queryEmpInfo, List<Long> storeIds);
 
     PageInfo<EmployeeDO> queryDecorativeEmpPageVO(Integer page, Integer size);
 
@@ -37,13 +37,13 @@ public interface MaEmployeeService {
 
     PageInfo<EmployeeDO> findDecorativeEmpByCondition(Integer page, Integer size,String enabled,String diyId,String identityType);
 
-    PageInfo<GuideVO> queryGuideVOPage(Integer page, Integer size);
+    PageInfo<GuideVO> queryGuideVOPage(Integer page, Integer size, List<Long> storeIds);
 
     GuideVO queryGuideVOById(Long id);
 
-    PageInfo<GuideVO> queryGuideVOByCondition(Integer page, Integer size,Long cityId, Long storeId);
+    PageInfo<GuideVO> queryGuideVOByCondition(Integer page, Integer size,Long cityId, Long storeId, List<Long> storeIds);
 
-    PageInfo<GuideVO>  queryGuideVOByInfo(Integer page,Integer size,String queryGuideVOInfo);
+    PageInfo<GuideVO>  queryGuideVOByInfo(Integer page,Integer size,String queryGuideVOInfo, List<Long> storeIds);
 
     EmployeeDO findEmployeeDOByEmpId(Long id);
 

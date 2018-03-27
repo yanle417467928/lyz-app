@@ -55,16 +55,22 @@
 
 
     <select id="findAllEmployee" resultMap="employeeResultMap">
-        select e.emp_id,e.login_name,e.name,e.identity_type,e.status,c.city_id,c.name cname,s.store_id,s.store_name,e.qr_code
+        select e.emp_id,e.login_name,e.name,e.identity_type,e.status,c.city_id,c.name
+        cname,s.store_id,s.store_name,e.qr_code
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
-        LEFT  JOIN  st_store s
+        LEFT JOIN st_store s
         ON e.store_id = s.store_id
         WHERE
-         e.identity_type!='DECORATE_MANAGER'
+        e.identity_type!='DECORATE_MANAGER'
         AND
         e.identity_type!='DECORATE_EMPLOYEE'
-        order by  emp_id asc
+        AND
+        s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        order by emp_id asc
     </select>
 
     <select id="queryEmployeeById" resultMap="employeeResultMap">
@@ -142,6 +148,11 @@
         e.identity_type!='DECORATE_MANAGER'
         AND
         e.identity_type!='DECORATE_EMPLOYEE'
+        AND
+        s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         order by emp_id asc
     </select>
 
@@ -169,6 +180,11 @@
         e.identity_type!='DECORATE_MANAGER'
         AND
         e.identity_type!='DECORATE_EMPLOYEE'
+        AND
+        s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         order by emp_id asc
     </select>
 
@@ -189,17 +205,22 @@
         select e.emp_id,e.login_name,e.name,e.identity_type,e.status,c.city_id,c.name cname,s.store_id,s.store_name
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
-        LEFT  JOIN  st_store s ON e.store_id = s.store_id
+        LEFT JOIN st_store s ON e.store_id = s.store_id
         where e.name LIKE CONCAT('%' ,#{queryEmpInfo},'%')
         OR
         e.mobile LIKE CONCAT('%' ,#{queryEmpInfo},'%')
         OR
         e.login_name LIKE CONCAT('%' ,#{queryEmpInfo},'%')
         AND
-         e.identity_type!='DECORATE_MANAGER'
+        e.identity_type!='DECORATE_MANAGER'
         AND
         e.identity_type!='DECORATE_EMPLOYEE'
-        order by  emp_id asc
+        AND
+        s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        order by emp_id asc
     </select>
 
     <select id="queryDecorativeEmpPageVO" resultMap="employeeResultMap">
@@ -264,10 +285,15 @@
         s.store_name,e.emp_id,ecm.id,ecm.credit_limit_available,ecm.temp_credit_limit
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
-        LEFT JOIN  st_store s ON e.store_id = s.store_id
-        LEFT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.emp_id
+        LEFT JOIN st_store s ON e.store_id = s.store_id
+        LEFT JOIN emp_credit_money ecm ON e.emp_id =ecm.emp_id
         WHERE
         e.identity_type='SELLER'
+        AND
+        s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         ORDER BY
         e.emp_id
         ASC
@@ -303,6 +329,11 @@
             AND
             s.store_id=#{storeId}
         </if>
+        AND
+        s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         ORDER BY
         e.emp_id
         ASC
@@ -313,14 +344,19 @@
         s.store_name,e.emp_id,ecm.id,ecm.credit_limit_available,ecm.temp_credit_limit
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
-        LEFT JOIN  st_store s ON e.store_id = s.store_id
-        LEFT JOIN  emp_credit_money ecm ON  e.emp_id =ecm.emp_id
+        LEFT JOIN st_store s ON e.store_id = s.store_id
+        LEFT JOIN emp_credit_money ecm ON e.emp_id =ecm.emp_id
         WHERE
-          e.identity_type='SELLER'
-          AND
-        e.login_name LIKE CONCAT('%' ,#{queryGuideVOByInfo},'%')
+        e.identity_type='SELLER'
+        AND
+        (e.login_name LIKE CONCAT('%' ,#{queryGuideVOInfo},'%')
         OR
-        e.name LIKE CONCAT('%' ,#{queryGuideVOByInfo},'%')
+        e.name LIKE CONCAT('%' ,#{queryGuideVOInfo},'%'))
+        AND
+        s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         ORDER BY
         e.emp_id
         ASC

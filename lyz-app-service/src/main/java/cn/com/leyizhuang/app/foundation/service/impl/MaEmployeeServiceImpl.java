@@ -72,7 +72,7 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
     }
 
     @Override
-    public PageInfo<EmployeeDO> queryPageVOByCondition(Integer page, Integer size,String identityType,Long storeId,Long cityId,String enabled){
+    public PageInfo<EmployeeDO> queryPageVOByCondition(Integer page, Integer size,String identityType,Long storeId,Long cityId,String enabled,List<Long> storeIds){
         PageHelper.startPage(page, size);
         String identityTypeConvert;
         if("导购".equals(identityType)){
@@ -95,17 +95,17 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
         //如果 门店有id 就根据门店查询 如果没有 按照城市查询
         List<EmployeeDO> pageEmployeeList=new ArrayList<EmployeeDO>();
         if(-1!=storeId){
-             pageEmployeeList = this.maEmployeeDAO.queryPageVOByStoreCondition(identityTypeConvert,storeId,enabled);
+             pageEmployeeList = this.maEmployeeDAO.queryPageVOByStoreCondition(identityTypeConvert,storeId,enabled,storeIds);
         }else{
-            pageEmployeeList = this.maEmployeeDAO.queryPageVOByCityCondition(identityTypeConvert,cityId,enabled);
+            pageEmployeeList = this.maEmployeeDAO.queryPageVOByCityCondition(identityTypeConvert,cityId,enabled,storeIds);
         }
         return new PageInfo<>(pageEmployeeList);
     }
 
     @Override
-    public PageInfo<EmployeeDO> queryPageVOByInfo(Integer page, Integer size,String queryEmpInfo){
+    public PageInfo<EmployeeDO> queryPageVOByInfo(Integer page, Integer size,String queryEmpInfo,List<Long> storeIds){
         PageHelper.startPage(page, size);
-        List<EmployeeDO> pageEmployeeList = this.maEmployeeDAO.findEmployeeByInfo(queryEmpInfo);
+        List<EmployeeDO> pageEmployeeList = this.maEmployeeDAO.findEmployeeByInfo(queryEmpInfo,storeIds);
         return new PageInfo<>(pageEmployeeList);
     }
 
@@ -147,9 +147,9 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
     }
 
     @Override
-    public PageInfo<GuideVO> queryGuideVOPage(Integer page, Integer size) {
+    public PageInfo<GuideVO> queryGuideVOPage(Integer page, Integer size,List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<GuideVO> pageGuideVOList = this.maEmployeeDAO.findAllGuide();
+        List<GuideVO> pageGuideVOList = this.maEmployeeDAO.findAllGuide(storeIds);
         for(GuideVO guideVO:pageGuideVOList){
             if(null == guideVO.getGuideCreditMoney()){
                 GuideCreditMoney guideCreditMoney = new  GuideCreditMoney();
@@ -170,7 +170,7 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
     }
 
     @Override
-    public PageInfo<GuideVO> queryGuideVOByCondition(Integer page, Integer size,Long cityId, Long storeId){
+    public PageInfo<GuideVO> queryGuideVOByCondition(Integer page, Integer size,Long cityId, Long storeId,List<Long> storeIds){
         if(-1==cityId){
           cityId=null;
         }
@@ -178,7 +178,7 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
             storeId=null;
         }
         PageHelper.startPage(page, size);
-        List<GuideVO> pageGuideVOList = this.maEmployeeDAO.queryGuideVOByCondition(cityId,storeId);
+        List<GuideVO> pageGuideVOList = this.maEmployeeDAO.queryGuideVOByCondition(cityId,storeId,storeIds);
         for(GuideVO guideVO:pageGuideVOList){
             if(null == guideVO.getGuideCreditMoney()){
                 GuideCreditMoney guideCreditMoney = new  GuideCreditMoney();
@@ -192,9 +192,9 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
     }
 
     @Override
-    public PageInfo<GuideVO> queryGuideVOByInfo(Integer page, Integer size,String queryGuideVOInfo){
+    public PageInfo<GuideVO> queryGuideVOByInfo(Integer page, Integer size,String queryGuideVOInfo,List<Long> storeIds){
         PageHelper.startPage(page, size);
-        List<GuideVO> pageGuideVOList = this.maEmployeeDAO.queryGuideVOByInfo(queryGuideVOInfo);
+        List<GuideVO> pageGuideVOList = this.maEmployeeDAO.queryGuideVOByInfo(queryGuideVOInfo,storeIds);
         for(GuideVO guideVO:pageGuideVOList){
             if(null == guideVO.getGuideCreditMoney()){
                 GuideCreditMoney guideCreditMoney = new  GuideCreditMoney();

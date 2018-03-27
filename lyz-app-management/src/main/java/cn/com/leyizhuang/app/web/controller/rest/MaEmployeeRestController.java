@@ -215,7 +215,9 @@ public class MaEmployeeRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<EmployeeDO> employeesPage = this.maEmployeeService.queryPageVOByCondition(page, size, identityType, storeId, cityId, enabled);
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<EmployeeDO> employeesPage = this.maEmployeeService.queryPageVOByCondition(page, size, identityType, storeId, cityId, enabled,storeIds);
             List<EmployeeDO> employeesList = employeesPage.getList();
             List<EmployeeVO> employeesVOList = EmployeeVO.transform(employeesList);
             logger.info("restEmployeesPageGirdByCondition ,后台根据身份信息查询员工成功", employeesVOList.size());
@@ -243,7 +245,9 @@ public class MaEmployeeRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<EmployeeDO> employeesPage = this.maEmployeeService.queryPageVOByInfo(page, size, queryEmpInfo);
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<EmployeeDO> employeesPage = this.maEmployeeService.queryPageVOByInfo(page, size, queryEmpInfo,storeIds);
             List<EmployeeDO> employeesList = employeesPage.getList();
             List<EmployeeVO> employeesVOList = EmployeeVO.transform(employeesList);
             logger.info("restEmployeesPageGirdByInfo ,后台根据搜索信息查询员工成功", employeesVOList.size());
@@ -272,7 +276,7 @@ public class MaEmployeeRestController extends BaseRestController {
             Integer page = getPage(offset, size);
             //查询登录用户门店权限的门店ID
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
-            PageInfo<GuideVO> guideVOPage = this.maEmployeeService.queryGuideVOPage(page, size);
+            PageInfo<GuideVO> guideVOPage = this.maEmployeeService.queryGuideVOPage(page, size,storeIds);
             List<GuideVO> guideVOList = guideVOPage.getList();
             logger.info("restGuideVOPageGird ,后台显示导购列表成功", guideVOList.size());
             return new GridDataVO<GuideVO>().transform(guideVOList, guideVOPage.getTotal());
@@ -330,7 +334,9 @@ public class MaEmployeeRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<GuideVO> guideVOPage = this.maEmployeeService.queryGuideVOByCondition(page, size, cityId, storeId);
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<GuideVO> guideVOPage = this.maEmployeeService.queryGuideVOByCondition(page, size, cityId, storeId,storeIds);
             List<GuideVO> guideVOList = guideVOPage.getList();
             logger.info("queryGuideVOByCondition ,后台根据身份信息查询员工额度成功");
             return new GridDataVO<GuideVO>().transform(guideVOList, guideVOPage.getTotal());
@@ -358,7 +364,9 @@ public class MaEmployeeRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<GuideVO> guideVOPage = this.maEmployeeService.queryGuideVOByInfo(page, size, queryGuideVOInfo);
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<GuideVO> guideVOPage = this.maEmployeeService.queryGuideVOByInfo(page, size, queryGuideVOInfo,storeIds);
             List<GuideVO> guideVOList = guideVOPage.getList();
             logger.info("queryGuideVOByInfo ,后台根据搜索信息查询导购额度成功");
             return new GridDataVO<GuideVO>().transform(guideVOList, guideVOPage.getTotal());

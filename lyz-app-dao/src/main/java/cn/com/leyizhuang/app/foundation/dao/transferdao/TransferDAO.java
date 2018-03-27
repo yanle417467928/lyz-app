@@ -2,23 +2,16 @@ package cn.com.leyizhuang.app.foundation.dao.transferdao;
 
 
 import cn.com.leyizhuang.app.core.constant.OrderCouponType;
-import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.*;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.*;
 import cn.com.leyizhuang.app.foundation.pojo.CashCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.CashCouponCompany;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon;
+import cn.com.leyizhuang.app.foundation.pojo.datatransfer.*;
+import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
+import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
-import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
-import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import org.apache.ibatis.annotations.Param;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -35,11 +28,14 @@ public interface TransferDAO {
     List<String> getTransferStoreMainOrderNumber(Date startTime, Date endTime);
 
     TdOrder getMainOrderInfoByMainOrderNumber(@Param(value = "mainOrderNumber") String mainOrderNumber);
+
     List<OrderBaseInfo> findNewOrderNumber();
 
     List<TdOwnMoneyRecord> findOwnMoneyRecordByOrderNumber(String orderNumber);
 
     List<TdOrder> findOrderByOrderNumber(String orderNumber);
+
+    List<TdOrder> findOrderAllFieldByOrderNumber(String orderNumber);
 
     int insertArrearsAudit(OrderArrearsAuditDO orderArrearsAuditDO);
 
@@ -53,17 +49,23 @@ public interface TransferDAO {
 
     Long findDeliveryInfoByClerkNo(String clerkNo);
 
+    List<TdOrderGoods> findTdorderGoodsByTdOrderId(@Param("tdOrderId") Long tdOrderId);
+
+    Boolean isExitTdOrderGoodsLine(@Param("orderNo") String orderNo,@Param("gid") Long gid,@Param("goodsLineType") String goodsLineType);
+
     List<TdOrderLogistics> queryOrderLogistcs(int size);
 
     void saveOrderLogisticsInfo(OrderLogisticsInfo orderLogisticsInfo);
 
     List<TdDeliveryInfoDetails> queryDeliveryTimeSeqBySize(int size);
 
-    TdDeliveryInfoDetails queryDeliveryInfoDetailByOrderNumber(String orderNo);
+    List<TdDeliveryInfoDetails> queryDeliveryInfoDetailByOrderNumber(String orderNo);
 
     List<TdDeliveryInfoDetails> queryTdOrderListBySize(int size);
 
     List<TdDeliveryInfoDetails> queryOrderGoodsListByOrderNumber(Long id);
+
+    List<OrderBaseInfo> findNewOrderNumberTest();
 
     AppEmployee findFitEmployeeInfoById(Long userId);
 
@@ -103,4 +105,6 @@ public interface TransferDAO {
     AppCustomer findCustomerByCustomerMobile(String realUserUsername);
 
     List<TdOrderSmall> getPendingTransferOrder(Date startTime, Date endTime);
+
+    List<TdOrderData> queryTdOrderDataListBySize(int size);
 }

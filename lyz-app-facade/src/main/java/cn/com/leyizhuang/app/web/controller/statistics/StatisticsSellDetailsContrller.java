@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,13 +24,21 @@ public class StatisticsSellDetailsContrller {
     private static final Logger logger = LoggerFactory.getLogger(StatisticsSellDetailsContrller.class);
 
     /**
-     * 导购个人销量统计
-     * flag : TS ：桶数；HYS：活跃数
+     * 导购当月 个人销量统计
+     * flag : TS ：桶数；HYS：活跃数 ; XKF :新开发高端会员数
      *
      * @return
      */
     @PostMapping(value = "/personal", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> statisticsPersonalSellDetais(Long sellerId, Long identityType, String flag) {
+        /** 4月31号以前无销量 则提示功能暂未开放 **/
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime dateTime = LocalDateTime.of(2018,4,31,23,59,59);
+
+        if (now.isBefore(dateTime)){
+            ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此功能暂未开放，敬请期待", "");
+        }
+
         logger.info("获取导购个人销量，入参 sellerId:{} identityType:{}", sellerId, identityType);
 
         ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "无数据", "");
@@ -45,8 +54,8 @@ public class StatisticsSellDetailsContrller {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", sellDetailsResponse);
             } else if (flag.equals("HYS")) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", sellDetailsResponse);
-            } else {
-
+            } else if(flag.equals("XKF")) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", sellDetailsResponse);
             }
 
         }
@@ -64,6 +73,14 @@ public class StatisticsSellDetailsContrller {
     @PostMapping(value = "/rank", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> statisticsSellDetaisRank(Long sellerId, String flag,String rankType) {
         logger.info("获取销量排名，入参 sellerId:{} flag:{}", sellerId, flag);
+
+        /** 4月31号以前无销量 则提示功能暂未开放 **/
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime dateTime = LocalDateTime.of(2018,4,31,23,59,59);
+
+        if (now.isBefore(dateTime)){
+            ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此功能暂未开放，敬请期待", "");
+        }
 
         ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "无数据", "");
 

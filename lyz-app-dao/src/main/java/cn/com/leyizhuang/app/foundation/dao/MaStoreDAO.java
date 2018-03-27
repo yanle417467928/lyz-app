@@ -22,7 +22,7 @@ import java.util.List;
 @Repository
 public interface MaStoreDAO {
 
-    List<StoreVO> findAllVO();
+    List<StoreVO> findAllVO( List<Long> storeIds);
 
     List<SimpleStoreParam> findStoresList(@Param("list") List<Long> storeIds);
 
@@ -38,11 +38,11 @@ public interface MaStoreDAO {
 
     StoreDetailVO findStoresVOById(Long storeId);
 
-    List<StoreVO> queryStoreListByCityId(Long cityId);
+    List<StoreVO> queryStoreListByCityId(@Param("cityId")Long cityId,@Param("list") List<Long> storeIds);
 
-    List<StoreVO> findStoresListByCondition(@Param("enabled") String enabled, @Param("cityId") Long cityId);
+    List<StoreVO> findStoresListByCondition(@Param("enabled") String enabled, @Param("cityId") Long cityId,@Param("list") List<Long> storeIds);
 
-    List<StoreVO> findStoresListByStoreInfo(String queryStoreInfo);
+    List<StoreVO> findStoresListByStoreInfo(@Param("queryStoreInfo")String queryStoreInfo,@Param("list") List<Long> storeIds);
 
     void update( @Param("storeId") Long storeId,@Param("isSelfDelivery") Boolean isSelfDelivery);
 

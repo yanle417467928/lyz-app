@@ -103,7 +103,12 @@
         st_store s
         LEFT JOIN city c ON s.city_code = c.code
         WHERE
-         s.store_type!="ZS"
+        s.store_type!="ZS"
+        AND
+        s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         ORDER BY
         create_time
         DESC
@@ -129,8 +134,8 @@
         st_store s
         LEFT JOIN city c on s.city_code = c.code
         WHERE c.city_id = #{cityId}
-         AND
-         s.store_type!="ZS"
+        AND
+        s.store_type!="ZS"
         AND s.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
@@ -170,7 +175,7 @@
         FROM
         st_store s
         WHERE
-         s.store_type!="ZS"
+        s.store_type!="ZS"
         AND s.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
@@ -186,14 +191,14 @@
         FROM
         st_store s
         WHERE
-         s.store_id IN
+        s.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
     </select>
 
 
-    <select id="queryStoreListByCityId" parameterType="java.lang.Long" resultMap="storeVOResultMap">
+    <select id="queryStoreListByCityId"  resultMap="storeVOResultMap">
         SELECT
         s.store_code,
         s.store_name,
@@ -206,8 +211,13 @@
         st_store s
         LEFT JOIN city c ON s.city_code = c.code
         WHERE c.city_id= #{cityId}
-            AND
-         s.store_type!="ZS"
+        AND
+        s.store_type!="ZS"
+        AND
+        s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
     </select>
 
 
@@ -235,6 +245,11 @@
         </if>
         AND
         s.store_type!="ZS"
+        AND
+        s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
     </select>
 
     <select id="findStoresListByStoreInfo" parameterType="java.lang.String" resultMap="storeVOResultMap">
@@ -252,6 +267,11 @@
         WHERE s.store_name LIKE CONCAT('%',#{queryStoreInfo},'%') OR s.store_code LIKE CONCAT('%',#{queryStoreInfo},'%')
         AND
          s.store_type!="ZS"
+        AND
+        s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
     </select>
 
     <update id="update">
@@ -605,7 +625,7 @@
         #{operatorIp}, #{orderNumber}, #{balance}, #{detailReason}, #{transferTime}, #{merchantOrderNumber})
     </insert>
 
-    <select id="findAllStoreVO" resultMap="storeVOResultMap" >
+    <select id="findAllStoreVO" resultMap="storeVOResultMap">
         SELECT
         s.store_code,
         s.store_name,
@@ -632,7 +652,8 @@
         DESC
     </select>
 
-    <select id="findStoresListByCityIdAndStoreId" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
+    <select id="findStoresListByCityIdAndStoreId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
         SELECT
         s.store_id,
         s.store_name
@@ -641,7 +662,7 @@
         LEFT JOIN city c on s.city_code = c.code
         WHERE (1 = 1)
         <if test="null != cityId and cityId != -1">
-          AND c.city_id = #{cityId}
+            AND c.city_id = #{cityId}
         </if>
         AND s.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
@@ -649,7 +670,8 @@
         </foreach>
     </select>
 
-    <select id="findStoresListByStoreId" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
+    <select id="findStoresListByStoreId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
         SELECT
         s.store_id,
         s.store_name
@@ -662,11 +684,13 @@
         </foreach>
     </select>
 
-    <select id="findAppStoreByStoreId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.AppStore">
+    <select id="findAppStoreByStoreId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.AppStore">
         SELECT city_id, store_id, store_type, store_name FROM st_store WHERE store_id = #{storeId}
     </select>
 
-    <select id="findStoresListByStoreIdAndStoreType" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
+    <select id="findStoresListByStoreIdAndStoreType"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
         SELECT
         s.store_id,
         s.store_name
@@ -688,7 +712,8 @@
     </select>
 
 
-    <select id="findStoresListByCityIdAndStoreType" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
+    <select id="findStoresListByCityIdAndStoreType"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
         SELECT
         s.store_id,
         s.store_name
@@ -700,7 +725,7 @@
             AND c.city_id = #{cityId}
         </if>
         <if test="null != storeType and storeType != ''">
-          AND s.store_type = #{storeType}
+            AND s.store_type = #{storeType}
         </if>
         AND s.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
