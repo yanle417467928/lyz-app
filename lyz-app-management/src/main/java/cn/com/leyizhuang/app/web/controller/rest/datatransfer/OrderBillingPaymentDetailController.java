@@ -110,7 +110,7 @@ public class OrderBillingPaymentDetailController {
                             }
                             appOrderService.saveOrderBillingPaymentDetail(paymentDetails);
 
-                        } else if (null != tdOrderData.getSellerCash() && tdOrderData.getSellerCash() > AppConstant.PAY_UP_LIMIT) {
+                        } else if (null != tdOrderData.getSellerCash() && tdOrderData.getSellerCash() != 0) {
                             OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails();
                             paymentDetails.setOrderId(null == orderBaseInfo ? 0L : orderBaseInfo.getId());
                             paymentDetails.setOrderNumber(tdOrderData.getMainOrderNumber());

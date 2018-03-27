@@ -52,7 +52,7 @@ public interface TransferDAO {
 
     List<TdDeliveryInfoDetails> queryDeliveryTimeSeqBySize(int size);
 
-    TdDeliveryInfoDetails queryDeliveryInfoDetailByOrderNumber(String orderNo);
+    List<TdDeliveryInfoDetails> queryDeliveryInfoDetailByOrderNumber(String orderNo);
 
     List<TdDeliveryInfoDetails> queryTdOrderListBySize(int size);
 

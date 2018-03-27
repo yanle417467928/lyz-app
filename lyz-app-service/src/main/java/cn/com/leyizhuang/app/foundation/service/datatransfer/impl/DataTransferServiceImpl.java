@@ -1,24 +1,10 @@
 package cn.com.leyizhuang.app.foundation.service.datatransfer.impl;
 
-import cn.com.leyizhuang.app.core.constant.AppCashCouponType;
-import cn.com.leyizhuang.app.core.constant.CouponGetType;
-import cn.com.leyizhuang.app.core.constant.OnlinePayType;
-import cn.com.leyizhuang.app.core.constant.OrderCouponType;
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.foundation.dao.TimingTaskErrorMessageDAO;
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.*;
-import cn.com.leyizhuang.app.foundation.pojo.CashCoupon;
-import cn.com.leyizhuang.app.foundation.pojo.CashCouponCompany;
-import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdDeliveryInfoDetails;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderLogistics;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderData;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOwnMoneyRecord;
-import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
@@ -27,7 +13,6 @@ import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferService
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import cn.com.leyizhuang.common.util.CountUtil;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
-import org.apache.ibatis.jdbc.Null;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -183,7 +168,7 @@ public class DataTransferServiceImpl implements DataTransferService {
     }
 
     @Override
-    public TdDeliveryInfoDetails queryDeliveryInfoDetailByOrderNumber(String orderNo) {
+    public List<TdDeliveryInfoDetails> queryDeliveryInfoDetailByOrderNumber(String orderNo) {
         return transferDAO.queryDeliveryInfoDetailByOrderNumber(orderNo);
     }
 
