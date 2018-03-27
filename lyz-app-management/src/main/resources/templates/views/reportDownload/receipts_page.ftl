@@ -6,6 +6,7 @@
     <link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
     <link href="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css" rel="stylesheet">
@@ -80,7 +81,8 @@
                         </span>
                     </div>
                 <#--<@shiro.hasPermission name="/views/admin/resource/add">-->
-                    <button id="btn_add" type="button" class="btn btn-default" onclick="openBillModal()">
+                    <button id="btn_add" type="button" class="btn btn-default pull-left" onclick="openBillModal()">
+                        <i class="fa fa-download"></i>
                         下载报表
                     </button>
                 <#--</@shiro.hasPermission>-->
@@ -275,30 +277,35 @@
         var cityId = $('#cityCode').val();
         var storeType = $('#storeType').val();
         var payType = $('#paymentType').val();
-        $.ajax({
-            url: '/rest/reportDownload/receipts/download',
-            method: 'GET',
-            data:{
-                keywords: keywords,
-                storeId: storeId,
-                startTime: startTime,
-                endTime: endTime,
-                storeType: storeType,
-                cityId: cityId,
-                payType: payType
-            },
-            error: function () {
-                clearTimeout($global.timer);
-                $loading.close();
-                $global.timer = null;
-                $notify.danger('网络异常，请稍后重试或联系管理员');
-            },
-            success: function (result) {
-                clearTimeout($global.timer);
-                var escapeUrl=result.replace(/\#/g,"%23");
-                window.open(escapeUrl);
-            }
-        });
+
+        var url = "/rest/reportDownload/receipts/download?keywords="+ keywords + "&storeId=" + storeId + "&startTime=" + startTime
+                + "&endTime=" + endTime + "&storeType=" + storeType + "&cityId=" + cityId + "&payType=" + payType;
+        var escapeUrl=url.replace(/\#/g,"%23");
+        window.open(escapeUrl);
+
+//        $.ajax({
+//            url: '/rest/reportDownload/receipts/download',
+//            method: 'GET',
+//            data:{
+//                keywords: keywords,
+//                storeId: storeId,
+//                startTime: startTime,
+//                endTime: endTime,
+//                storeType: storeType,
+//                cityId: cityId,
+//                payType: payType
+//            },
+//            error: function () {
+//                clearTimeout($global.timer);
+//                $loading.close();
+//                $global.timer = null;
+//                $notify.danger('网络异常，请稍后重试或联系管理员');
+//            },
+//            success: function (data, textStatus, request) {
+//                clearTimeout($global.timer);
+//                window.open(request.getResponseHeader('Content-Disposition'));
+//            }
+//        });
     }
 
 </script>

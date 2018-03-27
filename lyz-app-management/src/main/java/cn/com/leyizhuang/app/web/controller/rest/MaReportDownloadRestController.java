@@ -46,7 +46,7 @@ public class MaReportDownloadRestController extends BaseRestController{
     @Autowired
     private MaReportDownloadService maReportDownloadService;
 
-    private static final int maxRowNum = 100;
+    private static final int maxRowNum = 60000;
 
     @GetMapping(value = "/receipts/page/grid")
     public GridDataVO<ReceiptsReportDO> restStorePreDepositPageGird(Integer offset, Integer size, Long cityId, Long storeId, String storeType,
@@ -61,7 +61,7 @@ public class MaReportDownloadRestController extends BaseRestController{
     }
 
     @GetMapping(value = "/receipts/download")
-    public String receiptsDownload(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId, String storeType, String startTime, String endTime,
+    public void receiptsDownload(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId, String storeType, String startTime, String endTime,
                                               String payType, String keywords) {
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
@@ -74,13 +74,13 @@ public class MaReportDownloadRestController extends BaseRestController{
         }
 
         response.setContentType("text/html;charset=UTF-8");
-        //创建文件
-        String fileurl = "D://收款报表-"+ DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") +".xls";//如  D:/xx/xx/xxx.xls
+        //创建名称
+        String fileurl = "收款报表-"+ DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") +".xls";//如  D:/xx/xx/xxx.xls
+
         WritableWorkbook wwb = null;
-
         try {
-
-            wwb = this.getWorkbook(fileurl);
+            //创建文件
+            wwb = exportXML(fileurl, response);
 
             //excel单表最大行数是65535
             int maxSize = 0;
@@ -97,22 +97,22 @@ public class MaReportDownloadRestController extends BaseRestController{
 
                 //筛选条件
                 Map<String, String> map = new HashMap<>();
-                if (null != cityId && !(cityId.equals(-1L))){
+                if (null != cityId && !(cityId.equals(-1L)) && null != receiptsReportDOS && receiptsReportDOS.size() > 0){
                     map.put("城市", receiptsReportDOS.get(0).getCityName());
                 } else {
                     map.put("城市", "无");
                 }
-                if (null != storeId && !(storeId.equals(-1L))){
+                if (null != storeId && !(storeId.equals(-1L)) && null != receiptsReportDOS && receiptsReportDOS.size() > 0){
                     map.put("门店", receiptsReportDOS.get(0).getStoreName());
                 } else {
                     map.put("门店", "无");
                 }
-                if (null != storeType && !("".equals(storeType))){
+                if (null != storeType && !("".equals(storeType)) && null != receiptsReportDOS && receiptsReportDOS.size() > 0){
                     map.put("门店类型", receiptsReportDOS.get(0).getStoreType());
                 } else {
                     map.put("门店类型", "无");
                 }
-                if (null != payType && !("".equals(payType))){
+                if (null != payType && !("".equals(payType)) && null != receiptsReportDOS && receiptsReportDOS.size() > 0){
                     map.put("支付方式", receiptsReportDOS.get(0).getPayType());
                 } else {
                     map.put("支付方式", "无");
@@ -146,8 +146,6 @@ public class MaReportDownloadRestController extends BaseRestController{
                 //设置标题
                 ws = this.setHeader(ws, titleFormat, columnView, titles, row);
 
-
-
                 row += 1;
                 //填写表体数据
                 for (int j = 0; j < maxRowNum; j++) {
@@ -165,42 +163,32 @@ public class MaReportDownloadRestController extends BaseRestController{
                     ws.addCell(new Label(7, j + row, receiptsReportDO.getRemarks()));
                 }
             }
-            return fileurl;
         }catch(Exception e) {
             System.out.println(e);
+            e.printStackTrace();
         }finally {
             if(wwb != null) {
                 try {
                     wwb.write();//刷新（或写入），生成一个excel文档
                     wwb.close();//关闭
-//                        exportXML(fileurl, response);//下载excel文件
                 }catch(Exception e) {
                     e.printStackTrace();
                 }
             }
         }
-
-        return "";
     }
 
 
-    public void exportXML(String fileName, HttpServletResponse response)
+    public WritableWorkbook exportXML(String fileurl, HttpServletResponse response)
             throws IOException {
-        String filename = "table";
-        try {
-            filename = new String(fileName.getBytes("GBK"), "ISO-8859-1");
-        } catch (UnsupportedEncodingException e1) {
-            System.out.println("下载文件名格式转换错误！");
-        }
-        try {
-            OutputStream os;
-            response.reset();
-            response.setHeader("Content-Disposition",
-                    "attachment; filename=" + filename +".xls");
-            response.setContentType("application/octet-stream; charset=utf-8");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        response.reset();
+        fileurl = new String(fileurl.getBytes("GBK"), "ISO-8859-1");
+        response.setHeader("Content-Disposition",
+                "attachment; filename=" + fileurl);
+        response.setContentType("application/octet-stream; charset=utf-8");
+        OutputStream out = response.getOutputStream();
+        WritableWorkbook wwb = Workbook.createWorkbook(out);
+        return wwb;
     }
 
     /**
