@@ -32,7 +32,7 @@ public interface DataTransferService {
 
     Integer transferCoupon(OrderBaseInfo baseInfo);
 
-    void transferOrderBillingDetails();
+    Integer transferOrderBillingDetails();
 
     AppEmployee findFitEmployeeInfoById(Long userId);
 
