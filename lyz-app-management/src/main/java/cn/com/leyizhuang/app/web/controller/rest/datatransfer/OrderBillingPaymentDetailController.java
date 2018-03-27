@@ -57,7 +57,7 @@ public class OrderBillingPaymentDetailController {
         log.info("********************转换账单支付明细表结束*************************");
     }
 
-    public Boolean saveOrderBillingPaymentDetail(int size) {
+    private Boolean saveOrderBillingPaymentDetail(int size) {
 
         List<TdOrderData> orderDataList = dataTransferService.queryTdOrderDataListBySize(size);
         try {

@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author Jerry.Ren
@@ -41,6 +43,9 @@ public class DeliveryInfoController {
     private AppStoreService appStoreService;
     @Autowired
     private AppOrderService appOrderService;
+
+    // 线程池
+    private ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     /**
      * 转换物流明细表
@@ -135,7 +140,13 @@ public class DeliveryInfoController {
                     deliveryInfoDetails.setOrderNo(tdDeliveryInfoDetails.getMainOrderNumber());
                     deliveryInfoDetails.setCreateTime(tdDeliveryInfoDetails.getOperationTime());
                     deliveryInfoDetails.setIsRead(true);
-                    orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(deliveryInfoDetails);
+
+                    executorService.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(deliveryInfoDetails);
+                        }
+                    });
                 }
             } else {
                 return true;
@@ -172,23 +183,20 @@ public class DeliveryInfoController {
                                 returnDetails.setUnitPrice(tdOrderGoods.getJxDif());
                                 returnDetails.setQuantity(tdOrderGoods.getQuantity());
                                 returnDetails.setAmount(tdOrderGoods.getDifTotal());
-                                appOrderService.saveOrderJxPriceDifferenceReturnDetails(returnDetails);
+
+                                executorService.execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+
+                                        appOrderService.saveOrderJxPriceDifferenceReturnDetails(returnDetails);
+                                    }
+                                });
                             }
                         }
                         //转物流明细需要订单状态,所以拿到这里添加
-                        if (tdOrder.getStatusId().intValue() == 3) {
-                            OrderDeliveryInfoDetails orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
-                            orderDeliveryInfoDetails.setDeliveryInfo(tdOrder.getMainOrderNumber(), LogisticStatus.SEALED_CAR, "商家已封车完成！", "已封车",
-                                    "", "", "", "");
-                            orderDeliveryInfoDetails.setIsRead(true);
-                            orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
-                        } else if (tdOrder.getStatusId().intValue() == 4 || tdOrder.getStatusId().intValue() == 5 || tdOrder.getStatusId().intValue() == 6) {
-                            OrderDeliveryInfoDetails orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
-                            orderDeliveryInfoDetails.setDeliveryInfo(tdOrder.getMainOrderNumber(), LogisticStatus.CONFIRM_ARRIVAL, "确认到货！", "送达",
-                                    "", "", "", "");
-                            orderDeliveryInfoDetails.setIsRead(true);
-                            orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
-                        }
+                        int status = tdOrder.getStatusId().intValue();
+                        String orderNumber = tdOrder.getMainOrderNumber();
+                        this.addOtherDeliveryInfoByOrderStatus(status, orderNumber);
                     }
                 }
             } else {
@@ -245,5 +253,27 @@ public class DeliveryInfoController {
             log.debug("{}", e);
         }
         return false;
+    }
+
+    private void addOtherDeliveryInfoByOrderStatus(int status, String orderNumber) {
+
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (status == 3) {
+                    OrderDeliveryInfoDetails orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
+                    orderDeliveryInfoDetails.setDeliveryInfo(orderNumber, LogisticStatus.SEALED_CAR, "商家已封车完成！", "已封车",
+                            "", "", "", "");
+                    orderDeliveryInfoDetails.setIsRead(true);
+                    orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
+                } else if (status == 4 || status == 5 || status == 6) {
+                    OrderDeliveryInfoDetails orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
+                    orderDeliveryInfoDetails.setDeliveryInfo(orderNumber, LogisticStatus.CONFIRM_ARRIVAL, "确认到货！", "送达",
+                            "", "", "", "");
+                    orderDeliveryInfoDetails.setIsRead(true);
+                    orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
+                }
+            }
+        });
     }
 }
