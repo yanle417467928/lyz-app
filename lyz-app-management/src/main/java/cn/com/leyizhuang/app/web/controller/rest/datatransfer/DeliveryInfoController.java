@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderLogistics;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderJxPriceDifferenceReturnDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
@@ -42,7 +43,7 @@ public class DeliveryInfoController {
     private AppOrderService appOrderService;
 
     /**
-     * 转换物流明细表需要
+     * 转换物流明细表
      */
     @RequestMapping(value = "/app/resend/wms/test/deliveryInfo", method = RequestMethod.GET)
     public void transformDeliveryInfoDetails() {
@@ -72,7 +73,7 @@ public class DeliveryInfoController {
     }
 
     /**
-     * 运行此方法需要门店基础表(st_store)数据支持
+     * 运行此方法需要订单基础表(ord_base_info)门店基础表(st_store)数据支持
      */
     @RequestMapping(value = "/app/resend/wms/test/JxPrice", method = RequestMethod.GET)
     public void transformJxPriceDifferenceReturnDetails() {
@@ -132,7 +133,7 @@ public class DeliveryInfoController {
                     deliveryInfoDetails.setDescription(tdDeliveryInfoDetails.getOperationDescription());
                     deliveryInfoDetails.setOrderNo(tdDeliveryInfoDetails.getMainOrderNumber());
                     deliveryInfoDetails.setCreateTime(tdDeliveryInfoDetails.getOperationTime());
-                    deliveryInfoDetails.setIsRead(false);
+                    deliveryInfoDetails.setIsRead(true);
                     orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(deliveryInfoDetails);
                 }
             } else {
@@ -140,6 +141,7 @@ public class DeliveryInfoController {
             }
         } catch (Exception e) {
             log.debug("{}", e);
+            return true;
         }
         return false;
     }
@@ -149,36 +151,43 @@ public class DeliveryInfoController {
         try {
             if (AssertUtil.isNotEmpty(tdOrderList)) {
                 for (TdDeliveryInfoDetails tdOrder : tdOrderList) {
-                    List<TdDeliveryInfoDetails> tdOrderGoodsList = dataTransferService.queryOrderGoodsListByOrderNumber(tdOrder.getId());
-                    AppStore store = appStoreService.findByStoreCode(tdOrder.getDiySiteCode());
-                    if (AssertUtil.isNotEmpty(tdOrderGoodsList)) {
-                        for (TdDeliveryInfoDetails tdOrderGoods : tdOrderGoodsList) {
+                    OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(tdOrder.getMainOrderNumber());
+                    if (AssertUtil.isNotEmpty(orderBaseInfo)) {
+                        List<TdDeliveryInfoDetails> tdOrderGoodsList = dataTransferService.queryOrderGoodsListByOrderNumber(tdOrder.getId());
+                        AppStore store = appStoreService.findByStoreCode(tdOrder.getDiySiteCode());
+                        if (AssertUtil.isNotEmpty(tdOrderGoodsList)) {
+                            for (TdDeliveryInfoDetails tdOrderGoods : tdOrderGoodsList) {
 
-                            OrderJxPriceDifferenceReturnDetails returnDetails = new OrderJxPriceDifferenceReturnDetails();
+                                OrderJxPriceDifferenceReturnDetails returnDetails = new OrderJxPriceDifferenceReturnDetails();
 
-                            returnDetails.setOid(tdOrder.getId());
-                            returnDetails.setOrderNumber(tdOrder.getMainOrderNumber());
-                            returnDetails.setCreateTime(tdOrder.getPayTime());
-                            if (store != null) {
-                                returnDetails.setStoreCode(store.getStoreCode());
-                                returnDetails.setStoreId(store.getStoreId());
+                                returnDetails.setOid(orderBaseInfo.getId());
+                                returnDetails.setOrderNumber(tdOrder.getMainOrderNumber());
+                                returnDetails.setCreateTime(tdOrder.getPayTime());
+                                if (store != null) {
+                                    returnDetails.setStoreCode(store.getStoreCode());
+                                    returnDetails.setStoreId(store.getStoreId());
+                                }
+                                returnDetails.setSku(tdOrderGoods.getSku());
+                                returnDetails.setUnitPrice(tdOrderGoods.getJxDif());
+                                returnDetails.setQuantity(tdOrderGoods.getQuantity());
+                                returnDetails.setAmount(tdOrderGoods.getDifTotal());
+                                appOrderService.saveOrderJxPriceDifferenceReturnDetails(returnDetails);
                             }
-                            returnDetails.setSku(tdOrderGoods.getSku());
-                            returnDetails.setUnitPrice(tdOrderGoods.getJxDif());
-                            returnDetails.setQuantity(tdOrderGoods.getQuantity());
-                            returnDetails.setAmount(tdOrderGoods.getDifTotal());
-                            appOrderService.saveOrderJxPriceDifferenceReturnDetails(returnDetails);
                         }
-                    }
-                    //转物流明细需要订单状态,所以拿到这里添加
-                    if (tdOrder.getStatusId().intValue() == 3) {
-                        OrderDeliveryInfoDetails orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
-                        orderDeliveryInfoDetails.setDeliveryInfo(tdOrder.getMainOrderNumber(), LogisticStatus.SEALED_CAR, "商家已封车完成！", "已封车",
-                                "", "", "", "");
-                    } else if (tdOrder.getStatusId().intValue() == 4 || tdOrder.getStatusId().intValue() == 5 || tdOrder.getStatusId().intValue() == 6) {
-                        OrderDeliveryInfoDetails orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
-                        orderDeliveryInfoDetails.setDeliveryInfo(tdOrder.getMainOrderNumber(), LogisticStatus.CONFIRM_ARRIVAL, "确认到货！", "送达",
-                                "", "", "", "");
+                        //转物流明细需要订单状态,所以拿到这里添加
+                        if (tdOrder.getStatusId().intValue() == 3) {
+                            OrderDeliveryInfoDetails orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
+                            orderDeliveryInfoDetails.setDeliveryInfo(tdOrder.getMainOrderNumber(), LogisticStatus.SEALED_CAR, "商家已封车完成！", "已封车",
+                                    "", "", "", "");
+                            orderDeliveryInfoDetails.setIsRead(true);
+                            orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
+                        } else if (tdOrder.getStatusId().intValue() == 4 || tdOrder.getStatusId().intValue() == 5 || tdOrder.getStatusId().intValue() == 6) {
+                            OrderDeliveryInfoDetails orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
+                            orderDeliveryInfoDetails.setDeliveryInfo(tdOrder.getMainOrderNumber(), LogisticStatus.CONFIRM_ARRIVAL, "确认到货！", "送达",
+                                    "", "", "", "");
+                            orderDeliveryInfoDetails.setIsRead(true);
+                            orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
+                        }
                     }
                 }
             } else {
@@ -186,6 +195,7 @@ public class DeliveryInfoController {
             }
         } catch (Exception e) {
             log.debug("{}", e);
+            return true;
         }
         return false;
     }

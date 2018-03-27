@@ -189,7 +189,7 @@
         LIMIT #{size}, 1000;
     </select>
 
-    <select id="queryOrderGoodsListByOrderNumber" parameterType="java.lang.String"
+    <select id="queryOrderGoodsListByOrderNumber" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdDeliveryInfoDetails">
         SELECT
             sku,

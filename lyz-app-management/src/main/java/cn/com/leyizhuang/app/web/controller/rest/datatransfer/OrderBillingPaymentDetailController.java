@@ -66,11 +66,11 @@ public class OrderBillingPaymentDetailController {
                     TdOrder tdOrder = dataTransferService.getMainOrderInfoByMainOrderNumber(tdOrderData.getMainOrderNumber());
                     AppStore appStore = appStoreService.findByStoreCode(tdOrderData.getStoreCode());
                     OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(tdOrderData.getMainOrderNumber());
-                    if (AssertUtil.isNotEmpty(tdOrder)) {
+                    if (AssertUtil.isNotEmpty(tdOrder) && null != orderBaseInfo) {
                         if ((null != tdOrderData.getOnlinePay() && tdOrderData.getOnlinePay() > AppConstant.PAY_UP_LIMIT)
                                 || (null != tdOrderData.getBalanceUsed() && tdOrderData.getBalanceUsed() > AppConstant.PAY_UP_LIMIT)) {
                             OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails();
-                            paymentDetails.setOrderId(null == orderBaseInfo ? 0L : orderBaseInfo.getId());
+                            paymentDetails.setOrderId(orderBaseInfo.getId());
                             paymentDetails.setOrderNumber(tdOrderData.getMainOrderNumber());
                             paymentDetails.setCreateTime(tdOrder.getPayTime());
                             paymentDetails.setPayTime(tdOrder.getPayTime());
@@ -185,6 +185,7 @@ public class OrderBillingPaymentDetailController {
             }
         } catch (Exception e) {
             log.debug("{}", e);
+            return true;
         }
         return false;
     }
