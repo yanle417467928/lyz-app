@@ -78,7 +78,13 @@
         FROM
         cus_customer c
         LEFT JOIN st_store s ON c.store_id = s.store_id
-        WHERE c.city_id =#{cityId} ORDER BY c.create_time DESC
+        WHERE c.city_id =#{cityId}
+        AND
+        s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        ORDER BY c.create_time DESC
     </select>
 
     <select id="queryCustomerVOByStoreId" parameterType="java.lang.Long" resultMap="customerVoResultMap">
@@ -124,7 +130,13 @@
         FROM
         cus_customer c
         LEFT JOIN st_store s ON c.store_id = s.store_id
-        WHERE c.mobile LIKE CONCAT('%',#{queryCusInfo},'%') ORDER BY c.create_time DESC
+        WHERE c.mobile LIKE CONCAT('%',#{queryCusInfo},'%')
+        AND
+        s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        ORDER BY c.create_time DESC
     </select>
 
 
@@ -140,7 +152,13 @@
         FROM
         cus_customer c
         LEFT JOIN st_store s ON c.store_id = s.store_id
-        WHERE c.name LIKE CONCAT('%',#{queryCusInfo},'%') ORDER BY c.create_time DESC
+        WHERE c.name LIKE CONCAT('%',#{queryCusInfo},'%')
+        AND
+        s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        ORDER BY c.create_time DESC
     </select>
 
 

@@ -110,7 +110,9 @@ public class MaCustomerRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<CustomerDO> custmersPageByCityID = this.maCustomerService.queryCustomerVOByCityId(page, size, cityId);
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<CustomerDO> custmersPageByCityID = this.maCustomerService.queryCustomerVOByCityId(page, size, cityId,storeIds);
             List<CustomerDO> custmersList = custmersPageByCityID.getList();
             List<CustomerVO> custmersVOList = CustomerVO.transform(custmersList);
             logger.info("getCudByCityId ,查询城市顾客列表成功", custmersVOList.size());
@@ -194,7 +196,9 @@ public class MaCustomerRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<CustomerDO> custmersPageByPhone = this.maCustomerService.queryCustomerVOByPhone(page, size, queryCusInfo);
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<CustomerDO> custmersPageByPhone = this.maCustomerService.queryCustomerVOByPhone(page, size, queryCusInfo,storeIds);
             List<CustomerDO> custmersList = custmersPageByPhone.getList();
             List<CustomerVO> custmersVOList = CustomerVO.transform(custmersList);
             logger.info("getCudByPhone ,通过电话查询顾客列表成功", custmersVOList.size());
@@ -222,7 +226,9 @@ public class MaCustomerRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<CustomerDO> custmersPageByName = this.maCustomerService.queryCustomerVOByName(page, size, queryCusInfo);
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<CustomerDO> custmersPageByName = this.maCustomerService.queryCustomerVOByName(page, size, queryCusInfo,storeIds);
             List<CustomerDO> custmersList = custmersPageByName.getList();
             List<CustomerVO> custmersVOList = CustomerVO.transform(custmersList);
             logger.info("getCudByName ,通过姓名查询顾客列表成功", custmersVOList.size());

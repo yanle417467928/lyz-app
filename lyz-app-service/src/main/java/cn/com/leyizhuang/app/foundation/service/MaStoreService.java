@@ -21,7 +21,7 @@ import java.util.List;
 
 public interface MaStoreService {
 
-    PageInfo<StoreVO> queryPageVO(Integer page, Integer size);
+    PageInfo<StoreVO> queryPageVO(Integer page, Integer size,List<Long> storeIds);
 
     List<SimpleStoreParam> findStoreList(List<Long> storeIds);
 
@@ -35,11 +35,11 @@ public interface MaStoreService {
 
     StoreDetailVO queryStoreVOById(Long storeId);
 
-    PageInfo<StoreVO> queryStoreListByCityId(Integer page, Integer size, Long cityId);
+    PageInfo<StoreVO> queryStoreListByCityId(Integer page, Integer size, Long cityId,List<Long> storeIds);
 
-    PageInfo<StoreVO> findStoresListByCondition(Integer page, Integer size, String enabled, Long cityId);
+    PageInfo<StoreVO> findStoresListByCondition(Integer page, Integer size, String enabled, Long cityId,List<Long> storeIds);
 
-    PageInfo<StoreVO> findStoresListByStoreInfo(Integer page, Integer size,String queryStoreInfo);
+    PageInfo<StoreVO> findStoresListByStoreInfo(Integer page, Integer size,String queryStoreInfo,List<Long> storeIds);
 
     void update(Long storeId,Boolean  isSelfDelivery );
 

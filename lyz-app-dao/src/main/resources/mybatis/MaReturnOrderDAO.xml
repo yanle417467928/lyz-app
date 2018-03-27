@@ -6,27 +6,27 @@
     <select id="findMaReturnOrderList"
             resultType="cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaReturnOrderInfo">
         SELECT
-         orbi.roid roid,
-         orbi.return_time returnTime,
-         orbi.return_no returnNo,
-         orbi.return_type returnType,
-         orbi.creator_name creatorName,
-         orbi.store_code storeCode,
-         orbi.ord_type orderType,
-         orbi.return_status returnStatus,
-         s.store_name storeName
+        orbi.roid roid,
+        orbi.return_time returnTime,
+        orbi.return_no returnNo,
+        orbi.return_type returnType,
+        orbi.creator_name creatorName,
+        orbi.store_code storeCode,
+        orbi.ord_type orderType,
+        orbi.return_status returnStatus,
+        s.store_name storeName
         FROM ord_return_base_info orbi
         LEFT JOIN
         st_store AS s ON s.store_id = orbi.store_id
         WHERE
-          1=1
+        1=1
         AND s.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
-          ORDER BY
-           orbi.return_time
-           DESC
+        ORDER BY
+        orbi.return_time
+        DESC
     </select>
 
 
@@ -55,6 +55,10 @@
             AND
             orbi.return_status =#{status}
         </if>
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         ORDER BY
         orbi.return_time
         DESC
@@ -63,29 +67,33 @@
 
     <select id="findMaReturnOrderPageGirdByInfo"
             resultType="cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaReturnOrderInfo">
-    SELECT
-    orbi.roid roid,
-    orbi.return_time returnTime,
-    orbi.return_no returnNo,
-    orbi.return_type returnType,
-    orbi.creator_name creatorName,
-    orbi.store_code storeCode,
-    orbi.ord_type orderType,
-    orbi.return_status returnStatus,
-    s.store_name storeName
-    FROM ord_return_base_info orbi
-    LEFT JOIN
-    st_store AS s ON s.store_id = orbi.store_id
-    WHERE
-    1=1
-    AND
-    (orbi.ord_no  LIKE CONCAT('%',#{info},'%')
-    OR
-    orbi.return_no  LIKE CONCAT('%',#{info},'%'))
-     ORDER BY
-           orbi.return_time
-           DESC
-</select>
+        SELECT
+        orbi.roid roid,
+        orbi.return_time returnTime,
+        orbi.return_no returnNo,
+        orbi.return_type returnType,
+        orbi.creator_name creatorName,
+        orbi.store_code storeCode,
+        orbi.ord_type orderType,
+        orbi.return_status returnStatus,
+        s.store_name storeName
+        FROM ord_return_base_info orbi
+        LEFT JOIN
+        st_store AS s ON s.store_id = orbi.store_id
+        WHERE
+        1=1
+        AND
+        (orbi.ord_no LIKE CONCAT('%',#{info},'%')
+        OR
+        orbi.return_no LIKE CONCAT('%',#{info},'%'))
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        ORDER BY
+        orbi.return_time
+        DESC
+    </select>
 
     <select id="queryMaReturnOrderByReturnNo"
             resultType="cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaReturnOrderDetailInfo">

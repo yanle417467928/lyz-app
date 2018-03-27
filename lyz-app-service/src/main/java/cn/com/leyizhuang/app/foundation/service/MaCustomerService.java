@@ -18,15 +18,15 @@ public interface MaCustomerService {
 
     CustomerDO queryCustomerVOById(Long cusId);
 
-    PageInfo<CustomerDO> queryCustomerVOByCityId(Integer page, Integer size, Long cityId);
+    PageInfo<CustomerDO> queryCustomerVOByCityId(Integer page, Integer size, Long cityId,List<Long> storeIds);
 
     PageInfo<CustomerDO> queryCustomerVOByStoreId(Integer page, Integer size, Long storeId);
 
     PageInfo<CustomerDO> queryCustomerVOByGuideId(Integer page, Integer size, Long guideId);
 
-    PageInfo<CustomerDO> queryCustomerVOByPhone(Integer page, Integer size, Long queryCusInfo);
+    PageInfo<CustomerDO> queryCustomerVOByPhone(Integer page, Integer size, Long queryCusInfo,List<Long> storeIds);
 
-    PageInfo<CustomerDO> queryCustomerVOByName(Integer page, Integer size, String queryCusInfo);
+    PageInfo<CustomerDO> queryCustomerVOByName(Integer page, Integer size, String queryCusInfo,List<Long> storeIds);
 
     void saveCustomer(CustomerDetailVO customer);
 

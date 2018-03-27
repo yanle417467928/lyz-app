@@ -164,10 +164,10 @@ public interface MaOrderDAO {
 
     List<MaSelfTakeOrderVO> findSelfTakeOrderList(@Param("list") List<Long> storeIds);
 
-    List<MaSelfTakeOrderVO> findSelfTakeOrderListByScreen(@Param("cityId")Long cityId,@Param("storeId")Long storeId,@Param("status")Integer status,@Param("isPayUp")Integer isPayUp);
+    List<MaSelfTakeOrderVO> findSelfTakeOrderListByScreen(@Param("cityId")Long cityId,@Param("storeId")Long storeId,@Param("status")Integer status,@Param("isPayUp")Integer isPayUp,@Param("list") List<Long> storeIds);
 
 
-    List<MaSelfTakeOrderVO> findSelfTakeOrderListByInfo(String info);
+    List<MaSelfTakeOrderVO> findSelfTakeOrderListByInfo(@Param("info") String info,@Param("list") List<Long> storeIds);
 
     List<MaSelfTakeOrderVO> findSelfTakeOrderListByCondition(MaOrderVORequest maOrderVORequest);
 
@@ -194,9 +194,9 @@ public interface MaOrderDAO {
     List<MaAgencyAndArrearsOrderVO> findArrearsAndAgencyOrderList(@Param("list") List<Long> storeIds);
 
 
-    List<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByScreen(@Param("cityId")Long cityId,@Param("storeId")Long storeId,@Param("status")Integer status,@Param("isPayUp")Integer isPayUp);
+    List<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByScreen(@Param("cityId")Long cityId,@Param("storeId")Long storeId,@Param("status")Integer status,@Param("isPayUp")Integer isPayUp,@Param("list") List<Long> storeIds);
 
-    List<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByInfo(String info);
+    List<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByInfo(@Param("info") String info,@Param("list") List<Long> storeIds);
 
     void auditOrderStatus(@Param(value = "orderNumber")String orderNumber,@Param(value = "status")String status);
 

@@ -377,7 +377,8 @@ public class MaOrderRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<MaSelfTakeOrderVO> maSelfTakeOrderVOPageInfo = this.maOrderService.findSelfTakeOrderListByScreen(page, size, cityId, storeId, status, isPayUp);
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<MaSelfTakeOrderVO> maSelfTakeOrderVOPageInfo = this.maOrderService.findSelfTakeOrderListByScreen(page, size, cityId, storeId, status, isPayUp,storeIds);
             List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maSelfTakeOrderVOPageInfo.getList();
             logger.info("restSelfTakeOrderPageGirdByCityId ,后台根据筛选条件分页查询所有自提订单列表成功", (maSelfTakeOrderVOList == null) ? 0 : maSelfTakeOrderVOList.size());
             return new GridDataVO<MaSelfTakeOrderVO>().transform(maSelfTakeOrderVOList, maSelfTakeOrderVOPageInfo.getTotal());
@@ -403,7 +404,8 @@ public class MaOrderRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<MaSelfTakeOrderVO> maSelfTakeOrderVOPageInfo = this.maOrderService.findSelfTakeOrderListByInfo(page, size, info);
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<MaSelfTakeOrderVO> maSelfTakeOrderVOPageInfo = this.maOrderService.findSelfTakeOrderListByInfo(page, size, info,storeIds);
             List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maSelfTakeOrderVOPageInfo.getList();
             logger.info("restSelfTakeOrderPageGirdByInfo ,后台根据条件信息分页查询自提订单列表成功", (maSelfTakeOrderVOList == null) ? 0 : maSelfTakeOrderVOList.size());
             return new GridDataVO<MaSelfTakeOrderVO>().transform(maSelfTakeOrderVOList, maSelfTakeOrderVOPageInfo.getTotal());
@@ -660,7 +662,8 @@ public class MaOrderRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<MaAgencyAndArrearsOrderVO> maAgencyAndArrearsOrderVOPageInfo = this.maOrderService.findMaAgencyAndArrearsOrderListByScreen(page, size, cityId, storeId, status, isPayUp);
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<MaAgencyAndArrearsOrderVO> maAgencyAndArrearsOrderVOPageInfo = this.maOrderService.findMaAgencyAndArrearsOrderListByScreen(page, size, cityId, storeId, status, isPayUp,storeIds);
             List<MaAgencyAndArrearsOrderVO> maAgencyAndArrearsOrderVOList = maAgencyAndArrearsOrderVOPageInfo.getList();
             logger.info("restArrearsAndAgencyOrderPageGirdByScreen ,后台根据筛选条件分页查询所有欠款与还款订单列表成功", (maAgencyAndArrearsOrderVOList == null) ? 0 : maAgencyAndArrearsOrderVOList.size());
             return new GridDataVO<MaAgencyAndArrearsOrderVO>().transform(maAgencyAndArrearsOrderVOList, maAgencyAndArrearsOrderVOPageInfo.getTotal());
@@ -687,7 +690,8 @@ public class MaOrderRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<MaAgencyAndArrearsOrderVO> maAgencyAndArrearsOrderVOPageInfo = this.maOrderService.findMaAgencyAndArrearsOrderListByInfo(page, size, info);
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<MaAgencyAndArrearsOrderVO> maAgencyAndArrearsOrderVOPageInfo = this.maOrderService.findMaAgencyAndArrearsOrderListByInfo(page, size, info,storeIds);
             List<MaAgencyAndArrearsOrderVO> maAgencyAndArrearsOrderVOList = maAgencyAndArrearsOrderVOPageInfo.getList();
             logger.info("restArrearsAndAgencyOrderPageGirdByInfo ,后台根据条件信息分页查询欠款与还款订单成功", (maAgencyAndArrearsOrderVOList == null) ? 0 : maAgencyAndArrearsOrderVOList.size());
             return new GridDataVO<MaAgencyAndArrearsOrderVO>().transform(maAgencyAndArrearsOrderVOList, maAgencyAndArrearsOrderVOPageInfo.getTotal());

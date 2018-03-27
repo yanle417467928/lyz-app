@@ -89,7 +89,8 @@ public class MaRetrunOrderRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<MaReturnOrderInfo> ReturnOrderVOPageInfo = this.maReturnOrderService.findMaReturnOrderListByScreen(page, size, storeId, status);
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<MaReturnOrderInfo> ReturnOrderVOPageInfo = this.maReturnOrderService.findMaReturnOrderListByScreen(page, size, storeId, status,storeIds);
             List<MaReturnOrderInfo> ReturnOrderVOList = ReturnOrderVOPageInfo.getList();
             logger.info("restReturnOrderPageGirdByScreen ,后台根据筛选条件分页查询退货单列表成功", (ReturnOrderVOList == null) ? 0 : ReturnOrderVOList.size());
             return new GridDataVO<MaReturnOrderInfo>().transform(ReturnOrderVOList, ReturnOrderVOPageInfo.getTotal());
@@ -115,7 +116,8 @@ public class MaRetrunOrderRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<MaReturnOrderInfo> maReturnOrderInfoPageInfo = this.maReturnOrderService.findMaReturnOrderPageGirdByInfo(page, size, info);
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<MaReturnOrderInfo> maReturnOrderInfoPageInfo = this.maReturnOrderService.findMaReturnOrderPageGirdByInfo(page, size, info,storeIds);
             List<MaReturnOrderInfo> maReturnOrderList = maReturnOrderInfoPageInfo.getList();
             logger.info("restMaReturnOrderPageGirdByInfo ,后台根据条件信息分页查询退货单列表成功", (maReturnOrderList == null) ? 0 : maReturnOrderList.size());
             return new GridDataVO<MaReturnOrderInfo>().transform(maReturnOrderList, maReturnOrderInfoPageInfo.getTotal());

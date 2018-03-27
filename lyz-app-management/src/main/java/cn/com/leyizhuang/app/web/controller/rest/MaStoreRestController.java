@@ -48,7 +48,8 @@ public class MaStoreRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<StoreVO> storePage = this.maStoreService.queryPageVO(page, size);
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<StoreVO> storePage = this.maStoreService.queryPageVO(page, size,storeIds);
             List<StoreVO> pageAllStoresList = storePage.getList();
             logger.info("restStoresPageGird ,后台初始门店页面列表成功", pageAllStoresList.size());
             return new GridDataVO<StoreVO>().transform(pageAllStoresList, storePage.getTotal());
@@ -305,7 +306,8 @@ public class MaStoreRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<StoreVO> storePage = this.maStoreService.queryStoreListByCityId(page, size, cityId);
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<StoreVO> storePage = this.maStoreService.queryStoreListByCityId(page, size, cityId,storeIds);
             List<StoreVO> pageAllStoresList = storePage.getList();
             logger.info("findStoresListByCity , 后台查询该城市下的门店成功", pageAllStoresList.size());
             return new GridDataVO<StoreVO>().transform(pageAllStoresList, storePage.getTotal());
@@ -333,7 +335,8 @@ public class MaStoreRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<StoreVO> storePage = this.maStoreService.findStoresListByCondition(page, size, enabled, cityId);
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<StoreVO> storePage = this.maStoreService.findStoresListByCondition(page, size, enabled, cityId,storeIds);
             List<StoreVO> pageAllStoresList = storePage.getList();
             logger.info("findStoresListByCondition , 后台查询可用或不可用的门店成功", pageAllStoresList.size());
             return new GridDataVO<StoreVO>().transform(pageAllStoresList, storePage.getTotal());
@@ -361,7 +364,8 @@ public class MaStoreRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<StoreVO> storePage = this.maStoreService.findStoresListByStoreInfo(page, size, queryStoreInfo);
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<StoreVO> storePage = this.maStoreService.findStoresListByStoreInfo(page, size, queryStoreInfo,storeIds);
             List<StoreVO> pageAllStoresList = storePage.getList();
             logger.info("findStoresListByStoreInfo , 后台通过门店名称或者门店编码查询门店成功", pageAllStoresList.size());
             return new GridDataVO<StoreVO>().transform(pageAllStoresList, storePage.getTotal());

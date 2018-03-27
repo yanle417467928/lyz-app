@@ -202,7 +202,7 @@
 
 
     function checkCharacter(theObj) {
-        var reg = /^([A-Za-z]|[\u4E00-\u9FA5])+$/;
+        var reg = /^[A-Za-z0-9\u4e00-\u9fa5]+$/;
         if (reg.test(theObj)) {
             return true;
         }

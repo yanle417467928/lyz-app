@@ -573,6 +573,10 @@
             AND
             obi.city_id =#{cityId}
         </if>
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         ORDER BY
         obi.create_time DESC
     </select>
@@ -599,6 +603,10 @@
         obi.delivery_type= 'SELF_TAKE'
         AND
         obi.ord_no  LIKE CONCAT('%',#{info},'%')
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         ORDER BY
         obi.create_time DESC
     </select>
@@ -874,6 +882,10 @@
             AND
             obi.city_id =#{cityId}
         </if>
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         ORDER BY
         obi.create_time DESC
     </select>
@@ -900,6 +912,10 @@
         ord_billing_details obd ON obi.ord_no =obd.ord_no
         WHERE
         obi.ord_no LIKE concat(concat('%',#{info}),'%')
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         ORDER BY
         obi.create_time DESC
     </select>

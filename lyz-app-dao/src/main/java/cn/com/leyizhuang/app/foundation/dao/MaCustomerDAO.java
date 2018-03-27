@@ -19,15 +19,15 @@ public interface MaCustomerDAO {
 
     CustomerDO queryCustomerVOById(Long cusId);
 
-    List<CustomerDO> queryCustomerVOByCityId(Long cityId);
+    List<CustomerDO> queryCustomerVOByCityId(@Param("cityId") Long cityId,@Param("list") List<Long> storeIds);
 
     List<CustomerDO> queryCustomerVOByStoreId(Long storeId);
 
     List<CustomerDO> queryCustomerVOByGuideId(Long guideId);
 
-    List<CustomerDO> queryCustomerVOByPhone(Long queryCusInfo);
+    List<CustomerDO> queryCustomerVOByPhone( @Param("queryCusInfo") Long queryCusInfo,@Param("list") List<Long> storeIds);
 
-    List<CustomerDO> queryCustomerVOByName(String queryCusInfo);
+    List<CustomerDO> queryCustomerVOByName(@Param("queryCusInfo") String queryCusInfo,@Param("list") List<Long> storeIds);
 
     void save(CustomerDO customer);
 

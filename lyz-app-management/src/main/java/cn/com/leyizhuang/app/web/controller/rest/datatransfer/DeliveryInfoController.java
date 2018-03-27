@@ -204,38 +204,46 @@ public class DeliveryInfoController {
 
     public Boolean saveOrderLogistcs(int size) {
         List<TdOrderLogistics> tdOrderLogisticsList = dataTransferService.queryOrderLogistcs(size);
-
-        if (null == tdOrderLogisticsList || tdOrderLogisticsList.size() == 0) {
-            return false;
-        }
         try {
-            for (TdOrderLogistics tdOrderLogistics : tdOrderLogisticsList) {
-                OrderLogisticsInfo orderLogisticsInfo = new OrderLogisticsInfo();
-                orderLogisticsInfo.setDeliveryType(AppDeliveryType.getAppDeliveryTypeByDescription(tdOrderLogistics.getDeliverTypeTitle()));
-                orderLogisticsInfo.setBookingStoreAddress(tdOrderLogistics.getDetailedAddress());
-                orderLogisticsInfo.setBookingStoreName(tdOrderLogistics.getDiySiteName());
-                orderLogisticsInfo.setBookingStoreCode(tdOrderLogistics.getDiySiteCode());
-                orderLogisticsInfo.setOrdNo(tdOrderLogistics.getMainOrderNumber());
-                orderLogisticsInfo.setDeliveryCity(tdOrderLogistics.getCity());
-                orderLogisticsInfo.setDeliveryCounty(tdOrderLogistics.getDisctrict());
-                orderLogisticsInfo.setDeliveryStreet(tdOrderLogistics.getSubdistrict());
-                orderLogisticsInfo.setReceiver(tdOrderLogistics.getShippingName());
-                orderLogisticsInfo.setReceiverPhone(tdOrderLogistics.getShippingPhone());
-                orderLogisticsInfo.setResidenceName(null);
-                orderLogisticsInfo.setShippingAddress(tdOrderLogistics.getShippingAddress());
-                orderLogisticsInfo.setDeliveryClerkId(tdOrderLogistics.getEmpId());
-                orderLogisticsInfo.setDeliveryClerkName(tdOrderLogistics.getName());
-                orderLogisticsInfo.setDeliveryClerkNo(tdOrderLogistics.getDriver());
-                orderLogisticsInfo.setDeliveryClerkPhone(tdOrderLogistics.getMobile());
-                orderLogisticsInfo.setDeliveryTime(tdOrderLogistics.getDeliveryDate());
-                orderLogisticsInfo.setIsOwnerReceiving(false);
-                orderLogisticsInfo.setWarehouse(tdOrderLogistics.getWhNo());
-                orderLogisticsInfo.setOid(tdOrderLogistics.getOid());
-                dataTransferService.saveOrderLogisticsInfo(orderLogisticsInfo);
+            if (null == tdOrderLogisticsList || tdOrderLogisticsList.size() == 0) {
+                return true;
+            } else {
+                for (TdOrderLogistics tdOrderLogistics : tdOrderLogisticsList) {
+                    OrderLogisticsInfo orderLogisticsInfo = new OrderLogisticsInfo();
+                    //判断该信息是否存在
+                    OrderLogisticsInfo orderLogisticsInfoisExit = appOrderService.getOrderLogistice(tdOrderLogistics.getMainOrderNumber());
+                    if (null != orderLogisticsInfoisExit) {
+                        break;
+                    }
+                    if ("门店自提".equals(tdOrderLogistics.getDeliverTypeTitle())) {
+                        orderLogisticsInfo.setBookingStoreAddress(tdOrderLogistics.getDetailedAddress());
+                        orderLogisticsInfo.setBookingStoreName(tdOrderLogistics.getDiySiteName());
+                        orderLogisticsInfo.setBookingStoreCode(tdOrderLogistics.getDiySiteCode());
+                    }
+                    orderLogisticsInfo.setDeliveryType(AppDeliveryType.getAppDeliveryTypeByDescription(tdOrderLogistics.getDeliverTypeTitle()));
+                    orderLogisticsInfo.setOrdNo(tdOrderLogistics.getMainOrderNumber());
+                    orderLogisticsInfo.setDeliveryCity(tdOrderLogistics.getCity());
+                    orderLogisticsInfo.setDeliveryCounty(tdOrderLogistics.getDisctrict());
+                    orderLogisticsInfo.setDeliveryStreet(tdOrderLogistics.getSubdistrict());
+                    orderLogisticsInfo.setReceiver(tdOrderLogistics.getShippingName());
+                    orderLogisticsInfo.setReceiverPhone(tdOrderLogistics.getShippingPhone());
+                    orderLogisticsInfo.setResidenceName(null);
+                    orderLogisticsInfo.setShippingAddress(tdOrderLogistics.getShippingAddress());
+                    orderLogisticsInfo.setDeliveryClerkId(tdOrderLogistics.getEmpId());
+                    orderLogisticsInfo.setDeliveryClerkName(tdOrderLogistics.getName());
+                    orderLogisticsInfo.setDeliveryClerkNo(tdOrderLogistics.getDriver());
+                    orderLogisticsInfo.setDeliveryClerkPhone(tdOrderLogistics.getMobile());
+                    orderLogisticsInfo.setDeliveryTime(tdOrderLogistics.getDeliveryDate());
+                    orderLogisticsInfo.setIsOwnerReceiving(false);
+                    orderLogisticsInfo.setWarehouse(tdOrderLogistics.getWhNo());
+                    orderLogisticsInfo.setOid(tdOrderLogistics.getOid());
+                    orderLogisticsInfo.setDetailedAddress(tdOrderLogistics.getDetailedAddress());
+                    dataTransferService.saveOrderLogisticsInfo(orderLogisticsInfo);
+                }
             }
         } catch (Exception e) {
             log.debug("{}", e);
         }
-        return true;
+        return false;
     }
 }

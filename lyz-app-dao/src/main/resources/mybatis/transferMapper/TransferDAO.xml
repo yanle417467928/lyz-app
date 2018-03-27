@@ -95,7 +95,8 @@
 
     <select id="queryOrderLogistcs" parameterType="java.lang.Integer" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderLogistics">
         SELECT
-        tdc.id oid,
+        DISTINCT
+        obi.oid,
         tdc.main_order_number,
         tdc.deliver_type_title,
         tdc.diy_site_code,
@@ -117,6 +118,7 @@
         FROM
         td_delivery_info tdi
         LEFT JOIN td_order_copy tdc ON tdi.order_number = tdc.main_order_number
+        LEFT JOIN  ord_base_info obi ON  obi.ord_no = tdi.order_number
         LEFT JOIN st_store ss ON ss.store_code = tdc.diy_site_code
         LEFT JOIN emp_employee ee ON ee.delivery_clerk_no = tdi.driver
         WHERE

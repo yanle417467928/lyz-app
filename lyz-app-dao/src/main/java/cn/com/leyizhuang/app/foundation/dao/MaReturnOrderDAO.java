@@ -22,9 +22,9 @@ public interface MaReturnOrderDAO {
      */
     List<MaReturnOrderInfo> findMaReturnOrderList(@Param("list") List<Long> storeIds);
 
-    List<MaReturnOrderInfo> findMaReturnOrderListByScreen(@Param(value = "storeId") Long storeId, @Param(value = "status") String status);
+    List<MaReturnOrderInfo> findMaReturnOrderListByScreen(@Param(value = "storeId") Long storeId, @Param(value = "status") String status,@Param("list") List<Long> storeIds);
 
-    List<MaReturnOrderInfo> findMaReturnOrderPageGirdByInfo(String info);
+    List<MaReturnOrderInfo> findMaReturnOrderPageGirdByInfo(@Param("info")String info,@Param("list") List<Long> storeIds);
 
     MaReturnOrderDetailInfo queryMaReturnOrderByReturnNo(String returnNumber);
 

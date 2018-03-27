@@ -56,9 +56,9 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     }
 
     @Override
-    public PageInfo<CustomerDO> queryCustomerVOByCityId(Integer page, Integer size, Long cityId) {
+    public PageInfo<CustomerDO> queryCustomerVOByCityId(Integer page, Integer size, Long cityId,List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<CustomerDO> CustmoerList = maCustomerDAO.queryCustomerVOByCityId(cityId);
+        List<CustomerDO> CustmoerList = maCustomerDAO.queryCustomerVOByCityId(cityId,storeIds);
         return new PageInfo<>(CustmoerList);
     }
 
@@ -78,16 +78,16 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     }
 
     @Override
-    public PageInfo<CustomerDO> queryCustomerVOByPhone(Integer page, Integer size, Long queryCusInfo) {
+    public PageInfo<CustomerDO> queryCustomerVOByPhone(Integer page, Integer size, Long queryCusInfo,List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<CustomerDO> CustmoerList = maCustomerDAO.queryCustomerVOByPhone(queryCusInfo);
+        List<CustomerDO> CustmoerList = maCustomerDAO.queryCustomerVOByPhone(queryCusInfo,storeIds);
         return new PageInfo<>(CustmoerList);
     }
 
     @Override
-    public PageInfo<CustomerDO> queryCustomerVOByName(Integer page, Integer size, String queryCusInfo) {
+    public PageInfo<CustomerDO> queryCustomerVOByName(Integer page, Integer size, String queryCusInfo,List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<CustomerDO> CustmoerList = maCustomerDAO.queryCustomerVOByName(queryCusInfo);
+        List<CustomerDO> CustmoerList = maCustomerDAO.queryCustomerVOByName(queryCusInfo,storeIds);
         return new PageInfo<>(CustmoerList);
     }
 

@@ -223,20 +223,20 @@ public class MaOrderServiceImpl implements MaOrderService {
     }
 
     @Override
-    public PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderListByScreen(Integer page, Integer size, Long cityId, Long storeId, Integer status, Integer isPayUp) {
+    public PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderListByScreen(Integer page, Integer size, Long cityId, Long storeId, Integer status, Integer isPayUp,List<Long> storeIds) {
         PageHelper.startPage(page, size);
         if (storeId != -1) {
             cityId = null;
         }
-        List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maOrderDAO.findSelfTakeOrderListByScreen(cityId, storeId, status, isPayUp);
+        List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maOrderDAO.findSelfTakeOrderListByScreen(cityId, storeId, status, isPayUp,storeIds);
         return new PageInfo<>(maSelfTakeOrderVOList);
     }
 
 
     @Override
-    public PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderListByInfo(Integer page, Integer size, String info) {
+    public PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderListByInfo(Integer page, Integer size, String info, List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maOrderDAO.findSelfTakeOrderListByInfo(info);
+        List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maOrderDAO.findSelfTakeOrderListByInfo(info,storeIds);
         return new PageInfo<>(maSelfTakeOrderVOList);
     }
 
@@ -471,19 +471,19 @@ public class MaOrderServiceImpl implements MaOrderService {
 
 
     @Override
-    public PageInfo<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByScreen(Integer page, Integer size, Long cityId, Long storeId, Integer status, Integer isPayUp) {
+    public PageInfo<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByScreen(Integer page, Integer size, Long cityId, Long storeId, Integer status, Integer isPayUp,List<Long> storeIds) {
         PageHelper.startPage(page, size);
         if (storeId != -1) {
             cityId = null;
         }
-        List<MaAgencyAndArrearsOrderVO> maAgencyAndArrearsOrderVOList = maOrderDAO.findMaAgencyAndArrearsOrderListByScreen(cityId, storeId, status, isPayUp);
+        List<MaAgencyAndArrearsOrderVO> maAgencyAndArrearsOrderVOList = maOrderDAO.findMaAgencyAndArrearsOrderListByScreen(cityId, storeId, status, isPayUp,storeIds);
         return new PageInfo<>(maAgencyAndArrearsOrderVOList);
     }
 
     @Override
-    public PageInfo<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByInfo(Integer page, Integer size, String info) {
+    public PageInfo<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByInfo(Integer page, Integer size, String info, List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<MaAgencyAndArrearsOrderVO> maAgencyAndArrearsOrderVOList = maOrderDAO.findMaAgencyAndArrearsOrderListByInfo(info);
+        List<MaAgencyAndArrearsOrderVO> maAgencyAndArrearsOrderVOList = maOrderDAO.findMaAgencyAndArrearsOrderListByInfo(info,storeIds);
         return new PageInfo<>(maAgencyAndArrearsOrderVOList);
     }
 
