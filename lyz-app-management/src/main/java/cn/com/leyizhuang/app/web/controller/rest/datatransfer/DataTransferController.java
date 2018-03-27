@@ -497,29 +497,51 @@ public class DataTransferController {
         log.info("开始处理订单审核信息导入job,当前时间:{}", new Date());
         // *********************** 订单迁移处理 ***************
         List<OrderBaseInfo> orderNumberList = this.dataTransferService.findNewOrderNumber();
-        List<String> errorOrderNumber = new ArrayList<>();
-        Integer num = 0;
         List<String> error = new ArrayList<>();
         if (null != orderNumberList && orderNumberList.size() > 0) {
-            for (int i = 0; i < orderNumberList.size(); i++) {
-                String orderNumber = orderNumberList.get(i).getOrderNumber();
-                try {
-                    Integer flag = this.dataTransferService.transferArrearsAudit(orderNumber);
-                    if (flag > 0){
-                        errorOrderNumber.add(orderNumber + "--" + flag);
+            log.info("无订单信息 orderNumberList:{}", orderNumberList);
+        }
+        int size = orderNumberList.size();
+        int nThreads = 6;
+        AtomicInteger countLine = new AtomicInteger();
+        ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
+        List<Future<List<String>>> futures = new ArrayList<>(nThreads);
+
+        for (int i = 0; i < nThreads; i++) {
+            final List<OrderBaseInfo> subList = orderNumberList.subList(size / nThreads * i, size / nThreads * (i + 1));
+            Callable<List<String>> task = () -> {
+                List<String> errorOrderNumber = new ArrayList<>();
+                for (int j = 0; j < subList.size(); j++) {
+                    String orderNumber = subList.get(j).getOrderNumber();
+                    try {
+                        Integer flag = this.dataTransferService.transferArrearsAudit(orderNumber);
+                        if (flag > 0){
+                            errorOrderNumber.add(orderNumber + "--" + flag);
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        error.add(e.getMessage());
+                        errorOrderNumber.add(orderNumber + "--e");
+                        log.info("订单审核信息导入错误,订单号:{}", orderNumber);
                     }
-                }catch (Exception e){
-                    e.printStackTrace();
-                    error.add(e.getMessage());
-                    errorOrderNumber.add(orderNumber + "--e");
-                    log.info("订单卷信息导入错误,订单号:{}", orderNumber);
+                    countLine.addAndGet(1);
                 }
-                num += 1;
+                return errorOrderNumber;
+            };
+            futures.add(executorService.submit(task));
+        }
+        for (Future<List<String>> future : futures) {
+            try {
+                error.addAll(future.get());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
             }
         }
-        log.info("订单卷信息err:{}", error);
-        log.info("订单卷信息导入执行订单数num:{}", num);
-        log.info("订单审核信息导入未成功订单errorOrderNumber:{}", errorOrderNumber);
+        executorService.shutdown();
+        log.info("订单审核信息err:{}", error);
+        log.info("订单审核信息导入执行订单数num:{}", countLine);
         log.info("订单审核信息导入job处理完成,当前时间:{}", new Date());
         return "success";
     }
@@ -529,28 +551,51 @@ public class DataTransferController {
         log.info("开始处理订单卷信息导入job,当前时间:{}", new Date());
         // *********************** 订单迁移处理 ***************
         List<OrderBaseInfo> orderNumberList = this.dataTransferService.findNewOrderNumber();
-        List<String> errorOrderNumber = new ArrayList<>();
-        Integer num = 0;
         List<String> error = new ArrayList<>();
         if (null != orderNumberList && orderNumberList.size() > 0) {
-            for (int i = 0; i < orderNumberList.size(); i++) {
-                try {
-                    Integer flag = this.dataTransferService.transferCoupon(orderNumberList.get(i));
-                    if (flag > 0){
-                        errorOrderNumber.add(orderNumberList.get(i).getOrderNumber() + "--" + flag);
+            log.info("无订单信息 orderNumberList:{}", orderNumberList);
+        }
+        int size = orderNumberList.size();
+        int nThreads = 6;
+        AtomicInteger countLine = new AtomicInteger();
+        ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
+        List<Future<List<String>>> futures = new ArrayList<>(nThreads);
+
+        for (int i = 0; i < nThreads; i++) {
+            final List<OrderBaseInfo> subList = orderNumberList.subList(size / nThreads * i, size / nThreads * (i + 1));
+            Callable<List<String>> task = () -> {
+                List<String> errorOrderNumber = new ArrayList<>();
+                for (int j = 0; j < subList.size(); j++) {
+                    OrderBaseInfo orderBaseInfo = subList.get(j);
+                    try {
+                        Integer flag = this.dataTransferService.transferCoupon(orderBaseInfo);
+                        if (flag > 0){
+                            errorOrderNumber.add(orderBaseInfo.getOrderNumber() + "--" + flag);
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
+                        error.add(e.getMessage());
+                        errorOrderNumber.add(orderBaseInfo.getOrderNumber() + "--e");
+                        log.info("订单卷信息导入错误,订单号:{}", orderBaseInfo);
                     }
-                }catch (Exception e){
-                    e.printStackTrace();
-                    error.add(e.getMessage());
-                    errorOrderNumber.add(orderNumberList.get(i).getOrderNumber() + "--e");
-                    log.info("订单卷信息导入错误,订单号:{}", orderNumberList.get(i).getOrderNumber());
+                    countLine.addAndGet(1);
                 }
-                num += 1;
+                return errorOrderNumber;
+            };
+            futures.add(executorService.submit(task));
+        }
+        for (Future<List<String>> future : futures) {
+            try {
+                error.addAll(future.get());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
             }
         }
+        executorService.shutdown();
         log.info("订单卷信息err:{}", error);
-        log.info("订单卷信息导入执行订单数num:{}", num);
-        log.info("订单卷信息导入未成功订单errorOrderNumber:{}", errorOrderNumber);
+        log.info("订单卷信息导入执行订单数num:{}", countLine);
         log.info("订单卷信息导入job处理完成,当前时间:{}", new Date());
         return "success";
     }
