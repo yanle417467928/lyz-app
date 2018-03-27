@@ -2,6 +2,8 @@ package cn.com.leyizhuang.app.foundation.pojo.response;
 
 import lombok.*;
 
+import java.util.List;
+
 /**
  * 个人销量统计响应类
  * Created by panjie on 2018/3/15.
@@ -37,5 +39,10 @@ public class SellDetailsResponse {
      * 完成率
      */
     private Double finishChance;
+
+    /**
+     * 周完成详情
+     */
+    private List<SellDetailsWeekFinishResponse> weekFinishDetails;
 
 }
