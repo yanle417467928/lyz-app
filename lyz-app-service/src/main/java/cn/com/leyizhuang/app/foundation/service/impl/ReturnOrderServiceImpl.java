@@ -126,12 +126,14 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             returnOrderLogisticInfo.setDeliveryTime(returnDeliveryInfo.getDeliveryTime());
             returnOrderLogisticInfo.setRejecter(returnDeliveryInfo.getRejecter());
             returnOrderLogisticInfo.setRejecterPhone(returnDeliveryInfo.getRejecterPhone());
+            returnOrderLogisticInfo.setDeliveryProvince(returnDeliveryInfo.getDeliveryProvince());
             returnOrderLogisticInfo.setDeliveryCity(returnDeliveryInfo.getDeliveryCity());
             returnOrderLogisticInfo.setDeliveryCounty(returnDeliveryInfo.getDeliveryCounty());
             returnOrderLogisticInfo.setDeliveryStreet(returnDeliveryInfo.getDeliveryStreet());
             returnOrderLogisticInfo.setResidenceName(returnDeliveryInfo.getResidenceName());
             returnOrderLogisticInfo.setDetailedAddress(returnDeliveryInfo.getDetailedAddress());
-            returnOrderLogisticInfo.setReturnFullAddress(returnDeliveryInfo.getDeliveryCity() +
+            returnOrderLogisticInfo.setReturnFullAddress(returnDeliveryInfo.getDeliveryProvince() +
+                    returnDeliveryInfo.getDeliveryCity() +
                     returnDeliveryInfo.getDeliveryCounty() +
                     returnDeliveryInfo.getDeliveryStreet() +
                     returnDeliveryInfo.getResidenceName() +

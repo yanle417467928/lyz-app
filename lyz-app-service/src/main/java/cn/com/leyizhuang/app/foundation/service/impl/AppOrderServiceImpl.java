@@ -406,12 +406,14 @@ public class AppOrderServiceImpl implements AppOrderService {
             logisticsInfo.setDeliveryTime(deliverySimpleInfo.getDeliveryTime());
             logisticsInfo.setReceiver(deliverySimpleInfo.getReceiver());
             logisticsInfo.setReceiverPhone(deliverySimpleInfo.getReceiverPhone());
+            logisticsInfo.setDeliveryProvince(deliverySimpleInfo.getDeliveryProvince());
             logisticsInfo.setDeliveryCity(deliverySimpleInfo.getDeliveryCity());
             logisticsInfo.setDeliveryCounty(deliverySimpleInfo.getDeliveryCounty());
             logisticsInfo.setDeliveryStreet(deliverySimpleInfo.getDeliveryStreet());
             logisticsInfo.setResidenceName(deliverySimpleInfo.getResidenceName());
             logisticsInfo.setDetailedAddress(deliverySimpleInfo.getDetailedAddress());
-            logisticsInfo.setShippingAddress(logisticsInfo.getDeliveryCity().trim() + logisticsInfo.getDeliveryCounty().trim()
+            logisticsInfo.setShippingAddress(logisticsInfo.getDeliveryProvince().trim()
+                    + logisticsInfo.getDeliveryCity().trim() + logisticsInfo.getDeliveryCounty().trim()
                     + logisticsInfo.getDeliveryStreet().trim()
                     + logisticsInfo.getResidenceName().trim() + logisticsInfo.getDetailedAddress().trim());
         }
