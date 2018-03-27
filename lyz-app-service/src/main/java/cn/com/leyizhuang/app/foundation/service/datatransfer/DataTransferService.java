@@ -20,7 +20,7 @@ public interface DataTransferService {
 
     TdOrder getMainOrderInfoByMainOrderNumber(String mainOrderNumber);
 
-    void transferArrearsAudit(String orderNumber);
+    Integer transferArrearsAudit(String orderNumber);
 
     List<TdDeliveryInfoDetails> queryDeliveryTimeSeqBySize(int size);
 
@@ -30,7 +30,7 @@ public interface DataTransferService {
 
     List<TdDeliveryInfoDetails> queryOrderGoodsListByOrderNumber(Long id);
 
-    void transferCoupon(OrderBaseInfo baseInfo);
+    Integer transferCoupon(OrderBaseInfo baseInfo);
 
     void transferOrderBillingDetails();
 

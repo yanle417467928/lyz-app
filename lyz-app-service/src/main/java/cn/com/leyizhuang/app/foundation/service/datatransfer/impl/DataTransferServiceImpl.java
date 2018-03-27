@@ -85,37 +85,37 @@ public class DataTransferServiceImpl implements DataTransferService {
 
     @Override
     @Transactional
-    public void transferArrearsAudit(String orderNumber) {
+    public Integer transferArrearsAudit(String orderNumber) {
 
         Boolean exist = this.transferDAO.existArrearsAudit(orderNumber);
         if (exist) {
-            return;
+            return 0;
         }
         List<TdOwnMoneyRecord> ownMoneyRecords = this.transferDAO.findOwnMoneyRecordByOrderNumber(orderNumber);
         if (null == ownMoneyRecords || ownMoneyRecords.size() == 0) {
-            return;
+            return 0;
         }
         for (int j = 0; j < ownMoneyRecords.size(); j++) {
             Boolean exists = this.transferDAO.existArrearsAudit(orderNumber);
             if (exists) {
-                return;
+                return 0;
             }
             TdOwnMoneyRecord ownMoneyRecord = ownMoneyRecords.get(j);
             List<TdOrder> orders = this.transferDAO.findOrderByOrderNumber(orderNumber);
             if (null == orders || orders.size() == 0) {
 
-                return;
+                return 1;
             }
             TdOrderData agencyRefund = this.transferDAO.findOrderDataByOrderNumber(orderNumber);
             if (null == agencyRefund) {
 
-                return;
+                return 2;
             }
             TdOrder order = orders.get(0);
             Long employeeId = this.transferDAO.findEmployeeByMobile(order.getSellerUsername());
             if (null == employeeId) {
 
-                return;
+                return 3;
             }
             OrderArrearsAuditDO auditDO = new OrderArrearsAuditDO();
             String clerkNo = null;
@@ -135,7 +135,11 @@ public class DataTransferServiceImpl implements DataTransferService {
             auditDO.setSellerphone(order.getSellerUsername());
             auditDO.setDistributionAddress(order.getShippingAddress());
             auditDO.setDistributionTime(TimeTransformUtils.UDateToLocalDateTime(ownMoneyRecord.getCreateTime()));
-            auditDO.setAgencyMoney(agencyRefund.getAgencyRefund());
+            if (null != agencyRefund.getAgencyRefund() && agencyRefund.getAgencyRefund() > 0D){
+                auditDO.setAgencyMoney(agencyRefund.getAgencyRefund());
+            } else {
+                auditDO.setAgencyMoney(ownMoneyRecord.getPayed());
+            }
             auditDO.setOrderMoney(ownMoneyRecord.getOwned());
             auditDO.setRealMoney(ownMoneyRecord.getPayed());
             if (null != ownMoneyRecord.getMoney() && ownMoneyRecord.getMoney() > 0D) {
@@ -158,6 +162,7 @@ public class DataTransferServiceImpl implements DataTransferService {
             auditDO.setWhetherRepayments(ownMoneyRecord.getIsPayed());
             this.transferDAO.insertArrearsAudit(auditDO);
         }
+        return 0;
     }
 
     @Override
@@ -182,7 +187,7 @@ public class DataTransferServiceImpl implements DataTransferService {
 
     @Override
     @Transactional
-    public void transferCoupon(OrderBaseInfo baseInfo) {
+    public Integer transferCoupon(OrderBaseInfo baseInfo) {
 
         String orderNumber = baseInfo.getOrderNumber();
         TdOrderData orderData = this.transferDAO.findOrderDataByOrderNumber(orderNumber);
@@ -190,7 +195,7 @@ public class DataTransferServiceImpl implements DataTransferService {
         if(null != orderData && null != orderData.getCashCouponFee() && orderData.getCashCouponFee() > 0D){
             List<OrderCouponInfo> list = this.transferDAO.findCouponInfoListByType(orderNumber, OrderCouponType.CASH_COUPON);
             if (null != list && list.size() > 0) {
-                return;
+                return 1;
             }
 
             CashCoupon cashCoupon = new CashCoupon();
@@ -223,6 +228,7 @@ public class DataTransferServiceImpl implements DataTransferService {
             customerCashCoupon.setUseTime(orderBaseInfo.getCreateTime());
             customerCashCoupon.setUseOrderNumber(orderNumber);
             customerCashCoupon.setGetTime(orderBaseInfo.getCreateTime());
+            customerCashCoupon.setCondition(orderData.getCashCouponFee());
             customerCashCoupon.setDenomination(orderData.getCashCouponFee());
             customerCashCoupon.setPurchasePrice(0D);
             customerCashCoupon.setEffectiveStartTime(new Date());
@@ -248,16 +254,16 @@ public class DataTransferServiceImpl implements DataTransferService {
         }
         List<TdOrder> orders = this.transferDAO.findOrderInfoByOrderNumber(orderNumber);
         if (null == orders || orders.size() ==0){
-            return;
+            return 2;
         }
         List<OrderCouponInfo> list = this.transferDAO.findCouponInfoListByType(orderNumber, OrderCouponType.PRODUCT_COUPON);
         if (null != list && list.size() > 0) {
-            return;
+            return 0;
         }
         for (int j = 0; j < orders.size(); j++) {
             List<TdOrderGoods> orderGoodsList = this.transferDAO.getTdOrderGoodsByOrderNumber(orders.get(j).getId());
             if (null == orderGoodsList || orderGoodsList.size() ==0){
-                return;
+                continue;
             }
             for (int k = 0; k < orderGoodsList.size(); k++) {
                 TdOrderGoods tdOrderGoods = orderGoodsList.get(k);
@@ -265,7 +271,7 @@ public class DataTransferServiceImpl implements DataTransferService {
 
                     List<TdCoupon> couponList = this.transferDAO.getCouponListBySkuAndOrderNumber(tdOrderGoods.getSku(), orders.get(j).getOrderNumber());
                     if (null == couponList || couponList.size() ==0){
-                        return;
+                        return 3;
                     }
                     for (int l = 0; l < couponList.size(); l++) {
                         TdCoupon tdCoupon = couponList.get(l);
@@ -305,6 +311,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                 }
             }
         }
+        return 0;
     }
 
     @Override

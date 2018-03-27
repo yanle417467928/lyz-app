@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -231,18 +232,29 @@ public class DataTransferController {
         log.info("开始处理订单审核信息导入job,当前时间:{}", new Date());
         // *********************** 订单迁移处理 ***************
         List<OrderBaseInfo> orderNumberList = this.dataTransferService.findNewOrderNumber();
+        List<String> errorOrderNumber = new ArrayList<>();
+        Integer num = 0;
+        List<String> error = new ArrayList<>();
         if (null != orderNumberList && orderNumberList.size() > 0) {
             for (int i = 0; i < orderNumberList.size(); i++) {
                 String orderNumber = orderNumberList.get(i).getOrderNumber();
                 try {
-                    this.dataTransferService.transferArrearsAudit(orderNumber);
+                    Integer flag = this.dataTransferService.transferArrearsAudit(orderNumber);
+                    if (flag > 0){
+                        errorOrderNumber.add(orderNumber + "--" + flag);
+                    }
                 }catch (Exception e){
                     e.printStackTrace();
+                    error.add(e.getMessage());
+                    errorOrderNumber.add(orderNumber + "--e");
                     log.info("订单卷信息导入错误,订单号:{}", orderNumber);
                 }
-
+                num += 1;
             }
         }
+        log.info("订单卷信息err:{}", error);
+        log.info("订单卷信息导入执行订单数num:{}", num);
+        log.info("订单审核信息导入未成功订单errorOrderNumber:{}", errorOrderNumber);
         log.info("订单审核信息导入job处理完成,当前时间:{}", new Date());
         return "success";
     }
@@ -252,17 +264,28 @@ public class DataTransferController {
         log.info("开始处理订单卷信息导入job,当前时间:{}", new Date());
         // *********************** 订单迁移处理 ***************
         List<OrderBaseInfo> orderNumberList = this.dataTransferService.findNewOrderNumber();
+        List<String> errorOrderNumber = new ArrayList<>();
+        Integer num = 0;
+        List<String> error = new ArrayList<>();
         if (null != orderNumberList && orderNumberList.size() > 0) {
             for (int i = 0; i < orderNumberList.size(); i++) {
                 try {
-                    this.dataTransferService.transferCoupon(orderNumberList.get(i));
+                    Integer flag = this.dataTransferService.transferCoupon(orderNumberList.get(i));
+                    if (flag > 0){
+                        errorOrderNumber.add(orderNumberList.get(i).getOrderNumber() + "--" + flag);
+                    }
                 }catch (Exception e){
                     e.printStackTrace();
+                    error.add(e.getMessage());
+                    errorOrderNumber.add(orderNumberList.get(i).getOrderNumber() + "--e");
                     log.info("订单卷信息导入错误,订单号:{}", orderNumberList.get(i).getOrderNumber());
                 }
-
+                num += 1;
             }
         }
+        log.info("订单卷信息err:{}", error);
+        log.info("订单卷信息导入执行订单数num:{}", num);
+        log.info("订单卷信息导入未成功订单errorOrderNumber:{}", errorOrderNumber);
         log.info("订单卷信息导入job处理完成,当前时间:{}", new Date());
         return "success";
     }
