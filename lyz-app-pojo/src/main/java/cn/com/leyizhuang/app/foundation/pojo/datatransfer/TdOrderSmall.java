@@ -105,5 +105,10 @@ public class TdOrderSmall {
      */
     private Double totalGoodsPrice;
 
+    /**
+     * 真实用户id
+     */
+    private Long realUserId;
+
 
 }

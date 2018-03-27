@@ -420,6 +420,7 @@
         serial_number
         FROM td_own_money_record_copy
         WHERE order_number = #{orderNumber}
+        LIMIT 1
     </select>
 
     <insert id="saveOrderBillingDetails"
