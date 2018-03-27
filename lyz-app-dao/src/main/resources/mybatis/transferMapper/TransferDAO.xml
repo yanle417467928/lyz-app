@@ -30,7 +30,7 @@
             real_user_username,
             seller_real_name,
             seller_username,
-            shipping_address
+            IFNULL(shipping_address, '') shipping_address
         FROM td_order_copy
         WHERE main_order_number = #{orderNumber}
     </select>
@@ -302,7 +302,7 @@
     </select>
 
     <select id="getCouponListBySkuAndOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdCoupon">
-        SELECT id, coupon_order_number, buy_price, is_buy
+        SELECT id, coupon_order_number, IFNULL(buy_price, 0) buy_price, is_buy
         FROM td_coupon
         WHERE sku = #{sku} AND order_number = #{orderNumber}
     </select>
