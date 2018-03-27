@@ -62,6 +62,7 @@ function findStoreByCity(idArray) {
                 store += "<label id='" + item.storeId + "' class='label label-default' onclick='checkStore(this)'>" + item.storeName + "</label>";
             })
             $("#stores").html(store);
+            $('#stores label').css({'white-space':'normal','margin':'5px','display':'inline-block'});
         }
     });
 }

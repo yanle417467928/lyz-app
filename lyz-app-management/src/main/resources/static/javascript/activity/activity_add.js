@@ -68,9 +68,10 @@ function findStoreByCity(cityId) {
         success: function (result) {
             clearTimeout($global.timer);
             $.each(result, function (i, item) {
-                store += "<label id='"+item.storeId+"' class='label label-default' onclick='checkStore(this)'>"+item.storeName +"</label>";
+                store += "<label id='"+item.storeId+"' class='label label-default'  onclick='checkStore(this)'>"+item.storeName +"</label>";
             })
             $("#stores").html(store);
+            $('#stores label').css({'white-space':'normal','margin':'5px','display':'inline-block'});
         }
     });
 }

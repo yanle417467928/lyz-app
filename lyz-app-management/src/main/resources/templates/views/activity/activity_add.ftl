@@ -29,6 +29,13 @@
 
     <script type="text/javascript" src="/javascript/activity/activity_add.js"></script>
 </head>
+<style>
+    #stores label{
+        white-space: normal!important;
+        margin: 5px!important;
+        display: inline-block!important;
+    }
+</style>
 <body>
 <section class="content-header">
     <h1>新增促销</h1>
@@ -556,6 +563,10 @@
     $(function () {
         // 初始化城市信息
         findCityList();
+//        white-space: normal!important;
+//        margin: 5px!important;
+//        display: inline-block!important;
+
     })
 
 </script>

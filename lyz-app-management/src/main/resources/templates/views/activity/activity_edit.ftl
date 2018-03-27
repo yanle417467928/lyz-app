@@ -610,6 +610,8 @@
             // 隐藏保存按钮
             $("#saveBtn").hide();
         }
+
+        $('#stores label').css({'white-space':'normal','margin':'5px','display':'inline-block'});
     })
 
 </script>

@@ -41,6 +41,24 @@
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1-1">
                 <form id="activity_form">
+                    <div class="row">
+                        <div class="col-md-6 col-xs-6">
+                            <div class="form-group">
+                                <label for="exampleInputFile">上传图像</label>
+                                <input id="uploadQrcodeBtn" type="file" name="file" multiple class="file-loading">
+                                <p class="help-block">支持jpg、jpeg、png格式，大小不超过2.0M ，规格 360*200</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="height: 150px">
+                        <div class="col-md-6 col-xs-6">
+                            <div class="form-group" id='coverImageShow'>
+                                <input name="picUrl" type="hidden" id="coverImg" class="form-control">
+                                <div class="img-box" id="coverImageBox">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="row">
                         <div class="col-xs-12 col-md-6">
