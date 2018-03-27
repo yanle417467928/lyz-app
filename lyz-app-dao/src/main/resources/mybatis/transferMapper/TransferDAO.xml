@@ -30,7 +30,8 @@
             real_user_username,
             seller_real_name,
             seller_username,
-            IFNULL(shipping_address, '') shipping_address
+            IFNULL(shipping_address, '') shipping_address,
+            order_number
         FROM td_order_copy
         WHERE main_order_number = #{orderNumber}
     </select>

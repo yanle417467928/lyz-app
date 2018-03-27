@@ -61,7 +61,7 @@ public class MaReportDownloadRestController extends BaseRestController{
     }
 
     @GetMapping(value = "/receipts/download")
-    public String receiptsDownload(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId, String storeType, String startTime, String endTime,
+    public void receiptsDownload(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId, String storeType, String startTime, String endTime,
                                               String payType, String keywords) {
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
@@ -75,12 +75,18 @@ public class MaReportDownloadRestController extends BaseRestController{
 
         response.setContentType("text/html;charset=UTF-8");
         //创建文件
-        String fileurl = "D://收款报表-"+ DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") +".xls";//如  D:/xx/xx/xxx.xls
+        String fileurl = "收款报表-"+ DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") +".xls";//如  D:/xx/xx/xxx.xls
+
         WritableWorkbook wwb = null;
-
         try {
-
-            wwb = this.getWorkbook(fileurl);
+            response.reset();
+            fileurl = new String(fileurl.getBytes("GBK"), "ISO-8859-1");
+            response.setHeader("Content-Disposition",
+                    "attachment; filename=" + fileurl);
+            response.setContentType("application/octet-stream; charset=utf-8");
+            OutputStream out = response.getOutputStream();
+            wwb = Workbook.createWorkbook(out);
+//            wwb = this.getWorkbook(fileurl);
 
             //excel单表最大行数是65535
             int maxSize = 0;
@@ -146,8 +152,6 @@ public class MaReportDownloadRestController extends BaseRestController{
                 //设置标题
                 ws = this.setHeader(ws, titleFormat, columnView, titles, row);
 
-
-
                 row += 1;
                 //填写表体数据
                 for (int j = 0; j < maxRowNum; j++) {
@@ -165,22 +169,20 @@ public class MaReportDownloadRestController extends BaseRestController{
                     ws.addCell(new Label(7, j + row, receiptsReportDO.getRemarks()));
                 }
             }
-            return fileurl;
         }catch(Exception e) {
             System.out.println(e);
+            e.printStackTrace();
         }finally {
             if(wwb != null) {
                 try {
                     wwb.write();//刷新（或写入），生成一个excel文档
                     wwb.close();//关闭
-//                        exportXML(fileurl, response);//下载excel文件
+//                    exportXML(fileurl, response);//下载excel文件
                 }catch(Exception e) {
                     e.printStackTrace();
                 }
             }
         }
-
-        return "";
     }
 
 
@@ -193,10 +195,9 @@ public class MaReportDownloadRestController extends BaseRestController{
             System.out.println("下载文件名格式转换错误！");
         }
         try {
-            OutputStream os;
             response.reset();
             response.setHeader("Content-Disposition",
-                    "attachment; filename=" + filename +".xls");
+                    "attachment; filename=" + filename);
             response.setContentType("application/octet-stream; charset=utf-8");
         } catch (Exception e) {
             e.printStackTrace();
