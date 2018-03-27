@@ -118,8 +118,9 @@ public class DeliveryInfoController {
                         }
                         case "封车": {
                             deliveryInfoDetails.setLogisticStatus(LogisticStatus.SEALED_CAR);
-                            TdDeliveryInfoDetails deliveryInfoDetail = dataTransferService.queryDeliveryInfoDetailByOrderNumber(tdDeliveryInfoDetails.getMainOrderNumber());
-                            if (deliveryInfoDetail != null) {
+                            List<TdDeliveryInfoDetails> deliveryInfoDetailList = dataTransferService.queryDeliveryInfoDetailByOrderNumber(tdDeliveryInfoDetails.getMainOrderNumber());
+                            if (AssertUtil.isNotEmpty(deliveryInfoDetailList)) {
+                                TdDeliveryInfoDetails deliveryInfoDetail = deliveryInfoDetailList.get(0);
                                 deliveryInfoDetails.setOperatorNo(deliveryInfoDetail.getDriver());
                                 deliveryInfoDetails.setTaskNo(deliveryInfoDetail.getTaskNo());
                                 deliveryInfoDetails.setWarehouseNo(deliveryInfoDetail.getWhNo());

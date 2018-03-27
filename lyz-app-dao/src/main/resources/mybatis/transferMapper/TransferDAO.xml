@@ -367,4 +367,40 @@
         WHERE create_time &gt; '2017-10-01 00:00:00'
         LIMIT #{size}, 1000;
     </select>
+
+    <select id="getOwnMoneyRecordByOrderNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOwnMoneyRecord">
+        SELECT
+        owned,
+        payed,
+        money,
+        pos,
+        create_time,
+        ispassed,
+        is_payed,
+        serial_number
+        FROM td_own_money_record_copy
+        WHERE order_number = #{orderNumber}
+    </select>
+
+    <insert id="saveOrderBillingDetails"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails">
+        INSERT INTO ord_billing_details (create_time, oid, ord_no, total_goods_price, member_discount, promotion_discount, freight, upstairs_fee,
+        lebi_quantity, lebi_cash_discount, cash_coupon_discount, product_coupon_discount, cus_pre_deposit,
+        online_pay_type, online_pay_amount, st_pre_deposit, emp_credit_money, st_credit_money,
+        st_subvention, order_amount_subtotal, amount_payable, collection_amount, arrearage, is_owner_receiving,
+        online_pay_time, pay_up_time, is_pay_up, store_cash, store_other_money, store_pos_money, store_pos_number)
+        VALUES
+        (#{createTime}, #{oid}, #{orderNumber}, #{totalGoodsPrice}, #{memberDiscount}, #{promotionDiscount},
+        #{freight},
+        #{upstairsFee}, #{lebiQuantity}, #{lebiCashDiscount}, #{cashCouponDiscount},
+        #{productCouponDiscount}, #{cusPreDeposit},
+        #{onlinePayType}, #{onlinePayAmount}, #{stPreDeposit}, #{empCreditMoney}, #{storeCreditMoney},
+        #{storeSubvention}, #{orderAmountSubtotal},
+        #{amountPayable}, #{collectionAmount}, #{arrearage}, #{isOwnerReceiving}, #{onlinePayTime},
+        #{payUpTime}, #{isPayUp}, #{storeCash}, #{storeOtherMoney}, #{storePosMoney},
+        #{storePosNumber}
+        )
+    </insert>
+
 </mapper>

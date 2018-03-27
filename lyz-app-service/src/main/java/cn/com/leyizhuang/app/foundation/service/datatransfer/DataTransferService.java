@@ -24,7 +24,7 @@ public interface DataTransferService {
 
     List<TdDeliveryInfoDetails> queryDeliveryTimeSeqBySize(int size);
 
-    TdDeliveryInfoDetails queryDeliveryInfoDetailByOrderNumber(String orderNo);
+    List<TdDeliveryInfoDetails> queryDeliveryInfoDetailByOrderNumber(String orderNo);
 
     List<TdDeliveryInfoDetails> queryTdOrderListBySize(int size);
 
@@ -32,7 +32,7 @@ public interface DataTransferService {
 
     Integer transferCoupon(OrderBaseInfo baseInfo);
 
-    void transferOrderBillingDetails();
+    Integer transferOrderBillingDetails();
 
     AppEmployee findFitEmployeeInfoById(Long userId);
 
