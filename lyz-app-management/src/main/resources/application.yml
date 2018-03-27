@@ -131,7 +131,7 @@ deploy:
     bucket: leyizhuang-dev
   lyz:
     qrcodeRegister: http://eqtest.leyizhuang.com.cn:8089
-    baseUrl: lyz-app-management\src\main\resources\static\images\
+    baseUrl: \lyz-app-management\src\main\resources\static\images\
 
 ---
 ##################################################### 测试环境配置 #################################################

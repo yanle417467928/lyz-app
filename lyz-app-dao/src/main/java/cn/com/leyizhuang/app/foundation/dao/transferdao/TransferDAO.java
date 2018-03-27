@@ -28,11 +28,14 @@ public interface TransferDAO {
     List<String> getTransferStoreMainOrderNumber(Date startTime, Date endTime);
 
     TdOrder getMainOrderInfoByMainOrderNumber(@Param(value = "mainOrderNumber") String mainOrderNumber);
+
     List<OrderBaseInfo> findNewOrderNumber();
 
     List<TdOwnMoneyRecord> findOwnMoneyRecordByOrderNumber(String orderNumber);
 
     List<TdOrder> findOrderByOrderNumber(String orderNumber);
+
+    List<TdOrder> findOrderAllFieldByOrderNumber(String orderNumber);
 
     int insertArrearsAudit(OrderArrearsAuditDO orderArrearsAuditDO);
 
@@ -46,6 +49,10 @@ public interface TransferDAO {
 
     Long findDeliveryInfoByClerkNo(String clerkNo);
 
+    List<TdOrderGoods> findTdorderGoodsByTdOrderId(@Param("tdOrderId") Long tdOrderId);
+
+    Boolean isExitTdOrderGoodsLine(@Param("orderNo") String orderNo,@Param("gid") Long gid,@Param("goodsLineType") String goodsLineType);
+
     List<TdOrderLogistics> queryOrderLogistcs(int size);
 
     void saveOrderLogisticsInfo(OrderLogisticsInfo orderLogisticsInfo);
@@ -57,6 +64,8 @@ public interface TransferDAO {
     List<TdDeliveryInfoDetails> queryTdOrderListBySize(int size);
 
     List<TdDeliveryInfoDetails> queryOrderGoodsListByOrderNumber(Long id);
+
+    List<OrderBaseInfo> findNewOrderNumberTest();
 
     AppEmployee findFitEmployeeInfoById(Long userId);
 

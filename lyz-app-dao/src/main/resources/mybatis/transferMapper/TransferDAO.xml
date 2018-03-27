@@ -30,7 +30,15 @@
             real_user_username,
             seller_real_name,
             seller_username,
-            shipping_address
+            IFNULL(shipping_address, '') shipping_address
+        FROM td_order_copy
+        WHERE main_order_number = #{orderNumber}
+    </select>
+
+    <select id="findOrderAllFieldByOrderNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder">
+        SELECT
+        *
         FROM td_order_copy
         WHERE main_order_number = #{orderNumber}
     </select>
@@ -150,12 +158,6 @@
         INSERT INTO ord_coupon_info (oid, ord_no, coupon_type, coupon_id, purchase_price, cost_price, get_type, sku)
         VALUES (#{oid}, #{orderNumber}, #{couponType}, #{couponId}, #{purchasePrice}, #{costPrice}, #{getType}, #{sku});
     </insert>
-
-
-    <select id="getTdOrderGoods" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods">
-        SELECT *
-        FROM td_order_goods
-    </select>
 
     <select id="queryDeliveryTimeSeqBySize" parameterType="java.lang.Integer"
             resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdDeliveryInfoDetails">
@@ -281,6 +283,24 @@
         #{receiver}, #{receiverPhone}, #{shippingAddress}, #{residenceName}, #{deliveryCity}, #{deliveryCounty},
         #{deliveryStreet}, #{detailedAddress})
     </insert>
+    <select id="getTdOrderGoods" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods">
+        SELECT * from td_order_goods_copy g RIGHT JOIN td_order o
+        where g.td_order_id = o.id
+    </select>
+
+    <select id="findTdorderGoodsByTdOrderId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods">
+        select * from td_order_goods_copy where td_order_id = #{tdOrderId};
+    </select>
+
+    <select id="isExitTdOrderGoodsLine" resultType="java.lang.Boolean">
+        SELECT EXISTS (
+                select 1 from ord_goods_info where ord_no = #{orderNo} and gid = #{gid} and goods_line_type = #{goodsLineType}
+        )
+    </select>
+
+    <select id="findNewOrderNumberTest" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
+        SELECT main_order_number orderNumber, id id FROM td_order_copy
+    </select>
 
     <select id="findOrderInfoByOrderNumber" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder">
         SELECT id, order_number,jx_total_price
@@ -302,7 +322,7 @@
     </select>
 
     <select id="getCouponListBySkuAndOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdCoupon">
-        SELECT id, coupon_order_number, buy_price, is_buy
+        SELECT id, coupon_order_number, IFNULL(buy_price, 0) buy_price, is_buy
         FROM td_coupon
         WHERE sku = #{sku} AND order_number = #{orderNumber}
     </select>

@@ -11,6 +11,7 @@ import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferService;
 import lombok.extern.slf4j.Slf4j;
+import cn.com.leyizhuang.app.foundation.service.datatransfer.OrderGoodsTransferService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +31,9 @@ public class DataTransferController {
 
     @Resource
     private DataTransferService dataTransferService;
+
+    @Resource
+    private OrderGoodsTransferService orderGoodsTransferService;
 
     @Resource
     private AppStoreService storeService;
@@ -295,5 +299,11 @@ public class DataTransferController {
         log.info("开始处理订单账单导入,当前时间:{}", new Date());
         dataTransferService.transferOrderBillingDetails();
         return "success";
+    }
+
+    @RequestMapping(value = "/data/transfer/orderGoodsInfo",method = RequestMethod.GET)
+    public void orderGoodsInfoTransfer(){
+
+        orderGoodsTransferService.transferAll();
     }
 }

@@ -110,10 +110,10 @@ public class DataTransferServiceImpl implements DataTransferService {
             }
             TdOrder order = orders.get(0);
             Long employeeId = this.transferDAO.findEmployeeByMobile(order.getSellerUsername());
-            if (null == employeeId) {
-
-                return 3;
-            }
+//            if (null == employeeId) {
+//
+//                return 3;
+//            }
             OrderArrearsAuditDO auditDO = new OrderArrearsAuditDO();
             String clerkNo = null;
             for (int k = 0; k < orders.size(); k++) {
@@ -130,7 +130,7 @@ public class DataTransferServiceImpl implements DataTransferService {
             auditDO.setSellerId(employeeId);
             auditDO.setSellerName(order.getSellerRealName());
             auditDO.setSellerphone(order.getSellerUsername());
-            auditDO.setDistributionAddress(order.getShippingAddress());
+            auditDO.setDistributionAddress(order.getShippingAddress().replaceAll("null", ""));
             auditDO.setDistributionTime(TimeTransformUtils.UDateToLocalDateTime(ownMoneyRecord.getCreateTime()));
             if (null != agencyRefund.getAgencyRefund() && agencyRefund.getAgencyRefund() > 0D){
                 auditDO.setAgencyMoney(agencyRefund.getAgencyRefund());
@@ -139,10 +139,10 @@ public class DataTransferServiceImpl implements DataTransferService {
             }
             auditDO.setOrderMoney(ownMoneyRecord.getOwned());
             auditDO.setRealMoney(ownMoneyRecord.getPayed());
-            if (null != ownMoneyRecord.getMoney() && ownMoneyRecord.getMoney() > 0D) {
-                auditDO.setPaymentMethod("现金");
-            } else {
+            if (null != ownMoneyRecord.getPos() && ownMoneyRecord.getPos() > 0D) {
                 auditDO.setPaymentMethod("POS");
+            } else {
+                auditDO.setPaymentMethod("现金");
             }
             if (null == ownMoneyRecord.getIspassed()) {
                 auditDO.setStatus(ArrearsAuditStatus.AUDITING);
