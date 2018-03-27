@@ -103,6 +103,22 @@ public class DataTransferServiceImpl implements DataTransferService {
     }
 
     @Override
+    public AppCustomer findCustomerByCustomerMobile(String realUserUsername) {
+        if (null != realUserUsername){
+            return transferDAO.findCustomerByCustomerMobile(realUserUsername);
+        }
+        return null;
+    }
+
+    @Override
+    public List<TdOrderSmall> getPendingTransferOrder(Date startTime, Date endTime) {
+        if (null != startTime && null != endTime){
+            return transferDAO.getPendingTransferOrder(startTime,endTime);
+        }
+        return null;
+    }
+
+    @Override
     @Transactional
     public void transferArrearsAudit(String orderNumber) {
 

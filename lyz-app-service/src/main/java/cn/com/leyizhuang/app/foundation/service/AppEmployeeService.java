@@ -83,4 +83,7 @@ public interface AppEmployeeService {
     AppEmployee findDeliveryByClerkNo(String driver);
 
     List<AppEmployee> findQrcodeIsNull();
+
+
+    List<AppEmployee> findAllSeller();
 }

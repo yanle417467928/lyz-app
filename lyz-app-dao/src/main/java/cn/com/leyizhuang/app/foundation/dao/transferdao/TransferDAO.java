@@ -99,4 +99,8 @@ public interface TransferDAO {
     List<OrderCouponInfo> findCouponInfoListByType(@Param("orderNumber")String orderNumber, @Param("type") OrderCouponType type);
 
     TdOrderDeliveryTimeSeqDetail findDeliveryStatusByMainOrderNumber(String mainOrderNumber);
+
+    AppCustomer findCustomerByCustomerMobile(String realUserUsername);
+
+    List<TdOrderSmall> getPendingTransferOrder(Date startTime, Date endTime);
 }

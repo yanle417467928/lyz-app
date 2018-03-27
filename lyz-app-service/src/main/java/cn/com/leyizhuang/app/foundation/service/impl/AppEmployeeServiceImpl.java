@@ -266,4 +266,9 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     public List<AppEmployee> findQrcodeIsNull(){
         return employeeDAO.findQrcodeIsNull();
     }
+
+    @Override
+    public List<AppEmployee> findAllSeller() {
+        return employeeDAO.findAllSeller();
+    }
 }

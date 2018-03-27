@@ -853,4 +853,14 @@
         FROM cus_pre_deposit
         WHERE cus_id = #{cusId}
     </select>
+
+    <select id="findAllCustomer" resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer">
+        SELECT
+            cus_id,
+            name,
+            mobile,
+            customer_type
+        FROM cus_customer;
+    </select>
+
 </mapper>

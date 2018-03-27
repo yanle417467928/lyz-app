@@ -178,4 +178,6 @@ public interface AppCustomerDAO {
     void updateCustomerTypeByUserId(@Param("userId")Long userId);
 
     CustomerPreDeposit findCustomerPreDepositByCustomerId(@Param(value = "cusId") Long cusId);
+
+    List<AppCustomer> findAllCustomer();
 }

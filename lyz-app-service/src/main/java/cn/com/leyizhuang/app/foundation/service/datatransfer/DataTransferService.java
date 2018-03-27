@@ -1,19 +1,15 @@
 package cn.com.leyizhuang.app.foundation.service.datatransfer;
 
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
+import cn.com.leyizhuang.app.foundation.pojo.datatransfer.*;
 
 import java.util.Date;
 import java.util.List;
 
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdDeliveryInfoDetails;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderDeliveryTimeSeqDetail;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderLogistics;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOwnMoneyRecord;
 
 import java.util.List;
 
@@ -53,4 +49,8 @@ public interface DataTransferService {
     TdOrderDeliveryTimeSeqDetail findDeliveryStatusByMainOrderNumber(String mainOrderNumber);
 
     List<OrderBaseInfo> findNewOrderNumber();
+
+    AppCustomer findCustomerByCustomerMobile(String realUserUsername);
+
+    List<TdOrderSmall> getPendingTransferOrder(Date startTime, Date endTime);
 }

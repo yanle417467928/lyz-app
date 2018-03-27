@@ -86,4 +86,6 @@ public interface AppEmployeeDAO {
     AppEmployee findDeliveryByClerkNo(String driver);
 
     List<AppEmployee> findQrcodeIsNull();
+
+    List<AppEmployee> findAllSeller();
 }

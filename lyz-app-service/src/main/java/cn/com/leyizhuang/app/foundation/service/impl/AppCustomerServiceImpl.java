@@ -630,4 +630,10 @@ public class AppCustomerServiceImpl implements AppCustomerService {
         }
         return null;
     }
+
+    @Override
+    public List<AppCustomer> findAllCustomer() {
+
+        return customerDAO.findAllCustomer();
+    }
 }

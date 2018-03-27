@@ -233,36 +233,36 @@
 
     <select id="getOrderGoodsInfoById" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
         SELECT
-        id                      id,
-        oid                     oid,
-        ord_no                  orderNumber,
-        gid                     gid,
-        sku                     sku,
-        sku_name                skuName,
-        retail_price            retailPrice,
-        VIP_price               VIPPrice,
-        wholesale_price         wholesalePrice,
-        settlement_price        settlementPrice,
-        promotion_id            promotionId,
-        is_price_share          isPriceShare,
-        promotion_share_price   promotionSharePrice,
-        lb_share_price          lbSharePrice,
-        cash_coupon_share_price cashCouponSharePrice,
-        cash_return_share_price cashReturnSharePrice,
-        return_price            returnPrice,
-        is_returnable           isReturnable,
-        return_priority         returnPriority,
-        order_qty               orderQuantity,
-        shipping_qty            shippingQuantity,
-        return_qty              returnQuantity,
-        returnable_qty          returnableQuantity,
-        goods_line_type         goods_line_type,
-        price_item_id           priceItemId,
-        company_flag            companyFlag
+            id                      id,
+            oid                     oid,
+            ord_no                  orderNumber,
+            gid                     gid,
+            sku                     sku,
+            sku_name                skuName,
+            retail_price            retailPrice,
+            VIP_price               VIPPrice,
+            wholesale_price         wholesalePrice,
+            settlement_price        settlementPrice,
+            promotion_id            promotionId,
+            is_price_share          isPriceShare,
+            promotion_share_price   promotionSharePrice,
+            lb_share_price          lbSharePrice,
+            cash_coupon_share_price cashCouponSharePrice,
+            cash_return_share_price cashReturnSharePrice,
+            return_price            returnPrice,
+            is_returnable           isReturnable,
+            return_priority         returnPriority,
+            order_qty               orderQuantity,
+            shipping_qty            shippingQuantity,
+            return_qty              returnQuantity,
+            returnable_qty          returnableQuantity,
+            goods_line_type         goods_line_type,
+            price_item_id           priceItemId,
+            company_flag            companyFlag
         FROM
-        ord_goods_info
+            ord_goods_info
         WHERE
-        id = #{id}
+            id = #{id}
     </select>
 
     <select id="getAmountPayableByOrderNumber" resultType="java.lang.Double">
@@ -302,7 +302,7 @@
     <select id="getOrderDetail" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
         SELECT
-            oid id,
+            oid    id,
             ord_no order_number,
             order_type,
             create_time,
@@ -470,17 +470,18 @@
 
     </select>
 
-    <select id="getOrderGoodsZgInfoByUserId" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsZgInfo">
+    <select id="getOrderGoodsZgInfoByUserId" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsZgInfo">
         SELECT
-        id id,
-        user_id userId,
-        gid gid,
-        sku sku,
-        ord_no orderNo,
-        goods_line_id goodsLineId,
-        create_time createTime
+            id            id,
+            user_id       userId,
+            gid           gid,
+            sku           sku,
+            ord_no        orderNo,
+            goods_line_id goodsLineId,
+            create_time   createTime
         FROM ord_goods_zg_info
-        where user_id = #{userId}
+        WHERE user_id = #{userId}
     </select>
 
     <insert id="savePaymentDetails"
@@ -537,35 +538,57 @@
          delivery_type, order_subject_type, creator_identity_type, creator_id, creator_name, creator_phone,
          store_id, store_code, store_structure_code, sales_consult_id, sales_consult_name, sales_consult_phone,
          customer_id, customer_name, customer_phone, total_goods_price, is_evaluated, audit_no,
-         remark, city_id, city_name, customer_type, store_org_id, sob_id, sales_number,is_record_sales
-        )
-        VALUES
-            (
-                #{orderNumber}, #{orderType}, #{createTime}, #{effectiveEndTime}, #{status}, #{deliveryStatus},
-                                #{pickUpCode}, #{deliveryType}, #{orderSubjectType}, #{creatorIdentityType},
-                                #{creatorId},
-                #{creatorName},
-                #{creatorPhone}, #{storeId}, #{storeCode}, #{storeStructureCode}, #{salesConsultId},
-                #{salesConsultName},
-                #{salesConsultPhone}, #{customerId}, #{customerName}, #{customerPhone}, #{totalGoodsPrice},
-                                                                      #{isEvaluated}, #{auditNo}, #{remark}, #{cityId},
-                                                                      #{cityName}, #{customerType}, #{storeOrgId},
-                                                                      #{sobId}, #{salesNumber},#{isRecordSales}
-            )
+         remark, city_id, city_name, customer_type, store_org_id, sob_id, sales_number, is_record_sales
+        ) VALUES (
+            #{orderNumber},
+            #{orderType},
+            #{createTime},
+            #{effectiveEndTime},
+            #{status},
+            #{deliveryStatus},
+            #{pickUpCode},
+            #{deliveryType},
+            #{orderSubjectType},
+            #{creatorIdentityType},
+            #{creatorId},
+            #{creatorName},
+            #{creatorPhone},
+            #{storeId},
+            #{storeCode},
+            #{storeStructureCode},
+            #{salesConsultId},
+            #{salesConsultName},
+            #{salesConsultPhone},
+            #{customerId},
+            #{customerName},
+            #{customerPhone},
+            #{totalGoodsPrice},
+            #{isEvaluated},
+            #{auditNo},
+            #{remark},
+            #{cityId},
+            #{cityName},
+            #{customerType},
+            #{storeOrgId},
+            #{sobId},
+            #{salesNumber},
+            #{isRecordSales})
+
     </insert>
 
     <insert id="saveOrderLogisticsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo">
         INSERT INTO ord_logistics_info (oid, ord_no, delivery_type, booking_store_code, booking_store_name, booking_store_address, delivery_time,
                                         delivery_clerk_no, delivery_clerk_id, delivery_clerk_name, warehouse, is_owner_receiving, receiver,
-        receiver_phone, shipping_address, residence_name,delivery_province, delivery_city, delivery_county,
-        delivery_street,
+                                        receiver_phone, shipping_address, residence_name, delivery_province, delivery_city, delivery_county,
+                                        delivery_street,
                                         detailed_address)
         VALUES (#{oid}, #{ordNo}, #{deliveryType}, #{bookingStoreCode}, #{bookingStoreName},
                         #{bookingStoreAddress}, #{deliveryTime}, #{deliveryClerkNo}, #{deliveryClerkId},
                         #{deliveryClerkName}, #{warehouse}, #{isOwnerReceiving},
-        #{receiver}, #{receiverPhone}, #{shippingAddress}, #{residenceName},#{deliveryProvince}, #{deliveryCity},
-        #{deliveryCounty},
-                #{deliveryStreet}, #{detailedAddress})
+                                                            #{receiver}, #{receiverPhone}, #{shippingAddress},
+                                                            #{residenceName}, #{deliveryProvince}, #{deliveryCity},
+                                                            #{deliveryCounty},
+                                                            #{deliveryStreet}, #{detailedAddress})
     </insert>
     <insert id="saveOrderGoodsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo"
             useGeneratedKeys="true" keyProperty="id">
@@ -590,12 +613,12 @@
     <insert id="saveOrderGoodsZgInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsZgInfo">
         INSERT INTO ord_goods_zg_info
         (
-          user_id,gid,sku,ord_no,goods_line_id,create_time
+            user_id, gid, sku, ord_no, goods_line_id, create_time
         )
         VALUES
-        (
-          #{userId},#{gid},#{sku},#{orderNo},#{goodsLineId},#{createTime}
-        )
+            (
+                #{userId}, #{gid}, #{sku}, #{orderNo}, #{goodsLineId}, #{createTime}
+            )
 
     </insert>
 

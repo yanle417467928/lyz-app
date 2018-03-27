@@ -310,43 +310,44 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
 
     <insert id="addEmpCreditMoneyChangeLog"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoneyChangeLog">
-        INSERT INTO emp_credit_money_change_log (emp_id, create_time, temp_credit_change_id,available_credit_change_id,fixed_credit_change_id,
+        INSERT INTO emp_credit_money_change_log (emp_id, create_time, temp_credit_change_id, available_credit_change_id, fixed_credit_change_id,
                                                  reference_number, change_type, change_type_desc, operator_id, operator_type, operator_ip)
-        VALUES (#{empId}, #{createTime}, #{tempCreditChangeId}, #{availableCreditChangId},#{fixedCreditChangeId},
+        VALUES (#{empId}, #{createTime}, #{tempCreditChangeId}, #{availableCreditChangId}, #{fixedCreditChangeId},
                           #{referenceNumber}, #{changeType}, #{changeTypeDesc}, #{operatorId}, #{operatorType},
-                #{operatorIp})
+                          #{operatorIp})
     </insert>
 
-    <insert id="saveCreditLimitAvailableChange"  useGeneratedKeys="true" keyProperty="id" parameterType="EmpAvailableCreditMoneyChangeLog">
-        insert into emp_available_credit_change_log
-        (credit_limit_available_change_amount,credit_limit_available_after_change,change_type,change_type_desc)
-        values
-        (#{creditLimitAvailableChangeAmount},#{creditLimitAvailableAfterChange},#{changeType},#{changeTypeDesc})
+    <insert id="saveCreditLimitAvailableChange" useGeneratedKeys="true" keyProperty="id"
+            parameterType="EmpAvailableCreditMoneyChangeLog">
+        INSERT INTO emp_available_credit_change_log
+        (credit_limit_available_change_amount, credit_limit_available_after_change, change_type, change_type_desc)
+        VALUES
+            (#{creditLimitAvailableChangeAmount}, #{creditLimitAvailableAfterChange}, #{changeType}, #{changeTypeDesc})
     </insert>
 
-    <insert id="saveTempCreditLimitChange"  useGeneratedKeys="true" keyProperty="id" parameterType="EmpTempCreditMoneyChangeLog" >
-        insert into emp_temp_credit_change_log
-        (temp_credit_limit_change_amount,temp_credit_limit_after_change )
-        values
-        (#{tempCreditLimitChangeAmount},#{tempCreditLimitAfterChange})
+    <insert id="saveTempCreditLimitChange" useGeneratedKeys="true" keyProperty="id"
+            parameterType="EmpTempCreditMoneyChangeLog">
+        INSERT INTO emp_temp_credit_change_log
+        (temp_credit_limit_change_amount, temp_credit_limit_after_change)
+        VALUES
+            (#{tempCreditLimitChangeAmount}, #{tempCreditLimitAfterChange})
     </insert>
 
 
     <select id="isSupervisor" parameterType="java.lang.Long" resultType="java.lang.String">
-        SELECT
-        seller_type
+        SELECT seller_type
         FROM emp_employee
         WHERE emp_id = #{id}
     </select>
 
     <update id="unlockGuideCreditByUserIdAndGuideCreditAndVersion">
         UPDATE
-        emp_credit_money
+            emp_credit_money
         SET
-        credit_limit_available = credit_limit_available + #{credit}
+            credit_limit_available = credit_limit_available + #{credit}
         WHERE
-        emp_id = #{userId}
-        AND last_update_time = #{version}
+            emp_id = #{userId}
+            AND last_update_time = #{version}
     </update>
 
     <select id="findDeliveryByClerkNo" parameterType="java.lang.String"
@@ -361,7 +362,17 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
     </select>
 
     <select id="findQrcodeIsNull" resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee">
-        SELECT  * FROM emp_employee where qr_code is NULL or qr_code = ""
+        SELECT *
+        FROM emp_employee
+        WHERE qr_code IS NULL OR qr_code = ""
 
+    </select>
+    <select id="findAllSeller" resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee">
+        SELECT
+            e.emp_id,
+            e.`name`,
+            e.mobile
+        FROM emp_employee e
+        WHERE e.identity_type = 'SELLER'
     </select>
 </mapper>
