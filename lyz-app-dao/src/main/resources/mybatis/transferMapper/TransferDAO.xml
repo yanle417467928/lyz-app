@@ -5,7 +5,8 @@
     <select id="findNewOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
         SELECT
             ord_no orderNumber,
-            oid    id
+            oid    id,
+            order_subject_type orderSubjectType
         FROM ord_base_info
     </select>
 
@@ -313,7 +314,7 @@
     </select>
 
     <select id="getTdOrderGoodsByOrderNumber" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods">
-        SELECT coupon_number, sku, goods_title, real_price,price
+        SELECT *
         FROM td_order_goods_copy
         WHERE td_order_id = #{id}
     </select>

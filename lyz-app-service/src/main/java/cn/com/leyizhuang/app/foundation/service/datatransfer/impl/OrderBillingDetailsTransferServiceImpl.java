@@ -181,8 +181,6 @@ public class OrderBillingDetailsTransferServiceImpl implements OrderBillingTrans
                         orderBillingDetails.setDeliveryPos(0D);
                         orderBillingDetailsList.add(orderBillingDetails);
                     }
-                    this.saveOrderBillingDetailsAsync(orderBillingDetailsList);
-
                 } catch (Exception e) {
                     System.out.println(e);
                     System.out.println("订单账单创建失败请检查，订单号：" + orderBaseInfo.getOrderNumber());
@@ -195,6 +193,7 @@ public class OrderBillingDetailsTransferServiceImpl implements OrderBillingTrans
                     }
                 }
             }
+            this.saveOrderBillingDetailsAsync(orderBillingDetailsList);
         }
     }
 
