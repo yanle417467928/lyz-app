@@ -357,9 +357,8 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
                 // 插入
                 for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
                     // 检查是否存在
-                    //Boolean flag = transferDAO.isExitTdOrderGoodsLine(orderGoodsInfo.getOrderNumber(), orderGoodsInfo.getGid(), orderGoodsInfo.getGoodsLineType().getValue());
-                    Boolean flag = true;
-                    if (flag) {
+                    Boolean flag = transferDAO.isExitTdOrderGoodsLine(orderGoodsInfo.getOrderNumber(), orderGoodsInfo.getGid(), orderGoodsInfo.getGoodsLineType().getValue());
+                    if (!flag) {
                         transferNum++;
                         orderDAO.saveOrderGoodsInfo(orderGoodsInfo);
                     }
