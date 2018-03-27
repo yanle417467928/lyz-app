@@ -1,18 +1,12 @@
 package cn.com.leyizhuang.app.foundation.service.datatransfer;
 
-import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
-
-import java.util.Date;
-import java.util.List;
-
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdDeliveryInfoDetails;
+import cn.com.leyizhuang.app.foundation.pojo.datatransfer.*;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderLogistics;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOwnMoneyRecord;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,7 +20,7 @@ public interface DataTransferService {
 
     TdOrder getMainOrderInfoByMainOrderNumber(String mainOrderNumber);
 
-    void TransferArrearsAudit();
+    Integer transferArrearsAudit(String orderNumber);
 
     List<TdDeliveryInfoDetails> queryDeliveryTimeSeqBySize(int size);
 
@@ -36,7 +30,7 @@ public interface DataTransferService {
 
     List<TdDeliveryInfoDetails> queryOrderGoodsListByOrderNumber(Long id);
 
-    void TransferCoupon();
+    Integer transferCoupon(OrderBaseInfo baseInfo);
 
     void transferOrderBillingDetails();
 
@@ -47,4 +41,11 @@ public interface DataTransferService {
     AppCustomer findCustomerById(Long userId);
 
     void saveOrderLogisticsInfo(OrderLogisticsInfo orderLogisticsInfo);
+
+    TdOrderDeliveryTimeSeqDetail findDeliveryStatusByMainOrderNumber(String mainOrderNumber);
+
+    List<OrderBaseInfo> findNewOrderNumber();
+
+    List<TdOrderData> queryTdOrderDataListBySize(int size);
+
 }

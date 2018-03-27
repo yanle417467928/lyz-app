@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.web.controller.rest.datatransfer;
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
+import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderDeliveryTimeSeqDetail;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -53,6 +55,7 @@ public class DataTransferController {
         //查询所有待处理的订单号
         storeMainOrderNumberList = dataTransferService.getTransferStoreMainOrderNumber(startTime, endTime);
 
+
         // *********************** 处理 订单基础表 ord_base_info *****************
         for (String mainOrderNumber : storeMainOrderNumberList) {
             TdOrder tdOrder = dataTransferService.getMainOrderInfoByMainOrderNumber(mainOrderNumber);
@@ -81,7 +84,34 @@ public class DataTransferController {
                         break;
                 }
                 //todo 设置订单物流状态
+                if (orderBaseInfo.getDeliveryType() == AppDeliveryType.SELF_TAKE) {
+                    orderBaseInfo.setDeliveryStatus(LogisticStatus.INITIAL);
+                } else {
+                    if (orderBaseInfo.getStatus() == AppOrderStatus.PENDING_SHIPMENT) {
+                        TdOrderDeliveryTimeSeqDetail detail = dataTransferService.findDeliveryStatusByMainOrderNumber(mainOrderNumber);
+                        if (null != detail) {
+                            switch (detail.getOperationType()) {
+                                case "处理中":
+                                    orderBaseInfo.setDeliveryStatus(LogisticStatus.INITIAL);
+                                    break;
+                                case "定位":
+                                    orderBaseInfo.setDeliveryStatus(LogisticStatus.ALREADY_POSITIONED);
+                                    break;
+                                case "拣货":
+                                    orderBaseInfo.setDeliveryStatus(LogisticStatus.PICKING_GOODS);
+                                    break;
+                                case "装车":
+                                    orderBaseInfo.setDeliveryStatus(LogisticStatus.LOADING);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    } else if (orderBaseInfo.getStatus() == AppOrderStatus.PENDING_RECEIVE || orderBaseInfo.getStatus() == AppOrderStatus.FINISHED) {
+                        orderBaseInfo.setDeliveryStatus(LogisticStatus.SEALED_CAR);
+                    }
 
+                }
                 orderBaseInfo.setPickUpCode("0000");
                 switch (tdOrder.getDeliverTypeTitle()) {
                     case "送货上门":
@@ -118,7 +148,8 @@ public class DataTransferController {
                             orderBaseInfo.setCreatorName(fitEmployee.getName());
                             orderBaseInfo.setCreatorPhone(fitEmployee.getMobile());
                         } else {
-                            continue;
+                            log.warn("装饰公司订单：{} 经理信息没找到", mainOrderNumber);
+                            throw new RuntimeException("装饰公司订单：" + mainOrderNumber + "经理信息没找到");
                         }
                         break;
                     case SELLER:
@@ -131,11 +162,19 @@ public class DataTransferController {
                             orderBaseInfo.setSalesConsultName(orderBaseInfo.getSalesConsultName());
                             orderBaseInfo.setSalesConsultPhone(orderBaseInfo.getCreatorPhone());
                             AppCustomer customer = dataTransferService.findCustomerById(tdOrder.getUserId());
-                            orderBaseInfo.setCustomerId(customer.getCusId());
-                            orderBaseInfo.setCustomerName(customer.getName());
-                            orderBaseInfo.setCustomerPhone(customer.getMobile());
+                            if (null != customer) {
+                                orderBaseInfo.setCustomerId(customer.getCusId());
+                                orderBaseInfo.setCustomerName(customer.getName());
+                                orderBaseInfo.setCustomerPhone(customer.getMobile());
+                                orderBaseInfo.setCustomerType(customer.getCustomerType());
+                            } else {
+                                log.warn("订单：{} 顾客信息没找到", mainOrderNumber);
+                                throw new RuntimeException("订单：" + mainOrderNumber + "顾客信息没找到");
+                            }
+
                         } else {
-                            continue;
+                            log.warn("门店订单：{} 导购信息没找到", mainOrderNumber);
+                            throw new RuntimeException("门店订单：" + mainOrderNumber + "导购信息没找到");
                         }
                         break;
                     case CUSTOMER:
@@ -147,12 +186,20 @@ public class DataTransferController {
                             orderBaseInfo.setCustomerId(orderBaseInfo.getCreatorId());
                             orderBaseInfo.setCustomerName(orderBaseInfo.getCreatorName());
                             orderBaseInfo.setCustomerPhone(orderBaseInfo.getCreatorPhone());
+                            orderBaseInfo.setCustomerType(customer.getCustomerType());
                             AppEmployee sellerEmployee = dataTransferService.findStoreEmployeeById(tdOrder.getSellerId());
-                            orderBaseInfo.setSalesConsultId(sellerEmployee.getEmpId());
-                            orderBaseInfo.setSalesConsultName(sellerEmployee.getName());
-                            orderBaseInfo.setSalesConsultPhone(sellerEmployee.getMobile());
+                            if (null != sellerEmployee) {
+                                orderBaseInfo.setSalesConsultId(sellerEmployee.getEmpId());
+                                orderBaseInfo.setSalesConsultName(sellerEmployee.getName());
+                                orderBaseInfo.setSalesConsultPhone(sellerEmployee.getMobile());
+                            } else {
+                                log.warn("门店订单：{} 导购信息没找到", mainOrderNumber);
+                                throw new RuntimeException("门店订单：" + mainOrderNumber + "导购信息没找到");
+                            }
+
                         } else {
-                            continue;
+                            log.warn("门店订单：{} 顾客信息没找到", mainOrderNumber);
+                            throw new RuntimeException("门店订单：" + mainOrderNumber + "顾客信息没找到");
                         }
                         break;
                     default:
@@ -183,6 +230,76 @@ public class DataTransferController {
             }
         }
         log.info("订单导入job处理完成,当前时间:{}", new Date());
+        return "success";
+    }
+
+    @RequestMapping(value = "/data/transfer/arrearsAudit", method = RequestMethod.GET)
+    public String transferArrearsAudit() {
+        log.info("开始处理订单审核信息导入job,当前时间:{}", new Date());
+        // *********************** 订单迁移处理 ***************
+        List<OrderBaseInfo> orderNumberList = this.dataTransferService.findNewOrderNumber();
+        List<String> errorOrderNumber = new ArrayList<>();
+        Integer num = 0;
+        List<String> error = new ArrayList<>();
+        if (null != orderNumberList && orderNumberList.size() > 0) {
+            for (int i = 0; i < orderNumberList.size(); i++) {
+                String orderNumber = orderNumberList.get(i).getOrderNumber();
+                try {
+                    Integer flag = this.dataTransferService.transferArrearsAudit(orderNumber);
+                    if (flag > 0){
+                        errorOrderNumber.add(orderNumber + "--" + flag);
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                    error.add(e.getMessage());
+                    errorOrderNumber.add(orderNumber + "--e");
+                    log.info("订单卷信息导入错误,订单号:{}", orderNumber);
+                }
+                num += 1;
+            }
+        }
+        log.info("订单卷信息err:{}", error);
+        log.info("订单卷信息导入执行订单数num:{}", num);
+        log.info("订单审核信息导入未成功订单errorOrderNumber:{}", errorOrderNumber);
+        log.info("订单审核信息导入job处理完成,当前时间:{}", new Date());
+        return "success";
+    }
+
+    @RequestMapping(value = "/data/transfer/orderCoupon", method = RequestMethod.GET)
+    public String transferCoupon() {
+        log.info("开始处理订单卷信息导入job,当前时间:{}", new Date());
+        // *********************** 订单迁移处理 ***************
+        List<OrderBaseInfo> orderNumberList = this.dataTransferService.findNewOrderNumber();
+        List<String> errorOrderNumber = new ArrayList<>();
+        Integer num = 0;
+        List<String> error = new ArrayList<>();
+        if (null != orderNumberList && orderNumberList.size() > 0) {
+            for (int i = 0; i < orderNumberList.size(); i++) {
+                try {
+                    Integer flag = this.dataTransferService.transferCoupon(orderNumberList.get(i));
+                    if (flag > 0){
+                        errorOrderNumber.add(orderNumberList.get(i).getOrderNumber() + "--" + flag);
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                    error.add(e.getMessage());
+                    errorOrderNumber.add(orderNumberList.get(i).getOrderNumber() + "--e");
+                    log.info("订单卷信息导入错误,订单号:{}", orderNumberList.get(i).getOrderNumber());
+                }
+                num += 1;
+            }
+        }
+        log.info("订单卷信息err:{}", error);
+        log.info("订单卷信息导入执行订单数num:{}", num);
+        log.info("订单卷信息导入未成功订单errorOrderNumber:{}", errorOrderNumber);
+        log.info("订单卷信息导入job处理完成,当前时间:{}", new Date());
+        return "success";
+    }
+
+    @RequestMapping(value = "/data/transfer/orderbilling", method = RequestMethod.GET)
+    public String dataTransferOrderBillingDeatails() {
+        log.info("开始处理订单账单导入,当前时间:{}", new Date());
+        dataTransferService.transferOrderBillingDetails();
         return "success";
     }
 

@@ -30,9 +30,7 @@
             real_user_username,
             seller_real_name,
             seller_username,
-            shipping_address
-    <select id="findOrderByOrderNumber" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder">
-        SELECT *
+            IFNULL(shipping_address, '') shipping_address
         FROM td_order_copy
         WHERE main_order_number = #{orderNumber}
     </select>
@@ -59,8 +57,7 @@
         GROUP BY mobile
     </select>
 
-    <select id="findOrderDataByOrderNumber" parameterType="java.lang.String"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderData">
+    <select id="findOrderDataByOrderNumber" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderData">
         SELECT *
         FROM td_order_data_copy
         WHERE main_order_number = #{orderNumber}
@@ -74,14 +71,10 @@
     </select>
 
     <select id="findDeliveryInfoByOrderNumber" parameterType="java.lang.String" resultType="java.lang.String">
-        SELECT *
-        FROM (SELECT
-                  id,
-                  op_user,
-                  sub_order_number
-              FROM td_delivery_info_detail
-              WHERE sub_order_number = #{orderNumber}
-              ORDER BY id DESC) t
+        SELECT t.op_user FROM (SELECT id,op_user,sub_order_number
+            FROM td_delivery_info_detail
+            WHERE sub_order_number = #{orderNumber}
+            ORDER BY id DESC) t
         GROUP BY t.sub_order_number
     </select>
 
@@ -146,11 +139,11 @@
         #{denomination}, #{effectiveStartTime}, #{effectiveEndTime}, #{description}, #{title},#{cityId} ,#{cityName} ,#{type} , #{isSpecifiedStore}, #{lastUpdateTime})
     </insert>
 
-    <insert id="addCashCouponCompany" parameterType="import cn.com.leyizhuang.app.foundation.pojo.CashCouponCompany">
+    <insert id="addCashCouponCompany" parameterType="cn.com.leyizhuang.app.foundation.pojo.CashCouponCompany">
         INSERT INTO cp_cash_coupon_company
         (ccid,company_id,company_name,company_flag)
         VALUES
-        (#{item.ccid},#{item.companyId},#{item.companyName},#{item.companyFlag})
+        (#{ccid},#{companyId},#{companyName},#{companyFlag})
     </insert>
 
     <insert id="saveOrderCouponInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo">
@@ -190,13 +183,14 @@
             id,
             diy_site_code,
             main_order_number,
-            pay_time
+        pay_time,
+        status_id
         FROM td_order_copy
         WHERE pay_time &gt; '2017-10-01 00:00:00'
         LIMIT #{size}, 1000;
     </select>
 
-    <select id="queryOrderGoodsListByOrderNumber" parameterType="java.lang.String"
+    <select id="queryOrderGoodsListByOrderNumber" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdDeliveryInfoDetails">
         SELECT
             sku,
@@ -269,7 +263,8 @@
         SELECT
             e.cus_id,
             e.`name`,
-            e.mobile
+            e.mobile,
+            e.customer_type
         FROM
             td_user_copy c
             INNER JOIN cus_customer e ON c.username = e.mobile
@@ -306,30 +301,69 @@
         SELECT main_order_number orderNumber, id id FROM td_order_copy
     </select>
 
-    <select id="getOwnMoneyRecordByOrderNumber" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOwnMoneyRecord">
-        SELECT is_pay_up, serial_number
-        FROM td_own_money_record_copy
-        WHERE order_number = #{orderNumber}
-        GROUP BY order_number
+    <select id="findOrderInfoByOrderNumber" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder">
+        SELECT id, order_number,jx_total_price
+        FROM td_order_copy
+        WHERE main_order_number = #{orderNumber}
     </select>
 
-    <insert id="saveOrderBillingDetails"
-            parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails">
-        INSERT INTO ord_billing_details (create_time, oid, ord_no, total_goods_price, member_discount, promotion_discount, freight, upstairs_fee,
-        lebi_quantity, lebi_cash_discount, cash_coupon_discount, product_coupon_discount, cus_pre_deposit,
-        online_pay_type, online_pay_amount, st_pre_deposit, emp_credit_money, st_credit_money,
-        st_subvention, order_amount_subtotal, amount_payable, collection_amount, arrearage, is_owner_receiving,
-        online_pay_time, pay_up_time, is_pay_up, store_cash, store_other_money, store_pos_money, store_pos_number)
+    <select id="getTdOrderGoodsByOrderNumber" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods">
+        SELECT coupon_number, sku, goods_title, real_price,price
+        FROM td_order_goods_copy
+        WHERE td_order_id = #{id}
+    </select>
+
+    <select id="getGoodsBySku" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
+        SELECT gid
+        FROM gds_goods
+        WHERE sku = #{sku}
+        GROUP BY sku
+    </select>
+
+    <select id="getCouponListBySkuAndOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdCoupon">
+        SELECT id, coupon_order_number, IFNULL(buy_price, 0) buy_price, is_buy
+        FROM td_coupon
+        WHERE sku = #{sku} AND order_number = #{orderNumber}
+    </select>
+
+    <insert id="addCustomerProductCoupon" parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO cus_customer_product_coupon
+        (cus_id, seller_id, store_id, gid, quantity, get_type, get_time, get_ord_no, buy_price, effective_start_time, effective_end_time,is_used,
+        use_time, use_ord_no, goods_line_id,disable_time,status,last_update_time)
         VALUES
-        (#{createTime}, #{oid}, #{orderNumber}, #{totalGoodsPrice}, #{memberDiscount}, #{promotionDiscount},
-        #{freight},
-        #{upstairsFee}, #{lebiQuantity}, #{lebiCashDiscount}, #{cashCouponDiscount},
-        #{productCouponDiscount}, #{cusPreDeposit},
-        #{onlinePayType}, #{onlinePayAmount}, #{stPreDeposit}, #{empCreditMoney}, #{storeCreditMoney},
-        #{storeSubvention}, #{orderAmountSubtotal},
-        #{amountPayable}, #{collectionAmount}, #{arrearage}, #{isOwnerReceiving}, #{onlinePayTime},
-        #{payUpTime}, #{isPayUp}, #{storeCash}, #{storeOtherMoney}, #{storePosMoney},
-        #{storePosNumber}
-        )
+        (#{customerId}, #{sellerId}, #{storeId}, #{goodsId}, #{quantity}, #{getType},#{getTime}, #{getOrderNumber}, #{buyPrice}, #{effectiveStartTime},
+        #{effectiveEndTime},#{isUsed}, #{useTime}, #{useOrderNumber}, #{goodsLineId}, #{disableTime}, #{status}, #{lastUpdateTime})
     </insert>
+
+    <select id="existOrderBillingDetails" parameterType="java.lang.String" resultType="java.lang.Boolean">
+        SELECT EXISTS(SELECT id
+        FROM ord_billing_details
+        WHERE ord_no = #{orderNumber})
+    </select>
+
+    <select id="findCouponInfoListByType" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo">
+        SELECT id, purchase_price
+        FROM ord_coupon_info
+        WHERE ord_no = #{orderNumber} AND coupon_type = #{type}
+    </select>
+
+    <select id="findDeliveryStatusByMainOrderNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderDeliveryTimeSeqDetail">
+        SELECT
+            main_order_number,
+            operation_type
+        FROM td_order_delivery_time_seq_detail_copy
+        WHERE main_order_number = #{mainOrderNumber}
+        ORDER BY id DESC
+        LIMIT 1;
+    </select>
+
+    <select id="queryTdOrderDataListBySize" parameterType="java.lang.Integer"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderData">
+        SELECT *
+        FROM td_order_data_copy
+        WHERE create_time &gt; '2017-10-01 00:00:00'
+        LIMIT #{size}, 1000;
+    </select>
 </mapper>

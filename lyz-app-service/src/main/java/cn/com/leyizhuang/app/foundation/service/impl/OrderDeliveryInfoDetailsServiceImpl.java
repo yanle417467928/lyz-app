@@ -11,6 +11,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -25,6 +26,7 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
     private OrderDeliveryInfoDetailsDAO orderDeliveryInfoDetailsDAO;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void addOrderDeliveryInfoDetails(OrderDeliveryInfoDetails orderDeliveryInfoDetails) {
         orderDeliveryInfoDetailsDAO.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
     }
