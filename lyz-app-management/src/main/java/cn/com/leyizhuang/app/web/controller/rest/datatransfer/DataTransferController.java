@@ -625,7 +625,7 @@ public class DataTransferController {
     public String dataTransferOrderBillingDeatailsAsync() {
         log.info("开始处理订单账单导入,当前时间:{}", new Date());
         orderBillingTransferService.transferOrderBillingDetails();
-        log.info("处理订单账单导入结束!");
+        log.info("处理订单账单导入结束!时间：{}",new Date());
         return "success";
     }
 
