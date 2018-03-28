@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.GoodsGradeDAO">
+
+    <select id="queryBySkuAndSobId" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsGrade">
+    SELECT * FROM gds_goods_grade WHERE
+    sob_id=#{sobId}
+    AND
+    sku =#{sku}
+</select>
+
+    <insert id="addGoodsGrade" parameterType="cn.com.leyizhuang.app.foundation.pojo.GoodsGrade">
+        INSERT  gds_goods_grade (sku,sku_name,goods_grade,sob_id) VALUES (#{sku},#{skuName},#{grade},#{sobId})
+    </insert>
+
+    <update id="updateGoodsGrade" parameterType="cn.com.leyizhuang.app.foundation.pojo.GoodsGrade">
+        UPDATE gds_goods_grade
+        <set>
+            <if test="null != sku">
+                sku =#{sku},
+            </if>
+            <if test="null != skuName">
+                sku_name =#{skuName},
+            </if>
+            <if test="null != grade">
+                goods_grade =#{grade},
+            </if>
+            <if test="null != sobId">
+                sob_id =#{sobId},
+            </if>
+        </set>
+        WHERE
+        id =#{id}
+    </update>
+
+</mapper>
