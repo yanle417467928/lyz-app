@@ -868,23 +868,26 @@ public class DataTransferServiceImpl implements DataTransferService {
                         OrderBillingDetails orderBillingDetails = this.transferOrderBillingDetails(orderBaseInfo);
 
                         //****物流进度明细 begin****/
+                        List<OrderDeliveryInfoDetails> deliveryInfoDetailsList = new ArrayList<>();
                         if (AppDeliveryType.HOUSE_DELIVERY.equals(orderBaseInfo.getDeliveryType())) {
 
-                            List<OrderDeliveryInfoDetails> deliveryInfoDetailsList = this.saveOrderDeliveryInfoDetails(orderBaseInfo);
+                            deliveryInfoDetailsList = this.saveOrderDeliveryInfoDetails(orderBaseInfo);
                         }
 
                         //****经销差价返还 begin****/
+                        List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetailsList = new ArrayList<>();
                         if (!orderBaseInfo.getOrderNumber().contains("YF")) {
 
-                            List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetailsList = this.saveOrderJxPriceDifference(orderBaseInfo);
+                            jxPriceDifferenceReturnDetailsList = this.saveOrderJxPriceDifference(orderBaseInfo);
                         }
 
                         //****普通客户账单支付明细转换 begin****/
-                        List<OrderBillingPaymentDetails> paymentDetailsList = this.saveOrderBillingPaymentDetail(orderBaseInfo);
+                        List<OrderBillingPaymentDetails> paymentDetailsList = this.saveOrderBillingPaymentDetail(orderBaseInfo, tdOrder);
 
                         //****装饰公司账单支付明细转换 begin****/
+                        List<OrderBillingPaymentDetails> fixDiySiteBillingPaymentDetail = new ArrayList<>();
                         if (AppOrderSubjectType.FIT.equals(orderBaseInfo.getOrderSubjectType())) {
-                            List<OrderBillingPaymentDetails> fixDiySiteBillingPaymentDetail = this.saveFixDiySiteBillingPaymentDetail(orderBaseInfo);
+                            fixDiySiteBillingPaymentDetail = this.saveFixDiySiteBillingPaymentDetail(orderBaseInfo);
                         }
 
                         //处理订单物理信息
@@ -1016,18 +1019,13 @@ public class DataTransferServiceImpl implements DataTransferService {
         return jxPriceDifferenceReturnDetailsList;
     }
 
-    private List<OrderBillingPaymentDetails> saveOrderBillingPaymentDetail(OrderBaseInfo orderBaseInfo) {
+    private List<OrderBillingPaymentDetails> saveOrderBillingPaymentDetail(OrderBaseInfo orderBaseInfo, TdOrderSmall tdOrder) {
 
         List<TdOrderData> orderDataList = transferDAO.queryTdOrderDataListByOrderNo(orderBaseInfo.getOrderNumber());
         List<OrderBillingPaymentDetails> paymentDetailsList;
         if (AssertUtil.isNotEmpty(orderDataList)) {
             paymentDetailsList = new ArrayList<>();
             for (TdOrderData tdOrderData : orderDataList) {
-                List<TdOrder> tdOrderList = transferDAO.queryTdOrderByOrderNumber(tdOrderData.getMainOrderNumber());
-                if (AssertUtil.isEmpty(tdOrderList)) {
-                    throw new DataTransferException("没有在tdOrder表找到该订单", DataTransferExceptionType.NDT);
-                }
-                TdOrder tdOrder = tdOrderList.get(0);
                 if ((null != tdOrderData.getOnlinePay() && tdOrderData.getOnlinePay() > AppConstant.PAY_UP_LIMIT)
                         || (null != tdOrderData.getBalanceUsed() && tdOrderData.getBalanceUsed() > AppConstant.PAY_UP_LIMIT)) {
                     OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails();
