@@ -192,31 +192,33 @@ public class DataTransferServiceImpl implements DataTransferService {
 
     @Override
     @Transactional
-    public Integer transferArrearsAudit(String orderNumber) {
+    public OrderArrearsAuditDO transferArrearsAudit(String orderNumber) {
 
         Boolean exist = this.transferDAO.existArrearsAudit(orderNumber);
         if (exist) {
-            return 0;
+            return null;
         }
         List<TdOwnMoneyRecord> ownMoneyRecords = this.transferDAO.findOwnMoneyRecordByOrderNumber(orderNumber);
         if (null == ownMoneyRecords || ownMoneyRecords.size() == 0) {
-            return 0;
+            return null;
         }
+        OrderArrearsAuditDO auditDO = new OrderArrearsAuditDO();
         for (int j = 0; j < ownMoneyRecords.size(); j++) {
             Boolean exists = this.transferDAO.existArrearsAudit(orderNumber);
             if (exists) {
-                return 0;
+                return null;
             }
             TdOwnMoneyRecord ownMoneyRecord = ownMoneyRecords.get(j);
             List<TdOrder> orders = this.transferDAO.findOrderByOrderNumber(orderNumber);
             if (null == orders || orders.size() == 0) {
-
-                return 1;
+                log.warn("未查到此订单头信息！订单号：", orderNumber);
+                throw new DataTransferException("订单审核未查到此订单头信息", DataTransferExceptionType.NDT);
             }
             TdOrderData agencyRefund = this.transferDAO.findOrderDataByOrderNumber(orderNumber);
             if (null == agencyRefund) {
 
-                return 2;
+                log.warn("未查到此订单代收款信息！订单号：", orderNumber);
+                throw new DataTransferException("订单审核未查到此订单代收款信息", DataTransferExceptionType.NOTORDERDATA);
             }
             TdOrder order = orders.get(0);
             Long employeeId = this.transferDAO.findEmployeeByMobile(order.getSellerUsername());
@@ -224,7 +226,7 @@ public class DataTransferServiceImpl implements DataTransferService {
 //
 //                return 3;
 //            }
-            OrderArrearsAuditDO auditDO = new OrderArrearsAuditDO();
+
             String clerkNo = null;
             for (int k = 0; k < orders.size(); k++) {
                 clerkNo = this.transferDAO.findDeliveryInfoByOrderNumber(orders.get(k).getOrderNumber());
@@ -267,9 +269,9 @@ public class DataTransferServiceImpl implements DataTransferService {
             auditDO.setWechatMoney(0D);
             auditDO.setCreateTime(LocalDateTime.now());
             auditDO.setWhetherRepayments(ownMoneyRecord.getIsPayed());
-            this.transferDAO.insertArrearsAudit(auditDO);
+//            this.transferDAO.insertArrearsAudit(auditDO);
         }
-        return 0;
+        return auditDO;
     }
 
     @Override
@@ -294,7 +296,15 @@ public class DataTransferServiceImpl implements DataTransferService {
 
     @Override
     @Transactional
-    public Integer transferCoupon(OrderBaseInfo baseInfo) {
+    public Map<String, Object> transferCoupon(OrderBaseInfo baseInfo) {
+
+        Map<String, Object> map = new HashMap<>();
+        CashCoupon cashCoupon = new CashCoupon();
+        CashCouponCompany cashCouponCompany = new CashCouponCompany();
+        CustomerCashCoupon customerCashCoupon = new CustomerCashCoupon();
+        OrderCouponInfo cashCouponInfo = new OrderCouponInfo();
+        List<Map<String, Object>> listCoupon = new ArrayList<>();
+
 
         String orderNumber = baseInfo.getOrderNumber();
         TdOrderData orderData = this.transferDAO.findOrderDataByOrderNumber(orderNumber);
@@ -302,10 +312,9 @@ public class DataTransferServiceImpl implements DataTransferService {
         if (null != orderData && null != orderData.getCashCouponFee() && orderData.getCashCouponFee() > 0D) {
             List<OrderCouponInfo> list = this.transferDAO.findCouponInfoListByType(orderNumber, OrderCouponType.CASH_COUPON);
             if (null != list && list.size() > 0) {
-                return 0;
+                return null;
             }
 
-            CashCoupon cashCoupon = new CashCoupon();
             cashCoupon.setCreateTime(new Date());
             cashCoupon.setDenomination(orderData.getCashCouponFee());
             cashCoupon.setEffectiveStartTime(new Date());
@@ -319,15 +328,13 @@ public class DataTransferServiceImpl implements DataTransferService {
             cashCoupon.setIsSpecifiedStore(false);
             cashCoupon.setStatus(true);
             cashCoupon.setSortId(999);
-            this.transferDAO.addCashCoupon(cashCoupon);
+//            this.transferDAO.addCashCoupon(cashCoupon);
 
-            CashCouponCompany cashCouponCompany = new CashCouponCompany();
             cashCouponCompany.setCcid(cashCoupon.getId());
             cashCouponCompany.setCompanyName("华润");
             cashCouponCompany.setCompanyFlag("HR");
-            this.transferDAO.addCashCouponCompany(cashCouponCompany);
+//            this.transferDAO.addCashCouponCompany(cashCouponCompany);
 
-            CustomerCashCoupon customerCashCoupon = new CustomerCashCoupon();
             customerCashCoupon.setCusId(orderBaseInfo.getCustomerId());
             customerCashCoupon.setCcid(cashCoupon.getId());
             customerCashCoupon.setQty(1);
@@ -347,25 +354,25 @@ public class DataTransferServiceImpl implements DataTransferService {
             customerCashCoupon.setCityName(orderBaseInfo.getCityName());
             customerCashCoupon.setType(AppCashCouponType.COMPANY);
             customerCashCoupon.setIsSpecifiedStore(false);
-            this.transferDAO.addCustomerCashCoupon(customerCashCoupon);
+//            this.transferDAO.addCustomerCashCoupon(customerCashCoupon);
 
-            OrderCouponInfo orderCouponInfo = new OrderCouponInfo();
-            orderCouponInfo.setOid(baseInfo.getId());
-            orderCouponInfo.setOrderNumber(orderNumber);
-            orderCouponInfo.setCouponId(customerCashCoupon.getId());
-            orderCouponInfo.setCouponType(OrderCouponType.CASH_COUPON);
-            orderCouponInfo.setPurchasePrice(0D);
-            orderCouponInfo.setCostPrice(orderData.getCashCouponFee());
-            orderCouponInfo.setGetType(CouponGetType.HISTORY_IMPORT);
-            this.transferDAO.saveOrderCouponInfo(orderCouponInfo);
+            cashCouponInfo.setOid(baseInfo.getId());
+            cashCouponInfo.setOrderNumber(orderNumber);
+            cashCouponInfo.setCouponId(customerCashCoupon.getId());
+            cashCouponInfo.setCouponType(OrderCouponType.CASH_COUPON);
+            cashCouponInfo.setPurchasePrice(0D);
+            cashCouponInfo.setCostPrice(orderData.getCashCouponFee());
+            cashCouponInfo.setGetType(CouponGetType.HISTORY_IMPORT);
+//            this.transferDAO.saveOrderCouponInfo(orderCouponInfo);
         }
         List<TdOrder> orders = this.transferDAO.findOrderInfoByOrderNumber(orderNumber);
         if (null == orders || orders.size() == 0) {
-            return 1;
+            log.warn("未查到此订单信息！订单号：", orderNumber);
+            throw new DataTransferException("订单卷同步未查到此订单信息", DataTransferExceptionType.NDT);
         }
         List<OrderCouponInfo> list = this.transferDAO.findCouponInfoListByType(orderNumber, OrderCouponType.PRODUCT_COUPON);
         if (null != list && list.size() > 0) {
-            return 0;
+            return null;
         }
         for (int j = 0; j < orders.size(); j++) {
             List<TdOrderGoods> orderGoodsList = this.transferDAO.getTdOrderGoodsByOrderNumber(orders.get(j).getId());
@@ -378,11 +385,12 @@ public class DataTransferServiceImpl implements DataTransferService {
 
                     List<TdCoupon> couponList = this.transferDAO.getCouponListBySkuAndOrderNumber(tdOrderGoods.getSku(), orders.get(j).getOrderNumber());
                     if (null == couponList || couponList.size() == 0) {
-                        return 2;
+                        log.warn("未查到此订单卷信息！订单号：", orderNumber);
+                        throw new DataTransferException("订单卷同步未查到此订单卷信息", DataTransferExceptionType.COUPON);
                     }
                     for (int l = 0; l < couponList.size(); l++) {
                         TdCoupon tdCoupon = couponList.get(l);
-
+                        Map<String, Object> productMap = new HashMap<>();
                         CustomerProductCoupon productCoupon = new CustomerProductCoupon();
                         GoodsDO goodsDO = this.transferDAO.getGoodsBySku(tdOrderGoods.getSku());
                         productCoupon.setCustomerId(orderBaseInfo.getCustomerId());
@@ -402,7 +410,8 @@ public class DataTransferServiceImpl implements DataTransferService {
                         productCoupon.setStoreId(orderBaseInfo.getStoreId());
                         productCoupon.setSellerId(orderBaseInfo.getSalesConsultId());
                         productCoupon.setStatus(true);
-                        this.transferDAO.addCustomerProductCoupon(productCoupon);
+//                        this.transferDAO.addCustomerProductCoupon(productCoupon);
+                        productMap.put("productCoupon", productCoupon);
 
                         OrderCouponInfo orderCouponInfo = new OrderCouponInfo();
                         orderCouponInfo.setOid(baseInfo.getId());
@@ -413,12 +422,20 @@ public class DataTransferServiceImpl implements DataTransferService {
                         orderCouponInfo.setCostPrice(tdOrderGoods.getRealPrice());
                         orderCouponInfo.setGetType(CouponGetType.HISTORY_IMPORT);
                         orderCouponInfo.setSku(tdOrderGoods.getSku());
-                        this.transferDAO.saveOrderCouponInfo(orderCouponInfo);
+//                        this.transferDAO.saveOrderCouponInfo(orderCouponInfo);
+                        productMap.put("orderCoupon", orderCouponInfo);
+                        listCoupon.add(productMap);
                     }
                 }
             }
         }
-        return 0;
+        map.put("cashCoupon", cashCoupon);
+        map.put("cashCouponCompany", cashCouponCompany);
+        map.put("customerCashCoupon", customerCashCoupon);
+        map.put("cashCouponInfo", cashCouponInfo);
+        map.put("listCoupon", listCoupon);
+
+        return map;
     }
 
     @Override
@@ -894,8 +911,14 @@ public class DataTransferServiceImpl implements DataTransferService {
 
                         //处理订单物理信息
                         OrderLogisticsInfo orderLogisticsInfo = this.transferOrderLogisticsInfo(tdOrder, employeeList, storeList);
+
+                        Map<String, Object> map = this.transferCoupon(orderBaseInfo);
+
+                        OrderArrearsAuditDO orderArrearsAuditDO = this.transferArrearsAudit(orderBaseInfo.getOrderNumber());
+
+
                         //持久化订单相关信息
-                        dataTransferSupportService.saveOrderRelevantInfo(orderBaseInfo, orderBillingDetails, orderLogisticsInfo);
+                        dataTransferSupportService.saveOrderRelevantInfo(orderBaseInfo, orderBillingDetails, orderLogisticsInfo, map, orderArrearsAuditDO);
                     } catch (DataTransferException e) {
                         dataTransferErrorLogQueue.add(new DataTransferErrorLog(null, tdOrder.getMainOrderNumber(), e.getType().getDesc(), new Date()));
                     } catch (Exception e) {

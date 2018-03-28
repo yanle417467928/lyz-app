@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.datatransfer;
 
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.*;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
@@ -10,6 +11,7 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ExecutionException;
 
@@ -24,7 +26,7 @@ public interface DataTransferService {
 
     TdOrder getMainOrderInfoByMainOrderNumber(String mainOrderNumber);
 
-    Integer transferArrearsAudit(String orderNumber);
+    OrderArrearsAuditDO transferArrearsAudit(String orderNumber);
 
     List<TdDeliveryInfoDetails> queryDeliveryTimeSeqByOrderNo(String orderNO);
 
@@ -34,7 +36,7 @@ public interface DataTransferService {
 
     List<TdDeliveryInfoDetails> queryOrderGoodsListByOrderNumber(Long id);
 
-    Integer transferCoupon(OrderBaseInfo baseInfo);
+    Map<String, Object> transferCoupon(OrderBaseInfo baseInfo);
 
     OrderBillingDetails transferOrderBillingDetails(OrderBaseInfo orderBaseInfo);
 

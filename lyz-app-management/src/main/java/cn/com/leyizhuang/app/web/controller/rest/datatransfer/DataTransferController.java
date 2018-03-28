@@ -98,10 +98,10 @@ public class DataTransferController {
                 for (int j = 0; j < subList.size(); j++) {
                     String orderNumber = subList.get(j).getOrderNumber();
                     try {
-                        Integer flag = this.dataTransferService.transferArrearsAudit(orderNumber);
-                        if (flag > 0) {
-                            errorOrderNumber.add(orderNumber + "--" + flag);
-                        }
+//                        Integer flag = this.dataTransferService.transferArrearsAudit(orderNumber);
+//                        if (flag > 0) {
+//                            errorOrderNumber.add(orderNumber + "--" + flag);
+//                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                         error.add(e.getMessage());
@@ -152,10 +152,10 @@ public class DataTransferController {
                 for (int j = 0; j < subList.size(); j++) {
                     OrderBaseInfo orderBaseInfo = subList.get(j);
                     try {
-                        Integer flag = this.dataTransferService.transferCoupon(orderBaseInfo);
-                        if (flag > 0) {
-                            errorOrderNumber.add(orderBaseInfo.getOrderNumber() + "--" + flag);
-                        }
+//                        Integer flag = this.dataTransferService.transferCoupon(orderBaseInfo);
+//                        if (flag > 0) {
+//                            errorOrderNumber.add(orderBaseInfo.getOrderNumber() + "--" + flag);
+//                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                         error.add(e.getMessage());

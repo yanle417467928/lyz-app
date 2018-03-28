@@ -3,7 +3,7 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.BankDAO">
 
     <select id="findBankByIsEnable" resultType="cn.com.leyizhuang.app.foundation.vo.management.BankVO">
-        SELECT id, bank_name, bank_account, code
+        SELECT id, bank_name, bank_account, code, opening_bank
         FROM bank
         WHERE is_enable IS TRUE
     </select>
