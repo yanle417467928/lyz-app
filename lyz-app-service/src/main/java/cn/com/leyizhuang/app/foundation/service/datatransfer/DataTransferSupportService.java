@@ -1,14 +1,11 @@
 package cn.com.leyizhuang.app.foundation.service.datatransfer;
 
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.*;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
-import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
+import cn.com.leyizhuang.app.foundation.pojo.datatransfer.DataTransferErrorLog;
+import cn.com.leyizhuang.app.foundation.pojo.order.*;
 
-import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
 /**
@@ -17,7 +14,10 @@ import java.util.Queue;
 public interface DataTransferSupportService {
 
 
-    void saveOrderRelevantInfo(OrderBaseInfo orderBaseInfo,OrderBillingDetails orderBillingDetails,OrderLogisticsInfo orderLogisticsInfo);
-
     void saveDataTransferErrorLog(Queue<DataTransferErrorLog> errorLogQueue);
+
+    void saveOrderRelevantInfo(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList, OrderBillingDetails orderBillingDetails,
+                               List<OrderDeliveryInfoDetails> deliveryInfoDetailsList, List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetailsList,
+                               List<OrderBillingPaymentDetails> paymentDetailsList,
+                               OrderLogisticsInfo orderLogisticsInfo, Map<String, Object> map, OrderArrearsAuditDO orderArrearsAuditDO);
 }

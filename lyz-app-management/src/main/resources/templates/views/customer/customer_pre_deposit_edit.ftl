@@ -281,7 +281,7 @@
                                 <select class="form-control select" name="bankCode" id="bankCode" data-live-search="true">
                                     <if bankVOS??>
                                     <#list bankVOS as bank>
-                                        <option value="${bank.code}">${bank.bankName}(${bank.bankAccount})</option>
+                                        <option value="${bank.code}">${bank.bankName}-${bank.openingBank}-${bank.bankAccount}</option>
                                     </#list>
                                     </if>
                                 </select>
