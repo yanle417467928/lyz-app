@@ -266,6 +266,7 @@
         <if test="null != identityType and identityType.toString() == 'DECORATE_MANAGER'">
             obi.creator_id = #{userId} AND obi.creator_identity_type = #{identityType}
         </if>
+        AND obi.`status` != 'CANCELED'
         ORDER BY orbi.return_time DESC
     </select>
 

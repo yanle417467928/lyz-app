@@ -374,11 +374,11 @@ public class DataTransferServiceImpl implements DataTransferService {
                         orderBillingDetails.setCollectionAmount(tdOrderData.getAgencyRefund());
                         orderBillingDetails.setArrearage(tdOrderData.getDue());
                         orderBillingDetails.setIsOwnerReceiving(Boolean.FALSE);
-                        orderBillingDetails.setIsPayUp(tdOwnMoneyRecord.getIsPayed());
-                        if (tdOwnMoneyRecord.getIsPayed()) {
-                            orderBillingDetails.setPayUpTime(new Date());
-                        } else {
+                        orderBillingDetails.setIsPayUp(tdOrderData.getDue()>0?Boolean.FALSE:Boolean.TRUE);
+                        if (tdOrderData.getDue()>0) {
                             orderBillingDetails.setPayUpTime(null);
+                        } else {
+                            orderBillingDetails.setPayUpTime(new Date());
                         }
                         Double jxTotalPrice = 0.00;
                         List<TdOrder> tdOrderList = this.transferDAO.findOrderInfoByOrderNumber(orderBaseInfo.getOrderNumber());
@@ -393,7 +393,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                         orderBillingDetails.setStoreCash(tdOrderData.getSellerCash());
                         orderBillingDetails.setStoreOtherMoney(tdOrderData.getSellerOther());
                         orderBillingDetails.setStorePosMoney(tdOrderData.getSellerPos());
-                        orderBillingDetails.setStorePosNumber(tdOwnMoneyRecord.getSerialNumber());
+                        orderBillingDetails.setStorePosNumber(tdOwnMoneyRecord==null?null:tdOwnMoneyRecord.getSerialNumber());
                         orderBillingDetails.setDeliveryCash(tdOrderData.getDeliveryCash());
                         orderBillingDetails.setDeliveryPos(tdOrderData.getDeliveryPos());
                         this.transferDAO.saveOrderBillingDetails(orderBillingDetails);
@@ -473,6 +473,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                         timingTaskErrorMessageDO.setRecordTime(new Date());
                         timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
                     }
+                    throw  new  RuntimeException();
                 }
             }
         }
