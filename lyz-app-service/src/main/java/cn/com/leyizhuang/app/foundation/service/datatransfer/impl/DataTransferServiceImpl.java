@@ -124,25 +124,25 @@ public class DataTransferServiceImpl implements DataTransferService {
 
         List<TdDeliveryInfoDetails> tdDeliveryInfoDetailsList = this.queryDeliveryInfoDetailByOrderNumber(tdOrder.getMainOrderNumber());
         TdDeliveryInfoDetails tdDeliveryInfoDetails = tdDeliveryInfoDetailsList.get(0);
+
         if (null == tdDeliveryInfoDetailsList || tdDeliveryInfoDetailsList.size() == 0) {
             log.warn("物流信息没找到,订单：{}", tdOrder.getMainOrderNumber());
             throw new DataTransferException("该订单没有找到物流信息", DataTransferExceptionType.DENF);
         } else {
-            String empCode = tdDeliveryInfoDetails.getDriver();
+            String clerkNoCode = tdDeliveryInfoDetails.getDriver();
+            AppEmployee employee = employeeService.findDeliveryByClerkNo(clerkNoCode);
             orderLogisticsInfo.setDeliveryClerkId(tdOrderLogistics.getEmpId());
             orderLogisticsInfo.setWarehouse(tdDeliveryInfoDetails.getWhNo());
-            for (AppEmployee appEmployee : employeeList) {
-                if (empCode.equals(appEmployee.getDeliveryClerkNo())) {
-                    orderLogisticsInfo.setDeliveryClerkName(appEmployee.getName());
-                    orderLogisticsInfo.setDeliveryClerkNo(appEmployee.getDeliveryClerkNo());
-                    orderLogisticsInfo.setDeliveryClerkPhone(appEmployee.getMobile());
-                    break;
-                } else {
-                    log.warn("员工信息没找到,员工编码：{}", empCode);
-                    throw new DataTransferException("该订单没有找到员工信息", DataTransferExceptionType.ENF);
-                }
+            if (null != employee) {
+                orderLogisticsInfo.setDeliveryClerkName(employee.getName());
+                orderLogisticsInfo.setDeliveryClerkNo(employee.getDeliveryClerkNo());
+                orderLogisticsInfo.setDeliveryClerkPhone(employee.getMobile());
+            } else {
+                log.warn("员工信息没找到,员工编码：{}", clerkNoCode);
+                throw new DataTransferException("该订单没有找到员工信息", DataTransferExceptionType.ENF);
             }
         }
+
         orderLogisticsInfo.setDeliveryType(AppDeliveryType.getAppDeliveryTypeByDescription(tdOrder.getDeliverTypeTitle()));
         orderLogisticsInfo.setOrdNo(tdOrder.getMainOrderNumber());
         orderLogisticsInfo.setDeliveryCity(tdOrder.getCity());
@@ -551,7 +551,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                 this.transferDAO.saveOrderBillingDetails(orderBillingDetails);
             }
             return orderBillingDetails;
-        }else{
+        } else {
             log.warn("订单账单没有找到，订单号：{}", orderBaseInfo.getOrderNumber());
             throw new DataTransferException("订单账单没有找到，订单号：{}", DataTransferExceptionType.NOTORDERDATA);
         }
@@ -861,13 +861,13 @@ public class DataTransferServiceImpl implements DataTransferService {
                         OrderBaseInfo orderBaseInfo = this.transferOrderBaseInfo(tdOrder, employeeList, customerList, storeList);
 
                         // 转换订单商品
-                       List<OrderGoodsInfo> orderGoodsInfoList = orderGoodsTransferService.transferOne(orderBaseInfo);
+                        List<OrderGoodsInfo> orderGoodsInfoList = orderGoodsTransferService.transferOne(orderBaseInfo);
                         OrderBillingDetails orderBillingDetails = this.transferOrderBillingDetails(orderBaseInfo);
 
                         //处理订单物理信息
                         OrderLogisticsInfo orderLogisticsInfo = this.transferOrderLogisticsInfo(tdOrder, employeeList, storeList);
                         //持久化订单相关信息
-                        dataTransferSupportService.saveOrderRelevantInfo(orderBaseInfo, orderBillingDetails,orderLogisticsInfo);
+                        dataTransferSupportService.saveOrderRelevantInfo(orderBaseInfo, orderBillingDetails, orderLogisticsInfo);
                     } catch (DataTransferException e) {
                         dataTransferErrorLogQueue.add(new DataTransferErrorLog(null, tdOrder.getMainOrderNumber(), e.getType().getDesc(), new Date()));
                     } catch (Exception e) {
