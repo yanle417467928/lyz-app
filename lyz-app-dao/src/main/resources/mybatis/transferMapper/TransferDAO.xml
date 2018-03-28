@@ -22,6 +22,7 @@
             is_payed
         FROM td_own_money_record_copy
         WHERE order_number = #{orderNumber}
+        GROUP BY order_number
     </select>
 
     <select id="findOrderByOrderNumber" parameterType="java.lang.String"
@@ -82,7 +83,7 @@
 
     <select id="findDeliveryInfoByOrderNumber" parameterType="java.lang.String" resultType="java.lang.String">
         SELECT t.op_user FROM (SELECT id,op_user,sub_order_number
-            FROM td_delivery_info_detail
+            FROM td_delivery_info_detail_copy
             WHERE sub_order_number = #{orderNumber}
             ORDER BY id DESC) t
         GROUP BY t.sub_order_number
