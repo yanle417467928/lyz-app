@@ -395,7 +395,8 @@
             c.remark,
             c.city,
             c.paper_sales_number,
-            sum(c.total_goods_price) total_goods_price
+            sum(c.total_goods_price) total_goods_price,
+            c.real_user_id
         FROM td_order_copy c LEFT JOIN ord_base_info b ON c.main_order_number = b.ord_no
         WHERE b.ord_no IS NULL
         GROUP BY c.main_order_number;
