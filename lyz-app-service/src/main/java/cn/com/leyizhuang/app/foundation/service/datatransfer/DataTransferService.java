@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service.datatransfer;
 
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.*;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
@@ -8,6 +9,8 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author Created on 2018-03-24 15:15
@@ -57,4 +60,9 @@ public interface DataTransferService {
     List<OrderBaseInfo> queryOrderBaseInfoBySize(int size);
 
     List<TdOrder> queryTdOrderByOrderNumber(String orderNumber);
+
+    public OrderBaseInfo transferOrderBaseInfo(TdOrderSmall tdOrder, List<AppEmployee> employeeList,
+                                               List<AppCustomer> customerList, List<AppStore> storeList);
+
+    public Queue<DataTransferErrorLog> transferOrderRelevantInfo() throws ExecutionException, InterruptedException;
 }

@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.datatransfer.impl;
 
 import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.exception.DataTransferException;
 import cn.com.leyizhuang.app.foundation.dao.TimingTaskErrorMessageDAO;
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
 import cn.com.leyizhuang.app.foundation.pojo.*;
@@ -9,17 +10,24 @@ import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
+import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
+import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferService;
+import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferSupportService;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import cn.com.leyizhuang.common.util.CountUtil;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * 订单商品转换类
@@ -28,6 +36,7 @@ import java.util.List;
  * @date 2018/3/24
  */
 @Service
+@Slf4j
 public class DataTransferServiceImpl implements DataTransferService {
 
     @Resource
@@ -35,6 +44,19 @@ public class DataTransferServiceImpl implements DataTransferService {
 
     @Resource
     private TimingTaskErrorMessageDAO timingTaskErrorMessageDAO;
+
+    @Resource
+    private AppEmployeeService employeeService;
+
+    @Resource
+    private AppCustomerService customerService;
+
+    @Resource
+    private AppStoreService storeService;
+
+    @Resource
+    private DataTransferSupportService dataTransferSupportService;
+
 
     public OrderGoodsInfo transferOne(TdOrderGoods tdOrderGoods) {
         OrderGoodsInfo goodsInfo = new OrderGoodsInfo();
@@ -82,7 +104,7 @@ public class DataTransferServiceImpl implements DataTransferService {
 
     @Override
     public AppCustomer findCustomerByCustomerMobile(String realUserUsername) {
-        if (null != realUserUsername){
+        if (null != realUserUsername) {
             return transferDAO.findCustomerByCustomerMobile(realUserUsername);
         }
         return null;
@@ -90,8 +112,8 @@ public class DataTransferServiceImpl implements DataTransferService {
 
     @Override
     public List<TdOrderSmall> getPendingTransferOrder(Date startTime, Date endTime) {
-        if (null != startTime && null != endTime){
-            return transferDAO.getPendingTransferOrder(startTime,endTime);
+        if (null != startTime && null != endTime) {
+            return transferDAO.getPendingTransferOrder(startTime, endTime);
         }
         return null;
     }
@@ -521,5 +543,289 @@ public class DataTransferServiceImpl implements DataTransferService {
     @Override
     public List<TdOrder> queryTdOrderByOrderNumber(String orderNumber) {
         return transferDAO.queryTdOrderByOrderNumber(orderNumber);
+    }
+
+    @Override
+    public OrderBaseInfo transferOrderBaseInfo(TdOrderSmall tdOrder, List<AppEmployee> employeeList, List<AppCustomer> customerList,
+                                               List<AppStore> storeList) {
+        //TdOrder tdOrder = dataTransferService.getMainOrderInfoByMainOrderNumber(mainOrderNumber);
+        OrderBaseInfo orderBaseInfo = new OrderBaseInfo();
+        orderBaseInfo.setOrderNumber(tdOrder.getMainOrderNumber());
+        orderBaseInfo.setOrderType(AppOrderType.SHIPMENT);
+        orderBaseInfo.setCreateTime(null != tdOrder.getPayTime() ? tdOrder.getPayTime() : tdOrder.getOrderTime());
+        switch (tdOrder.getDeliverTypeTitle()) {
+            case "送货上门":
+                orderBaseInfo.setDeliveryType(AppDeliveryType.HOUSE_DELIVERY);
+                break;
+            case "门店自提":
+                orderBaseInfo.setDeliveryType(AppDeliveryType.SELF_TAKE);
+                break;
+            default:
+                break;
+        }
+        orderBaseInfo.setPickUpCode("0000");
+        if (orderBaseInfo.getDeliveryType() == AppDeliveryType.SELF_TAKE) {
+            switch (tdOrder.getStatusId().intValue()) {
+                case 3:
+                    orderBaseInfo.setStatus(AppOrderStatus.PENDING_RECEIVE);
+                    break;
+                case 4:
+                    orderBaseInfo.setStatus(AppOrderStatus.FINISHED);
+                    break;
+                case 5:
+                    orderBaseInfo.setStatus(AppOrderStatus.FINISHED);
+                    break;
+                case 6:
+                    orderBaseInfo.setStatus(AppOrderStatus.FINISHED);
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            switch (tdOrder.getStatusId().intValue()) {
+                case 3:
+                    orderBaseInfo.setStatus(AppOrderStatus.PENDING_SHIPMENT);
+                    break;
+                case 4:
+                    orderBaseInfo.setStatus(AppOrderStatus.PENDING_RECEIVE);
+                    break;
+                case 5:
+                    orderBaseInfo.setStatus(AppOrderStatus.FINISHED);
+                    break;
+                case 6:
+                    orderBaseInfo.setStatus(AppOrderStatus.FINISHED);
+                    break;
+                default:
+                    break;
+            }
+        }
+        //todo 设置订单物流状态
+        if (orderBaseInfo.getDeliveryType() == AppDeliveryType.SELF_TAKE) {
+            orderBaseInfo.setDeliveryStatus(LogisticStatus.INITIAL);
+        } else {
+            if (orderBaseInfo.getStatus() == AppOrderStatus.PENDING_SHIPMENT) {
+                TdOrderDeliveryTimeSeqDetail detail = this.findDeliveryStatusByMainOrderNumber(tdOrder.getMainOrderNumber());
+                if (null != detail) {
+                    switch (detail.getOperationType()) {
+                        case "处理中":
+                            orderBaseInfo.setDeliveryStatus(LogisticStatus.INITIAL);
+                            break;
+                        case "定位":
+                            orderBaseInfo.setDeliveryStatus(LogisticStatus.ALREADY_POSITIONED);
+                            break;
+                        case "拣货":
+                            orderBaseInfo.setDeliveryStatus(LogisticStatus.PICKING_GOODS);
+                            break;
+                        case "装车":
+                            orderBaseInfo.setDeliveryStatus(LogisticStatus.LOADING);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            } else if (orderBaseInfo.getStatus() == AppOrderStatus.PENDING_RECEIVE || orderBaseInfo.getStatus() == AppOrderStatus.FINISHED) {
+                orderBaseInfo.setDeliveryStatus(LogisticStatus.SEALED_CAR);
+            }
+
+        }
+        if (tdOrder.getMainOrderNumber().contains("FIT")) {
+            orderBaseInfo.setOrderSubjectType(AppOrderSubjectType.FIT);
+        } else {
+            orderBaseInfo.setOrderSubjectType(AppOrderSubjectType.STORE);
+        }
+        //设置订单创建者身份类型
+        if (tdOrder.getMainOrderNumber().contains("FIT")) {
+            orderBaseInfo.setCreatorIdentityType(AppIdentityType.DECORATE_MANAGER);
+        } else {
+            if (tdOrder.getIsSellerOrder()) {
+                orderBaseInfo.setCreatorIdentityType(AppIdentityType.SELLER);
+            } else {
+                orderBaseInfo.setCreatorIdentityType(AppIdentityType.CUSTOMER);
+            }
+        }
+        //设置订单创建者信息
+        switch (orderBaseInfo.getCreatorIdentityType()) {
+            case DECORATE_MANAGER:
+                AppEmployee fitEmployee = this.findFitEmployeeInfoById(tdOrder.getRealUserId());
+                if (null != fitEmployee) {
+                    orderBaseInfo.setCreatorId(fitEmployee.getEmpId());
+                    orderBaseInfo.setCreatorName(fitEmployee.getName());
+                    orderBaseInfo.setCreatorPhone(fitEmployee.getMobile());
+                } else {
+                    //unhandledMap.put(tdOrder.getMainOrderNumber(), "该订单没有找到装饰经理信息");
+                    log.warn("装饰公司订单：{} 经理信息没找到", tdOrder.getMainOrderNumber());
+                    throw new DataTransferException("该订单没有找到装饰经理信息", DataTransferExceptionType.DMNF);
+                    //throw new RuntimeException("装饰公司订单：" + mainOrderNumber + "经理信息没找到");
+                    //continue;
+                }
+                break;
+            case SELLER:
+                //AppEmployee storeEmployee = dataTransferService.findStoreEmployeeById(tdOrder.getSellerId());
+                List<AppEmployee> filterEmployeeList = employeeList.stream().filter(p -> p.getMobile().equals(tdOrder.getSellerUsername())).
+                        collect(Collectors.toList());
+                if (null != filterEmployeeList && !filterEmployeeList.isEmpty()) {
+                    AppEmployee storeEmployee = filterEmployeeList.get(0);
+                    orderBaseInfo.setCreatorId(storeEmployee.getEmpId());
+                    orderBaseInfo.setCreatorName(storeEmployee.getName());
+                    orderBaseInfo.setCreatorPhone(storeEmployee.getMobile());
+                    orderBaseInfo.setSalesConsultId(orderBaseInfo.getCreatorId());
+                    orderBaseInfo.setSalesConsultName(orderBaseInfo.getSalesConsultName());
+                    orderBaseInfo.setSalesConsultPhone(orderBaseInfo.getCreatorPhone());
+                    //AppCustomer customer = dataTransferService.findCustomerById(tdOrder.getUserId());
+                    // AppCustomer customer = dataTransferService.findCustomerByCustomerMobile(tdOrder.getRealUserUsername());
+                    List<AppCustomer> filterCustomerList = customerList.stream().filter(p -> p.getMobile().equals(tdOrder.getRealUserUsername())).
+                            collect(Collectors.toList());
+                    if (null != filterCustomerList && !filterCustomerList.isEmpty()) {
+                        AppCustomer customer = filterCustomerList.get(0);
+                        orderBaseInfo.setCustomerId(customer.getCusId());
+                        orderBaseInfo.setCustomerName(customer.getName());
+                        orderBaseInfo.setCustomerPhone(customer.getMobile());
+                        orderBaseInfo.setCustomerType(customer.getCustomerType());
+                    } else {
+                        //unhandledMap.put(tdOrder.getMainOrderNumber(), "该订单没有找到顾客信息");
+                        log.warn("订单：{} 顾客信息没找到", tdOrder.getMainOrderNumber());
+                        throw new DataTransferException("该订单没有找到顾客信息", DataTransferExceptionType.CNF);
+                        //throw new RuntimeException("订单：" + mainOrderNumber + " 顾客信息没找到");
+                    }
+                } else {
+                    //unhandledMap.put(tdOrder.getMainOrderNumber(), "该订单没有找到导购信息");
+                    log.warn("门店订单：{} 导购信息没找到", tdOrder.getMainOrderNumber());
+                    throw new DataTransferException("该订单没有找到导购信息", DataTransferExceptionType.SNF);
+                }
+                break;
+            case CUSTOMER:
+                //AppCustomer customer = dataTransferService.findCustomerById(tdOrder.getUserId());
+                // AppCustomer customer = dataTransferService.findCustomerByCustomerMobile(tdOrder.getRealUserUsername());
+                List<AppCustomer> filterCustomerList = customerList.stream().filter(p -> p.getMobile().equals(tdOrder.getRealUserUsername())).
+                        collect(Collectors.toList());
+                if (null != filterCustomerList && !filterCustomerList.isEmpty()) {
+                    AppCustomer customer = filterCustomerList.get(0);
+                    orderBaseInfo.setCreatorId(customer.getCusId());
+                    orderBaseInfo.setCreatorName(customer.getName());
+                    orderBaseInfo.setCreatorPhone(customer.getMobile());
+                    orderBaseInfo.setCustomerId(orderBaseInfo.getCreatorId());
+                    orderBaseInfo.setCustomerName(orderBaseInfo.getCreatorName());
+                    orderBaseInfo.setCustomerPhone(orderBaseInfo.getCreatorPhone());
+                    orderBaseInfo.setCustomerType(customer.getCustomerType());
+                    //AppEmployee sellerEmployee = dataTransferService.findStoreEmployeeById(tdOrder.getSellerId());
+                    List<AppEmployee> filterSellerList = employeeList.stream().filter(p -> p.getMobile().equals(tdOrder.getSellerUsername())).
+                            collect(Collectors.toList());
+                    if (null != filterSellerList && !filterSellerList.isEmpty()) {
+                        AppEmployee sellerEmployee = filterSellerList.get(0);
+
+                        orderBaseInfo.setSalesConsultId(sellerEmployee.getEmpId());
+                        orderBaseInfo.setSalesConsultName(sellerEmployee.getName());
+                        orderBaseInfo.setSalesConsultPhone(sellerEmployee.getMobile());
+                    } else {
+                        //unhandledMap.put(tdOrder.getMainOrderNumber(), "该订单没有找到导购信息");
+                        log.warn("门店订单：{} 导购信息没找到", tdOrder.getMainOrderNumber());
+                        throw new DataTransferException("该订单没有找到导购信息", DataTransferExceptionType.SNF);
+                        //throw new RuntimeException("门店订单：" + mainOrderNumber + "导购信息没找到");
+                    }
+                } else {
+                    //unhandledMap.put(tdOrder.getMainOrderNumber(), "该订单没有找到顾客信息");
+                    log.warn("门店订单：{} 顾客信息没找到", tdOrder.getMainOrderNumber());
+                    throw new DataTransferException("该订单没有找到顾客信息", DataTransferExceptionType.CNF);
+                    //throw new RuntimeException("门店订单：" + mainOrderNumber + "顾客信息没找到");
+                }
+                break;
+            default:
+                break;
+        }
+        //设置门店信息
+        List<AppStore> filterStoreList = storeList.stream().filter(p -> p.getStoreCode().equals(tdOrder.getDiySiteCode())).
+                collect(Collectors.toList());
+        AppStore store = filterStoreList.get(0);
+        if (null != store) {
+            orderBaseInfo.setStoreId(store.getStoreId());
+            orderBaseInfo.setStoreCode(store.getStoreCode());
+            orderBaseInfo.setStoreOrgId(store.getStoreOrgId());
+            orderBaseInfo.setStoreStructureCode(store.getStoreStructureCode());
+        } else {
+            //unhandledMap.put(tdOrder.getMainOrderNumber(), "该订单没有找到门店信息");
+            log.warn("门店订单：{} 门店信息没找到", tdOrder.getMainOrderNumber());
+            throw new DataTransferException("该订单没有找到门店信息", DataTransferExceptionType.STNF);
+            // continue;
+        }
+        orderBaseInfo.setTotalGoodsPrice(tdOrder.getTotalGoodsPrice());
+        orderBaseInfo.setIsEvaluated(Boolean.FALSE);
+        orderBaseInfo.setRemark(tdOrder.getRemark());
+        orderBaseInfo.setCityName(tdOrder.getCity());
+        if (orderBaseInfo.getCityName().equals("成都市")) {
+            orderBaseInfo.setCityId(1L);
+            orderBaseInfo.setSobId(2121L);
+        } else {
+            orderBaseInfo.setCityId(2L);
+            orderBaseInfo.setSobId(2033L);
+        }
+        orderBaseInfo.setSalesNumber(tdOrder.getPaperSalesNumber());
+        orderBaseInfo.setIsRecordSales(Boolean.TRUE);
+        return orderBaseInfo;
+
+        //System.out.println("orderBaseInfo:\n" + orderBaseInfo);
+        //System.out.println(countLine);
+        // orderService.saveOrderBaseInfo(orderBaseInfo);
+    }
+
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Queue<DataTransferErrorLog> transferOrderRelevantInfo() throws ExecutionException, InterruptedException {
+        // *********************** 订单迁移处理 ***************
+        Queue<DataTransferErrorLog> errorLogQueue = new ConcurrentLinkedDeque<>();
+        List<TdOrderSmall> storeMainOrderNumberList;
+        List<AppEmployee> employeeList = employeeService.findAllSeller();
+        List<AppCustomer> customerList = customerService.findAllCustomer();
+        List<AppStore> storeList = storeService.findAll();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2017, Calendar.NOVEMBER, 1, 0, 0, 0);
+        Date startTime = calendar.getTime();
+        Date endTime = new Date();
+        //查询所有待处理的主单
+        storeMainOrderNumberList = this.getPendingTransferOrder(startTime, endTime);
+        //多线程处理任务集
+        if (storeMainOrderNumberList == null || storeMainOrderNumberList.isEmpty()) {
+            throw new DataTransferException("没有要迁移的数据", DataTransferExceptionType.NDT);
+        }
+        int size = storeMainOrderNumberList.size();
+        int nThreads = 6;
+        AtomicInteger countLine = new AtomicInteger();
+        ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
+        List<Future<Queue<DataTransferErrorLog>>> futures = new ArrayList<>(nThreads);
+
+        for (int i = 0; i < nThreads; i++) {
+            final List<TdOrderSmall> subList = storeMainOrderNumberList.subList(size / nThreads * i, size / nThreads * (i + 1));
+            Callable<Queue<DataTransferErrorLog>> task = () -> {
+                Queue<DataTransferErrorLog> dataTransferErrorLogQueue = new ConcurrentLinkedDeque<>();
+                for (TdOrderSmall tdOrder : subList) {
+                    try {
+                        countLine.addAndGet(1);
+                        //处理订单头
+                        OrderBaseInfo orderBaseInfo = this.transferOrderBaseInfo(tdOrder, employeeList, customerList, storeList);
+
+
+                        //持久化订单相关信息
+                        dataTransferSupportService.saveOrderRelevantInfo(orderBaseInfo);
+                    } catch (DataTransferException e) {
+                        dataTransferErrorLogQueue.add(new DataTransferErrorLog(null, tdOrder.getMainOrderNumber(), e.getType().getDesc(), new Date()));
+                    } catch (Exception e) {
+                        log.warn(e.getMessage());
+                        dataTransferErrorLogQueue.add(new DataTransferErrorLog(null, tdOrder.getMainOrderNumber(), e.getMessage(),
+                                new Date()));
+                    }
+                }
+                return dataTransferErrorLogQueue;
+            };
+            futures.add(executorService.submit(task));
+        }
+        for (Future<Queue<DataTransferErrorLog>> future : futures) {
+            errorLogQueue.addAll(future.get());
+        }
+        dataTransferSupportService.saveDataTransferErrorLog(errorLogQueue);
+        executorService.shutdown();
+        System.out.println("未处理或处理失败的数据条数:" + errorLogQueue.size());
+        log.info("订单导入job处理完成,当前时间:{}", new Date());
+        return errorLogQueue;
     }
 }

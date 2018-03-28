@@ -113,4 +113,6 @@ public interface TransferDAO {
     List<OrderBaseInfo> queryOrderBaseInfoBySize(int size);
 
     List<TdOrder> queryTdOrderByOrderNumber(String orderNumber);
+
+    void saveDataTransferErrorLogList(@Param(value = "errorLogList") List<DataTransferErrorLog> errorLogList);
 }
