@@ -216,18 +216,19 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
                 goodsInfo.setVIPPrice(tdOrderGoods.getRealPrice());
                 goodsInfo.setSettlementPrice(tdOrderGoods.getRealPrice());
                 goodsInfo.setReturnPriority(1);
-
+                goodsInfo.setWholesalePrice(tdOrderGoods.getJxPrice());
             } else if (tdOrderGoods.getPresentedListId() != null) {
                 goodsInfo.setGoodsLineType(AppGoodsLineType.PRESENT);
                 goodsInfo.setRetailPrice(tdOrderGoods.getGiftPrice());
                 goodsInfo.setVIPPrice(tdOrderGoods.getGiftPrice());
                 goodsInfo.setSettlementPrice(tdOrderGoods.getGiftPrice());
                 goodsInfo.setReturnPriority(2);
+                goodsInfo.setWholesalePrice(0.00);
             }
             goodsInfo.setGid(goodsDO.getGid());
             goodsInfo.setSku(tdOrderGoods.getSku());
             goodsInfo.setSkuName(tdOrderGoods.getGoodsTitle());
-            goodsInfo.setWholesalePrice(tdOrderGoods.getJxPrice());
+
 
             String activityId = tdOrderGoods.getActivityId();
             if (activityId != null && activityId.contains("_")) {
@@ -289,7 +290,7 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
             goodsInfo2.setGid(goodsDO.getGid());
             goodsInfo2.setSku(tdOrderGoods.getSku());
             goodsInfo2.setSkuName(tdOrderGoods.getGoodsTitle());
-            goodsInfo2.setWholesalePrice(tdOrderGoods.getJxPrice());
+            goodsInfo2.setWholesalePrice(0.00);
             goodsInfo2.setPromotionId(null);
             goodsInfo2.setIsPriceShare(false);
             goodsInfo2.setPromotionSharePrice(0D);
