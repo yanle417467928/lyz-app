@@ -1,14 +1,11 @@
 package cn.com.leyizhuang.app.web.controller.rest.datatransfer;
 
-import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdDeliveryInfoDetails;
-import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderLogistics;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderJxPriceDifferenceReturnDetails;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.OrderDeliveryInfoDetailsService;
@@ -55,7 +52,7 @@ public class DeliveryInfoController {
 
         int size = 0;
         for (int i = 0; i < 200; i++) {
-            Boolean hasNotDatas = this.saveOrderDeliveryInfoDetails(size);
+            Boolean hasNotDatas = this.saveOrderDeliveryInfoDetails("");
             if (hasNotDatas) {
                 return "********************转换物流明细表结束*************************";
             }
@@ -85,8 +82,8 @@ public class DeliveryInfoController {
         return "按理说不应该执行到这儿!";
     }
 
-    private Boolean saveOrderDeliveryInfoDetails(int size) {
-        List<TdDeliveryInfoDetails> entityList = dataTransferService.queryDeliveryTimeSeqBySize(size);
+    private Boolean saveOrderDeliveryInfoDetails(String orderNO) {
+        List<TdDeliveryInfoDetails> entityList = dataTransferService.queryDeliveryTimeSeqByOrderNo(orderNO);
 
         try {
             if (AssertUtil.isNotEmpty(entityList)) {
@@ -149,7 +146,7 @@ public class DeliveryInfoController {
     }
 
     private Boolean saveOrderJxPriceDifference(int size) {
-        List<TdDeliveryInfoDetails> tdOrderList = dataTransferService.queryTdOrderListBySize(size);
+        List<TdDeliveryInfoDetails> tdOrderList = dataTransferService.queryTdOrderListByOrderNo("");
         try {
             if (AssertUtil.isNotEmpty(tdOrderList)) {
                 for (TdDeliveryInfoDetails tdOrder : tdOrderList) {
@@ -207,19 +204,7 @@ public class DeliveryInfoController {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                if (status == 3) {
-                    OrderDeliveryInfoDetails orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
-                    orderDeliveryInfoDetails.setDeliveryInfo(orderNumber, LogisticStatus.SEALED_CAR, "商家已封车完成！", "已封车",
-                            "", "", "", "");
-                    orderDeliveryInfoDetails.setIsRead(true);
-                    orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
-                } else if (status == 4 || status == 5 || status == 6) {
-                    OrderDeliveryInfoDetails orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
-                    orderDeliveryInfoDetails.setDeliveryInfo(orderNumber, LogisticStatus.CONFIRM_ARRIVAL, "确认到货！", "送达",
-                            "", "", "", "");
-                    orderDeliveryInfoDetails.setIsRead(true);
-                    orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
-                }
+
             }
         });
     }
