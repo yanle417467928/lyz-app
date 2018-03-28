@@ -13,6 +13,7 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
+import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferSupportService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.OrderGoodsTransferService;
@@ -29,6 +30,10 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * 订单商品转换类
@@ -61,6 +66,11 @@ public class DataTransferServiceImpl implements DataTransferService {
     @Resource
     private OrderGoodsTransferService orderGoodsTransferService;
 
+    @Resource
+    private AppOrderService appOrderService;
+
+    private ExecutorService executorService = Executors.newFixedThreadPool(10);
+
     public OrderGoodsInfo transferOne(TdOrderGoods tdOrderGoods) {
         OrderGoodsInfo goodsInfo = new OrderGoodsInfo();
         return goodsInfo;
@@ -83,13 +93,69 @@ public class DataTransferServiceImpl implements DataTransferService {
     }
 
     @Override
-    public List<TdOrderLogistics> queryOrderLogistcs(int size) {
-        return transferDAO.queryOrderLogistcs(size);
+    public TdOrderLogistics queryOrderLogistcsByOrderNumber(String orderNumber) {
+        return transferDAO.queryOrderLogistcsByOrderNumber(orderNumber);
     }
 
     @Override
-    public void saveOrderLogisticsInfo(OrderLogisticsInfo orderLogisticsInfo) {
-        transferDAO.saveOrderLogisticsInfo(orderLogisticsInfo);
+    public OrderLogisticsInfo transferOrderLogisticsInfo(TdOrderSmall tdOrder, List<AppEmployee> employeeList, List<AppStore> storeList) {
+        TdOrderLogistics tdOrderLogistics = this.queryOrderLogistcsByOrderNumber(tdOrder.getMainOrderNumber());
+        OrderLogisticsInfo orderLogisticsInfo = new OrderLogisticsInfo();
+
+        if ("门店自提".equals(tdOrder.getDeliverTypeTitle())) {
+            for (AppStore appStore : storeList) {
+                if (appStore.getStoreCode().equals(tdOrder.getDiySiteCode())) {
+                    orderLogisticsInfo.setBookingStoreCode(tdOrder.getDiySiteCode());
+                    orderLogisticsInfo.setBookingStoreAddress(appStore.getDetailedAddress());
+                    orderLogisticsInfo.setBookingStoreName(appStore.getStoreName());
+                    break;
+                } else {
+                    log.warn("门店信息没找到,订单：{}", tdOrder.getMainOrderNumber());
+                    throw new DataTransferException("该订单没有找到门店信息没", DataTransferExceptionType.STNF);
+                }
+            }
+
+        }
+        if ("成都市".equals(tdOrder.getCity())) {
+            orderLogisticsInfo.setDeliveryProvince("四川省");
+        } else if ("郑州市".equals(tdOrder.getCity())) {
+            orderLogisticsInfo.setDeliveryProvince("河南省");
+        }
+
+        List<TdDeliveryInfoDetails> tdDeliveryInfoDetailsList = this.queryDeliveryInfoDetailByOrderNumber(tdOrder.getMainOrderNumber());
+        TdDeliveryInfoDetails tdDeliveryInfoDetails = tdDeliveryInfoDetailsList.get(0);
+        if (null == tdDeliveryInfoDetailsList || tdDeliveryInfoDetailsList.size() == 0) {
+            log.warn("物流信息没找到,订单：{}", tdOrder.getMainOrderNumber());
+            throw new DataTransferException("该订单没有找到物流信息", DataTransferExceptionType.DENF);
+        } else {
+            String empCode = tdDeliveryInfoDetails.getDriver();
+            orderLogisticsInfo.setDeliveryClerkId(tdOrderLogistics.getEmpId());
+            orderLogisticsInfo.setWarehouse(tdDeliveryInfoDetails.getWhNo());
+            for (AppEmployee appEmployee : employeeList) {
+                if (empCode.equals(appEmployee.getDeliveryClerkNo())) {
+                    orderLogisticsInfo.setDeliveryClerkName(appEmployee.getName());
+                    orderLogisticsInfo.setDeliveryClerkNo(appEmployee.getDeliveryClerkNo());
+                    orderLogisticsInfo.setDeliveryClerkPhone(appEmployee.getMobile());
+                    break;
+                } else {
+                    log.warn("员工信息没找到,员工编码：{}", empCode);
+                    throw new DataTransferException("该订单没有找到员工信息", DataTransferExceptionType.ENF);
+                }
+            }
+        }
+        orderLogisticsInfo.setDeliveryType(AppDeliveryType.getAppDeliveryTypeByDescription(tdOrder.getDeliverTypeTitle()));
+        orderLogisticsInfo.setOrdNo(tdOrder.getMainOrderNumber());
+        orderLogisticsInfo.setDeliveryCity(tdOrder.getCity());
+        orderLogisticsInfo.setDeliveryCounty(tdOrderLogistics.getDisctrict());
+        orderLogisticsInfo.setDeliveryStreet(tdOrderLogistics.getSubdistrict());
+        orderLogisticsInfo.setReceiver(tdOrderLogistics.getShippingName());
+        orderLogisticsInfo.setReceiverPhone(tdOrderLogistics.getShippingPhone());
+        orderLogisticsInfo.setShippingAddress(tdOrderLogistics.getShippingAddress());
+        orderLogisticsInfo.setDeliveryTime(tdOrderLogistics.getDeliveryDate());
+        orderLogisticsInfo.setDetailedAddress(tdOrderLogistics.getDetailedAddress());
+        orderLogisticsInfo.setIsOwnerReceiving(false);
+        orderLogisticsInfo.setResidenceName(null);
+        return orderLogisticsInfo;
     }
 
     @Override
@@ -795,11 +861,13 @@ public class DataTransferServiceImpl implements DataTransferService {
                         OrderBaseInfo orderBaseInfo = this.transferOrderBaseInfo(tdOrder, employeeList, customerList, storeList);
 
                         // 转换订单商品
-                        List<OrderGoodsInfo> orderGoodsInfoList = orderGoodsTransferService.transferOne(orderBaseInfo);
+                       List<OrderGoodsInfo> orderGoodsInfoList = orderGoodsTransferService.transferOne(orderBaseInfo);
                         OrderBillingDetails orderBillingDetails = this.transferOrderBillingDetails(orderBaseInfo);
 
+                        //处理订单物理信息
+                        OrderLogisticsInfo orderLogisticsInfo = this.transferOrderLogisticsInfo(tdOrder, employeeList, storeList);
                         //持久化订单相关信息
-                        dataTransferSupportService.saveOrderRelevantInfo(orderBaseInfo,orderBillingDetails);
+                        dataTransferSupportService.saveOrderRelevantInfo(orderBaseInfo, orderBillingDetails,orderLogisticsInfo);
                     } catch (DataTransferException e) {
                         dataTransferErrorLogQueue.add(new DataTransferErrorLog(null, tdOrder.getMainOrderNumber(), e.getType().getDesc(), new Date()));
                     } catch (Exception e) {

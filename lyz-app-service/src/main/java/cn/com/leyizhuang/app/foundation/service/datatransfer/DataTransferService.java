@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutionException;
  **/
 public interface DataTransferService {
 
-    List<TdOrderLogistics> queryOrderLogistcs(int size);
+    TdOrderLogistics queryOrderLogistcsByOrderNumber(String orderNumber);
 
     List<String> getTransferStoreMainOrderNumber(Date startTime, Date endTime);
 
@@ -44,7 +44,7 @@ public interface DataTransferService {
 
     AppCustomer findCustomerById(Long userId);
 
-    void saveOrderLogisticsInfo(OrderLogisticsInfo orderLogisticsInfo);
+    OrderLogisticsInfo transferOrderLogisticsInfo(TdOrderSmall tdOrder, List<AppEmployee> employeeList,List<AppStore> storeList);
 
     TdOrderDeliveryTimeSeqDetail findDeliveryStatusByMainOrderNumber(String mainOrderNumber);
 

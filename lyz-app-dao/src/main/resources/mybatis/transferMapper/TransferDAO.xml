@@ -108,7 +108,7 @@
         GROUP BY emp_id
     </select>
 
-    <select id="queryOrderLogistcs" parameterType="java.lang.Integer"
+    <select id="queryOrderLogistcsByOrderNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderLogistics">
         SELECT
             DISTINCT
@@ -139,7 +139,8 @@
             LEFT JOIN emp_employee ee ON ee.delivery_clerk_no = tdi.driver
         WHERE
             tdc.order_time > '2017-10-01 00:00:00'
-        LIMIT #{size}, 1000;
+            AND
+            tdc.main_order_number =#{orderNumber}
     </select>
     <select id="findNewOrderByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
         SELECT *

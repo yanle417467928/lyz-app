@@ -17,7 +17,7 @@ import java.util.Queue;
 public interface DataTransferSupportService {
 
 
-    void saveOrderRelevantInfo(OrderBaseInfo orderBaseInfo,OrderBillingDetails orderBillingDetails);
+    void saveOrderRelevantInfo(OrderBaseInfo orderBaseInfo,OrderBillingDetails orderBillingDetails,OrderLogisticsInfo orderLogisticsInfo);
 
     void saveDataTransferErrorLog(Queue<DataTransferErrorLog> errorLogQueue);
 }
