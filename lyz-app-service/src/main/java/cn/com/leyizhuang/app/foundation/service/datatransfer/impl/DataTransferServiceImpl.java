@@ -208,7 +208,7 @@ public class DataTransferServiceImpl implements DataTransferService {
         if (null != orderData && null != orderData.getCashCouponFee() && orderData.getCashCouponFee() > 0D) {
             List<OrderCouponInfo> list = this.transferDAO.findCouponInfoListByType(orderNumber, OrderCouponType.CASH_COUPON);
             if (null != list && list.size() > 0) {
-                return 1;
+                return 0;
             }
 
             CashCoupon cashCoupon = new CashCoupon();
@@ -267,7 +267,7 @@ public class DataTransferServiceImpl implements DataTransferService {
         }
         List<TdOrder> orders = this.transferDAO.findOrderInfoByOrderNumber(orderNumber);
         if (null == orders || orders.size() == 0) {
-            return 2;
+            return 1;
         }
         List<OrderCouponInfo> list = this.transferDAO.findCouponInfoListByType(orderNumber, OrderCouponType.PRODUCT_COUPON);
         if (null != list && list.size() > 0) {
@@ -284,7 +284,7 @@ public class DataTransferServiceImpl implements DataTransferService {
 
                     List<TdCoupon> couponList = this.transferDAO.getCouponListBySkuAndOrderNumber(tdOrderGoods.getSku(), orders.get(j).getOrderNumber());
                     if (null == couponList || couponList.size() == 0) {
-                        return 3;
+                        return 2;
                     }
                     for (int l = 0; l < couponList.size(); l++) {
                         TdCoupon tdCoupon = couponList.get(l);
