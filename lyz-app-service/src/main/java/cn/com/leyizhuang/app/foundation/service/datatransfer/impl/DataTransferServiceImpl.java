@@ -796,7 +796,9 @@ public class DataTransferServiceImpl implements DataTransferService {
 
                         // 转换订单商品
                         List<OrderGoodsInfo> orderGoodsInfoList = orderGoodsTransferService.transferOne(orderBaseInfo);
+                        //处理订单账单信息
                         OrderBillingDetails orderBillingDetails = this.transferOrderBillingDetails(orderBaseInfo);
+
 
                         //持久化订单相关信息
                         dataTransferSupportService.saveOrderRelevantInfo(orderBaseInfo,orderBillingDetails);
