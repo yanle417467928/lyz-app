@@ -883,11 +883,11 @@ public class DataTransferServiceImpl implements DataTransferService {
                         List<TdOrder> tdOrders = transferDAO.findOrderAllFieldByOrderNumber(orderBaseInfo.getOrderNumber());
                         if (tdOrders == null || tdOrders.size() == 0) {
                             //throw new Exception("订单商品转行异常，找不到旧订单 订单号："+ orderBaseInfo.getOrderNumber());
-                            throw new DataTransferException("找不到旧订单 订单号："+ orderBaseInfo.getOrderNumber(), DataTransferExceptionType.NDT);
+                            throw new DataTransferException("找不到旧订单 订单号：" + orderBaseInfo.getOrderNumber(), DataTransferExceptionType.NDT);
                         }
 
                         // 转换订单商品
-                        List<OrderGoodsInfo> orderGoodsInfoList = orderGoodsTransferService.transferOne(orderBaseInfo,tdOrders);
+                        List<OrderGoodsInfo> orderGoodsInfoList = orderGoodsTransferService.transferOne(orderBaseInfo, tdOrders);
 
                         //处理订单账单信息
                         OrderBillingDetails orderBillingDetails = this.transferOrderBillingDetails(orderBaseInfo);
@@ -901,12 +901,12 @@ public class DataTransferServiceImpl implements DataTransferService {
                         //****经销差价返还 begin****/
                         List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetailsList = new ArrayList<>();
                         if (!orderBaseInfo.getOrderNumber().contains("YF")) {
-                            jxPriceDifferenceReturnDetailsList = this.saveOrderJxPriceDifference(orderBaseInfo);
+                            jxPriceDifferenceReturnDetailsList = this.saveOrderJxPriceDifference(orderBaseInfo, tdOrders);
                         }
                         List<OrderBillingPaymentDetails> paymentDetailsList = new ArrayList<>();
                         //****装饰公司账单支付明细转换 begin****/
                         if (AppOrderSubjectType.FIT.equals(orderBaseInfo.getOrderSubjectType())) {
-                            paymentDetailsList = this.saveFixDiySiteBillingPaymentDetail(orderBaseInfo);
+                            paymentDetailsList = this.saveFixDiySiteBillingPaymentDetail(orderBaseInfo, tdOrders);
                         } else {
                             //****普通客户账单支付明细转换 begin****/
                             paymentDetailsList = this.saveOrderBillingPaymentDetail(orderBaseInfo, tdOrder);
@@ -1015,14 +1015,10 @@ public class DataTransferServiceImpl implements DataTransferService {
         }
     }
 
-    private List<OrderJxPriceDifferenceReturnDetails> saveOrderJxPriceDifference(OrderBaseInfo orderBaseInfo) {
+    private List<OrderJxPriceDifferenceReturnDetails> saveOrderJxPriceDifference(OrderBaseInfo orderBaseInfo, List<TdOrder> tdOrderList) {
 
-        List<TdDeliveryInfoDetails> tdOrderList = transferDAO.queryTdOrderListByOrderNo(orderBaseInfo.getOrderNumber());
-        if (AssertUtil.isEmpty(tdOrderList)) {
-            throw new DataTransferException("没有在tdOrder表找到该订单", DataTransferExceptionType.NDT);
-        }
         List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetailsList = new ArrayList<>();
-        for (TdDeliveryInfoDetails tdOrder : tdOrderList) {
+        for (TdOrder tdOrder : tdOrderList) {
             if (!tdOrder.getMainOrderNumber().contains("YF")) {
                 List<TdDeliveryInfoDetails> tdOrderGoodsList = dataTransferService.queryOrderGoodsListByOrderNumber(tdOrder.getId());
                 if (AssertUtil.isNotEmpty(tdOrderGoodsList)) {
@@ -1165,63 +1161,57 @@ public class DataTransferServiceImpl implements DataTransferService {
         }
     }
 
-    private List<OrderBillingPaymentDetails> saveFixDiySiteBillingPaymentDetail(OrderBaseInfo orderBaseInfo) {
+    private List<OrderBillingPaymentDetails> saveFixDiySiteBillingPaymentDetail(OrderBaseInfo orderBaseInfo, List<TdOrder> orderList) {
 
 
-        List<OrderBillingPaymentDetails> paymentDetailsList;
-        List<TdOrder> orderList = transferDAO.queryTdOrderByOrderNumber(orderBaseInfo.getOrderNumber());
-        if (AssertUtil.isNotEmpty(orderList)) {
-            paymentDetailsList = new ArrayList<>();
-            Double storeCredit = 0D;
-            Double storePrepay = 0D;
-            for (TdOrder tdOrder : orderList) {
-                if (null != tdOrder.getCredit() && tdOrder.getCredit() > AppConstant.PAY_UP_LIMIT) {
+        List<OrderBillingPaymentDetails> paymentDetailsList = new ArrayList<>();
+        Double storeCredit = 0D;
+        Double storePrepay = 0D;
+        for (TdOrder tdOrder : orderList) {
+            if (null != tdOrder.getCredit() && tdOrder.getCredit() > AppConstant.PAY_UP_LIMIT) {
 
-                    storeCredit = CountUtil.add(storeCredit, tdOrder.getCredit());
+                storeCredit = CountUtil.add(storeCredit, tdOrder.getCredit());
 
-                } else if ((null != tdOrder.getWalletMoney() && tdOrder.getWalletMoney() > AppConstant.PAY_UP_LIMIT)
-                        || null != tdOrder.getAlipayMoney() && tdOrder.getAlipayMoney() > AppConstant.PAY_UP_LIMIT) {
+            } else if ((null != tdOrder.getWalletMoney() && tdOrder.getWalletMoney() > AppConstant.PAY_UP_LIMIT)
+                    || null != tdOrder.getAlipayMoney() && tdOrder.getAlipayMoney() > AppConstant.PAY_UP_LIMIT) {
 
-                    Double amount = CountUtil.add(null == tdOrder.getWalletMoney() ? 0D : tdOrder.getWalletMoney(),
-                            null == tdOrder.getAlipayMoney() ? 0D : tdOrder.getAlipayMoney());
+                Double amount = CountUtil.add(null == tdOrder.getWalletMoney() ? 0D : tdOrder.getWalletMoney(),
+                        null == tdOrder.getAlipayMoney() ? 0D : tdOrder.getAlipayMoney());
 
-                    storePrepay = CountUtil.add(amount, storePrepay);
-                }
+                storePrepay = CountUtil.add(amount, storePrepay);
             }
-            if (storeCredit > AppConstant.PAY_UP_LIMIT) {
-                OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails();
-                paymentDetails.setOrderId(orderBaseInfo.getId());
-                paymentDetails.setOrderNumber(orderBaseInfo.getOrderNumber());
-                paymentDetails.setCreateTime(orderList.get(0).getPayTime());
-                paymentDetails.setPayTime(orderList.get(0).getPayTime());
-                paymentDetails.setPayType(OrderBillingPaymentType.STORE_CREDIT_MONEY);
-                paymentDetails.setPayTypeDesc(OrderBillingPaymentType.STORE_CREDIT_MONEY.getDescription());
-
-                paymentDetails.setPaymentSubjectType(PaymentSubjectType.DECORATE_MANAGER);
-                paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.DECORATE_MANAGER.getDescription());
-                paymentDetails.setAmount(storeCredit);
-                paymentDetails.setReceiptNumber(OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
-                paymentDetailsList.add(paymentDetails);
-            }
-            if (storePrepay > AppConstant.PAY_UP_LIMIT) {
-                OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails();
-                paymentDetails.setOrderId(orderBaseInfo.getId());
-                paymentDetails.setOrderNumber(orderBaseInfo.getOrderNumber());
-                paymentDetails.setCreateTime(orderList.get(0).getPayTime());
-                paymentDetails.setPayTime(orderList.get(0).getPayTime());
-                paymentDetails.setPayType(OrderBillingPaymentType.ST_PREPAY);
-                paymentDetails.setPayTypeDesc(OrderBillingPaymentType.ST_PREPAY.getDescription());
-
-                paymentDetails.setPaymentSubjectType(PaymentSubjectType.DECORATE_MANAGER);
-                paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.DECORATE_MANAGER.getDescription());
-
-                paymentDetails.setAmount(storePrepay);
-                paymentDetails.setReceiptNumber(OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
-                paymentDetailsList.add(paymentDetails);
-            }
-            return paymentDetailsList;
-        } else {
-            throw new DataTransferException("没有在tdOrder表找到该订单", DataTransferExceptionType.NDT);
         }
+        if (storeCredit > AppConstant.PAY_UP_LIMIT) {
+            OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails();
+            paymentDetails.setOrderId(orderBaseInfo.getId());
+            paymentDetails.setOrderNumber(orderBaseInfo.getOrderNumber());
+            paymentDetails.setCreateTime(orderList.get(0).getPayTime());
+            paymentDetails.setPayTime(orderList.get(0).getPayTime());
+            paymentDetails.setPayType(OrderBillingPaymentType.STORE_CREDIT_MONEY);
+            paymentDetails.setPayTypeDesc(OrderBillingPaymentType.STORE_CREDIT_MONEY.getDescription());
+
+            paymentDetails.setPaymentSubjectType(PaymentSubjectType.DECORATE_MANAGER);
+            paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.DECORATE_MANAGER.getDescription());
+            paymentDetails.setAmount(storeCredit);
+            paymentDetails.setReceiptNumber(OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+            paymentDetailsList.add(paymentDetails);
+        }
+        if (storePrepay > AppConstant.PAY_UP_LIMIT) {
+            OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails();
+            paymentDetails.setOrderId(orderBaseInfo.getId());
+            paymentDetails.setOrderNumber(orderBaseInfo.getOrderNumber());
+            paymentDetails.setCreateTime(orderList.get(0).getPayTime());
+            paymentDetails.setPayTime(orderList.get(0).getPayTime());
+            paymentDetails.setPayType(OrderBillingPaymentType.ST_PREPAY);
+            paymentDetails.setPayTypeDesc(OrderBillingPaymentType.ST_PREPAY.getDescription());
+
+            paymentDetails.setPaymentSubjectType(PaymentSubjectType.DECORATE_MANAGER);
+            paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.DECORATE_MANAGER.getDescription());
+
+            paymentDetails.setAmount(storePrepay);
+            paymentDetails.setReceiptNumber(OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+            paymentDetailsList.add(paymentDetails);
+        }
+        return paymentDetailsList;
     }
 }
