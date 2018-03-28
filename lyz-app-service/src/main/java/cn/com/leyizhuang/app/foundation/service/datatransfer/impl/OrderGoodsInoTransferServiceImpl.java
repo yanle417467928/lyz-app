@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -48,6 +49,64 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
     // 线程池
     private ExecutorService executorService = Executors.newFixedThreadPool(10);
 
+    @Transactional
+    public void transferOne(OrderBaseInfo orderBaseInfo) throws Exception {
+        logger.info("开始转换订单商品数据  ≡(▔﹏▔)≡ ⊙﹏⊙∥ ˋ︿ˊ (=‵′=) 一.一 ￣﹏￣||| >﹏<~ "+orderBaseInfo.getOrderNumber());
+
+        // 根据主单号 找到旧订单分单
+        List<TdOrder> tdOrders = transferDAO.findOrderAllFieldByOrderNumber(orderBaseInfo.getOrderNumber());
+        if (tdOrders == null || tdOrders.size() == 0){
+            throw new Exception("订单商品转行异常，找不到旧订单 订单号："+ orderBaseInfo.getOrderNumber());
+        }else {
+            // 新订单商品记录
+            List<OrderGoodsInfo> orderGoodsInfoList = new ArrayList<>();
+            List<OrderGoodsInfo> productGoodsinfo = new ArrayList<>();
+
+            for (TdOrder order : tdOrders) {
+
+                // 不处理运费单
+                if (order.getOrderNumber().contains("YF")){
+                    continue;
+                }
+
+                // 找到分单下的商品
+                List<TdOrderGoods> tdOrderGoodsList = transferDAO.findTdorderGoodsByTdOrderId(order.getId());
+                // 找到分单下的赠品
+                List<TdOrderGoods> tdGiftGoodsList = transferDAO.findTdorderGoodsByPresentId(order.getId());
+
+                // 合并
+                tdOrderGoodsList.addAll(tdGiftGoodsList);
+
+                // 转换每一个商品
+                for (TdOrderGoods tdOrderGoods : tdOrderGoodsList) {
+                    // 找到新商品
+                    GoodsDO goodsDO = goodsDAO.queryBySku(tdOrderGoods.getSku());
+
+                    List<OrderGoodsInfo> orderGoodsInfoList1 = this.transferOne(tdOrderGoods, order, orderBaseInfo, goodsDO);
+
+                    if (orderGoodsInfoList1 == null || orderGoodsInfoList1.size() == 0){
+                        throw  new Exception("订单商品转行异常,商品转换异常 商品id: "+ goodsDO.getGid());
+                    }
+
+                    for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList1) {
+                        if (orderGoodsInfo.getGoodsLineType().equals(AppGoodsLineType.PRODUCT_COUPON)) {
+                            productGoodsinfo.add(orderGoodsInfo);
+                        } else {
+                            orderGoodsInfoList.add(orderGoodsInfo);
+                        }
+                    }
+
+                }
+
+                // 分摊
+                orderGoodsInfoList = dutch(orderGoodsInfoList, order);
+            }
+            orderGoodsInfoList.addAll(productGoodsinfo);
+
+            this.saveOrderGoodsInfo(orderGoodsInfoList);
+        }
+    }
+
     public void transferAll() {
 
         LocalDateTime startTime = LocalDateTime.now();
@@ -76,11 +135,15 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
                     continue;
                 }
 
-                // 找到分单下的商品
-
+                // 找到分单下的本品
                 List<TdOrderGoods> tdOrderGoodsList = transferDAO.findTdorderGoodsByTdOrderId(order.getId());
+                // 找到分单下的赠品
+                List<TdOrderGoods> tdGiftGoodsList = transferDAO.findTdorderGoodsByPresentId(order.getId());
 
-                // 转换每一个商品
+                // 合并
+                tdOrderGoodsList.addAll(tdGiftGoodsList);
+
+                // 转换每一个本品
                 for (TdOrderGoods tdOrderGoods : tdOrderGoodsList) {
                     // 找到新商品
                     GoodsDO goodsDO = goodsDAO.queryBySku(tdOrderGoods.getSku());
@@ -94,7 +157,6 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
                             orderGoodsInfoList.add(orderGoodsInfo);
                         }
                     }
-
                 }
 
                 // 分摊
@@ -150,9 +212,9 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
 
             } else if (tdOrderGoods.getPresentedListId() != null) {
                 goodsInfo.setGoodsLineType(AppGoodsLineType.PRESENT);
-                goodsInfo.setRetailPrice(tdOrderGoods.getPrice());
-                goodsInfo.setVIPPrice(tdOrderGoods.getRealPrice());
-                goodsInfo.setSettlementPrice(tdOrderGoods.getRealPrice());
+                goodsInfo.setRetailPrice(tdOrderGoods.getGiftPrice());
+                goodsInfo.setVIPPrice(tdOrderGoods.getGiftPrice());
+                goodsInfo.setSettlementPrice(tdOrderGoods.getGiftPrice());
                 goodsInfo.setReturnPriority(2);
             }
             goodsInfo.setGid(goodsDO.getGid());
@@ -275,6 +337,7 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
             orderGoodsInfoList = this.dutchPrice(orderGoodsInfoList, totalPrice, totalActivitySubPrice, totalCashCoupon);
         } catch (Exception e) {
             e.printStackTrace();
+            logger.info("订单商品转换失败，发送异常");
         }
 
 
@@ -294,6 +357,10 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
             }
 
             return goodsInfs;
+        }
+
+        if (activitySubPrice > 0 && cashCouponPrice > 0){
+            System.out.printf("123");
         }
 
         for (int i = 0; i < goodsInfs.size(); i++) {
@@ -324,7 +391,7 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
                 goods.setPromotionSharePrice(CountUtil.div((dutchPrice), goods.getOrderQuantity()));
                 goods.setCashCouponSharePrice(CountUtil.div(cashCouponDutchPrice, goods.getOrderQuantity()));
 
-                returnPrice = CountUtil.sub(goods.getSettlementPrice(),dutchPrice,cashCouponDutchPrice);
+                returnPrice = CountUtil.sub(goods.getSettlementPrice(),CountUtil.div((dutchPrice), goods.getOrderQuantity()),CountUtil.div(cashCouponDutchPrice, goods.getOrderQuantity()));
             }
 
             goods.setReturnPrice(returnPrice);
@@ -334,18 +401,18 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
     }
 
     private void saveOrderGoodsInfo(final List<OrderGoodsInfo> orderGoodsInfoList) {
-
+        Integer num = 0;
         // 插入
         for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
             // 检查是否存在
             Boolean flag = transferDAO.isExitTdOrderGoodsLine(orderGoodsInfo.getOrderNumber(), orderGoodsInfo.getGid(), orderGoodsInfo.getGoodsLineType().getValue());
 
             if (!flag) {
-                transferNum++;
+                num ++;
                 orderDAO.saveOrderGoodsInfo(orderGoodsInfo);
             }
         }
-        logger.info("条数："+ transferNum);
+        logger.info("条数："+ num);
     }
 
     private void saveOrderGoodsInfoAsync(final List<OrderGoodsInfo> orderGoodsInfoList) {

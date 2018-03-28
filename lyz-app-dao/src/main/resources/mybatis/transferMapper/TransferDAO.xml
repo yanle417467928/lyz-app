@@ -297,6 +297,10 @@
         select * from td_order_goods_copy where td_order_id = #{tdOrderId};
     </select>
 
+    <select id="findTdorderGoodsByPresentId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods">
+        select * from td_order_goods_copy where presented_list_id = #{presentId};
+    </select>
+
     <select id="isExitTdOrderGoodsLine" resultType="java.lang.Boolean">
         SELECT EXISTS (
                 select 1 from ord_goods_info where ord_no = #{orderNo} and gid = #{gid} and goods_line_type = #{goodsLineType}
