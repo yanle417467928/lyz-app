@@ -10,6 +10,14 @@
         FROM ord_base_info
     </select>
 
+    <select id="findNewOrderNumberByDeliveryType" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
+        SELECT
+        ord_no orderNumber,
+        oid    id
+        FROM ord_base_info
+        WHERE delivery_type = 'HOUSE_DELIVERY'
+    </select>
+
     <select id="findOwnMoneyRecordByOrderNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOwnMoneyRecord">
         SELECT
@@ -82,7 +90,7 @@
 
     <select id="findDeliveryInfoByOrderNumber" parameterType="java.lang.String" resultType="java.lang.String">
         SELECT t.op_user FROM (SELECT id,op_user,sub_order_number
-            FROM td_delivery_info_detail
+            FROM td_delivery_info_detail_copy
             WHERE sub_order_number = #{orderNumber}
             ORDER BY id DESC) t
         GROUP BY t.sub_order_number
@@ -118,9 +126,9 @@
         tdc.subdistrict,
         tdc.detail_address
         FROM
-        td_delivery_info tdi
-        LEFT JOIN td_order_copy tdc ON tdi.order_number = tdc.main_order_number
-        LEFT JOIN  ord_base_info obi ON  obi.ord_no = tdi.order_number
+        td_order_copy tdc
+        LEFT JOIN td_delivery_info_copy tdi ON tdi.order_number = tdc.main_order_number
+        LEFT JOIN  ord_base_info obi ON  obi.ord_no = tdc.main_order_number
         LEFT JOIN st_store ss ON ss.store_code = tdc.diy_site_code
         LEFT JOIN emp_employee ee ON ee.delivery_clerk_no = tdi.driver
         WHERE
@@ -169,6 +177,27 @@
         FROM td_order_delivery_time_seq_detail_copy
         WHERE operation_time &gt; '2017-10-01 00:00:00'
         LIMIT #{size}, 1000;
+    </select>
+
+    <select id="queryOrderBaseInfoBySize" parameterType="java.lang.Integer"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
+
+        SELECT *
+        FROM ord_base_info
+        LIMIT #{size}, 1000;
+    </select>
+
+    <select id="queryTdOrderByOrderNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder">
+
+        SELECT
+            credit,
+            pay_time,
+            wallet_money,
+            alipay_money
+        FROM td_order_copy
+        WHERE main_order_number = #{orderNumber}
+
     </select>
 
     <select id="queryDeliveryInfoDetailByOrderNumber" parameterType="java.lang.String"
@@ -280,12 +309,12 @@
     <insert id="saveOrderLogisticsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo">
         INSERT INTO ord_logistics_info (oid, ord_no, delivery_type, booking_store_code, booking_store_name, booking_store_address, delivery_time,
         delivery_clerk_no, delivery_clerk_id, delivery_clerk_name,delivery_clerk_phone ,warehouse, is_owner_receiving, receiver,
-        receiver_phone, shipping_address, residence_name, delivery_city, delivery_county, delivery_street,
+        receiver_phone, shipping_address, residence_name, delivery_province,delivery_city, delivery_county, delivery_street,
         detailed_address)
         VALUES (#{oid}, #{ordNo}, #{deliveryType}, #{bookingStoreCode}, #{bookingStoreName},
         #{bookingStoreAddress}, #{deliveryTime}, #{deliveryClerkNo}, #{deliveryClerkId},
         #{deliveryClerkName}, #{deliveryClerkPhone}, #{warehouse}, #{isOwnerReceiving},
-        #{receiver}, #{receiverPhone}, #{shippingAddress}, #{residenceName}, #{deliveryCity}, #{deliveryCounty},
+        #{receiver}, #{receiverPhone}, #{shippingAddress}, #{residenceName}, #{deliveryProvince}, #{deliveryCity}, #{deliveryCounty},
         #{deliveryStreet}, #{detailedAddress})
     </insert>
     <select id="getTdOrderGoods" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods">
@@ -398,7 +427,8 @@
             c.remark,
             c.city,
             c.paper_sales_number,
-            sum(c.total_goods_price) total_goods_price
+            sum(c.total_goods_price) total_goods_price,
+            c.real_user_id
         FROM td_order_copy c LEFT JOIN ord_base_info b ON c.main_order_number = b.ord_no
         WHERE b.ord_no IS NULL
         GROUP BY c.main_order_number;

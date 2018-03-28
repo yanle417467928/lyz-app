@@ -1,7 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service.datatransfer.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
-import cn.com.leyizhuang.app.core.exception.DutchException;
 import cn.com.leyizhuang.app.foundation.dao.GoodsDAO;
 import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
@@ -11,7 +10,6 @@ import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.OrderGoodsTransferService;
-import cn.com.leyizhuang.app.foundation.service.impl.AppActServiceImpl;
 import cn.com.leyizhuang.common.util.CountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -197,7 +195,7 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
         Long status = tdOrder.getStatusId() == null ? 0L : tdOrder.getStatusId();
         String companyFlag = tdOrderGoods.getBrandTitle();
 
-        if (oderQty > couponNumber){
+        if (oderQty > couponNumber) {
             OrderGoodsInfo goodsInfo = new OrderGoodsInfo();
 
             goodsInfo.setOid(orderBaseInfo.getId());
@@ -357,10 +355,6 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
             }
 
             return goodsInfs;
-        }
-
-        if (activitySubPrice > 0 && cashCouponPrice > 0){
-            System.out.printf("123");
         }
 
         for (int i = 0; i < goodsInfs.size(); i++) {

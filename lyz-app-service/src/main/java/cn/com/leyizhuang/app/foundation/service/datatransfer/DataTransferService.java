@@ -52,4 +52,9 @@ public interface DataTransferService {
 
     List<TdOrderData> queryTdOrderDataListBySize(int size);
 
+    List<OrderBaseInfo> findNewOrderNumberByDeliveryType();
+
+    List<OrderBaseInfo> queryOrderBaseInfoBySize(int size);
+
+    List<TdOrder> queryTdOrderByOrderNumber(String orderNumber);
 }

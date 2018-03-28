@@ -117,4 +117,8 @@ public class ReturnOrderLogisticInfo {
      */
     private String deliveryClerkPhone;
 
+    /**
+     * 返配上架时间
+     */
+    private String backTime;
 }

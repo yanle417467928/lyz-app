@@ -142,5 +142,12 @@ public interface ReturnOrderDAO {
      * @param returnNo  退单号
      * @param returnStatus  退单状态
      */
-    void updateReturnOrderBaseInfoByReturnNo(@Param("returnNo")String returnNo,@Param("returnStatus")AppReturnOrderStatus returnStatus);
+    void updateReturnOrderBaseInfoByReturnNo(@Param("returnNo") String returnNo, @Param("returnStatus") AppReturnOrderStatus returnStatus);
+
+    /**
+     * 单独更新物流表的返配上架时间
+     *
+     * @param returnNo
+     */
+    void updateReturnLogisticInfoOfBackTime(@Param("returnNo") String returnNo);
 }

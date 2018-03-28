@@ -283,6 +283,8 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                             if (a){
                                 //修改取消订单处理状态
                                 returnOrderService.updateReturnOrderStatus(returnOrderBaseInfo.getReturnNo(), AppReturnOrderStatus.FINISHED);
+
+                                returnOrderService.updateReturnLogisticInfoOfBackTime(returnOrderBaseInfo.getReturnNo());
                             }else{
                                 //修改取消订单处理状态
                                 returnOrderService.updateReturnOrderStatus(returnOrderBaseInfo.getReturnNo(), AppReturnOrderStatus.PENDING_REFUND);

@@ -51,17 +51,18 @@ public class DeliveryInfoController {
      * 转换物流明细表
      */
     @RequestMapping(value = "/app/resend/wms/test/deliveryInfo", method = RequestMethod.GET)
-    public void transformDeliveryInfoDetails() {
+    public String transformDeliveryInfoDetails() {
 
         int size = 0;
         for (int i = 0; i < 200; i++) {
             Boolean hasNotDatas = this.saveOrderDeliveryInfoDetails(size);
             if (hasNotDatas) {
-                return;
+                return "********************转换物流明细表结束*************************";
             }
             size += 1000;
         }
         log.info("********************转换物流明细表结束*************************");
+        return "按理说不应该执行到这儿!";
     }
 
     @RequestMapping(value = "/app/resend/wms/test/logistcsInfo", method = RequestMethod.GET)
@@ -81,18 +82,19 @@ public class DeliveryInfoController {
      * 运行此方法需要订单基础表(ord_base_info)门店基础表(st_store)数据支持
      */
     @RequestMapping(value = "/app/resend/wms/test/JxPrice", method = RequestMethod.GET)
-    public void transformJxPriceDifferenceReturnDetails() {
+    public String transformJxPriceDifferenceReturnDetails() {
 
         int size = 0;
 
         for (int i = 0; i < 200; i++) {
             Boolean hasNotDatas = this.saveOrderJxPriceDifference(size);
             if (hasNotDatas) {
-                return;
+                return "********************转换返还经销差价信息表结束*************************";
             }
             size += 1000;
         }
         log.info("********************转换返还经销差价信息表结束*************************");
+        return "按理说不应该执行到这儿!";
     }
 
     private Boolean saveOrderDeliveryInfoDetails(int size) {
@@ -227,6 +229,11 @@ public class DeliveryInfoController {
                         orderLogisticsInfo.setBookingStoreAddress(tdOrderLogistics.getDetailedAddress());
                         orderLogisticsInfo.setBookingStoreName(tdOrderLogistics.getDiySiteName());
                         orderLogisticsInfo.setBookingStoreCode(tdOrderLogistics.getDiySiteCode());
+                    }
+                    if ("成都市".equals(tdOrderLogistics.getCity())) {
+                        orderLogisticsInfo.setDeliveryProvince("四川省");
+                    } else if ("郑州市".equals(tdOrderLogistics.getCity())) {
+                        orderLogisticsInfo.setDeliveryProvince("河南省");
                     }
                     orderLogisticsInfo.setDeliveryType(AppDeliveryType.getAppDeliveryTypeByDescription(tdOrderLogistics.getDeliverTypeTitle()));
                     orderLogisticsInfo.setOrdNo(tdOrderLogistics.getMainOrderNumber());
