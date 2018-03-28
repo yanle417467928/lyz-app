@@ -57,7 +57,6 @@ public class DataTransferController {
         JOB_END_TIME = c.getTime();
     }
 
-
     @RequestMapping(value = "/data/transfer/orderBaseInfo", method = RequestMethod.GET)
     public String dataTransfer() throws ExecutionException, InterruptedException {
         Date startTime = new Date();
