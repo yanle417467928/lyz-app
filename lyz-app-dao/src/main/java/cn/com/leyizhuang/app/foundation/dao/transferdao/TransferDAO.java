@@ -55,15 +55,15 @@ public interface TransferDAO {
 
     Boolean isExitTdOrderGoodsLine(@Param("orderNo") String orderNo,@Param("gid") Long gid,@Param("goodsLineType") String goodsLineType);
 
-    List<TdOrderLogistics> queryOrderLogistcs(int size);
+    TdOrderLogistics queryOrderLogistcsByOrderNumber(String orderNumber);
 
     void saveOrderLogisticsInfo(OrderLogisticsInfo orderLogisticsInfo);
 
-    List<TdDeliveryInfoDetails> queryDeliveryTimeSeqBySize(int size);
+    List<TdDeliveryInfoDetails> queryDeliveryTimeSeqByOrderNo(String orderNO);
 
     List<TdDeliveryInfoDetails> queryDeliveryInfoDetailByOrderNumber(String orderNo);
 
-    List<TdDeliveryInfoDetails> queryTdOrderListBySize(int size);
+    List<TdDeliveryInfoDetails> queryTdOrderListByOrderNo(String orderNo);
 
     List<TdDeliveryInfoDetails> queryOrderGoodsListByOrderNumber(Long id);
 
@@ -108,7 +108,7 @@ public interface TransferDAO {
 
     List<TdOrderSmall> getPendingTransferOrder(Date startTime, Date endTime);
 
-    List<TdOrderData> queryTdOrderDataListBySize(int size);
+    List<TdOrderData> queryTdOrderDataListByOrderNo(String orderNo);
 
     List<OrderBaseInfo> findNewOrderNumberByDeliveryType();
 

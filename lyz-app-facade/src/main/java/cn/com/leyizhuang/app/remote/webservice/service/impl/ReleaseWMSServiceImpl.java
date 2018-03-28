@@ -518,8 +518,12 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     } else {
                         // 如果申请取消退货单失败退回为原来的退货申请状态
                         returnOrderService.updateReturnOrderStatus(returnNo, AppReturnOrderStatus.PENDING_PICK_UP);
+
+                        ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(returnNo);
                         // 推送取消订单失败的个人系统消息
-                        NoticePushUtils.pushApplyCancelReturnOrderInfo(returnNo);
+//                        NoticePushUtils.pushApplyCancelReturnOrderInfo(returnNo);
+                        String info = "您取消的退货单" + returnNo + "取消失败，请联系管理人员！";
+                        smsAccountService.commonSendSms(returnOrderBaseInfo.getCreatorPhone(), info);
                     }
                 }
                 logger.info("GetWMSInfo OUT,获取取消退单结果确认wms信息成功 出参 code=0");

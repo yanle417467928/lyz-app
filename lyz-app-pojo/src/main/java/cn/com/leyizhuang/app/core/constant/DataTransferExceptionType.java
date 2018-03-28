@@ -10,6 +10,11 @@ public enum DataTransferExceptionType {
     SNF("SNF", "订单导购信息没有找到"),
     STNF("STNF", "订单门店信息没有找到"),
     NOTORDERDATA("NOTORDERDATA","订单账单没有找到"),
+    DENF("DENF", "物流信息没有找到"),
+    ENF("ENF", "员工信息没有找到"),
+    DDNF("DDNF", "此配送订单物流明细没有找到"),
+    OGNF("OGNF", "订单的商品明细没有找到"),
+    ODNF("ODNF", "订单账单明细没有找到"),
     UNKNOWN("UNKNOWN", "未知异常信息");
 
     private final String value;

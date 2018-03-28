@@ -108,7 +108,7 @@
         GROUP BY emp_id
     </select>
 
-    <select id="queryOrderLogistcs" parameterType="java.lang.Integer"
+    <select id="queryOrderLogistcsByOrderNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderLogistics">
         SELECT
             DISTINCT
@@ -139,7 +139,8 @@
             LEFT JOIN emp_employee ee ON ee.delivery_clerk_no = tdi.driver
         WHERE
             tdc.order_time > '2017-10-01 00:00:00'
-        LIMIT #{size}, 1000;
+            AND
+            tdc.main_order_number =#{orderNumber}
     </select>
     <select id="findNewOrderByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
         SELECT *
@@ -183,12 +184,11 @@
         VALUES (#{oid}, #{orderNumber}, #{couponType}, #{couponId}, #{purchasePrice}, #{costPrice}, #{getType}, #{sku});
     </insert>
 
-    <select id="queryDeliveryTimeSeqBySize" parameterType="java.lang.Integer"
+    <select id="queryDeliveryTimeSeqByOrderNo" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdDeliveryInfoDetails">
         SELECT *
         FROM td_order_delivery_time_seq_detail_copy
-        WHERE operation_time &gt; '2017-10-01 00:00:00'
-        LIMIT #{size}, 1000;
+        WHERE main_order_number = #{orderNo}
     </select>
 
     <select id="queryOrderBaseInfoBySize" parameterType="java.lang.Integer"
@@ -206,7 +206,9 @@
             credit,
             pay_time,
             wallet_money,
-            alipay_money
+        alipay_money,
+        pay_time,
+        is_seller_order
         FROM td_order_copy
         WHERE main_order_number = #{orderNumber}
 
@@ -223,7 +225,7 @@
               AND order_number = #{orderNo}
     </select>
 
-    <select id="queryTdOrderListBySize" parameterType="java.lang.Integer"
+    <select id="queryTdOrderListByOrderNo" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdDeliveryInfoDetails">
         SELECT
             id,
@@ -232,8 +234,7 @@
             pay_time,
             status_id
         FROM td_order_copy
-        WHERE pay_time &gt; '2017-10-01 00:00:00'
-        LIMIT #{size}, 1000;
+        WHERE main_order_number = #{orderNo}
     </select>
 
     <select id="queryOrderGoodsListByOrderNumber" parameterType="java.lang.Long"
@@ -473,12 +474,11 @@
         GROUP BY c.main_order_number;
     </select>
 
-    <select id="queryTdOrderDataListBySize" parameterType="java.lang.Integer"
+    <select id="queryTdOrderDataListByOrderNo" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderData">
         SELECT *
         FROM td_order_data_copy
-        WHERE create_time &gt; '2017-10-01 00:00:00'
-        LIMIT #{size}, 1000;
+        WHERE main_order_number = #{orderNo};
     </select>
 
     <select id="getOwnMoneyRecordByOrderNumber" parameterType="java.lang.String"
