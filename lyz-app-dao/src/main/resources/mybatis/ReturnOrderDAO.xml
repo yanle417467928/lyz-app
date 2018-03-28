@@ -618,4 +618,10 @@
         SET return_status = #{returnStatus}
         WHERE return_no = #{returnNo}
     </update>
+
+    <update id="updateReturnLogisticInfoOfBackTime">
+        UPDATE ord_return_logistic_info
+        SET back_time = now()
+        WHERE return_no = #{returnNo}
+    </update>
 </mapper>
