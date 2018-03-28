@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.DataTransferErrorLog;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
+import cn.com.leyizhuang.app.foundation.service.ArrearsAuditService;
 import cn.com.leyizhuang.app.foundation.service.OrderDeliveryInfoDetailsService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferSupportService;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,9 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
     @Resource
     private OrderDeliveryInfoDetailsService deliveryInfoDetailsService;
 
+    @Resource
+    private ArrearsAuditService arrearsAuditService;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveOrderRelevantInfo(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList, OrderBillingDetails orderBillingDetails,
@@ -56,7 +60,7 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
         }
         //保存订单账单信息
         orderBillingDetails.setOid(orderBaseInfo.getId());
-        transferDAO.saveOrderBillingDetails(orderBillingDetails);
+        orderService.saveOrderBillingDetails(orderBillingDetails);
 
         //保存订单账单支付明细信息
         if (null != paymentDetailsList && !paymentDetailsList.isEmpty()) {
@@ -71,7 +75,7 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
         orderService.saveOrderLogisticsInfo(orderLogisticsInfo);
         //保存订单欠款审核信息
         if (null != orderArrearsAuditDO && StringUtils.isNotBlank(orderArrearsAuditDO.getOrderNumber())) {
-            this.transferDAO.insertArrearsAudit(orderArrearsAuditDO);
+            arrearsAuditService.save(orderArrearsAuditDO);
         }
         //保存订单券信息
         if (null != map && !map.isEmpty()) {
@@ -88,7 +92,7 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
                 this.transferDAO.addCustomerCashCoupon(customerCashCoupon);
                 cashCouponInfo.setCouponId(customerCashCoupon.getId());
                 cashCouponInfo.setOid(orderBaseInfo.getId());
-                this.transferDAO.saveOrderCouponInfo(cashCouponInfo);
+                orderService.saveOrderCouponInfo(cashCouponInfo);
             }
             List<Map<String, Object>> listCoupon = (List) map.get("listCoupon");
             if (null != listCoupon && !listCoupon.isEmpty()) {
@@ -101,7 +105,7 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
                             this.transferDAO.addCustomerProductCoupon(productCoupon);
                             orderCouponInfo.setOid(orderBaseInfo.getId());
                             cashCouponInfo.setCouponId(productCoupon.getId());
-                            this.transferDAO.saveOrderCouponInfo(cashCouponInfo);
+                            orderService.saveOrderCouponInfo(cashCouponInfo);
                         }
                     }
                 }

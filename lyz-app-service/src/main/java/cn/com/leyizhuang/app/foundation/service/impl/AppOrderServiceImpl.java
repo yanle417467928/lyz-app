@@ -534,7 +534,7 @@ public class AppOrderServiceImpl implements AppOrderService {
 
                 amountPayable = orderBillingDetails.getOrderAmountSubtotal()
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getCusPreDeposit())
-                        -OrderUtils.replaceNullWithZero(orderBillingDetails.getLebiCashDiscount());
+                        - OrderUtils.replaceNullWithZero(orderBillingDetails.getLebiCashDiscount());
                 orderBillingDetails.setAmountPayable(amountPayable);
                 orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable());
                 break;
@@ -631,6 +631,7 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveOrderCouponInfo(OrderCouponInfo couponInfo) {
         if (null != couponInfo) {
             orderDAO.saveOrderCouponInfo(couponInfo);
