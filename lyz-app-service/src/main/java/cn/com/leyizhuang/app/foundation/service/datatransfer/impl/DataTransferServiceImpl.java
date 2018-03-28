@@ -106,16 +106,16 @@ public class DataTransferServiceImpl implements DataTransferService {
         OrderLogisticsInfo orderLogisticsInfo = new OrderLogisticsInfo();
 
         if ("门店自提".equals(tdOrder.getDeliverTypeTitle())) {
-            for (AppStore appStore : storeList) {
-                if (appStore.getStoreCode().equals(tdOrder.getDiySiteCode())) {
-                    orderLogisticsInfo.setBookingStoreCode(tdOrder.getDiySiteCode());
-                    orderLogisticsInfo.setBookingStoreAddress(appStore.getDetailedAddress());
-                    orderLogisticsInfo.setBookingStoreName(appStore.getStoreName());
-                    break;
-                } else {
-                    log.warn("门店信息没找到,订单：{}", tdOrder.getMainOrderNumber());
-                    throw new DataTransferException("该订单没有找到门店信息没", DataTransferExceptionType.STNF);
-                }
+            List<AppStore> filterStoreList = storeList.stream().filter(p -> p.getStoreCode().equals(tdOrder.getDiySiteCode())).
+                    collect(Collectors.toList());
+            AppStore store = filterStoreList.get(0);
+            if (null != store) {
+                orderLogisticsInfo.setBookingStoreCode(tdOrder.getDiySiteCode());
+                orderLogisticsInfo.setBookingStoreAddress(store.getDetailedAddress());
+                orderLogisticsInfo.setBookingStoreName(store.getStoreName());
+            } else {
+                log.warn("门店信息没找到,订单：{}", tdOrder.getMainOrderNumber());
+                throw new DataTransferException("该订单没有找到门店信息没", DataTransferExceptionType.STNF);
             }
         } else if ("送货上门".equals(tdOrder.getDeliverTypeTitle())) {
             List<TdDeliveryInfoDetails> tdDeliveryInfoDetailsList = this.queryDeliveryInfoDetailByOrderNumber(tdOrder.getMainOrderNumber());
@@ -504,7 +504,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                 orderBillingDetails.setStorePosNumber(tdOwnMoneyRecord == null ? null : tdOwnMoneyRecord.getSerialNumber());
                 orderBillingDetails.setDeliveryCash(tdOrderData.getDeliveryCash());
                 orderBillingDetails.setDeliveryPos(tdOrderData.getDeliveryPos());
-                this.transferDAO.saveOrderBillingDetails(orderBillingDetails);
+                //this.transferDAO.saveOrderBillingDetails(orderBillingDetails);
                 num += 1;
             } else {
                 orderBillingDetails = new OrderBillingDetails();
@@ -568,7 +568,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                 orderBillingDetails.setStorePosNumber(null);
                 orderBillingDetails.setDeliveryCash(0D);
                 orderBillingDetails.setDeliveryPos(0D);
-                this.transferDAO.saveOrderBillingDetails(orderBillingDetails);
+                //this.transferDAO.saveOrderBillingDetails(orderBillingDetails);
             }
             return orderBillingDetails;
         } else {
@@ -844,7 +844,6 @@ public class DataTransferServiceImpl implements DataTransferService {
     }
 
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
     public Queue<DataTransferErrorLog> transferOrderRelevantInfo() throws ExecutionException, InterruptedException {
         // *********************** 订单迁移处理 ***************
