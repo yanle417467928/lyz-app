@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.datatransfer;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.*;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
@@ -35,7 +36,7 @@ public interface DataTransferService {
 
     Integer transferCoupon(OrderBaseInfo baseInfo);
 
-    Integer transferOrderBillingDetails();
+    OrderBillingDetails transferOrderBillingDetails(OrderBaseInfo orderBaseInfo);
 
     AppEmployee findFitEmployeeInfoById(Long userId);
 

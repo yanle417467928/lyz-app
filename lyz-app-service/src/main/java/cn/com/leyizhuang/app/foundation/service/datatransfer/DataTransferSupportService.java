@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.datatransfer;
 
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.*;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
@@ -16,7 +17,7 @@ import java.util.Queue;
 public interface DataTransferSupportService {
 
 
-    void saveOrderRelevantInfo(OrderBaseInfo orderBaseInfo);
+    void saveOrderRelevantInfo(OrderBaseInfo orderBaseInfo,OrderBillingDetails orderBillingDetails);
 
     void saveDataTransferErrorLog(Queue<DataTransferErrorLog> errorLogQueue);
 }

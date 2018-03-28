@@ -54,6 +54,7 @@ public class OrderBillingDetailsTransferServiceImpl implements OrderBillingTrans
         TimingTaskErrorMessageDO timingTaskErrorMessageDO = null;
         if (null != orderBaseInfoList && orderBaseInfoList.size() > 0) {
             for (OrderBaseInfo orderBaseInfo : orderBaseInfoList) {
+                OrderBillingDetails orderBillingDetails =null;
                 TdOrderData tdOrderData = this.transferDAO.findOrderDataByOrderNumber(orderBaseInfo.getOrderNumber());
                 TdOwnMoneyRecord tdOwnMoneyRecord = this.transferDAO.getOwnMoneyRecordByOrderNumber(orderBaseInfo.getOrderNumber());
                 //获取错误信息
@@ -64,7 +65,7 @@ public class OrderBillingDetailsTransferServiceImpl implements OrderBillingTrans
                         throw new Exception("此订单号账单已生成请检查！订单号：" + orderBaseInfo.getOrderNumber());
                     }
                     if (orderBaseInfo.getOrderSubjectType() == AppOrderSubjectType.STORE) {
-                        OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
+                        orderBillingDetails = new OrderBillingDetails();
                         orderBillingDetails.setOid(orderBaseInfo.getId());
                         orderBillingDetails.setCreateTime(tdOrderData.getCreateTime());
                         orderBillingDetails.setOrderNumber(tdOrderData.getMainOrderNumber());
@@ -116,9 +117,8 @@ public class OrderBillingDetailsTransferServiceImpl implements OrderBillingTrans
                         orderBillingDetails.setStorePosNumber(tdOwnMoneyRecord==null?null:tdOwnMoneyRecord.getSerialNumber());
                         orderBillingDetails.setDeliveryCash(tdOrderData.getDeliveryCash());
                         orderBillingDetails.setDeliveryPos(tdOrderData.getDeliveryPos());
-                        orderBillingDetailsList.add(orderBillingDetails);
                     } else {
-                        OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
+                        orderBillingDetails = new OrderBillingDetails();
                         Double totalGoodsPrice = 0.00;
                         Double storePreDeposit = 0.00;
                         Double creditMoney = 0.00;
@@ -179,7 +179,6 @@ public class OrderBillingDetailsTransferServiceImpl implements OrderBillingTrans
                         orderBillingDetails.setStorePosNumber(null);
                         orderBillingDetails.setDeliveryCash(0D);
                         orderBillingDetails.setDeliveryPos(0D);
-                        orderBillingDetailsList.add(orderBillingDetails);
                     }
                 } catch (Exception e) {
                     System.out.println(e);
@@ -193,22 +192,21 @@ public class OrderBillingDetailsTransferServiceImpl implements OrderBillingTrans
                     }
                     throw  new  RuntimeException();
                 }
+                this.saveOrderBillingDetailsAsync(orderBillingDetails);
             }
-            this.saveOrderBillingDetailsAsync(orderBillingDetailsList);
+
         }
     }
 
 
 
-    private void saveOrderBillingDetailsAsync(final List<OrderBillingDetails> orderBillingDetailsList) {
+    private void saveOrderBillingDetailsAsync(final OrderBillingDetails orderBillingDetails) {
 
         executorService.execute(new Runnable() {
             @Override
             public void run() {
                 // 插入
-                for (OrderBillingDetails orderBillingDetails : orderBillingDetailsList) {
                     transferDAO.saveOrderBillingDetails(orderBillingDetails);
-                }
                 logger.info("处理订单账单导入总条数："+ transferNum);
             }
         });

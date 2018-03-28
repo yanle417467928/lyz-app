@@ -187,8 +187,6 @@ public class DataTransferController {
     @RequestMapping(value = "/data/transfer/orderbilling", method = RequestMethod.GET)
     public String dataTransferOrderBillingDeatails() {
         log.info("开始处理订单账单导入,当前时间:{}", new Date());
-        Integer num = dataTransferService.transferOrderBillingDetails();
-        log.info("处理订单账单导入结束单数num:{}", num);
         return "success";
     }
 

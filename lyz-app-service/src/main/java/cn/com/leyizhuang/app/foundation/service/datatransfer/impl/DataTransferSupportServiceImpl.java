@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.datatransfer.impl;
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.DataTransferErrorLog;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferSupportService;
 import lombok.extern.slf4j.Slf4j;
@@ -32,8 +33,9 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveOrderRelevantInfo(OrderBaseInfo orderBaseInfo) {
+    public void saveOrderRelevantInfo(OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails) {
         orderService.saveOrderBaseInfo(orderBaseInfo);
+        transferDAO.saveOrderBillingDetails(orderBillingDetails);
     }
 
     @Override
