@@ -180,6 +180,27 @@
         LIMIT #{size}, 1000;
     </select>
 
+    <select id="queryOrderBaseInfoBySize" parameterType="java.lang.Integer"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
+
+        SELECT *
+        FROM ord_base_info
+        LIMIT #{size}, 1000;
+    </select>
+
+    <select id="queryTdOrderByOrderNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder">
+
+        SELECT
+            credit,
+            pay_time,
+            wallet_money,
+            alipay_money
+        FROM td_order_copy
+        WHERE main_order_number = #{orderNumber}
+
+    </select>
+
     <select id="queryDeliveryInfoDetailByOrderNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdDeliveryInfoDetails">
         SELECT
