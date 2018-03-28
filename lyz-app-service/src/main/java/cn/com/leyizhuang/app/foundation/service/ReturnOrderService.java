@@ -235,4 +235,11 @@ public interface ReturnOrderService {
      * @param returnStatus  退单状态
      */
     void updateReturnOrderBaseInfoByReturnNo(String returnNo,AppReturnOrderStatus returnStatus);
+
+    /**
+     * 单独更新物流表的返配上架时间
+     *
+     * @param returnNo
+     */
+    void updateReturnLogisticInfoOfBackTime(String returnNo);
 }

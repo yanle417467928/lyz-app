@@ -344,6 +344,10 @@
         WHERE td_order_id = #{tdOrderId};
     </select>
 
+    <select id="findTdorderGoodsByPresentId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods">
+        select * from td_order_goods_copy where presented_list_id = #{presentId};
+    </select>
+
     <select id="isExitTdOrderGoodsLine" resultType="java.lang.Boolean">
         SELECT EXISTS(
                 SELECT 1

@@ -62,7 +62,7 @@
                 <br>
                 <div class="row">
                 <#--<div class="col-xs-12 col-md-2">-->
-                    <div class="col-md-4 invoice-col">
+                    <div class="col-md-3 invoice-col">
                         <ul style="line-height: 40px;">
                             <li style="list-style: none">
                                 <button type="button" class="btn btn-primary btn-xs"
@@ -87,7 +87,7 @@
                             </li>
                         </ul>
                     </div>
-                    <div class="col-md-4 invoice-col">
+                    <div class="col-md-3 invoice-col">
                         <ul style="line-height: 40px;">
                             <li style="list-style: none">
                                 <button type="button" class="btn btn-primary btn-xs"
@@ -108,6 +108,21 @@
                                 <spanp id="customerPhone" class="span"></spanp>
                                 <spanp id="customerType" style="display:none"></spanp>
                             </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6 invoice-col">
+
+                        <ul style="line-height: 30px; position: relative; left:-30px;">
+
+                            <li style="list-style: none">
+                                <b>产品券使用说明:</b>
+                                <spanp id="sellerId" class="span"></spanp>
+                            </li>
+                            1) 产品券购买：依照下订单当下之产品价格计算。
+                        <br>
+                            2) 产品券提货：依照产品券上之关联产品进行出货。
+                        <br>
+                            3) 产品券提货时效：需于六个月内（含）出货完毕，若逾期，则此订单自动取消，按产品券购买之价格退至会员预存款。
                         </ul>
                     </div>
                 <#--</div>-->

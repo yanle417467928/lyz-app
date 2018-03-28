@@ -113,7 +113,7 @@ public class OrderBillingDetailsTransferServiceImpl implements OrderBillingTrans
                         orderBillingDetails.setStoreCash(tdOrderData.getSellerCash());
                         orderBillingDetails.setStoreOtherMoney(tdOrderData.getSellerOther());
                         orderBillingDetails.setStorePosMoney(tdOrderData.getSellerPos());
-                        orderBillingDetails.setStorePosNumber(tdOwnMoneyRecord.getSerialNumber()==null?null:tdOwnMoneyRecord.getSerialNumber());
+                        orderBillingDetails.setStorePosNumber(tdOwnMoneyRecord==null?null:tdOwnMoneyRecord.getSerialNumber());
                         orderBillingDetails.setDeliveryCash(tdOrderData.getDeliveryCash());
                         orderBillingDetails.setDeliveryPos(tdOrderData.getDeliveryPos());
                         orderBillingDetailsList.add(orderBillingDetails);
@@ -191,6 +191,7 @@ public class OrderBillingDetailsTransferServiceImpl implements OrderBillingTrans
                         timingTaskErrorMessageDO.setRecordTime(new Date());
                         timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
                     }
+                    throw  new  RuntimeException();
                 }
             }
             this.saveOrderBillingDetailsAsync(orderBillingDetailsList);

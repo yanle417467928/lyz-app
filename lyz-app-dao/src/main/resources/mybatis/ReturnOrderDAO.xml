@@ -266,6 +266,7 @@
         <if test="null != identityType and identityType.toString() == 'DECORATE_MANAGER'">
             obi.creator_id = #{userId} AND obi.creator_identity_type = #{identityType}
         </if>
+        AND obi.`status` != 'CANCELED'
         ORDER BY orbi.return_time DESC
     </select>
 
@@ -615,6 +616,12 @@
     <update id="updateReturnOrderBaseInfoByReturnNo">
         UPDATE ord_return_base_info
         SET return_status = #{returnStatus}
+        WHERE return_no = #{returnNo}
+    </update>
+
+    <update id="updateReturnLogisticInfoOfBackTime">
+        UPDATE ord_return_logistic_info
+        SET back_time = now()
         WHERE return_no = #{returnNo}
     </update>
 </mapper>

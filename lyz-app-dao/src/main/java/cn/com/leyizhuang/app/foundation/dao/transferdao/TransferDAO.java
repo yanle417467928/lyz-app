@@ -51,6 +51,8 @@ public interface TransferDAO {
 
     List<TdOrderGoods> findTdorderGoodsByTdOrderId(@Param("tdOrderId") Long tdOrderId);
 
+    List<TdOrderGoods> findTdorderGoodsByPresentId(@Param("presentId") Long presentId);
+
     Boolean isExitTdOrderGoodsLine(@Param("orderNo") String orderNo,@Param("gid") Long gid,@Param("goodsLineType") String goodsLineType);
 
     List<TdOrderLogistics> queryOrderLogistcs(int size);
