@@ -37,6 +37,7 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
     @Resource
     private OrderDeliveryInfoDetailsService deliveryInfoDetailsService;
 
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveOrderRelevantInfo(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList, OrderBillingDetails orderBillingDetails,
@@ -51,7 +52,10 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
         if (null != orderGoodsInfoList && !orderGoodsInfoList.isEmpty()) {
             orderGoodsInfoList.forEach(p -> {
                 p.setOid(orderBaseInfo.getId());
-                orderService.saveOrderGoodsInfo(p);
+                Boolean flag = transferDAO.isExitTdOrderGoodsLine(p.getOrderNumber(), p.getGid(), p.getGoodsLineType().getValue());
+                if (!flag) {
+                    orderService.saveOrderGoodsInfo(p);
+                }
             });
         }
         //保存订单账单信息

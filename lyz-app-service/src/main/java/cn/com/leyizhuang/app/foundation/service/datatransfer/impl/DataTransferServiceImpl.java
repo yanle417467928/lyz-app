@@ -880,8 +880,15 @@ public class DataTransferServiceImpl implements DataTransferService {
                         //处理订单头
                         OrderBaseInfo orderBaseInfo = this.transferOrderBaseInfo(tdOrder, employeeList, customerList, storeList);
 
+                        // 根据主单号 找到旧订单分单
+                        List<TdOrder> tdOrders = transferDAO.findOrderAllFieldByOrderNumber(orderBaseInfo.getOrderNumber());
+                        if (tdOrders == null || tdOrders.size() == 0) {
+                            //throw new Exception("订单商品转行异常，找不到旧订单 订单号："+ orderBaseInfo.getOrderNumber());
+                            throw new DataTransferException("找不到旧订单 订单号："+ orderBaseInfo.getOrderNumber(), DataTransferExceptionType.NDT);
+                        }
+
                         // 转换订单商品
-                        List<OrderGoodsInfo> orderGoodsInfoList = orderGoodsTransferService.transferOne(orderBaseInfo);
+                        List<OrderGoodsInfo> orderGoodsInfoList = orderGoodsTransferService.transferOne(orderBaseInfo,tdOrders);
 
                         //处理订单账单信息
                         OrderBillingDetails orderBillingDetails = this.transferOrderBillingDetails(orderBaseInfo);

@@ -52,14 +52,15 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
     private ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     @Transactional
-    public List<OrderGoodsInfo> transferOne(OrderBaseInfo orderBaseInfo) throws Exception {
+    public List<OrderGoodsInfo> transferOne(OrderBaseInfo orderBaseInfo,List<TdOrder> tdOrders) throws Exception {
         logger.info("开始转换订单商品数据  ≡(▔﹏▔)≡ ⊙﹏⊙∥ ˋ︿ˊ (=‵′=) 一.一 ￣﹏￣||| >﹏<~ "+orderBaseInfo.getOrderNumber());
 
         // 根据主单号 找到旧订单分单
-        List<TdOrder> tdOrders = transferDAO.findOrderAllFieldByOrderNumber(orderBaseInfo.getOrderNumber());
+        //List<TdOrder> tdOrders = transferDAO.findOrderAllFieldByOrderNumber(orderBaseInfo.getOrderNumber());
+
         if (tdOrders == null || tdOrders.size() == 0){
             //throw new Exception("订单商品转行异常，找不到旧订单 订单号："+ orderBaseInfo.getOrderNumber());
-            throw new DataTransferException("订单商品转行异常，找不到旧订单 订单号：\"+ orderBaseInfo.getOrderNumber()", DataTransferExceptionType.NDT);
+            throw new DataTransferException("订单商品转行异常，找不到旧订单 订单号："+ orderBaseInfo.getOrderNumber(), DataTransferExceptionType.NDT);
         }else {
             // 新订单商品记录
             List<OrderGoodsInfo> orderGoodsInfoList = new ArrayList<>();
@@ -89,7 +90,7 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
 
                     if (orderGoodsInfoList1 == null || orderGoodsInfoList1.size() == 0){
                         //throw  new Exception("订单商品转行异常,商品转换异常 商品id: "+ goodsDO.getGid());
-                        throw new DataTransferException("订单商品转行异常，找不到旧订单 订单号：\"+ orderBaseInfo.getOrderNumber()", DataTransferExceptionType.NDT);
+                        throw new DataTransferException("订单商品转行异常，找不到旧订单 订单号："+ orderBaseInfo.getOrderNumber(), DataTransferExceptionType.NDT);
                     }
 
                     for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList1) {
