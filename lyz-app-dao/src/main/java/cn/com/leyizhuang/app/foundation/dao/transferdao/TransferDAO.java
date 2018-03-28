@@ -55,7 +55,7 @@ public interface TransferDAO {
 
     Boolean isExitTdOrderGoodsLine(@Param("orderNo") String orderNo,@Param("gid") Long gid,@Param("goodsLineType") String goodsLineType);
 
-    List<TdOrderLogistics> queryOrderLogistcs(int size);
+    TdOrderLogistics queryOrderLogistcsByOrderNumber(String orderNumber);
 
     void saveOrderLogisticsInfo(OrderLogisticsInfo orderLogisticsInfo);
 

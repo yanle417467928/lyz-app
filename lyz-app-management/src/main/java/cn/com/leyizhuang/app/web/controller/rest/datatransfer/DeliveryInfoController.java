@@ -65,18 +65,6 @@ public class DeliveryInfoController {
         return "按理说不应该执行到这儿!";
     }
 
-    @RequestMapping(value = "/app/resend/wms/test/logistcsInfo", method = RequestMethod.GET)
-    public void transformOrderLogistcs() {
-        int size = 0;
-        for (int i = 0; i < 200; i++) {
-            Boolean hasNotDatas = this.saveOrderLogistcs(size);
-            if (hasNotDatas) {
-                return;
-            }
-            size += 1000;
-        }
-        log.info("********************转换物流地址信息表结束*************************");
-    }
 
     /**
      * 运行此方法需要订单基础表(ord_base_info)门店基础表(st_store)数据支持
@@ -212,55 +200,7 @@ public class DeliveryInfoController {
     }
 
 
-    public Boolean saveOrderLogistcs(int size) {
-        List<TdOrderLogistics> tdOrderLogisticsList = dataTransferService.queryOrderLogistcs(size);
-        try {
-            if (null == tdOrderLogisticsList || tdOrderLogisticsList.size() == 0) {
-                return true;
-            } else {
-                for (TdOrderLogistics tdOrderLogistics : tdOrderLogisticsList) {
-                    OrderLogisticsInfo orderLogisticsInfo = new OrderLogisticsInfo();
-                    //判断该信息是否存在
-                    OrderLogisticsInfo orderLogisticsInfoisExit = appOrderService.getOrderLogistice(tdOrderLogistics.getMainOrderNumber());
-                    if (null != orderLogisticsInfoisExit) {
-                        break;
-                    }
-                    if ("门店自提".equals(tdOrderLogistics.getDeliverTypeTitle())) {
-                        orderLogisticsInfo.setBookingStoreAddress(tdOrderLogistics.getDetailedAddress());
-                        orderLogisticsInfo.setBookingStoreName(tdOrderLogistics.getDiySiteName());
-                        orderLogisticsInfo.setBookingStoreCode(tdOrderLogistics.getDiySiteCode());
-                    }
-                    if ("成都市".equals(tdOrderLogistics.getCity())) {
-                        orderLogisticsInfo.setDeliveryProvince("四川省");
-                    } else if ("郑州市".equals(tdOrderLogistics.getCity())) {
-                        orderLogisticsInfo.setDeliveryProvince("河南省");
-                    }
-                    orderLogisticsInfo.setDeliveryType(AppDeliveryType.getAppDeliveryTypeByDescription(tdOrderLogistics.getDeliverTypeTitle()));
-                    orderLogisticsInfo.setOrdNo(tdOrderLogistics.getMainOrderNumber());
-                    orderLogisticsInfo.setDeliveryCity(tdOrderLogistics.getCity());
-                    orderLogisticsInfo.setDeliveryCounty(tdOrderLogistics.getDisctrict());
-                    orderLogisticsInfo.setDeliveryStreet(tdOrderLogistics.getSubdistrict());
-                    orderLogisticsInfo.setReceiver(tdOrderLogistics.getShippingName());
-                    orderLogisticsInfo.setReceiverPhone(tdOrderLogistics.getShippingPhone());
-                    orderLogisticsInfo.setResidenceName(null);
-                    orderLogisticsInfo.setShippingAddress(tdOrderLogistics.getShippingAddress());
-                    orderLogisticsInfo.setDeliveryClerkId(tdOrderLogistics.getEmpId());
-                    orderLogisticsInfo.setDeliveryClerkName(tdOrderLogistics.getName());
-                    orderLogisticsInfo.setDeliveryClerkNo(tdOrderLogistics.getDriver());
-                    orderLogisticsInfo.setDeliveryClerkPhone(tdOrderLogistics.getMobile());
-                    orderLogisticsInfo.setDeliveryTime(tdOrderLogistics.getDeliveryDate());
-                    orderLogisticsInfo.setIsOwnerReceiving(false);
-                    orderLogisticsInfo.setWarehouse(tdOrderLogistics.getWhNo());
-                    orderLogisticsInfo.setOid(tdOrderLogistics.getOid());
-                    orderLogisticsInfo.setDetailedAddress(tdOrderLogistics.getDetailedAddress());
-                    dataTransferService.saveOrderLogisticsInfo(orderLogisticsInfo);
-                }
-            }
-        } catch (Exception e) {
-            log.debug("{}", e);
-        }
-        return false;
-    }
+
 
     private void addOtherDeliveryInfoByOrderStatus(int status, String orderNumber) {
 
