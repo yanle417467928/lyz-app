@@ -882,43 +882,43 @@ public class DataTransferServiceImpl implements DataTransferService {
 
                         // 转换订单商品
                         List<OrderGoodsInfo> orderGoodsInfoList = orderGoodsTransferService.transferOne(orderBaseInfo);
+
                         //处理订单账单信息
                         OrderBillingDetails orderBillingDetails = this.transferOrderBillingDetails(orderBaseInfo);
-
 
                         //****物流进度明细 begin****/
                         List<OrderDeliveryInfoDetails> deliveryInfoDetailsList = new ArrayList<>();
                         if (AppDeliveryType.HOUSE_DELIVERY.equals(orderBaseInfo.getDeliveryType())) {
-
                             deliveryInfoDetailsList = this.saveOrderDeliveryInfoDetails(orderBaseInfo);
                         }
 
                         //****经销差价返还 begin****/
                         List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetailsList = new ArrayList<>();
                         if (!orderBaseInfo.getOrderNumber().contains("YF")) {
-
                             jxPriceDifferenceReturnDetailsList = this.saveOrderJxPriceDifference(orderBaseInfo);
                         }
-
-                        //****普通客户账单支付明细转换 begin****/
-                        List<OrderBillingPaymentDetails> paymentDetailsList = this.saveOrderBillingPaymentDetail(orderBaseInfo, tdOrder);
-
+                        List<OrderBillingPaymentDetails> paymentDetailsList = new ArrayList<>();
                         //****装饰公司账单支付明细转换 begin****/
-                        List<OrderBillingPaymentDetails> fixDiySiteBillingPaymentDetail = new ArrayList<>();
                         if (AppOrderSubjectType.FIT.equals(orderBaseInfo.getOrderSubjectType())) {
-                            fixDiySiteBillingPaymentDetail = this.saveFixDiySiteBillingPaymentDetail(orderBaseInfo);
+                            paymentDetailsList = this.saveFixDiySiteBillingPaymentDetail(orderBaseInfo);
+                        } else {
+                            //****普通客户账单支付明细转换 begin****/
+                            paymentDetailsList = this.saveOrderBillingPaymentDetail(orderBaseInfo, tdOrder);
                         }
 
-                        //处理订单物理信息
+                        //处理订单物流信息
                         OrderLogisticsInfo orderLogisticsInfo = this.transferOrderLogisticsInfo(tdOrder, employeeList, storeList);
 
+                        //订单券信息处理
                         Map<String, Object> map = this.transferCoupon(orderBaseInfo);
 
+                        //订单欠款审核信息
                         OrderArrearsAuditDO orderArrearsAuditDO = this.transferArrearsAudit(orderBaseInfo.getOrderNumber());
 
-
                         //持久化订单相关信息
-                        dataTransferSupportService.saveOrderRelevantInfo(orderBaseInfo, orderBillingDetails, orderLogisticsInfo, map, orderArrearsAuditDO);
+                        dataTransferSupportService.saveOrderRelevantInfo(orderBaseInfo, orderGoodsInfoList, orderBillingDetails, deliveryInfoDetailsList,
+                                jxPriceDifferenceReturnDetailsList, paymentDetailsList, orderLogisticsInfo, map,
+                                orderArrearsAuditDO);
                     } catch (DataTransferException e) {
                         dataTransferErrorLogQueue.add(new DataTransferErrorLog(null, tdOrder.getMainOrderNumber(), e.getType().getDesc(), new Date()));
                     } catch (Exception e) {
