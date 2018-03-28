@@ -1,7 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service.datatransfer.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
-import cn.com.leyizhuang.app.core.exception.DutchException;
 import cn.com.leyizhuang.app.foundation.dao.GoodsDAO;
 import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
@@ -11,7 +10,6 @@ import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.OrderGoodsTransferService;
-import cn.com.leyizhuang.app.foundation.service.impl.AppActServiceImpl;
 import cn.com.leyizhuang.common.util.CountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +46,7 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
     // 线程池
     private ExecutorService executorService = Executors.newFixedThreadPool(10);
 
+    @Override
     public void transferAll() {
 
         LocalDateTime startTime = LocalDateTime.now();
@@ -72,7 +71,7 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
 
             for (TdOrder order : tdOrders) {
 
-                if (order.getOrderNumber().contains("YF")){
+                if (order.getOrderNumber().contains("YF")) {
                     continue;
                 }
 
@@ -135,7 +134,7 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
         Long status = tdOrder.getStatusId() == null ? 0L : tdOrder.getStatusId();
         String companyFlag = tdOrderGoods.getBrandTitle();
 
-        if (oderQty > couponNumber){
+        if (oderQty > couponNumber) {
             OrderGoodsInfo goodsInfo = new OrderGoodsInfo();
 
             goodsInfo.setOid(orderBaseInfo.getId());
@@ -316,7 +315,7 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
                 dutchedPrice += CountUtil.mul(dutchPrice, goods.getOrderQuantity());
                 cashCouponDutchedPrice += CountUtil.mul(cashCouponDutchPrice, goods.getOrderQuantity());
 
-                returnPrice = CountUtil.sub(goods.getSettlementPrice(),dutchPrice,cashCouponDutchPrice);
+                returnPrice = CountUtil.sub(goods.getSettlementPrice(), dutchPrice, cashCouponDutchPrice);
             } else {
                 dutchPrice = CountUtil.sub(activitySubPrice, dutchedPrice);
                 cashCouponDutchPrice = CountUtil.sub(cashCouponPrice, cashCouponDutchedPrice);
@@ -324,7 +323,7 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
                 goods.setPromotionSharePrice(CountUtil.div((dutchPrice), goods.getOrderQuantity()));
                 goods.setCashCouponSharePrice(CountUtil.div(cashCouponDutchPrice, goods.getOrderQuantity()));
 
-                returnPrice = CountUtil.sub(goods.getSettlementPrice(),dutchPrice,cashCouponDutchPrice);
+                returnPrice = CountUtil.sub(goods.getSettlementPrice(), dutchPrice, cashCouponDutchPrice);
             }
 
             goods.setReturnPrice(returnPrice);
@@ -345,7 +344,7 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
                 orderDAO.saveOrderGoodsInfo(orderGoodsInfo);
             }
         }
-        logger.info("条数："+ transferNum);
+        logger.info("条数：" + transferNum);
     }
 
     private void saveOrderGoodsInfoAsync(final List<OrderGoodsInfo> orderGoodsInfoList) {
@@ -364,7 +363,7 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
                     }
                 }
 
-                logger.info("条数："+ transferNum);
+                logger.info("条数：" + transferNum);
             }
         });
 
