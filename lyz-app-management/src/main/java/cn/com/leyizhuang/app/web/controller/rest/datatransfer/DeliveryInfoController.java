@@ -230,6 +230,11 @@ public class DeliveryInfoController {
                         orderLogisticsInfo.setBookingStoreName(tdOrderLogistics.getDiySiteName());
                         orderLogisticsInfo.setBookingStoreCode(tdOrderLogistics.getDiySiteCode());
                     }
+                    if ("成都市".equals(tdOrderLogistics.getCity())) {
+                        orderLogisticsInfo.setDeliveryProvince("四川省");
+                    } else if ("郑州市".equals(tdOrderLogistics.getCity())) {
+                        orderLogisticsInfo.setDeliveryProvince("河南省");
+                    }
                     orderLogisticsInfo.setDeliveryType(AppDeliveryType.getAppDeliveryTypeByDescription(tdOrderLogistics.getDeliverTypeTitle()));
                     orderLogisticsInfo.setOrdNo(tdOrderLogistics.getMainOrderNumber());
                     orderLogisticsInfo.setDeliveryCity(tdOrderLogistics.getCity());
