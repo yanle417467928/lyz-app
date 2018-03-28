@@ -507,4 +507,9 @@ public class DataTransferServiceImpl implements DataTransferService {
     public List<TdOrderData> queryTdOrderDataListBySize(int size) {
         return transferDAO.queryTdOrderDataListBySize(size);
     }
+
+    @Override
+    public List<OrderBaseInfo> findNewOrderNumberByDeliveryType() {
+        return this.transferDAO.findNewOrderNumberByDeliveryType();
+    }
 }

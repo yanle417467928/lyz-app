@@ -509,7 +509,7 @@ public class DataTransferController {
     public String transferArrearsAudit() {
         log.info("开始处理订单审核信息导入job,当前时间:{}", new Date());
         // *********************** 订单迁移处理 ***************
-        List<OrderBaseInfo> orderNumberList = this.dataTransferService.findNewOrderNumber();
+        List<OrderBaseInfo> orderNumberList = this.dataTransferService.findNewOrderNumberByDeliveryType();
         List<String> error = new ArrayList<>();
         if (null != orderNumberList && orderNumberList.size() > 0) {
             log.info("无订单信息 orderNumberList:{}", orderNumberList);

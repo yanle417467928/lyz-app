@@ -107,4 +107,6 @@ public interface TransferDAO {
     List<TdOrderSmall> getPendingTransferOrder(Date startTime, Date endTime);
 
     List<TdOrderData> queryTdOrderDataListBySize(int size);
+
+    List<OrderBaseInfo> findNewOrderNumberByDeliveryType();
 }
