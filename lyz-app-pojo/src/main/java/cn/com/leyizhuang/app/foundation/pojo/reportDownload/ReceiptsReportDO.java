@@ -31,6 +31,8 @@ public class ReceiptsReportDO {
     //备注
     private String remarks;
 
+    private String payTypes;
+
     public void setPayType(OrderBillingPaymentType payType){
         this.payType = payType.getDescription();
     }

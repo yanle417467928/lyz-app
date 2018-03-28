@@ -7,11 +7,14 @@ import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.reportDownload.ReceiptsReportDO;
 import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.MaReportDownloadService;
+import cn.com.leyizhuang.common.util.CountUtil;
 import com.github.pagehelper.PageInfo;
 import jxl.Workbook;
+import jxl.format.*;
 import jxl.format.Alignment;
+import jxl.format.Border;
+import jxl.format.BorderLineStyle;
 import jxl.format.Colour;
-import jxl.format.UnderlineStyle;
 import jxl.format.VerticalAlignment;
 import jxl.write.*;
 import jxl.write.Number;
@@ -46,7 +49,7 @@ public class MaReportDownloadRestController extends BaseRestController{
     @Autowired
     private MaReportDownloadService maReportDownloadService;
 
-    private static final int maxRowNum = 60000;
+    private static final int maxRowNum = 100;
 
     @GetMapping(value = "/receipts/page/grid")
     public GridDataVO<ReceiptsReportDO> restStorePreDepositPageGird(Integer offset, Integer size, Long cityId, Long storeId, String storeType,
@@ -135,18 +138,42 @@ public class MaReportDownloadRestController extends BaseRestController{
                 //设置筛选条件
                 ws = this.setCondition(ws, map, titleFormat, shiroName);
                 //列宽
-                int[] columnView = {10, 13, 10, 20, 12, 10, 30, 10};
+                int[] columnView = {10, 13, 10, 20, 12, 10, 30, 15, 20};
                 //列标题
                 String[] titles = {"城市", "门店名称", "门店类型", "付款/退款时间", "支付方式", "支付金额", "订/退单号", "备注"};
                 //计算标题开始行号
                 int row = 1;
                 if (null != map && map.size() > 0){
-                    row = (map.size() + 1)/2 + 2;
+                    row = (map.size() + 1)/2 + 4;
                 }
+
+
+                ws.addCell(new Label(0, row, "微信", titleFormat));
+                ws.addCell(new Label(1, row, "支付宝", titleFormat));
+                ws.addCell(new Label(2, row, "银联", titleFormat));
+                ws.addCell(new Label(3, row, "现金", titleFormat));
+                ws.addCell(new Label(4, row, "POS", titleFormat));
+                ws.addCell(new Label(5, row, "其他", titleFormat));
+                ws.addCell(new Label(6, row, "门店预存款", titleFormat));
+                ws.addCell(new Label(7, row, "顾客预存款", titleFormat));
+                ws.addCell(new Label(8, row, "支付总额", titleFormat));
+
+                int collectRow = row + 1;
+
+                row += 5;
                 //设置标题
                 ws = this.setHeader(ws, titleFormat, columnView, titles, row);
 
                 row += 1;
+                Double cusPrepay = 0D;
+                Double stPrepay = 0D;
+                Double alipay = 0D;
+                Double weChat = 0D;
+                Double unionPay = 0D;
+                Double pos = 0D;
+                Double cash = 0D;
+                Double other = 0D;
+                Double totle = 0D;
                 //填写表体数据
                 for (int j = 0; j < maxRowNum; j++) {
                     if (j + i * maxRowNum >= maxSize) {
@@ -161,7 +188,34 @@ public class MaReportDownloadRestController extends BaseRestController{
                     ws.addCell(new Number(5, j + row, receiptsReportDO.getMoney(), new WritableCellFormat(new NumberFormat("0.00"))));
                     ws.addCell(new Label(6, j + row, receiptsReportDO.getOrderNumber()));
                     ws.addCell(new Label(7, j + row, receiptsReportDO.getRemarks()));
+                    if ("CUS_PREPAY".equals(receiptsReportDO.getPayTypes())){
+                        cusPrepay = CountUtil.add(cusPrepay, null==receiptsReportDO.getMoney()?0D:receiptsReportDO.getMoney());
+                    } else if ("ST_PREPAY".equals(receiptsReportDO.getPayTypes())){
+                        stPrepay = CountUtil.add(stPrepay, null==receiptsReportDO.getMoney()?0D:receiptsReportDO.getMoney());
+                    } else if ("ALIPAY".equals(receiptsReportDO.getPayTypes())){
+                        alipay = CountUtil.add(alipay, null==receiptsReportDO.getMoney()?0D:receiptsReportDO.getMoney());
+                    } else if ("WE_CHAT".equals(receiptsReportDO.getPayTypes())){
+                        weChat = CountUtil.add(weChat, null==receiptsReportDO.getMoney()?0D:receiptsReportDO.getMoney());
+                    } else if ("UNION_PAY".equals(receiptsReportDO.getPayTypes())){
+                        unionPay = CountUtil.add(unionPay, null==receiptsReportDO.getMoney()?0D:receiptsReportDO.getMoney());
+                    } else if ("POS".equals(receiptsReportDO.getPayTypes())){
+                        pos = CountUtil.add(pos, null==receiptsReportDO.getMoney()?0D:receiptsReportDO.getMoney());
+                    } else if ("CASH".equals(receiptsReportDO.getPayTypes())){
+                        cash = CountUtil.add(cash, null==receiptsReportDO.getMoney()?0D:receiptsReportDO.getMoney());
+                    } else {
+                        other = CountUtil.add(other, null==receiptsReportDO.getMoney()?0D:receiptsReportDO.getMoney());
+                    }
+                    totle = CountUtil.add(totle, null==receiptsReportDO.getMoney()?0D:receiptsReportDO.getMoney());
                 }
+                ws.addCell(new Number(0, collectRow, weChat, new WritableCellFormat(new NumberFormat("0.00"))));
+                ws.addCell(new Number(1, collectRow, alipay, new WritableCellFormat(new NumberFormat("0.00"))));
+                ws.addCell(new Number(2, collectRow, unionPay, new WritableCellFormat(new NumberFormat("0.00"))));
+                ws.addCell(new Number(3, collectRow, cash, new WritableCellFormat(new NumberFormat("0.00"))));
+                ws.addCell(new Number(4, collectRow, pos, new WritableCellFormat(new NumberFormat("0.00"))));
+                ws.addCell(new Number(5, collectRow, other, new WritableCellFormat(new NumberFormat("0.00"))));
+                ws.addCell(new Number(6, collectRow, stPrepay, new WritableCellFormat(new NumberFormat("0.00"))));
+                ws.addCell(new Number(7, collectRow, cusPrepay, new WritableCellFormat(new NumberFormat("0.00"))));
+                ws.addCell(new Number(8, collectRow, totle, new WritableCellFormat(new NumberFormat("0.00"))));
             }
         }catch(Exception e) {
             System.out.println(e);
@@ -277,6 +331,9 @@ public class MaReportDownloadRestController extends BaseRestController{
             titleFormat.setAlignment(Alignment.CENTRE);
             //设置文本垂直居中对齐
             titleFormat.setVerticalAlignment(VerticalAlignment.CENTRE);
+            //设置背景颜色
+            titleFormat.setBackground(Colour.PALE_BLUE);
+            titleFormat.setBorder(Border.ALL, BorderLineStyle.THIN, Colour.BLACK);
             return titleFormat;
         } catch (WriteException e) {
             e.printStackTrace();

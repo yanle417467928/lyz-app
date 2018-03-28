@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaReportDownloadDAO">
     <select id="findReceiptsReportDOAll" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.ReceiptsReportDO">
-        SELECT obi.city_name cityName, st.store_name storeName, st.store_type storeType, obpd.pay_time payTime,
+        SELECT obi.city_name cityName, st.store_name storeName, st.store_type storeType, obpd.pay_time payTime, obpd.pay_type payTypes,
             obpd.pay_type payType, obpd.amount money, obi.ord_no orderNumber, IF(obpd.pay_type = 'POS',obd.store_pos_number,null) remarks
          FROM
         ord_billing_payment_details obpd
@@ -36,8 +36,8 @@
                 #{item}
             </foreach>
         UNION
-        SELECT obi.city_name cityName, st.store_name storeName, st.store_type storeType, orbd.create_time payTime,
-            orbd.return_pay_type payType, orbd.return_money money, orbi.return_no orderNumber, NULL remarks
+        SELECT obi.city_name cityName, st.store_name storeName, st.store_type storeType, orbd.create_time payTime, orbd.return_pay_type payTypes,
+            orbd.return_pay_type payType, (-1 * orbd.return_money) money, orbi.return_no orderNumber, NULL remarks
         FROM ord_return_billing_detail orbd
         INNER JOIN ord_return_base_info orbi ON orbi.return_no = orbd.return_no
         INNER JOIN st_store st ON st.store_id = orbi.store_id
