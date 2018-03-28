@@ -26,11 +26,11 @@ public interface DataTransferService {
 
     Integer transferArrearsAudit(String orderNumber);
 
-    List<TdDeliveryInfoDetails> queryDeliveryTimeSeqBySize(int size);
+    List<TdDeliveryInfoDetails> queryDeliveryTimeSeqByOrderNo(String orderNO);
 
     List<TdDeliveryInfoDetails> queryDeliveryInfoDetailByOrderNumber(String orderNo);
 
-    List<TdDeliveryInfoDetails> queryTdOrderListBySize(int size);
+    List<TdDeliveryInfoDetails> queryTdOrderListByOrderNo(String orderNo);
 
     List<TdDeliveryInfoDetails> queryOrderGoodsListByOrderNumber(Long id);
 
@@ -54,7 +54,7 @@ public interface DataTransferService {
 
     List<TdOrderSmall> getPendingTransferOrder(Date startTime, Date endTime);
 
-    List<TdOrderData> queryTdOrderDataListBySize(int size);
+    List<TdOrderData> queryTdOrderDataListByOrderNo(String orderNo);
 
     List<OrderBaseInfo> findNewOrderNumberByDeliveryType();
 

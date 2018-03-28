@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.datatransfer.impl;
 
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.exception.DataTransferException;
+import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.TimingTaskErrorMessageDAO;
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
 import cn.com.leyizhuang.app.foundation.pojo.*;
@@ -12,12 +13,13 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
-import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
+import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferSupportService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.OrderGoodsTransferService;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
+import cn.com.leyizhuang.common.util.AssertUtil;
 import cn.com.leyizhuang.common.util.CountUtil;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -30,10 +32,6 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * 订单商品转换类
@@ -70,6 +68,11 @@ public class DataTransferServiceImpl implements DataTransferService {
     private AppOrderService appOrderService;
 
     private ExecutorService executorService = Executors.newFixedThreadPool(10);
+    @Resource
+    private DataTransferService dataTransferService;
+
+    @Resource
+    private AppStoreService appStoreService;
 
     public OrderGoodsInfo transferOne(TdOrderGoods tdOrderGoods) {
         OrderGoodsInfo goodsInfo = new OrderGoodsInfo();
@@ -270,8 +273,8 @@ public class DataTransferServiceImpl implements DataTransferService {
     }
 
     @Override
-    public List<TdDeliveryInfoDetails> queryDeliveryTimeSeqBySize(int size) {
-        return transferDAO.queryDeliveryTimeSeqBySize(size);
+    public List<TdDeliveryInfoDetails> queryDeliveryTimeSeqByOrderNo(String orderNO) {
+        return transferDAO.queryDeliveryTimeSeqByOrderNo(orderNO);
     }
 
     @Override
@@ -280,8 +283,8 @@ public class DataTransferServiceImpl implements DataTransferService {
     }
 
     @Override
-    public List<TdDeliveryInfoDetails> queryTdOrderListBySize(int size) {
-        return transferDAO.queryTdOrderListBySize(size);
+    public List<TdDeliveryInfoDetails> queryTdOrderListByOrderNo(String orderNo) {
+        return transferDAO.queryTdOrderListByOrderNo(orderNo);
     }
 
     @Override
@@ -582,8 +585,8 @@ public class DataTransferServiceImpl implements DataTransferService {
     }
 
     @Override
-    public List<TdOrderData> queryTdOrderDataListBySize(int size) {
-        return transferDAO.queryTdOrderDataListBySize(size);
+    public List<TdOrderData> queryTdOrderDataListByOrderNo(String orderNo) {
+        return transferDAO.queryTdOrderDataListByOrderNo(orderNo);
     }
 
     @Override
@@ -864,6 +867,26 @@ public class DataTransferServiceImpl implements DataTransferService {
                         List<OrderGoodsInfo> orderGoodsInfoList = orderGoodsTransferService.transferOne(orderBaseInfo);
                         OrderBillingDetails orderBillingDetails = this.transferOrderBillingDetails(orderBaseInfo);
 
+                        //****物流进度明细 begin****/
+                        if (AppDeliveryType.HOUSE_DELIVERY.equals(orderBaseInfo.getDeliveryType())) {
+
+                            List<OrderDeliveryInfoDetails> deliveryInfoDetailsList = this.saveOrderDeliveryInfoDetails(orderBaseInfo);
+                        }
+
+                        //****经销差价返还 begin****/
+                        if (!orderBaseInfo.getOrderNumber().contains("YF")) {
+
+                            List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetailsList = this.saveOrderJxPriceDifference(orderBaseInfo);
+                        }
+
+                        //****普通客户账单支付明细转换 begin****/
+                        List<OrderBillingPaymentDetails> paymentDetailsList = this.saveOrderBillingPaymentDetail(orderBaseInfo);
+
+                        //****装饰公司账单支付明细转换 begin****/
+                        if (AppOrderSubjectType.FIT.equals(orderBaseInfo.getOrderSubjectType())) {
+                            List<OrderBillingPaymentDetails> fixDiySiteBillingPaymentDetail = this.saveFixDiySiteBillingPaymentDetail(orderBaseInfo);
+                        }
+
                         //处理订单物理信息
                         OrderLogisticsInfo orderLogisticsInfo = this.transferOrderLogisticsInfo(tdOrder, employeeList, storeList);
                         //持久化订单相关信息
@@ -888,5 +911,288 @@ public class DataTransferServiceImpl implements DataTransferService {
         System.out.println("未处理或处理失败的数据条数:" + errorLogQueue.size());
         log.info("订单导入job处理完成,当前时间:{}", new Date());
         return errorLogQueue;
+    }
+
+    private List<OrderDeliveryInfoDetails> saveOrderDeliveryInfoDetails(OrderBaseInfo orderBaseInfo) {
+        List<TdDeliveryInfoDetails> entityList = transferDAO.queryDeliveryTimeSeqByOrderNo(orderBaseInfo.getOrderNumber());
+        List<OrderDeliveryInfoDetails> deliveryInfoDetailsList;
+        if (AssertUtil.isNotEmpty(entityList)) {
+            deliveryInfoDetailsList = new ArrayList<>();
+            for (TdDeliveryInfoDetails tdDeliveryInfoDetails : entityList) {
+
+                OrderDeliveryInfoDetails deliveryInfoDetails = new OrderDeliveryInfoDetails();
+
+                switch (tdDeliveryInfoDetails.getOperationType()) {
+                    case "处理中": {
+                        deliveryInfoDetails.setLogisticStatus(LogisticStatus.INITIAL);
+                        break;
+                    }
+                    case "定位": {
+                        deliveryInfoDetails.setLogisticStatus(LogisticStatus.ALREADY_POSITIONED);
+                        break;
+                    }
+                    case "拣货": {
+                        deliveryInfoDetails.setLogisticStatus(LogisticStatus.PICKING_GOODS);
+                        break;
+                    }
+                    case "装车": {
+                        deliveryInfoDetails.setLogisticStatus(LogisticStatus.LOADING);
+                        break;
+                    }
+                    case "封车": {
+                        deliveryInfoDetails.setLogisticStatus(LogisticStatus.SEALED_CAR);
+                        List<TdDeliveryInfoDetails> deliveryInfoDetailList = dataTransferService.queryDeliveryInfoDetailByOrderNumber(tdDeliveryInfoDetails.getMainOrderNumber());
+                        if (AssertUtil.isNotEmpty(deliveryInfoDetailList)) {
+                            TdDeliveryInfoDetails deliveryInfoDetail = deliveryInfoDetailList.get(0);
+                            deliveryInfoDetails.setOperatorNo(deliveryInfoDetail.getDriver());
+                            deliveryInfoDetails.setTaskNo(deliveryInfoDetail.getTaskNo());
+                            deliveryInfoDetails.setWarehouseNo(deliveryInfoDetail.getWhNo());
+                        }
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+                deliveryInfoDetails.setDescription(tdDeliveryInfoDetails.getOperationDescription());
+                deliveryInfoDetails.setOrderNo(tdDeliveryInfoDetails.getMainOrderNumber());
+                deliveryInfoDetails.setCreateTime(tdDeliveryInfoDetails.getOperationTime());
+                deliveryInfoDetails.setIsRead(true);
+
+                deliveryInfoDetailsList.add(deliveryInfoDetails);
+            }
+
+            if (AppOrderStatus.PENDING_RECEIVE.equals(orderBaseInfo.getStatus())) {
+                OrderDeliveryInfoDetails orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
+                orderDeliveryInfoDetails.setDeliveryInfo(orderBaseInfo.getOrderNumber(), LogisticStatus.SEALED_CAR, "商家已封车完成！", "已封车",
+                        "", "", "", "");
+                orderDeliveryInfoDetails.setIsRead(true);
+                deliveryInfoDetailsList.add(orderDeliveryInfoDetails);
+            } else if (AppOrderStatus.FINISHED.equals(orderBaseInfo.getStatus())) {
+                OrderDeliveryInfoDetails orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
+                orderDeliveryInfoDetails.setDeliveryInfo(orderBaseInfo.getOrderNumber(), LogisticStatus.CONFIRM_ARRIVAL, "确认到货！", "送达",
+                        "", "", "", "");
+                orderDeliveryInfoDetails.setIsRead(true);
+                deliveryInfoDetailsList.add(orderDeliveryInfoDetails);
+            }
+            return deliveryInfoDetailsList;
+        } else {
+            throw new DataTransferException("此配送订单物流明细没有找到", DataTransferExceptionType.DDNF);
+        }
+    }
+
+    private List<OrderJxPriceDifferenceReturnDetails> saveOrderJxPriceDifference(OrderBaseInfo orderBaseInfo) {
+
+        List<TdDeliveryInfoDetails> tdOrderList = transferDAO.queryTdOrderListByOrderNo(orderBaseInfo.getOrderNumber());
+        if (AssertUtil.isEmpty(tdOrderList)) {
+            throw new DataTransferException("没有在tdOrder表找到该订单", DataTransferExceptionType.NDT);
+        }
+        List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetailsList = new ArrayList<>();
+        for (TdDeliveryInfoDetails tdOrder : tdOrderList) {
+            if (!tdOrder.getMainOrderNumber().contains("YF")) {
+                List<TdDeliveryInfoDetails> tdOrderGoodsList = dataTransferService.queryOrderGoodsListByOrderNumber(tdOrder.getId());
+                if (AssertUtil.isNotEmpty(tdOrderGoodsList)) {
+                    for (TdDeliveryInfoDetails tdOrderGoods : tdOrderGoodsList) {
+
+                        OrderJxPriceDifferenceReturnDetails returnDetails = new OrderJxPriceDifferenceReturnDetails();
+
+                        returnDetails.setOid(orderBaseInfo.getId());
+                        returnDetails.setOrderNumber(tdOrder.getMainOrderNumber());
+                        returnDetails.setCreateTime(tdOrder.getPayTime());
+                        returnDetails.setStoreCode(orderBaseInfo.getStoreCode());
+                        returnDetails.setStoreId(orderBaseInfo.getStoreId());
+                        returnDetails.setSku(tdOrderGoods.getSku());
+                        returnDetails.setUnitPrice(tdOrderGoods.getJxDif());
+                        returnDetails.setQuantity(tdOrderGoods.getQuantity());
+                        returnDetails.setAmount(tdOrderGoods.getDifTotal());
+
+                        jxPriceDifferenceReturnDetailsList.add(returnDetails);
+                    }
+                } else {
+                    throw new DataTransferException("订单的商品明细没有找到,无法转换经销差价", DataTransferExceptionType.OGNF);
+                }
+            }
+        }
+        return jxPriceDifferenceReturnDetailsList;
+    }
+
+    private List<OrderBillingPaymentDetails> saveOrderBillingPaymentDetail(OrderBaseInfo orderBaseInfo) {
+
+        List<TdOrderData> orderDataList = transferDAO.queryTdOrderDataListByOrderNo(orderBaseInfo.getOrderNumber());
+        List<OrderBillingPaymentDetails> paymentDetailsList;
+        if (AssertUtil.isNotEmpty(orderDataList)) {
+            paymentDetailsList = new ArrayList<>();
+            for (TdOrderData tdOrderData : orderDataList) {
+                List<TdOrder> tdOrderList = transferDAO.queryTdOrderByOrderNumber(tdOrderData.getMainOrderNumber());
+                if (AssertUtil.isEmpty(tdOrderList)) {
+                    throw new DataTransferException("没有在tdOrder表找到该订单", DataTransferExceptionType.NDT);
+                }
+                TdOrder tdOrder = tdOrderList.get(0);
+                if ((null != tdOrderData.getOnlinePay() && tdOrderData.getOnlinePay() > AppConstant.PAY_UP_LIMIT)
+                        || (null != tdOrderData.getBalanceUsed() && tdOrderData.getBalanceUsed() > AppConstant.PAY_UP_LIMIT)) {
+                    OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails();
+                    paymentDetails.setOrderId(orderBaseInfo.getId());
+                    paymentDetails.setOrderNumber(tdOrderData.getMainOrderNumber());
+                    paymentDetails.setCreateTime(tdOrder.getPayTime());
+                    paymentDetails.setPayTime(tdOrder.getPayTime());
+                    paymentDetails.setPayType(OrderBillingPaymentType.ST_PREPAY);
+                    paymentDetails.setPayTypeDesc(OrderBillingPaymentType.ST_PREPAY.getDescription());
+
+                    if (tdOrder.getIsSellerOrder()) {
+                        paymentDetails.setPaymentSubjectType(PaymentSubjectType.SELLER);
+                        paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.SELLER.getDescription());
+                    } else {
+                        paymentDetails.setPaymentSubjectType(PaymentSubjectType.CUSTOMER);
+                        paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.CUSTOMER.getDescription());
+                    }
+                    Double amount = CountUtil.add(null == tdOrderData.getOnlinePay() ? 0D : tdOrderData.getOnlinePay(),
+                            null == tdOrderData.getBalanceUsed() ? 0D : tdOrderData.getBalanceUsed());
+                    paymentDetails.setAmount(amount);
+
+                    paymentDetails.setReceiptNumber(OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+
+                    paymentDetailsList.add(paymentDetails);
+                } else if (null != tdOrderData.getDeliveryCash() && tdOrderData.getDeliveryCash() > AppConstant.PAY_UP_LIMIT) {
+                    OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails();
+                    paymentDetails.setOrderId(orderBaseInfo.getId());
+                    paymentDetails.setOrderNumber(tdOrderData.getMainOrderNumber());
+                    paymentDetails.setCreateTime(tdOrder.getPayTime());
+                    paymentDetails.setPayTime(tdOrder.getPayTime());
+                    paymentDetails.setPayType(OrderBillingPaymentType.CASH);
+                    paymentDetails.setPayTypeDesc(OrderBillingPaymentType.CASH.getDescription());
+
+                    paymentDetails.setPaymentSubjectType(PaymentSubjectType.DELIVERY_CLERK);
+                    paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.DELIVERY_CLERK.getDescription());
+                    paymentDetails.setAmount(tdOrderData.getDeliveryCash());
+
+                    paymentDetails.setReceiptNumber(OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+                    paymentDetailsList.add(paymentDetails);
+
+                } else if (null != tdOrderData.getSellerCash() && tdOrderData.getSellerCash() != 0) {
+                    OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails();
+                    paymentDetails.setOrderId(orderBaseInfo.getId());
+                    paymentDetails.setOrderNumber(tdOrderData.getMainOrderNumber());
+                    paymentDetails.setCreateTime(tdOrder.getPayTime());
+                    paymentDetails.setPayTime(tdOrder.getPayTime());
+                    paymentDetails.setPayType(OrderBillingPaymentType.CASH);
+                    paymentDetails.setPayTypeDesc(OrderBillingPaymentType.CASH.getDescription());
+
+                    paymentDetails.setPaymentSubjectType(PaymentSubjectType.SELLER);
+                    paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.SELLER.getDescription());
+                    paymentDetails.setAmount(tdOrderData.getSellerCash());
+                    paymentDetails.setReceiptNumber(OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+                    paymentDetailsList.add(paymentDetails);
+
+                } else if (null != tdOrderData.getDeliveryPos() && tdOrderData.getDeliveryPos() > AppConstant.PAY_UP_LIMIT) {
+                    OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails();
+                    paymentDetails.setOrderId(orderBaseInfo.getId());
+                    paymentDetails.setOrderNumber(tdOrderData.getMainOrderNumber());
+                    paymentDetails.setCreateTime(tdOrder.getPayTime());
+                    paymentDetails.setPayTime(tdOrder.getPayTime());
+                    paymentDetails.setPayType(OrderBillingPaymentType.POS);
+                    paymentDetails.setPayTypeDesc(OrderBillingPaymentType.POS.getDescription());
+
+                    paymentDetails.setPaymentSubjectType(PaymentSubjectType.DELIVERY_CLERK);
+                    paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.DELIVERY_CLERK.getDescription());
+                    paymentDetails.setAmount(tdOrderData.getDeliveryPos());
+
+                    paymentDetails.setReceiptNumber(OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+
+                    paymentDetailsList.add(paymentDetails);
+                } else if (null != tdOrderData.getSellerPos() && tdOrderData.getSellerPos() > AppConstant.PAY_UP_LIMIT) {
+                    OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails();
+                    paymentDetails.setOrderId(orderBaseInfo.getId());
+                    paymentDetails.setOrderNumber(tdOrderData.getMainOrderNumber());
+                    paymentDetails.setCreateTime(tdOrder.getPayTime());
+                    paymentDetails.setPayTime(tdOrder.getPayTime());
+                    paymentDetails.setPayType(OrderBillingPaymentType.POS);
+                    paymentDetails.setPayTypeDesc(OrderBillingPaymentType.POS.getDescription());
+
+                    paymentDetails.setPaymentSubjectType(PaymentSubjectType.STORE);
+                    paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.STORE.getDescription());
+                    paymentDetails.setAmount(tdOrderData.getSellerPos());
+                    paymentDetails.setReceiptNumber(OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+                    paymentDetailsList.add(paymentDetails);
+
+                } else if (null != tdOrderData.getSellerOther() && tdOrderData.getSellerOther() > AppConstant.PAY_UP_LIMIT) {
+                    OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails();
+                    paymentDetails.setOrderId(orderBaseInfo.getId());
+                    paymentDetails.setOrderNumber(tdOrderData.getMainOrderNumber());
+                    paymentDetails.setCreateTime(tdOrder.getPayTime());
+                    paymentDetails.setPayTime(tdOrder.getPayTime());
+                    paymentDetails.setPayType(OrderBillingPaymentType.OTHER);
+                    paymentDetails.setPayTypeDesc(OrderBillingPaymentType.OTHER.getDescription());
+
+                    paymentDetails.setPaymentSubjectType(PaymentSubjectType.STORE);
+                    paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.STORE.getDescription());
+                    paymentDetails.setAmount(tdOrderData.getSellerOther());
+                    paymentDetails.setReceiptNumber(OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+                    paymentDetailsList.add(paymentDetails);
+                }
+            }
+            return paymentDetailsList;
+        } else {
+            throw new DataTransferException("订单账单明细没有找到,无法转化订单支付明细", DataTransferExceptionType.ODNF);
+        }
+    }
+
+    private List<OrderBillingPaymentDetails> saveFixDiySiteBillingPaymentDetail(OrderBaseInfo orderBaseInfo) {
+
+
+        List<OrderBillingPaymentDetails> paymentDetailsList;
+        List<TdOrder> orderList = transferDAO.queryTdOrderByOrderNumber(orderBaseInfo.getOrderNumber());
+        if (AssertUtil.isNotEmpty(orderList)) {
+            paymentDetailsList = new ArrayList<>();
+            Double storeCredit = 0D;
+            Double storePrepay = 0D;
+            for (TdOrder tdOrder : orderList) {
+                if (null != tdOrder.getCredit() && tdOrder.getCredit() > AppConstant.PAY_UP_LIMIT) {
+
+                    storeCredit = CountUtil.add(storeCredit, tdOrder.getCredit());
+
+                } else if ((null != tdOrder.getWalletMoney() && tdOrder.getWalletMoney() > AppConstant.PAY_UP_LIMIT)
+                        || null != tdOrder.getAlipayMoney() && tdOrder.getAlipayMoney() > AppConstant.PAY_UP_LIMIT) {
+
+                    Double amount = CountUtil.add(null == tdOrder.getWalletMoney() ? 0D : tdOrder.getWalletMoney(),
+                            null == tdOrder.getAlipayMoney() ? 0D : tdOrder.getAlipayMoney());
+
+                    storePrepay = CountUtil.add(amount, storePrepay);
+                }
+            }
+            if (storeCredit > AppConstant.PAY_UP_LIMIT) {
+                OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails();
+                paymentDetails.setOrderId(orderBaseInfo.getId());
+                paymentDetails.setOrderNumber(orderBaseInfo.getOrderNumber());
+                paymentDetails.setCreateTime(orderList.get(0).getPayTime());
+                paymentDetails.setPayTime(orderList.get(0).getPayTime());
+                paymentDetails.setPayType(OrderBillingPaymentType.STORE_CREDIT_MONEY);
+                paymentDetails.setPayTypeDesc(OrderBillingPaymentType.STORE_CREDIT_MONEY.getDescription());
+
+                paymentDetails.setPaymentSubjectType(PaymentSubjectType.DECORATE_MANAGER);
+                paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.DECORATE_MANAGER.getDescription());
+                paymentDetails.setAmount(storeCredit);
+                paymentDetails.setReceiptNumber(OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+                paymentDetailsList.add(paymentDetails);
+            }
+            if (storePrepay > AppConstant.PAY_UP_LIMIT) {
+                OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails();
+                paymentDetails.setOrderId(orderBaseInfo.getId());
+                paymentDetails.setOrderNumber(orderBaseInfo.getOrderNumber());
+                paymentDetails.setCreateTime(orderList.get(0).getPayTime());
+                paymentDetails.setPayTime(orderList.get(0).getPayTime());
+                paymentDetails.setPayType(OrderBillingPaymentType.ST_PREPAY);
+                paymentDetails.setPayTypeDesc(OrderBillingPaymentType.ST_PREPAY.getDescription());
+
+                paymentDetails.setPaymentSubjectType(PaymentSubjectType.DECORATE_MANAGER);
+                paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.DECORATE_MANAGER.getDescription());
+
+                paymentDetails.setAmount(storePrepay);
+                paymentDetails.setReceiptNumber(OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+                paymentDetailsList.add(paymentDetails);
+            }
+            return paymentDetailsList;
+        } else {
+            throw new DataTransferException("没有在tdOrder表找到该订单", DataTransferExceptionType.NDT);
+        }
     }
 }
