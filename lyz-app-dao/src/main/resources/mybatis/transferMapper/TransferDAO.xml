@@ -10,6 +10,14 @@
         FROM ord_base_info
     </select>
 
+    <select id="findNewOrderNumberByDeliveryType" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
+        SELECT
+        ord_no orderNumber,
+        oid    id
+        FROM ord_base_info
+        WHERE delivery_type = 'HOUSE_DELIVERY'
+    </select>
+
     <select id="findOwnMoneyRecordByOrderNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOwnMoneyRecord">
         SELECT
