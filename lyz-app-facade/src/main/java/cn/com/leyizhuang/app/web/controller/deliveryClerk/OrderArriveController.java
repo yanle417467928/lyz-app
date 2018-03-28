@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.deliveryClerk;
 
 import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.getui.NoticePushUtils;
 import cn.com.leyizhuang.app.core.utils.SmsUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
@@ -23,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -105,10 +105,10 @@ public class OrderArriveController {
             logger.info("confirmOrderArrive OUT,配送员确认订单送达失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if(paymentMethod.contains("POS")){
+        if (paymentMethod.contains("POS")) {
             paymentMethod = "POS";
         }
-        if(paymentMethod.contains("现金")){
+        if (paymentMethod.contains("现金")) {
             paymentMethod = "现金";
         }
         if (null == collectionAmount || "".equals(collectionAmount.trim())) {
@@ -117,7 +117,7 @@ public class OrderArriveController {
         Double amount;
         try {
             amount = Double.parseDouble(collectionAmount);
-        }catch (Exception e){
+        } catch (Exception e) {
             amount = 0D;
         }
 
@@ -198,13 +198,13 @@ public class OrderArriveController {
                         // 如果名称不为“”,说明该文件存在，否则说明该文件不存在
                         if (!"".equals(myFileName.trim())) {
                             // 定义上传路径
-                            if(!iter.hasNext()){
+                            if (!iter.hasNext()) {
                                 picture.append(FileUploadOSSUtils.uploadProfilePhoto(f, "order/photo"));
-                            }else{
+                            } else {
                                 picture.append(FileUploadOSSUtils.uploadProfilePhoto(f, "order/photo")).append(",");
                             }
                             i += 1;
-                            if (i > 2 ) {
+                            if (i > 2) {
                                 break;
                             }
                         }
@@ -262,6 +262,8 @@ public class OrderArriveController {
                         logger.info("confirmOrderArrive EXCEPTION，提醒短信发送失败");
                         logger.warn("{}", e);
                     }
+                    //发送推送新消息给导购
+                    NoticePushUtils.pushApplyArrearageInfo(orderArrearsAuditDO.getSellerId());
 
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "欠款审核提交成功,正在审核中!", null);
                     logger.info("confirmOrderArrive OUT,配送员确认订单送达申请欠款审核，出参 resultDTO:{}", resultDTO);
@@ -299,18 +301,18 @@ public class OrderArriveController {
 //                        //修改导购信用额度
 //                        Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(orderTempInfo.getSellerId(), ownManey, empCreditMoney.getLastUpdateTime());
 //                        if (affectLine > 0) {
-                            //记录导购信用金变更日志
-                            empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
-                            empCreditMoneyChangeLog.setEmpId(orderTempInfo.getSellerId());
-                            empCreditMoneyChangeLog.setCreateTime(new Date());
-                            empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(ownManey);
-                            empCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
-                            empCreditMoneyChangeLog.setReferenceNumber(orderNo);
-                            empCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
-                            empCreditMoneyChangeLog.setChangeTypeDesc("订单还款");
-                            empCreditMoneyChangeLog.setOperatorId(userId);
-                            empCreditMoneyChangeLog.setOperatorType(AppIdentityType.DELIVERY_CLERK);
-                            //保存日志
+                        //记录导购信用金变更日志
+                        empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
+                        empCreditMoneyChangeLog.setEmpId(orderTempInfo.getSellerId());
+                        empCreditMoneyChangeLog.setCreateTime(new Date());
+                        empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(ownManey);
+                        empCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
+                        empCreditMoneyChangeLog.setReferenceNumber(orderNo);
+                        empCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
+                        empCreditMoneyChangeLog.setChangeTypeDesc("订单还款");
+                        empCreditMoneyChangeLog.setOperatorId(userId);
+                        empCreditMoneyChangeLog.setOperatorType(AppIdentityType.DELIVERY_CLERK);
+                        //保存日志
 //                            appEmployeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
 //                        }
                     }
