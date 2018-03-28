@@ -15,6 +15,7 @@ import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferSupportService;
+import cn.com.leyizhuang.app.foundation.service.datatransfer.OrderGoodsTransferService;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import cn.com.leyizhuang.common.util.CountUtil;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
@@ -57,6 +58,8 @@ public class DataTransferServiceImpl implements DataTransferService {
     @Resource
     private DataTransferSupportService dataTransferSupportService;
 
+    @Resource
+    private OrderGoodsTransferService orderGoodsTransferService;
 
     public OrderGoodsInfo transferOne(TdOrderGoods tdOrderGoods) {
         OrderGoodsInfo goodsInfo = new OrderGoodsInfo();
@@ -805,6 +808,8 @@ public class DataTransferServiceImpl implements DataTransferService {
                         //处理订单头
                         OrderBaseInfo orderBaseInfo = this.transferOrderBaseInfo(tdOrder, employeeList, customerList, storeList);
 
+                        // 转换订单商品
+                        List<OrderGoodsInfo> orderGoodsInfoList = orderGoodsTransferService.transferOne(orderBaseInfo);
 
                         //持久化订单相关信息
                         dataTransferSupportService.saveOrderRelevantInfo(orderBaseInfo);

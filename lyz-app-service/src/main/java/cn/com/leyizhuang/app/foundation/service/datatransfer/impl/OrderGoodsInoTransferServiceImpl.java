@@ -1,6 +1,8 @@
 package cn.com.leyizhuang.app.foundation.service.datatransfer.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
+import cn.com.leyizhuang.app.core.constant.DataTransferExceptionType;
+import cn.com.leyizhuang.app.core.exception.DataTransferException;
 import cn.com.leyizhuang.app.foundation.dao.GoodsDAO;
 import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
@@ -23,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import static cn.com.leyizhuang.app.core.constant.DataTransferExceptionType.NDT;
 
 /**
  * 订单商品转换类
@@ -48,13 +52,14 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
     private ExecutorService executorService = Executors.newFixedThreadPool(10);
 
     @Transactional
-    public void transferOne(OrderBaseInfo orderBaseInfo) throws Exception {
+    public List<OrderGoodsInfo> transferOne(OrderBaseInfo orderBaseInfo) throws Exception {
         logger.info("开始转换订单商品数据  ≡(▔﹏▔)≡ ⊙﹏⊙∥ ˋ︿ˊ (=‵′=) 一.一 ￣﹏￣||| >﹏<~ "+orderBaseInfo.getOrderNumber());
 
         // 根据主单号 找到旧订单分单
         List<TdOrder> tdOrders = transferDAO.findOrderAllFieldByOrderNumber(orderBaseInfo.getOrderNumber());
         if (tdOrders == null || tdOrders.size() == 0){
-            throw new Exception("订单商品转行异常，找不到旧订单 订单号："+ orderBaseInfo.getOrderNumber());
+            //throw new Exception("订单商品转行异常，找不到旧订单 订单号："+ orderBaseInfo.getOrderNumber());
+            throw new DataTransferException("订单商品转行异常，找不到旧订单 订单号：\"+ orderBaseInfo.getOrderNumber()", DataTransferExceptionType.NDT);
         }else {
             // 新订单商品记录
             List<OrderGoodsInfo> orderGoodsInfoList = new ArrayList<>();
@@ -83,7 +88,8 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
                     List<OrderGoodsInfo> orderGoodsInfoList1 = this.transferOne(tdOrderGoods, order, orderBaseInfo, goodsDO);
 
                     if (orderGoodsInfoList1 == null || orderGoodsInfoList1.size() == 0){
-                        throw  new Exception("订单商品转行异常,商品转换异常 商品id: "+ goodsDO.getGid());
+                        //throw  new Exception("订单商品转行异常,商品转换异常 商品id: "+ goodsDO.getGid());
+                        throw new DataTransferException("订单商品转行异常，找不到旧订单 订单号：\"+ orderBaseInfo.getOrderNumber()", DataTransferExceptionType.NDT);
                     }
 
                     for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList1) {
@@ -101,7 +107,9 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
             }
             orderGoodsInfoList.addAll(productGoodsinfo);
 
-            this.saveOrderGoodsInfo(orderGoodsInfoList);
+            //this.saveOrderGoodsInfo(orderGoodsInfoList);
+
+            return orderGoodsInfoList;
         }
     }
 

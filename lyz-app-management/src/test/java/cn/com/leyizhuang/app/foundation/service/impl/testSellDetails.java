@@ -36,7 +36,7 @@ public class testSellDetails {
         //statisticsSellDetailsService.addOrderSellDetails("CD_XN20180319095037659959");
 
         List<OrderBaseInfo> orderBaseInfoList = transferDAO.findNewOrderNumber();
-        OrderBaseInfo baseInfo = appOrderService.getOrderByOrderNumber("CD_XN20171221125359086415");
+        OrderBaseInfo baseInfo = appOrderService.getOrderByOrderNumber("CD_XN20171221124725763838");
         try {
             //orderGoodsTransferService.transferOne(orderBaseInfoList.get(0));
             orderGoodsTransferService.transferOne(baseInfo);
