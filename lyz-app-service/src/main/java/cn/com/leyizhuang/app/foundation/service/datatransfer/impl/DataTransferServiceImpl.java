@@ -117,33 +117,33 @@ public class DataTransferServiceImpl implements DataTransferService {
                     throw new DataTransferException("该订单没有找到门店信息没", DataTransferExceptionType.STNF);
                 }
             }
+        } else if ("送货上门".equals(tdOrder.getDeliverTypeTitle())) {
+            List<TdDeliveryInfoDetails> tdDeliveryInfoDetailsList = this.queryDeliveryInfoDetailByOrderNumber(tdOrder.getMainOrderNumber());
+            TdDeliveryInfoDetails tdDeliveryInfoDetails = tdDeliveryInfoDetailsList.get(0);
 
+            if (null == tdDeliveryInfoDetailsList || tdDeliveryInfoDetailsList.size() == 0) {
+                log.warn("物流信息没找到,订单：{}", tdOrder.getMainOrderNumber());
+                throw new DataTransferException("该订单没有找到物流信息", DataTransferExceptionType.DENF);
+            } else {
+                String clerkNoCode = tdDeliveryInfoDetails.getDriver();
+                AppEmployee employee = employeeService.findDeliveryByClerkNo(clerkNoCode);
+                orderLogisticsInfo.setDeliveryClerkId(tdOrderLogistics.getEmpId());
+                orderLogisticsInfo.setWarehouse(tdDeliveryInfoDetails.getWhNo());
+                if (null != employee) {
+                    orderLogisticsInfo.setDeliveryClerkName(employee.getName());
+                    orderLogisticsInfo.setDeliveryClerkNo(employee.getDeliveryClerkNo());
+                    orderLogisticsInfo.setDeliveryClerkPhone(employee.getMobile());
+                } else {
+                    log.warn("员工信息没找到,员工编码：{}", clerkNoCode);
+                    throw new DataTransferException("该订单没有找到员工信息", DataTransferExceptionType.ENF);
+                }
+            }
         }
+
         if ("成都市".equals(tdOrder.getCity())) {
             orderLogisticsInfo.setDeliveryProvince("四川省");
         } else if ("郑州市".equals(tdOrder.getCity())) {
             orderLogisticsInfo.setDeliveryProvince("河南省");
-        }
-
-        List<TdDeliveryInfoDetails> tdDeliveryInfoDetailsList = this.queryDeliveryInfoDetailByOrderNumber(tdOrder.getMainOrderNumber());
-        TdDeliveryInfoDetails tdDeliveryInfoDetails = tdDeliveryInfoDetailsList.get(0);
-
-        if (null == tdDeliveryInfoDetailsList || tdDeliveryInfoDetailsList.size() == 0) {
-            log.warn("物流信息没找到,订单：{}", tdOrder.getMainOrderNumber());
-            throw new DataTransferException("该订单没有找到物流信息", DataTransferExceptionType.DENF);
-        } else {
-            String clerkNoCode = tdDeliveryInfoDetails.getDriver();
-            AppEmployee employee = employeeService.findDeliveryByClerkNo(clerkNoCode);
-            orderLogisticsInfo.setDeliveryClerkId(tdOrderLogistics.getEmpId());
-            orderLogisticsInfo.setWarehouse(tdDeliveryInfoDetails.getWhNo());
-            if (null != employee) {
-                orderLogisticsInfo.setDeliveryClerkName(employee.getName());
-                orderLogisticsInfo.setDeliveryClerkNo(employee.getDeliveryClerkNo());
-                orderLogisticsInfo.setDeliveryClerkPhone(employee.getMobile());
-            } else {
-                log.warn("员工信息没找到,员工编码：{}", clerkNoCode);
-                throw new DataTransferException("该订单没有找到员工信息", DataTransferExceptionType.ENF);
-            }
         }
 
         orderLogisticsInfo.setDeliveryType(AppDeliveryType.getAppDeliveryTypeByDescription(tdOrder.getDeliverTypeTitle()));
