@@ -177,32 +177,41 @@
         WHERE mobile = #{mobile})
     </select>
 
-    <select id="findAllCusPredeposit" resultType="cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO">
+    <select id="isExistPhoneNumberByCusId" parameterType="java.lang.Long" resultType="boolean">
+        SELECT EXISTS(SELECT 1
+        FROM cus_customer
+        WHERE mobile = #{mobile}
+        AND cus_id != #{cusId})
+    </select>
+
+    <select id="findAllCusPredeposit"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO">
         SELECT
-          c.cus_id, c.name, c.mobile, cp.id, cp.balance, s.store_name
+        c.cus_id, c.name, c.mobile, cp.id, cp.balance, s.store_name
         FROM cus_customer c
         LEFT JOIN cus_pre_deposit cp on cp.cus_id = c.cus_id
         LEFT JOIN st_store s ON s.store_id = c.store_id
         WHERE
         (1 = 1)
         <if test="null != cityId and cityId != -1">
-          AND  c.city_id = #{cityId}
+            AND c.city_id = #{cityId}
         </if>
         <if test="null != storeId and storeId != -1">
-          AND c.store_id = #{storeId}
+            AND c.store_id = #{storeId}
         </if>
         <if test="null != keywords and keywords != ''">
             AND (c.name LIKE concat(concat('%',#{keywords}),'%')
             OR c.mobile LIKE concat(concat('%',#{keywords}),'%'))
         </if>
-         AND c.store_id IN
+        AND c.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
         ORDER BY c.create_time DESC
     </select>
 
-    <select id="queryCusPredepositByCusId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO">
+    <select id="queryCusPredepositByCusId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO">
         SELECT
         c.cus_id, c.name, c.mobile, cp.id, cp.balance, s.store_name,cp.last_update_time
         FROM cus_customer c
@@ -225,13 +234,33 @@
     <update id="updateDepositByUserId">
         UPDATE cus_pre_deposit
         SET balance = balance + #{deposit},
-          last_update_time = #{lastUpdateTime}
+        last_update_time = #{lastUpdateTime}
         WHERE cus_id = #{userId}
         <if test="null != oldLastUpdateTime">
             AND last_update_time = #{oldLastUpdateTime}
         </if>
     </update>
 
+
+    <update id="updateCustomer" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO">
+        UPDATE cus_customer
+        <set>
+            <if test="null != name">
+                 name = #{name},
+            </if>
+            <if test="null != mobile">
+                 mobile = #{mobile},
+            </if>
+            <if test="null != sex">
+                 sex = #{sex},
+            </if>
+            <if test="null != birthday">
+                 birthday = #{birthday},
+            </if>
+        </set>
+        WHERE
+        cus_id = #{cusId}
+    </update>
 
     <select id="findAllCusLebi" resultType="cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerLebiVO">
         SELECT
@@ -242,7 +271,7 @@
         WHERE
         (1 = 1)
         <if test="null != cityId and cityId != -1">
-            AND  c.city_id = #{cityId}
+            AND c.city_id = #{cityId}
         </if>
         <if test="null != storeId and storeId != -1">
             AND c.store_id = #{storeId}
@@ -259,7 +288,8 @@
     </select>
 
 
-    <select id="queryCusLebiByCusId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerLebiVO">
+    <select id="queryCusLebiByCusId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerLebiVO">
         SELECT
         c.cus_id, c.name, c.mobile, b.id, b.quantity, s.store_name
         FROM cus_customer c
@@ -291,16 +321,16 @@
 
     <select id="findCustomerByCityIdAndStoreId" resultMap="customerVoResultMap">
         SELECT
-            cus_id,
-            `name`,
-            mobile,
-            customer_type
+        cus_id,
+        `name`,
+        mobile,
+        customer_type
         FROM
-            cus_customer
+        cus_customer
         WHERE
         1 = 1
         <if test="cityId != null and cityId != -1">
-            AND  city_id = #{cityId}
+            AND city_id = #{cityId}
         </if>
         <if test="storeId != null and storeId != -1">
             AND store_id = #{storeId}
@@ -317,23 +347,25 @@
         cus_customer
         WHERE
         1 = 1
-        AND  (`name` LIKE CONCAT('%' ,#{customerQueryConditions},'%') OR mobile LIKE CONCAT('%' ,#{customerQueryConditions},'%') )
+        AND (`name` LIKE CONCAT('%' ,#{customerQueryConditions},'%') OR mobile LIKE CONCAT('%'
+        ,#{customerQueryConditions},'%') )
         <if test="cityId != null and cityId != -1">
-            AND  city_id = #{cityId}
+            AND city_id = #{cityId}
         </if>
         <if test="storeId != null and storeId != -1">
             AND store_id = #{storeId}
         </if>
     </select>
 
-    <select id="findCustomerByLightAndStatusTrue" resultType="cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO">
+    <select id="findCustomerByLightAndStatusTrue"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO">
         select * from cus_customer
         where light = #{light}
         and status = TRUE ;
     </select>
 
     <!--改变灯号-->
-    <update id="updateLight" >
+    <update id="updateLight">
         UPDATE cus_customer
         set light = #{light}
         where cus_id in
@@ -349,7 +381,8 @@
         AND last_update_time = #{version}
     </update>
 
-    <insert id="saveCusPreDepositLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.customer.MaCustomerPreDeposit">
+    <insert id="saveCusPreDepositLog"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.management.customer.MaCustomerPreDeposit">
         INSERT INTO cus_pre_deposit_log (create_time, change_money, remarks, change_type, change_type_desc, cus_id, operator_id, operator_type, operator_ip, order_number, balance,
         detail_reason, transfer_time, merchant_order_number)
         VALUES (#{createTime}, #{changeMoney}, #{remarks}, #{changeType}, #{changeTypeDesc}, #{cusId},

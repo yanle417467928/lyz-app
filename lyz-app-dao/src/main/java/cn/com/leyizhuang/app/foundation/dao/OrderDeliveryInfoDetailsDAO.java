@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -26,6 +27,8 @@ public interface OrderDeliveryInfoDetailsDAO {
 
     //获取配送员待配送列表
     List<WaitDeliveryResponse> getOrderBeasInfoByOperatorNo(@Param("operatorNo") String operatorNo);
+
+    List<OrderArrearsAuditDO> getArrearsAuditByOperatorNo(@Param("operatorNo") String operatorNo);
 
     /**
      * 配送员获取已完成单列表

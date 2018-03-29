@@ -30,7 +30,8 @@
             ispassed,
             is_payed
         FROM td_own_money_record_copy
-        WHERE order_number = #{orderNumber}
+        WHERE order_number = #{orderNumber} AND is_enable IS TRUE
+        GROUP BY order_number
     </select>
 
     <select id="findOrderByOrderNumber" parameterType="java.lang.String"

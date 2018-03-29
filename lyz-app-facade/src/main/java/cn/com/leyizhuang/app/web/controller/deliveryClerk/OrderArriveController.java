@@ -153,7 +153,7 @@ public class OrderArriveController {
             Double collectionAmountOrder = null == orderTempInfo.getCollectionAmount() ? 0D : orderTempInfo.getCollectionAmount();
             Double ownManey = null == orderTempInfo.getOwnMoney() ? 0D : orderTempInfo.getOwnMoney();
             //判断是否货到付款--如果是订单欠款必须付清
-            if (OnlinePayType.CASH_DELIVERY.equals(billingDetails) && amount < ownManey) {
+            if (OnlinePayType.CASH_DELIVERY.equals(billingDetails.getOnlinePayType()) && amount < ownManey) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "货到付款的订单必须付清欠款！", null);
                 logger.info("confirmOrderArrive OUT,配送员确认订单送达失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -236,38 +236,44 @@ public class OrderArriveController {
                     orderArrearsAuditDO.setCustomerAndSeller(orderTempInfo.getCustomerName(), orderTempInfo.getCustomerPhone(), orderTempInfo.getSellerId(),
                             orderTempInfo.getSellerName(), orderTempInfo.getSellerPhone());
                     orderArrearsAuditDO.setDistributionInfo(orderTempInfo.getShippingAddress(), LocalDateTime.now());
-                    orderArrearsAuditDO.setArrearsAuditInfo(paymentMethod, amount, remarks, ArrearsAuditStatus.AUDITING);
+                    if (amount.equals(collectionAmountOrder)){
+                        orderArrearsAuditDO.setArrearsAuditInfo(paymentMethod, amount, remarks, ArrearsAuditStatus.AUDIT_PASSED);
+                    } else {
+                        orderArrearsAuditDO.setArrearsAuditInfo(paymentMethod, amount, remarks, ArrearsAuditStatus.AUDITING);
+                    }
                     orderArrearsAuditDO.setPicture(picture.toString());
                     this.arrearsAuditServiceImpl.save(orderArrearsAuditDO);
 
-                    //短信提醒
-                    String info = "您有新的欠款审核单，请及时处理。谢谢！";
-                    String content = "";
-                    try {
-                        content = URLEncoder.encode(info, "GB2312");
-                        System.err.println(content);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        logger.info("confirmOrderArrive EXCEPTION，提醒短信发送失败");
-                        logger.warn("{}", e);
-                    }
-                    SmsAccount account = smsAccountService.findOne();
-                    String returnCode;
-                    try {
-                        returnCode = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(), orderTempInfo.getSellerPhone(), content);
-                    } catch (IOException e) {
-                        logger.info("confirmOrderArrive EXCEPTION，提醒短信发送失败");
-                        logger.warn("{}", e);
-                    } catch (Exception e) {
-                        logger.info("confirmOrderArrive EXCEPTION，提醒短信发送失败");
-                        logger.warn("{}", e);
-                    }
-                    //发送推送新消息给导购
-                    NoticePushUtils.pushApplyArrearageInfo(orderArrearsAuditDO.getSellerId());
+                    if (!(amount.equals(collectionAmountOrder))){
+                        //短信提醒
+                        String info = "您有新的欠款审核单，请及时处理。谢谢！";
+                        String content = "";
+                        try {
+                            content = URLEncoder.encode(info, "GB2312");
+                            System.err.println(content);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            logger.info("confirmOrderArrive EXCEPTION，提醒短信发送失败");
+                            logger.warn("{}", e);
+                        }
+                        SmsAccount account = smsAccountService.findOne();
+                        String returnCode;
+                        try {
+                            returnCode = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(), orderTempInfo.getSellerPhone(), content);
+                        } catch (IOException e) {
+                            logger.info("confirmOrderArrive EXCEPTION，提醒短信发送失败");
+                            logger.warn("{}", e);
+                        } catch (Exception e) {
+                            logger.info("confirmOrderArrive EXCEPTION，提醒短信发送失败");
+                            logger.warn("{}", e);
+                        }
+                        //发送推送新消息给导购
+                        NoticePushUtils.pushApplyArrearageInfo(orderArrearsAuditDO.getSellerId());
 
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "欠款审核提交成功,正在审核中!", null);
-                    logger.info("confirmOrderArrive OUT,配送员确认订单送达申请欠款审核，出参 resultDTO:{}", resultDTO);
-                    return resultDTO;
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "欠款审核提交成功,正在审核中!", null);
+                        logger.info("confirmOrderArrive OUT,配送员确认订单送达申请欠款审核，出参 resultDTO:{}", resultDTO);
+                        return resultDTO;
+                    }
                 } else { //欠款金额 <= 收款金额
                     if (ownManey > 0) {
                         //生成收款单号

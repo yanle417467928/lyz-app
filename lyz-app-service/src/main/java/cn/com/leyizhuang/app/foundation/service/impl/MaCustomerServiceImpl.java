@@ -106,9 +106,22 @@ public class MaCustomerServiceImpl implements MaCustomerService {
         }
     }
 
+
+    @Override
+    public void updateCustomer(CustomerDetailVO customer){
+        if(null!=customer){
+            CustomerDO customerDO = CustomerDO.transform(customer);
+            maCustomerDAO.updateCustomer(customerDO);
+        }
+    }
     @Override
     public Boolean isExistPhoneNumber(Long moblie) {
         return maCustomerDAO.isExistPhoneNumber(moblie);
+    }
+
+    @Override
+    public Boolean isExistPhoneNumberByCusId(Long mobile,Long cusId) {
+        return maCustomerDAO.isExistPhoneNumberByCusId(mobile,cusId);
     }
 
     @Override

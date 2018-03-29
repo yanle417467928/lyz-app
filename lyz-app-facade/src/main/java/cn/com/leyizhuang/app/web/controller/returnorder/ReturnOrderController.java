@@ -1034,8 +1034,23 @@ public class ReturnOrderController {
             return resultDTO;
         }
         try {
-            //分别判断是普通退货单，还是买券退货，还是
+            //分别判断是普通退货单，还是买券退货，还是自提单
             ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(returnNumber);
+            //分别判断是普通退货单，还是买券退货，还是自提单
+            OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(returnOrderBaseInfo.getOrderNo());
+            if (AppDeliveryType.SELF_TAKE.equals(orderBaseInfo.getDeliveryType()) ||
+                    AppOrderType.COUPON.equals(orderBaseInfo.getOrderType())) {
+                // 修改回原订单的可退和已退！
+                List<ReturnOrderGoodsInfo> returnOrderGoodsInfoList = returnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnNumber);
+                returnOrderGoodsInfoList.forEach(returnOrderGoodsInfo -> appOrderService.updateReturnableQuantityAndReturnQuantityById(
+                        returnOrderGoodsInfo.getReturnQty(), returnOrderGoodsInfo.getOrderGoodsId()));
+
+                //修改退货单状态
+                returnOrderService.updateReturnOrderStatus(returnNumber, AppReturnOrderStatus.CANCELED);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+                logger.info("cancelReturnOrder OUT,用户取消退货单成功,等待wms返回取消结果，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
             //判断物流是否已取货，买券无判断
             List<ReturnOrderDeliveryDetail> returnOrderDeliveryDetail = returnOrderDeliveryDetailsService.queryListByReturnOrderNumber(returnNumber);
             if (AssertUtil.isEmpty(returnOrderDeliveryDetail)) {
