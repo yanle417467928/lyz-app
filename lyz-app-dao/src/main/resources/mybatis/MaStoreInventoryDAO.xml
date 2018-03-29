@@ -63,4 +63,12 @@
         (#{cityId},#{cityName},#{storeId},#{storeName},#{storeCode},#{gid},#{sku},#{skuName},#{changeTime},#{changeQty},#{afterChangeQty},#{referenceNumber},#{changeType},#{changeTypeDesc})
     </insert>
 
+    <insert id="saveStoreInventory"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventory">
+        INSERT st_inventory
+        (create_time,last_update_time,city_id,city_code,city_name,store_id,store_code,store_name,gid,sku,sku_name,available_ity,real_ity)
+        VALUES
+        (#{createTime},#{lastUpdateTime},#{cityId},#{cityCode},#{cityName},#{storeId},#{storeCode},#{storeName},#{gid},#{sku},#{skuName},#{availableIty},#{realIty})
+    </insert>
+
 </mapper>
