@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.constant.remote.webservice.ebs.ChargeObjType;
 import cn.com.leyizhuang.app.core.remote.ebs.EbsSenderService;
+import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppSeparateOrderDAO;
@@ -590,43 +591,52 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                 //创建一个map用于存储拆单后退单头和退单商品信息
                 Map<ReturnOrderBaseInf, List<ReturnOrderGoodsInf>> returnOrderParamMap = new HashMap<>(5);
 
-                //*********************************** 拆退单头及退单商品信息 begin *************************************
                 String fxStoreCode = null;
-                for (String flag : companyFlag) {
-                    //查找退单该flag对应的原分单信息
-                    OrderBaseInf orderBaseInf = separateOrderDAO.getOrderBaseInfByMainOrderNumberAndCompanFlag(orderBaseInfo.getOrderNumber(), flag);
-                    //查找退单该flag对应的原分单商品信息
-                    List<OrderGoodsInf> orderGoodsInfList;
-                    if (null != orderBaseInf) {
-                        orderGoodsInfList = separateOrderDAO.getOrderGoodsInfByOrderNumber(orderBaseInf.getOrderNumber());
+
+                if (null != orderBaseInfo.getCreateTime() && orderBaseInfo.getCreateTime().before(DateUtil.parseDateTime(AppConstant.PUB_DATE))) {
+                    //*********************************** 拆退单头及退单商品信息 begin *************************************
+                    for (String flag : companyFlag) {
+                        //查找退单该flag对应的原分单商品信息
                         List<ReturnOrderGoodsInfo> separateReturnOrderGoodsInfoList = returnOrderGoodsInfoList.parallelStream().
                                 filter(p -> p.getCompanyFlag().equals(flag)).collect(Collectors.toList());
                         separateReturnOrderGoodsInfoMap.put(flag, separateReturnOrderGoodsInfoList);
-
                         //创建分退单头信息
                         ReturnOrderBaseInf returnOrderBaseInf = new ReturnOrderBaseInf();
                         returnOrderBaseInf.setCreateTime(new Date());
                         returnOrderBaseInf.setDeliverTypeTitle(orderBaseInfo.getDeliveryType());
                         returnOrderBaseInf.setDiySiteCode(orderBaseInfo.getStoreCode());
                         returnOrderBaseInf.setMainOrderNumber(orderBaseInfo.getOrderNumber());
-                        returnOrderBaseInf.setOrderNumber(orderBaseInf.getOrderNumber());
+                        //returnOrderBaseInf.setOrderNumber(orderBaseInf.getOrderNumber());
                         returnOrderBaseInf.setMainReturnNumber(returnOrderBaseInfo.getReturnNo());
                         returnOrderBaseInf.setReturnNumber(OrderUtils.generateSeparateReturnOrderNumber(flag, returnOrderBaseInfo.getReturnNo()));
-                        returnOrderBaseInf.setOrderTypeId(orderBaseInf.getOrderTypeId());
+                        returnOrderBaseInf.setOrderTypeId(4L);
                         //returnOrderBaseInf.setRefundAmount(returnOrderBaseInfo.getReturnPrice());
                         returnOrderBaseInf.setReturnDate(returnOrderBaseInfo.getReturnTime());
                         returnOrderBaseInf.setReturnType(returnOrderBaseInfo.getReturnType());
                         returnOrderBaseInf.setRtFullFlag(returnOrderBaseInfo.getReturnType() == ReturnOrderType.NORMAL_RETURN ? AppWhetherFlag.N : AppWhetherFlag.Y);
-                        returnOrderBaseInf.setSellerId(orderBaseInf.getSalesConsultId());
-                        returnOrderBaseInf.setUserId(orderBaseInf.getUserId());
-                        returnOrderBaseInf.setSobId(orderBaseInf.getSobId());
+                        returnOrderBaseInf.setSellerId(orderBaseInfo.getSalesConsultId());
+                        if (orderBaseInfo.getOrderSubjectType() == AppOrderSubjectType.STORE) {
+                            returnOrderBaseInf.setUserId(orderBaseInfo.getCustomerId());
+                        } else {
+                            returnOrderBaseInf.setUserId(orderBaseInfo.getCreatorId());
+                        }
+                        returnOrderBaseInf.setSobId(orderBaseInfo.getSobId());
                         returnOrderBaseInf.setStoreOrgCode(orderBaseInfo.getStoreStructureCode());
                         //分销仓库为分销门店代下单，设置分销门店编码至订单头 attribute3
-                        if (StringUtils.isNotBlank(orderBaseInf.getAttribute3())) {
-                            fxStoreCode = orderBaseInf.getAttribute3();
-                            returnOrderBaseInf.setAttribute3(fxStoreCode);
+                        if (orderBaseInfo.getCreatorIdentityType() == AppIdentityType.CUSTOMER ||
+                                orderBaseInfo.getCreatorIdentityType() == AppIdentityType.SELLER) {
+                            Long customerIdTemp;
+                            if (orderBaseInfo.getCreatorIdentityType() == AppIdentityType.SELLER) {
+                                customerIdTemp = orderBaseInfo.getCustomerId();
+                            } else {
+                                customerIdTemp = orderBaseInfo.getCreatorId();
+                            }
+                            AppCustomerFxStoreRelation customerFxStoreRelation = separateOrderDAO.getCustomerFxStoreRelationByCusId(customerIdTemp);
+                            if (null != customerFxStoreRelation) {
+                                fxStoreCode = customerFxStoreRelation.getFxStoreCode();
+                                returnOrderBaseInf.setAttribute3(fxStoreCode);
+                            }
                         }
-
                         //创建分退单产品信息
                         Double refundAmount = 0D;
                         List<ReturnOrderGoodsInf> returnOrderGoodsInfList = new ArrayList<>(20);
@@ -637,8 +647,6 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                                 returnGoodsInf.setOrderNumber(returnOrderBaseInf.getOrderNumber());
                                 returnGoodsInf.setMainReturnNumber(returnOrderBaseInf.getMainReturnNumber());
                                 returnGoodsInf.setReturnNumber(returnOrderBaseInf.getReturnNumber());
-                                returnGoodsInf.setOrderLineId(orderGoodsInfList.stream().filter(p -> p.getMainOrderLineId().
-                                        equals(returnGoodsInfo.getOrderGoodsId())).collect(Collectors.toList()).get(0).getOrderLineId());
                                 returnGoodsInf.setCreateTime(returnOrderBaseInf.getCreateTime());
                                 returnGoodsInf.setGoodsTitle(returnGoodsInfo.getSkuName());
                                 returnGoodsInf.setHyPrice(returnGoodsInfo.getVipPrice());
@@ -654,15 +662,81 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         refundAmount = returnOrderGoodsInfList.stream().mapToDouble(p -> p.getQuantity() * p.getReturnPrice()).sum();
                         returnOrderBaseInf.setRefundAmount(refundAmount);
                         returnOrderParamMap.put(returnOrderBaseInf, returnOrderGoodsInfList);
-                    } else {
-                        throw new RuntimeException("未找到原分单信息,退单拆单失败!");
+
                     }
+                    //*********************************** 拆退单头及退单商品信息 end ***************************************
+                } else {
+                    //*********************************** 拆退单头及退单商品信息 begin *************************************
+                    for (String flag : companyFlag) {
+                        //查找退单该flag对应的原分单信息
+                        OrderBaseInf orderBaseInf = separateOrderDAO.getOrderBaseInfByMainOrderNumberAndCompanFlag(orderBaseInfo.getOrderNumber(), flag);
+                        //查找退单该flag对应的原分单商品信息
+                        List<OrderGoodsInf> orderGoodsInfList;
+                        if (null != orderBaseInf) {
+                            orderGoodsInfList = separateOrderDAO.getOrderGoodsInfByOrderNumber(orderBaseInf.getOrderNumber());
+                            List<ReturnOrderGoodsInfo> separateReturnOrderGoodsInfoList = returnOrderGoodsInfoList.parallelStream().
+                                    filter(p -> p.getCompanyFlag().equals(flag)).collect(Collectors.toList());
+                            separateReturnOrderGoodsInfoMap.put(flag, separateReturnOrderGoodsInfoList);
+
+                            //创建分退单头信息
+                            ReturnOrderBaseInf returnOrderBaseInf = new ReturnOrderBaseInf();
+                            returnOrderBaseInf.setCreateTime(new Date());
+                            returnOrderBaseInf.setDeliverTypeTitle(orderBaseInfo.getDeliveryType());
+                            returnOrderBaseInf.setDiySiteCode(orderBaseInfo.getStoreCode());
+                            returnOrderBaseInf.setMainOrderNumber(orderBaseInfo.getOrderNumber());
+                            returnOrderBaseInf.setOrderNumber(orderBaseInf.getOrderNumber());
+                            returnOrderBaseInf.setMainReturnNumber(returnOrderBaseInfo.getReturnNo());
+                            returnOrderBaseInf.setReturnNumber(OrderUtils.generateSeparateReturnOrderNumber(flag, returnOrderBaseInfo.getReturnNo()));
+                            returnOrderBaseInf.setOrderTypeId(orderBaseInf.getOrderTypeId());
+                            //returnOrderBaseInf.setRefundAmount(returnOrderBaseInfo.getReturnPrice());
+                            returnOrderBaseInf.setReturnDate(returnOrderBaseInfo.getReturnTime());
+                            returnOrderBaseInf.setReturnType(returnOrderBaseInfo.getReturnType());
+                            returnOrderBaseInf.setRtFullFlag(returnOrderBaseInfo.getReturnType() == ReturnOrderType.NORMAL_RETURN ? AppWhetherFlag.N : AppWhetherFlag.Y);
+                            returnOrderBaseInf.setSellerId(orderBaseInf.getSalesConsultId());
+                            returnOrderBaseInf.setUserId(orderBaseInf.getUserId());
+                            returnOrderBaseInf.setSobId(orderBaseInf.getSobId());
+                            returnOrderBaseInf.setStoreOrgCode(orderBaseInfo.getStoreStructureCode());
+                            //分销仓库为分销门店代下单，设置分销门店编码至订单头 attribute3
+                            if (StringUtils.isNotBlank(orderBaseInf.getAttribute3())) {
+                                fxStoreCode = orderBaseInf.getAttribute3();
+                                returnOrderBaseInf.setAttribute3(fxStoreCode);
+                            }
+
+                            //创建分退单产品信息
+                            Double refundAmount = 0D;
+                            List<ReturnOrderGoodsInf> returnOrderGoodsInfList = new ArrayList<>(20);
+                            if (null != separateReturnOrderGoodsInfoList && separateReturnOrderGoodsInfoList.size() > 0) {
+                                for (ReturnOrderGoodsInfo returnGoodsInfo : separateReturnOrderGoodsInfoList) {
+                                    ReturnOrderGoodsInf returnGoodsInf = new ReturnOrderGoodsInf();
+                                    returnGoodsInf.setMainOrderNumber(returnOrderBaseInf.getMainOrderNumber());
+                                    returnGoodsInf.setOrderNumber(returnOrderBaseInf.getOrderNumber());
+                                    returnGoodsInf.setMainReturnNumber(returnOrderBaseInf.getMainReturnNumber());
+                                    returnGoodsInf.setReturnNumber(returnOrderBaseInf.getReturnNumber());
+                                    returnGoodsInf.setOrderLineId(orderGoodsInfList.stream().filter(p -> p.getMainOrderLineId().
+                                            equals(returnGoodsInfo.getOrderGoodsId())).collect(Collectors.toList()).get(0).getOrderLineId());
+                                    returnGoodsInf.setCreateTime(returnOrderBaseInf.getCreateTime());
+                                    returnGoodsInf.setGoodsTitle(returnGoodsInfo.getSkuName());
+                                    returnGoodsInf.setHyPrice(returnGoodsInfo.getVipPrice());
+                                    returnGoodsInf.setJxPrice(returnGoodsInfo.getWholesalePrice());
+                                    returnGoodsInf.setLsPrice(returnGoodsInfo.getRetailPrice());
+                                    returnGoodsInf.setSettlementPrice(returnGoodsInfo.getSettlementPrice());
+                                    returnGoodsInf.setQuantity(returnGoodsInfo.getReturnQty());
+                                    returnGoodsInf.setReturnPrice(returnGoodsInfo.getReturnPrice());
+                                    returnGoodsInf.setSku(returnGoodsInfo.getSku());
+                                    returnOrderGoodsInfList.add(returnGoodsInf);
+                                }
+                            }
+                            refundAmount = returnOrderGoodsInfList.stream().mapToDouble(p -> p.getQuantity() * p.getReturnPrice()).sum();
+                            returnOrderBaseInf.setRefundAmount(refundAmount);
+                            returnOrderParamMap.put(returnOrderBaseInf, returnOrderGoodsInfList);
+                        } else {
+                            throw new RuntimeException("未找到原分单信息,退单拆单失败!");
+                        }
+                    }
+                    //*********************************** 拆退单头及退单商品信息 end ***************************************
+
+
                 }
-                //*********************************** 拆退单头及退单商品信息 end ***************************************
-
-
-                //************************************* 生成退单券信息 begin *****************************************
-
                 List<ReturnOrderCouponInf> returnOrderCouponInfList = new ArrayList<>(20);
                 //生成退单优惠券列表
                 List<ReturnOrderCashCoupon> returnOrderCashCouponList = returnOrderService.
@@ -749,12 +823,11 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                 //******************************* 生成退订单退经销差价信息 end ***************************************
 
                 //保存退单拆单信息
-                supportService.saveSeparateReturnOrderRelevantInf(returnOrderParamMap, returnOrderCouponInfList, returnOrderRefundInfList, jxPriceDifferenceRefundInfList);
-
+                supportService.saveSeparateReturnOrderRelevantInf(returnOrderParamMap, returnOrderCouponInfList, returnOrderRefundInfList,
+                        jxPriceDifferenceRefundInfList);
             } else {
                 throw new RuntimeException("未找到原主单信息,退单拆单失败!");
             }
-
         }
     }
 
@@ -987,7 +1060,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                 AppStore store = null;
                 if (null != stPreDepositWithdraw) {
                     store = storeService.findStoreByUserIdAndIdentityType(stPreDepositWithdraw.getApplyStId(), AppIdentityType.SELLER.getValue());
-                } else{
+                } else {
                     List<RechargeOrder> rechargeOrderList = rechargeService.findRechargeOrderByWithdrawNo(withdrawRefundInfo.getWithdrawNo());
                     store = storeService.findById(rechargeOrderList.get(0).getStoreId());
                 }
