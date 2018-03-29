@@ -67,6 +67,7 @@
             <if test="null != showStatus and showStatus == 5">
                 AND obi.`status` = 'FINISHED'
                 AND obi.is_evaluated is FALSE
+                AND <![CDATA[obi.create_time >= DATE_ADD(NOW(),INTERVAL -6 MONTH )]]>
             </if>
             <if test="null != showStatus and showStatus == 6">
                 AND obi.`status` = 'PENDING_SHIPMENT'
