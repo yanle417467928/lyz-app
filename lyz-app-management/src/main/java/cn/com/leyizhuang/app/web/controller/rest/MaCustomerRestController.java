@@ -278,6 +278,36 @@ public class MaCustomerRestController extends BaseRestController {
         }
     }
 
+
+    /**
+     * 编辑顾客信息
+     *
+     * @param customer
+     * @param result
+     * @return
+     */
+    @PutMapping
+    public ResultDTO<Object> restEditCustomerVO(@Valid CustomerDetailVO customer, BindingResult result) {
+        logger.info("restCustomerVOPost 编辑顾客信息 ,入参 customer:{}", customer);
+        try {
+            if (!result.hasErrors()) {
+                this.maCustomerService.updateCustomer(customer);
+                logger.info("restEditCustomerVO ,编辑顾客信息成功");
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            } else {
+                List<ObjectError> allErrors = result.getAllErrors();
+                logger.warn("页面提交的数据有错误：errors = {}", errorMsgToHtml(allErrors));
+                return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,
+                        errorMsgToHtml(allErrors), null);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("restCustomerVOPost EXCEPTION,发生未知错误，编辑顾客信息失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
     /**
      * 新增顾客检验电话号码是否存在
      *
@@ -298,6 +328,36 @@ public class MaCustomerRestController extends BaseRestController {
         } catch (Exception e) {
             e.printStackTrace();
             logger.warn("isExistPhoneNumber EXCEPTION,发生未知错误，新增顾客检验电话号码是否存在判断失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
+
+    /**
+     * 编辑顾客检验电话号码是否存在
+     *
+     * @param mobile
+     * @return
+     */
+    @PostMapping(value = "/isExistPhoneNumberByCusId")
+    public ValidatorResultDTO isExistPhoneNumberByCusId(@RequestParam(value = "mobile") Long mobile,@RequestParam(value = "cusId") Long cusId) {
+        logger.info("isExistPhoneNumberByCusId 编辑顾客检验电话号码是否存在 ,入参 mobile:{} cusId:{}", mobile,cusId);
+        try {
+            if (null == mobile) {
+                logger.warn("页面提交的数据有错误,号码为空");
+                return new ValidatorResultDTO(false);
+            }
+            if (null == cusId) {
+                logger.warn("页面提交的数据有错误,顾客id为空");
+                return new ValidatorResultDTO(false);
+            }
+            Boolean result = this.maCustomerService.isExistPhoneNumberByCusId(mobile,cusId);
+            logger.info("isExistPhoneNumberByCusId 编辑顾客检验电话号码是否存判断在成功");
+            return new ValidatorResultDTO(!result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("isExistPhoneNumberByCusId EXCEPTION,发生未知错误，编辑顾客检验电话号码是否存在判断失败");
             logger.warn("{}", e);
             return null;
         }
@@ -363,4 +423,7 @@ public class MaCustomerRestController extends BaseRestController {
             return null;
         }
     }
+
+
+
 }

@@ -31,7 +31,11 @@ public interface MaCustomerDAO {
 
     void save(CustomerDO customer);
 
+    void updateCustomer(CustomerDO customer);
+
     Boolean isExistPhoneNumber(Long moblie);
+
+    Boolean isExistPhoneNumberByCusId(@Param(value = "mobile") Long mobile,@Param(value = "cusId") Long cusId);
 
     List<CustomerPreDepositVO> findAllCusPredeposit(@Param("cityId") Long cityId, @Param("storeId")Long storeId, @Param("keywords")String keywords, @Param("list") List<Long> storeIds);
 

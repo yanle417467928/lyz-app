@@ -37,6 +37,9 @@
                     <button id="btn_add" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
                     </button>
+                    <button id="btn_edit" type="button" class="btn btn-default">
+                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
+                    </button>
 
                     <select name="city" id="cityCode" class="form-control select" style="width:auto;"
                             onchange="findCusByCity(this.value)">
@@ -283,7 +286,9 @@
         $('#btn_add').on('click', function () {
             $grid.add('/views/admin/customers/add?parentMenuId=${(parentMenuId!'0')}');
         });
-
+        $('#btn_edit').on('click', function() {
+            modify($('#dataGrid'), '/views/admin/customers/edit/{id}?parentMenuId=${parentMenuId!'0'}')
+        });
     }
 
 
@@ -629,6 +634,30 @@
         $(select).empty();
         var selectOption = "<option value=-1>" + optionName + "</option>";
         $(select).append(selectOption);
+    }
+
+    function modify(container, url) {
+        var selected = this.getSelectedIds(container);
+        var length = selected.length;
+        if (length === 0) {
+            $notify.warning('请在点击按钮前选中一条数据');
+        } else if (length > 1) {
+            $notify.warning('您每次只能选择一条数据进行修改');
+        } else {
+            var id = selected[0];
+            url = url.replace('{id}', id);
+            window.location.href = url;
+        }
+    }
+
+    function getSelectedIds(container){
+        var ids = [];
+        var selected = container.bootstrapTable('getSelections');
+        for (var i = 0; i < selected.length; i++ ) {
+            var data = selected[i];
+            ids.push(data.cusId);
+        }
+        return ids;
     }
 </script>
 </body>

@@ -106,6 +106,7 @@ public class DataTransferServiceImpl implements DataTransferService {
         OrderLogisticsInfo orderLogisticsInfo = new OrderLogisticsInfo();
 
         if ("门店自提".equals(tdOrder.getDeliverTypeTitle())) {
+            orderLogisticsInfo.setDetailedAddress(null);
             List<AppStore> filterStoreList = storeList.stream().filter(p -> p.getStoreCode().equals(tdOrder.getDiySiteCode())).
                     collect(Collectors.toList());
             AppStore store = filterStoreList.get(0);
@@ -120,7 +121,7 @@ public class DataTransferServiceImpl implements DataTransferService {
         } else if ("送货上门".equals(tdOrder.getDeliverTypeTitle())) {
             List<TdDeliveryInfoDetails> tdDeliveryInfoDetailsList = this.queryDeliveryInfoDetailByOrderNumber(tdOrder.getMainOrderNumber());
             TdDeliveryInfoDetails tdDeliveryInfoDetails = tdDeliveryInfoDetailsList.get(0);
-
+            orderLogisticsInfo.setDetailedAddress(tdOrderLogistics.getDetailedAddress());
             if (null == tdDeliveryInfoDetailsList || tdDeliveryInfoDetailsList.size() == 0) {
                 log.warn("物流信息没找到,订单：{}", tdOrder.getMainOrderNumber());
                 throw new DataTransferException("该订单没有找到物流信息", DataTransferExceptionType.DENF);
@@ -155,7 +156,6 @@ public class DataTransferServiceImpl implements DataTransferService {
         orderLogisticsInfo.setReceiverPhone(tdOrderLogistics.getShippingPhone());
         orderLogisticsInfo.setShippingAddress(tdOrderLogistics.getShippingAddress());
         orderLogisticsInfo.setDeliveryTime(tdOrderLogistics.getDeliveryDate());
-        orderLogisticsInfo.setDetailedAddress(tdOrderLogistics.getDetailedAddress());
         orderLogisticsInfo.setIsOwnerReceiving(false);
         orderLogisticsInfo.setResidenceName(null);
         return orderLogisticsInfo;
