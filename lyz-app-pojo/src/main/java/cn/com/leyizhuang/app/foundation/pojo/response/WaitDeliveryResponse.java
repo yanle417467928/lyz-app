@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
+import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import lombok.*;
 
 /**
@@ -48,4 +49,5 @@ public class WaitDeliveryResponse {
      * 代收金额
      */
     private Double collectionAmount;
+
 }

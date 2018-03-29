@@ -25,7 +25,7 @@ public class AppConstant {
     public static final int ORDER_EFFECTIVE_MINUTE = 60;
     /**
      * RMB对乐币比率
-     *  2018-03-15 因为业务需求暂时不开放乐币,设置比率为负,可关闭页面显示.
+     * 2018-03-15 因为业务需求暂时不开放乐币,设置比率为负,可关闭页面显示.
      */
     public static final Double RMB_TO_LEBI_RATIO = -10.00;
 
@@ -81,5 +81,10 @@ public class AppConstant {
      * APP logo地址
      */
     public static final String APP_LOGO = "http://leyizhuang.oss-cn-shenzhen.aliyuncs.com/lyz-app/logo/Icon-256.png";
+
+    /**
+     * 二代App上线时间
+     */
+    public static final String PUB_DATE = "2018-03-28 00:00:00";
 
 }

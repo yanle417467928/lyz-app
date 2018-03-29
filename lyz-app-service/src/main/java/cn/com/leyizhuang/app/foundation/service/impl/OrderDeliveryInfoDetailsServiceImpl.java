@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.dao.OrderDeliveryInfoDetailsDAO;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.service.OrderDeliveryInfoDetailsService;
+import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,18 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
 
     @Override
     public List<WaitDeliveryResponse> getOrderBeasInfoByOperatorNo(String operatorNo) {
+//        PageHelper.startPage(page, size);
         List<WaitDeliveryResponse> waitDeliveryResponseList = orderDeliveryInfoDetailsDAO.getOrderBeasInfoByOperatorNo(operatorNo);
+        List<String> orderNumberList = orderDeliveryInfoDetailsDAO.getArrearsAuditByOperatorNo(operatorNo);
+        if (null != waitDeliveryResponseList && waitDeliveryResponseList.size() > 0) {
+            for (WaitDeliveryResponse waitDeliveryResponse : waitDeliveryResponseList) {
+                    for (String orderNumber:orderNumberList){
+                        if (waitDeliveryResponse.getOrderNumber().equals(orderNumber)){
+                            waitDeliveryResponseList.remove(waitDeliveryResponse);
+                        }
+                    }
+            }
+        }
         return waitDeliveryResponseList;
     }
 
