@@ -153,7 +153,7 @@ public class OrderArriveController {
             Double collectionAmountOrder = null == orderTempInfo.getCollectionAmount() ? 0D : orderTempInfo.getCollectionAmount();
             Double ownManey = null == orderTempInfo.getOwnMoney() ? 0D : orderTempInfo.getOwnMoney();
             //判断是否货到付款--如果是订单欠款必须付清
-            if (OnlinePayType.CASH_DELIVERY.equals(billingDetails) && amount < ownManey) {
+            if (OnlinePayType.CASH_DELIVERY.equals(billingDetails.getOnlinePayType()) && amount < ownManey) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "货到付款的订单必须付清欠款！", null);
                 logger.info("confirmOrderArrive OUT,配送员确认订单送达失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
