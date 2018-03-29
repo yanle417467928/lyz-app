@@ -264,7 +264,7 @@ public class DataTransferServiceImpl implements DataTransferService {
             if (null != agencyRefund.getAgencyRefund() && agencyRefund.getAgencyRefund() > 0D) {
                 auditDO.setAgencyMoney(agencyRefund.getAgencyRefund());
             } else {
-                auditDO.setAgencyMoney(ownMoneyRecord.getPayed());
+                return null;
             }
             auditDO.setOrderMoney(ownMoneyRecord.getOwned());
             auditDO.setRealMoney(ownMoneyRecord.getPayed());
