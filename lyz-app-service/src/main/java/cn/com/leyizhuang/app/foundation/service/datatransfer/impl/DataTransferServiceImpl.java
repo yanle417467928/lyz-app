@@ -751,7 +751,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                     orderBaseInfo.setCreatorName(storeEmployee.getName());
                     orderBaseInfo.setCreatorPhone(storeEmployee.getMobile());
                     orderBaseInfo.setSalesConsultId(orderBaseInfo.getCreatorId());
-                    orderBaseInfo.setSalesConsultName(orderBaseInfo.getSalesConsultName());
+                    orderBaseInfo.setSalesConsultName(orderBaseInfo.getCreatorName());
                     orderBaseInfo.setSalesConsultPhone(orderBaseInfo.getCreatorPhone());
                     //AppCustomer customer = dataTransferService.findCustomerById(tdOrder.getUserId());
                     // AppCustomer customer = dataTransferService.findCustomerByCustomerMobile(tdOrder.getRealUserUsername());
