@@ -107,8 +107,8 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
                         if (null != productCoupon && null != orderCouponInfo && StringUtils.isNotBlank(orderCouponInfo.getOrderNumber())) {
                             this.transferDAO.addCustomerProductCoupon(productCoupon);
                             orderCouponInfo.setOid(orderBaseInfo.getId());
-                            cashCouponInfo.setCouponId(productCoupon.getId());
-                            orderService.saveOrderCouponInfo(cashCouponInfo);
+                            orderCouponInfo.setCouponId(productCoupon.getId());
+                            orderService.saveOrderCouponInfo(orderCouponInfo);
                         }
                     }
                 }

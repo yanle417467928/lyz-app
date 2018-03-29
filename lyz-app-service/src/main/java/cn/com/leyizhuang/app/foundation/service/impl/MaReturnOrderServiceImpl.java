@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.core.remote.ebs.EbsSenderService;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.MaReturnOrderDAO;
+import cn.com.leyizhuang.app.foundation.dao.MaStoreDAO;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.management.coupon.MaCashCouponInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.coupon.MaProductCouponInfo;
@@ -22,6 +23,7 @@ import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.foundation.vo.management.city.CityDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO;
@@ -74,6 +76,9 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
     private ReturnOrderService returnOrderService;
     @Resource
     private AppOrderService appOrderService;
+    @Resource
+    private MaCityService maCityService;
+
 
     @Override
     public PageInfo<MaReturnOrderInfo> findMaReturnOrderList(Integer page, Integer size, List<Long> storeIds) {
@@ -92,7 +97,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
         if ("-1".equals(status)) {
             status = null;
         }
-        List<MaReturnOrderInfo> maReturnOrderList = maReturnOrderDAO.findMaReturnOrderListByScreen(storeId, status,storeIds);
+        List<MaReturnOrderInfo> maReturnOrderList = maReturnOrderDAO.findMaReturnOrderListByScreen(storeId, status, storeIds);
         return new PageInfo<>(maReturnOrderList);
     }
 
@@ -100,7 +105,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
     @Override
     public PageInfo<MaReturnOrderInfo> findMaReturnOrderPageGirdByInfo(Integer page, Integer size, String info, List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<MaReturnOrderInfo> maReturnOrderInfoList = maReturnOrderDAO.findMaReturnOrderPageGirdByInfo(info,storeIds);
+        List<MaReturnOrderInfo> maReturnOrderInfoList = maReturnOrderDAO.findMaReturnOrderPageGirdByInfo(info, storeIds);
         return new PageInfo<>(maReturnOrderInfoList);
     }
 
@@ -211,46 +216,92 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
         List<ReturnOrderGoodsInfo> MaOrderGoodsInfoList = this.findReturnOrderGoodsList(returnNumber);
         //门店库存,可用量及生成日志信息
         for (ReturnOrderGoodsInfo returnOrderGoodsInfo : MaOrderGoodsInfoList) {
+
+            //查看是否有该门店
+            StoreDetailVO storeDetailVO = maStoreService.queryStoreVOById(maReturnOrderDetailInfo.getStoreId());
+            if (null == storeDetailVO) {
+                throw new RuntimeException("未找到该门店,门店id:" + maReturnOrderDetailInfo.getStoreId());
+            }
+            MaStoreInventoryChange storeInventoryChange = new MaStoreInventoryChange();
             //查看门店下 该商品的库存
             MaStoreInventory storeInventory = maStoreInventoryService.findStoreInventoryByStoreIdAndGoodsId(maReturnOrderDetailInfo.getStoreId(), returnOrderGoodsInfo.getGid());
             if (null == storeInventory) {
-                throw new RuntimeException("未找到该门店或该门店下没有该商品库存,门店id:" + maReturnOrderDetailInfo.getStoreId() + "商品id:" + returnOrderGoodsInfo.getGid());
+                //新增门店库存数量及可用量
+                MaStoreInventory storeInventorySave = new MaStoreInventory();
+
+                Integer goodsQtyAfterChange = returnOrderGoodsInfo.getReturnQty();
+                Integer goodsAvailableItyAfterChange = returnOrderGoodsInfo.getReturnQty();
+                storeInventorySave.setAvailableIty(goodsAvailableItyAfterChange);
+                storeInventorySave.setRealIty(goodsQtyAfterChange);
+                storeInventorySave.setGid(returnOrderGoodsInfo.getGid());
+                storeInventorySave.setCreateTime(new Date());
+                storeInventorySave.setStoreCode(storeDetailVO.getStoreCode());
+                storeInventorySave.setStoreId(storeDetailVO.getStoreId());
+                storeInventorySave.setStoreName(storeDetailVO.getStoreName());
+                storeInventorySave.setSku(returnOrderGoodsInfo.getSku());
+                storeInventorySave.setStoreName(returnOrderGoodsInfo.getSkuName());
+
+                if (null != storeDetailVO.getCityCode()) {
+                    Long cityId = storeDetailVO.getCityCode().getCityId();
+                    CityDetailVO cityDetailVO = maCityService.queryCityVOById(cityId);
+                    storeInventorySave.setCityId(cityDetailVO.getCityId());
+                    storeInventorySave.setCityName(cityDetailVO.getName());
+                    storeInventorySave.setCityCode(cityDetailVO.getCode());
+                }
+                maStoreInventoryService.saveStoreInventory(storeInventorySave);
+                //增加门店库变更日志存可用量
+                storeInventoryChange.setCityId(storeInventory.getCityId());
+                storeInventoryChange.setCityName(storeInventory.getCityName());
+                storeInventoryChange.setStoreId(storeInventory.getStoreId());
+                storeInventoryChange.setStoreCode(storeInventory.getStoreCode());
+                storeInventoryChange.setReferenceNumber(returnNumber);
+                storeInventoryChange.setGid(returnOrderGoodsInfo.getGid());
+                storeInventoryChange.setSku(returnOrderGoodsInfo.getSku());
+                storeInventoryChange.setSkuName(returnOrderGoodsInfo.getSkuName());
+                storeInventoryChange.setChangeTime(date);
+                storeInventoryChange.setAfterChangeQty(goodsQtyAfterChange);
+                storeInventoryChange.setChangeQty(returnOrderGoodsInfo.getReturnQty());
+                storeInventoryChange.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS);
+                storeInventoryChange.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS.getDescription());
+                maStoreInventoryService.addInventoryChangeLog(storeInventoryChange);
+                // throw new RuntimeException("未找到该门店或该门店下没有该商品库存,门店id:" + maReturnOrderDetailInfo.getStoreId() + "商品id:" + returnOrderGoodsInfo.getGid());
+            } else {
+                for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                    //更新门店库存数量及可用量
+                    Integer goodsQtyAfterChange = storeInventory.getRealIty() + returnOrderGoodsInfo.getReturnQty();
+                    Integer goodsAvailableItyAfterChange = storeInventory.getAvailableIty() + returnOrderGoodsInfo.getReturnQty();
+                    Integer affectLine = maStoreInventoryService.updateStoreInventoryAndAvailableIty(maReturnOrderDetailInfo.getStoreId(), returnOrderGoodsInfo.getGid(), goodsQtyAfterChange, goodsAvailableItyAfterChange, storeInventory.getLastUpdateTime());
+                    //增加门店库变更日志存可用量
+                    if (affectLine > 0) {
+                        storeInventoryChange.setCityId(storeInventory.getCityId());
+                        storeInventoryChange.setCityName(storeInventory.getCityName());
+                        storeInventoryChange.setStoreId(storeInventory.getStoreId());
+                        storeInventoryChange.setStoreCode(storeInventory.getStoreCode());
+                        storeInventoryChange.setReferenceNumber(returnNumber);
+                        storeInventoryChange.setGid(returnOrderGoodsInfo.getGid());
+                        storeInventoryChange.setSku(returnOrderGoodsInfo.getSku());
+                        storeInventoryChange.setSkuName(returnOrderGoodsInfo.getSkuName());
+                        storeInventoryChange.setChangeTime(date);
+                        storeInventoryChange.setAfterChangeQty(goodsQtyAfterChange);
+                        storeInventoryChange.setChangeQty(returnOrderGoodsInfo.getReturnQty());
+                        storeInventoryChange.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS);
+                        storeInventoryChange.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS.getDescription());
+                        maStoreInventoryService.addInventoryChangeLog(storeInventoryChange);
+                        break;
+                    } else {
+                        if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                            throw new SystemBusyException("系统繁忙，请稍后再试!");
+                        }
+                    }
+                }
             }
             //得到订单头商品信息
-            OrderGoodsInfo orderGoodsInfo = appOrderService.getOrderGoodsInfoById(returnOrderGoodsInfo.getOrderGoodsId());
+            //OrderGoodsInfo orderGoodsInfo = appOrderService.getOrderGoodsInfoById(returnOrderGoodsInfo.getOrderGoodsId());
             //更改订单头商品已退数量和可退数量
             //Integer returnQuantity = orderGoodsInfo.getReturnQuantity() + returnOrderGoodsInfo.getReturnQty();
             //Integer returnableQuantity = orderGoodsInfo.getReturnableQuantity() - returnOrderGoodsInfo.getReturnQty();
             //returnOrderService.updateReturnableQuantityAndReturnQuantityById(returnQuantity, returnableQuantity, returnOrderGoodsInfo.getOrderGoodsId());
-            for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
-                //更新门店库存数量及可用量
-                Integer goodsQtyAfterChange = storeInventory.getRealIty() + returnOrderGoodsInfo.getReturnQty();
-                Integer goodsAvailableItyAfterChange = storeInventory.getAvailableIty() + returnOrderGoodsInfo.getReturnQty();
-                Integer affectLine = maStoreInventoryService.updateStoreInventoryAndAvailableIty(maReturnOrderDetailInfo.getStoreId(), returnOrderGoodsInfo.getGid(), goodsQtyAfterChange, goodsAvailableItyAfterChange, storeInventory.getLastUpdateTime());
-                //增加门店库变更日志存可用量
-                if (affectLine > 0) {
-                    MaStoreInventoryChange storeInventoryChange = new MaStoreInventoryChange();
-                    storeInventoryChange.setCityId(storeInventory.getCityId());
-                    storeInventoryChange.setCityName(storeInventory.getCityName());
-                    storeInventoryChange.setStoreId(storeInventory.getStoreId());
-                    storeInventoryChange.setStoreCode(storeInventory.getStoreCode());
-                    storeInventoryChange.setReferenceNumber(returnNumber);
-                    storeInventoryChange.setGid(returnOrderGoodsInfo.getGid());
-                    storeInventoryChange.setSku(returnOrderGoodsInfo.getSku());
-                    storeInventoryChange.setSkuName(returnOrderGoodsInfo.getSkuName());
-                    storeInventoryChange.setChangeTime(date);
-                    storeInventoryChange.setAfterChangeQty(goodsQtyAfterChange);
-                    storeInventoryChange.setChangeQty(returnOrderGoodsInfo.getReturnQty());
-                    storeInventoryChange.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS);
-                    storeInventoryChange.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS.getDescription());
-                    maStoreInventoryService.addInventoryChangeLog(storeInventoryChange);
-                    break;
-                } else {
-                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                        throw new SystemBusyException("系统繁忙，请稍后再试!");
-                    }
-                }
-            }
+
         }
         //门店退货生成ebs接口表数据
         MaOrderTempInfo maOrderTempInfo = maOrderService.getOrderInfoByOrderNo(maReturnOrderDetailInfo.getOrderNo());

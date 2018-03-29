@@ -1123,9 +1123,12 @@ public class OrderController {
                     OrderListResponse orderListResponse = new OrderListResponse();
                     //获取订单商品
                     List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderBaseInfo.getOrderNumber());
+                    //商品总数
+                    int totalGoods = 0;
                     //遍历订单商品
                     for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
-                        goodsImgList.add(goodsService.queryBySku(orderGoodsInfo.getSku()).getCoverImageUri());
+                        goodsImgList.add(orderGoodsInfo.getCoverImageUri());
+                        totalGoods += orderGoodsInfo.getOrderQuantity();
                     }
                     if ("待付款".equals(orderBaseInfo.getStatus().getDescription())) {
                         //计算剩余过期失效时间
@@ -1149,7 +1152,7 @@ public class OrderController {
                             orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getBookingStoreName()) ? null : orderLogisticsInfo.getBookingStoreName());
                         }
                     }
-                    orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
+                    orderListResponse.setCount(totalGoods);
                     OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderBaseInfo.getOrderNumber());
                     orderListResponse.setPrice(orderBillingDetails.getTotalGoodsPrice());
                     orderListResponse.setAmountPayable(orderBillingDetails.getAmountPayable());

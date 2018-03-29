@@ -80,6 +80,7 @@
         <association property="credit" javaType="DecorativeCompanyCredit">
             <id property="cid" column="cid"/>
             <result property="credit" column="credit"/>
+            <result property="creditLimit" column="credit_limit"/>
             <result property="creditLastUpdateTime" column="credit_Last_update_ime"/>
         </association>
         <association property="sponsorship" javaType="DecorativeCompanySubvention">
@@ -118,6 +119,7 @@
     <select id="findStoresVOById" parameterType="java.lang.Long" resultMap="storeDetailVOResultMap">
         SELECT
         s.*,
+        c.city_id,
         c.name
         FROM
         st_store s
@@ -392,7 +394,8 @@
         s.store_id,
         c.name,
         scm.credit_limit_available AS credit,
-        ss.balance AS sponsorship
+        ss.balance AS sponsorship,
+        scm.credit_limit
         FROM
         st_store s
         LEFT JOIN city c ON s.city_code = c.code
@@ -419,7 +422,8 @@
         scm.credit_limit_available AS credit ,
         scm.last_update_time AS credit_Last_update_ime ,
         ss.balance AS sponsorship,
-        ss.last_update_time AS sponsorship_last_update_time
+        ss.last_update_time AS sponsorship_last_update_time,
+        scm.credit_limit
         FROM
         st_store s
         LEFT JOIN city c ON s.city_code = c.code
@@ -440,7 +444,8 @@
         s.store_id,
         c.name,
         scm.credit_limit_available AS credit,
-        ss.balance AS sponsorship
+        ss.balance AS sponsorship,
+        scm.credit_limit
         FROM
         st_store s
         LEFT JOIN city c ON s.city_code = c.code
@@ -465,7 +470,8 @@
         s.store_id,
         c.name,
         scm.credit_limit_available AS credit,
-        ss.balance AS sponsorship
+        ss.balance AS sponsorship,
+        scm.credit_limit
         FROM
         st_store s
         LEFT JOIN city c ON s.city_code = c.code

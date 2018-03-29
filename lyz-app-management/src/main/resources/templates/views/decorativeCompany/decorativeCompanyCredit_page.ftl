@@ -31,7 +31,8 @@
                     <button id="btn_edit" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
                     </button>
-                    <select name="city" id="cityCode"  class="form-control select" style="width:auto;"  data-live-search="true" onchange="findDecorativeByCondition()">
+                    <select name="city" id="cityCode" class="form-control select" style="width:auto;"
+                            data-live-search="true" onchange="findDecorativeByCondition()">
                         <option value="-1">选择城市</option>
                     </select>
                     <select name="enabled" id="enabled" class="form-control select" style="width:auto;"
@@ -42,7 +43,8 @@
                     </select>
 
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
-                        <input type="text" name="queryDecorativeCreditInfo" id="queryDecorativeCreditInfo" class="form-control "
+                        <input type="text" name="queryDecorativeCreditInfo" id="queryDecorativeCreditInfo"
+                               class="form-control "
                                style="width:auto;" placeholder="请输入公司名称或公司编码..">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
@@ -86,6 +88,9 @@
                             <b>公司名称</b> <a class="pull-right" id="storeName"></a>
                         </li>
                         <li class="list-group-item">
+                            <b>签约信用金</b> <a class="pull-right" id="creditLimit"></a>
+                        </li>
+                        <li class="list-group-item">
                             <b>信用金余额</b> <a class="pull-right" id="credit"></a>
                         </li>
                         <li class="list-group-item">
@@ -106,16 +111,16 @@
 <script>
 
 
-    $(function() {
+    $(function () {
         initDateGird('/rest/decorativeCredit/page/grid');
         findCitySelection();
-        $('#btn_edit').on('click', function() {
+        $('#btn_edit').on('click', function () {
             $grid.modify($('#dataGrid'), '/views/admin/decorativeCredit/edit/{id}?parentMenuId=${parentMenuId!'0'}')
         });
     });
 
 
-    function findCitySelection(){
+    function findCitySelection() {
         var city = "";
         $.ajax({
             url: '/rest/citys/findCitylist',
@@ -167,21 +172,25 @@
             title: '所属城市',
             align: 'center'
         }, {
+            field: 'credit.creditLimit',
+            title: '签约信用金',
+            align: 'center'
+        }, {
             field: 'credit.credit',
             title: '信用金余额',
             align: 'center'
-        },{
+        }, {
             field: 'sponsorship.sponsorship',
             title: '赞助金余额',
             align: 'center'
-        },{
+        }, {
             field: 'enable',
             title: '是否启用',
             align: 'center',
-            formatter: function(value,row,index){
+            formatter: function (value, row, index) {
                 if (true === value) {
                     return '<span class="label label-primary">是</span>';
-                }else if(false === value){
+                } else if (false === value) {
                     return '<span class="label label-danger">否</span>';
                 } else {
                     return '<span class="label label-danger">-</span>';
@@ -233,21 +242,30 @@
                                 $('#storeName').html(data.storeName);
 
                                 if (null === data.credit) {
-                                    data.credit = '-';
+                                    $('#creditLimit').html('-');
+                                }else {
+                                    $('#creditLimit').html(data.credit.creditLimit);
                                 }
-                                $('#credit').html(data.credit.credit);
+
+                                if (null === data.credit) {
+                                    $('#credit').html('-');
+                                }else{
+                                    $('#credit').html(data.credit.credit);
+                                }
 
                                 if (null === data.sponsorship) {
-                                    data.sponsorship = '-';
+                                    $('#sponsorship').html('-');
+                                }else {
+                                    $('#sponsorship').html(data.sponsorship.sponsorship);
                                 }
-                                $('#sponsorship').html(data.sponsorship.sponsorship);
+
 
                                 if (true === data.enable) {
                                     data.enable = '<span class="label label-primary">是</span>';
-                                }else if(false === data.enable){
+                                } else if (false === data.enable) {
                                     data.enable = '<span class="label label-danger">否</span>';
-                                }else{
-                                    data.enable  = '<span class="label label-danger">-</span>';
+                                } else {
+                                    data.enable = '<span class="label label-danger">-</span>';
                                 }
                                 $('#enable').html(data.enable);
 
@@ -265,9 +283,6 @@
             }
         }
     }
-
-
-
 
 
     function findDecorativeByCondition() {

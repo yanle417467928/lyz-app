@@ -308,6 +308,8 @@
                 OR oaa.`status` IS NULL
             )
             AND odid.operator_no = #{operatorNo}
+            AND <![CDATA[oaa.update_time >= DATE_ADD(NOW(),INTERVAL -6 MONTH )]]>
+            AND <![CDATA[odid.create_time >= DATE_ADD(NOW(),INTERVAL -6 MONTH )]]>
             UNION
             SELECT
                 obi.sales_consult_name sellerName,
@@ -330,7 +332,7 @@
             WHERE
              ordd.return_logistic_status = 'PICKUP_COMPLETE'
             AND orli.delivery_clerk_no = #{operatorNo}
-
+            AND <![CDATA[ordd.create_time >= DATE_ADD(NOW(),INTERVAL -6 MONTH )]]>
             ORDER BY createTime DESC
     </select>
 

@@ -268,7 +268,7 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
             }
 
             goodsInfo.setIsEvaluation(false);
-            goodsInfo.setCoverImageUri(tdOrderGoods.getGoodsCoverImageUri());
+            goodsInfo.setCoverImageUri(goodsDO.getCoverImageUri());
 
             goodsInfoList.add(goodsInfo);
         }
@@ -319,7 +319,7 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
                 goodsInfo2.setCompanyFlag("YR");
             }
             goodsInfo2.setIsEvaluation(false);
-            goodsInfo2.setCoverImageUri(tdOrderGoods.getGoodsCoverImageUri());
+            goodsInfo2.setCoverImageUri(goodsDO.getCoverImageUri());
 
             goodsInfoList.add(goodsInfo2);
         }
