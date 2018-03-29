@@ -308,8 +308,8 @@
                 OR oaa.`status` IS NULL
             )
             AND odid.operator_no = #{operatorNo}
-            AND <![CDATA[oaa.update_time >= DATE_ADD(NOW(),INTERVAL -6 MONTH )]]>
-            AND <![CDATA[odid.create_time >= DATE_ADD(NOW(),INTERVAL -6 MONTH )]]>
+            AND (<![CDATA[oaa.update_time >= DATE_ADD(NOW(),INTERVAL -6 MONTH )]]>
+            OR <![CDATA[odid.create_time >= DATE_ADD(NOW(),INTERVAL -6 MONTH )]]>)
             UNION
             SELECT
                 obi.sales_consult_name sellerName,
