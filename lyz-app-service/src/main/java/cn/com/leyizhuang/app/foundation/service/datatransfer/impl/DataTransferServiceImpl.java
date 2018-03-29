@@ -248,7 +248,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                 }
             }
             Long deliveryId = this.transferDAO.findDeliveryInfoByClerkNo(clerkNo);
-            if (null != deliveryId){
+            if (null == deliveryId){
                 log.warn("未查到此订单配送员信息！订单号：", orderNumber);
                 throw new DataTransferException("订单审核未查到此订单配送员信息", DataTransferExceptionType.ENF);
             }
@@ -264,7 +264,7 @@ public class DataTransferServiceImpl implements DataTransferService {
             if (null != agencyRefund.getAgencyRefund() && agencyRefund.getAgencyRefund() > 0D) {
                 auditDO.setAgencyMoney(agencyRefund.getAgencyRefund());
             } else {
-                auditDO.setAgencyMoney(ownMoneyRecord.getPayed());
+                return null;
             }
             auditDO.setOrderMoney(ownMoneyRecord.getOwned());
             auditDO.setRealMoney(ownMoneyRecord.getPayed());
@@ -1117,8 +1117,8 @@ public class DataTransferServiceImpl implements DataTransferService {
                     paymentDetails.setPayType(OrderBillingPaymentType.CASH);
                     paymentDetails.setPayTypeDesc(OrderBillingPaymentType.CASH.getDescription());
 
-                    paymentDetails.setPaymentSubjectType(PaymentSubjectType.SELLER);
-                    paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.SELLER.getDescription());
+                    paymentDetails.setPaymentSubjectType(PaymentSubjectType.STORE);
+                    paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.STORE.getDescription());
                     paymentDetails.setAmount(tdOrderData.getSellerCash());
                     paymentDetails.setReceiptNumber(OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
                     paymentDetailsList.add(paymentDetails);
