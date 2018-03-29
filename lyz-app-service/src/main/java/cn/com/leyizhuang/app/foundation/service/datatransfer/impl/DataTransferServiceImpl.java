@@ -106,6 +106,9 @@ public class DataTransferServiceImpl implements DataTransferService {
         OrderLogisticsInfo orderLogisticsInfo = new OrderLogisticsInfo();
 
         if ("门店自提".equals(tdOrder.getDeliverTypeTitle())) {
+            orderLogisticsInfo.setReceiver(null);
+            orderLogisticsInfo.setReceiverPhone(null);
+            orderLogisticsInfo.setShippingAddress(null);
             List<AppStore> filterStoreList = storeList.stream().filter(p -> p.getStoreCode().equals(tdOrder.getDiySiteCode())).
                     collect(Collectors.toList());
             AppStore store = filterStoreList.get(0);
@@ -120,6 +123,9 @@ public class DataTransferServiceImpl implements DataTransferService {
         } else if ("送货上门".equals(tdOrder.getDeliverTypeTitle())) {
             List<TdDeliveryInfoDetails> tdDeliveryInfoDetailsList = this.queryDeliveryInfoDetailByOrderNumber(tdOrder.getMainOrderNumber());
             TdDeliveryInfoDetails tdDeliveryInfoDetails = tdDeliveryInfoDetailsList.get(0);
+            orderLogisticsInfo.setReceiver(tdOrderLogistics.getShippingName());
+            orderLogisticsInfo.setReceiverPhone(tdOrderLogistics.getShippingPhone());
+            orderLogisticsInfo.setShippingAddress(tdOrderLogistics.getShippingAddress());
 
             if (null == tdDeliveryInfoDetailsList || tdDeliveryInfoDetailsList.size() == 0) {
                 log.warn("物流信息没找到,订单：{}", tdOrder.getMainOrderNumber());
@@ -145,17 +151,13 @@ public class DataTransferServiceImpl implements DataTransferService {
         } else if ("郑州市".equals(tdOrder.getCity())) {
             orderLogisticsInfo.setDeliveryProvince("河南省");
         }
-
+        orderLogisticsInfo.setDetailedAddress(tdOrderLogistics.getDetailedAddress());
         orderLogisticsInfo.setDeliveryType(AppDeliveryType.getAppDeliveryTypeByDescription(tdOrder.getDeliverTypeTitle()));
         orderLogisticsInfo.setOrdNo(tdOrder.getMainOrderNumber());
         orderLogisticsInfo.setDeliveryCity(tdOrder.getCity());
         orderLogisticsInfo.setDeliveryCounty(tdOrderLogistics.getDisctrict());
         orderLogisticsInfo.setDeliveryStreet(tdOrderLogistics.getSubdistrict());
-        orderLogisticsInfo.setReceiver(tdOrderLogistics.getShippingName());
-        orderLogisticsInfo.setReceiverPhone(tdOrderLogistics.getShippingPhone());
-        orderLogisticsInfo.setShippingAddress(tdOrderLogistics.getShippingAddress());
         orderLogisticsInfo.setDeliveryTime(tdOrderLogistics.getDeliveryDate());
-        orderLogisticsInfo.setDetailedAddress(tdOrderLogistics.getDetailedAddress());
         orderLogisticsInfo.setIsOwnerReceiving(false);
         orderLogisticsInfo.setResidenceName(null);
         return orderLogisticsInfo;
@@ -192,12 +194,12 @@ public class DataTransferServiceImpl implements DataTransferService {
 
     @Override
     @Transactional
-    public OrderArrearsAuditDO transferArrearsAudit(String orderNumber) {
+    public OrderArrearsAuditDO transferArrearsAudit(String orderNumber, List<AppEmployee> employeeList) {
 
-        Boolean exist = this.transferDAO.existArrearsAudit(orderNumber);
-        if (exist) {
-            return null;
-        }
+//        Boolean exist = this.transferDAO.existArrearsAudit(orderNumber);
+//        if (exist) {
+//            return null;
+//        }
         List<TdOwnMoneyRecord> ownMoneyRecords = this.transferDAO.findOwnMoneyRecordByOrderNumber(orderNumber);
         if (null == ownMoneyRecords || ownMoneyRecords.size() == 0) {
             return null;
@@ -221,7 +223,13 @@ public class DataTransferServiceImpl implements DataTransferService {
                 throw new DataTransferException("订单审核未查到此订单代收款信息", DataTransferExceptionType.NOTORDERDATA);
             }
             TdOrder order = orders.get(0);
-            Long employeeId = this.transferDAO.findEmployeeByMobile(order.getSellerUsername());
+//            Long employeeId = this.transferDAO.findEmployeeByMobile(order.getSellerUsername());
+            Long employeeId = null;
+            List<AppEmployee> filterSellerList = employeeList.stream().filter(p -> p.getMobile().equals(order.getSellerUsername())).
+                    collect(Collectors.toList());
+            if (null != filterSellerList && !filterSellerList.isEmpty()) {
+                employeeId = filterSellerList.get(0).getEmpId();
+            }
 //            if (null == employeeId) {
 //
 //                return 3;
@@ -745,7 +753,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                     orderBaseInfo.setCreatorName(storeEmployee.getName());
                     orderBaseInfo.setCreatorPhone(storeEmployee.getMobile());
                     orderBaseInfo.setSalesConsultId(orderBaseInfo.getCreatorId());
-                    orderBaseInfo.setSalesConsultName(orderBaseInfo.getSalesConsultName());
+                    orderBaseInfo.setSalesConsultName(orderBaseInfo.getCreatorName());
                     orderBaseInfo.setSalesConsultPhone(orderBaseInfo.getCreatorPhone());
                     //AppCustomer customer = dataTransferService.findCustomerById(tdOrder.getUserId());
                     // AppCustomer customer = dataTransferService.findCustomerByCustomerMobile(tdOrder.getRealUserUsername());
@@ -919,7 +927,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                         Map<String, Object> map = this.transferCoupon(orderBaseInfo);
 
                         //订单欠款审核信息
-                        OrderArrearsAuditDO orderArrearsAuditDO = this.transferArrearsAudit(orderBaseInfo.getOrderNumber());
+                        OrderArrearsAuditDO orderArrearsAuditDO = this.transferArrearsAudit(orderBaseInfo.getOrderNumber(), employeeList);
 
                         //持久化订单相关信息
                         dataTransferSupportService.saveOrderRelevantInfo(orderBaseInfo, orderGoodsInfoList, orderBillingDetails, deliveryInfoDetailsList,

@@ -30,7 +30,11 @@ public interface MaCustomerService {
 
     void saveCustomer(CustomerDetailVO customer);
 
+    void updateCustomer(CustomerDetailVO customer);
+
     Boolean isExistPhoneNumber(Long moblie);
+
+    Boolean isExistPhoneNumberByCusId(Long moblie,Long cusId);
 
     PageInfo<CustomerPreDepositVO> findAllCusPredeposit(Integer page, Integer size, Long cityId, Long storeId, String keywords, List<Long> storeIds);
 
