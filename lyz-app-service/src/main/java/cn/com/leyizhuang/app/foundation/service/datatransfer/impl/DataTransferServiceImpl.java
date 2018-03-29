@@ -106,9 +106,7 @@ public class DataTransferServiceImpl implements DataTransferService {
         OrderLogisticsInfo orderLogisticsInfo = new OrderLogisticsInfo();
 
         if ("门店自提".equals(tdOrder.getDeliverTypeTitle())) {
-            orderLogisticsInfo.setReceiver(null);
-            orderLogisticsInfo.setReceiverPhone(null);
-            orderLogisticsInfo.setShippingAddress(null);
+            orderLogisticsInfo.setDetailedAddress(null);
             List<AppStore> filterStoreList = storeList.stream().filter(p -> p.getStoreCode().equals(tdOrder.getDiySiteCode())).
                     collect(Collectors.toList());
             AppStore store = filterStoreList.get(0);
@@ -123,10 +121,7 @@ public class DataTransferServiceImpl implements DataTransferService {
         } else if ("送货上门".equals(tdOrder.getDeliverTypeTitle())) {
             List<TdDeliveryInfoDetails> tdDeliveryInfoDetailsList = this.queryDeliveryInfoDetailByOrderNumber(tdOrder.getMainOrderNumber());
             TdDeliveryInfoDetails tdDeliveryInfoDetails = tdDeliveryInfoDetailsList.get(0);
-            orderLogisticsInfo.setReceiver(tdOrderLogistics.getShippingName());
-            orderLogisticsInfo.setReceiverPhone(tdOrderLogistics.getShippingPhone());
-            orderLogisticsInfo.setShippingAddress(tdOrderLogistics.getShippingAddress());
-
+            orderLogisticsInfo.setDetailedAddress(tdOrderLogistics.getDetailedAddress());
             if (null == tdDeliveryInfoDetailsList || tdDeliveryInfoDetailsList.size() == 0) {
                 log.warn("物流信息没找到,订单：{}", tdOrder.getMainOrderNumber());
                 throw new DataTransferException("该订单没有找到物流信息", DataTransferExceptionType.DENF);
@@ -151,12 +146,15 @@ public class DataTransferServiceImpl implements DataTransferService {
         } else if ("郑州市".equals(tdOrder.getCity())) {
             orderLogisticsInfo.setDeliveryProvince("河南省");
         }
-        orderLogisticsInfo.setDetailedAddress(tdOrderLogistics.getDetailedAddress());
+
         orderLogisticsInfo.setDeliveryType(AppDeliveryType.getAppDeliveryTypeByDescription(tdOrder.getDeliverTypeTitle()));
         orderLogisticsInfo.setOrdNo(tdOrder.getMainOrderNumber());
         orderLogisticsInfo.setDeliveryCity(tdOrder.getCity());
         orderLogisticsInfo.setDeliveryCounty(tdOrderLogistics.getDisctrict());
         orderLogisticsInfo.setDeliveryStreet(tdOrderLogistics.getSubdistrict());
+        orderLogisticsInfo.setReceiver(tdOrderLogistics.getShippingName());
+        orderLogisticsInfo.setReceiverPhone(tdOrderLogistics.getShippingPhone());
+        orderLogisticsInfo.setShippingAddress(tdOrderLogistics.getShippingAddress());
         orderLogisticsInfo.setDeliveryTime(tdOrderLogistics.getDeliveryDate());
         orderLogisticsInfo.setIsOwnerReceiving(false);
         orderLogisticsInfo.setResidenceName(null);
@@ -230,10 +228,10 @@ public class DataTransferServiceImpl implements DataTransferService {
             if (null != filterSellerList && !filterSellerList.isEmpty()) {
                 employeeId = filterSellerList.get(0).getEmpId();
             }
-//            if (null == employeeId) {
-//
-//                return 3;
-//            }
+            if (null == employeeId) {
+                log.warn("未查到此订单导购信息！订单号：", orderNumber);
+                throw new DataTransferException("订单审核未查到此订单导购信息", DataTransferExceptionType.SNF);
+            }
 
             String clerkNo = null;
             for (int k = 0; k < orders.size(); k++) {
@@ -243,6 +241,10 @@ public class DataTransferServiceImpl implements DataTransferService {
                 }
             }
             Long deliveryId = this.transferDAO.findDeliveryInfoByClerkNo(clerkNo);
+            if (null != deliveryId){
+                log.warn("未查到此订单配送员信息！订单号：", orderNumber);
+                throw new DataTransferException("订单审核未查到此订单配送员信息", DataTransferExceptionType.ENF);
+            }
             auditDO.setUserId(deliveryId);
             auditDO.setOrderNumber(orderNumber);
             auditDO.setCustomerName(order.getRealUserRealName());
@@ -751,7 +753,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                     orderBaseInfo.setCreatorName(storeEmployee.getName());
                     orderBaseInfo.setCreatorPhone(storeEmployee.getMobile());
                     orderBaseInfo.setSalesConsultId(orderBaseInfo.getCreatorId());
-                    orderBaseInfo.setSalesConsultName(orderBaseInfo.getCreatorName());
+                    orderBaseInfo.setSalesConsultName(orderBaseInfo.getSalesConsultName());
                     orderBaseInfo.setSalesConsultPhone(orderBaseInfo.getCreatorPhone());
                     //AppCustomer customer = dataTransferService.findCustomerById(tdOrder.getUserId());
                     // AppCustomer customer = dataTransferService.findCustomerByCustomerMobile(tdOrder.getRealUserUsername());
