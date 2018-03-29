@@ -26,7 +26,7 @@ public interface DataTransferService {
 
     TdOrder getMainOrderInfoByMainOrderNumber(String mainOrderNumber);
 
-    OrderArrearsAuditDO transferArrearsAudit(String orderNumber);
+    OrderArrearsAuditDO transferArrearsAudit(String orderNumber, List<AppEmployee> employeeList);
 
     List<TdDeliveryInfoDetails> queryDeliveryTimeSeqByOrderNo(String orderNO);
 

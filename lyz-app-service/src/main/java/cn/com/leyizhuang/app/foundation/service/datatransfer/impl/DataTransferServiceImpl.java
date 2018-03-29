@@ -192,12 +192,12 @@ public class DataTransferServiceImpl implements DataTransferService {
 
     @Override
     @Transactional
-    public OrderArrearsAuditDO transferArrearsAudit(String orderNumber) {
+    public OrderArrearsAuditDO transferArrearsAudit(String orderNumber, List<AppEmployee> employeeList) {
 
-        Boolean exist = this.transferDAO.existArrearsAudit(orderNumber);
-        if (exist) {
-            return null;
-        }
+//        Boolean exist = this.transferDAO.existArrearsAudit(orderNumber);
+//        if (exist) {
+//            return null;
+//        }
         List<TdOwnMoneyRecord> ownMoneyRecords = this.transferDAO.findOwnMoneyRecordByOrderNumber(orderNumber);
         if (null == ownMoneyRecords || ownMoneyRecords.size() == 0) {
             return null;
@@ -221,7 +221,13 @@ public class DataTransferServiceImpl implements DataTransferService {
                 throw new DataTransferException("订单审核未查到此订单代收款信息", DataTransferExceptionType.NOTORDERDATA);
             }
             TdOrder order = orders.get(0);
-            Long employeeId = this.transferDAO.findEmployeeByMobile(order.getSellerUsername());
+//            Long employeeId = this.transferDAO.findEmployeeByMobile(order.getSellerUsername());
+            Long employeeId = null;
+            List<AppEmployee> filterSellerList = employeeList.stream().filter(p -> p.getMobile().equals(order.getSellerUsername())).
+                    collect(Collectors.toList());
+            if (null != filterSellerList && !filterSellerList.isEmpty()) {
+                employeeId = filterSellerList.get(0).getEmpId();
+            }
 //            if (null == employeeId) {
 //
 //                return 3;
@@ -919,7 +925,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                         Map<String, Object> map = this.transferCoupon(orderBaseInfo);
 
                         //订单欠款审核信息
-                        OrderArrearsAuditDO orderArrearsAuditDO = this.transferArrearsAudit(orderBaseInfo.getOrderNumber());
+                        OrderArrearsAuditDO orderArrearsAuditDO = this.transferArrearsAudit(orderBaseInfo.getOrderNumber(), employeeList);
 
                         //持久化订单相关信息
                         dataTransferSupportService.saveOrderRelevantInfo(orderBaseInfo, orderGoodsInfoList, orderBillingDetails, deliveryInfoDetailsList,
