@@ -325,7 +325,7 @@ public class DataTransferServiceImpl implements DataTransferService {
 
         String orderNumber = baseInfo.getOrderNumber();
         TdOrderData orderData = this.transferDAO.findOrderDataByOrderNumber(orderNumber);
-        OrderBaseInfo orderBaseInfo = this.transferDAO.findNewOrderByOrderNumber(orderNumber);
+        //OrderBaseInfo orderBaseInfo = this.transferDAO.findNewOrderByOrderNumber(orderNumber);
         if (null != orderData && null != orderData.getCashCouponFee() && orderData.getCashCouponFee() > 0D) {
             List<OrderCouponInfo> list = this.transferDAO.findCouponInfoListByType(orderNumber, OrderCouponType.CASH_COUPON);
             if (null != list && list.size() > 0) {
@@ -339,8 +339,8 @@ public class DataTransferServiceImpl implements DataTransferService {
             cashCoupon.setInitialQuantity(1);
             cashCoupon.setRemainingQuantity(0);
             cashCoupon.setTitle("优惠券");
-            cashCoupon.setCityId(orderBaseInfo.getCityId());
-            cashCoupon.setCityName(orderBaseInfo.getCityName());
+            cashCoupon.setCityId(baseInfo.getCityId());
+            cashCoupon.setCityName(baseInfo.getCityName());
             cashCoupon.setType(AppCashCouponType.COMPANY);
             cashCoupon.setIsSpecifiedStore(false);
             cashCoupon.setStatus(true);
@@ -352,13 +352,13 @@ public class DataTransferServiceImpl implements DataTransferService {
             cashCouponCompany.setCompanyFlag("HR");
 //            this.transferDAO.addCashCouponCompany(cashCouponCompany);
 
-            customerCashCoupon.setCusId(orderBaseInfo.getCustomerId());
+            customerCashCoupon.setCusId(baseInfo.getCustomerId());
             customerCashCoupon.setCcid(cashCoupon.getId());
             customerCashCoupon.setQty(1);
             customerCashCoupon.setIsUsed(true);
-            customerCashCoupon.setUseTime(orderBaseInfo.getCreateTime());
+            customerCashCoupon.setUseTime(baseInfo.getCreateTime());
             customerCashCoupon.setUseOrderNumber(orderNumber);
-            customerCashCoupon.setGetTime(orderBaseInfo.getCreateTime());
+            customerCashCoupon.setGetTime(baseInfo.getCreateTime());
             customerCashCoupon.setCondition(orderData.getCashCouponFee());
             customerCashCoupon.setDenomination(orderData.getCashCouponFee());
             customerCashCoupon.setPurchasePrice(0D);
@@ -367,8 +367,8 @@ public class DataTransferServiceImpl implements DataTransferService {
             customerCashCoupon.setTitle("优惠券");
             customerCashCoupon.setStatus(true);
             customerCashCoupon.setGetType(CouponGetType.HISTORY_IMPORT);
-            customerCashCoupon.setCityId(orderBaseInfo.getCityId());
-            customerCashCoupon.setCityName(orderBaseInfo.getCityName());
+            customerCashCoupon.setCityId(baseInfo.getCityId());
+            customerCashCoupon.setCityName(baseInfo.getCityName());
             customerCashCoupon.setType(AppCashCouponType.COMPANY);
             customerCashCoupon.setIsSpecifiedStore(false);
 //            this.transferDAO.addCustomerCashCoupon(customerCashCoupon);
@@ -410,7 +410,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                         Map<String, Object> productMap = new HashMap<>();
                         CustomerProductCoupon productCoupon = new CustomerProductCoupon();
                         GoodsDO goodsDO = this.transferDAO.getGoodsBySku(tdOrderGoods.getSku());
-                        productCoupon.setCustomerId(orderBaseInfo.getCustomerId());
+                        productCoupon.setCustomerId(baseInfo.getCustomerId());
                         productCoupon.setGoodsId(goodsDO.getGid());
                         productCoupon.setQuantity(1);
                         if (null != tdCoupon.getIsBuy() && tdCoupon.getIsBuy()) {
@@ -424,8 +424,8 @@ public class DataTransferServiceImpl implements DataTransferService {
                         productCoupon.setUseTime(new Date());
                         productCoupon.setUseOrderNumber(orderNumber);
                         productCoupon.setBuyPrice(tdCoupon.getBuyPrice());
-                        productCoupon.setStoreId(orderBaseInfo.getStoreId());
-                        productCoupon.setSellerId(orderBaseInfo.getSalesConsultId());
+                        productCoupon.setStoreId(baseInfo.getStoreId());
+                        productCoupon.setSellerId(baseInfo.getSalesConsultId());
                         productCoupon.setStatus(true);
 //                        this.transferDAO.addCustomerProductCoupon(productCoupon);
                         productMap.put("productCoupon", productCoupon);
