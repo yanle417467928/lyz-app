@@ -236,6 +236,7 @@ public class AppActServiceImpl implements AppActService {
             if (customer == null) {
                 return result;
             }
+            cusId = userId;
 
             /** 计算专供促销 **/
             List<PromotionsGiftListResponse> zgGiftResponse = this.countZgPromotion(cusId,goodsIdList,goodsPool);
@@ -245,6 +246,8 @@ public class AppActServiceImpl implements AppActService {
 
             actList = this.getActList(customer, skus);
             customerType = customer.getCustomerType();
+
+            result.setPromotionGiftList(proGiftList);
         } else if (userType.getValue() == 0) {
             // 导购
             AppEmployee employee = appEmployeeService.findById(userId);
@@ -253,10 +256,10 @@ public class AppActServiceImpl implements AppActService {
             }
 
             /** 计算专供促销 **/
-            List<PromotionsGiftListResponse> zgGiftResponse = this.countZgPromotion(cusId,goodsIdList,goodsPool);
-            if (zgGiftResponse != null && zgGiftResponse.size() > 0){
-                proGiftList.addAll(zgGiftResponse);
-            }
+//            List<PromotionsGiftListResponse> zgGiftResponse = this.countZgPromotion(cusId,goodsIdList,goodsPool);
+//            if (zgGiftResponse != null && zgGiftResponse.size() > 0){
+//                proGiftList.addAll(zgGiftResponse);
+//            }
 
             actList = this.getActList(employee, skus);
             customerType = AppCustomerType.MEMBER;
@@ -264,8 +267,8 @@ public class AppActServiceImpl implements AppActService {
 
         if (actList == null || actList.size() == 0) {
 
-            logger.info("无促销！");
-            return null;
+            logger.info("无普通促销！");
+            return result;
         }
 
         //******************* 根据促销类型 计算促销 *************************
