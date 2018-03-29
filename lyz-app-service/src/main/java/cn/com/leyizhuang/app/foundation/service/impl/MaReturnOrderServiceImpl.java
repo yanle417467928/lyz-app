@@ -226,7 +226,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
             //查看门店下 该商品的库存
             MaStoreInventory storeInventory = maStoreInventoryService.findStoreInventoryByStoreIdAndGoodsId(maReturnOrderDetailInfo.getStoreId(), returnOrderGoodsInfo.getGid());
             if (null == storeInventory) {
-                //新增门店库存数量及可用量
+             /*   //新增门店库存数量及可用量
                 MaStoreInventory storeInventorySave = new MaStoreInventory();
 
                 Integer goodsQtyAfterChange = returnOrderGoodsInfo.getReturnQty();
@@ -263,8 +263,8 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                 storeInventoryChange.setChangeQty(returnOrderGoodsInfo.getReturnQty());
                 storeInventoryChange.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS);
                 storeInventoryChange.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS.getDescription());
-                maStoreInventoryService.addInventoryChangeLog(storeInventoryChange);
-                // throw new RuntimeException("未找到该门店或该门店下没有该商品库存,门店id:" + maReturnOrderDetailInfo.getStoreId() + "商品id:" + returnOrderGoodsInfo.getGid());
+                maStoreInventoryService.addInventoryChangeLog(storeInventoryChange);*/
+                 throw new RuntimeException("未找到该门店或该门店下没有该商品库存,门店id:" + maReturnOrderDetailInfo.getStoreId() + "商品id:" + returnOrderGoodsInfo.getGid());
             } else {
                 for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                     //更新门店库存数量及可用量
