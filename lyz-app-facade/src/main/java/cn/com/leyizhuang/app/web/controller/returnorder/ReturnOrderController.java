@@ -779,7 +779,12 @@ public class ReturnOrderController {
             if (AppDeliveryType.HOUSE_DELIVERY.equals(order.getDeliveryType())) {
                 //发送退货单到wms
                 callWms.sendToWmsReturnOrderAndGoods(returnNo);
+
+            } else if (AppDeliveryType.SELF_TAKE.equals(order.getDeliveryType())) {
+                //发送退单拆单消息到拆单消息队列
+                sinkSender.sendReturnOrder(returnNo);
             }
+
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("createOrder OUT,退货单创建成功,出参 resultDTO:{}", resultDTO);
             return resultDTO;
