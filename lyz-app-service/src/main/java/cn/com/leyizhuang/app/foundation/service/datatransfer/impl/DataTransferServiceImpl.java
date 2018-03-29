@@ -269,8 +269,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                 auditDO.setStatus(ArrearsAuditStatus.AUDIT_NO);
             }
             auditDO.setAgencyMoney(agencyRefund.getAgencyRefund());
-            if (null != agencyRefund.getAgencyRefund() && agencyRefund.getAgencyRefund() > 0D) {
-            } else {
+            if (null == agencyRefund.getAgencyRefund() || agencyRefund.getAgencyRefund() == 0D || agencyRefund.getAgencyRefund().equals(ownMoneyRecord.getPayed()))  {
                 auditDO.setStatus(ArrearsAuditStatus.AUDIT_PASSED);
             }
             auditDO.setOrderMoney(ownMoneyRecord.getOwned());
