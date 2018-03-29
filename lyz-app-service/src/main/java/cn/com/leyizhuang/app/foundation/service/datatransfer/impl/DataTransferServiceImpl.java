@@ -261,10 +261,17 @@ public class DataTransferServiceImpl implements DataTransferService {
             auditDO.setSellerphone(order.getSellerUsername());
             auditDO.setDistributionAddress(order.getShippingAddress().replaceAll("null", ""));
             auditDO.setDistributionTime(TimeTransformUtils.UDateToLocalDateTime(ownMoneyRecord.getCreateTime()));
-            if (null != agencyRefund.getAgencyRefund() && agencyRefund.getAgencyRefund() > 0D) {
-                auditDO.setAgencyMoney(agencyRefund.getAgencyRefund());
+            if (null == ownMoneyRecord.getIspassed()) {
+                auditDO.setStatus(ArrearsAuditStatus.AUDITING);
+            } else if (ownMoneyRecord.getIspassed()) {
+                auditDO.setStatus(ArrearsAuditStatus.AUDIT_PASSED);
             } else {
-                return null;
+                auditDO.setStatus(ArrearsAuditStatus.AUDIT_NO);
+            }
+            auditDO.setAgencyMoney(agencyRefund.getAgencyRefund());
+            if (null != agencyRefund.getAgencyRefund() && agencyRefund.getAgencyRefund() > 0D) {
+            } else {
+                auditDO.setStatus(ArrearsAuditStatus.AUDIT_PASSED);
             }
             auditDO.setOrderMoney(ownMoneyRecord.getOwned());
             auditDO.setRealMoney(ownMoneyRecord.getPayed());
@@ -273,13 +280,7 @@ public class DataTransferServiceImpl implements DataTransferService {
             } else {
                 auditDO.setPaymentMethod("现金");
             }
-            if (null == ownMoneyRecord.getIspassed()) {
-                auditDO.setStatus(ArrearsAuditStatus.AUDITING);
-            } else if (ownMoneyRecord.getIspassed()) {
-                auditDO.setStatus(ArrearsAuditStatus.AUDIT_PASSED);
-            } else {
-                auditDO.setStatus(ArrearsAuditStatus.AUDIT_NO);
-            }
+
             auditDO.setCashMoney(ownMoneyRecord.getMoney());
             auditDO.setPosMoney(ownMoneyRecord.getPos());
             auditDO.setAlipayMoney(0D);
