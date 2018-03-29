@@ -27,6 +27,8 @@ public interface OrderDeliveryInfoDetailsDAO {
     //获取配送员待配送列表
     List<WaitDeliveryResponse> getOrderBeasInfoByOperatorNo(@Param("operatorNo") String operatorNo);
 
+    List<String> getArrearsAuditByOperatorNo(@Param("operatorNo") String operatorNo);
+
     /**
      * 配送员获取已完成单列表
      * @return  已完成单列表

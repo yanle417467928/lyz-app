@@ -66,7 +66,7 @@ public class DispatchingController {
     @RequestMapping(value = "/list", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> getDispatchingList(Long userID, Integer identityType) {
         ResultDTO<Object> resultDTO;
-        logger.info("getDispatchingList CALLED,配送员获取待配送列表，入参 userID:{}, identityType:{}", userID, identityType);
+        logger.info("getDispatchingList CALLED,配送员获取待配送列表，入参 userID:{}, identityType:{}, page:{}, size:{}", userID, identityType);
         if (null == userID) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
             logger.info("getDispatchingList OUT,获配送员获取待配送列表失败，出参 resultDTO:{}", resultDTO);

@@ -112,24 +112,26 @@
                 oaa.`status` = 'AUDIT_NO'
                 OR oaa.`status` IS NULL
             )
-            AND obi.ord_no NOT IN (
-                SELECT
-                    ord_no
-                FROM
-                    ord_arrears_audit oat
-                LEFT JOIN ord_delivery_info_details ord ON oat.ord_no = ord.order_no
-                WHERE
-                    ord.operator_no = #{operatorNo}
-                AND ord.logistic_status = 'SEALED_CAR'
-                AND (
-                    STATUS = 'AUDITING'
-                    OR STATUS = 'AUDIT_PASSED'
-                )
-            )
             AND odid.operator_no = #{operatorNo}
             ORDER BY
                 odid.create_time DESC
     </select>
+
+    <select id="getArrearsAuditByOperatorNo" parameterType="java.lang.String">
+       SELECT
+		ord_no
+        FROM
+            ord_arrears_audit oat
+        LEFT JOIN ord_delivery_info_details ord ON oat.ord_no = ord.order_no
+        WHERE
+            ord.operator_no = #{operatorNo}
+        AND ord.logistic_status = 'SEALED_CAR'
+        AND (
+            STATUS = 'AUDITING'
+            OR STATUS = 'AUDIT_PASSED'
+	  )
+    </select>
+
 
     <select id="getOrderDeliveryInfoDetailsByOperatorNoAndOrderNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.ShipperDetailResponse">

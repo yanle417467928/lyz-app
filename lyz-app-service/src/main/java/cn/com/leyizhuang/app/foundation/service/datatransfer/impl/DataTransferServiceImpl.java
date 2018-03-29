@@ -448,7 +448,6 @@ public class DataTransferServiceImpl implements DataTransferService {
 
     @Override
     public OrderBillingDetails transferOrderBillingDetails(OrderBaseInfo orderBaseInfo) {
-        Integer num = 0;
         OrderBillingDetails orderBillingDetails = null;
         TdOrderData tdOrderData = this.transferDAO.findOrderDataByOrderNumber(orderBaseInfo.getOrderNumber());
         TdOwnMoneyRecord tdOwnMoneyRecord = this.transferDAO.getOwnMoneyRecordByOrderNumber(orderBaseInfo.getOrderNumber());
@@ -485,7 +484,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                         tdOrderData.getActivitySub() == null ? 0D : tdOrderData.getActivitySub(), tdOrderData.getCashCouponFee() == null ? 0D : tdOrderData.getCashCouponFee(), tdOrderData.getProCouponFee() == null ? 0D : tdOrderData.getProCouponFee());
                 Double orderAmountSubTotal = CountUtil.add(totalGoodsPrice == null ? 0d : totalGoodsPrice, tdOrderData.getDeliveryFee());
                 orderBillingDetails.setOrderAmountSubtotal(orderAmountSubTotal);
-                orderBillingDetails.setAmountPayable(CountUtil.sub(orderAmountSubTotal, stPreDepsit));
+                orderBillingDetails.setAmountPayable(CountUtil.sub(orderAmountSubTotal, stPreDepsit,tdOrderData.getLeftPrice()==null?0D:tdOrderData.getLeftPrice()));
                 orderBillingDetails.setCollectionAmount(tdOrderData.getAgencyRefund());
                 orderBillingDetails.setArrearage(tdOrderData.getDue());
                 orderBillingDetails.setIsOwnerReceiving(Boolean.FALSE);
@@ -513,7 +512,6 @@ public class DataTransferServiceImpl implements DataTransferService {
                 orderBillingDetails.setDeliveryCash(tdOrderData.getDeliveryCash());
                 orderBillingDetails.setDeliveryPos(tdOrderData.getDeliveryPos());
                 //this.transferDAO.saveOrderBillingDetails(orderBillingDetails);
-                num += 1;
             } else {
                 orderBillingDetails = new OrderBillingDetails();
                 Double totalGoodsPrice = 0.00;
