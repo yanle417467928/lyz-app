@@ -117,9 +117,9 @@
                 odid.create_time DESC
     </select>
 
-    <select id="getArrearsAuditByOperatorNo" parameterType="java.lang.String">
+    <select id="getArrearsAuditByOperatorNo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO">
        SELECT
-		ord_no
+		ord_no orderNumber
         FROM
             ord_arrears_audit oat
         LEFT JOIN ord_delivery_info_details ord ON oat.ord_no = ord.order_no

@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.OrderDeliveryInfoDetailsDAO;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.service.OrderDeliveryInfoDetailsService;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
@@ -51,11 +52,11 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
     public List<WaitDeliveryResponse> getOrderBeasInfoByOperatorNo(String operatorNo) {
 //        PageHelper.startPage(page, size);
         List<WaitDeliveryResponse> waitDeliveryResponseList = orderDeliveryInfoDetailsDAO.getOrderBeasInfoByOperatorNo(operatorNo);
-        List<String> orderNumberList = orderDeliveryInfoDetailsDAO.getArrearsAuditByOperatorNo(operatorNo);
+        List<OrderArrearsAuditDO> orderArrearsAuditDOList = orderDeliveryInfoDetailsDAO.getArrearsAuditByOperatorNo(operatorNo);
         if (null != waitDeliveryResponseList && waitDeliveryResponseList.size() > 0) {
             for (WaitDeliveryResponse waitDeliveryResponse : waitDeliveryResponseList) {
-                    for (String orderNumber:orderNumberList){
-                        if (waitDeliveryResponse.getOrderNumber().equals(orderNumber)){
+                    for (OrderArrearsAuditDO arrearsAuditDO:orderArrearsAuditDOList){
+                        if (waitDeliveryResponse.getOrderNumber().equals(arrearsAuditDO.getOrderNumber())){
                             waitDeliveryResponseList.remove(waitDeliveryResponse);
                         }
                     }
