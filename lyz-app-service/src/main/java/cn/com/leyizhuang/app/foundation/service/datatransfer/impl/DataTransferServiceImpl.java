@@ -1108,8 +1108,8 @@ public class DataTransferServiceImpl implements DataTransferService {
                     paymentDetails.setPayType(OrderBillingPaymentType.CASH);
                     paymentDetails.setPayTypeDesc(OrderBillingPaymentType.CASH.getDescription());
 
-                    paymentDetails.setPaymentSubjectType(PaymentSubjectType.SELLER);
-                    paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.SELLER.getDescription());
+                    paymentDetails.setPaymentSubjectType(PaymentSubjectType.STORE);
+                    paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.STORE.getDescription());
                     paymentDetails.setAmount(tdOrderData.getSellerCash());
                     paymentDetails.setReceiptNumber(OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
                     paymentDetailsList.add(paymentDetails);

@@ -1040,7 +1040,13 @@ public class ReturnOrderController {
             OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(returnOrderBaseInfo.getOrderNo());
             if (AppDeliveryType.SELF_TAKE.equals(orderBaseInfo.getDeliveryType()) ||
                     AppOrderType.COUPON.equals(orderBaseInfo.getOrderType())) {
-                returnOrderService.updateReturnOrderStatus(returnNumber, AppReturnOrderStatus.CANCELING);
+                // 修改回原订单的可退和已退！
+                List<ReturnOrderGoodsInfo> returnOrderGoodsInfoList = returnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnNumber);
+                returnOrderGoodsInfoList.forEach(returnOrderGoodsInfo -> appOrderService.updateReturnableQuantityAndReturnQuantityById(
+                        returnOrderGoodsInfo.getReturnQty(), returnOrderGoodsInfo.getOrderGoodsId()));
+
+                //修改退货单状态
+                returnOrderService.updateReturnOrderStatus(returnNumber, AppReturnOrderStatus.CANCELED);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
                 logger.info("cancelReturnOrder OUT,用户取消退货单成功,等待wms返回取消结果，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
