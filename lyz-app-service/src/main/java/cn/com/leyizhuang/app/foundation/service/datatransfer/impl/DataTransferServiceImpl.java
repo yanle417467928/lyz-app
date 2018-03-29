@@ -248,7 +248,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                 }
             }
             Long deliveryId = this.transferDAO.findDeliveryInfoByClerkNo(clerkNo);
-            if (null != deliveryId){
+            if (null == deliveryId){
                 log.warn("未查到此订单配送员信息！订单号：", orderNumber);
                 throw new DataTransferException("订单审核未查到此订单配送员信息", DataTransferExceptionType.ENF);
             }
