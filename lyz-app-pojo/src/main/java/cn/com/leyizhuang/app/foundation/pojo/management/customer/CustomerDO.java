@@ -45,7 +45,7 @@ public class CustomerDO {
     //手机号码
     private String mobile;
     //生日
-    @DateTimeFormat(pattern = "yyyy-mm-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date birthday;
     //状态：禁用、启用
     private Boolean status;
@@ -71,7 +71,7 @@ public class CustomerDO {
     //上次签到时间
     private Date lastSignTime;
     //绑定时间
-    @DateTimeFormat(pattern = "yyyy-mm-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date bindingTime;
 
     public static final CustomerDO transform(CustomerDetailVO customerVO) {
@@ -83,7 +83,7 @@ public class CustomerDO {
             customerDO.setMobile(customerVO.getMobile());
             customerDO.setBirthday(customerVO.getBirthday());
             customerDO.setStatus(customerVO.getStatus());
-            customerDO.setSex(customerDO.getSex());
+            customerDO.setSex(customerVO.getSex());
             customerDO.setPicUrl(customerVO.getPicUrl());
             customerDO.setCreateTime(customerVO.getCreateTime());
             customerDO.setLight(customerVO.getLight());

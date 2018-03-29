@@ -27,7 +27,6 @@ import java.util.List;
 @ToString
 
 public class CustomerVO {
-
     //顾客ID
     private Long cusId;
     //门店id
