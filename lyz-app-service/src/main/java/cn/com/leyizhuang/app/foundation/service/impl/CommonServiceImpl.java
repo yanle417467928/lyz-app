@@ -1654,16 +1654,16 @@ public class CommonServiceImpl implements CommonService {
     public void confirmOrderArrive(OrderBillingPaymentDetails paymentDetails,
                                    OrderBillingDetails orderBillingDetails, EmpCreditMoneyChangeLog empCreditMoneyChangeLog,
                                    OrderAgencyFundDO orderAgencyFundDO, OrderDeliveryInfoDetails orderDeliveryInfoDetails,
-                                   OrderBaseInfo orderBaseInfo, Long sellerId, Double ownManey, Timestamp lastUpdateTime) {
+                                   OrderBaseInfo orderBaseInfo, Long sellerId, Double credit, Timestamp lastUpdateTime) {
         if (null != paymentDetails) {
             this.orderService.savePaymentDetails(paymentDetails);
         }
         if (null != orderBillingDetails) {
             this.orderService.updateOwnMoneyByOrderNo(orderBillingDetails);
         }
-        if (ownManey > 0D){
+        if (credit > 0D){
             //修改导购信用额度
-            Integer affectLine = this.employeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(sellerId, ownManey, lastUpdateTime);
+            Integer affectLine = this.employeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(sellerId, credit, lastUpdateTime);
             if (affectLine > 0 && null != empCreditMoneyChangeLog) {
                 this.employeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
             }

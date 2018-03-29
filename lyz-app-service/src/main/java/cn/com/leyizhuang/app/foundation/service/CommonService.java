@@ -105,7 +105,7 @@ public interface CommonService {
 
     void confirmOrderArrive(OrderBillingPaymentDetails paymentDetails, OrderBillingDetails orderBillingDetails,
                             EmpCreditMoneyChangeLog empCreditMoneyChangeLog, OrderAgencyFundDO orderAgencyFundDO, OrderDeliveryInfoDetails orderDeliveryInfoDetails,
-                            OrderBaseInfo orderBaseInfo, Long sellerId, Double ownManey, Timestamp lastUpdateTime);
+                            OrderBaseInfo orderBaseInfo, Long sellerId, Double credit, Timestamp lastUpdateTime);
 
     void sellerAudit(OrderAgencyFundDO orderAgencyFundDO, OrderBillingPaymentDetails paymentDetails, OrderBillingDetails orderBillingDetails,
                      EmpCreditMoneyChangeLog empCreditMoneyChangeLog, OrderDeliveryInfoDetails orderDeliveryInfoDetails,

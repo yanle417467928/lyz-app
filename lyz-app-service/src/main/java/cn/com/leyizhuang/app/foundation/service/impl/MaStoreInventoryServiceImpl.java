@@ -35,4 +35,9 @@ public class MaStoreInventoryServiceImpl implements MaStoreInventoryService {
     public int updateStoreInventoryAndAvailableIty(Long storeId,Long goodsId,Integer goodsQty,Integer goodsAvailableIty,Date date){
         return maStoreInventoryDAO.updateStoreInventoryAndAvailableIty(storeId,goodsId,goodsQty,goodsAvailableIty,date);
     }
+
+    @Override
+    public void saveStoreInventory(MaStoreInventory storeInventory){
+         this.maStoreInventoryDAO.saveStoreInventory(storeInventory);
+    }
 }

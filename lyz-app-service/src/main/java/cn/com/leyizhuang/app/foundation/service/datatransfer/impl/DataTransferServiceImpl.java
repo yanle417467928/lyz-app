@@ -159,9 +159,6 @@ public class DataTransferServiceImpl implements DataTransferService {
         orderLogisticsInfo.setDeliveryCity(tdOrder.getCity());
         orderLogisticsInfo.setDeliveryCounty(tdOrderLogistics.getDisctrict());
         orderLogisticsInfo.setDeliveryStreet(tdOrderLogistics.getSubdistrict());
-        orderLogisticsInfo.setReceiver(tdOrderLogistics.getShippingName());
-        orderLogisticsInfo.setReceiverPhone(tdOrderLogistics.getShippingPhone());
-        orderLogisticsInfo.setShippingAddress(tdOrderLogistics.getShippingAddress());
         orderLogisticsInfo.setDeliveryTime(tdOrderLogistics.getDeliveryDate());
         orderLogisticsInfo.setIsOwnerReceiving(false);
         orderLogisticsInfo.setResidenceName(null);
@@ -908,7 +905,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                         OrderBillingDetails orderBillingDetails = this.transferOrderBillingDetails(orderBaseInfo);
 
                         //****物流进度明细 begin****/
-                        List<OrderDeliveryInfoDetails> deliveryInfoDetailsList = new ArrayList<>();
+                       List<OrderDeliveryInfoDetails> deliveryInfoDetailsList = new ArrayList<>();
                         if (AppDeliveryType.HOUSE_DELIVERY.equals(orderBaseInfo.getDeliveryType())) {
                             deliveryInfoDetailsList = this.saveOrderDeliveryInfoDetails(orderBaseInfo);
                         }

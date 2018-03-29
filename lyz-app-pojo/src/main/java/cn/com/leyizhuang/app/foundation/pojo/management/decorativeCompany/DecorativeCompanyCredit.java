@@ -26,6 +26,8 @@ public class DecorativeCompanyCredit {
     private Long storeId;
    //装饰公司信用金
     private BigDecimal credit;
+    //签约信用金
+    private BigDecimal creditLimit;
     //上次更新时间
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date creditLastUpdateTime;

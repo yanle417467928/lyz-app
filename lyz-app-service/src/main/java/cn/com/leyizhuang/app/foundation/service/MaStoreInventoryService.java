@@ -15,5 +15,7 @@ public interface MaStoreInventoryService {
     int updateStoreInventory(Long storeId,Long goodsId,Integer goodsQty,Date date);
 
     int updateStoreInventoryAndAvailableIty(Long storeId,Long goodsId,Integer goodsQty,Integer goodsAvailableIty,Date date);
+
+    void saveStoreInventory(MaStoreInventory storeInventory);
 }
 

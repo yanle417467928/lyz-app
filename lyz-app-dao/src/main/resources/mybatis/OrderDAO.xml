@@ -224,7 +224,8 @@
             returnable_qty          returnableQuantity,
             goods_line_type         goods_line_type,
             price_item_id           priceItemId,
-            company_flag            companyFlag
+            company_flag            companyFlag,
+            cover_image_uri         coverImageUri
         FROM
             ord_goods_info
         WHERE

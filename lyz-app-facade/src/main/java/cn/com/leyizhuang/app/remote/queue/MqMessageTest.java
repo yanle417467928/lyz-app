@@ -19,6 +19,10 @@ public class MqMessageTest {
     public void testSendOrder(String mainOrderNumber) throws Exception {
         sinkSender.sendOrder(mainOrderNumber);
     }
+    @RequestMapping(value = "/send/message/returnOrder")
+    public void testSendReturnOrder(String returnNo) throws Exception {
+        sinkSender.sendReturnOrder(returnNo);
+    }
 
     @RequestMapping(value = "/send/message/recharge")
     public void testSendRecharge(String rechargeNumber) {

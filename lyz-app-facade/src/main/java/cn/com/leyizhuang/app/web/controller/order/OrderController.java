@@ -1249,6 +1249,13 @@ public class OrderController {
                 orderListResponse.setPrice(orderBillingDetails.getTotalGoodsPrice());
                 orderListResponse.setAmountPayable(orderBillingDetails.getAmountPayable());
                 orderListResponse.setGoodsImgList(goodsImgList);
+
+                if (identityType == 0) {
+                    orderListResponse.setCustomerId(orderBaseInfo.getCustomerId());
+                    orderListResponse.setCustomerName(orderBaseInfo.getCustomerName());
+                    orderListResponse.setCustomerPhone(orderBaseInfo.getCustomerPhone());
+                }
+
                 //添加到返回类list中
                 orderListResponses.add(orderListResponse);
             }
