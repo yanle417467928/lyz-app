@@ -49,7 +49,7 @@ public class MaReportDownloadRestController extends BaseRestController{
     @Autowired
     private MaReportDownloadService maReportDownloadService;
 
-    private static final int maxRowNum = 100;
+    private static final int maxRowNum = 60000;
 
     @GetMapping(value = "/receipts/page/grid")
     public GridDataVO<ReceiptsReportDO> restStorePreDepositPageGird(Integer offset, Integer size, Long cityId, Long storeId, String storeType,

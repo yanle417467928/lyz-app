@@ -236,7 +236,7 @@ public class OrderArriveController {
                     orderArrearsAuditDO.setCustomerAndSeller(orderTempInfo.getCustomerName(), orderTempInfo.getCustomerPhone(), orderTempInfo.getSellerId(),
                             orderTempInfo.getSellerName(), orderTempInfo.getSellerPhone());
                     orderArrearsAuditDO.setDistributionInfo(orderTempInfo.getShippingAddress(), LocalDateTime.now());
-                    if ( amount.equals(collectionAmountOrder)){
+                    if (amount.equals(collectionAmountOrder)){
                         orderArrearsAuditDO.setArrearsAuditInfo(paymentMethod, amount, remarks, ArrearsAuditStatus.AUDIT_PASSED);
                     } else {
                         orderArrearsAuditDO.setArrearsAuditInfo(paymentMethod, amount, remarks, ArrearsAuditStatus.AUDITING);
