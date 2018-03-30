@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
-import cn.com.leyizhuang.app.core.constant.OnlinePayType;
 import lombok.*;
 
 import java.util.List;
@@ -51,11 +50,6 @@ public class ShipperDetailResponse {
      * 代收金额
      */
     private Double collectionAmount;
-    /**
-    * 付款方式
-    */
-    private OnlinePayType onlinePayType;
-
     /**
      * 商品list
      */

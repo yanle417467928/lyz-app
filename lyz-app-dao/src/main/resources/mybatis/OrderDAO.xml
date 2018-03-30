@@ -704,6 +704,9 @@
             <if test="null != payUpTime  ">
                 pay_up_time = #{payUpTime},
             </if>
+            <if test="null != collectionAmount">
+                collection_amount = #{collectionAmount},
+            </if>
             <if test="null != isPayUp  ">
                 is_pay_up = #{isPayUp}
             </if>

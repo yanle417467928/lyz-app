@@ -144,8 +144,7 @@
             oli.receiver            receiver,
             oli.receiver_phone      receiverPhone,
             odid.task_no            shipperNumber,
-            obd.collection_amount   collectionAmount,
-            obd.online_pay_type     onlinePayType
+            obd.collection_amount   collectionAmount
         FROM
             ord_base_info AS obi
             INNER JOIN ord_delivery_info_details AS odid ON obi.ord_no = odid.order_no
