@@ -163,4 +163,8 @@ public interface AppCustomerService {
     CustomerPreDeposit findCustomerPreDepositByCustomerId(Long cusId);
 
     List<AppCustomer> findAllCustomer();
+
+    void createCustomerPreDepositAccount(Long cusId);
+
+    void createCustomerLeBiAccount(Long cusId);
 }
