@@ -416,7 +416,12 @@ public class DataTransferServiceImpl implements DataTransferService {
                             productCoupon.setGetType(CouponGetType.MANUAL_GRANT);
                         }
                         productCoupon.setGetTime(new Date());
-                        productCoupon.setEffectiveStartTime(new Date());
+                        if (null != tdCoupon.getGetTime()) {
+                            productCoupon.setEffectiveStartTime(tdCoupon.getGetTime());
+                        } else {
+                            productCoupon.setEffectiveStartTime(new Date());
+                        }
+
                         productCoupon.setIsUsed(true);
                         productCoupon.setUseTime(new Date());
                         productCoupon.setUseOrderNumber(orderNumber);
