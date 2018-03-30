@@ -14,10 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * 订单商品转换类
@@ -126,6 +123,9 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
                 orderService.saveOrderJxPriceDifferenceReturnDetails(p);
             });
         }
+
+        /** 记录订单转换成功时间 **/
+        transferDAO.updateTransferDate(new Date(),orderBaseInfo.getOrderNumber());
     }
 
 
@@ -135,7 +135,13 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
             List<DataTransferErrorLog> errorLogList = new ArrayList<>(errorLogQueue);
             transferDAO.saveDataTransferErrorLogList(errorLogList);
         }
+    }
 
+    @Override
+    public void saveOneDataTransferErrolog(DataTransferErrorLog log){
+        if (log != null){
+            transferDAO.saveDataTransferErrorLog(log);
+        }
 
     }
 }

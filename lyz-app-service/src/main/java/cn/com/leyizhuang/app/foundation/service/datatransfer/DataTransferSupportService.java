@@ -16,6 +16,8 @@ public interface DataTransferSupportService {
 
     void saveDataTransferErrorLog(Queue<DataTransferErrorLog> errorLogQueue);
 
+    void saveOneDataTransferErrolog(DataTransferErrorLog log);
+
     void saveOrderRelevantInfo(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList, OrderBillingDetails orderBillingDetails,
                                List<OrderDeliveryInfoDetails> deliveryInfoDetailsList, List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetailsList,
                                List<OrderBillingPaymentDetails> paymentDetailsList,

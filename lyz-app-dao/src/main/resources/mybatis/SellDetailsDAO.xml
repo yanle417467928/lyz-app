@@ -100,7 +100,7 @@
     </update>
     <select id="queryOneMonthSellDetails" resultType="cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO">
       select * from sell_details where
-      `year` = #{year} and `month` = #{month}
+      `year` = #{year} and `month` = #{month} and company_flag = 'HR'
     </select>
 
     <select id="isExitByNumberAndGoodsLineId" resultType="java.lang.Boolean">

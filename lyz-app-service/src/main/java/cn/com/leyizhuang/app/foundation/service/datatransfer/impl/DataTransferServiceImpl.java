@@ -939,9 +939,14 @@ public class DataTransferServiceImpl implements DataTransferService {
                                 orderArrearsAuditDO);
                     } catch (DataTransferException e) {
                         dataTransferErrorLogQueue.add(new DataTransferErrorLog(null, tdOrder.getMainOrderNumber(), e.getType().getDesc(), new Date()));
+                        // 记录一条错误日志
+                        dataTransferSupportService.saveOneDataTransferErrolog(new DataTransferErrorLog(null, tdOrder.getMainOrderNumber(), e.getType().getDesc(), new Date()));
                     } catch (Exception e) {
                         log.warn(e.getMessage());
                         dataTransferErrorLogQueue.add(new DataTransferErrorLog(null, tdOrder.getMainOrderNumber(), e.getMessage(),
+                                new Date()));
+                        // 记录一条错误日志
+                        dataTransferSupportService.saveOneDataTransferErrolog(new DataTransferErrorLog(null, tdOrder.getMainOrderNumber(), e.getMessage(),
                                 new Date()));
                     }
                 }
@@ -1031,7 +1036,7 @@ public class DataTransferServiceImpl implements DataTransferService {
 
         List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetailsList = new ArrayList<>();
         for (TdOrder tdOrder : tdOrderList) {
-            if (!tdOrder.getMainOrderNumber().contains("YF")) {
+            if (!tdOrder.getOrderNumber().contains("YF")) {
                 List<TdDeliveryInfoDetails> tdOrderGoodsList = dataTransferService.queryOrderGoodsListByOrderNumber(tdOrder.getId());
                 if (AssertUtil.isNotEmpty(tdOrderGoodsList)) {
                     for (TdDeliveryInfoDetails tdOrderGoods : tdOrderGoodsList) {
