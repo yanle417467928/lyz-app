@@ -50,7 +50,7 @@ import java.util.*;
  * 订单相关接口
  *
  * @author Richard
- *         Created on 2017-10-23 17:02
+ * Created on 2017-10-23 17:02
  **/
 @RestController
 @RequestMapping(value = "/app/order")
@@ -125,7 +125,7 @@ public class OrderController {
     @Resource
     private MaOrderService maOrderService;
     @Resource
-    private  ReturnOrderService returnOrderService;
+    private ReturnOrderService returnOrderService;
 
     /**
      * 创建订单方法
@@ -312,7 +312,7 @@ public class OrderController {
             List<OrderGoodsInfo> orderGoodsInfoList;
 
             /********* 开始计算分摊 促销分摊可能产生新的行记录 所以优先分摊 ******************/
-            orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(orderParam.getUserId(), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, support.getPureOrderGoodsInfo(),orderParam.getCustomerId());
+            orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(orderParam.getUserId(), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, support.getPureOrderGoodsInfo(), orderParam.getCustomerId());
 
             //******** 分摊现乐币 策略：每个商品 按单价占比 分摊 *********************
             // 乐币暂时不分摊
@@ -551,15 +551,15 @@ public class OrderController {
 
             //赠品的数量和标识
             if (AssertUtil.isNotEmpty(giftsInfo)) {
-                for (OrderGoodsSimpleResponse aGiftInfo : giftsInfo) {
-                    for (GoodsIdQtyParam goodsIdQtyParam : giftsList) {
+                for (GoodsIdQtyParam goodsIdQtyParam : giftsList) {
+                    for (OrderGoodsSimpleResponse aGiftInfo : giftsInfo) {
                         if (aGiftInfo.getId().equals(goodsIdQtyParam.getId())) {
-                            aGiftInfo.setGoodsQty(goodsIdQtyParam.getQty());
+                            aGiftInfo.setGoodsQty(aGiftInfo.getGoodsQty() + goodsIdQtyParam.getQty());
                             aGiftInfo.setRetailPrice(0D);
                             break;
                         }
+                        aGiftInfo.setGoodsLineType(AppGoodsLineType.PRESENT.getValue());
                     }
-                    aGiftInfo.setGoodsLineType(AppGoodsLineType.PRESENT.getValue());
                 }
                 //合并商品和赠品集合
                 goodsInfo.addAll(giftsInfo);
@@ -587,7 +587,7 @@ public class OrderController {
 
             //计算订单金额小计
             //********* 计算促销立减金额 *************
-            List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsInfo,customer.getCusId());
+            List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsInfo, customer.getCusId());
             for (PromotionDiscountListResponse discountResponse : discountListResponseList) {
                 orderDiscount = CountUtil.add(orderDiscount, discountResponse.getDiscountPrice());
                 PromotionSimpleInfo promotionSimpleInfo = new PromotionSimpleInfo();
@@ -1569,7 +1569,7 @@ public class OrderController {
         Date date = new Date();
         try {
             OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
-            if(null == orderBaseInfo){
+            if (null == orderBaseInfo) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查到此订单信息！", null);
                 logger.info("verifyTimeout OUT,待付款订单检查是否超时失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
