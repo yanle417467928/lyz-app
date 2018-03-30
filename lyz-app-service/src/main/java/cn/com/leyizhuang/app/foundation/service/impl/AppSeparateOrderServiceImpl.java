@@ -24,6 +24,7 @@ import cn.com.leyizhuang.app.foundation.pojo.user.CusPreDepositWithdraw;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.util.AssertUtil;
 import cn.com.leyizhuang.common.util.CountUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +41,7 @@ import java.util.stream.Collectors;
  * Created on 2018-01-04 10:49
  **/
 @Service
+@Slf4j
 public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
 
     @Resource
@@ -576,6 +578,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
 
     @Override
     public void separateReturnOrder(String returnNumber) {
+        log.info("门店自提单收货队列消费开始");
         //查找主退单信息
         ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(returnNumber);
         if (null != returnOrderBaseInfo) {
@@ -657,11 +660,13 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                                 returnGoodsInf.setReturnPrice(returnGoodsInfo.getReturnPrice());
                                 returnGoodsInf.setSku(returnGoodsInfo.getSku());
                                 returnOrderGoodsInfList.add(returnGoodsInf);
+                                log.info("************************************保存拆单信息:"+returnGoodsInf );
                             }
                         }
                         refundAmount = returnOrderGoodsInfList.stream().mapToDouble(p -> p.getQuantity() * p.getReturnPrice()).sum();
                         returnOrderBaseInf.setRefundAmount(refundAmount);
                         returnOrderParamMap.put(returnOrderBaseInf, returnOrderGoodsInfList);
+                        log.info("************************************保存拆单信息:"+returnOrderBaseInf );
 
                     }
                     //*********************************** 拆退单头及退单商品信息 end ***************************************
@@ -724,11 +729,13 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                                     returnGoodsInf.setReturnPrice(returnGoodsInfo.getReturnPrice());
                                     returnGoodsInf.setSku(returnGoodsInfo.getSku());
                                     returnOrderGoodsInfList.add(returnGoodsInf);
+                                    log.info("************************************保存拆单信息:"+returnGoodsInf );
                                 }
                             }
                             refundAmount = returnOrderGoodsInfList.stream().mapToDouble(p -> p.getQuantity() * p.getReturnPrice()).sum();
                             returnOrderBaseInf.setRefundAmount(refundAmount);
                             returnOrderParamMap.put(returnOrderBaseInf, returnOrderGoodsInfList);
+                            log.info("************************************保存拆单信息:"+returnOrderBaseInf );
                         } else {
                             throw new RuntimeException("未找到原分单信息,退单拆单失败!");
                         }
@@ -750,6 +757,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         returnOrderCouponInf.setCouponTypeId(2L);
                         returnOrderCouponInf.setQuantity(1);
                         returnOrderCouponInfList.add(returnOrderCouponInf);
+                        log.info("************************************保存拆单信息:"+returnOrderCouponInf );
                     }
                 }
                 //生成退单产品券列表
@@ -764,6 +772,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         returnOrderCouponInf.setQuantity(1);
                         returnOrderCouponInf.setSku(productCoupon.getSku());
                         returnOrderCouponInfList.add(returnOrderCouponInf);
+                        log.info("************************************保存拆单信息:"+returnOrderCouponInf );
                     }
                 }
                 //************************************* 生成退单券信息 end *******************************************
@@ -795,6 +804,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                             refundInf.setAttribute3(fxStoreCode);
                         }
                         returnOrderRefundInfList.add(refundInf);
+                        log.info("************************************保存拆单信息:"+refundInf );
                     }
                 }
 
@@ -818,6 +828,7 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         inf.setDiySiteCode(details.getStoreCode());
                         inf.setRefundNumber(details.getRefundNumber());
                         jxPriceDifferenceRefundInfList.add(inf);
+                        log.info("***************************保存拆单信息:"+inf );
                     }
                 }
                 //******************************* 生成退订单退经销差价信息 end ***************************************

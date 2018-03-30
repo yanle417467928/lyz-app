@@ -178,7 +178,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                             newGoodsInfo.setPromotionId(act.getId().toString());
                             newOrderGoodsInfoList.add(newGoodsInfo);
 
-                            goodsTotalPrice = CountUtil.add(CountUtil.mul(this.returnCountPrice(orderGoodsInfo, identityType, customerType),fullQty),goodsTotalPrice);
+                            goodsTotalPrice = CountUtil.add(CountUtil.mul(orderGoodsInfo.getSettlementPrice(),fullQty),goodsTotalPrice);
 
                             if (remainQty == 0){
                                 orderGoodsInfoMap.remove(goods.getSku());
@@ -189,15 +189,14 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                             }
                         }
 
-
+                        /** 记录该顾客参与首单促销参与次数 **/
+                        statisticsSellDetailsService.addOrUpdateSellZgCusTimes(userId,goods.getSku(),1,orderGoodsInfo.getOrderQuantity(),ActBaseType.ZGFRIST);
                     }
 
                     //计算分摊
-                    finallyOrderGoodsInfo.addAll(this.countDutchPrice(newOrderGoodsInfoList, CountUtil.add(goodsTotalPrice, giftTotalPrice), CountUtil.sub(giftTotalPrice), identityType, customerType));
+                    finallyOrderGoodsInfo.addAll(this.countDutchPrice(newOrderGoodsInfoList, CountUtil.add(goodsTotalPrice, giftTotalPrice), giftTotalPrice, identityType, customerType));
 
                 }
-
-
 
             }
 
@@ -268,7 +267,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                                 newGoodsInfo.setPromotionId(act.getId().toString());
                                 newOrderGoodsInfoList.add(newGoodsInfo);
 
-                                goodsTotalPrice = CountUtil.add(CountUtil.mul(this.returnCountPrice(orderGoodsInfo, identityType, customerType),orderGoodsInfo.getOrderQuantity()-remainQty),goodsTotalPrice);
+                                goodsTotalPrice = CountUtil.add(CountUtil.mul(orderGoodsInfo.getSettlementPrice(),orderGoodsInfo.getOrderQuantity()-remainQty),goodsTotalPrice);
 
                                 if (remainQty == 0){
                                     orderGoodsInfoMap.remove(goods.getSku());
@@ -278,9 +277,11 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                                     orderGoodsInfoMap.put(goods.getSku(),orderGoodsInfo);
                                 }
 
-
                             }
                         }
+
+                        /** 记录该顾客参累积促销参与次数 **/
+                        statisticsSellDetailsService.addOrUpdateSellZgCusTimes(userId,goods.getSku(),1,orderGoodsInfo.getOrderQuantity(),ActBaseType.ACCUMULATE);
                     }
 
                     //计算分摊
@@ -387,7 +388,8 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                                     newGoodsInfo.setPromotionId(act.getId().toString());
                                     newOrderGoodsInfoList.add(newGoodsInfo);
 
-                                    goodsTotalPrice = CountUtil.add(CountUtil.mul(this.returnCountPrice(goods, identityType, customerType) ,singleQty), goodsTotalPrice);
+                                    //goodsTotalPrice = CountUtil.add(CountUtil.mul(this.returnCountPrice(goods, identityType, customerType) ,singleQty), goodsTotalPrice);
+                                    goodsTotalPrice = CountUtil.add(CountUtil.mul(goods.getSettlementPrice() ,singleQty), goodsTotalPrice);
 
                                     OrderGoodsInfo oldGoodsInfo = orderGoodsInfoMap.get(goods.getSku());
                                     Integer oldNum = oldGoodsInfo.getOrderQuantity();
@@ -497,7 +499,8 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                                     oldGoodsInfo.setReturnableQuantity(oldNum - singleQty);
                                     orderGoodsInfoMap.put(goods.getSku(), oldGoodsInfo);
 
-                                    goodsTotalPrice = CountUtil.add(CountUtil.mul(this.returnCountPrice(goods, identityType, customerType) ,singleQty), goodsTotalPrice);
+                                    //goodsTotalPrice = CountUtil.add(CountUtil.mul(this.returnCountPrice(goods, identityType, customerType) ,singleQty), goodsTotalPrice);
+                                    goodsTotalPrice = CountUtil.add(CountUtil.mul(goods.getSettlementPrice() ,singleQty), goodsTotalPrice);
 
                                     enjoyTimes = enjoyTimes - singleEnjoyTimes;
                                 }

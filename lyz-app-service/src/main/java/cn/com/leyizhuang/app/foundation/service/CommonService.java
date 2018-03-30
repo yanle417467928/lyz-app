@@ -112,4 +112,5 @@ public interface CommonService {
                      OrderBaseInfo orderBaseInfo, OrderArrearsAuditDO orderArrearsAuditDO, Long sellerId,
                      Double collectionAmount, Timestamp lastUpdateTime);
 
+    void originalCustomerRegistry(AppCustomer phoneUser) throws UnsupportedEncodingException;
 }

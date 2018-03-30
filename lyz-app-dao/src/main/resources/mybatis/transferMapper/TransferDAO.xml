@@ -346,7 +346,8 @@
         WHERE td_order_id = #{tdOrderId};
     </select>
 
-    <select id="findTdorderGoodsByPresentId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods">
+    <select id="findTdorderGoodsByPresentId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods">
         select * from td_order_goods_copy where presented_list_id = #{presentId};
     </select>
 
@@ -526,4 +527,13 @@
         </foreach>
     </insert>
 
+    <insert id="saveDataTransferErrorLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.DataTransferErrorLog">
+        INSERT INTO data_transfer_error_log(order_number, error_msg, create_time)
+        VALUES
+        (#{orderNumber},#{errorMsg},#{createTime})
+    </insert>
+
+    <update id="updateTransferDate">
+        UPDATE td_order_copy set transfer_date = #{date} where main_order_number = #{orderNo}
+    </update>
 </mapper>

@@ -12,9 +12,9 @@
 
     <insert id="addSellZgCusTimes" parameterType="cn.com.leyizhuang.app.foundation.pojo.SellZgCusTimes">
         INSERT INTO sell_zg_cus_times
-        (cus_id,sku,times,act_base_type)
+        (cus_id,sku,times,act_base_type,qty)
         VALUES
-        (#{cusId},#{sku},#{times},#{actBaseType})
+        (#{cusId},#{sku},#{times},#{actBaseType},#{qty})
     </insert>
 
     <update id="update" parameterType="cn.com.leyizhuang.app.foundation.pojo.SellZgDetailsDO">
@@ -71,6 +71,9 @@
         <set>
             <if test="times != null">
                 times = #{times},
+            </if>
+            <if test="qty != null">
+                qty = #{qty},
             </if>
         </set>
         where id = #{id}

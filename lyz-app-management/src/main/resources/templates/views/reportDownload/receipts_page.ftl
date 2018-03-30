@@ -131,8 +131,10 @@
                 clearTimeout($global.timer);
                 $.each(result, function (i, item) {
                     city += "<option value=" + item.cityId + ">" + item.name + "</option>";
-                })
+                });
                 $("#cityCode").append(city);
+                $("#cityCode").selectpicker('refresh');
+                $("#cityCode").selectpicker('render');
             }
         });
     }
@@ -159,7 +161,7 @@
                 clearTimeout($global.timer);
                 $.each(result, function (i, item) {
                     store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
-                })
+                });
                 $("#storeCode").append(store);
                 $('#storeCode').selectpicker('refresh');
                 $('#storeCode').selectpicker('render');

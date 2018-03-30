@@ -117,4 +117,8 @@ public interface TransferDAO {
     List<TdOrder> queryTdOrderByOrderNumber(String orderNumber);
 
     void saveDataTransferErrorLogList(@Param(value = "errorLogList") List<DataTransferErrorLog> errorLogList);
+
+    void saveDataTransferErrorLog(DataTransferErrorLog errorLogList);
+
+    void updateTransferDate(@Param("date") Date date , @Param("orderNo") String orderNo);
 }

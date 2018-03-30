@@ -335,4 +335,11 @@ public class TdOrder {
 
     //纸质销货单号
     private String paperSalesNumber;
+
+    /**
+     * 转入日期 转入成功后记录
+     */
+    private Date transferDate;
+
+
 }

@@ -230,13 +230,13 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
             goodsInfo.setSkuName(tdOrderGoods.getGoodsTitle());
 
 
-            String activityId = tdOrderGoods.getActivityId();
-            if (activityId != null && activityId.contains("_")) {
-                activityId = activityId.substring(0, activityId.indexOf("_") - 1);
-                goodsInfo.setPromotionId(activityId);
-            } else {
-                goodsInfo.setPromotionId(activityId);
-            }
+//            String activityId = tdOrderGoods.getActivityId();
+//            if (activityId != null && activityId.contains("_")) {
+//                activityId = activityId.substring(0, activityId.indexOf("_") - 1);
+//                goodsInfo.setPromotionId(activityId);
+//            } else {
+//                goodsInfo.setPromotionId(activityId);
+//            }
 
             goodsInfo.setIsPriceShare(true);
             goodsInfo.setPromotionSharePrice(0D);

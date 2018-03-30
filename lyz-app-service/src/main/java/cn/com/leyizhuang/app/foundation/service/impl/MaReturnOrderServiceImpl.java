@@ -264,7 +264,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                 storeInventoryChange.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS);
                 storeInventoryChange.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS.getDescription());
                 maStoreInventoryService.addInventoryChangeLog(storeInventoryChange);*/
-                 throw new RuntimeException("未找到该门店或该门店下没有该商品库存,门店id:" + maReturnOrderDetailInfo.getStoreId() + "商品id:" + returnOrderGoodsInfo.getGid());
+                throw new RuntimeException("未找到该门店或该门店下没有该商品库存,门店id:" + maReturnOrderDetailInfo.getStoreId() + "商品id:" + returnOrderGoodsInfo.getGid());
             } else {
                 for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                     //更新门店库存数量及可用量
@@ -438,8 +438,12 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                         }
                     }
                 }
+            } else {
+                maps.put("hasReturnOnlinePay", Boolean.TRUE);
             }
-
+        }else{
+            maps.put("hasReturnOnlinePay", Boolean.FALSE);
+        }
 /*            //查询原订单线上支付方式
             List<MaPaymentData> paymentDataList = maOrderService.findPaymentDataByOrderNo(maReturnOrderDetailInfo.getOrderNo());
             for (MaPaymentData maPaymentData : paymentDataList) {
@@ -456,7 +460,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                 appSeparateOrderService.saveReturnOrderRefundInf(returnOrderRefundInf);
                 maOrdReturnBillingDetailList.add(maOrdReturnBillingDetail);
             }*/
-        }
+
 
         //退顾客预存款
         if (null != preDepositAmount && preDepositAmount > 0) {
@@ -635,7 +639,6 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
         }
         //更新订单状态
         this.updateReturnOrderStatus(returnNumber, AppReturnOrderStatus.FINISHED.toString());
-        maps.put("hasReturnOnlinePay", Boolean.TRUE);
         return maps;
     }
 }

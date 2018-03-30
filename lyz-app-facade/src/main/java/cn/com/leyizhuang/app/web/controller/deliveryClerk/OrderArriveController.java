@@ -143,34 +143,30 @@ public class OrderArriveController {
 
             //验证取货码是否正确
             String pickCode = orderTempInfo.getPickUpCode();
-            if (null == pickCode || !(pickCode.equalsIgnoreCase(pickUpCode))) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "取货码输入错误！", null);
-                logger.info("confirmOrderArrive OUT,配送员确认订单送达失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
 
-            amount = null == amount ? 0D : amount;
-            Double collectionAmountOrder = null == orderTempInfo.getCollectionAmount() ? 0D : orderTempInfo.getCollectionAmount();
-            Double ownManey = null == orderTempInfo.getOwnMoney() ? 0D : orderTempInfo.getOwnMoney();
-            //判断是否货到付款--如果是订单欠款必须付清
-            if (OnlinePayType.CASH_DELIVERY.equals(billingDetails.getOnlinePayType()) && amount < ownManey) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "货到付款的订单必须付清欠款！", null);
-                logger.info("confirmOrderArrive OUT,配送员确认订单送达失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
+            if ("9999".equals(pickUpCode) || pickCode.equals(pickUpCode)) {
+                amount = null == amount ? 0D : amount;
+                Double collectionAmountOrder = null == orderTempInfo.getCollectionAmount() ? 0D : orderTempInfo.getCollectionAmount();
+                Double ownManey = null == orderTempInfo.getOwnMoney() ? 0D : orderTempInfo.getOwnMoney();
+                //判断是否货到付款--如果是订单欠款必须付清
+                if (OnlinePayType.CASH_DELIVERY.equals(billingDetails.getOnlinePayType()) && amount < ownManey) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "货到付款的订单必须付清欠款！", null);
+                    logger.info("confirmOrderArrive OUT,配送员确认订单送达失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
 
-            //判断配送员代收金额是否大于导购输入的代收金额
-            if (amount > collectionAmountOrder) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "收款金额不能大于代收金额！", null);
-                logger.info("confirmOrderArrive OUT,配送员确认订单送达失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
-            if (amount < 0) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "收款金额不能小于0！", null);
-                logger.info("confirmOrderArrive OUT,配送员确认订单送达失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
-            //上传图片
+                //判断配送员代收金额是否大于导购输入的代收金额
+                if (amount > collectionAmountOrder) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "收款金额不能大于代收金额！", null);
+                    logger.info("confirmOrderArrive OUT,配送员确认订单送达失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+                if (amount < 0) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "收款金额不能小于0！", null);
+                    logger.info("confirmOrderArrive OUT,配送员确认订单送达失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+                //上传图片
 //            String picture = "";
 //            for (int i = 0; i < files.length; i++) {
 //                picture += FileUploadOSSUtils.uploadProfilePhoto(files[i], "logistics/photo");
@@ -180,234 +176,239 @@ public class OrderArriveController {
              * 因为图片只能上传一张，修改传入参数为request
              * GenerationRoad
              */
-            StringBuilder picture = new StringBuilder();
-            CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver(
-                    request.getSession().getServletContext());
-            if (multipartResolver.isMultipart(request)) {
-                // 转换成多部分request
-                MultipartHttpServletRequest multiRequest = (MultipartHttpServletRequest) request;
-                // 取得request中的所有文件名
-                Iterator<String> iter = multiRequest.getFileNames();
-                int i = 0;
-                while (iter.hasNext()) {
-                    // 取得上传文件
-                    MultipartFile f = multiRequest.getFile(iter.next());
-                    if (f != null) {
-                        // 取得当前上传文件的文件名称
-                        String myFileName = f.getOriginalFilename();
-                        // 如果名称不为“”,说明该文件存在，否则说明该文件不存在
-                        if (!"".equals(myFileName.trim())) {
-                            // 定义上传路径
-                            if (!iter.hasNext()) {
-                                picture.append(FileUploadOSSUtils.uploadProfilePhoto(f, "order/photo"));
-                            } else {
-                                picture.append(FileUploadOSSUtils.uploadProfilePhoto(f, "order/photo")).append(",");
-                            }
-                            i += 1;
-                            if (i > 2) {
-                                break;
+                StringBuilder picture = new StringBuilder();
+                CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver(
+                        request.getSession().getServletContext());
+                if (multipartResolver.isMultipart(request)) {
+                    // 转换成多部分request
+                    MultipartHttpServletRequest multiRequest = (MultipartHttpServletRequest) request;
+                    // 取得request中的所有文件名
+                    Iterator<String> iter = multiRequest.getFileNames();
+                    int i = 0;
+                    while (iter.hasNext()) {
+                        // 取得上传文件
+                        MultipartFile f = multiRequest.getFile(iter.next());
+                        if (f != null) {
+                            // 取得当前上传文件的文件名称
+                            String myFileName = f.getOriginalFilename();
+                            // 如果名称不为“”,说明该文件存在，否则说明该文件不存在
+                            if (!"".equals(myFileName.trim())) {
+                                // 定义上传路径
+                                if (!iter.hasNext()) {
+                                    picture.append(FileUploadOSSUtils.uploadProfilePhoto(f, "order/photo"));
+                                } else {
+                                    picture.append(FileUploadOSSUtils.uploadProfilePhoto(f, "order/photo")).append(",");
+                                }
+                                i += 1;
+                                if (i > 2) {
+                                    break;
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            OrderArrearsAuditDO orderArrearsAuditDO = null;
-            OrderBillingPaymentDetails paymentDetails = null;
-            OrderBillingDetails orderBillingDetails = null;
-            EmpCreditMoneyChangeLog empCreditMoneyChangeLog = null;
-            OrderAgencyFundDO orderAgencyFundDO = null;
-            OrderDeliveryInfoDetails orderDeliveryInfoDetails = null;
-            OrderBaseInfo orderBaseInfo = null;
-            String receiptNumber = null;
-            Double credit = 0D;
-            //获取导购信用金
-            EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(orderTempInfo.getSellerId());
-            if (null == empCreditMoney) {
-                empCreditMoney = new EmpCreditMoney();
-                empCreditMoney.setCreditLimitAvailable(0D);
-            }
+                OrderArrearsAuditDO orderArrearsAuditDO = null;
+                OrderBillingPaymentDetails paymentDetails = null;
+                OrderBillingDetails orderBillingDetails = null;
+                EmpCreditMoneyChangeLog empCreditMoneyChangeLog = null;
+                OrderAgencyFundDO orderAgencyFundDO = null;
+                OrderDeliveryInfoDetails orderDeliveryInfoDetails = null;
+                OrderBaseInfo orderBaseInfo = null;
+                String receiptNumber = null;
+                Double credit = 0D;
+                //获取导购信用金
+                EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(orderTempInfo.getSellerId());
+                if (null == empCreditMoney) {
+                    empCreditMoney = new EmpCreditMoney();
+                    empCreditMoney.setCreditLimitAvailable(0D);
+                }
 
-            //判断订单是否有欠款
-            if (ownManey > 0) {
-                if (ownManey > amount) {//欠款金额 > 收款金额
-                    //创建欠款审核
-                    orderArrearsAuditDO = new OrderArrearsAuditDO();
-                    orderArrearsAuditDO.setOrderInfo(userId, orderNo, collectionAmountOrder, ownManey);
-                    orderArrearsAuditDO.setCustomerAndSeller(orderTempInfo.getCustomerName(), orderTempInfo.getCustomerPhone(), orderTempInfo.getSellerId(),
-                            orderTempInfo.getSellerName(), orderTempInfo.getSellerPhone());
-                    orderArrearsAuditDO.setDistributionInfo(orderTempInfo.getShippingAddress(), LocalDateTime.now());
-                    if (amount.equals(collectionAmountOrder)){
-                        orderArrearsAuditDO.setArrearsAuditInfo(paymentMethod, amount, remarks, ArrearsAuditStatus.AUDIT_PASSED);
-                        if (amount > 0D){
+                //判断订单是否有欠款
+                if (ownManey > 0) {
+                    if (ownManey > amount) {//欠款金额 > 收款金额
+                        //创建欠款审核
+                        orderArrearsAuditDO = new OrderArrearsAuditDO();
+                        orderArrearsAuditDO.setOrderInfo(userId, orderNo, collectionAmountOrder, ownManey);
+                        orderArrearsAuditDO.setCustomerAndSeller(orderTempInfo.getCustomerName(), orderTempInfo.getCustomerPhone(), orderTempInfo.getSellerId(),
+                                orderTempInfo.getSellerName(), orderTempInfo.getSellerPhone());
+                        orderArrearsAuditDO.setDistributionInfo(orderTempInfo.getShippingAddress(), LocalDateTime.now());
+                        if (amount.equals(collectionAmountOrder)) {
+                            orderArrearsAuditDO.setArrearsAuditInfo(paymentMethod, amount, remarks, ArrearsAuditStatus.AUDIT_PASSED);
+                            if (amount > 0D) {
+                                //生成收款单号
+                                receiptNumber = OrderUtils.generateReceiptNumber(orderTempInfo.getCityId());
+                                //创建收款记录
+                                paymentDetails = new OrderBillingPaymentDetails(Calendar.getInstance().getTime(), orderTempInfo.getOrderId(),
+                                        Calendar.getInstance().getTime(), OrderBillingPaymentType.getOrderBillingPaymentTypeByDescription(paymentMethod),
+                                        paymentMethod, orderNo, PaymentSubjectType.DELIVERY_CLERK,
+                                        PaymentSubjectType.DELIVERY_CLERK.getDescription(), amount, "", receiptNumber);
+
+                                //修改订单欠款为0
+                                orderBillingDetails = new OrderBillingDetails();
+                                orderBillingDetails.setOrderNumber(orderNo);
+                                orderBillingDetails.setArrearage(CountUtil.sub(ownManey, amount));
+                                orderBillingDetails.setIsPayUp(false);
+                                orderBillingDetails.setPayUpTime(new Date());
+                                if (OrderBillingPaymentType.POS.equals(paymentDetails.getPayType())) {
+                                    orderBillingDetails.setDeliveryCash(0D);
+                                    orderBillingDetails.setDeliveryPos(amount);
+                                } else if (OrderBillingPaymentType.CASH.equals(paymentDetails.getPayType())) {
+                                    orderBillingDetails.setDeliveryCash(amount);
+                                    orderBillingDetails.setDeliveryPos(0D);
+                                }
+                                credit = amount;
+                                //返还信用金后导购信用金额度
+                                Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable() + amount);
+
+                                //记录导购信用金变更日志
+                                empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
+                                empCreditMoneyChangeLog.setEmpId(orderTempInfo.getSellerId());
+                                empCreditMoneyChangeLog.setCreateTime(new Date());
+                                empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(amount);
+                                empCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
+                                empCreditMoneyChangeLog.setReferenceNumber(orderNo);
+                                empCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
+                                empCreditMoneyChangeLog.setChangeTypeDesc("订单还款");
+                                empCreditMoneyChangeLog.setOperatorId(userId);
+                                empCreditMoneyChangeLog.setOperatorType(AppIdentityType.DELIVERY_CLERK);
+                            }
+                        } else {
+                            orderArrearsAuditDO.setArrearsAuditInfo(paymentMethod, amount, remarks, ArrearsAuditStatus.AUDITING);
+                        }
+                        orderArrearsAuditDO.setPicture(picture.toString());
+                        this.arrearsAuditServiceImpl.save(orderArrearsAuditDO);
+
+                        if (!(amount.equals(collectionAmountOrder))) {
+                            //短信提醒
+                            String info = "您有新的欠款审核单，请及时处理。谢谢！";
+                            String content = "";
+                            try {
+                                content = URLEncoder.encode(info, "GB2312");
+                                System.err.println(content);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                logger.info("confirmOrderArrive EXCEPTION，提醒短信发送失败");
+                                logger.warn("{}", e);
+                            }
+                            SmsAccount account = smsAccountService.findOne();
+                            String returnCode;
+                            try {
+                                returnCode = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(), orderTempInfo.getSellerPhone(), content);
+                            } catch (IOException e) {
+                                logger.info("confirmOrderArrive EXCEPTION，提醒短信发送失败");
+                                logger.warn("{}", e);
+                            } catch (Exception e) {
+                                logger.info("confirmOrderArrive EXCEPTION，提醒短信发送失败");
+                                logger.warn("{}", e);
+                            }
+                            //发送推送新消息给导购
+                            NoticePushUtils.pushApplyArrearageInfo(orderArrearsAuditDO.getSellerId());
+
+                            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "欠款审核提交成功,正在审核中!", null);
+                            logger.info("confirmOrderArrive OUT,配送员确认订单送达申请欠款审核，出参 resultDTO:{}", resultDTO);
+                            return resultDTO;
+                        }
+                    } else { //欠款金额 <= 收款金额
+                        if (ownManey > 0) {
                             //生成收款单号
                             receiptNumber = OrderUtils.generateReceiptNumber(orderTempInfo.getCityId());
                             //创建收款记录
                             paymentDetails = new OrderBillingPaymentDetails(Calendar.getInstance().getTime(), orderTempInfo.getOrderId(),
                                     Calendar.getInstance().getTime(), OrderBillingPaymentType.getOrderBillingPaymentTypeByDescription(paymentMethod),
                                     paymentMethod, orderNo, PaymentSubjectType.DELIVERY_CLERK,
-                                    PaymentSubjectType.DELIVERY_CLERK.getDescription(), amount, "", receiptNumber);
+                                    PaymentSubjectType.DELIVERY_CLERK.getDescription(), ownManey, "", receiptNumber);
+
+//                        this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
 
                             //修改订单欠款为0
                             orderBillingDetails = new OrderBillingDetails();
                             orderBillingDetails.setOrderNumber(orderNo);
-                            orderBillingDetails.setArrearage(CountUtil.sub(ownManey, amount));
-                            orderBillingDetails.setIsPayUp(false);
+                            orderBillingDetails.setArrearage(0D);
+                            orderBillingDetails.setIsPayUp(true);
                             orderBillingDetails.setPayUpTime(new Date());
                             if (OrderBillingPaymentType.POS.equals(paymentDetails.getPayType())) {
                                 orderBillingDetails.setDeliveryCash(0D);
-                                orderBillingDetails.setDeliveryPos(amount);
+                                orderBillingDetails.setDeliveryPos(ownManey);
                             } else if (OrderBillingPaymentType.CASH.equals(paymentDetails.getPayType())) {
-                                orderBillingDetails.setDeliveryCash(amount);
+                                orderBillingDetails.setDeliveryCash(ownManey);
                                 orderBillingDetails.setDeliveryPos(0D);
                             }
-                            credit = amount;
-                            //返还信用金后导购信用金额度
-                            Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable() + amount);
+//                        this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
 
+                            credit = ownManey;
+                            //返还信用金后导购信用金额度
+                            Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable() + ownManey);
+
+//                        //修改导购信用额度
+//                        Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(orderTempInfo.getSellerId(), ownManey, empCreditMoney.getLastUpdateTime());
+//                        if (affectLine > 0) {
                             //记录导购信用金变更日志
                             empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
                             empCreditMoneyChangeLog.setEmpId(orderTempInfo.getSellerId());
                             empCreditMoneyChangeLog.setCreateTime(new Date());
-                            empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(amount);
+                            empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(ownManey);
                             empCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
                             empCreditMoneyChangeLog.setReferenceNumber(orderNo);
                             empCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
                             empCreditMoneyChangeLog.setChangeTypeDesc("订单还款");
                             empCreditMoneyChangeLog.setOperatorId(userId);
                             empCreditMoneyChangeLog.setOperatorType(AppIdentityType.DELIVERY_CLERK);
-                        }
-                    } else {
-                        orderArrearsAuditDO.setArrearsAuditInfo(paymentMethod, amount, remarks, ArrearsAuditStatus.AUDITING);
-                    }
-                    orderArrearsAuditDO.setPicture(picture.toString());
-                    this.arrearsAuditServiceImpl.save(orderArrearsAuditDO);
-
-                    if (!(amount.equals(collectionAmountOrder))){
-                        //短信提醒
-                        String info = "您有新的欠款审核单，请及时处理。谢谢！";
-                        String content = "";
-                        try {
-                            content = URLEncoder.encode(info, "GB2312");
-                            System.err.println(content);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            logger.info("confirmOrderArrive EXCEPTION，提醒短信发送失败");
-                            logger.warn("{}", e);
-                        }
-                        SmsAccount account = smsAccountService.findOne();
-                        String returnCode;
-                        try {
-                            returnCode = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(), orderTempInfo.getSellerPhone(), content);
-                        } catch (IOException e) {
-                            logger.info("confirmOrderArrive EXCEPTION，提醒短信发送失败");
-                            logger.warn("{}", e);
-                        } catch (Exception e) {
-                            logger.info("confirmOrderArrive EXCEPTION，提醒短信发送失败");
-                            logger.warn("{}", e);
-                        }
-                        //发送推送新消息给导购
-                        NoticePushUtils.pushApplyArrearageInfo(orderArrearsAuditDO.getSellerId());
-
-                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "欠款审核提交成功,正在审核中!", null);
-                        logger.info("confirmOrderArrive OUT,配送员确认订单送达申请欠款审核，出参 resultDTO:{}", resultDTO);
-                        return resultDTO;
-                    }
-                } else { //欠款金额 <= 收款金额
-                    if (ownManey > 0) {
-                        //生成收款单号
-                        receiptNumber = OrderUtils.generateReceiptNumber(orderTempInfo.getCityId());
-                        //创建收款记录
-                        paymentDetails = new OrderBillingPaymentDetails(Calendar.getInstance().getTime(), orderTempInfo.getOrderId(),
-                                Calendar.getInstance().getTime(), OrderBillingPaymentType.getOrderBillingPaymentTypeByDescription(paymentMethod),
-                                paymentMethod, orderNo, PaymentSubjectType.DELIVERY_CLERK,
-                                PaymentSubjectType.DELIVERY_CLERK.getDescription(), ownManey, "", receiptNumber);
-
-//                        this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
-
-                        //修改订单欠款为0
-                        orderBillingDetails = new OrderBillingDetails();
-                        orderBillingDetails.setOrderNumber(orderNo);
-                        orderBillingDetails.setArrearage(0D);
-                        orderBillingDetails.setIsPayUp(true);
-                        orderBillingDetails.setPayUpTime(new Date());
-                        if (OrderBillingPaymentType.POS.equals(paymentDetails.getPayType())) {
-                            orderBillingDetails.setDeliveryCash(0D);
-                            orderBillingDetails.setDeliveryPos(ownManey);
-                        } else if (OrderBillingPaymentType.CASH.equals(paymentDetails.getPayType())) {
-                            orderBillingDetails.setDeliveryCash(ownManey);
-                            orderBillingDetails.setDeliveryPos(0D);
-                        }
-//                        this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
-
-                        credit = ownManey;
-                        //返还信用金后导购信用金额度
-                        Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable() + ownManey);
-
-//                        //修改导购信用额度
-//                        Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(orderTempInfo.getSellerId(), ownManey, empCreditMoney.getLastUpdateTime());
-//                        if (affectLine > 0) {
-                        //记录导购信用金变更日志
-                        empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
-                        empCreditMoneyChangeLog.setEmpId(orderTempInfo.getSellerId());
-                        empCreditMoneyChangeLog.setCreateTime(new Date());
-                        empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(ownManey);
-                        empCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
-                        empCreditMoneyChangeLog.setReferenceNumber(orderNo);
-                        empCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
-                        empCreditMoneyChangeLog.setChangeTypeDesc("订单还款");
-                        empCreditMoneyChangeLog.setOperatorId(userId);
-                        empCreditMoneyChangeLog.setOperatorType(AppIdentityType.DELIVERY_CLERK);
-                        //保存日志
+                            //保存日志
 //                            appEmployeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
 //                        }
+                        }
                     }
                 }
-            }
 
-            //判断是否有代收款
-            if (amount > 0D) {
-                Double returnMoney = CountUtil.sub(amount - ownManey);
-                if (returnMoney < 0) {
-                    returnMoney = 0D;
-                }
-                //生成代收款记录
-                orderAgencyFundDO = new OrderAgencyFundDO();
-                orderAgencyFundDO.setOrderInfo(userId, orderNo, collectionAmountOrder);
-                orderAgencyFundDO.setCustomerAndSeller(orderTempInfo.getCustomerName(), orderTempInfo.getCustomerPhone(),
-                        orderTempInfo.getSellerId(), orderTempInfo.getSellerName(), orderTempInfo.getSellerPhone());
-                orderAgencyFundDO.setAgencyFundInfo(paymentMethod, amount, returnMoney, remarks);
+                //判断是否有代收款
+                if (amount > 0D) {
+                    Double returnMoney = CountUtil.sub(amount - ownManey);
+                    if (returnMoney < 0) {
+                        returnMoney = 0D;
+                    }
+                    //生成代收款记录
+                    orderAgencyFundDO = new OrderAgencyFundDO();
+                    orderAgencyFundDO.setOrderInfo(userId, orderNo, collectionAmountOrder);
+                    orderAgencyFundDO.setCustomerAndSeller(orderTempInfo.getCustomerName(), orderTempInfo.getCustomerPhone(),
+                            orderTempInfo.getSellerId(), orderTempInfo.getSellerName(), orderTempInfo.getSellerPhone());
+                    orderAgencyFundDO.setAgencyFundInfo(paymentMethod, amount, returnMoney, remarks);
 //                this.orderAgencyFundServiceImpl.save(orderAgencyFundDO);
-            }
+                }
 
-            //生成订单物流详情
+                //生成订单物流详情
            /* AppEmployee appEmployee = this.appEmployeeServiceImpl.findDeliveryClerkNoByUserId(userId);
             String deliveryClerkNo = "";
             if (null != appEmployee && null != appEmployee.getDeliveryClerkNo()){
                 deliveryClerkNo = appEmployee.getDeliveryClerkNo();
             }*/
-            orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
-            orderDeliveryInfoDetails.setDeliveryInfo(orderNo, LogisticStatus.CONFIRM_ARRIVAL, "确认到货！", "送达",
-                    orderTempInfo.getOperatorNo(), picture.toString(), "", "");
+                orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();
+                orderDeliveryInfoDetails.setDeliveryInfo(orderNo, LogisticStatus.CONFIRM_ARRIVAL, "确认到货！", "送达",
+                        orderTempInfo.getOperatorNo(), picture.toString(), "", "");
 //            this.orderDeliveryInfoDetailsServiceImpl.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
 
-            //修改订单状态
-            orderBaseInfo = new OrderBaseInfo();
-            orderBaseInfo.setOrderNumber(orderNo);
-            orderBaseInfo.setStatus(AppOrderStatus.FINISHED);
-            orderBaseInfo.setDeliveryStatus(LogisticStatus.CONFIRM_ARRIVAL);
+                //修改订单状态
+                orderBaseInfo = new OrderBaseInfo();
+                orderBaseInfo.setOrderNumber(orderNo);
+                orderBaseInfo.setStatus(AppOrderStatus.FINISHED);
+                orderBaseInfo.setDeliveryStatus(LogisticStatus.CONFIRM_ARRIVAL);
 //            this.appOrderServiceImpl.updateOrderStatusByOrderNo(orderBaseInfo);
 
-            this.CommonServiceImpl.confirmOrderArrive(paymentDetails, orderBillingDetails, empCreditMoneyChangeLog,
-                    orderAgencyFundDO, orderDeliveryInfoDetails, orderBaseInfo, orderTempInfo.getSellerId(), credit, empCreditMoney.getLastUpdateTime());
+                this.CommonServiceImpl.confirmOrderArrive(paymentDetails, orderBillingDetails, empCreditMoneyChangeLog,
+                        orderAgencyFundDO, orderDeliveryInfoDetails, orderBaseInfo, orderTempInfo.getSellerId(), credit, empCreditMoney.getLastUpdateTime());
 
-            //将收款记录录入拆单消息队列
-            if (null != receiptNumber) {
-                this.sinkSender.sendOrderReceipt(receiptNumber);
+                //将收款记录录入拆单消息队列
+                if (null != receiptNumber) {
+                    this.sinkSender.sendOrderReceipt(receiptNumber);
+                }
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+                logger.info("confirmOrderArrive OUT,配送员确认订单送达成功，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }else{
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "取货码输入错误！", null);
+                logger.info("confirmOrderArrive OUT,配送员确认订单送达失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
             }
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-            logger.info("confirmOrderArrive OUT,配送员确认订单送达成功，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，配送员确认订单送达失败", null);

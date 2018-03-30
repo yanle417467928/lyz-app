@@ -89,4 +89,6 @@ public interface StatisticsSellDetailsService {
     void updateSellZgCusTimes(SellZgCusTimes sellZgCusTimes);
 
     void addSellZgCusTimes(SellZgCusTimes sellZgCusTimes);
+
+    void addOrUpdateSellZgCusTimes(Long cusId,String sku,Integer times,Integer qty,ActBaseType type);
 }

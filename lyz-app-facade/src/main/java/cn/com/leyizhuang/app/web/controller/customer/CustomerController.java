@@ -201,7 +201,8 @@ public class CustomerController {
                     if (null != phoneUser.getName() && !"".equals(phoneUser.getName())) {
                         phoneUser.setName(registryParam.getName());
                     }
-                    customerService.update(phoneUser);
+                    //customerService.update(phoneUser);
+                    commonService.originalCustomerRegistry(phoneUser);
                     String accessToken = JwtUtils.createJWT(String.valueOf(phoneUser.getCusId()), String.valueOf(phoneUser.getMobile()),
                             JwtConstant.EXPPIRES_SECOND * 1000);
                     System.out.println(accessToken);

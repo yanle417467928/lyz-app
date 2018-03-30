@@ -3,9 +3,11 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.core.constant.DataTransferExceptionType;
 import cn.com.leyizhuang.app.core.exception.DataTransferException;
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
+import cn.com.leyizhuang.app.foundation.pojo.datatransfer.DataTransferErrorLog;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferSupportService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.OrderGoodsTransferService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,6 +37,9 @@ public class testSellDetails {
 
     @Autowired
     private OrderGoodsTransferService orderGoodsTransferService;
+
+    @Resource
+    private DataTransferSupportService dataTransferSupportService;
 
     @Test
     public void testInsert(){
@@ -57,5 +64,11 @@ public class testSellDetails {
                 System.out.println(e.getMessage());
             }
         }
+    }
+
+    @Test
+    public void testTransfer(){
+        //dataTransferSupportService.saveOneDataTransferErrolog(new DataTransferErrorLog(null,"123","456",new Date()));
+        transferDAO.updateTransferDate(new Date(),"CD_XN20171001072558198957");
     }
 }

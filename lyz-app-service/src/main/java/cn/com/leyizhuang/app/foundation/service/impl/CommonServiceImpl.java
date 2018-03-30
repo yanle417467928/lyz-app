@@ -1715,5 +1715,15 @@ public class CommonServiceImpl implements CommonService {
         }
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void originalCustomerRegistry(AppCustomer phoneUser) throws UnsupportedEncodingException {
+        if (null != phoneUser){
+            customerService.update(phoneUser);
+            customerService.createCustomerPreDepositAccount(phoneUser.getCusId());
+            customerService.createCustomerLeBiAccount(phoneUser.getCusId());
+        }
+    }
+
 }
 

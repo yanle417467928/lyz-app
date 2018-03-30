@@ -139,6 +139,7 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
         //保存退单头及商品信息
         if (AssertUtil.isNotEmpty(returnOrderParamMap)) {
             for (Map.Entry<ReturnOrderBaseInf, List<ReturnOrderGoodsInf>> entry : returnOrderParamMap.entrySet()) {
+                System.out.println("保存退单头信息，ReturnOrderBaseInf" + entry.getKey());
                 separateOrderService.saveReturnOrderBaseInf(entry.getKey());
                 entry.getValue().forEach(p -> p.setRtHeaderId(entry.getKey().getRtHeaderId()));
                 for (ReturnOrderGoodsInf returnOrderGoodsInf : entry.getValue()) {
