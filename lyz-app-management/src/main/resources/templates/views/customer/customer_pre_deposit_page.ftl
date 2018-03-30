@@ -166,8 +166,10 @@
                 clearTimeout($global.timer);
                 $.each(result, function (i, item) {
                     city += "<option value=" + item.cityId + ">" + item.name + "</option>";
-                })
+                });
                 $("#cityCode").append(city);
+                $("#cityCode").selectpicker('refresh');
+                $("#cityCode").selectpicker('render');
             }
         });
     }
