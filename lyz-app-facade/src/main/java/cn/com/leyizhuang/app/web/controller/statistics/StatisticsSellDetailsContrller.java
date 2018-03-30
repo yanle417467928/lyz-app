@@ -33,10 +33,11 @@ public class StatisticsSellDetailsContrller {
     public ResultDTO<Object> statisticsPersonalSellDetais(Long sellerId, Long identityType, String flag) {
         /** 4月31号以前无销量 则提示功能暂未开放 **/
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime dateTime = LocalDateTime.of(2018,4,31,23,59,59);
+        LocalDateTime dateTime = LocalDateTime.of(2018,4,30,23,59,59);
 
         if (now.isBefore(dateTime)){
             ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此功能暂未开放，敬请期待", "");
+            return  resultDTO;
         }
 
         logger.info("获取导购个人销量，入参 sellerId:{} identityType:{}", sellerId, identityType);
@@ -76,10 +77,11 @@ public class StatisticsSellDetailsContrller {
 
         /** 4月31号以前无销量 则提示功能暂未开放 **/
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime dateTime = LocalDateTime.of(2018,4,31,23,59,59);
+        LocalDateTime dateTime = LocalDateTime.of(2018,4,30,23,59,59);
 
         if (now.isBefore(dateTime)){
             ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此功能暂未开放，敬请期待", "");
+            return  resultDTO;
         }
 
         ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "无数据", "");
