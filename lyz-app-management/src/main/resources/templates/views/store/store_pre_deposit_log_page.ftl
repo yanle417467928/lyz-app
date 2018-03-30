@@ -149,7 +149,7 @@
 <script>
 
     $(function () {
-        findCitylist()
+        findCitylist();
         showAvailableCredit(null,null,'-1');
         $('#btn_back').on('click', function () {
             window.history.back()
@@ -171,8 +171,10 @@
                 clearTimeout($global.timer);
                 $.each(result, function (i, item) {
                     city += "<option value=" + item.cityId + ">" + item.name + "</option>";
-                })
+                });
                 $("#cityCode").append(city);
+                $("#cityCode").selectpicker('refresh');
+                $("#cityCode").selectpicker('render');
             }
         });
     }
