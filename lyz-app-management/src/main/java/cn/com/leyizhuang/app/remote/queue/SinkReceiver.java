@@ -167,8 +167,8 @@ public class SinkReceiver {
                 try {
                     String returnNumber = objectMapper.readValue(message.getContent(), String.class);
                     // 门店退货单收货(自提单)
-                    log.info("门店自提单收货队列消费开始");
-                    //拆退单
+
+                    //拆退单 log.info("门店自提单收货队列消费开始");
                     separateOrderService.separateReturnOrder(returnNumber);
                     //拆单完成之后发送退单和退单商品信息到EBS
                     separateOrderService.sendReturnOrderBaseInfAndReturnOrderGoodsInf(returnNumber);
@@ -178,6 +178,8 @@ public class SinkReceiver {
                     separateOrderService.sendReturnOrderRefundInf(returnNumber);
                     //发送经退单销差价扣除信息
                     separateOrderService.sendReturnOrderJxPriceDifferenceRefundInf(returnNumber);
+                     //发送门店退货基本信息
+                    maReturnOrderService.sendReturnOrderReceiptInfAndRecord(returnNumber);
                 } catch (IOException e) {
                     log.warn("消息格式错误!");
                     e.printStackTrace();
