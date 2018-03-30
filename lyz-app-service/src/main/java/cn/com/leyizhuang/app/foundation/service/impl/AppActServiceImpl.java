@@ -916,13 +916,13 @@ public class AppActServiceImpl implements AppActService {
                         logger.info("专供促销："+response.getPromotionTitle());
 
                         // 记录
-                        SellZgCusTimes sellZgCusTimes1 = new SellZgCusTimes();
-                        sellZgCusTimes1.setCusId(cusId);
-                        sellZgCusTimes1.setSku(gift.getSku());
-                        sellZgCusTimes1.setTimes(1);
-                        sellZgCusTimes1.setActBaseType(ActBaseType.ZGFRIST);
-
-                        statisticsSellDetailsService.addSellZgCusTimes(sellZgCusTimes1);
+//                        SellZgCusTimes sellZgCusTimes1 = new SellZgCusTimes();
+//                        sellZgCusTimes1.setCusId(cusId);
+//                        sellZgCusTimes1.setSku(gift.getSku());
+//                        sellZgCusTimes1.setTimes(1);
+//                        sellZgCusTimes1.setActBaseType(ActBaseType.ZGFRIST);
+//
+//                        statisticsSellDetailsService.addSellZgCusTimes(sellZgCusTimes1);
                     }
                 }
             }
@@ -969,24 +969,24 @@ public class AppActServiceImpl implements AppActService {
                         enjoiedTimes = sellZgCusTimes.getTimes();
 
                         if (enjoyTimes > enjoiedTimes){
-                            sellZgCusTimes.setTimes(enjoiedTimes+enjoyTimes);
-                            statisticsSellDetailsService.updateSellZgCusTimes(sellZgCusTimes);
+//                            sellZgCusTimes.setTimes(enjoiedTimes+enjoyTimes);
+//                            statisticsSellDetailsService.updateSellZgCusTimes(sellZgCusTimes);
                         }else{
                             // 不能参与
                             continue;
                         }
 
                     }else {
-                        if (enjoyTimes > 0){
-                            //新增一条参与记录
-                            SellZgCusTimes sellZgCusTimes1 = new SellZgCusTimes();
-                            sellZgCusTimes1.setCusId(cusId);
-                            sellZgCusTimes1.setSku(zgGoods.getSku());
-                            sellZgCusTimes1.setTimes(enjoyTimes);
-                            sellZgCusTimes1.setActBaseType(ActBaseType.ACCUMULATE);
-
-                            statisticsSellDetailsService.addSellZgCusTimes(sellZgCusTimes1);
-                        }
+//                        if (enjoyTimes > 0){
+//                            //新增一条参与记录
+//                            SellZgCusTimes sellZgCusTimes1 = new SellZgCusTimes();
+//                            sellZgCusTimes1.setCusId(cusId);
+//                            sellZgCusTimes1.setSku(zgGoods.getSku());
+//                            sellZgCusTimes1.setTimes(enjoyTimes);
+//                            sellZgCusTimes1.setActBaseType(ActBaseType.ACCUMULATE);
+//
+//                            statisticsSellDetailsService.addSellZgCusTimes(sellZgCusTimes1);
+//                        }
                     }
 
                     currentEnjoyTimes = enjoyTimes - enjoiedTimes;

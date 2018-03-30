@@ -526,4 +526,7 @@
         </foreach>
     </insert>
 
+    <update id="updateTransferDate">
+        UPDATE td_order_copy set transfer_date = #{date} where id = #{id}
+    </update>
 </mapper>

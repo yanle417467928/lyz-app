@@ -189,15 +189,14 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                             }
                         }
 
-
+                        /** 记录该顾客参与首单促销参与次数 **/
+                        statisticsSellDetailsService.addOrUpdateSellZgCusTimes(userId,goods.getSku(),1,orderGoodsInfo.getOrderQuantity(),ActBaseType.ZGFRIST);
                     }
 
                     //计算分摊
                     finallyOrderGoodsInfo.addAll(this.countDutchPrice(newOrderGoodsInfoList, CountUtil.add(goodsTotalPrice, giftTotalPrice), CountUtil.sub(giftTotalPrice), identityType, customerType));
 
                 }
-
-
 
             }
 
@@ -278,9 +277,11 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                                     orderGoodsInfoMap.put(goods.getSku(),orderGoodsInfo);
                                 }
 
-
                             }
                         }
+
+                        /** 记录该顾客参累积促销参与次数 **/
+                        statisticsSellDetailsService.addOrUpdateSellZgCusTimes(userId,goods.getSku(),1,orderGoodsInfo.getOrderQuantity(),ActBaseType.ACCUMULATE);
                     }
 
                     //计算分摊

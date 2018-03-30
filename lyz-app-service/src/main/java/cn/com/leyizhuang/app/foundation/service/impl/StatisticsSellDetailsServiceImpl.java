@@ -69,15 +69,15 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
         // 月
         Integer month = now.getMonthValue();
 
-        logger.info(year+"年"+month+"月"+"，开始查询当月销量明细");
-        List<SellDetailsDO> sellDetailsDOList = sellDetailsDAO.queryOneMonthSellDetails(year,month);
+        logger.info(year + "年" + month + "月" + "，开始查询当月销量明细");
+        List<SellDetailsDO> sellDetailsDOList = sellDetailsDAO.queryOneMonthSellDetails(year, month);
 
         return sellDetailsDOList;
     }
 
-    public void addSellDetails(List<SellDetailsDO> sellDetailsDOS){
-        if (sellDetailsDOS != null){
-            for (SellDetailsDO detailsDO : sellDetailsDOS){
+    public void addSellDetails(List<SellDetailsDO> sellDetailsDOS) {
+        if (sellDetailsDOS != null) {
+            for (SellDetailsDO detailsDO : sellDetailsDOS) {
                 sellDetailsDAO.addOneDetail(detailsDO);
             }
         }
@@ -85,79 +85,79 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
 
     @Override
     @Transactional
-    public void addOrderSellDetails(String orderNumber){
-        if (StringUtils.isNotBlank(orderNumber)){
-           OrderBaseInfo orderBaseInfo = orderService.getOrderByOrderNumber(orderNumber);
+    public void addOrderSellDetails(String orderNumber) {
+        if (StringUtils.isNotBlank(orderNumber)) {
+            OrderBaseInfo orderBaseInfo = orderService.getOrderByOrderNumber(orderNumber);
 
-           /**打上标记 标识已经记录销量**/
-           orderBaseInfo.setIsRecordSales(true);
-           orderService.updateOrderBaseInfo(orderBaseInfo);
+            /**打上标记 标识已经记录销量**/
+            orderBaseInfo.setIsRecordSales(true);
+            orderService.updateOrderBaseInfo(orderBaseInfo);
 
-           List<OrderGoodsInfo> orderGoodsInfos = orderService.getOrderGoodsInfoByOrderNumber(orderNumber);
+            List<OrderGoodsInfo> orderGoodsInfos = orderService.getOrderGoodsInfoByOrderNumber(orderNumber);
 
-           if (orderBaseInfo != null && orderBaseInfo != null && orderGoodsInfos.size() > 0){
-               Date createDate = orderBaseInfo.getCreateTime();
-               //date 转 localDateTime
-               Instant instant = createDate.toInstant();
-               ZoneId zoneId = ZoneId.systemDefault();
-               LocalDateTime localDateTime = instant.atZone(zoneId).toLocalDateTime();
+            if (orderBaseInfo != null && orderBaseInfo != null && orderGoodsInfos.size() > 0) {
+                Date createDate = orderBaseInfo.getCreateTime();
+                //date 转 localDateTime
+                Instant instant = createDate.toInstant();
+                ZoneId zoneId = ZoneId.systemDefault();
+                LocalDateTime localDateTime = instant.atZone(zoneId).toLocalDateTime();
 
-               Integer year = localDateTime.getYear();
-               Integer month = localDateTime.getMonthValue();
+                Integer year = localDateTime.getYear();
+                Integer month = localDateTime.getMonthValue();
 
-               List<Long> goodsIds = new ArrayList<>();
-               for (OrderGoodsInfo goodsInfo : orderGoodsInfos){
-                   // 检查明细是否已经记录
-                   Boolean isExit = sellDetailsDAO.isExitByNumberAndGoodsLineId(orderNumber,goodsInfo.getId());
+                List<Long> goodsIds = new ArrayList<>();
+                for (OrderGoodsInfo goodsInfo : orderGoodsInfos) {
+                    // 检查明细是否已经记录
+                    Boolean isExit = sellDetailsDAO.isExitByNumberAndGoodsLineId(orderNumber, goodsInfo.getId());
 
-                   if (!isExit){
-                       SellDetailsDO detailsDO = new SellDetailsDO();
+                    if (!isExit) {
+                        SellDetailsDO detailsDO = new SellDetailsDO();
 
-                       detailsDO.setCompanyId(orderBaseInfo.getSobId());
-                       detailsDO.setYear(year);
-                       detailsDO.setMonth(month);
-                       detailsDO.setCreateTime(new Date());
-                       detailsDO.setCityId(orderBaseInfo.getCityId());
-                       detailsDO.setStoreId(orderBaseInfo.getStoreOrgId());
-                       detailsDO.setSellerId(orderBaseInfo.getSalesConsultId());
-                       detailsDO.setSellerName(orderBaseInfo.getSalesConsultName());
-                       detailsDO.setCustomerId(orderBaseInfo.getCustomerId());
-                       detailsDO.setCustomerPhone(orderBaseInfo.getCustomerPhone());
-                       detailsDO.setCustomerName(orderBaseInfo.getCustomerName());
-                       detailsDO.setNumber(orderBaseInfo.getOrderNumber());
-                       detailsDO.setSku(goodsInfo.getSku());
-                       detailsDO.setQuantity(goodsInfo.getOrderQuantity());
-                       detailsDO.setAmount(goodsInfo.getReturnPrice());
-                       detailsDO.setGoodsLineId(goodsInfo.getId());
-                       detailsDO.setOrderSubjectType(orderBaseInfo.getOrderSubjectType());
-                       detailsDO.setCreatorIdentityType(orderBaseInfo.getCreatorIdentityType());
-                       detailsDO.setCreatorId(orderBaseInfo.getCreatorId());
-                       detailsDO.setCreatorName(orderBaseInfo.getCreatorName());
-                       detailsDO.setSellDetalsFlag(0);
-                       detailsDO.setCompanyFlag(goodsInfo.getCompanyFlag());
-                       detailsDO.setGoodsLineType(goodsInfo.getGoodsLineType());
+                        detailsDO.setCompanyId(orderBaseInfo.getSobId());
+                        detailsDO.setYear(year);
+                        detailsDO.setMonth(month);
+                        detailsDO.setCreateTime(new Date());
+                        detailsDO.setCityId(orderBaseInfo.getCityId());
+                        detailsDO.setStoreId(orderBaseInfo.getStoreOrgId());
+                        detailsDO.setSellerId(orderBaseInfo.getSalesConsultId());
+                        detailsDO.setSellerName(orderBaseInfo.getSalesConsultName());
+                        detailsDO.setCustomerId(orderBaseInfo.getCustomerId());
+                        detailsDO.setCustomerPhone(orderBaseInfo.getCustomerPhone());
+                        detailsDO.setCustomerName(orderBaseInfo.getCustomerName());
+                        detailsDO.setNumber(orderBaseInfo.getOrderNumber());
+                        detailsDO.setSku(goodsInfo.getSku());
+                        detailsDO.setQuantity(goodsInfo.getOrderQuantity());
+                        detailsDO.setAmount(goodsInfo.getReturnPrice());
+                        detailsDO.setGoodsLineId(goodsInfo.getId());
+                        detailsDO.setOrderSubjectType(orderBaseInfo.getOrderSubjectType());
+                        detailsDO.setCreatorIdentityType(orderBaseInfo.getCreatorIdentityType());
+                        detailsDO.setCreatorId(orderBaseInfo.getCreatorId());
+                        detailsDO.setCreatorName(orderBaseInfo.getCreatorName());
+                        detailsDO.setSellDetalsFlag(0);
+                        detailsDO.setCompanyFlag(goodsInfo.getCompanyFlag());
+                        detailsDO.setGoodsLineType(goodsInfo.getGoodsLineType());
 
-                       sellDetailsDAO.addOneDetail(detailsDO);
+                        sellDetailsDAO.addOneDetail(detailsDO);
 
-                   }
-                   goodsIds.add(goodsInfo.getGid());
-               }
+                    }
+                    goodsIds.add(goodsInfo.getGid());
+                }
 
-               /*** 记录专供销量 ****/
-               this.recordZgSales(orderBaseInfo,goodsIds,orderGoodsInfos);
+                /*** 记录专供销量 ****/
+                this.recordZgSales(orderBaseInfo, goodsIds, orderGoodsInfos);
 
-           }else{
-               logger.info("订单："+orderNumber+"数据异常，生成销量明细失败！");
-               //  记录错误日志
-               this.recordeErrorLog(orderNumber);
-           }
+            } else {
+                logger.info("订单：" + orderNumber + "数据异常，生成销量明细失败！");
+                //  记录错误日志
+                this.recordeErrorLog(orderNumber);
+            }
         }
     }
 
     @Override
     @Transactional
-    public void addReturnOrderSellDetails(String returnOrderNumber){
-        if (StringUtils.isNotBlank(returnOrderNumber)){
+    public void addReturnOrderSellDetails(String returnOrderNumber) {
+        if (StringUtils.isNotBlank(returnOrderNumber)) {
             ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(returnOrderNumber);
 
             returnOrderBaseInfo.setIsRecordSales(true);
@@ -167,7 +167,7 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
             // 订单信息
             OrderBaseInfo orderBaseInfo = orderService.getOrderByOrderNumber(returnOrderBaseInfo.getOrderNo());
 
-            if (orderBaseInfo != null && returnOrderBaseInfo != null && returnOrderGoodsInfos != null && returnOrderGoodsInfos.size() != 0){
+            if (orderBaseInfo != null && returnOrderBaseInfo != null && returnOrderGoodsInfos != null && returnOrderGoodsInfos.size() != 0) {
 
                 Date returnTime = returnOrderBaseInfo.getReturnTime();
                 //date 转 localDateTime
@@ -178,11 +178,11 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
                 Integer year = localDateTime.getYear();
                 Integer month = localDateTime.getMonthValue();
 
-                for (ReturnOrderGoodsInfo goodsInfo : returnOrderGoodsInfos){
+                for (ReturnOrderGoodsInfo goodsInfo : returnOrderGoodsInfos) {
                     // 检查明细是否已经记录
-                    Boolean isExit = sellDetailsDAO.isExitByNumberAndGoodsLineId(returnOrderNumber,goodsInfo.getId());
+                    Boolean isExit = sellDetailsDAO.isExitByNumberAndGoodsLineId(returnOrderNumber, goodsInfo.getId());
 
-                    if (!isExit){
+                    if (!isExit) {
                         SellDetailsDO detailsDO = new SellDetailsDO();
 
                         detailsDO.setCompanyId(orderBaseInfo.getSobId());
@@ -212,8 +212,8 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
                         sellDetailsDAO.addOneDetail(detailsDO);
                     }
                 }
-            }else{
-                logger.info("订单："+returnOrderNumber+"数据异常，生成销量明细失败！");
+            } else {
+                logger.info("订单：" + returnOrderNumber + "数据异常，生成销量明细失败！");
                 // 记录错误日志
                 this.recordeErrorLog(returnOrderNumber);
             }
@@ -222,29 +222,30 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
 
     /**
      * 根据销量时间倒叙取四条记录单号
+     *
      * @return
      */
     @Override
-    public List<String> getCustomerSellDetailsOrderByCreateTimeDescLimit4(Long cusId,LocalDateTime dateTime,Long sellerId){
-        if (cusId == null || sellerId == null || dateTime == null){
-            return  null;
+    public List<String> getCustomerSellDetailsOrderByCreateTimeDescLimit4(Long cusId, LocalDateTime dateTime, Long sellerId) {
+        if (cusId == null || sellerId == null || dateTime == null) {
+            return null;
         }
 
-        return sellDetailsDAO.getCustomerSellDetailsOrderByCreateTimeDescLimit4(cusId,dateTime,sellerId);
+        return sellDetailsDAO.getCustomerSellDetailsOrderByCreateTimeDescLimit4(cusId, dateTime, sellerId);
     }
 
     @Override
-    public List<String> getSellDetailsFrequencyBycusIdAndSellerIdAndCreateTime(Long cusId,LocalDateTime dateTime,Long sellerId){
-        if (cusId == null || sellerId == null || dateTime == null){
-            return  null;
+    public List<String> getSellDetailsFrequencyBycusIdAndSellerIdAndCreateTime(Long cusId, LocalDateTime dateTime, Long sellerId) {
+        if (cusId == null || sellerId == null || dateTime == null) {
+            return null;
         }
 
-        return sellDetailsDAO.getSellDetailsFrequencyBycusIdAndSellerIdAndCreateTime(cusId,dateTime,sellerId);
+        return sellDetailsDAO.getSellDetailsFrequencyBycusIdAndSellerIdAndCreateTime(cusId, dateTime, sellerId);
     }
 
     @Override
-    public void recordeErrorLog(String orderNo){
-        if (orderNo != null || !orderNo.equals("")){
+    public void recordeErrorLog(String orderNo) {
+        if (orderNo != null || !orderNo.equals("")) {
             SellDetailsErrorLogDO log = new SellDetailsErrorLogDO();
             log.setOrderNo(orderNo);
             log.setRecordTime(new Date());
@@ -258,17 +259,18 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
 
     /**
      * 新增
+     *
      * @param detailsDOS
      */
-    public void addZgDetailsList(List<SellZgDetailsDO> detailsDOS){
-        if (detailsDOS != null || detailsDOS.size() > 0){
+    public void addZgDetailsList(List<SellZgDetailsDO> detailsDOS) {
+        if (detailsDOS != null || detailsDOS.size() > 0) {
             for (SellZgDetailsDO details : detailsDOS) {
                 sellZgDetailsDAO.addOneDetail(details);
             }
         }
     }
 
-    private Boolean recordZgSales(OrderBaseInfo orderBaseInfo,List<Long> goodsIds,List<OrderGoodsInfo> orderGoodsInfoList){
+    private Boolean recordZgSales(OrderBaseInfo orderBaseInfo, List<Long> goodsIds, List<OrderGoodsInfo> orderGoodsInfoList) {
         Long cusId = orderBaseInfo.getCustomerId();
         //判断会员身份
         CustomerRankInfoResponse customerRankInfoResponse = appCustomerService.findCusRankinfoByCusId(cusId);
@@ -277,18 +279,18 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
             appCustomer = appCustomerService.findById(cusId);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-            logger.info("计算专供促销，顾客id:"+cusId+"找不到顾客信息");
+            logger.info("计算专供促销，顾客id:" + cusId + "找不到顾客信息");
         }
 
-        if (customerRankInfoResponse == null){
+        if (customerRankInfoResponse == null) {
             // 非专供会员 不能参与专供促销
             return false;
         }
 
         // 根据用户购买产品id 返回专供产品
-        List<GiftListResponseGoods> goodsZGList = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserId(goodsIds,cusId, AppIdentityType.CUSTOMER);
+        List<GiftListResponseGoods> goodsZGList = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserId(goodsIds, cusId, AppIdentityType.CUSTOMER);
 
-        if (goodsZGList == null || goodsZGList.size() == 0){
+        if (goodsZGList == null || goodsZGList.size() == 0) {
             // 无专供产品
             return false;
         }
@@ -302,11 +304,11 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
         Integer year = localDateTime.getYear();
         Integer month = localDateTime.getMonthValue();
 
-        for ( GiftListResponseGoods zgGoods : goodsZGList){
-            for (OrderGoodsInfo goodsInfo : orderGoodsInfoList){
-                if (zgGoods.getSku().equals(goodsInfo.getSku())){
+        for (GiftListResponseGoods zgGoods : goodsZGList) {
+            for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
+                if (zgGoods.getSku().equals(goodsInfo.getSku())) {
 
-                    if (goodsInfo.getGoodsLineType().equals(AppGoodsLineType.PRESENT)){
+                    if (goodsInfo.getGoodsLineType().equals(AppGoodsLineType.PRESENT)) {
                         // 赠品则不记录销量
                         continue;
                     }
@@ -333,8 +335,8 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
 
                     // 检查是否已经记录
 
-                    Boolean exitFlag = sellZgDetailsDAO.isExitByNumberAndGoodsLineId(orderBaseInfo.getOrderNumber(),goodsInfo.getId());
-                    if(!exitFlag){
+                    Boolean exitFlag = sellZgDetailsDAO.isExitByNumberAndGoodsLineId(orderBaseInfo.getOrderNumber(), goodsInfo.getId());
+                    if (!exitFlag) {
                         sellZgDetailsDAO.addOneDetail(detailsDO);
                     }
 
@@ -347,67 +349,92 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
 
     /**
      * 返回会员专供产品累计桶数
+     *
      * @return
      */
-    public Integer getZgTsBycusIdAndsku(Long cusId,String sku){
+    public Integer getZgTsBycusIdAndsku(Long cusId, String sku) {
         Integer totalQty = 0;
 
-        if (cusId == null || sku == null || sku.equals("")){
+        if (cusId == null || sku == null || sku.equals("")) {
 
-        }else{
-            totalQty = sellZgDetailsDAO.getQtyByCusIdAndSku(cusId,sku);
+        } else {
+            totalQty = sellZgDetailsDAO.getQtyByCusIdAndSku(cusId, sku);
 
-            if (totalQty == null){
+            if (totalQty == null) {
                 totalQty = 0;
             }
         }
-        return  totalQty;
+        return totalQty;
     }
 
     /**
      * 根据专供会员id和返回专供销量结果结果
+     *
      * @param cusId
      * @param sku
      * @return
      */
-    public List<SellZgDetailsDO> getZgDetailsByCusIdAndSku(Long cusId,String sku){
-        if (cusId == null || sku == null || sku.equals("")){
+    public List<SellZgDetailsDO> getZgDetailsByCusIdAndSku(Long cusId, String sku) {
+        if (cusId == null || sku == null || sku.equals("")) {
             return null;
         }
 
-        return sellZgDetailsDAO.getDetailsByCusIdAndSku(cusId,sku);
+        return sellZgDetailsDAO.getDetailsByCusIdAndSku(cusId, sku);
     }
 
-    public List<SellZgDetailsDO> getZgDetailsByCusId(Long cusId){
-        if (cusId == null){
+    public List<SellZgDetailsDO> getZgDetailsByCusId(Long cusId) {
+        if (cusId == null) {
             return null;
         }
 
         return sellZgDetailsDAO.getDetailsByCusId(cusId);
     }
 
-    public SellZgCusTimes getTimesByCusIdAndSku(Long cusId,String sku,ActBaseType actBaseType){
-        if (cusId == null){
+    public SellZgCusTimes getTimesByCusIdAndSku(Long cusId, String sku, ActBaseType actBaseType) {
+        if (cusId == null) {
             return null;
         }
 
-        return sellZgDetailsDAO.getTimesByCusIdAndSku(cusId,sku,actBaseType);
+        return sellZgDetailsDAO.getTimesByCusIdAndSku(cusId, sku, actBaseType);
     }
 
-    public void updateSellZgCusTimes(SellZgCusTimes sellZgCusTimes){
-        if (sellZgCusTimes != null){
+    public void updateSellZgCusTimes(SellZgCusTimes sellZgCusTimes) {
+        if (sellZgCusTimes != null) {
             sellZgDetailsDAO.updateSellZgCusTimes(sellZgCusTimes);
         }
     }
 
-    public void addSellZgCusTimes(SellZgCusTimes sellZgCusTimes){
-        if (sellZgCusTimes != null){
+    public void addSellZgCusTimes(SellZgCusTimes sellZgCusTimes) {
+        if (sellZgCusTimes != null) {
             sellZgDetailsDAO.addSellZgCusTimes(sellZgCusTimes);
         }
     }
 
+    public void addOrUpdateSellZgCusTimes(Long cusId, String sku, Integer times, Integer qty, ActBaseType type) {
+        SellZgCusTimes sellZgCusTimes = this.sellZgDetailsDAO.getTimesByCusIdAndSku(cusId, sku, type);
 
-    /**
-     * 统计个人总销量
-     */
+        if (sellZgCusTimes != null) {
+            Integer enjoiedTimes = sellZgCusTimes.getTimes();
+            Integer enjoideQty = sellZgCusTimes.getQty();
+
+            sellZgCusTimes.setTimes(enjoiedTimes + times);
+            sellZgCusTimes.setQty(enjoideQty + qty);
+            sellZgDetailsDAO.updateSellZgCusTimes(sellZgCusTimes);
+
+        } else {
+            //新增一条参与记录
+            SellZgCusTimes sellZgCusTimes1 = new SellZgCusTimes();
+            sellZgCusTimes1.setCusId(cusId);
+            sellZgCusTimes1.setSku(sku);
+            sellZgCusTimes1.setTimes(times);
+            sellZgCusTimes1.setActBaseType(type);
+            sellZgCusTimes1.setQty(qty);
+
+            sellZgDetailsDAO.addSellZgCusTimes(sellZgCusTimes1);
+        }
+    }
+
+/**
+ * 统计个人总销量
+ */
 }

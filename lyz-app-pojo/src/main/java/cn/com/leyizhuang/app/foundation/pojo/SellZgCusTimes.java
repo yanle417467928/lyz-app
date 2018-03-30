@@ -35,4 +35,9 @@ public class SellZgCusTimes {
      * 促销标志
      */
     private ActBaseType actBaseType;
+
+    /**
+     * 数量
+     */
+    private Integer qty;
 }
