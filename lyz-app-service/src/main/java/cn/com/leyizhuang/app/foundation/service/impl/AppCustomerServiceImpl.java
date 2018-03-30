@@ -636,4 +636,28 @@ public class AppCustomerServiceImpl implements AppCustomerService {
 
         return customerDAO.findAllCustomer();
     }
+
+    @Override
+    @Transactional
+    public void createCustomerPreDepositAccount(Long cusId) {
+        if (null != cusId){
+            CustomerPreDeposit customerPreDeposit = new CustomerPreDeposit();
+            customerPreDeposit.setBalance(0D);
+            customerPreDeposit.setCreateTime(new Date());
+            customerPreDeposit.setCusId(cusId);
+            customerDAO.savePreDeposit(customerPreDeposit);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void createCustomerLeBiAccount(Long cusId) {
+        if (null != cusId){
+            CustomerLeBi customerLeBi = new CustomerLeBi();
+            customerLeBi.setQuantity(0);
+            customerLeBi.setCreateTime(new Date());
+            customerLeBi.setCusId(cusId);
+            customerDAO.saveLeBi(customerLeBi);
+        }
+    }
 }
