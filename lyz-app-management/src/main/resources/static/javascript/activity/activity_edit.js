@@ -445,7 +445,7 @@ function formValidate() {
 
         })
         if (target == "") {
-
+            $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
             $notify.danger('请选择目标对象');
             return false;
         }
@@ -466,6 +466,7 @@ function formValidate() {
             );
         })
         if (stores.length == 0) {
+            $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
             $notify.danger("请选择门店");
             return false;
         }

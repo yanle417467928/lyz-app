@@ -100,7 +100,7 @@ public class MaActViewsController extends BaseController{
 
         for (SimpleStoreParam VO : stores) {
             for ( ActStoreDO DO : actStoreDOList) {
-                if(VO.getStoreId() == DO.getStoreId()){
+                if(VO.getStoreId().equals(DO.getStoreId())){
                     VO.setIsSelected(true);
                     break;
                 }else{
