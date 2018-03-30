@@ -787,10 +787,6 @@ public class ReturnOrderController {
             if (AppDeliveryType.HOUSE_DELIVERY.equals(order.getDeliveryType())) {
                 //发送退货单到wms
                 callWms.sendToWmsReturnOrderAndGoods(returnNo);
-                //自提单不发WMS只发EBS
-            } else if (AppDeliveryType.SELF_TAKE.equals(order.getDeliveryType())) {
-                //发送退单拆单消息到拆单消息队列
-                sinkSender.sendReturnOrder(returnNo);
             }
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
