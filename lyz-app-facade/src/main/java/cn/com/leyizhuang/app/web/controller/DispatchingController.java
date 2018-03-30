@@ -97,7 +97,7 @@ public class DispatchingController {
             }
             List<WaitDeliveryResponse> waitDeliveryResponseList = orderDeliveryInfoDetailsService.getOrderBeasInfoByOperatorNo(appEmployee.getDeliveryClerkNo());
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, waitDeliveryResponseList);
-            logger.info("getDispatchingList OUT,配送员获取待配送列表成功，出参 resultDTO:{}", resultDTO);
+            logger.info("getDispatchingList OUT,配送员获取待配送列表成功，出参 resultDTO:{}", waitDeliveryResponseList.size());
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
