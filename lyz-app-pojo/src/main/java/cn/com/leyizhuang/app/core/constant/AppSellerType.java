@@ -15,11 +15,11 @@ public enum AppSellerType {
 
     private String value;
 
-    private String desccription;
+    private String description;
 
-    AppSellerType(String value, String desccription) {
+    AppSellerType(String value, String description) {
         this.value = value;
-        this.desccription = desccription;
+        this.description = description;
     }
 
     public String getValue() {
@@ -27,7 +27,7 @@ public enum AppSellerType {
     }
 
     public String getDesccription() {
-        return desccription;
+        return description;
     }
 
     public static AppSellerType getAppSellerTypeByValue(String value){
