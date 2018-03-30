@@ -1426,11 +1426,11 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             }
             returnOrderBaseInfo.setReturnPrice(returnPrice);
             returnOrderBaseInfo.setRemarksInfo(remarksInfo);
-            returnOrderBaseInfo.setCreatorId(userId);
-            returnOrderBaseInfo.setCreatorIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
-            AppEmployee employee = employeeService.findById(userId);
-            returnOrderBaseInfo.setCreatorName(employee.getName());
-            returnOrderBaseInfo.setCreatorPhone(employee.getMobile());
+            returnOrderBaseInfo.setCreatorId(orderBaseInfo.getCreatorId());
+            returnOrderBaseInfo.setCreatorIdentityType(orderBaseInfo.getCreatorIdentityType());
+//            AppEmployee employee = employeeService.findById(userId);
+            returnOrderBaseInfo.setCreatorName(orderBaseInfo.getCreatorName());
+            returnOrderBaseInfo.setCreatorPhone(orderBaseInfo.getCreatorPhone());
             returnOrderBaseInfo.setCustomerId(orderBaseInfo.getCustomerId());
             returnOrderBaseInfo.setCustomerName(orderBaseInfo.getCustomerName());
             returnOrderBaseInfo.setReasonInfo(reasonInfo);

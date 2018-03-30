@@ -446,6 +446,14 @@ public class ReturnOrderController {
                 logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
+            //校验门店自提单只能退门店
+            if (AppDeliveryType.SELF_TAKE.equals(order.getDeliveryType())) {
+                if (param.getReturnDeliveryInfo().getDeliveryType().equalsIgnoreCase(AppDeliveryType.HOUSE_PICK.getValue())) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "自提单请选择退回门店!", "");
+                    logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+            }
             //*******************处理上传图骗***********************
             List<String> pictureUrls = new ArrayList<>();
             String returnPic = null;
@@ -775,11 +783,11 @@ public class ReturnOrderController {
                     logger.info("cancelOrderToWms OUT,买券正常退货成功");
                 }
             }
-            //只有配送单退货才发WMS.
+            //只有配送单退货才发WMS.在返配上架后发EBS
             if (AppDeliveryType.HOUSE_DELIVERY.equals(order.getDeliveryType())) {
                 //发送退货单到wms
                 callWms.sendToWmsReturnOrderAndGoods(returnNo);
-
+                //自提单不发WMS只发EBS
             } else if (AppDeliveryType.SELF_TAKE.equals(order.getDeliveryType())) {
                 //发送退单拆单消息到拆单消息队列
                 sinkSender.sendReturnOrder(returnNo);
