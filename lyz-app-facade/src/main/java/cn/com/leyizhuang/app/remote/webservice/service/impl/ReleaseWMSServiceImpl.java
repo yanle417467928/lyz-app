@@ -291,19 +291,29 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                             if (a){
                                 //修改订单处理状态
                                 returnOrderService.updateReturnOrderStatus(returnOrderBaseInfo.getReturnNo(), AppReturnOrderStatus.FINISHED);
+                                //*****************************保存订单生命周期信息***************************
                                 OrderLifecycle orderLifecycle = new OrderLifecycle();
                                 orderLifecycle.setOid(orderBaseInfo.getId());
                                 orderLifecycle.setOrderNumber(orderBaseInfo.getOrderNumber());
                                 if (returnOrderBaseInfo.getReturnType().equals(ReturnOrderType.REFUSED_RETURN)){
                                     orderLifecycle.setOperation(OrderLifecycleType.REJECTED);
-                                    orderLifecycle.setPostStatus(OrderLifecycleType.REJECTED);
+                                    orderLifecycle.setPostStatus(AppOrderStatus.REJECTED);
                                 }else if (returnOrderBaseInfo.getReturnType().equals(ReturnOrderType.NORMAL_RETURN)){
                                     orderLifecycle.setOperation(OrderLifecycleType.NORMAL_RETURN);
-                                    orderLifecycle.setOperation(OrderLifecycleType.FINISHED);
+                                    orderLifecycle.setPostStatus(AppOrderStatus.FINISHED);
                                 }
                                 orderLifecycle.setOperationTime(new Date());
                                 returnOrderDAO.saveOrderLifecycle(orderLifecycle);
+                                //********************************保存退单生命周期信息***********************
+                                ReturnOrderLifecycle returnOrderLifecycle = new ReturnOrderLifecycle();
+                                returnOrderLifecycle.setRoid(returnOrderBaseInfo.getRoid());
+                                returnOrderLifecycle.setReturnNo(returnOrderBaseInfo.getReturnNo());
+                                returnOrderLifecycle.setOperation(OrderLifecycleType.REJECTED);
+                                returnOrderLifecycle.setPostStatus(AppReturnOrderStatus.FINISHED);
+                                returnOrderLifecycle.setOperationTime(new Date());
+                                returnOrderDAO.saveReturnOrderLifecycle(returnOrderLifecycle);
 
+                                //****************************更新物流表的返配上架时间*******************************
                                 returnOrderService.updateReturnLogisticInfoOfBackTime(returnOrderBaseInfo.getReturnNo());
                             }else{
                                 //修改订单处理状态

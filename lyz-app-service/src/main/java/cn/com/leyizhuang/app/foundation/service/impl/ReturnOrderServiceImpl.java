@@ -854,15 +854,24 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             if (AssertUtil.isNotEmpty(appStore) && appStore.getStoreType().equals(StoreType.FX) || appStore.getStoreType().equals(StoreType.JM)) {
                 commonService.deductionOrderJxPriceDifferenceRefund(returnOrderBaseInfo, orderBaseInfo, returnOrderGoodsInfos);
             }
-            //*******************************记录订单生命周期**************************
-            if (orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_SHIPMENT) && orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE)) {
+
+            if (!orderBaseInfo.getStatus().equals(AppOrderStatus.UNPAID)) {
+                //*******************************记录订单生命周期**************************
                 OrderLifecycle orderLifecycle = new OrderLifecycle();
                 orderLifecycle.setOid(orderBaseInfo.getId());
                 orderLifecycle.setOrderNumber(orderBaseInfo.getOrderNumber());
                 orderLifecycle.setOperation(OrderLifecycleType.CANCEL_ORDER);
-                orderLifecycle.setPostStatus(OrderLifecycleType.CANCELED);
+                orderLifecycle.setPostStatus(AppOrderStatus.CANCELED);
                 orderLifecycle.setOperationTime(new Date());
                 returnOrderDAO.saveOrderLifecycle(orderLifecycle);
+                //********************************保存退单生命周期信息***********************
+                ReturnOrderLifecycle returnOrderLifecycle = new ReturnOrderLifecycle();
+                returnOrderLifecycle.setRoid(returnOrderBaseInfo.getRoid());
+                returnOrderLifecycle.setReturnNo(returnOrderBaseInfo.getReturnNo());
+                returnOrderLifecycle.setOperation(OrderLifecycleType.CANCEL_ORDER);
+                returnOrderLifecycle.setPostStatus(AppReturnOrderStatus.FINISHED);
+                returnOrderLifecycle.setOperationTime(new Date());
+                returnOrderDAO.saveReturnOrderLifecycle(returnOrderLifecycle);
             }
             //修改订单状态为已取消
             appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.CANCELED, null, orderBaseInfo.getOrderNumber());

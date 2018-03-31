@@ -633,4 +633,13 @@
         (#{oid}, #{orderNumber}, #{operation}, #{postStatus}, #{operationTime})
     </insert>
 
+    <insert id="saveReturnOrderLifecycle"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderLifecycle">
+        INSERT INTO ord_return_lifecycle
+        (roid,return_no,operation, post_status, operation_time)
+        VALUES
+        (#{roid}, #{returnNo}, #{operation}, #{postStatus}, #{operationTime})
+    </insert>
+
+
 </mapper>

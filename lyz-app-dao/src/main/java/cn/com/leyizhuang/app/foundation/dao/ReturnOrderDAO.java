@@ -157,4 +157,10 @@ public interface ReturnOrderDAO {
      * @param orderLifecycle
      */
     void saveOrderLifecycle(OrderLifecycle orderLifecycle);
+
+    /**
+     * 保存退单生命周期记录
+     * @param returnOrderLifecycle
+     */
+    void saveReturnOrderLifecycle(ReturnOrderLifecycle returnOrderLifecycle);
 }
