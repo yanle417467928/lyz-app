@@ -183,10 +183,11 @@ public class QrcodeRegisterRestController extends BaseRestController {
         if ("00".equalsIgnoreCase(returnCode)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("getQrCode OUT，验证码发送成功，出参 ResultDTO:{}", resultDTO);
+            return resultDTO;
         } else {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "短信平台故障，验证码发送失败！", null);
             logger.info("getQrCode OUT，验证码发送失败，出参 ResultDTO:{}", resultDTO);
+            return resultDTO;
         }
-        return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
     }
 }
