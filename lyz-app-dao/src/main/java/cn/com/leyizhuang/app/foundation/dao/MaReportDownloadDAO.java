@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.foundation.pojo.reportDownload.NotPickGoodsReportDO;
 import cn.com.leyizhuang.app.foundation.pojo.reportDownload.ReceiptsReportDO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -18,4 +19,7 @@ public interface MaReportDownloadDAO {
                                                    @Param("keywords")String keywords, @Param("list") List<Long> storeIds);
 
 
+    List<NotPickGoodsReportDO> findNotPickGoodsReportDOAll(@Param("cityId") Long cityId, @Param("storeId") Long storeId, @Param("storeType") String storeType,
+                                                           @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("pickType") String pickType,
+                                                           @Param("list") List<Long> storeIds);
 }

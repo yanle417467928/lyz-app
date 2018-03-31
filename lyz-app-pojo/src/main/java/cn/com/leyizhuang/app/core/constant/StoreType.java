@@ -48,4 +48,10 @@ public enum StoreType {
         storeTypes.add(StoreType.FXCK);
         return storeTypes;
     }
+
+    public static List<StoreType> getStoreTypeList() {
+        List<StoreType> storeTypes = getNotZsType();
+        storeTypes.add(StoreType.ZS);
+        return storeTypes;
+    }
 }

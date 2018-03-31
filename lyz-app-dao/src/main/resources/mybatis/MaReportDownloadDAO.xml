@@ -1,74 +1,176 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaReportDownloadDAO">
-    <select id="findReceiptsReportDOAll" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.ReceiptsReportDO">
-        SELECT obi.city_name cityName, st.store_name storeName, st.store_type storeType, obpd.pay_time payTime, obpd.pay_type payTypes,
-            obpd.pay_type payType, obpd.amount money, obi.ord_no orderNumber, IF(obpd.pay_type = 'POS',obd.store_pos_number,null) remarks
-         FROM
+    <select id="findReceiptsReportDOAll"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.ReceiptsReportDO">
+        SELECT obi.city_name cityName, st.store_name storeName, st.store_type storeType, obpd.pay_time payTime,
+        obpd.pay_type payTypes,
+        obpd.pay_type payType, obpd.amount money, obi.ord_no orderNumber, IF(obpd.pay_type =
+        'POS',obd.store_pos_number,null) remarks
+        FROM
         ord_billing_payment_details obpd
         INNER JOIN ord_base_info obi ON obi.ord_no = obpd.ord_no
         INNER JOIN st_store st ON st.store_id = obi.store_id
         INNER JOIN ord_billing_details obd ON obd.ord_no = obi.ord_no
         WHERE 1=1
-            <if test="null != cityId and cityId != -1">
-                AND obi.city_id = #{cityId}
-            </if>
-            <if test="null != storeId and storeId != -1">
-                AND obi.store_id = #{storeId}
-            </if>
-            <if test="null != storeType and storeType != ''">
-                AND st.store_type = #{storeType}
-            </if>
-            <if test="null != startTime and startTime != ''">
-                AND obpd.pay_time &gt; #{startTime}
-            </if>
-            <if test="null != endTime and endTime != ''">
-                AND obpd.pay_time &lt; #{endTime}
-            </if>
-            <if test="null != payType and payType != ''">
-                AND obpd.pay_type = #{payType}
-            </if>
-            <if test="null != keywords and keywords != ''">
-                AND obi.ord_no LIKE concat(concat('%',#{keywords}),'%')
-            </if>
-            AND obi.store_id IN
-            <foreach collection="list" item="item" open="(" close=")" separator=",">
-                #{item}
-            </foreach>
+        <if test="null != cityId and cityId != -1">
+            AND obi.city_id = #{cityId}
+        </if>
+        <if test="null != storeId and storeId != -1">
+            AND obi.store_id = #{storeId}
+        </if>
+        <if test="null != storeType and storeType != ''">
+            AND st.store_type = #{storeType}
+        </if>
+        <if test="null != startTime and startTime != ''">
+            AND obpd.pay_time &gt; #{startTime}
+        </if>
+        <if test="null != endTime and endTime != ''">
+            AND obpd.pay_time &lt; #{endTime}
+        </if>
+        <if test="null != payType and payType != ''">
+            AND obpd.pay_type = #{payType}
+        </if>
+        <if test="null != keywords and keywords != ''">
+            AND obi.ord_no LIKE concat(concat('%',#{keywords}),'%')
+        </if>
+        AND obi.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         UNION
-        SELECT obi.city_name cityName, st.store_name storeName, st.store_type storeType, orbd.create_time payTime, orbd.return_pay_type payTypes,
-            orbd.return_pay_type payType, (-1 * orbd.return_money) money, orbi.return_no orderNumber, NULL remarks
+        SELECT obi.city_name cityName, st.store_name storeName, st.store_type storeType, orbd.create_time payTime,
+        orbd.return_pay_type payTypes,
+        orbd.return_pay_type payType, (-1 * orbd.return_money) money, orbi.return_no orderNumber, NULL remarks
         FROM ord_return_billing_detail orbd
         INNER JOIN ord_return_base_info orbi ON orbi.return_no = orbd.return_no
         INNER JOIN st_store st ON st.store_id = orbi.store_id
         INNER JOIN ord_base_info obi ON obi.ord_no = orbi.ord_no
         WHERE 1 = 1
-            <if test="null != cityId and cityId != -1">
-                AND obi.city_id = 1
-            </if>
-            <if test="null != storeId and storeId != -1">
-                AND obi.store_id = #{storeId}
-            </if>
-           <if test="null != storeType and storeType != ''">
-                AND st.store_type = #{storeType}
-            </if>
-            <if test="null != startTime and startTime != ''">
-                AND orbd.create_time &gt; #{startTime}
-            </if>
-            <if test="null != endTime and endTime != ''">
-                AND orbd.create_time &lt; #{endTime}
-            </if>
-            <if test="null != payType and payType != ''">
-                AND orbd.return_pay_type = #{payType}
-            </if>
-            <if test="null != keywords and keywords != ''">
-                AND orbi.return_no LIKE concat(concat('%',#{keywords}),'%')
-            </if>
-            AND obi.store_id IN
-            <foreach collection="list" item="item" open="(" close=")" separator=",">
-                #{item}
-            </foreach>
+        <if test="null != cityId and cityId != -1">
+            AND obi.city_id = 1
+        </if>
+        <if test="null != storeId and storeId != -1">
+            AND obi.store_id = #{storeId}
+        </if>
+        <if test="null != storeType and storeType != ''">
+            AND st.store_type = #{storeType}
+        </if>
+        <if test="null != startTime and startTime != ''">
+            AND orbd.create_time &gt; #{startTime}
+        </if>
+        <if test="null != endTime and endTime != ''">
+            AND orbd.create_time &lt; #{endTime}
+        </if>
+        <if test="null != payType and payType != ''">
+            AND orbd.return_pay_type = #{payType}
+        </if>
+        <if test="null != keywords and keywords != ''">
+            AND orbi.return_no LIKE concat(concat('%',#{keywords}),'%')
+        </if>
+        AND obi.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         ORDER BY payTime
     </select>
 
+    <select id="findNotPickGoodsReportDOAll"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.NotPickGoodsReportDO">
+        SELECT
+        obi.city_name cityName,
+        st.store_name storeName,
+        st.store_type storeType,
+        obi.delivery_type pickType,
+        obd.pay_up_time buyTime,
+        obi.effective_end_time effectiveTime,
+        obi.customer_id customerId,
+        obi.customer_name customerName,
+        obi.customer_phone customerPhone,
+        obi.customer_type customerType,
+        obi.sales_consult_name sellerName,
+        ogi.sku sku,
+        ogi.sku_name skuName,
+        ogi.order_qty quantity,
+        ogi.retail_price buyPrice,
+        (ogi.order_qty * ogi.retail_price) totalBuyPrice,
+        obi.ord_no referenceNumber
+        FROM ord_billing_details obd
+        INNER JOIN ord_base_info obi ON obd.oid = obi.oid
+        INNER JOIN st_store st ON st.store_id = obi.store_id
+        INNER JOIN ord_goods_info ogi ON obi.oid = ogi.oid
+        WHERE obd.is_pay_up = 1 AND ((obi.delivery_type = 'HOUSE_DELIVERY' AND obi.status = 'PENDING_SHIPMENT')
+        OR (obi.delivery_type = 'SELF_TAKE' AND obi.status = 'PENDING_RECEIVE'))
+        <if test="null != cityId and cityId != -1">
+            AND obi.city_id = #{cityId}
+        </if>
+        <if test="null != storeId and storeId != -1">
+            AND obi.store_id = #{storeId}
+        </if>
+        <if test="null != storeType and storeType != ''">
+            AND st.store_type = #{storeType}
+        </if>
+        <if test="null != startTime and startTime != ''">
+            AND obd.pay_up_time &gt; #{startTime}
+        </if>
+        <if test="null != endTime and endTime != ''">
+            AND obd.pay_up_time &lt; #{endTime}
+        </if>
+        <if test="null != pickType and pickType != ''">
+            AND obi.delivery_type = #{pickType}
+        </if>
+        AND obi.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        UNION
+        SELECT
+        city.name cityName,
+        st.store_name storeName,
+        st.store_type storeType,
+        'PRODUCT_COUPON' pickType,
+        ccpc.get_time buyTime,
+        ccpc.effective_end_time effectiveTime,
+        c.cus_id customerId,
+        c.name customerName,
+        c.mobile customerPhone,
+        c.customer_type customerType,
+        e.name sellerName,
+        g.sku sku,
+        g.sku_name skuName,
+        ccpc.quantity quantity,
+        ccpc.buy_price buyPrice,
+        (ccpc.quantity * ccpc.buy_price) totalBuyPrice,
+        ccpc.use_ord_no referenceNumber
+        FROM cus_customer_product_coupon ccpc
+        INNER JOIN cus_customer c ON ccpc.cus_id = c.cus_id
+        LEFT JOIN emp_employee e ON c.sales_consult_id = e.emp_id
+        INNER JOIN st_store st ON st.store_id = c.store_id
+        INNER JOIN city ON c.city_id = city.city_id
+        INNER JOIN gds_goods g ON ccpc.gid = g.gid
+        WHERE ccpc.is_used = 0 AND ccpc.effective_end_time &lt; now()
+        <if test="null != cityId and cityId != -1">
+            AND city.city_id = #{cityId}
+        </if>
+        <if test="null != storeId and storeId != -1">
+            AND st.store_id = #{storeId}
+        </if>
+        <if test="null != storeType and storeType != ''">
+            AND st.store_type = #{storeType}
+        </if>
+        <if test="null != startTime and startTime != ''">
+            AND ccpc.get_time &gt; #{startTime}
+        </if>
+        <if test="null != endTime and endTime != ''">
+            AND ccpc.get_time &lt; #{endTime}
+        </if>
+        <if test="null != pickType and pickType != ''">
+            AND 'PRODUCT_COUPON' = #{pickType}
+        </if>
+        AND c.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        ORDER BY buyTime
+    </select>
 </mapper>
