@@ -24,6 +24,7 @@ import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderLifecycle;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderLifecycle;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.management.city.CityDetailVO;
@@ -644,15 +645,25 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
             }
         }
         OrderBaseInfo orderBaseInfo =  appOrderService.getOrderByOrderNumber(maReturnOrderDetailInfo.getOrderNo());
-        OrderLifecycle orderLifecycle = new OrderLifecycle();
-        orderLifecycle.setOrderNumber(orderBaseInfo.getOrderNumber());
-        orderLifecycle.setOperation(OrderLifecycleType.NORMAL_RETURN);
-        orderLifecycle.setOperation(OrderLifecycleType.FINISHED);
-        orderLifecycle.setOperationTime(new Date());
-        returnOrderDAO.saveOrderLifecycle(orderLifecycle);
 
         //更新订单状态
         this.updateReturnOrderStatus(returnNumber, AppReturnOrderStatus.FINISHED.toString());
+
+        //**************************保存订单生命周期信息*************************************
+        OrderLifecycle orderLifecycle = new OrderLifecycle();
+        orderLifecycle.setOrderNumber(orderBaseInfo.getOrderNumber());
+        orderLifecycle.setOperation(OrderLifecycleType.NORMAL_RETURN);
+        orderLifecycle.setPostStatus(AppOrderStatus.FINISHED);
+        orderLifecycle.setOperationTime(new Date());
+        returnOrderDAO.saveOrderLifecycle(orderLifecycle);
+        //********************************保存退单生命周期信息***********************
+        ReturnOrderLifecycle returnOrderLifecycle = new ReturnOrderLifecycle();
+        returnOrderLifecycle.setRoid(maReturnOrderDetailInfo.getRoid());
+        returnOrderLifecycle.setReturnNo(maReturnOrderDetailInfo.getReturnNo());
+        returnOrderLifecycle.setOperation(OrderLifecycleType.NORMAL_RETURN);
+        returnOrderLifecycle.setPostStatus(AppReturnOrderStatus.FINISHED);
+        returnOrderLifecycle.setOperationTime(new Date());
+        returnOrderDAO.saveReturnOrderLifecycle(returnOrderLifecycle);
 
         return maps;
     }

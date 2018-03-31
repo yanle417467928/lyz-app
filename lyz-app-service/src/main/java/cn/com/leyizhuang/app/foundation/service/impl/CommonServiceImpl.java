@@ -1359,7 +1359,7 @@ public class CommonServiceImpl implements CommonService {
             }
             try {
                 String returnCode = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(), mobile, content);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             //顾客下单发送短信给导购
@@ -1372,7 +1372,7 @@ public class CommonServiceImpl implements CommonService {
                 try {
                     String code = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(),
                             orderBaseInfo.getSalesConsultPhone(), URLEncoder.encode(tips, "GB2312"));
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -1391,6 +1391,8 @@ public class CommonServiceImpl implements CommonService {
                     content = URLEncoder.encode(info, "GB2312");
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 String mobile;
                 if (orderBaseInfo.getCreatorIdentityType() == AppIdentityType.CUSTOMER || orderBaseInfo.getCreatorIdentityType() == AppIdentityType.DECORATE_MANAGER) {
@@ -1400,7 +1402,7 @@ public class CommonServiceImpl implements CommonService {
                 }
                 try {
                     String returnCode = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(), mobile, content);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 //保存提货码
@@ -1415,6 +1417,8 @@ public class CommonServiceImpl implements CommonService {
                     String code = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(),
                             orderBaseInfo.getSalesConsultPhone(), URLEncoder.encode(tips, "GB2312"));
                 } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 

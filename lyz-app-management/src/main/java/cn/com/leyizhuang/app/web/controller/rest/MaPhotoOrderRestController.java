@@ -9,7 +9,6 @@ import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.PhotoOrderGoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsCategoryDO;
-import cn.com.leyizhuang.app.foundation.pojo.response.VerifyCodeResponse;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.service.impl.SmsAccountServiceImpl;
 import cn.com.leyizhuang.app.foundation.vo.management.goods.GoodsResponseVO;
@@ -30,7 +29,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -256,12 +258,10 @@ public class MaPhotoOrderRestController extends BaseRestController{
                         ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "网络故障，提醒短信发送失败！", null);
                         logger.info("savePhotoOrder EXCEPTION，提醒短信发送失败，出参 ResultDTO:{}", resultDTO);
                         logger.warn("{}", e);
-                        return resultDTO;
                     } catch (Exception e) {
                         ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知错误，短信验证码发送失败！", null);
                         logger.info("savePhotoOrder EXCEPTION，提醒短信发送失败，出参 ResultDTO:{}", resultDTO);
                         logger.warn("{}", e);
-                        return resultDTO;
                     }
 
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);

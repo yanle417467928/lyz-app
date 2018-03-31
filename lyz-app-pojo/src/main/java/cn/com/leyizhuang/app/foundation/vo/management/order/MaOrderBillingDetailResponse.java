@@ -56,5 +56,9 @@ public class MaOrderBillingDetailResponse {
      * 欠款金额
      */
     private Double arrearage;
+    /**
+     * 导购信用额度
+     */
+    private Double empCreditMoney;
 
 }

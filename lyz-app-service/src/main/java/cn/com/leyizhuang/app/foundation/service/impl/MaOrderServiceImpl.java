@@ -121,7 +121,6 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Resource
     private MaDecorativeCompanyCreditService maDecorativeCompanyCreditService;
 
-
     @Resource
     private AppSeparateOrderService separateOrderService;
 
@@ -131,8 +130,8 @@ public class MaOrderServiceImpl implements MaOrderService {
     }
 
     @Override
-    public List<MaOrderVO> findMaOrderVOByCityId(Long cityId,List<Long> storeIds) {
-        return maOrderDAO.findMaOrderVOByCityId(cityId,storeIds);
+    public List<MaOrderVO> findMaOrderVOByCityId(Long cityId, List<Long> storeIds) {
+        return maOrderDAO.findMaOrderVOByCityId(cityId, storeIds);
     }
 
     @Override
@@ -151,8 +150,8 @@ public class MaOrderServiceImpl implements MaOrderService {
     }
 
     @Override
-    public List<MaOrderVO> findMaOrderVOByCondition(MaOrderVORequest maOrderVORequest,List<Long> storeIds) {
-        return maOrderDAO.findMaOrderVOByCondition(maOrderVORequest,storeIds);
+    public List<MaOrderVO> findMaOrderVOByCondition(MaOrderVORequest maOrderVORequest, List<Long> storeIds) {
+        return maOrderDAO.findMaOrderVOByCondition(maOrderVORequest, storeIds);
     }
 
     @Override
@@ -166,8 +165,8 @@ public class MaOrderServiceImpl implements MaOrderService {
     }
 
     @Override
-    public List<MaOrderVO> findCompanyOrderByCondition(MaCompanyOrderVORequest maCompanyOrderVORequest,List<Long> storeIds) {
-        return maOrderDAO.findCompanyOrderByCondition(maCompanyOrderVORequest,storeIds);
+    public List<MaOrderVO> findCompanyOrderByCondition(MaCompanyOrderVORequest maCompanyOrderVORequest, List<Long> storeIds) {
+        return maOrderDAO.findCompanyOrderByCondition(maCompanyOrderVORequest, storeIds);
     }
 
     @Override
@@ -223,12 +222,12 @@ public class MaOrderServiceImpl implements MaOrderService {
     }
 
     @Override
-    public PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderListByScreen(Integer page, Integer size, Long cityId, Long storeId, Integer status, Integer isPayUp,List<Long> storeIds) {
+    public PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderListByScreen(Integer page, Integer size, Long cityId, Long storeId, Integer status, Integer isPayUp, List<Long> storeIds) {
         PageHelper.startPage(page, size);
         if (storeId != -1) {
             cityId = null;
         }
-        List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maOrderDAO.findSelfTakeOrderListByScreen(cityId, storeId, status, isPayUp,storeIds);
+        List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maOrderDAO.findSelfTakeOrderListByScreen(cityId, storeId, status, isPayUp, storeIds);
         return new PageInfo<>(maSelfTakeOrderVOList);
     }
 
@@ -236,7 +235,7 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Override
     public PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderListByInfo(Integer page, Integer size, String info, List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maOrderDAO.findSelfTakeOrderListByInfo(info,storeIds);
+        List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maOrderDAO.findSelfTakeOrderListByInfo(info, storeIds);
         return new PageInfo<>(maSelfTakeOrderVOList);
     }
 
@@ -374,10 +373,18 @@ public class MaOrderServiceImpl implements MaOrderService {
         return maOrderDAO.scanningUnpaidOrder(findDate);
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public List<String> selfTakeOrderReceivables(MaOrderAmount maOrderAmount, MaOrderBillingDetailResponse maOrderBillingDetailResponse, GuideCreditChangeDetail guideCreditChangeDetail) {
+        // 更新订单支付信息
+        List<String> receiptNumberList = this.orderReceivables(maOrderAmount, maOrderBillingDetailResponse, guideCreditChangeDetail);
+        return receiptNumberList;
+    }
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List<String> orderReceivables(MaOrderAmount maOrderAmount) {
+    public List<String> orderReceivables(MaOrderAmount maOrderAmount, MaOrderBillingDetailResponse maOrderBillingDetailResponse, GuideCreditChangeDetail guideCreditChangeDetail) {
         //得到订单基本信息
         MaOrderTempInfo maOrderTempInfo = this.getOrderInfoByOrderNo(maOrderAmount.getOrderNumber());
         //更新订单收款信息
@@ -426,6 +433,48 @@ public class MaOrderServiceImpl implements MaOrderService {
             maOrderBillingPaymentDetails.setAmount(maOrderAmount.getPosAmount());
             this.saveOrderBillingPaymentDetails(maOrderBillingPaymentDetails);
         }
+
+        //得到导购id
+        Long sellerId = maOrderTempInfo.getSalesConsultId();
+        if (null == sellerId) {
+            throw new RuntimeException("该订单导购ID为空");
+        }
+        //更新导购额度
+        Double empCreditMoney = maOrderBillingDetailResponse.getEmpCreditMoney();
+        if (null != empCreditMoney && empCreditMoney > 0D) {
+            //得到该销售的可用额度
+            GuideCreditMoney guideCreditMoney = maEmpCreditMoneyService.findGuideCreditMoneyAvailableByEmpId(sellerId);
+            BigDecimal availableCreditMoney = guideCreditMoney.getCreditLimitAvailable().add(maOrderAmount.getAllAmount());
+            //更改该销售的可用额度
+            for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                int affectLine = maEmpCreditMoneyService.updateGuideCreditMoneyByRepayment(sellerId, availableCreditMoney, guideCreditMoney.getLastUpdateTime());
+                if (affectLine > 0) {
+                    //生成信用金额变成日志
+
+                    GuideAvailableCreditChange guideAvailableCreditChange = new GuideAvailableCreditChange();
+                    guideAvailableCreditChange.setCreditLimitAvailableAfterChange(availableCreditMoney);
+                    guideAvailableCreditChange.setCreditLimitAvailableChangeAmount(maOrderAmount.getAllAmount());
+                    guideAvailableCreditChange.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT.toString());
+                    guideAvailableCreditChange.setChangeTypeDesc(EmpCreditMoneyChangeType.ORDER_REPAYMENT.getDescription());
+                    maEmpCreditMoneyDAO.saveCreditLimitAvailableChange(guideAvailableCreditChange);
+
+                    GuideCreditMoneyDetail guideCreditMoneyDetail = new GuideCreditMoneyDetail();
+                    guideCreditMoneyDetail.setEmpId(sellerId);
+                    guideCreditMoneyDetail.setOriginalCreditLimitAvailable(guideCreditMoney.getCreditLimitAvailable());
+                    guideCreditMoneyDetail.setCreditLimitAvailable(availableCreditMoney);
+                    guideCreditChangeDetail.setEmpId(sellerId);
+                    guideCreditChangeDetail.setAvailableCreditChangId(guideAvailableCreditChange.getId());
+                    maEmpCreditMoneyService.saveCreditChange(guideCreditChangeDetail);
+                    break;
+                } else {
+                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                        throw new SystemBusyException("系统繁忙，请稍后再试!");
+                    }
+                }
+            }
+        }
+
+
         return receiptNumberList;
     }
 
@@ -471,19 +520,19 @@ public class MaOrderServiceImpl implements MaOrderService {
 
 
     @Override
-    public PageInfo<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByScreen(Integer page, Integer size, Long cityId, Long storeId, Integer status, Integer isPayUp,List<Long> storeIds) {
+    public PageInfo<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByScreen(Integer page, Integer size, Long cityId, Long storeId, Integer status, Integer isPayUp, List<Long> storeIds) {
         PageHelper.startPage(page, size);
         if (storeId != -1) {
             cityId = null;
         }
-        List<MaAgencyAndArrearsOrderVO> maAgencyAndArrearsOrderVOList = maOrderDAO.findMaAgencyAndArrearsOrderListByScreen(cityId, storeId, status, isPayUp,storeIds);
+        List<MaAgencyAndArrearsOrderVO> maAgencyAndArrearsOrderVOList = maOrderDAO.findMaAgencyAndArrearsOrderListByScreen(cityId, storeId, status, isPayUp, storeIds);
         return new PageInfo<>(maAgencyAndArrearsOrderVOList);
     }
 
     @Override
     public PageInfo<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByInfo(Integer page, Integer size, String info, List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<MaAgencyAndArrearsOrderVO> maAgencyAndArrearsOrderVOList = maOrderDAO.findMaAgencyAndArrearsOrderListByInfo(info,storeIds);
+        List<MaAgencyAndArrearsOrderVO> maAgencyAndArrearsOrderVOList = maOrderDAO.findMaAgencyAndArrearsOrderListByInfo(info, storeIds);
         return new PageInfo<>(maAgencyAndArrearsOrderVOList);
     }
 
@@ -621,47 +670,11 @@ public class MaOrderServiceImpl implements MaOrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List<String> arrearsOrderRepayment(MaOrderAmount maOrderAmount, GuideCreditChangeDetail guideCreditChangeDetail) {
+    public List<String> arrearsOrderRepayment(MaOrderAmount maOrderAmount, MaOrderBillingDetailResponse maOrderBillingDetailResponse, GuideCreditChangeDetail guideCreditChangeDetail) {
         // 更新订单支付信息
-        List<String> receiptNumberList = this.orderReceivables(maOrderAmount);
+        List<String> receiptNumberList = this.orderReceivables(maOrderAmount, maOrderBillingDetailResponse, guideCreditChangeDetail);
         //更新欠款审核表
         this.updateOrderArrearsAudit(maOrderAmount.getOrderNumber(), maOrderAmount.getDate());
-
-        //得到导购id
-        Long sellerId = this.querySellerIdByOrderNumber(maOrderAmount.getOrderNumber());
-        if (null == sellerId) {
-            throw new RuntimeException("该订单导购ID为空");
-        }
-        //得到该销售的可用额度
-        GuideCreditMoney guideCreditMoney = maEmpCreditMoneyService.findGuideCreditMoneyAvailableByEmpId(sellerId);
-        BigDecimal availableCreditMoney = guideCreditMoney.getCreditLimitAvailable().add(maOrderAmount.getAllAmount());
-        //更改该销售的可用额度
-        for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
-            int affectLine = maEmpCreditMoneyService.updateGuideCreditMoneyByRepayment(sellerId, availableCreditMoney, guideCreditMoney.getLastUpdateTime());
-            if (affectLine > 0) {
-                //生成信用金额变成日志
-
-                GuideAvailableCreditChange guideAvailableCreditChange = new GuideAvailableCreditChange();
-                guideAvailableCreditChange.setCreditLimitAvailableAfterChange(availableCreditMoney);
-                guideAvailableCreditChange.setCreditLimitAvailableChangeAmount(maOrderAmount.getAllAmount());
-                guideAvailableCreditChange.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT.toString());
-                guideAvailableCreditChange.setChangeTypeDesc(EmpCreditMoneyChangeType.ORDER_REPAYMENT.getDescription());
-                maEmpCreditMoneyDAO.saveCreditLimitAvailableChange(guideAvailableCreditChange);
-
-                GuideCreditMoneyDetail guideCreditMoneyDetail = new GuideCreditMoneyDetail();
-                guideCreditMoneyDetail.setEmpId(sellerId);
-                guideCreditMoneyDetail.setOriginalCreditLimitAvailable(guideCreditMoney.getCreditLimitAvailable());
-                guideCreditMoneyDetail.setCreditLimitAvailable(availableCreditMoney);
-                guideCreditChangeDetail.setEmpId(sellerId);
-                guideCreditChangeDetail.setAvailableCreditChangId(guideAvailableCreditChange.getId());
-                maEmpCreditMoneyService.saveCreditChange(guideCreditChangeDetail);
-                break;
-            } else {
-                if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                    throw new SystemBusyException("系统繁忙，请稍后再试!");
-                }
-            }
-        }
         return receiptNumberList;
     }
 
@@ -833,8 +846,8 @@ public class MaOrderServiceImpl implements MaOrderService {
                     if (affectLine > 0) {
                         StPreDepositLogDO log = new StPreDepositLogDO();
                         log.setStoreId(preDeposit.getStoreId());
-                        log.setChangeMoney(CountUtil.sub(0,billingDetails.getStPreDeposit()));
-                        log.setBalance(CountUtil.sub(preDeposit.getBalance(),billingDetails.getStPreDeposit()));
+                        log.setChangeMoney(CountUtil.sub(0, billingDetails.getStPreDeposit()));
+                        log.setBalance(CountUtil.sub(preDeposit.getBalance(), billingDetails.getStPreDeposit()));
                         log.setCreateTime(LocalDateTime.now());
                         log.setOrderNumber(orderNumber);
                         log.setOperatorId(userId);
@@ -1174,12 +1187,12 @@ public class MaOrderServiceImpl implements MaOrderService {
                         //获取现有城市库存量
                         CityInventory cityInventory = cityService.findCityInventoryByCityIdAndGoodsId(orderBaseInfo.getCityId(), orderGoodsInfo.getGid());
                         Integer affectLine = 0;
-                        if (orderBaseInfo.getCreatorIdentityType().equals(AppIdentityType.DECORATE_MANAGER)){
+                        if (orderBaseInfo.getCreatorIdentityType().equals(AppIdentityType.DECORATE_MANAGER)) {
                             //退还城市库存量
                             affectLine = cityService.updateCityInventoryByEmployeeIdAndGoodsIdAndInventoryAndVersion(orderBaseInfo.getCreatorId(), orderGoodsInfo.getGid(), orderGoodsInfo.getOrderQuantity(), cityInventory.getLastUpdateTime());
-                        }else {
+                        } else {
                             //退还城市库存量
-                             affectLine = cityService.updateCityInventoryByEmployeeIdAndGoodsIdAndInventoryAndVersion(orderBaseInfo.getSalesConsultId(), orderGoodsInfo.getGid(), orderGoodsInfo.getOrderQuantity(), cityInventory.getLastUpdateTime());
+                            affectLine = cityService.updateCityInventoryByEmployeeIdAndGoodsIdAndInventoryAndVersion(orderBaseInfo.getSalesConsultId(), orderGoodsInfo.getGid(), orderGoodsInfo.getOrderQuantity(), cityInventory.getLastUpdateTime());
                         }
                         if (affectLine > 0) {
                             //记录城市库存变更日志
@@ -1200,13 +1213,13 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                if (null  == timingTaskErrorMessageDO){
+                                if (null == timingTaskErrorMessageDO) {
                                     timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
                                     timingTaskErrorMessageDO.setMessage("系统繁忙，退还城市库存量失败，请稍后再试!");
                                     timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
                                     timingTaskErrorMessageDO.setRecordTime(date);
                                     timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
-                                }else {
+                                } else {
                                     timingTaskErrorMessageDO.setMessage("系统繁忙，退还城市库存量失败，请稍后再试!");
                                     timingTaskErrorMessageDO.setRecordTime(date);
                                     timingTaskErrorMessageDAO.updateTimingTaskErrorMessageByOrderNo(timingTaskErrorMessageDO);
@@ -1244,13 +1257,13 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                if (null  == timingTaskErrorMessageDO){
+                                if (null == timingTaskErrorMessageDO) {
                                     timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
                                     timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店可用量失败，请稍后再试!");
                                     timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
                                     timingTaskErrorMessageDO.setRecordTime(date);
                                     timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
-                                }else {
+                                } else {
                                     timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店可用量失败，请稍后再试!");
                                     timingTaskErrorMessageDO.setRecordTime(date);
                                     timingTaskErrorMessageDAO.updateTimingTaskErrorMessageByOrderNo(timingTaskErrorMessageDO);
@@ -1302,13 +1315,13 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                if (null  == timingTaskErrorMessageDO){
+                                if (null == timingTaskErrorMessageDO) {
                                     timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
                                     timingTaskErrorMessageDO.setMessage("系统繁忙，退还顾客乐币数量失败，请稍后再试!");
                                     timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
                                     timingTaskErrorMessageDO.setRecordTime(date);
                                     timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
-                                }else {
+                                } else {
                                     timingTaskErrorMessageDO.setMessage("系统繁忙，退还顾客乐币数量失败，请稍后再试!");
                                     timingTaskErrorMessageDO.setRecordTime(date);
                                     timingTaskErrorMessageDAO.updateTimingTaskErrorMessageByOrderNo(timingTaskErrorMessageDO);
@@ -1358,13 +1371,13 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                if (null  == timingTaskErrorMessageDO){
+                                if (null == timingTaskErrorMessageDO) {
                                     timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
                                     timingTaskErrorMessageDO.setMessage("系统繁忙，退还顾客预存款失败，请稍后再试!");
                                     timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
                                     timingTaskErrorMessageDO.setRecordTime(date);
                                     timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
-                                }else {
+                                } else {
                                     timingTaskErrorMessageDO.setMessage("系统繁忙，退还顾客预存款失败，请稍后再试!");
                                     timingTaskErrorMessageDO.setRecordTime(date);
                                     timingTaskErrorMessageDAO.updateTimingTaskErrorMessageByOrderNo(timingTaskErrorMessageDO);
@@ -1415,13 +1428,13 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                if (null  == timingTaskErrorMessageDO){
+                                if (null == timingTaskErrorMessageDO) {
                                     timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
                                     timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店预存款失败，请稍后再试!");
                                     timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
                                     timingTaskErrorMessageDO.setRecordTime(date);
                                     timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
-                                }else {
+                                } else {
                                     timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店预存款失败，请稍后再试!");
                                     timingTaskErrorMessageDO.setRecordTime(date);
                                     timingTaskErrorMessageDAO.updateTimingTaskErrorMessageByOrderNo(timingTaskErrorMessageDO);
@@ -1457,13 +1470,13 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                if (null  == timingTaskErrorMessageDO){
+                                if (null == timingTaskErrorMessageDO) {
                                     timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
                                     timingTaskErrorMessageDO.setMessage("系统繁忙，退还导购信用金失败，请稍后再试!");
                                     timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
                                     timingTaskErrorMessageDO.setRecordTime(date);
                                     timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
-                                }else {
+                                } else {
                                     timingTaskErrorMessageDO.setMessage("系统繁忙，退还导购信用金失败，请稍后再试!");
                                     timingTaskErrorMessageDO.setRecordTime(date);
                                     timingTaskErrorMessageDAO.updateTimingTaskErrorMessageByOrderNo(timingTaskErrorMessageDO);
@@ -1514,13 +1527,13 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                if (null  == timingTaskErrorMessageDO){
+                                if (null == timingTaskErrorMessageDO) {
                                     timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
                                     timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店预存款失败，请稍后再试!");
                                     timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
                                     timingTaskErrorMessageDO.setRecordTime(date);
                                     timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
-                                }else {
+                                } else {
                                     timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店预存款失败，请稍后再试!");
                                     timingTaskErrorMessageDO.setRecordTime(date);
                                     timingTaskErrorMessageDAO.updateTimingTaskErrorMessageByOrderNo(timingTaskErrorMessageDO);
@@ -1558,13 +1571,13 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                if (null  == timingTaskErrorMessageDO){
+                                if (null == timingTaskErrorMessageDO) {
                                     timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
                                     timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店信用金失败，请稍后再试!");
                                     timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
                                     timingTaskErrorMessageDO.setRecordTime(date);
                                     timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
-                                }else {
+                                } else {
                                     timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店信用金失败，请稍后再试!");
                                     timingTaskErrorMessageDO.setRecordTime(date);
                                     timingTaskErrorMessageDAO.updateTimingTaskErrorMessageByOrderNo(timingTaskErrorMessageDO);
@@ -1601,13 +1614,13 @@ public class MaOrderServiceImpl implements MaOrderService {
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                if (null  == timingTaskErrorMessageDO){
+                                if (null == timingTaskErrorMessageDO) {
                                     timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
                                     timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店现金返利失败，请稍后再试!");
                                     timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
                                     timingTaskErrorMessageDO.setRecordTime(date);
                                     timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
-                                }else {
+                                } else {
                                     timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店现金返利失败，请稍后再试!");
                                     timingTaskErrorMessageDO.setRecordTime(date);
                                     timingTaskErrorMessageDAO.updateTimingTaskErrorMessageByOrderNo(timingTaskErrorMessageDO);
@@ -1700,13 +1713,13 @@ public class MaOrderServiceImpl implements MaOrderService {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             System.out.println("异常错误，待付款超时订单处理失败，订单号：" + orderBaseInfo.getOrderNumber());
-            if (null  == timingTaskErrorMessageDO) {
+            if (null == timingTaskErrorMessageDO) {
                 timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();
                 timingTaskErrorMessageDO.setMessage(e.getMessage());
                 timingTaskErrorMessageDO.setOrderNumber(orderBaseInfo.getOrderNumber());
                 timingTaskErrorMessageDO.setRecordTime(date);
                 timingTaskErrorMessageDAO.saveTimingTaskErrorMessage(timingTaskErrorMessageDO);
-            }else{
+            } else {
                 timingTaskErrorMessageDO.setMessage("系统繁忙，退还门店现金返利失败，请稍后再试!");
                 timingTaskErrorMessageDO.setRecordTime(date);
                 timingTaskErrorMessageDAO.updateTimingTaskErrorMessageByOrderNo(timingTaskErrorMessageDO);
