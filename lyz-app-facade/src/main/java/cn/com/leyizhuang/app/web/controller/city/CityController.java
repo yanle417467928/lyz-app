@@ -18,7 +18,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 城市控制器
@@ -104,7 +107,8 @@ public class CityController {
                 if (i == 0) {
                     if (hour < deliveryTimeList.get(i).getStartHour()) {
                         deliveryTimeList.remove(0);
-                        Collections.copy(day1DeliveryTime, deliveryTimeList);
+//                        Collections.copy(day1DeliveryTime, deliveryTimeList); copy方法报错:Source does not fit in dest 使用下面方法代替
+                        day1DeliveryTime = new ArrayList<>(deliveryTimeList);
                         break;
                     }
                 } else {
