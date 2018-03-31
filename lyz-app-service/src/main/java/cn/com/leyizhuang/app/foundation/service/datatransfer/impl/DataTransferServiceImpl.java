@@ -257,13 +257,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                 throw new DataTransferException("订单审核未查到此订单导购信息", DataTransferExceptionType.SNF);
             }
 
-            String clerkNo = null;
-            for (int k = 0; k < orders.size(); k++) {
-                clerkNo = this.transferDAO.findDeliveryInfoByOrderNumber(orders.get(k).getOrderNumber());
-                if (null != clerkNo && !"".equals(clerkNo)) {
-                    break;
-                }
-            }
+            String clerkNo = this.transferDAO.findDeliveryInfoByOrderNumber(orderNumber);
             Long deliveryId = this.transferDAO.findDeliveryInfoByClerkNo(clerkNo);
             if (null == deliveryId) {
                 log.warn("未查到此订单配送员信息！订单号：", orderNumber);
