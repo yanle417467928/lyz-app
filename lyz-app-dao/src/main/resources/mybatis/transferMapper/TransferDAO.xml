@@ -161,6 +161,9 @@
             tdc.order_time > '2017-10-01 00:00:00'
             AND
             tdc.main_order_number =#{orderNumber}
+              ORDER BY tdi.begin_dt desc
+            limit 1
+
     </select>
     <select id="findNewOrderByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
         SELECT *
@@ -495,7 +498,8 @@
         GROUP BY c.main_order_number;
     </select>
 
-    <select id="getPendingTransferOrderByOrderNo" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderSmall">
+    <select id="getPendingTransferOrderByOrderNo"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderSmall">
         SELECT
         c.main_order_number,
         c.order_time,
@@ -572,7 +576,8 @@
         </foreach>
     </insert>
 
-    <insert id="saveDataTransferErrorLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.DataTransferErrorLog">
+    <insert id="saveDataTransferErrorLog"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.DataTransferErrorLog">
         INSERT INTO data_transfer_error_log(order_number, error_msg, create_time)
         VALUES
         (#{orderNumber},#{errorMsg},#{createTime})
