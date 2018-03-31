@@ -646,10 +646,10 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
         OrderBaseInfo orderBaseInfo =  appOrderService.getOrderByOrderNumber(maReturnOrderDetailInfo.getOrderNo());
         OrderLifecycle orderLifecycle = new OrderLifecycle();
         orderLifecycle.setOrderNumber(orderBaseInfo.getOrderNumber());
-        orderLifecycle.setOperation("取消订单");
+        orderLifecycle.setOperation(OrderLifecycleType.NORMAL_RETURN);
+        orderLifecycle.setOperation(OrderLifecycleType.FINISHED);
         orderLifecycle.setOperationTime(new Date());
-        orderLifecycle.setPostStatus("已取消");
-        //returnOrderDAO.saveOrderLifecycle(orderLifecycle);
+        returnOrderDAO.saveOrderLifecycle(orderLifecycle);
 
         //更新订单状态
         this.updateReturnOrderStatus(returnNumber, AppReturnOrderStatus.FINISHED.toString());

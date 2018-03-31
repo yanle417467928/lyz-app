@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.core.pay.wechat.refund.OnlinePayRefundService;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.SmsUtils;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.foundation.dao.ReturnOrderDAO;
 import cn.com.leyizhuang.app.foundation.pojo.CancelOrderParametersDO;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.WareHouseDO;
@@ -15,6 +16,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderLifecycle;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
@@ -42,6 +44,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -84,6 +87,9 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
     private CityService cityService;
     @Resource
     private AppEmployeeService appEmployeeService;
+
+    @Resource
+    private ReturnOrderDAO returnOrderDAO;
     /**
      * 获取wms信息
      *
@@ -245,6 +251,8 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
 
                         ReturnOrderBaseInfo returnOrderBaseInfo = (ReturnOrderBaseInfo) maps.get("returnOrderBaseInfo");
 
+                        OrderBaseInfo orderBaseInfo = (OrderBaseInfo) maps.get("orderBaseInfo");
+
                         Boolean a = true;
                         if ("SUCCESS".equals(maps.get("code"))) {
                             if ((Boolean) maps.get("hasReturnOnlinePay")) {
@@ -281,12 +289,24 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                                 }
                             }
                             if (a){
-                                //修改取消订单处理状态
+                                //修改订单处理状态
                                 returnOrderService.updateReturnOrderStatus(returnOrderBaseInfo.getReturnNo(), AppReturnOrderStatus.FINISHED);
+                                OrderLifecycle orderLifecycle = new OrderLifecycle();
+                                orderLifecycle.setOid(orderBaseInfo.getId());
+                                orderLifecycle.setOrderNumber(orderBaseInfo.getOrderNumber());
+                                if (returnOrderBaseInfo.getReturnType().equals(ReturnOrderType.REFUSED_RETURN)){
+                                    orderLifecycle.setOperation(OrderLifecycleType.REJECTED);
+                                    orderLifecycle.setPostStatus(OrderLifecycleType.REJECTED);
+                                }else if (returnOrderBaseInfo.getReturnType().equals(ReturnOrderType.NORMAL_RETURN)){
+                                    orderLifecycle.setOperation(OrderLifecycleType.NORMAL_RETURN);
+                                    orderLifecycle.setOperation(OrderLifecycleType.FINISHED);
+                                }
+                                orderLifecycle.setOperationTime(new Date());
+                                returnOrderDAO.saveOrderLifecycle(orderLifecycle);
 
                                 returnOrderService.updateReturnLogisticInfoOfBackTime(returnOrderBaseInfo.getReturnNo());
                             }else{
-                                //修改取消订单处理状态
+                                //修改订单处理状态
                                 returnOrderService.updateReturnOrderStatus(returnOrderBaseInfo.getReturnNo(), AppReturnOrderStatus.PENDING_REFUND);
                             }
                             //发送退单拆单消息到拆单消息队列
@@ -447,6 +467,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                                 }
                                 //修改取消订单处理状态
                                 cancelOrderParametersService.updateCancelStatusByOrderNumber(orderResultEnter.getOrderNo());
+
                                 //发送退单拆单消息到拆单消息队列
                         sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
                                 logger.info("cancelOrderToWms OUT,取消订单成功");
