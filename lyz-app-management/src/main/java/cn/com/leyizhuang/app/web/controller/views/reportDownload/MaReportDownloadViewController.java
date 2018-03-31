@@ -52,4 +52,10 @@ public class MaReportDownloadViewController extends BaseController {
         map.addAttribute("storeTypes", StoreType.getStoreTypeList());
         return "/views/reportDownload/not_pick_goods";
     }
+
+    @GetMapping(value = "/store/predeposit/list")
+    public String getStorePredeposit(ModelMap map) {
+        map.addAttribute("storeTypes", StoreType.getNotZsType());
+        return "/views/reportDownload/store_predeposit_page";
+    }
 }

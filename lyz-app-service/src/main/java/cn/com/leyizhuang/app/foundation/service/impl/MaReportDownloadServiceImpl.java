@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.foundation.dao.MaReportDownloadDAO;
 import cn.com.leyizhuang.app.foundation.pojo.reportDownload.NotPickGoodsReportDO;
 import cn.com.leyizhuang.app.foundation.pojo.reportDownload.ReceiptsReportDO;
+import cn.com.leyizhuang.app.foundation.pojo.reportDownload.StorePredepositReportDO;
 import cn.com.leyizhuang.app.foundation.service.MaReportDownloadService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -36,6 +37,13 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
     }
 
     @Override
+    public PageInfo<StorePredepositReportDO> findStorePredepositReportDOAll(Long cityId, Long storeId, String storeType, String startTime, String endTime, List<Long> storeIds, Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        List<StorePredepositReportDO> storePredepositReportDOS = maReportDownloadDAO.findStorePredepositReportDOAll(cityId, storeId, storeType, startTime, endTime, storeIds);
+        return new PageInfo<>(storePredepositReportDOS);
+    }
+
+    @Override
     public List<ReceiptsReportDO> receiptsDownload(Long cityId, Long storeId, String storeType, String startTime, String endTime, String payType, String keywords, List<Long> storeIds) {
         return maReportDownloadDAO.findReceiptsReportDOAll(cityId, storeId, storeType, startTime, endTime, payType, keywords, storeIds);
     }
@@ -43,5 +51,10 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
     @Override
     public List<NotPickGoodsReportDO> notPickGoodsDownload(Long cityId, Long storeId, String storeType, String startTime, String endTime, String pickType, List<Long> storeIds) {
         return maReportDownloadDAO.findNotPickGoodsReportDOAll(cityId, storeId, storeType, startTime, endTime, pickType, storeIds);
+    }
+
+    @Override
+    public List<StorePredepositReportDO> storePredepositDownload(Long cityId, Long storeId, String storeType, String startTime, String endTime, List<Long> storeIds) {
+        return maReportDownloadDAO.findStorePredepositReportDOAll(cityId, storeId, storeType, startTime, endTime, storeIds);
     }
 }
