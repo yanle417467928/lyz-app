@@ -335,28 +335,29 @@ public class OrderArriveController {
                                 orderBillingDetails.setDeliveryPos(0D);
                             }
 //                        this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
+                            if (!(OnlinePayType.CASH_DELIVERY.equals(billingDetails.getOnlinePayType()))) {
+                                credit = ownManey;
+                                //返还信用金后导购信用金额度
+                                Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable() + ownManey);
 
-                            credit = ownManey;
-                            //返还信用金后导购信用金额度
-                            Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable() + ownManey);
-
-//                        //修改导购信用额度
-//                        Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(orderTempInfo.getSellerId(), ownManey, empCreditMoney.getLastUpdateTime());
-//                        if (affectLine > 0) {
-                            //记录导购信用金变更日志
-                            empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
-                            empCreditMoneyChangeLog.setEmpId(orderTempInfo.getSellerId());
-                            empCreditMoneyChangeLog.setCreateTime(new Date());
-                            empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(ownManey);
-                            empCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
-                            empCreditMoneyChangeLog.setReferenceNumber(orderNo);
-                            empCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
-                            empCreditMoneyChangeLog.setChangeTypeDesc("订单还款");
-                            empCreditMoneyChangeLog.setOperatorId(userId);
-                            empCreditMoneyChangeLog.setOperatorType(AppIdentityType.DELIVERY_CLERK);
-                            //保存日志
-//                            appEmployeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
-//                        }
+    //                        //修改导购信用额度
+    //                        Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(orderTempInfo.getSellerId(), ownManey, empCreditMoney.getLastUpdateTime());
+    //                        if (affectLine > 0) {
+                                //记录导购信用金变更日志
+                                empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
+                                empCreditMoneyChangeLog.setEmpId(orderTempInfo.getSellerId());
+                                empCreditMoneyChangeLog.setCreateTime(new Date());
+                                empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(ownManey);
+                                empCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
+                                empCreditMoneyChangeLog.setReferenceNumber(orderNo);
+                                empCreditMoneyChangeLog.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
+                                empCreditMoneyChangeLog.setChangeTypeDesc("订单还款");
+                                empCreditMoneyChangeLog.setOperatorId(userId);
+                                empCreditMoneyChangeLog.setOperatorType(AppIdentityType.DELIVERY_CLERK);
+                                //保存日志
+    //                            appEmployeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
+    //                        }
+                            }
                         }
                     }
                 }
