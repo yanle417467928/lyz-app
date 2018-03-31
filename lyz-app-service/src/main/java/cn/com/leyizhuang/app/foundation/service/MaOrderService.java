@@ -185,7 +185,8 @@ public interface MaOrderService {
 
     void saveOrderShipping(OrderShipping orderShipping);
 
-    List<String> orderReceivables(MaOrderAmount maOrderAmount);
+
+    List<String> orderReceivables(MaOrderAmount maOrderAmount, MaOrderBillingDetailResponse maOrderBillingDetailResponse, GuideCreditChangeDetail guideCreditChangeDetail);
 
     /**
      * 更新订单基础表订单状态
@@ -270,7 +271,9 @@ public interface MaOrderService {
     Long querySellerIdByOrderNumber(String orderNumber);
 
 
-    List<String> arrearsOrderRepayment(MaOrderAmount maOrderAmount, GuideCreditChangeDetail guideCreditChangeDetail);
+    List<String> arrearsOrderRepayment(MaOrderAmount maOrderAmount,MaOrderBillingDetailResponse maOrderBillingDetailResponses ,GuideCreditChangeDetail guideCreditChangeDetail);
+
+    List<String> selfTakeOrderReceivables(MaOrderAmount maOrderAmount,MaOrderBillingDetailResponse maOrderBillingDetailResponse,GuideCreditChangeDetail guideCreditChangeDetail);
 
     /**
      * 后台买券订单创建订单账单信息

@@ -451,7 +451,8 @@
         amount_payable amountPayable,
         arrearage arrearage,
         order_amount_subtotal orderAmountSubtotal,
-        product_coupon_discount productCouponDiscount
+        product_coupon_discount productCouponDiscount,
+        emp_credit_money empCreditMoney
         FROM
         ord_billing_details
         WHERE

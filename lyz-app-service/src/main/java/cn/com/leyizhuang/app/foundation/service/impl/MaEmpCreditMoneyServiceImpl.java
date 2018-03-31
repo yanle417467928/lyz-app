@@ -62,16 +62,16 @@ public class MaEmpCreditMoneyServiceImpl implements MaEmpCreditMoneyService {
         guideCreditMoney.setCreditLimitAvailable(creditLimitAvailable);
         //更新导购信用金
         for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
-            Integer affectLine = this.maEmpCreditMoneyDAO.update(guideCreditMoney);
-            //更新变更详情父表与子表
-            if (affectLine > 0) {
-                this.saveCreditMoneyChange(guideCreditMoneyDetail, guideCreditChangeDetail);
-                break;
-            } else {
-                if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                    throw new SystemBusyException("系统繁忙，请稍后再试!");
+                Integer affectLine = this.maEmpCreditMoneyDAO.update(guideCreditMoney);
+                //更新变更详情父表与子表
+                if (affectLine > 0) {
+                    this.saveCreditMoneyChange(guideCreditMoneyDetail, guideCreditChangeDetail);
+                    break;
+                } else {
+                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                        throw new SystemBusyException("系统繁忙，请稍后再试!");
+                    }
                 }
-            }
         }
 
     }

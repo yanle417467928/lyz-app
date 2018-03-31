@@ -550,7 +550,7 @@ public class MaOrderRestController extends BaseRestController {
      * @return
      */
     @PostMapping(value = "/orderReceivables")
-    public ResultDTO<Object> orderReceivables(MaOrderAmount maOrderAmount) {
+    public ResultDTO<Object> orderReceivables(MaOrderAmount maOrderAmount, HttpServletRequest request) {
         logger.warn("orderReceivables 后台订单收款 ,maOrderAmount:{}", maOrderAmount);
         ResultDTO<Object> resultDTO;
         if (null == maOrderAmount.getCashAmount()) {
@@ -574,6 +574,7 @@ public class MaOrderRestController extends BaseRestController {
         }
         MaOrderTempInfo maOrderTempInfo = maOrderService.getOrderInfoByOrderNo(maOrderAmount.getOrderNumber());
         BigDecimal acount = maOrderAmount.getCashAmount().add(maOrderAmount.getOtherAmount()).add(maOrderAmount.getPosAmount());
+        maOrderAmount.setAllAmount(acount);
         if (StringUtils.isBlank(maOrderAmount.getOrderNumber())) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单号为空", null);
             logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
@@ -602,7 +603,16 @@ public class MaOrderRestController extends BaseRestController {
             return resultDTO;
         }
         try {
-            List<String> ReceiptNumberList = this.maOrderService.orderReceivables(maOrderAmount);
+            ShiroUser shiroUser = this.getShiroUser();
+            GuideCreditChangeDetail guideCreditChangeDetail = new GuideCreditChangeDetail();
+            guideCreditChangeDetail.setReferenceNumber(maOrderTempInfo.getOrderNumber());
+            guideCreditChangeDetail.setEmpId(maOrderTempInfo.getSalesConsultId());
+            guideCreditChangeDetail.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
+            guideCreditChangeDetail.setChangeTypeDesc(EmpCreditMoneyChangeType.ORDER_REPAYMENT.getDescription());
+            guideCreditChangeDetail.setCreateTime(new Date());
+            guideCreditChangeDetail.setOperatorId(shiroUser.getId());
+            guideCreditChangeDetail.setOperatorIp(IpUtil.getIpAddress(request));
+            List<String> ReceiptNumberList = this.maOrderService.selfTakeOrderReceivables(maOrderAmount,maOrderBillingDetailResponse,guideCreditChangeDetail);
             for (String receiptNumber : ReceiptNumberList) {
                 this.maSinkSender.sendOrderReceipt(receiptNumber);
             }
@@ -813,6 +823,7 @@ public class MaOrderRestController extends BaseRestController {
             return resultDTO;
         }
         try {
+            MaOrderBillingDetailResponse maOrderBillingDetailResponse = maOrderService.getMaOrderBillingDetailByOrderNumber(maOrderAmount.getOrderNumber());
             ShiroUser shiroUser = this.getShiroUser();
             GuideCreditChangeDetail guideCreditChangeDetail = new GuideCreditChangeDetail();
             guideCreditChangeDetail.setOperatorId(shiroUser.getId());
@@ -821,7 +832,7 @@ public class MaOrderRestController extends BaseRestController {
             guideCreditChangeDetail.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
             guideCreditChangeDetail.setOperatorIp(IpUtil.getIpAddress(request));
             guideCreditChangeDetail.setReferenceNumber(maOrderAmount.getOrderNumber());
-            List<String> receiptNumberList = this.maOrderService.arrearsOrderRepayment(maOrderAmount, guideCreditChangeDetail);
+            List<String> receiptNumberList = this.maOrderService.arrearsOrderRepayment(maOrderAmount,maOrderBillingDetailResponse ,guideCreditChangeDetail);
             for (String receiptNumber : receiptNumberList) {
                 this.maSinkSender.sendOrderReceipt(receiptNumber);
             }
