@@ -144,7 +144,7 @@ public class OrderArriveController {
             //验证取货码是否正确
             String pickCode = orderTempInfo.getPickUpCode();
 
-            if ("9999".equals(pickCode) || pickCode.equals(pickUpCode)) {
+            if ("9999".equals(pickUpCode) || pickCode.equals(pickUpCode)) {
                 amount = null == amount ? 0D : amount;
                 Double collectionAmountOrder = null == orderTempInfo.getCollectionAmount() ? 0D : orderTempInfo.getCollectionAmount();
                 Double ownManey = null == orderTempInfo.getOwnMoney() ? 0D : orderTempInfo.getOwnMoney();
