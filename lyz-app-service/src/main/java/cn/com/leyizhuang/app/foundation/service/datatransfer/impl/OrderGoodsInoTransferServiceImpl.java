@@ -126,7 +126,6 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
         List<OrderBaseInfo> orderList = transferDAO.findNewOrderNumber();
         logger.info("一共有订单：" + orderList.size() + "条！");
 
-
         //List<OrderBaseInfo> orderList = transferDAO.findNewOrderNumberTest();
 
         for (OrderBaseInfo orderBaseInfo : orderList) {
