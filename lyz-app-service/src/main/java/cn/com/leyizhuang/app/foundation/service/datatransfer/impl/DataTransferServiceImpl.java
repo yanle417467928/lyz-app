@@ -462,7 +462,7 @@ public class DataTransferServiceImpl implements DataTransferService {
         OrderBillingDetails orderBillingDetails = null;
         TdOrderData tdOrderData = this.transferDAO.findOrderDataByOrderNumber(orderBaseInfo.getOrderNumber());
         TdOwnMoneyRecord tdOwnMoneyRecord = this.transferDAO.getOwnMoneyRecordByOrderNumber(orderBaseInfo.getOrderNumber());
-        if (null != tdOrderData) {
+
             Boolean b = this.transferDAO.existOrderBillingDetails(orderBaseInfo.getOrderNumber());
             if (b) {
                 log.warn("此订单号账单已生成请检查！订单号：", orderBaseInfo.getOrderNumber());
@@ -581,17 +581,14 @@ public class DataTransferServiceImpl implements DataTransferService {
                 orderBillingDetails.setJxPriceDifferenceAmount(0D);
                 orderBillingDetails.setStoreCash(0D);
                 orderBillingDetails.setStoreOtherMoney(0D);
-                orderBillingDetails.setStorePosMoney(tdOrderData.getSellerPos());
+                orderBillingDetails.setStorePosMoney(0D);
                 orderBillingDetails.setStorePosNumber(null);
                 orderBillingDetails.setDeliveryCash(0D);
                 orderBillingDetails.setDeliveryPos(0D);
                 //this.transferDAO.saveOrderBillingDetails(orderBillingDetails);
             }
             return orderBillingDetails;
-        } else {
-            log.warn("订单账单没有找到，订单号：{}", orderBaseInfo.getOrderNumber());
-            throw new DataTransferException("订单账单没有找到，订单号：{}", DataTransferExceptionType.NOTORDERDATA);
-        }
+
     }
 
     @Override
