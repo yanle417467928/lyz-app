@@ -2,6 +2,30 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO">
 
+    <resultMap id="storeDetailVOResultMap" type="StoreDetailVO">
+        <id property="storeId" column="store_id" jdbcType="BIGINT"/>
+        <result property="storeName" column="store_name"/>
+        <result property="storeCode" column="store_code"/>
+        <result property="storeType" column="store_type"/>
+        <result property="enable" column="enable"/>
+        <result property="creatorType" column="creator_type"/>
+        <result property="createTime" column="create_time"/>
+        <result property="modifierType" column="modifier_type"/>
+        <result property="modifyTime" column="modify_time"/>
+        <result property="phone" column="phone"/>
+        <result property="isDefault" column="is_default"/>
+        <result property="province" column="province"/>
+        <result property="city" column="city"/>
+        <result property="area" column="area"/>
+        <result property="storeOrgId" column="store_org_id"/>
+        <result property="detailedAddress" column="detailed_address"/>
+        <result property="isSelfDelivery" column="is_self_delivery"/>
+        <association property="cityCode" javaType="SimpleCityParam">
+            <id property="cityId" column="city_id"/>
+            <result property="name" column="name"/>
+        </association>
+    </resultMap>
+
     <select id="findNewOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
         SELECT
             ord_no             orderNumber,
@@ -91,15 +115,10 @@
     </select>
 
     <select id="findDeliveryInfoByOrderNumber" parameterType="java.lang.String" resultType="java.lang.String">
-        SELECT t.op_user
-        FROM (SELECT
-                  id,
-                  op_user,
-                  sub_order_number
-              FROM td_delivery_info_detail_copy
-              WHERE sub_order_number = #{orderNumber}
-              ORDER BY id DESC) t
-        GROUP BY t.sub_order_number
+        SELECT driver
+              FROM td_delivery_info_copy
+              WHERE order_number = #{orderNumber}
+        GROUP BY order_number
     </select>
 
     <select id="findDeliveryInfoByClerkNo" parameterType="java.lang.String" resultType="java.lang.Long">
@@ -476,6 +495,32 @@
         GROUP BY c.main_order_number;
     </select>
 
+    <select id="getPendingTransferOrderByOrderNo" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderSmall">
+        SELECT
+        c.main_order_number,
+        c.order_time,
+        c.pay_time,
+        c.status_id,
+        c.deliver_type_title,
+        c.is_seller_order,
+        c.user_id,
+        c.username,
+        c.seller_id,
+        c.diy_site_code,
+        c.seller_real_name,
+        c.seller_username,
+        c.real_user_real_name,
+        c.real_user_username,
+        c.remark,
+        c.city,
+        c.paper_sales_number,
+        sum(c.total_goods_price) total_goods_price,
+        c.real_user_id
+        FROM td_order_copy c LEFT JOIN ord_base_info b ON c.main_order_number = b.ord_no
+        WHERE b.ord_no IS NULL and c.main_order_number = #{orderNo}
+        GROUP BY c.main_order_number;
+    </select>
+
     <select id="queryTdOrderDataListByOrderNo" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderData">
         SELECT *
@@ -536,4 +581,84 @@
     <update id="updateTransferDate">
         UPDATE td_order_copy set transfer_date = #{date} where main_order_number = #{orderNo}
     </update>
+
+
+    <select id="queryAllGoodsTrans"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
+        SELECT
+        gid,
+        sku,
+        sku_name,
+        goods_detail,
+        type_name,
+        brand_name,
+        category_name
+        FROM gds_goods_copy
+    </select>
+
+
+    <select id="queryAllGoodsType"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsType">
+        SELECT
+        *
+        FROM gds_goods_type_copy
+    </select>
+
+
+    <select id="queryAllGoodsBrand"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsBrand">
+        SELECT
+        *
+        FROM gds_goods_brand_copy
+    </select>
+
+
+    <select id="queryAllGoodsCategory"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsCategory">
+        SELECT
+        *
+        FROM gds_goods_category_copy
+    </select>
+
+    <select id="findStorehasInventory" resultMap="storeDetailVOResultMap">
+        SELECT
+        s.*,
+        c.city_id,
+        c.name
+        FROM st_store s
+        LEFT JOIN city  c
+        ON
+        s.city_id=c.city_id
+        WHERE
+        store_type ='ZY'
+        OR
+        store_type='FXCK'
+    </select>
+
+
+    <update id="updateGoodsTrans" parameterType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
+        UPDATE gds_goods_copy
+        <set>
+            <if test="null != goodsDetial">
+                goods_detail=#{goodsDetial},
+            </if>
+            <if test="null != cid">
+                cid=#{cid},
+            </if>
+            <if test="null != brdId">
+                brd_id=#{brdId},
+            </if>
+            <if test="null != gtid">
+                gtid=#{gtid},
+            </if>
+        </set>
+        WHERE
+        sku=#{sku}
+    </update>
+
+    <insert id="saveStoreInventory" parameterType="cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory">
+               INSERT st_inventory(create_time,last_update_time,city_id,city_code,city_name,store_id,store_code,store_name,gid,sku,sku_name,available_ity,real_ity)
+               VALUES (#{createTime},#{lastUpdateTime},#{cityId},#{cityCode},#{cityName},#{storeId},#{storeCode},#{storeName},#{gid},#{sku},#{skuName},#{availableIty},#{realIty})
+
+    </insert>
 </mapper>

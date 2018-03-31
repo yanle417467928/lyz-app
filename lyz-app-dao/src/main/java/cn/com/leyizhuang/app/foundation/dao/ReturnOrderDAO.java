@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.AppReturnOrderStatus;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderLifecycle;
 import cn.com.leyizhuang.app.foundation.pojo.order.ReturnOrderJxPriceDifferenceRefundDetails;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
@@ -150,4 +151,10 @@ public interface ReturnOrderDAO {
      * @param returnNo
      */
     void updateReturnLogisticInfoOfBackTime(@Param("returnNo") String returnNo);
+
+    /**
+     * 保存订单生命周期记录
+     * @param orderLifecycle
+     */
+    void saveOrderLifecycle(OrderLifecycle orderLifecycle);
 }

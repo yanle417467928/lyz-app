@@ -854,6 +854,16 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             if (AssertUtil.isNotEmpty(appStore) && appStore.getStoreType().equals(StoreType.FX) || appStore.getStoreType().equals(StoreType.JM)) {
                 commonService.deductionOrderJxPriceDifferenceRefund(returnOrderBaseInfo, orderBaseInfo, returnOrderGoodsInfos);
             }
+            //*******************************记录订单生命周期**************************
+            if (orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_SHIPMENT) && orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE)) {
+                OrderLifecycle orderLifecycle = new OrderLifecycle();
+                orderLifecycle.setOid(orderBaseInfo.getId());
+                orderLifecycle.setOrderNumber(orderBaseInfo.getOrderNumber());
+                orderLifecycle.setOperation(OrderLifecycleType.CANCEL_ORDER);
+                orderLifecycle.setPostStatus(OrderLifecycleType.CANCELED);
+                orderLifecycle.setOperationTime(new Date());
+                returnOrderDAO.saveOrderLifecycle(orderLifecycle);
+            }
             //修改订单状态为已取消
             appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.CANCELED, null, orderBaseInfo.getOrderNumber());
             maps.put("returnOrderBaseInfo", returnOrderBaseInfo);
@@ -1385,6 +1395,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
 
             maps.put("returnOrderBaseInfo",returnOrderBaseInfo);
             maps.put("returnOrderBilling",returnOrderBilling);
+            maps.put("orderBaseInfo",orderBaseInfo);
             maps.put("code", "SUCCESS");
             return maps;
         } catch (Exception e) {
@@ -2004,6 +2015,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
 
             maps.put("returnOrderBaseInfo", returnOrderBaseInfo);
             maps.put("returnOrderBilling", returnOrderBilling);
+            maps.put("orderBaseInfo", orderBaseInfo);
             maps.put("code", "SUCCESS");
             return maps;
         } catch (Exception e) {

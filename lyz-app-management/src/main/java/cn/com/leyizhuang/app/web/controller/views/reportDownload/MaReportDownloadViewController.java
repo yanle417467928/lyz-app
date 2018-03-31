@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.views.reportDownload;
 
+import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
 import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.web.controller.BaseController;
@@ -39,5 +40,16 @@ public class MaReportDownloadViewController extends BaseController {
         map.addAttribute("paymentTypes", paymentTypes);
         map.addAttribute("storeTypes", StoreType.getNotZsType());
         return "/views/reportDownload/receipts_page";
+    }
+
+    @GetMapping(value = "/not/pickGoods/list")
+    public String getNotPickGoodsList(ModelMap map) {
+        List<AppDeliveryType> deliveryTypes = new ArrayList<>();
+        deliveryTypes.add(AppDeliveryType.HOUSE_DELIVERY);
+        deliveryTypes.add(AppDeliveryType.PRODUCT_COUPON);
+        deliveryTypes.add(AppDeliveryType.SELF_TAKE);
+        map.addAttribute("pickTypes", deliveryTypes);
+        map.addAttribute("storeTypes", StoreType.getStoreTypeList());
+        return "/views/reportDownload/not_pick_goods";
     }
 }

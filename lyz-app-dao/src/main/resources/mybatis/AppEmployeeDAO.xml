@@ -364,7 +364,7 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
     <select id="findQrcodeIsNull" resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee">
         SELECT *
         FROM emp_employee
-        WHERE qr_code IS NULL OR qr_code = ""
+        WHERE qr_code IS NULL OR qr_code = "" AND  seller_type = 'SELLER'
 
     </select>
     <select id="findAllSeller" resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee">

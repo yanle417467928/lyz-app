@@ -1,11 +1,9 @@
 package cn.com.leyizhuang.app.web.controller.rest.datatransfer;
 
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.DataTransferErrorLog;
+import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
-import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
-import cn.com.leyizhuang.app.foundation.service.AppOrderService;
-import cn.com.leyizhuang.app.foundation.service.AppStoreService;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.OrderBillingTransferService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.OrderGoodsTransferService;
@@ -48,6 +46,7 @@ public class DataTransferController {
     @Resource
     private AppCustomerService customerService;
 
+
     private static final Date JOB_END_TIME;
 
     static {
@@ -73,6 +72,30 @@ public class DataTransferController {
         int seconds = (int) ((to - from) / (1000));
         log.info("导入耗时: {} 秒", seconds);
         return "订单导入完成,耗时: {} 秒" + seconds + "\n错误信息如下:\n" + queue.toString();
+    }
+
+    @RequestMapping(value = "/data/transfer/orderBaseInfo/one", method = RequestMethod.GET)
+    public String dataTransferOne(String orderNo) throws ExecutionException, InterruptedException {
+        Date startTime = new Date();
+        if (startTime.after(JOB_END_TIME)) {
+            return "当前时间不在该任务作业周期内!";
+        }
+        Date endTime;
+        log.info("开始处理订单导入job,当前时间:{}", startTime);
+        if (orderNo == null || orderNo.equals("")){
+            log.info("订单号不正确");
+
+            return "订单号不正确";
+        }
+
+        dataTransferService.transferOrderRelevantInfo(orderNo);
+        endTime = new Date();
+        log.info("订单导入job执行完成", endTime);
+        long from = startTime.getTime();
+        long to = endTime.getTime();
+        int seconds = (int) ((to - from) / (1000));
+        log.info("导入耗时: {} 秒", seconds);
+        return "订单导入完成,耗时: {} 秒" + seconds ;
     }
 
     @RequestMapping(value = "/data/transfer/arrearsAudit", method = RequestMethod.GET)
@@ -201,5 +224,16 @@ public class DataTransferController {
     public void orderGoodsInfoTransfer() {
 
         orderGoodsTransferService.transferAll();
+    }
+
+
+    @RequestMapping(value = "/data/transfer/goodsInfo", method = RequestMethod.GET)
+    public void goodsInfoTransfer() {
+        dataTransferService.goodsInfoTransfer();
+    }
+
+    @RequestMapping(value = "/data/transfer/storeInventoryInfo", method = RequestMethod.GET)
+    public void storeInventoryInfoTransfer() {
+        dataTransferService.storeInventoryInfoTransfer();
     }
 }

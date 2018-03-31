@@ -8,9 +8,14 @@ import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.*;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
+import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsType;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
+import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsBrand;
+import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsCategory;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -108,6 +113,8 @@ public interface TransferDAO {
 
     List<TdOrderSmall> getPendingTransferOrder(Date startTime, Date endTime);
 
+    List<TdOrderSmall> getPendingTransferOrderByOrderNo(Date startTime, Date endTime ,@Param("orderNo") String orderNO);
+
     List<TdOrderData> queryTdOrderDataListByOrderNo(String orderNo);
 
     List<OrderBaseInfo> findNewOrderNumberByDeliveryType();
@@ -121,4 +128,18 @@ public interface TransferDAO {
     void saveDataTransferErrorLog(DataTransferErrorLog errorLogList);
 
     void updateTransferDate(@Param("date") Date date , @Param("orderNo") String orderNo);
+
+    List<GoodsDO> queryAllGoodsTrans();
+
+    void updateGoodsTrans(GoodsDO goodsDO);
+
+    List<GoodsType> queryAllGoodsType();
+
+    List<GoodsBrand> queryAllGoodsBrand();
+
+    List<GoodsCategory> queryAllGoodsCategory();
+
+    List<StoreDetailVO> findStorehasInventory();
+
+    void saveStoreInventory(StoreInventory storeInventory);
 }

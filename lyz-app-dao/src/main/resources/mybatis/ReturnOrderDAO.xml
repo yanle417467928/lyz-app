@@ -624,4 +624,13 @@
         SET back_time = now()
         WHERE return_no = #{returnNo}
     </update>
+
+    <insert id="saveOrderLifecycle"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderLifecycle">
+        INSERT INTO ord_lifecycle
+        (oid,ord_no,operation, post_status, operation_time)
+        VALUES
+        (#{oid}, #{orderNumber}, #{operation}, #{postStatus}, #{operationTime})
+    </insert>
+
 </mapper>
