@@ -505,7 +505,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                             logger.info("cancelOrderToWms EXCEPTION，取消订单失败信息发送失败，出参 ResultDTO:{}");
                             logger.warn("{}", e);
                         }
-                        if (returnCode.equalsIgnoreCase("00")) {
+                        if ("00".equalsIgnoreCase(returnCode)) {
                             logger.info("cancelOrderToWms OUT，取消订单失败信息发送成功，出参 ResultDTO:{}");
                         } else {
                             logger.info("cancelOrderToWms OUT，取消订单失败信息发送失败，出参 ResultDTO:{}");

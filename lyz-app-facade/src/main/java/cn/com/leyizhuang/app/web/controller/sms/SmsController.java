@@ -57,29 +57,26 @@ public class SmsController {
             return resultDTO;
         }
         SmsAccount account = smsAccountService.findOne();
-        String returnCode;
+        String returnCode = null;
         try {
             returnCode = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(), mobile, content);
         } catch (IOException e) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "网络故障，短信验证码发送失败！", new VerifyCodeResponse(null));
             logger.info("getQrCode EXCEPTION，验证码发送失败，出参 ResultDTO:{}", resultDTO);
             logger.warn("{}", e);
-            return resultDTO;
         } catch (Exception e) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知错误，短信验证码发送失败！", new VerifyCodeResponse(null));
             logger.info("getQrCode EXCEPTION，验证码发送失败，出参 ResultDTO:{}", resultDTO);
             logger.warn("{}", e);
-            return resultDTO;
         }
-        if (returnCode.equalsIgnoreCase("00")) {
+        if ("00".equalsIgnoreCase(returnCode)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new VerifyCodeResponse(smsCode));
             logger.info("getQrCode OUT，验证码发送成功，出参 ResultDTO:{}", resultDTO);
-            return resultDTO;
         } else {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "短信平台故障，验证码发送失败！", new VerifyCodeResponse(null));
             logger.info("getQrCode OUT，验证码发送失败，出参 ResultDTO:{}", resultDTO);
-            return resultDTO;
         }
+        return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
     }
 
     /**
@@ -114,28 +111,25 @@ public class SmsController {
         }
 
         SmsAccount account = smsAccountService.findOne();
-        String returnCode;
+        String returnCode = null;
         try {
             returnCode = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(), mobile, content);
         } catch (IOException e) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "网络故障，短信提货码发送失败！", new VerifyCodeResponse(null));
             logger.info("getPuCode EXCEPTION，提货码发送失败，出参 ResultDTO:{}", resultDTO);
             logger.warn("{}", e);
-            return resultDTO;
         } catch (Exception e) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知错误，短信验证码发送失败！", new VerifyCodeResponse(null));
             logger.info("getPuCode EXCEPTION，提货码发送失败，出参 ResultDTO:{}", resultDTO);
             logger.warn("{}", e);
-            return resultDTO;
         }
-        if (returnCode.equalsIgnoreCase("00")) {
+        if ("00".equalsIgnoreCase(returnCode)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new VerifyCodeResponse(smsCode));
             logger.info("getPuCode OUT，提货码发送成功，出参 ResultDTO:{}", resultDTO);
-            return resultDTO;
         } else {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "短信平台故障，提货码发送失败！", new VerifyCodeResponse(null));
             logger.info("getPuCode OUT，提货码发送失败，出参 ResultDTO:{}", resultDTO);
-            return resultDTO;
         }
+        return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
     }
 }
