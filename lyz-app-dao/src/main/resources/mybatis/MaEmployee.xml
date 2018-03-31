@@ -383,10 +383,10 @@
         FROM
         emp_employee AS ee
         INNER JOIN st_store AS ss ON ee.store_id = ss.store_id
-        INNER JOIN st_pre_deposit AS spd ON spd.store_id = ee.store_id
+        LEFT JOIN st_pre_deposit AS spd ON spd.store_id = ee.store_id
         WHERE
         1 = 1
-        AND s.store_id IN
+        AND ss.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
@@ -405,7 +405,7 @@
         FROM
         emp_employee AS ee
         INNER JOIN st_store AS ss ON ee.store_id = ss.store_id
-        INNER JOIN st_pre_deposit AS spd ON spd.store_id = ee.store_id
+        LEFT JOIN st_pre_deposit AS spd ON spd.store_id = ee.store_id
         WHERE
         1 = 1
         AND (ee.`name` LIKE CONCAT('%' ,#{sellerQueryConditions},'%') OR ee.mobile LIKE CONCAT('%'
