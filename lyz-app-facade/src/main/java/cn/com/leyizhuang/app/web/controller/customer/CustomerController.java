@@ -923,7 +923,7 @@ public class CustomerController {
             appCustomer = customerService.findByMobile(phone);
 
             if (appCustomer == null){
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户找不到", null);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, null, null);
                 logger.info("getCustomerInfoByPhone OUT,顾客信息获取,出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
