@@ -2,12 +2,17 @@ package cn.com.leyizhuang.app.foundation.service.datatransfer;
 
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.*;
+import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
+import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsType;
+import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsBrand;
+import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsCategory;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
 
 import java.util.Date;
 import java.util.List;
@@ -70,4 +75,20 @@ public interface DataTransferService {
                                                List<AppCustomer> customerList, List<AppStore> storeList);
 
     public Queue<DataTransferErrorLog> transferOrderRelevantInfo() throws ExecutionException, InterruptedException;
+
+    List<GoodsDO> queryAllGoodsTrans();
+
+    void goodsInfoTransfer();
+
+    void updateGoodsTrans(GoodsDO goodsDO);
+
+    List<GoodsType> queryAllGoodsType();
+
+    List<GoodsBrand> queryAllGoodsBrand();
+
+    List<GoodsCategory> queryAllGoodsCategory();
+
+    void storeInventoryInfoTransfer();
+
+    List<StoreDetailVO> findStorehasInventory();
 }

@@ -216,7 +216,7 @@ public class ReturnOrderController {
                     }
 
                     //如果是待发货的门店自提单发送退单拆单消息到拆单消息队列
-                    if (orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE)){
+                    if (orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_SHIPMENT) && orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE)){
                         sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
                     }
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);

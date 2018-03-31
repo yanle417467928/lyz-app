@@ -8,6 +8,7 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.MaReturnOrderDAO;
 import cn.com.leyizhuang.app.foundation.dao.MaStoreDAO;
+import cn.com.leyizhuang.app.foundation.dao.ReturnOrderDAO;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.management.coupon.MaCashCouponInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.coupon.MaProductCouponInfo;
@@ -19,7 +20,9 @@ import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderTempInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.*;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventoryChange;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderLifecycle;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
@@ -78,6 +81,9 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
     private AppOrderService appOrderService;
     @Resource
     private MaCityService maCityService;
+    @Resource
+    private ReturnOrderDAO returnOrderDAO;
+
 
 
     @Override
@@ -637,8 +643,17 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
 
             }
         }
+        OrderBaseInfo orderBaseInfo =  appOrderService.getOrderByOrderNumber(maReturnOrderDetailInfo.getOrderNo());
+        OrderLifecycle orderLifecycle = new OrderLifecycle();
+        orderLifecycle.setOrderNumber(orderBaseInfo.getOrderNumber());
+        orderLifecycle.setOperation(OrderLifecycleType.NORMAL_RETURN);
+        orderLifecycle.setOperation(OrderLifecycleType.FINISHED);
+        orderLifecycle.setOperationTime(new Date());
+        returnOrderDAO.saveOrderLifecycle(orderLifecycle);
+
         //更新订单状态
         this.updateReturnOrderStatus(returnNumber, AppReturnOrderStatus.FINISHED.toString());
+
         return maps;
     }
 }

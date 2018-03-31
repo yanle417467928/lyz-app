@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.order;
 
+import cn.com.leyizhuang.app.core.constant.OrderLifecycleType;
 import lombok.*;
 
 import java.util.Date;
@@ -19,14 +20,17 @@ public class OrderLifecycle {
 
     private Long id;
 
+    //订单ID
+    private Long oid;
+
     //订单号
     private String orderNumber;
 
     //订单操作
-    private String operation;
+    private OrderLifecycleType operation;
 
     //操作后订单状态
-    private String postStatus;
+    private OrderLifecycleType postStatus;
 
     //操作时间
     private Date operationTime;
