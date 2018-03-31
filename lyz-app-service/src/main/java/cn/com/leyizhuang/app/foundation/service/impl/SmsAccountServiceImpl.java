@@ -41,6 +41,8 @@ public class SmsAccountServiceImpl implements cn.com.leyizhuang.app.foundation.s
 
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
