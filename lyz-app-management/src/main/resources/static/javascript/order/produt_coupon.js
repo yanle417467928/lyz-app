@@ -338,6 +338,13 @@ function initSeller(url) {
         field: 'balance',
         title: '门店预存款',
         align: 'center',
+        formatter: function (value) {
+            if (null == value) {
+                return 0;
+            } else {
+                return value;
+            }
+        },
         visible: false
     }
     ]);
