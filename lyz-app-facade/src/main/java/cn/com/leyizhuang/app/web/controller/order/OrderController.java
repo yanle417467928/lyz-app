@@ -297,7 +297,7 @@ public class OrderController {
             orderBillingDetails.setIsOwnerReceiving(orderLogisticsInfo.getIsOwnerReceiving());
             orderBillingDetails.setTotalGoodsPrice(support.getGoodsTotalPrice());
             orderBillingDetails.setMemberDiscount(support.getMemberDiscount());
-            orderBillingDetails.setPromotionDiscount(support.getPromotionDiscount());
+            orderBillingDetails.setPromotionDiscount(billing.getOrderDiscount());
             if (null != jxPriceDifferenceReturnDetailsList && jxPriceDifferenceReturnDetailsList.size() > 0) {
                 orderBillingDetails.setJxPriceDifferenceAmount(jxPriceDifferenceReturnDetailsList.stream().mapToDouble(OrderJxPriceDifferenceReturnDetails::getAmount).sum());
             }
