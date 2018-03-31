@@ -138,8 +138,8 @@ public class DataTransferServiceImpl implements DataTransferService {
 
 
             if (null == tdDeliveryInfoDetailsList || tdDeliveryInfoDetailsList.size() == 0) {
-                log.warn("物流信息没找到,订单：{}", tdOrder.getMainOrderNumber());
-                throw new DataTransferException("该订单没有找到物流信息", DataTransferExceptionType.DENF);
+//                log.warn("物流信息没找到,订单：{}", tdOrder.getMainOrderNumber());
+//                throw new DataTransferException("该订单没有找到物流信息", DataTransferExceptionType.DENF);
             } else {
                 TdDeliveryInfoDetails tdDeliveryInfoDetails = tdDeliveryInfoDetailsList.get(0);
                 orderLogisticsInfo.setReceiver(tdOrderLogistics.getShippingName());
