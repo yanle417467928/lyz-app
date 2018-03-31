@@ -1220,7 +1220,7 @@ public class CommonServiceImpl implements CommonService {
                         PaymentSubjectType.DECORATE_MANAGER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
                 billingPaymentDetails.add(details);
             }
-            if (null != orderBillingDetails.getLebiCashDiscount() && orderBillingDetails.getStoreCreditMoney() > AppConstant.DOUBLE_ZERO){
+            if (null != orderBillingDetails.getLebiCashDiscount() && orderBillingDetails.getStoreCreditMoney() > AppConstant.DOUBLE_ZERO) {
                 OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
                 details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.LE_BI, orderBillingDetails.getLebiCashDiscount(),
                         PaymentSubjectType.CUSTOMER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
@@ -1661,7 +1661,7 @@ public class CommonServiceImpl implements CommonService {
         if (null != orderBillingDetails) {
             this.orderService.updateOwnMoneyByOrderNo(orderBillingDetails);
         }
-        if (credit > 0D){
+        if (credit > 0D) {
             //修改导购信用额度
             Integer affectLine = this.employeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(sellerId, credit, lastUpdateTime);
             if (affectLine > 0 && null != empCreditMoneyChangeLog) {
@@ -1695,7 +1695,7 @@ public class CommonServiceImpl implements CommonService {
         if (null != orderBillingDetails) {
             this.orderService.updateOwnMoneyByOrderNo(orderBillingDetails);
         }
-        if (collectionAmount > 0D){
+        if (collectionAmount > 0D) {
             //修改导购信用额度
             Integer affectLine = this.employeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(sellerId, collectionAmount, lastUpdateTime);
             if (affectLine > 0 && null != empCreditMoneyChangeLog) {
@@ -1718,10 +1718,16 @@ public class CommonServiceImpl implements CommonService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void originalCustomerRegistry(AppCustomer phoneUser) throws UnsupportedEncodingException {
-        if (null != phoneUser){
+        if (null != phoneUser) {
             customerService.update(phoneUser);
-            customerService.createCustomerPreDepositAccount(phoneUser.getCusId());
-            customerService.createCustomerLeBiAccount(phoneUser.getCusId());
+            CustomerLeBi customerLeBi = customerService.findCustomerLebiByCustomerId(phoneUser.getCusId());
+            if (null == customerLeBi) {
+                customerService.createCustomerLeBiAccount(phoneUser.getCusId());
+            }
+            CustomerPreDeposit customerPreDeposit = customerService.findCustomerPreDepositByCustomerId(phoneUser.getCusId());
+            if (null == customerPreDeposit) {
+                customerService.createCustomerPreDepositAccount(phoneUser.getCusId());
+            }
         }
     }
 
