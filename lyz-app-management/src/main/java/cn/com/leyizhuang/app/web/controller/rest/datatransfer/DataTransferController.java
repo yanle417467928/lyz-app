@@ -74,6 +74,30 @@ public class DataTransferController {
         return "订单导入完成,耗时: {} 秒" + seconds + "\n错误信息如下:\n" + queue.toString();
     }
 
+    @RequestMapping(value = "/data/transfer/orderBaseInfo/one", method = RequestMethod.GET)
+    public String dataTransferOne(String orderNo) throws ExecutionException, InterruptedException {
+        Date startTime = new Date();
+        if (startTime.after(JOB_END_TIME)) {
+            return "当前时间不在该任务作业周期内!";
+        }
+        Date endTime;
+        log.info("开始处理订单导入job,当前时间:{}", startTime);
+        if (orderNo == null || orderNo.equals("")){
+            log.info("订单号不正确");
+
+            return "订单号不正确";
+        }
+
+        dataTransferService.transferOrderRelevantInfo(orderNo);
+        endTime = new Date();
+        log.info("订单导入job执行完成", endTime);
+        long from = startTime.getTime();
+        long to = endTime.getTime();
+        int seconds = (int) ((to - from) / (1000));
+        log.info("导入耗时: {} 秒", seconds);
+        return "订单导入完成,耗时: {} 秒" + seconds ;
+    }
+
     @RequestMapping(value = "/data/transfer/arrearsAudit", method = RequestMethod.GET)
     public String transferArrearsAudit() {
         log.info("开始处理订单审核信息导入job,当前时间:{}", new Date());

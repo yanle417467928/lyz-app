@@ -986,6 +986,91 @@ public class DataTransferServiceImpl implements DataTransferService {
         return errorLogQueue;
     }
 
+
+    public void transferOrderRelevantInfo(String orderNo) throws ExecutionException, InterruptedException {
+        // *********************** 订单迁移处理 ***************
+        Queue<DataTransferErrorLog> errorLogQueue = new ConcurrentLinkedDeque<>();
+        List<TdOrderSmall> storeMainOrderNumberList;
+        List<AppEmployee> employeeList = employeeService.findAllSeller();
+        List<AppCustomer> customerList = customerService.findAllCustomer();
+        List<AppStore> storeList = storeService.findAll();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2017, Calendar.NOVEMBER, 1, 0, 0, 0);
+        Date startTime = calendar.getTime();
+        Date endTime = new Date();
+        //查询所有待处理的主单
+        storeMainOrderNumberList = this.getPendingTransferOrderByOrderNo(startTime, endTime,orderNo);
+        if (storeMainOrderNumberList == null || storeMainOrderNumberList.isEmpty()) {
+            log.info("订单号："+orderNo+"查不到数据");
+            throw new DataTransferException("该订单号数据不存在", DataTransferExceptionType.NDT);
+        }
+
+        for (TdOrderSmall tdOrder : storeMainOrderNumberList) {
+            try {
+                //处理订单头
+                OrderBaseInfo orderBaseInfo = this.transferOrderBaseInfo(tdOrder, employeeList, customerList, storeList);
+
+                // 根据主单号 找到旧订单分单
+                List<TdOrder> tdOrders = transferDAO.findOrderAllFieldByOrderNumber(orderBaseInfo.getOrderNumber());
+                if (tdOrders == null || tdOrders.size() == 0) {
+                    //throw new Exception("订单商品转行异常，找不到旧订单 订单号："+ orderBaseInfo.getOrderNumber());
+                    throw new DataTransferException("找不到旧订单 订单号：" + orderBaseInfo.getOrderNumber(), DataTransferExceptionType.NDT);
+                }
+
+                // 转换订单商品
+                List<OrderGoodsInfo> orderGoodsInfoList = orderGoodsTransferService.transferOne(orderBaseInfo, tdOrders);
+
+                //处理订单账单信息
+                OrderBillingDetails orderBillingDetails = this.transferOrderBillingDetails(orderBaseInfo);
+
+                //****物流进度明细 begin****/
+                List<OrderDeliveryInfoDetails> deliveryInfoDetailsList = new ArrayList<>();
+                if (AppDeliveryType.HOUSE_DELIVERY.equals(orderBaseInfo.getDeliveryType())) {
+                    deliveryInfoDetailsList = this.saveOrderDeliveryInfoDetails(orderBaseInfo);
+                }
+
+                //****经销差价返还 begin****/
+                List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetailsList = new ArrayList<>();
+                if (!orderBaseInfo.getOrderNumber().contains("YF")) {
+                    jxPriceDifferenceReturnDetailsList = this.saveOrderJxPriceDifference(orderBaseInfo, tdOrders);
+                }
+                List<OrderBillingPaymentDetails> paymentDetailsList = new ArrayList<>();
+                //****装饰公司账单支付明细转换 begin****/
+                if (AppOrderSubjectType.FIT.equals(orderBaseInfo.getOrderSubjectType())) {
+                    paymentDetailsList = this.saveFixDiySiteBillingPaymentDetail(orderBaseInfo, tdOrders);
+                } else {
+                    //****普通客户账单支付明细转换 begin****/
+                    paymentDetailsList = this.saveOrderBillingPaymentDetail(orderBaseInfo, tdOrder);
+                }
+
+                //处理订单物流信息
+                OrderLogisticsInfo orderLogisticsInfo = this.transferOrderLogisticsInfo(tdOrder, employeeList, storeList);
+
+                //订单券信息处理
+                Map<String, Object> map = this.transferCoupon(orderBaseInfo);
+
+                //订单欠款审核信息
+                OrderArrearsAuditDO orderArrearsAuditDO = this.transferArrearsAudit(orderBaseInfo.getOrderNumber(), employeeList);
+
+                //持久化订单相关信息
+                dataTransferSupportService.saveOrderRelevantInfo(orderBaseInfo, orderGoodsInfoList, orderBillingDetails, deliveryInfoDetailsList,
+                        jxPriceDifferenceReturnDetailsList, paymentDetailsList, orderLogisticsInfo, map,
+                        orderArrearsAuditDO);
+            } catch (DataTransferException e) {
+                // 记录一条错误日志
+                dataTransferSupportService.saveOneDataTransferErrolog(new DataTransferErrorLog(null, tdOrder.getMainOrderNumber(), e.getType().getDesc(), new Date()));
+            } catch (Exception e) {
+                log.warn(e.getMessage());
+                // 记录一条错误日志
+                dataTransferSupportService.saveOneDataTransferErrolog(new DataTransferErrorLog(null, tdOrder.getMainOrderNumber(), e.getMessage(),
+                        new Date()));
+            }
+        }
+
+
+    }
+
     private List<OrderDeliveryInfoDetails> saveOrderDeliveryInfoDetails(OrderBaseInfo orderBaseInfo) {
         List<TdDeliveryInfoDetails> entityList = transferDAO.queryDeliveryTimeSeqByOrderNo(orderBaseInfo.getOrderNumber());
         List<OrderDeliveryInfoDetails> deliveryInfoDetailsList;

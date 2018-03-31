@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.datatransfer.DataTransferErrorLog;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferSupportService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.OrderGoodsTransferService;
 import org.junit.Test;
@@ -18,6 +19,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by panjie on 2018/3/5.
@@ -40,6 +42,9 @@ public class testSellDetails {
 
     @Resource
     private DataTransferSupportService dataTransferSupportService;
+
+    @Resource
+    private DataTransferService dataTransferService;
 
     @Test
     public void testInsert(){
@@ -68,7 +73,12 @@ public class testSellDetails {
 
     @Test
     public void testTransfer(){
-        //dataTransferSupportService.saveOneDataTransferErrolog(new DataTransferErrorLog(null,"123","456",new Date()));
-        transferDAO.updateTransferDate(new Date(),"CD_XN20171001072558198957");
+        try {
+            dataTransferService.transferOrderRelevantInfo("CD_XN20171125122851755751");
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
