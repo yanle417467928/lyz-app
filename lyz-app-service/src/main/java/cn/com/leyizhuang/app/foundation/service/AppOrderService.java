@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
+import cn.com.leyizhuang.app.core.constant.OrderLifecycleType;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
@@ -164,4 +165,7 @@ public interface AppOrderService {
 
     OrderGoodsInfo getOrderGoodsInfoById(Long id);
 
+    void addOrderLifecycle(OrderLifecycleType payed, String orderNumber);
+
+    void saveOrderLifecycle(OrderLifecycle lifecycle);
 }

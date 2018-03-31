@@ -868,6 +868,8 @@ public class CommonServiceImpl implements CommonService {
             if (customer.getCusId() != null) {
                 customerService.update(customer);
             }
+            //增加订单生命周期信息
+            orderService.addOrderLifecycle(OrderLifecycleType.PAYED,orderNumber);
         }
     }
 
@@ -1650,6 +1652,8 @@ public class CommonServiceImpl implements CommonService {
             if (customer.getCusId() != null) {
                 customerService.update(customer);
             }
+            //增加订单生命周期信息
+            orderService.addOrderLifecycle(OrderLifecycleType.PAYED,orderNumber);
         }
     }
 

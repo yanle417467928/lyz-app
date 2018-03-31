@@ -6,6 +6,7 @@ import java.util.Objects;
  * Created by caiyu on 2018/3/31.
  */
 public enum OrderLifecycleType {
+    PAYED("PAYED","支付"),
     CANCEL_ORDER("CANCEL_ORDER", "取消订单"),
     NORMAL_RETURN("NORMAL_RETURN", "正常退货"),
     CANCELED("CANCELED", "已取消"),

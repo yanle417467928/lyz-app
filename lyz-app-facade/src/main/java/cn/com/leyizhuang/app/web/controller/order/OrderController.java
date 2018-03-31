@@ -353,8 +353,9 @@ public class OrderController {
                     iCallWms.sendToWmsRequisitionOrderAndGoods(orderBaseInfo.getOrderNumber());
                 }
                 //将该订单入拆单消息队列
-
                 sinkSender.sendOrder(orderBaseInfo.getOrderNumber());
+                //添加订单生命周期
+                appOrderService.addOrderLifecycle(OrderLifecycleType.PAYED,orderBaseInfo.getOrderNumber());
 
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                         new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), true, false));
@@ -1521,6 +1522,7 @@ public class OrderController {
             this.commonService.handleOrderRelevantBusinessAfterOnlinePayCashDelivery(orderNumber, OnlinePayType.CASH_DELIVERY);
             //发送订单到拆单消息队列
             sinkSender.sendOrder(orderNumber);
+
             //发送订单到WMS
             OrderBaseInfo baseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
             if (baseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {

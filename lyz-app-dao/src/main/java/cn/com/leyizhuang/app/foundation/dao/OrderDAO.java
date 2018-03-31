@@ -150,4 +150,6 @@ public interface OrderDAO {
     //用户获取查看物流单列表
     List<OrderBaseInfo> getPendingShipmentAndPendingReceive(@Param("userId") Long userId,
                                                             @Param("identityType") AppIdentityType identityType);
+
+    void saveOrderLifecycle(OrderLifecycle lifecycle);
 }
