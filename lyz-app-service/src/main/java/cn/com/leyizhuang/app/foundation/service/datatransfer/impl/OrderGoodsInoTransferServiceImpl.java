@@ -62,11 +62,13 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
             //throw new Exception("订单商品转行异常，找不到旧订单 订单号："+ orderBaseInfo.getOrderNumber());
             throw new DataTransferException("订单商品转行异常，找不到旧订单 订单号："+ orderBaseInfo.getOrderNumber(), DataTransferExceptionType.NDT);
         }else {
-            // 新订单商品记录
-            List<OrderGoodsInfo> orderGoodsInfoList = new ArrayList<>();
-            List<OrderGoodsInfo> productGoodsinfo = new ArrayList<>();
+
+            List<OrderGoodsInfo> allList = new ArrayList<>();
 
             for (TdOrder order : tdOrders) {
+                // 新订单商品记录
+                List<OrderGoodsInfo> orderGoodsInfoList = new ArrayList<>();
+                List<OrderGoodsInfo> productGoodsinfo = new ArrayList<>();
 
                 // 不处理运费单
                 if (order.getOrderNumber().contains("YF")){
@@ -105,12 +107,14 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
 
                 // 分摊
                 orderGoodsInfoList = dutch(orderGoodsInfoList, order);
+                orderGoodsInfoList.addAll(productGoodsinfo);
+                allList.addAll(orderGoodsInfoList);
             }
-            orderGoodsInfoList.addAll(productGoodsinfo);
+
 
             //this.saveOrderGoodsInfo(orderGoodsInfoList);
 
-            return orderGoodsInfoList;
+            return allList;
         }
     }
 
@@ -384,8 +388,8 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
                 goods.setCashCouponSharePrice(cashCouponDutchPrice);
 
                 // 记录
-                dutchedPrice += CountUtil.mul(dutchPrice, goods.getOrderQuantity());
-                cashCouponDutchedPrice += CountUtil.mul(cashCouponDutchPrice, goods.getOrderQuantity());
+                dutchedPrice = CountUtil.add(CountUtil.mul(dutchPrice, goods.getOrderQuantity()),dutchedPrice);
+                cashCouponDutchedPrice = CountUtil.add(CountUtil.mul(cashCouponDutchPrice, goods.getOrderQuantity()),cashCouponDutchedPrice);
 
                 returnPrice = CountUtil.sub(goods.getSettlementPrice(),dutchPrice,cashCouponDutchPrice);
             } else {
