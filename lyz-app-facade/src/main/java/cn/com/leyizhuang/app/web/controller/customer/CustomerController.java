@@ -922,6 +922,12 @@ public class CustomerController {
         try {
             appCustomer = customerService.findByMobile(phone);
 
+            if (appCustomer == null){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户找不到", null);
+                logger.info("getCustomerInfoByPhone OUT,顾客信息获取,出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+
             // 设置默认导购电话
             Long sellerId = appCustomer.getSalesConsultId();
             if (sellerId != null) {
