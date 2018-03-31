@@ -1127,4 +1127,11 @@
             ORDER BY obi.create_time DESC
         </if>
     </select>
+
+    <insert id="saveOrderLifecycle" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderLifecycle">
+        INSERT INTO ord_lifecycle (oid, ord_no, operation, post_status, operation_time)
+        VALUES (
+            #{oid}, #{orderNumber}, #{operation}, #{postStatus}, #{operationTime}
+        )
+    </insert>
 </mapper>

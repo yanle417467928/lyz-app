@@ -928,6 +928,31 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void addOrderLifecycle(OrderLifecycleType lifecycleType, String orderNumber) {
+        if (null != lifecycleType && null != orderNumber) {
+            OrderBaseInfo orderBaseInfo = this.getOrderDetail(orderNumber);
+            if (null != orderBaseInfo) {
+                OrderLifecycle lifecycle = new OrderLifecycle();
+                lifecycle.setOid(orderBaseInfo.getId());
+                lifecycle.setOperation(lifecycleType);
+                lifecycle.setOperationTime(new Date());
+                lifecycle.setOrderNumber(orderNumber);
+                lifecycle.setPostStatus(AppOrderStatus.PENDING_SHIPMENT);
+                this.saveOrderLifecycle(lifecycle);
+            }
+
+        }
+    }
+
+    @Override
+    public void saveOrderLifecycle(OrderLifecycle lifecycle) {
+        if (null != lifecycle) {
+            orderDAO.saveOrderLifecycle(lifecycle);
+        }
+    }
+
+    @Override
     public PageInfo<OrderBaseInfo> getPendingShipmentAndPendingReceive(Long userId, Integer identityType, Integer page, Integer size) {
         PageHelper.startPage(page, size);
         List<OrderBaseInfo> orderBaseInfoList = orderDAO.getPendingShipmentAndPendingReceive(userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
