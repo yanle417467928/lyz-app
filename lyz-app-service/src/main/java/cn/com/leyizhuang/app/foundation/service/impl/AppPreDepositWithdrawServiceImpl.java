@@ -808,7 +808,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
             logger.info("预存款提现审核 短信发送失败");
             logger.warn("{}", e);
         }
-        if (returnCode.equalsIgnoreCase("00")) {
+        if ("00".equalsIgnoreCase(returnCode)) {
 
         } else {
             logger.info("预存款提现审核 短信发送失败");

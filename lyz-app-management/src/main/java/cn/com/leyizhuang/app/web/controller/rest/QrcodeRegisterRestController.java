@@ -180,7 +180,7 @@ public class QrcodeRegisterRestController extends BaseRestController {
             logger.info("getQrCode EXCEPTION，验证码发送失败，出参 ResultDTO:{}", resultDTO);
             logger.warn("{}", e);
         }
-        if (returnCode.equalsIgnoreCase("00")) {
+        if ("00".equalsIgnoreCase(returnCode)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("getQrCode OUT，验证码发送成功，出参 ResultDTO:{}", resultDTO);
         } else {

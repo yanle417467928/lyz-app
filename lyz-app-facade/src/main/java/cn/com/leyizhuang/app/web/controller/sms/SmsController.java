@@ -69,7 +69,7 @@ public class SmsController {
             logger.info("getQrCode EXCEPTION，验证码发送失败，出参 ResultDTO:{}", resultDTO);
             logger.warn("{}", e);
         }
-        if (returnCode.equalsIgnoreCase("00")) {
+        if ("00".equalsIgnoreCase(returnCode)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new VerifyCodeResponse(smsCode));
             logger.info("getQrCode OUT，验证码发送成功，出参 ResultDTO:{}", resultDTO);
         } else {
@@ -123,7 +123,7 @@ public class SmsController {
             logger.info("getPuCode EXCEPTION，提货码发送失败，出参 ResultDTO:{}", resultDTO);
             logger.warn("{}", e);
         }
-        if (returnCode.equalsIgnoreCase("00")) {
+        if ("00".equalsIgnoreCase(returnCode)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, new VerifyCodeResponse(smsCode));
             logger.info("getPuCode OUT，提货码发送成功，出参 ResultDTO:{}", resultDTO);
         } else {
