@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.reportDownload.NotPickGoodsReportDO;
 import cn.com.leyizhuang.app.foundation.pojo.reportDownload.ReceiptsReportDO;
+import cn.com.leyizhuang.app.foundation.pojo.reportDownload.StorePredepositReportDO;
 import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.MaReportDownloadService;
 import cn.com.leyizhuang.common.util.CountUtil;
@@ -79,6 +80,18 @@ public class MaReportDownloadRestController extends BaseRestController{
         PageInfo<NotPickGoodsReportDO> notPickGoodsReportDOAll = this.maReportDownloadService.findNotPickGoodsReportDOAll(cityId, storeId, storeType, startTime,
                 endTime, pickType, storeIds, page, size);
         return new GridDataVO<NotPickGoodsReportDO>().transform(notPickGoodsReportDOAll.getList(), notPickGoodsReportDOAll.getTotal());
+    }
+
+    @GetMapping(value = "/store/predeposit/page/grid")
+    public GridDataVO<StorePredepositReportDO> restStorePredepositPageGird(Integer offset, Integer size, Long cityId, Long storeId, String storeType,
+                                                                           String startTime, String endTime) {
+        size = getSize(size);
+        Integer page = getPage(offset, size);
+        //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
+        PageInfo<StorePredepositReportDO> storePredepositReportDOAll = this.maReportDownloadService.findStorePredepositReportDOAll(cityId, storeId, storeType, startTime,
+                endTime, storeIds, page, size);
+        return new GridDataVO<StorePredepositReportDO>().transform(storePredepositReportDOAll.getList(), storePredepositReportDOAll.getTotal());
     }
 
     @GetMapping(value = "/receipts/download")
@@ -382,6 +395,122 @@ public class MaReportDownloadRestController extends BaseRestController{
                     ws.addCell(new Number(14, j + row, notPickGoodsReportDO.getBuyPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     ws.addCell(new Number(15, j + row, notPickGoodsReportDO.getTotalBuyPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     ws.addCell(new Label(16, j + row, notPickGoodsReportDO.getReferenceNumber(), textFormat));
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+        } finally {
+            if (wwb != null) {
+                try {
+                    wwb.write();//刷新（或写入），生成一个excel文档
+                    wwb.close();//关闭
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    @GetMapping(value = "/store/predeposit/download")
+    public void storePredepositDownload(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId, String storeType, String startTime, String endTime) {
+        //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
+        List<StorePredepositReportDO> storePredepositReportDOS = this.maReportDownloadService.storePredepositDownload(cityId, storeId, storeType, startTime, endTime, storeIds);
+        ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
+        String shiroName = "";
+        if (null != shiroUser) {
+            shiroName = shiroUser.getName();
+        }
+
+        response.setContentType("text/html;charset=UTF-8");
+        //创建名称
+        String fileurl = "门店预存款-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
+
+        WritableWorkbook wwb = null;
+        try {
+            //创建文件
+            wwb = exportXML(fileurl, response);
+
+            //excel单表最大行数是65535
+            int maxSize = 0;
+            if (storePredepositReportDOS != null) {
+                maxSize = storePredepositReportDOS.size();
+            }
+            int sheets = maxSize / maxRowNum + 1;
+            //设置excel的sheet数
+            for (int i = 0; i < sheets; i++) {
+                //标题格式
+                WritableCellFormat titleFormat = this.setTitleStyle();
+                //正文格式
+                WritableCellFormat textFormat = this.setTextStyle();
+
+                //工作表，参数0表示这是第一页
+                WritableSheet ws = wwb.createSheet("第" + (i + 1) + "页", i);
+
+                //筛选条件
+                Map<String, String> map = new HashMap<>();
+                if (null != cityId && !(cityId.equals(-1L)) && null != storePredepositReportDOS && storePredepositReportDOS.size() > 0) {
+                    map.put("城市", storePredepositReportDOS.get(0).getCityName());
+                } else {
+                    map.put("城市", "无");
+                }
+                if (null != storeId && !(storeId.equals(-1L)) && null != storePredepositReportDOS && storePredepositReportDOS.size() > 0) {
+                    map.put("门店", storePredepositReportDOS.get(0).getStoreName());
+                } else {
+                    map.put("门店", "无");
+                }
+                if (null != storeType && !("".equals(storeType)) && null != storePredepositReportDOS && storePredepositReportDOS.size() > 0) {
+                    map.put("门店类型", storePredepositReportDOS.get(0).getStoreType());
+                } else {
+                    map.put("门店类型", "无");
+                }
+                if (null != startTime && !("".equals(startTime))) {
+                    map.put("开始时间", startTime);
+                } else {
+                    map.put("开始时间", "无");
+                }
+                if (null != endTime && !("".equals(endTime))) {
+                    map.put("结束时间", endTime);
+                } else {
+                    map.put("结束时间", "无");
+                }
+                //设置筛选条件
+                ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
+                //列宽
+                int[] columnView = {10, 20, 13, 20, 10, 10, 15, 20, 20};
+                //列标题
+                String[] titles = {"城市", "门店名称", "门店类型", "变动类型", "变动金额", "变更后总金额", "变更时间", "相关单号", "备注"};
+                //计算标题开始行号
+                int row = 1;
+                if (null != map && map.size() > 0) {
+                    row = (map.size() + 1) / 2 + 4;
+                }
+
+                int collectRow = row + 1;
+//
+                row += 5;
+//                //设置标题
+                ws = this.setHeader(ws, titleFormat, columnView, titles, row);
+//
+                row += 1;
+                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.NO_BOLD, false,
+                        UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
+                //填写表体数据
+                for (int j = 0; j < maxRowNum; j++) {
+                    if (j + i * maxRowNum >= maxSize) {
+                        break;
+                    }
+                    StorePredepositReportDO storePredepositReportDO = storePredepositReportDOS.get(j + i * maxRowNum);
+                    ws.addCell(new Label(0, j + row, storePredepositReportDO.getCityName(), textFormat));
+                    ws.addCell(new Label(1, j + row, storePredepositReportDO.getStoreName(), textFormat));
+                    ws.addCell(new Label(2, j + row, storePredepositReportDO.getStoreType(), textFormat));
+                    ws.addCell(new Label(3, j + row, storePredepositReportDO.getChangeType(), textFormat));
+                    ws.addCell(new Number(4, j + row, storePredepositReportDO.getChangeMoney(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Number(5, j + row, storePredepositReportDO.getBalance(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Label(6, j + row, storePredepositReportDO.getChangeTime(), textFormat));
+                    ws.addCell(new Label(7, j + row, storePredepositReportDO.getReferenceNumber(), textFormat));
+                    ws.addCell(new Label(8, j + row, storePredepositReportDO.getRemarks(), textFormat));
                 }
             }
         } catch (Exception e) {

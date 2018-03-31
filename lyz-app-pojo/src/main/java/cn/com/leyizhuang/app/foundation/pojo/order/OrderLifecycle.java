@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.order;
 
+import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.core.constant.OrderLifecycleType;
 import lombok.*;
 
@@ -30,7 +31,7 @@ public class OrderLifecycle {
     private OrderLifecycleType operation;
 
     //操作后订单状态
-    private OrderLifecycleType postStatus;
+    private AppOrderStatus postStatus;
 
     //操作时间
     private Date operationTime;

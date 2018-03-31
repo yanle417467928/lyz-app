@@ -173,4 +173,42 @@
         </foreach>
         ORDER BY buyTime
     </select>
+
+    <select id="findStorePredepositReportDOAll"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.StorePredepositReportDO">
+        SELECT
+        c.name cityName,
+        s.store_name storeName,
+        s.store_type storeType,
+        pl.create_time changeTime,
+        pl.change_type changeType,
+        pl.change_money changeMoney,
+        pl.balance balance,
+        pl.order_number referenceNumber,
+        pl.remarks remarks
+        FROM st_pre_deposit_log pl
+        INNER JOIN st_store s ON pl.store_id = s.store_id
+        INNER JOIN city c ON c.city_id = s.city_id
+        WHERE TRUE
+        <if test="null != cityId and cityId != -1">
+            AND city.city_id = #{cityId}
+        </if>
+        <if test="null != storeId and storeId != -1">
+            AND pl.store_id = #{storeId}
+        </if>
+        <if test="null != storeType and storeType != ''">
+            AND s.store_type = #{storeType}
+        </if>
+        <if test="null != startTime and startTime != ''">
+            AND pl.create_time &gt; #{startTime}
+        </if>
+        <if test="null != endTime and endTime != ''">
+            AND pl.create_time &lt; #{endTime}
+        </if>
+        AND pl.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        ORDER BY changeTime DESC
+    </select>
 </mapper>
