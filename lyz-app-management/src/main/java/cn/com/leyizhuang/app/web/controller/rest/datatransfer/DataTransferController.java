@@ -87,8 +87,12 @@ public class DataTransferController {
 
             return "订单号不正确";
         }
+        try {
+            dataTransferService.transferOrderRelevantInfo(orderNo);
+        }catch (java.lang.Exception e){
+            log.info(e.getMessage());
+        }
 
-        dataTransferService.transferOrderRelevantInfo(orderNo);
         endTime = new Date();
         log.info("订单导入job执行完成", endTime);
         long from = startTime.getTime();

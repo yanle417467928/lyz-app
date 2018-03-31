@@ -135,15 +135,17 @@ public class DataTransferServiceImpl implements DataTransferService {
             }
         } else if ("送货上门".equals(tdOrder.getDeliverTypeTitle())) {
             List<TdDeliveryInfoDetails> tdDeliveryInfoDetailsList = this.queryDeliveryInfoDetailByOrderNumber(tdOrder.getMainOrderNumber());
-            TdDeliveryInfoDetails tdDeliveryInfoDetails = tdDeliveryInfoDetailsList.get(0);
-            orderLogisticsInfo.setReceiver(tdOrderLogistics.getShippingName());
-            orderLogisticsInfo.setReceiverPhone(tdOrderLogistics.getShippingPhone());
-            orderLogisticsInfo.setShippingAddress(tdOrderLogistics.getShippingAddress());
+
 
             if (null == tdDeliveryInfoDetailsList || tdDeliveryInfoDetailsList.size() == 0) {
                 log.warn("物流信息没找到,订单：{}", tdOrder.getMainOrderNumber());
                 throw new DataTransferException("该订单没有找到物流信息", DataTransferExceptionType.DENF);
             } else {
+                TdDeliveryInfoDetails tdDeliveryInfoDetails = tdDeliveryInfoDetailsList.get(0);
+                orderLogisticsInfo.setReceiver(tdOrderLogistics.getShippingName());
+                orderLogisticsInfo.setReceiverPhone(tdOrderLogistics.getShippingPhone());
+                orderLogisticsInfo.setShippingAddress(tdOrderLogistics.getShippingAddress());
+
                 String clerkNoCode = tdDeliveryInfoDetails.getDriver();
                 AppEmployee employee = employeeService.findDeliveryByClerkNo(clerkNoCode);
                 orderLogisticsInfo.setDeliveryClerkId(tdOrderLogistics.getEmpId());
@@ -1055,7 +1057,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                 // 记录一条错误日志
                 dataTransferSupportService.saveOneDataTransferErrolog(new DataTransferErrorLog(null, tdOrder.getMainOrderNumber(), e.getType().getDesc(), new Date()));
             } catch (Exception e) {
-                log.warn(e.getMessage());
+                log.info(e.getMessage());
                 // 记录一条错误日志
                 dataTransferSupportService.saveOneDataTransferErrolog(new DataTransferErrorLog(null, tdOrder.getMainOrderNumber(), e.getMessage(),
                         new Date()));
