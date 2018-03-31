@@ -56,6 +56,8 @@ public interface DataTransferService {
 
     List<TdOrderSmall> getPendingTransferOrder(Date startTime, Date endTime);
 
+    List<TdOrderSmall> getPendingTransferOrderByOrderNo(Date startTime, Date endTime,String orderNO);
+
     List<TdOrderData> queryTdOrderDataListByOrderNo(String orderNo);
 
     List<OrderBaseInfo> findNewOrderNumberByDeliveryType();

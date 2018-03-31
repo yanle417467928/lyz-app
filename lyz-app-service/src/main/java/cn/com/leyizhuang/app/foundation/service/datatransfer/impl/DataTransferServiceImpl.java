@@ -195,6 +195,14 @@ public class DataTransferServiceImpl implements DataTransferService {
     }
 
     @Override
+    public List<TdOrderSmall> getPendingTransferOrderByOrderNo(Date startTime, Date endTime,String orderNO) {
+        if (null != startTime && null != endTime) {
+            return transferDAO.getPendingTransferOrderByOrderNo(startTime, endTime, orderNO);
+        }
+        return null;
+    }
+
+    @Override
     @Transactional
     public OrderArrearsAuditDO transferArrearsAudit(String orderNumber, List<AppEmployee> employeeList) {
 

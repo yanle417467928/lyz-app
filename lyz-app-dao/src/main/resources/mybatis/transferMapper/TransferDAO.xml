@@ -476,6 +476,32 @@
         GROUP BY c.main_order_number;
     </select>
 
+    <select id="getPendingTransferOrderByOrderNo" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderSmall">
+        SELECT
+        c.main_order_number,
+        c.order_time,
+        c.pay_time,
+        c.status_id,
+        c.deliver_type_title,
+        c.is_seller_order,
+        c.user_id,
+        c.username,
+        c.seller_id,
+        c.diy_site_code,
+        c.seller_real_name,
+        c.seller_username,
+        c.real_user_real_name,
+        c.real_user_username,
+        c.remark,
+        c.city,
+        c.paper_sales_number,
+        sum(c.total_goods_price) total_goods_price,
+        c.real_user_id
+        FROM td_order_copy c LEFT JOIN ord_base_info b ON c.main_order_number = b.ord_no
+        WHERE b.ord_no IS NULL and c.main_order_number = #{orderNo}
+        GROUP BY c.main_order_number;
+    </select>
+
     <select id="queryTdOrderDataListByOrderNo" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderData">
         SELECT *
