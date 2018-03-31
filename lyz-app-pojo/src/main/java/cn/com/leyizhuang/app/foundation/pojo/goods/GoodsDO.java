@@ -89,6 +89,7 @@ public class GoodsDO {
 
     //商品详情
     private String goodsDetial;
+
     //物料状态
     private Boolean materialsEnable;
 

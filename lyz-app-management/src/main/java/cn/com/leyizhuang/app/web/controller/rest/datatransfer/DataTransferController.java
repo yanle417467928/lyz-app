@@ -1,11 +1,9 @@
 package cn.com.leyizhuang.app.web.controller.rest.datatransfer;
 
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.DataTransferErrorLog;
+import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
-import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
-import cn.com.leyizhuang.app.foundation.service.AppOrderService;
-import cn.com.leyizhuang.app.foundation.service.AppStoreService;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.OrderBillingTransferService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.OrderGoodsTransferService;
@@ -47,6 +45,7 @@ public class DataTransferController {
 
     @Resource
     private AppCustomerService customerService;
+
 
     private static final Date JOB_END_TIME;
 
@@ -201,5 +200,16 @@ public class DataTransferController {
     public void orderGoodsInfoTransfer() {
 
         orderGoodsTransferService.transferAll();
+    }
+
+
+    @RequestMapping(value = "/data/transfer/goodsInfo", method = RequestMethod.GET)
+    public void goodsInfoTransfer() {
+        dataTransferService.goodsInfoTransfer();
+    }
+
+    @RequestMapping(value = "/data/transfer/storeInventoryInfo", method = RequestMethod.GET)
+    public void storeInventoryInfoTransfer() {
+        dataTransferService.storeInventoryInfoTransfer();
     }
 }

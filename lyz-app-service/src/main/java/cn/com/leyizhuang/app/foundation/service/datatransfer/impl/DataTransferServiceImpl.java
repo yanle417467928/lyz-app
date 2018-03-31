@@ -6,18 +6,22 @@ import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.TimingTaskErrorMessageDAO;
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
 import cn.com.leyizhuang.app.foundation.pojo.*;
+import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.*;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
+import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsType;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
+import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsBrand;
+import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsCategory;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
-import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
-import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
-import cn.com.leyizhuang.app.foundation.service.AppOrderService;
-import cn.com.leyizhuang.app.foundation.service.AppStoreService;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferSupportService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.OrderGoodsTransferService;
+import cn.com.leyizhuang.app.foundation.vo.management.city.CityDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
 import cn.com.leyizhuang.common.util.AssertUtil;
 import cn.com.leyizhuang.common.util.CountUtil;
@@ -27,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.*;
@@ -73,6 +78,13 @@ public class DataTransferServiceImpl implements DataTransferService {
 
     @Resource
     private AppStoreService appStoreService;
+
+    @Resource
+    private GoodsService goodsService;
+
+    @Resource
+    private MaCityService cityService;
+
 
     public OrderGoodsInfo transferOne(TdOrderGoods tdOrderGoods) {
         OrderGoodsInfo goodsInfo = new OrderGoodsInfo();
@@ -245,7 +257,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                 }
             }
             Long deliveryId = this.transferDAO.findDeliveryInfoByClerkNo(clerkNo);
-            if (null == deliveryId){
+            if (null == deliveryId) {
                 log.warn("未查到此订单配送员信息！订单号：", orderNumber);
                 throw new DataTransferException("订单审核未查到此订单配送员信息", DataTransferExceptionType.ENF);
             }
@@ -266,7 +278,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                 auditDO.setStatus(ArrearsAuditStatus.AUDIT_NO);
             }
             auditDO.setAgencyMoney(agencyRefund.getAgencyRefund());
-            if (null == agencyRefund.getAgencyRefund() || agencyRefund.getAgencyRefund() == 0D || agencyRefund.getAgencyRefund().equals(ownMoneyRecord.getPayed()))  {
+            if (null == agencyRefund.getAgencyRefund() || agencyRefund.getAgencyRefund() == 0D || agencyRefund.getAgencyRefund().equals(ownMoneyRecord.getPayed())) {
                 auditDO.setStatus(ArrearsAuditStatus.AUDIT_PASSED);
             }
             auditDO.setOrderMoney(ownMoneyRecord.getOwned());
@@ -495,7 +507,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                         tdOrderData.getActivitySub() == null ? 0D : tdOrderData.getActivitySub(), tdOrderData.getCashCouponFee() == null ? 0D : tdOrderData.getCashCouponFee(), tdOrderData.getProCouponFee() == null ? 0D : tdOrderData.getProCouponFee());
                 Double orderAmountSubTotal = CountUtil.add(totalGoodsPrice == null ? 0d : totalGoodsPrice, tdOrderData.getDeliveryFee());
                 orderBillingDetails.setOrderAmountSubtotal(orderAmountSubTotal);
-                orderBillingDetails.setAmountPayable(CountUtil.sub(orderAmountSubTotal, stPreDepsit,tdOrderData.getLeftPrice()==null?0D:tdOrderData.getLeftPrice()));
+                orderBillingDetails.setAmountPayable(CountUtil.sub(orderAmountSubTotal, stPreDepsit, tdOrderData.getLeftPrice() == null ? 0D : tdOrderData.getLeftPrice()));
                 orderBillingDetails.setCollectionAmount(tdOrderData.getAgencyRefund());
                 orderBillingDetails.setArrearage(tdOrderData.getDue());
                 orderBillingDetails.setIsOwnerReceiving(Boolean.FALSE);
@@ -907,7 +919,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                         OrderBillingDetails orderBillingDetails = this.transferOrderBillingDetails(orderBaseInfo);
 
                         //****物流进度明细 begin****/
-                       List<OrderDeliveryInfoDetails> deliveryInfoDetailsList = new ArrayList<>();
+                        List<OrderDeliveryInfoDetails> deliveryInfoDetailsList = new ArrayList<>();
                         if (AppDeliveryType.HOUSE_DELIVERY.equals(orderBaseInfo.getDeliveryType())) {
                             deliveryInfoDetailsList = this.saveOrderDeliveryInfoDetails(orderBaseInfo);
                         }
@@ -1232,5 +1244,112 @@ public class DataTransferServiceImpl implements DataTransferService {
             paymentDetailsList.add(paymentDetails);
         }
         return paymentDetailsList;
+    }
+
+    @Override
+    public List<GoodsDO> queryAllGoodsTrans() {
+        return transferDAO.queryAllGoodsTrans();
+    }
+
+
+    @Override
+    public List<GoodsType> queryAllGoodsType() {
+        return transferDAO.queryAllGoodsType();
+    }
+
+    @Override
+    public List<GoodsBrand> queryAllGoodsBrand() {
+        return transferDAO.queryAllGoodsBrand();
+    }
+
+    @Override
+    public List<GoodsCategory> queryAllGoodsCategory() {
+        return transferDAO.queryAllGoodsCategory();
+    }
+
+    @Override
+    public void updateGoodsTrans(GoodsDO goodsDO) {
+        transferDAO.updateGoodsTrans(goodsDO);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void goodsInfoTransfer() {
+        List<GoodsDO> goodsDOList = this.queryAllGoodsTrans();
+        for (GoodsDO goodsDO : goodsDOList) {
+            String sku = goodsDO.getSku();
+            log.info("sku编码"+sku);
+            String typeName = goodsDO.getTypeName();
+            log.info("typeName"+typeName);
+            String brandName = goodsDO.getBrandName();
+            log.info("brandName"+brandName);
+            String categoryName = goodsDO.getCategoryName();
+            log.info("categoryName"+categoryName);
+            List<GoodsType> goodsTypes = this.queryAllGoodsType();
+            for (GoodsType goodsType : goodsTypes) {
+                if (typeName.equals(goodsType.getTypeName())) {
+                    goodsDO.setGtid(goodsType.getGtid());
+                }
+            }
+
+            List<GoodsBrand> goodsBrands = this.queryAllGoodsBrand();
+            for (GoodsBrand goodsBrand : goodsBrands) {
+                if (brandName.equals(goodsBrand.getBrandName())) {
+                    goodsDO.setBrdId(goodsBrand.getBrdId());
+                }
+            }
+
+            List<GoodsCategory> goodsCategories = this.queryAllGoodsCategory();
+            for (GoodsCategory goodsCategory : goodsCategories) {
+                if (categoryName.equals(goodsCategory.getCategoryName())) {
+                    goodsDO.setCid(goodsCategory.getCid());
+                }
+            }
+                if(!"喜鹊".equals(goodsDO.getBrandName())){
+                    GoodsDO goodsDOBefore = goodsService.queryBySku(sku);
+                    if(null!=goodsDOBefore){
+                        goodsDO.setGoodsDetial(goodsDOBefore.getGoodsDetial());
+                    }
+            }
+            this.updateGoodsTrans(goodsDO);
+        }
+    }
+
+
+    @Override
+    public List<StoreDetailVO> findStorehasInventory() {
+        return transferDAO.findStorehasInventory();
+    }
+
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void storeInventoryInfoTransfer() {
+        List<StoreDetailVO> storeDetailVOs = this.findStorehasInventory();
+        Date date = new Date();
+        if (null != storeDetailVOs && storeDetailVOs.size() > 0) {
+            for (StoreDetailVO storeDetailVO : storeDetailVOs) {
+                CityDetailVO city = cityService.queryCityVOById(storeDetailVO.getCityCode().getCityId());
+                List<GoodsDO> goodsDOs = this.queryAllGoodsTrans();
+                for (GoodsDO goodsDO : goodsDOs) {
+                    StoreInventory storeInventory = new StoreInventory();
+                    storeInventory.setAvailableIty(0);
+                    storeInventory.setCityCode(city.getCode());
+                    storeInventory.setCityId(city.getCityId());
+                    storeInventory.setCityName(city.getName());
+                    storeInventory.setCreateTime(date);
+                    storeInventory.setGid(goodsDO.getGid());
+                    storeInventory.setRealIty(0);
+                    storeInventory.setSku(goodsDO.getSku());
+                    storeInventory.setSkuName(goodsDO.getSkuName());
+                    storeInventory.setStoreId(storeDetailVO.getStoreId());
+                    storeInventory.setStoreCode(storeDetailVO.getStoreCode());
+                    storeInventory.setStoreName(storeDetailVO.getStoreName());
+                    transferDAO.saveStoreInventory(storeInventory);
+                }
+            }
+        }
+
+
     }
 }
