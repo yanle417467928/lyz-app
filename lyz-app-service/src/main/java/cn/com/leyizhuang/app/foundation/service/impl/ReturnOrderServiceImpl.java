@@ -2015,6 +2015,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
 
             maps.put("returnOrderBaseInfo", returnOrderBaseInfo);
             maps.put("returnOrderBilling", returnOrderBilling);
+            maps.put("orderBaseInfo", orderBaseInfo);
             maps.put("code", "SUCCESS");
             return maps;
         } catch (Exception e) {
