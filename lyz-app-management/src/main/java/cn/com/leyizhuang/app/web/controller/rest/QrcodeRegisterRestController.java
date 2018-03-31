@@ -30,6 +30,8 @@ import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 扫码注册
@@ -93,12 +95,22 @@ public class QrcodeRegisterRestController extends BaseRestController {
 
                 workNumber = workNumber.trim();
 
-                // 输入工号 “-” 后面的号码也可以
-                if (workNumber.equalsIgnoreCase(appEmployee.getLoginName())
-                        || appEmployee.getLoginName().contains(workNumber) ) {
-                    // 有推荐码 设置为会员
-                    newCustomer.setCustomerType(AppCustomerType.MEMBER);
-                } else {
+                String loginName = appEmployee.getLoginName();
+
+                if (loginName != null){
+                    String regEx="[^0-9]";
+                    Pattern p = Pattern.compile(regEx);
+                    Matcher m = p.matcher(loginName);
+                    System.out.println( m.replaceAll("").trim());
+
+                    if (workNumber.equalsIgnoreCase(appEmployee.getLoginName())
+                            || appEmployee.getLoginName().equals(m) ) {
+                        // 有推荐码 设置为会员
+                        newCustomer.setCustomerType(AppCustomerType.MEMBER);
+                    } else {
+                        newCustomer.setCustomerType(AppCustomerType.RETAIL);
+                    }
+                }else {
                     newCustomer.setCustomerType(AppCustomerType.RETAIL);
                 }
 
