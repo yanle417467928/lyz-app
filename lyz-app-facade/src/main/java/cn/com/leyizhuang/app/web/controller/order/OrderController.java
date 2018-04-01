@@ -637,7 +637,8 @@ public class OrderController {
 
             //由于运费不抵扣乐币及优惠券,避免分摊出现负,运费放最后计算
             // 运费计算
-            freight = deliveryFeeRuleService.countDeliveryFee(identityType, cityId, totalOrderAmount, goodsInfo);
+            //2018-04-01 generation 产品卷金额加进运费计算
+            freight = deliveryFeeRuleService.countDeliveryFee(identityType, cityId, CountUtil.add(totalOrderAmount, proCouponDiscount), goodsInfo);
 
             totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
 
