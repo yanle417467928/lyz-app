@@ -29,6 +29,7 @@ import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.util.AssertUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +45,7 @@ import java.util.*;
  * Time: 18:17.
  */
 @Service
+@Slf4j
 public class AppOrderServiceImpl implements AppOrderService {
 
 
@@ -527,6 +529,7 @@ public class AppOrderServiceImpl implements AppOrderService {
         Double amountPayable = 0D;
         switch (identityType) {
             case 6:
+                log.info("订单会员折扣:{}",orderBillingDetails.getMemberDiscount());
                 orderAmountSubtotal = orderBillingDetails.getTotalGoodsPrice()
                         + OrderUtils.replaceNullWithZero(orderBillingDetails.getFreight())
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getProductCouponDiscount())
@@ -535,6 +538,7 @@ public class AppOrderServiceImpl implements AppOrderService {
                         /* - OrderUtils.replaceNullWithZero(orderBillingDetails.getLebiCashDiscount())*/
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getCashCouponDiscount());
                 orderBillingDetails.setOrderAmountSubtotal(orderAmountSubtotal);
+                log.info("订单金额小计:{}",orderAmountSubtotal);
 
                 amountPayable = orderBillingDetails.getOrderAmountSubtotal()
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getCusPreDeposit())
@@ -543,6 +547,7 @@ public class AppOrderServiceImpl implements AppOrderService {
                 orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable());
                 break;
             case 0:
+                log.info("订单会员折扣:{}",orderBillingDetails.getMemberDiscount());
                 orderAmountSubtotal = orderBillingDetails.getTotalGoodsPrice()
                         + OrderUtils.replaceNullWithZero(orderBillingDetails.getFreight())
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getProductCouponDiscount())
@@ -552,6 +557,8 @@ public class AppOrderServiceImpl implements AppOrderService {
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getCashCouponDiscount());
                 orderBillingDetails.setOrderAmountSubtotal(orderAmountSubtotal);
 
+                log.info("订单金额小计:{}",orderAmountSubtotal);
+
                 amountPayable = orderBillingDetails.getOrderAmountSubtotal()
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getStPreDeposit())
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getEmpCreditMoney());
@@ -559,11 +566,14 @@ public class AppOrderServiceImpl implements AppOrderService {
                 orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable() + orderBillingDetails.getEmpCreditMoney());
                 break;
             case 2:
+                log.info("订单会员折扣:{}",orderBillingDetails.getMemberDiscount());
                 orderAmountSubtotal = orderBillingDetails.getTotalGoodsPrice()
                         + OrderUtils.replaceNullWithZero(orderBillingDetails.getFreight())
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getMemberDiscount())
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getPromotionDiscount());
                 orderBillingDetails.setOrderAmountSubtotal(orderAmountSubtotal);
+
+                log.info("订单金额小计:{}",orderAmountSubtotal);
 
                 amountPayable = orderBillingDetails.getOrderAmountSubtotal()
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getStPreDeposit())
