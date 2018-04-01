@@ -99,7 +99,7 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
-    public Long existOrderGoodsInventory(Long cityId, List<GoodsIdQtyParam> goodsList, List<GoodsIdQtyParam> giftList, List<GoodsIdQtyParam> couponList) {
+    public List<Long> existOrderGoodsInventory(Long cityId, List<GoodsIdQtyParam> goodsList, List<GoodsIdQtyParam> giftList, List<GoodsIdQtyParam> couponList) {
 
         if (null == cityId || AssertUtil.isEmpty(goodsList)) {
             return null;
@@ -121,14 +121,18 @@ public class AppOrderServiceImpl implements AppOrderService {
                 mergeMap.put(param.getId(), param.getQty());
             }
         }
+        //2018-04-01 generation 修改  返回所有库存不足商品ID
+        List<Long> goodsIds = new ArrayList<>();
         //遍历判断库存
         for (Long id : mergeMap.keySet()) {
             Boolean isHaveInventory = cityDAO.existGoodsCityInventory(cityId, id, mergeMap.get(id));
             if (!isHaveInventory) {
-                return id;
+                goodsIds.add(id);
+//                return id;
             }
         }
-        return null;
+//        return null;
+        return goodsIds;
     }
 
     @Override
