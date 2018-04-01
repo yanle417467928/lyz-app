@@ -1192,7 +1192,7 @@ public class CommonServiceImpl implements CommonService {
         CreateOrderGoodsSupport support = new CreateOrderGoodsSupport();
         support.setGoodsTotalPrice(goodsTotalPrice);
         support.setInventoryCheckMap(inventoryCheckMap);
-        support.setMemberDiscount(memberDiscount);
+        support.setMemberDiscount(CountUtil.HALF_UP_SCALE_2(memberDiscount));
         support.setOrderGoodsInfoList(orderGoodsInfoList);
         support.setProductCouponGoodsList(productCouponGoodsList);
         support.setPromotionDiscount(promotionDiscount);
