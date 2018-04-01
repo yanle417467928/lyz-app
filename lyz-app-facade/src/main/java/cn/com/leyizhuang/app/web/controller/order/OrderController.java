@@ -670,12 +670,22 @@ public class OrderController {
             goodsSettlement.put("deliveryTypeList", deliveryTypeList);
             //非门店自提,为城市库存充足及门店库存充足
             if (!AppDeliveryType.SELF_TAKE.equals(goodsSimpleRequest.getSysDeliveryType())) {
+
+                //2018-04-01 generation 修改 提示所有城市库存不足的商品
                 //判断库存的特殊处理
-                Long gid = appOrderService.existOrderGoodsInventory(cityId, goodsList, giftsList, couponList);
-                if (gid != null) {
-                    GoodsDO goodsDO = goodsService.queryById(gid);
+                List<Long> goodsIdList = appOrderService.existOrderGoodsInventory(cityId, goodsList, giftsList, couponList);
+                if (goodsIdList != null && goodsIdList.size() > 0) {
+                    String message = "商品";
+                    for (Long gid: goodsIdList) {
+                        GoodsDO goodsDO = goodsService.queryById(gid);
+                        message += "'" ;
+                        message += goodsDO.getSkuName() ;
+                        message += "'" ;
+                    }
+                    message += "仓库库存不足，请更改购买数量!";
                     //如果这里发现库存不足还是要返回去商品列表
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该商品:" + goodsDO.getSkuName() + "商品库存不足！", goodsSettlement);
+//                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该商品:" + goodsDO.getSkuName() + "商品库存不足！", goodsSettlement);
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, message, goodsSettlement);
                     logger.info("enterOrder OUT,用户确认订单计算商品价格明细，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }

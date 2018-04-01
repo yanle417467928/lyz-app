@@ -38,7 +38,7 @@ public interface AppOrderService {
 
     Boolean existGoodsCityInventory(Long cityId, Long gid, Integer qty);
 
-    Long existOrderGoodsInventory(Long cityId, List<GoodsIdQtyParam> goodsList, List<GoodsIdQtyParam> giftList, List<GoodsIdQtyParam> couponList);
+    List<Long> existOrderGoodsInventory(Long cityId, List<GoodsIdQtyParam> goodsList, List<GoodsIdQtyParam> giftList, List<GoodsIdQtyParam> couponList);
 
     //用户获取我的订单列表
     PageInfo<OrderBaseInfo> getOrderListByUserIDAndIdentityType(Long userID, Integer identityType, Integer showStatus, Integer page, Integer size);

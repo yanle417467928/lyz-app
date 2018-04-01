@@ -134,9 +134,11 @@ public class OrderGiftController {
             }
             //先判断是否开通门店配送,没有只判断门店库存
             if (appStore.getIsOpenDelivery()) {
+
+                //2018-04-01 generation 修改 提示所有城市库存不足的商品
                 //默认门店.装饰公司.普通门店都先判断城市库存
-                Long gid = appOrderService.existOrderGoodsInventory(cityId, goodsItyList, giftsList, couponList);
-                if (gid != null) {
+                List<Long> goodsIds = appOrderService.existOrderGoodsInventory(cityId, goodsItyList, giftsList, couponList);
+                if (goodsIds != null && goodsIds.size() > 0) {
                     if (StoreType.ZY.equals(appStore.getStoreType()) ||
                             StoreType.JM.equals(appStore.getStoreType()) ||
                             StoreType.FX.equals(appStore.getStoreType()) ||
@@ -146,8 +148,18 @@ public class OrderGiftController {
                             GoodsDO goodsDO = goodsService.findGoodsById(entry.getKey());
                             Boolean enoughInvFlag = appOrderService.existGoodsStoreInventory(storeId, entry.getKey(), entry.getValue());
                             if (!enoughInvFlag) {
-                                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该商品 '" + goodsDO.getSkuName()
-                                        + "' 库存不足，请更改购买数量!", null);
+                                String message = "商品";
+                                for (Long gid: goodsIds) {
+                                    GoodsDO goods = goodsService.findGoodsById(gid);
+                                    message += "'" ;
+                                    message += goodsDO.getSkuName() ;
+                                    message += "'" ;
+
+                                }
+                                message += "仓库库存不足，请更改购买数量!";
+//                                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该商品 '" + goodsDO.getSkuName()
+//                                        + "' 库存不足，请更改购买数量!", null);
+                                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, message, null);
                                 logger.info("materialListStepToGiftList OUT,下料清单跳转赠品列表失败，出参 resultDTO:{}", resultDTO);
                                 return resultDTO;
                             } else {
