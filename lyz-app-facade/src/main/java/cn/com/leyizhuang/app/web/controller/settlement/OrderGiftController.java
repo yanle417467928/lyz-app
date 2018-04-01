@@ -152,7 +152,7 @@ public class OrderGiftController {
                                 for (Long gid: goodsIds) {
                                     GoodsDO goods = goodsService.findGoodsById(gid);
                                     message += "'" ;
-                                    message += goodsDO.getSkuName() ;
+                                    message += goods.getSkuName() ;
                                     message += "'" ;
 
                                 }
