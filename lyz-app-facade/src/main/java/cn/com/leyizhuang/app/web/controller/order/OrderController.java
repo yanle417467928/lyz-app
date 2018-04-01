@@ -43,6 +43,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -1591,6 +1592,82 @@ public class OrderController {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，去支付失败", null);
             logger.warn("verifyTimeout EXCEPTION,发生未知异常，待付款订单检查是否超时失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * 支付 金额为0的订单
+     * @param userId
+     * @param identityType
+     * @param orderNumber
+     * @return
+     */
+    @PostMapping(value = "/pay/zero/order", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> payZeroOrder(Long userId, Integer identityType, String orderNumber){
+        ResultDTO<Object> resultDTO;
+        logger.info("payZeroOrder CALLED,待付款订单，入参 userID:{}, identityType:{}, orderNumber{}", userId, identityType, orderNumber);
+
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
+            logger.info("payZeroOrder OUT,待付款订单，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("payZeroOrder OUT,待付款订单，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (!StringUtils.isNotBlank(orderNumber)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单编号不允许为空！", null);
+            logger.info("payZeroOrder OUT,待付款订单，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+
+        OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
+        if (null == orderBaseInfo) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查到此订单信息！", null);
+            logger.info("payZeroOrder OUT,待付款订单，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+
+        /** 校验订单状态 以及金额是否为 0 **/
+        AppOrderStatus status = orderBaseInfo.getStatus();
+        if (!status.equals(AppOrderStatus.UNPAID)){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单状态不正确，非待付款状态！", null);
+            logger.info("payZeroOrder OUT,待付款订单，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+
+        // 应付金额
+        Double amount = appOrderService.getAmountPayableByOrderNumber(orderNumber);
+
+        if (!amount.equals(0)){
+            // 应付金额不为0
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单未付清，金额有误！", null);
+            logger.info("payZeroOrder OUT,待付款订单，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+
+        try {
+            commonService.payZeroOrder(orderNumber);
+
+            //发送订单到拆单消息队列
+            sinkSender.sendOrder(orderNumber);
+
+            //发送订单到WMS
+            OrderBaseInfo baseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
+            if (baseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
+                iCallWms.sendToWmsRequisitionOrderAndGoods(orderNumber);
+            }
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            logger.info("支付0元订单成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            logger.info(e.getMessage());
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生异常，支付失败！", null);
+            logger.info("payZeroOrder OUT,待付款订单，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
     }

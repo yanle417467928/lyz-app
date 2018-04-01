@@ -103,6 +103,8 @@ public interface CommonService {
 
     void handleOrderRelevantBusinessAfterOnlinePayCashDelivery(String orderNumber, OnlinePayType payType) throws UnsupportedEncodingException;
 
+    void payZeroOrder(String orderNumber) throws UnsupportedEncodingException;
+
     void confirmOrderArrive(OrderBillingPaymentDetails paymentDetails, OrderBillingDetails orderBillingDetails,
                             EmpCreditMoneyChangeLog empCreditMoneyChangeLog, OrderAgencyFundDO orderAgencyFundDO, OrderDeliveryInfoDetails orderDeliveryInfoDetails,
                             OrderBaseInfo orderBaseInfo, Long sellerId, Double credit, Timestamp lastUpdateTime);
