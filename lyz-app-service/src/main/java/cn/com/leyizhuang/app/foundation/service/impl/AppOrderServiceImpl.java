@@ -529,7 +529,7 @@ public class AppOrderServiceImpl implements AppOrderService {
         Double amountPayable = 0D;
         switch (identityType) {
             case 6:
-                log.info("订单会员折扣:{}",orderBillingDetails.getMemberDiscount());
+                log.info("订单会员折扣:{}", orderBillingDetails.getMemberDiscount());
                 orderAmountSubtotal = orderBillingDetails.getTotalGoodsPrice()
                         + OrderUtils.replaceNullWithZero(orderBillingDetails.getFreight())
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getProductCouponDiscount())
@@ -538,7 +538,7 @@ public class AppOrderServiceImpl implements AppOrderService {
                         /* - OrderUtils.replaceNullWithZero(orderBillingDetails.getLebiCashDiscount())*/
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getCashCouponDiscount());
                 orderBillingDetails.setOrderAmountSubtotal(orderAmountSubtotal);
-                log.info("订单金额小计:{}",orderAmountSubtotal);
+                log.info("订单金额小计:{}", orderAmountSubtotal);
 
                 amountPayable = orderBillingDetails.getOrderAmountSubtotal()
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getCusPreDeposit())
@@ -547,7 +547,7 @@ public class AppOrderServiceImpl implements AppOrderService {
                 orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable());
                 break;
             case 0:
-                log.info("订单会员折扣:{}",orderBillingDetails.getMemberDiscount());
+                log.info("订单会员折扣:{}", orderBillingDetails.getMemberDiscount());
                 orderAmountSubtotal = orderBillingDetails.getTotalGoodsPrice()
                         + OrderUtils.replaceNullWithZero(orderBillingDetails.getFreight())
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getProductCouponDiscount())
@@ -557,7 +557,7 @@ public class AppOrderServiceImpl implements AppOrderService {
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getCashCouponDiscount());
                 orderBillingDetails.setOrderAmountSubtotal(orderAmountSubtotal);
 
-                log.info("订单金额小计:{}",orderAmountSubtotal);
+                log.info("订单金额小计:{}", orderAmountSubtotal);
 
                 amountPayable = orderBillingDetails.getOrderAmountSubtotal()
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getStPreDeposit())
@@ -566,14 +566,14 @@ public class AppOrderServiceImpl implements AppOrderService {
                 orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable() + orderBillingDetails.getEmpCreditMoney());
                 break;
             case 2:
-                log.info("订单会员折扣:{}",orderBillingDetails.getMemberDiscount());
+                log.info("订单会员折扣:{}", orderBillingDetails.getMemberDiscount());
                 orderAmountSubtotal = orderBillingDetails.getTotalGoodsPrice()
                         + OrderUtils.replaceNullWithZero(orderBillingDetails.getFreight())
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getMemberDiscount())
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getPromotionDiscount());
                 orderBillingDetails.setOrderAmountSubtotal(orderAmountSubtotal);
 
-                log.info("订单金额小计:{}",orderAmountSubtotal);
+                log.info("订单金额小计:{}", orderAmountSubtotal);
 
                 amountPayable = orderBillingDetails.getOrderAmountSubtotal()
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getStPreDeposit())
@@ -602,7 +602,8 @@ public class AppOrderServiceImpl implements AppOrderService {
         }
         //若使用信用额度，必须付清，不能再使用第三方支付
         if ((orderBillingDetails.getEmpCreditMoney() > 0 || orderBillingDetails.getStoreCreditMoney() > 0)) {
-            if (orderBillingDetails.getAmountPayable() > 0) {
+            //if (orderBillingDetails.getAmountPayable() > AppConstant.PAY_UP_LIMIT) {
+            if (!orderBillingDetails.getIsPayUp()) {
                 throw new OrderCreditMoneyException("使用信用额度的订单必须用信用额度付清，不能使用第三方支付！");
             }
         }
