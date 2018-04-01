@@ -1653,7 +1653,7 @@ public class OrderController {
         // 应付金额
         Double amount = appOrderService.getAmountPayableByOrderNumber(orderNumber);
 
-        if (!amount.equals(0)){
+        if (!amount.equals(0D)){
             // 应付金额不为0
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单未付清，金额有误！", null);
             logger.info("payZeroOrder OUT,待付款订单，出参 resultDTO:{}", resultDTO);
