@@ -582,8 +582,14 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
 
                     //修改订单状态
-                    appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.PENDING_RECEIVE,
-                            orderDeliveryInfoDetails.getLogisticStatus(), orderDeliveryInfoDetails.getOrderNo());
+                    if(orderDeliveryInfoDetails.getOperationType().equals("出货装车单")){
+                        appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.PENDING_RECEIVE,
+                                orderDeliveryInfoDetails.getLogisticStatus(), orderDeliveryInfoDetails.getOrderNo());
+                    }else{
+                        appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(null,
+                                orderDeliveryInfoDetails.getLogisticStatus(), orderDeliveryInfoDetails.getOrderNo());
+                    }
+
                 }
                 logger.info("GetWMSInfo OUT,获取wms物流信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
