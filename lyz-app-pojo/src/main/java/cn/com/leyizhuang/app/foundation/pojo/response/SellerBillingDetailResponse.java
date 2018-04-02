@@ -39,4 +39,7 @@ public class SellerBillingDetailResponse {
 
     //预存款
     private Double preDeposit;
+    
+    //代收金额
+    private Double collectionAmount;
 }
