@@ -602,8 +602,7 @@ public class AppOrderServiceImpl implements AppOrderService {
         }
         //若使用信用额度，必须付清，不能再使用第三方支付
         if ((orderBillingDetails.getEmpCreditMoney() > 0 || orderBillingDetails.getStoreCreditMoney() > 0)) {
-            //if (orderBillingDetails.getAmountPayable() > AppConstant.PAY_UP_LIMIT) {
-            if (!orderBillingDetails.getIsPayUp()) {
+            if (orderBillingDetails.getAmountPayable() > AppConstant.PAY_UP_LIMIT) {
                 throw new OrderCreditMoneyException("使用信用额度的订单必须用信用额度付清，不能使用第三方支付！");
             }
         }
