@@ -1405,6 +1405,9 @@ public class OrderController {
                     sellerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount() == null ? 0 : orderBillingDetails.getPromotionDiscount());
                     sellerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice() == null ? 0 : orderBaseInfo.getTotalGoodsPrice());
 
+                    //2018-04-02 generation 导购订单详情加查看代收款
+                    sellerBillingDetailResponse.setCollectionAmount(null == orderBillingDetails.getCollectionAmount() ? 0D : orderBillingDetails.getCollectionAmount());
+
                     orderDetailsResponse.setSellerBillingDetailResponse(sellerBillingDetailResponse);
                 }
                 orderDetailsResponse.setGoodsList(appOrderService.getOrderGoodsList(orderNumber));
