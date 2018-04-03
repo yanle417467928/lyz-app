@@ -54,12 +54,12 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
         List<WaitDeliveryResponse> waitDeliveryResponseList = orderDeliveryInfoDetailsDAO.getOrderBeasInfoByOperatorNo(operatorNo);
         List<OrderArrearsAuditDO> orderArrearsAuditDOList = orderDeliveryInfoDetailsDAO.getArrearsAuditByOperatorNo(operatorNo);
         if (null != waitDeliveryResponseList && waitDeliveryResponseList.size() > 0) {
-            for (WaitDeliveryResponse waitDeliveryResponse : waitDeliveryResponseList) {
-                    for (OrderArrearsAuditDO arrearsAuditDO:orderArrearsAuditDOList){
-                        if (waitDeliveryResponse.getOrderNumber().equals(arrearsAuditDO.getOrderNumber())){
-                            waitDeliveryResponseList.remove(waitDeliveryResponse);
-                        }
+            for(int i = 0;i<waitDeliveryResponseList.size();i++){
+                for (int j=0;j<orderArrearsAuditDOList.size();j++){
+                    if (waitDeliveryResponseList.get(i).getOrderNumber().equals(orderArrearsAuditDOList.get(j).getOrderNumber())){
+                        waitDeliveryResponseList.remove(waitDeliveryResponseList.get(i));
                     }
+                }
             }
         }
         return waitDeliveryResponseList;
