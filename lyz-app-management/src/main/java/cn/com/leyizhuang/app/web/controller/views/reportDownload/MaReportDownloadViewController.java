@@ -26,6 +26,15 @@ public class MaReportDownloadViewController extends BaseController {
 
     private final Logger logger = LoggerFactory.getLogger(MaReportDownloadViewController.class);
 
+    /**
+     * @title    收款报表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/4/2
+     */
     @GetMapping(value = "/receipts/list")
     public String getReceiptsList(ModelMap map) {
         List<OrderBillingPaymentType> paymentTypes = new ArrayList<>();
@@ -58,4 +67,50 @@ public class MaReportDownloadViewController extends BaseController {
         map.addAttribute("storeTypes", StoreType.getNotZsType());
         return "/views/reportDownload/store_predeposit_page";
     }
+
+    /**
+     * @title    对账商品明细报表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/4/2
+     */
+    @GetMapping(value = "/accountGoodsItems/list")
+    public String getAccountGoodsItemsList(ModelMap map) {
+        map.addAttribute("storeTypes", StoreType.values());
+        return "/views/reportDownload/account_goods_items_page";
+    }
+
+    /**
+     * @title   账单明细报表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/4/3
+     */
+    @GetMapping(value = "/billingItems/list")
+    public String getBillingItemsList(ModelMap map) {
+        map.addAttribute("storeTypes", StoreType.values());
+        return "/views/reportDownload/billing_items_page";
+    }
+
+    /**
+     * @title    配送员代收款报表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/4/3
+     */
+    @GetMapping(value = "/agencyFund/list")
+    public String getAgencyFundList(ModelMap map) {
+        map.addAttribute("storeTypes", StoreType.values());
+        return "/views/reportDownload/agency_fund_page";
+    }
+
 }
