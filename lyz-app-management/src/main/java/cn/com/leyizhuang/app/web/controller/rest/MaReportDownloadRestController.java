@@ -251,7 +251,7 @@ public class MaReportDownloadRestController extends BaseRestController{
                 //设置筛选条件
                 ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
                 //列宽
-                int[] columnView = {10, 13, 10, 20, 12, 10, 30, 15, 20};
+                int[] columnView = {10, 13, 10, 20, 12, 10, 30, 15, 15, 15, 25};
                 //列标题
                 String[] titles = {"城市", "门店名称", "门店类型", "付款/退款时间", "支付方式", "支付金额", "订/退单号", "备注"};
                 //计算标题开始行号
@@ -269,7 +269,9 @@ public class MaReportDownloadRestController extends BaseRestController{
                 ws.addCell(new Label(5, row, "其他", titleFormat));
                 ws.addCell(new Label(6, row, "门店预存款", titleFormat));
                 ws.addCell(new Label(7, row, "顾客预存款", titleFormat));
-                ws.addCell(new Label(8, row, "支付总额", titleFormat));
+                ws.addCell(new Label(8, row, "配送POS", titleFormat));
+                ws.addCell(new Label(9, row, "配送现金", titleFormat));
+                ws.addCell(new Label(10, row, "支付总额", titleFormat));
 
                 int collectRow = row + 1;
 
@@ -287,6 +289,8 @@ public class MaReportDownloadRestController extends BaseRestController{
                 Double cash = 0D;
                 Double other = 0D;
                 Double totle = 0D;
+                Double deliveryPos = 0D;
+                Double deliveryCash = 0D;
                 WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"),9,WritableFont.NO_BOLD,false,
                         UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
                 //填写表体数据
@@ -300,6 +304,14 @@ public class MaReportDownloadRestController extends BaseRestController{
                     ws.addCell(new Label(2, j + row, receiptsReportDO.getStoreType(), textFormat));
                     ws.addCell(new Label(3, j + row, receiptsReportDO.getPayTime(), textFormat));
                     ws.addCell(new Label(4, j + row, receiptsReportDO.getPayType(), textFormat));
+                    if ("DELIVERY_CLERK".equals(receiptsReportDO.getPaymentSubjectType())) {
+                        if ("CASH".equals(receiptsReportDO.getPayTypes())){
+                            ws.addCell(new Label(4, j + row, "配送现金", textFormat));
+                        }
+                        if ("POS".equals(receiptsReportDO.getPayTypes())){
+                            ws.addCell(new Label(4, j + row, "配送POS", textFormat));
+                        }
+                    }
                     ws.addCell(new Number(5, j + row, receiptsReportDO.getMoney(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     ws.addCell(new Label(6, j + row, receiptsReportDO.getOrderNumber(), textFormat));
                     ws.addCell(new Label(7, j + row, receiptsReportDO.getRemarks(), textFormat));
@@ -314,9 +326,18 @@ public class MaReportDownloadRestController extends BaseRestController{
                     } else if ("UNION_PAY".equals(receiptsReportDO.getPayTypes())){
                         unionPay = CountUtil.add(unionPay, null==receiptsReportDO.getMoney()?0D:receiptsReportDO.getMoney());
                     } else if ("POS".equals(receiptsReportDO.getPayTypes())){
-                        pos = CountUtil.add(pos, null==receiptsReportDO.getMoney()?0D:receiptsReportDO.getMoney());
+                        if ("DELIVERY_CLERK".equals(receiptsReportDO.getPaymentSubjectType())) {
+                            deliveryPos = CountUtil.add(deliveryPos, null==receiptsReportDO.getMoney()?0D:receiptsReportDO.getMoney());
+                        } else {
+                            pos = CountUtil.add(pos, null==receiptsReportDO.getMoney()?0D:receiptsReportDO.getMoney());
+                        }
+
                     } else if ("CASH".equals(receiptsReportDO.getPayTypes())){
-                        cash = CountUtil.add(cash, null==receiptsReportDO.getMoney()?0D:receiptsReportDO.getMoney());
+                        if ("DELIVERY_CLERK".equals(receiptsReportDO.getPaymentSubjectType())) {
+                            deliveryCash = CountUtil.add(deliveryCash, null == receiptsReportDO.getMoney()?0D : receiptsReportDO.getMoney());
+                        } else {
+                            cash = CountUtil.add(cash, null == receiptsReportDO.getMoney()?0D : receiptsReportDO.getMoney());
+                        }
                     } else {
                         other = CountUtil.add(other, null==receiptsReportDO.getMoney()?0D:receiptsReportDO.getMoney());
                     }
@@ -330,7 +351,11 @@ public class MaReportDownloadRestController extends BaseRestController{
                 ws.addCell(new Number(5, collectRow, other, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                 ws.addCell(new Number(6, collectRow, stPrepay, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                 ws.addCell(new Number(7, collectRow, cusPrepay, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                ws.addCell(new Number(8, collectRow, totle, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                ws.addCell(new Number(6, collectRow, stPrepay, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                ws.addCell(new Number(7, collectRow, cusPrepay, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                ws.addCell(new Number(8, collectRow, deliveryPos, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                ws.addCell(new Number(9, collectRow, deliveryCash, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                ws.addCell(new Number(10, collectRow, totle, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
             }
         }catch(Exception e) {
             System.out.println(e);

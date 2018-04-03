@@ -5,7 +5,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.ReceiptsReportDO">
         SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, obpd.pay_time payTime,
         obpd.pay_type payTypes, obpd.pay_type payType, IFNULL(obpd.amount, 0) money, obi.ord_no orderNumber,
-        IF(obpd.pay_type = 'POS',obd.store_pos_number,null) remarks
+        IF(obpd.pay_type = 'POS',obd.store_pos_number,null) remarks, obpd.payment_subject_type paymentSubjectType
         FROM
         ord_billing_payment_details obpd
         INNER JOIN ord_base_info obi ON obi.ord_no = obpd.ord_no
@@ -40,7 +40,7 @@
         UNION
         SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, orbd.create_time payTime,
         orbd.return_pay_type payTypes, orbd.return_pay_type payType, (-1 * IFNULL(orbd.return_money, 0)) money, orbi.return_no orderNumber,
-        NULL remarks
+        NULL remarks, null paymentSubjectType
         FROM ord_return_billing_detail orbd
         INNER JOIN ord_return_base_info orbi ON orbi.return_no = orbd.return_no
         INNER JOIN st_store st ON st.store_id = orbi.store_id
