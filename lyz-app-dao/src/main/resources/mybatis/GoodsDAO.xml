@@ -478,7 +478,7 @@
             AND gc.category_name =#{categorySecond}
         </if>
         <if test="null !=goodsType and ''!= goodsType ">
-            AND ggt.type_name=#{goodsType}
+            AND t.type_name=#{goodsType}
         </if>
         <if test="null !=goodsBrand and ''!= goodsBrand ">
             AND b.brand_name=#{goodsBrand}
@@ -509,7 +509,7 @@
             AND gc.category_name =#{categorySecond}
         </if>
         <if test="null !=goodsType and ''!= goodsType">
-            AND ggt.type_name=#{goodsType}
+            AND t.type_name=#{goodsType}
         </if>
         <if test="null !=goodsBrand and ''!= goodsBrand">
             AND b.brand_name=#{goodsBrand}
