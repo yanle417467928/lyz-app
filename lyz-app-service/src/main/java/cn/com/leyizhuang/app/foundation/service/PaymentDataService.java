@@ -25,4 +25,11 @@ public interface PaymentDataService {
      * @return  还款记录详情
      */
     PaymentDataDO findPaymentDataDOByOutTradeNo(String outTradeNo);
+
+    /**
+     * 查询还款记录详情
+     * @param orderNumber 订单号
+     * @return 还款记录详情
+     */
+    PaymentDataDO findPaymentDataDOByOrderNumber(String orderNumber);
 }

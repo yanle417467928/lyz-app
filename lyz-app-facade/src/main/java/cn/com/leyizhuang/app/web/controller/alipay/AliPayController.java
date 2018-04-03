@@ -416,11 +416,19 @@ public class AliPayController {
         Double money = CountUtil.sub(orderArrearsAuditDO.getOrderMoney(),orderArrearsAuditDO.getRealMoney());
         if (!orderBillingDetails.getArrearage().equals(money)){
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "欠款金额有误，请联系管理员核查！", null);
-            logger.info("wechatDebtRepayments OUT,支付宝欠款还款失败，出参 resultDTO:{}", resultDTO);
+            logger.info("AliPayDebtRepayments OUT,支付宝欠款还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         String totalFee = CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getArrearage());
         String outTradeNo = orderNumber.replaceAll("_XN", "_HK");
+
+        PaymentDataDO paymentData = paymentDataService.findPaymentDataDOByOrderNumber(orderNumber);
+        if (null != paymentData){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该订单已经使用过第三方支付，不能再进行支付！", null);
+            logger.info("AliPayDebtRepayments OUT,支付宝欠款还款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+
         PaymentDataDO paymentDataDO = new PaymentDataDO();
         paymentDataDO.setUserId(userId);
         paymentDataDO.setOutTradeNo(outTradeNo);

@@ -39,4 +39,11 @@ public interface PaymentDataDAO {
      */
     PaymentDataDO findPaymentDataDOByOutTradeNo(@Param("outTradeNo") String outTradeNo);
 
+    /**
+     * 查询还款记录详情
+     * @param orderNumber 订单号
+     * @return 还款记录详情
+     */
+    PaymentDataDO findPaymentDataDOByOrderNumber(@Param("orderNumber")String orderNumber);
+
 }

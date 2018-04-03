@@ -245,7 +245,7 @@ public class WeChatPayController {
         }
         OrderArrearsAuditDO orderArrearsAuditDO = arrearsAuditService.findArrearsByUserIdAndOrderNumber(userId, orderNumber);
         if (null == orderArrearsAuditDO) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "为查询到此欠款记录！", null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此欠款记录！", null);
             logger.info("wechatDebtRepayments OUT,微信欠款还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
@@ -264,7 +264,12 @@ public class WeChatPayController {
         String totlefee = CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getArrearage());
         Double totlefeeParse = Double.parseDouble(totlefee);
         String outTradeNo = orderNumber.replaceAll("_XN", "_HK");
-
+        PaymentDataDO paymentData = paymentDataService.findPaymentDataDOByOrderNumber(orderNumber);
+        if (null != paymentData){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该订单已经使用过第三方支付，不能再进行支付！", null);
+            logger.info("wechatDebtRepayments OUT,微信欠款还款失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         PaymentDataDO paymentDataDO = new PaymentDataDO();
         paymentDataDO.setUserId(userId);
         paymentDataDO.setOutTradeNo(outTradeNo);

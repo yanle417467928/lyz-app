@@ -52,5 +52,17 @@ public class MaOrderVO {
      * 应付金额
      */
     private Double orderPrice;
+    /**
+     * 门店id
+     */
+    private Long storeId;
+    /**
+     * 顾客姓名
+     */
+    private String customerName;
+    /**
+     * 顾客电话
+     */
+    private String customerPhone;
 
 }
