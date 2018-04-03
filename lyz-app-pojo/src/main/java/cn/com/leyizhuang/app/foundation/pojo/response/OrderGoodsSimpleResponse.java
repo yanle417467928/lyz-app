@@ -81,7 +81,7 @@ public class OrderGoodsSimpleResponse implements Serializable {
     /**
      * 商品数量
      */
-    private Integer goodsQty;
+    private Integer goodsQty = 0;
 
     /**
      * 公司标识
