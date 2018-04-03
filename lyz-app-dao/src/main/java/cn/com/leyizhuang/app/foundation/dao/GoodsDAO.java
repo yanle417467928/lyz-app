@@ -32,22 +32,29 @@ public interface GoodsDAO {
     void batchRemove(List<Long> longs);
 
     List<GoodsCategoryResponse> findGoodsCategoryListByCategoryCodeAndCustomerIdAndIdentityType(
-            @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId);
+            @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId, @Param(value = "goodsBrand") String goodsBrand, @Param(value = "specification") String specification, @Param(value = "goodsType") String goodsType);
 
     List<GoodsCategoryResponse> findGoodsCategoryListByCategoryCodeAndEmployeeIdAndIdentityType(
-            @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId);
+            @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId, @Param(value = "goodsBrand") String goodsBrand, @Param(value = "specification") String specification, @Param(value = "goodsType") String goodsType);
 
     List<GoodsBrandResponse> findGoodsBrandListByCategoryCodeAndCustomerIdAndIdentityType(
-            @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId);
+            @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId, @Param(value = "categorySecond") String categorySecond, @Param(value = "specification") String specification, @Param(value = "goodsType") String goodsType);
 
     List<GoodsBrandResponse> findGoodsBrandListByCategoryCodeAndEmployeeIdAndIdentityType(
-            @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId);
+            @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId, @Param(value = "categorySecond") String categorySecond, @Param(value = "specification") String specification, @Param(value = "goodsType") String goodsType);
 
     List<GoodsTypeResponse> findGoodsTypeListByCategoryCodeAndCustomerIdAndIdentityType(
-            @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId);
+            @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId, @Param(value = "categorySecond") String categorySecond, @Param(value = "specification") String specification, @Param(value = "goodsBrand") String goodsBrand);
 
     List<GoodsTypeResponse> findGoodsTypeListByCategoryCodeAndEmployeeIdAndIdentityType(
-            @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId);
+            @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId, @Param(value = "categorySecond") String categorySecond, @Param(value = "specification") String specification, @Param(value = "goodsBrand") String goodsBrand);
+
+
+    List<GoodsSpecificationResponse> findGoodsSpecificationListByCategoryCodeAndCustomerIdAndIdentityType(
+            @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId, @Param(value = "categorySecond") String categorySecond , @Param(value = "goodsBrand") String goodsBrand, @Param(value = "goodsType") String goodsType );
+
+    List<GoodsSpecificationResponse> findGoodsSpecificationListByCategoryCodeAndEmployeeIdAndIdentityType(
+            @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId, @Param(value = "categorySecond")  String categorySecond , @Param(value = "goodsBrand") String goodsBrand, @Param(value = "goodsType") String goodsType );
 
     GoodsDO findGoodsImageUriByGoodsId(Long goodsId);
 

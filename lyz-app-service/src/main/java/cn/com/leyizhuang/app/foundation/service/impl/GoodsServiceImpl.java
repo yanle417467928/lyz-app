@@ -105,36 +105,49 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public List<GoodsCategoryResponse> findGoodsCategoryListByCategoryCodeAndUserIdAndIdentityType(String categoryCode, Long userId, Integer identityType) {
+    public List<GoodsCategoryResponse> findGoodsCategoryListByCategoryCodeAndUserIdAndIdentityType(String categoryCode, Long userId, Integer identityType, String goodsBrand, String specification, String goodsType) {
         if (null != categoryCode && null != userId && null != identityType) {
             if (identityType == 6) {
-                return goodsDAO.findGoodsCategoryListByCategoryCodeAndCustomerIdAndIdentityType(categoryCode, userId);
+                return goodsDAO.findGoodsCategoryListByCategoryCodeAndCustomerIdAndIdentityType(categoryCode, userId, goodsBrand, specification, goodsType);
             } else {
-                return goodsDAO.findGoodsCategoryListByCategoryCodeAndEmployeeIdAndIdentityType(categoryCode, userId);
+                return goodsDAO.findGoodsCategoryListByCategoryCodeAndEmployeeIdAndIdentityType(categoryCode, userId, goodsBrand, specification, goodsType);
             }
         }
         return null;
     }
 
     @Override
-    public List<GoodsBrandResponse> findGoodsBrandListByCategoryCodeAndUserIdAndIdentityType(String categoryCode, Long userId, Integer identityType) {
+    public List<GoodsBrandResponse> findGoodsBrandListByCategoryCodeAndUserIdAndIdentityType(String categoryCode, Long userId, Integer identityType, String categorySecond, String specification, String goodType) {
         if (null != categoryCode && null != userId && null != identityType) {
             if (identityType == 6) {
-                return goodsDAO.findGoodsBrandListByCategoryCodeAndCustomerIdAndIdentityType(categoryCode, userId);
+                return goodsDAO.findGoodsBrandListByCategoryCodeAndCustomerIdAndIdentityType(categoryCode, userId, categorySecond, specification, goodType);
             } else {
-                return goodsDAO.findGoodsBrandListByCategoryCodeAndEmployeeIdAndIdentityType(categoryCode, userId);
+                return goodsDAO.findGoodsBrandListByCategoryCodeAndEmployeeIdAndIdentityType(categoryCode, userId, categorySecond, specification, goodType);
             }
         }
         return null;
     }
 
     @Override
-    public List<GoodsTypeResponse> findGoodsTypeListByCategoryCodeAndUserIdAndIdentityType(String categoryCode, Long userId, Integer identityType) {
+    public List<GoodsTypeResponse> findGoodsTypeListByCategoryCodeAndUserIdAndIdentityType(String categoryCode, Long userId, Integer identityType, String categorySecond, String specification, String goodsBrand) {
         if (null != categoryCode && null != userId && null != identityType) {
             if (identityType == 6) {
-                return goodsDAO.findGoodsTypeListByCategoryCodeAndCustomerIdAndIdentityType(categoryCode, userId);
+                return goodsDAO.findGoodsTypeListByCategoryCodeAndCustomerIdAndIdentityType(categoryCode, userId, categorySecond, specification, goodsBrand);
             } else {
-                return goodsDAO.findGoodsTypeListByCategoryCodeAndEmployeeIdAndIdentityType(categoryCode, userId);
+                return goodsDAO.findGoodsTypeListByCategoryCodeAndEmployeeIdAndIdentityType(categoryCode, userId, categorySecond, specification, goodsBrand);
+            }
+        }
+        return null;
+    }
+
+
+    @Override
+    public List<GoodsSpecificationResponse> findGoodsSpecificationListByCategoryCodeAndUserIdAndIdentityType(String categoryCode, Long userId, Integer identityType, String categorySecond, String goodsBrand, String goodType) {
+        if (null != categoryCode && null != userId && null != identityType) {
+            if (identityType == 6) {
+                return goodsDAO.findGoodsSpecificationListByCategoryCodeAndCustomerIdAndIdentityType(categoryCode, userId, categorySecond, goodsBrand, goodType);
+            } else {
+                return goodsDAO.findGoodsSpecificationListByCategoryCodeAndEmployeeIdAndIdentityType(categoryCode, userId, categorySecond, goodsBrand, goodType);
             }
         }
         return null;
