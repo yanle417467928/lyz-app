@@ -600,10 +600,27 @@ public class AppOrderServiceImpl implements AppOrderService {
         } else {
             orderBillingDetails.setIsPayUp(false);
         }
-        //若使用信用额度，必须付清，不能再使用第三方支付
+        /*
+          1、装饰公司若使用信用额度，必须付清，不能再使用第三方支付
+          2、导购使用信用额度，商品金额必须用信用额度付清；
+             如果有运费，运费部分若要使用信用额度支付，必须一次付清，否则只能用其它方式支付
+         */
         if ((orderBillingDetails.getEmpCreditMoney() > 0 || orderBillingDetails.getStoreCreditMoney() > 0)) {
-            if (orderBillingDetails.getAmountPayable() > AppConstant.PAY_UP_LIMIT) {
-                throw new OrderCreditMoneyException("使用信用额度的订单必须用信用额度付清，不能使用第三方支付！");
+            if (identityType == AppIdentityType.SELLER.getValue()) {
+                if (null != orderBillingDetails.getFreight() && orderBillingDetails.getFreight() > AppConstant.DOUBLE_ZERO) {
+                    if (Math.abs(orderBillingDetails.getAmountPayable()) > AppConstant.DOUBLE_ZERO &&
+                            Math.abs(orderBillingDetails.getAmountPayable() - orderBillingDetails.getFreight()) > AppConstant.PAY_UP_LIMIT) {
+                        throw new OrderCreditMoneyException("信用额度支付运费必须一次性付清,不能部分支付!");
+                    }
+                } else {
+                    if (orderBillingDetails.getAmountPayable() > AppConstant.PAY_UP_LIMIT) {
+                        throw new OrderCreditMoneyException("使用信用额度的订单必须一次性付清，不能使用第三方支付！");
+                    }
+                }
+            } else {
+                if (orderBillingDetails.getAmountPayable() > AppConstant.PAY_UP_LIMIT) {
+                    throw new OrderCreditMoneyException("使用信用额度的订单必须一次性付清，不能使用第三方支付！");
+                }
             }
         }
         return orderBillingDetails;
