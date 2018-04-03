@@ -317,7 +317,7 @@
         WHERE
         e.emp_id = #{userId}
         AND gc.p_category_code = #{categoryCode}
-        AND p.price_type = 'COMMON',
+        AND p.price_type = 'COMMON'
         <if test="null !=goodsBrand and ''!= goodsBrand ">
             AND ggb.brand_name =#{goodsBrand}
         </if>
