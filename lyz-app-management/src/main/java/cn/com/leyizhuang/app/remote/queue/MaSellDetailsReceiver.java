@@ -43,6 +43,8 @@ public class MaSellDetailsReceiver {
                 } catch (IOException e) {
                     log.warn("消息格式错误!");
                     e.printStackTrace();
+                    // 记录日志
+                    statisticsSellDetailsService.recordeErrorLog(message.getContent());
                 } catch (Exception e) {
                     log.warn("{}", e);
                     e.printStackTrace();
@@ -60,6 +62,8 @@ public class MaSellDetailsReceiver {
                 } catch (IOException e) {
                     log.warn("消息格式错误!");
                     e.printStackTrace();
+                    // 记录日志
+                    statisticsSellDetailsService.recordeErrorLog(message.getContent());
                 } catch (Exception e) {
                     log.warn("{}", e);
                     e.printStackTrace();
