@@ -1127,7 +1127,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 if (null != childNode.getChildNodes().item(0)) {
                     shippingOrderGoods.setTaskNo(childNode.getChildNodes().item(0).getNodeValue());
                 }
-            } else if ("c_reserved1".equalsIgnoreCase(childNode.getNodeName())) {
+            } else if ("c_reserved4".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     shippingOrderGoods.setOrderNo(childNode.getChildNodes().item(0).getNodeValue());
                 }
