@@ -38,6 +38,7 @@
         WHERE user_id = #{userId}
               AND identity_type = 'CUSTOMER'
               AND status IS TRUE
+        ORDER BY id DESC
     </select>
     <select id="queryListByEmployeeIdAndIdentityTypeAndStatusIsTrue"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse">
@@ -56,6 +57,7 @@
         WHERE user_id = #{userId}
               AND identity_type = #{identityType}
               AND status IS TRUE
+        ORDER BY id DESC
     </select>
     <insert id="addDeliveryAddress" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.DeliveryAddressDO">
         INSERT INTO delivery_address
