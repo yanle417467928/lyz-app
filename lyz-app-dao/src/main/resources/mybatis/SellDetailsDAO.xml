@@ -127,4 +127,43 @@
         INSERT INTO  sell_details_error_log (order_no,record_time,status) VALUES (#{orderNo},#{recordTime},#{status})
     </select>
 
+    <select id="statisticsSelldetailsSingle" resultType="cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsResponse">
+        SELECT
+        id lineId,
+        seller_id id,
+        seller_name name,
+        target_qty targetQty,
+        finish_qty finishQty,
+        finish_chance finishChance,
+        flag
+        from sell_details_single
+        where "year" = #{year} and "month" = #{month} and flag = #{flag} and seller_id = #{sellerId}
+    </select>
+
+    <select id="getWeekFinishDetails" resultType="cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsWeekFinishResponse">
+        SELECT * from sell_details_week_finish where head_id = #{headId} order by week
+    </select>
+
+    <select id="countGDTS" resultType="java.lang.Integer">
+        SELECT
+        SUM(quantity)
+        FROM
+            sell_details s
+        INNER JOIN gds_goods_grade gg ON s.sku = gg.sku
+        WHERE
+            s.seller_id = #{sellerId}
+        AND gg.structure_code = #{structureCode}
+        AND gg.goods_grade = 2
+        AND s.sell_detals_flag = #{flag}
+        AND s.create_time &gt; #{startTime}
+        AND s.create_time &lt; #{endTime}
+    </select>
+
+    <select id="countHYS" resultType="java.lang.Long">
+        SELECT
+        customer_id
+        from sell_details s
+        where seller_id = #{sellerId} and create_time > #{startTime}
+        GROUP BY customer_id HAVING SUM(quantity * amount) > 0;
+    </select>
 </mapper>

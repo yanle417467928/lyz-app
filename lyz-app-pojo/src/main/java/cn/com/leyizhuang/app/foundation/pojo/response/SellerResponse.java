@@ -17,4 +17,6 @@ public class SellerResponse {
 
     private String sellerName;
 
+    private Boolean status;
+
 }

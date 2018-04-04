@@ -255,6 +255,15 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
         WHERE store_id = #{storeId} AND identity_type = #{type}
     </select>
 
+    <select id="querySellerByStructureCode" resultType="cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse">
+        SELECT
+            e.emp_id sellerId,
+            e.name   sellerName,
+            e.status status
+        FROM emp_employee e LEFT JOIN  st_store s ON  e.store_id = s.store_id
+        where s.store_structure_code LIKE CONCAT(CONCAT('%',#{structureCode}),'%') and e.identity_type = 'seller';
+    </select>
+
     <select id="findSellerByEmpId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.SalesConsult">
         SELECT

@@ -1,7 +1,9 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.AppSellerType;
 import cn.com.leyizhuang.app.foundation.pojo.*;
+import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoneyResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse;
@@ -88,4 +90,6 @@ public interface AppEmployeeDAO {
     List<AppEmployee> findQrcodeIsNull();
 
     List<AppEmployee> findAllSeller();
+
+    List<SellerResponse> querySellerByStructureCode(@Param("structureCode") String structureCode);
 }

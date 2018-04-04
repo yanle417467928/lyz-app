@@ -16,7 +16,12 @@ import java.util.List;
 public class SellDetailsResponse {
 
     /**
-     * 人员id
+     * 主键id
+     */
+    private Long lineId;
+
+    /**
+     * 导购id
      */
     private Long id;
 
@@ -44,5 +49,7 @@ public class SellDetailsResponse {
      * 周完成详情
      */
     private List<SellDetailsWeekFinishResponse> weekFinishDetails;
+
+    private String flag;
 
 }

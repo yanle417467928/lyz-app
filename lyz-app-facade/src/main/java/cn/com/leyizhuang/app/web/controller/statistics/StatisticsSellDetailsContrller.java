@@ -1,11 +1,16 @@
 package cn.com.leyizhuang.app.web.controller.statistics;
 
+import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsRankReponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsResponse;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
+import cn.com.leyizhuang.app.foundation.service.StatisticsSellDetailsService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +27,12 @@ import java.util.List;
 @RequestMapping(value = "/app/statistics")
 public class StatisticsSellDetailsContrller {
     private static final Logger logger = LoggerFactory.getLogger(StatisticsSellDetailsContrller.class);
+
+    @Autowired
+    private AppEmployeeService appEmployeeService;
+
+    @Autowired
+    private StatisticsSellDetailsService statisticsSellDetailsService;
 
     /**
      * 导购当月 个人销量统计
@@ -44,6 +55,13 @@ public class StatisticsSellDetailsContrller {
 
         ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "无数据", "");
 
+        //检核导购信息
+        AppEmployee employee = appEmployeeService.findById(sellerId);
+
+        if (employee == null){
+            return resultDTO;
+        }
+
         if (identityType == 0) {
             SellDetailsResponse sellDetailsResponse = new SellDetailsResponse();
             sellDetailsResponse.setId(1L);
@@ -60,6 +78,7 @@ public class StatisticsSellDetailsContrller {
             }
 
         }
+
 
         return resultDTO;
     }

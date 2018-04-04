@@ -3,7 +3,10 @@ package cn.com.leyizhuang.app.foundation.dao;
 import cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.SellDetailsErrorLogDO;
 import cn.com.leyizhuang.app.foundation.pojo.SellZgDetailsDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsWeekFinishResponse;
 import org.apache.ibatis.annotations.Param;
+import org.apache.tomcat.jni.Local;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -61,6 +64,31 @@ public interface SellDetailsDAO {
      */
     void recordeErrorLog(SellDetailsErrorLogDO logDO);
 
+    /**
+     * 统计某导购高端桶数
+     * @param flag TS桶数；HYS活跃数； XKF新开发活跃会员数；
+     * @param sellerId
+     */
+    SellDetailsResponse statisticsSellDetailsSingle(@Param("year") Integer year ,@Param("month") Integer month,@Param("sellerId") Long sellerId,@Param("flag") String flag);
+
+    /**
+     * 查询周完成情况
+     */
+    List<SellDetailsWeekFinishResponse> getWeekFinishDetails(Long headId);
+
+    /**
+     * 返回导购一段时间内的高端桶数
+     */
+    Integer countGDTS(@Param("startTime") LocalDateTime startTime,@Param("endTime") LocalDateTime endTime,@Param("sellerId") Long sellerId,@Param("structureCode") String structureCode,@Param("flag") String flag);
+
+    /**
+     * 返回导购下活跃会员数
+     * @param startTime
+     * @param endTime
+     * @param sellerId
+     * @return
+     */
+    Integer countHYS(@Param("startTime") LocalDateTime startTime,@Param("endTime") LocalDateTime endTime,@Param("sellerId") Long sellerId);
 
     /******              专供销量                *******/
 

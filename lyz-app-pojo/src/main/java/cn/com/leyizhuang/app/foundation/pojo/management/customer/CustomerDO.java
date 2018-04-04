@@ -95,6 +95,8 @@ public class CustomerDO {
             customerDO.setOpenId(customerVO.getOpenId());
             customerDO.setStoreId(customerVO.getStore());
             customerDO.setSalesConsultId(customerVO.getSalesConsultId());
+            customerDO.setCreateType(customerVO.getCreateType());
+            customerDO.setCustomerType(customerVO.getCustomerType());
             return customerDO;
         } else {
             return null;

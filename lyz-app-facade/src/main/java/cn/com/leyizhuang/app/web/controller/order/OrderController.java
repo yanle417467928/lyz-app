@@ -275,9 +275,6 @@ public class OrderController {
             CreateOrderGoodsSupport support = commonService.createOrderGoodsInfo(goodsList, orderParam.getUserId(), orderParam.getIdentityType(),
                     orderParam.getCustomerId(), productCouponList, orderBaseInfo.getOrderNumber());
 
-            //****************** 创建订单经销差价返还明细 ***********
-            List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetailsList = commonService.createOrderJxPriceDifferenceReturnDetails(orderBaseInfo, support.getOrderGoodsInfoList());
-
             //****************** 创建订单券信息 *********************
             List<OrderCouponInfo> orderCouponInfoList = new ArrayList<>();
 
@@ -299,9 +296,7 @@ public class OrderController {
             orderBillingDetails.setTotalGoodsPrice(support.getGoodsTotalPrice());
             orderBillingDetails.setMemberDiscount(support.getMemberDiscount());
             orderBillingDetails.setPromotionDiscount(billing.getOrderDiscount());
-            if (null != jxPriceDifferenceReturnDetailsList && jxPriceDifferenceReturnDetailsList.size() > 0) {
-                orderBillingDetails.setJxPriceDifferenceAmount(jxPriceDifferenceReturnDetailsList.stream().mapToDouble(OrderJxPriceDifferenceReturnDetails::getAmount).sum());
-            }
+
             orderBillingDetails = appOrderService.createOrderBillingDetails(orderBillingDetails, orderParam.getUserId(), orderParam.getIdentityType(),
                     billing, cashCouponList, support.getProductCouponGoodsList());
 
@@ -310,9 +305,8 @@ public class OrderController {
             //****************** 处理订单账单支付明细信息 ************
             List<OrderBillingPaymentDetails> paymentDetails = commonService.createOrderBillingPaymentDetails(orderBaseInfo, orderBillingDetails);
 
-            List<OrderGoodsInfo> orderGoodsInfoList;
-
             /********* 开始计算分摊 促销分摊可能产生新的行记录 所以优先分摊 ******************/
+            List<OrderGoodsInfo> orderGoodsInfoList;
             orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(orderParam.getUserId(), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, support.getPureOrderGoodsInfo(), orderParam.getCustomerId());
 
             //******** 分摊现乐币 策略：每个商品 按单价占比 分摊 *********************
@@ -334,6 +328,12 @@ public class OrderController {
             //将产品券商品加入 分摊完毕的商品列表中
             orderGoodsInfoList.addAll(support.getProductCouponGoodsList());
             support.setOrderGoodsInfoList(orderGoodsInfoList);
+
+            //****************** 创建订单经销差价返还明细 ***********
+            List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetailsList = commonService.createOrderJxPriceDifferenceReturnDetails(orderBaseInfo, support.getOrderGoodsInfoList(),promotionSimpleInfoList);
+            if (null != jxPriceDifferenceReturnDetailsList && jxPriceDifferenceReturnDetailsList.size() > 0) {
+                orderBillingDetails.setJxPriceDifferenceAmount(jxPriceDifferenceReturnDetailsList.stream().mapToDouble(OrderJxPriceDifferenceReturnDetails::getAmount).sum());
+            }
 
             //**************** 创建要检核库存的商品和商品数量的Map ***********
             Map<Long, Integer> inventoryCheckMap = commonService.createInventoryCheckMap(orderGoodsInfoList);
@@ -1252,10 +1252,8 @@ public class OrderController {
                     orderListResponse.setShippingAddress(StringUtils.isBlank(orderLogisticsInfo.getBookingStoreName()) ? null : orderLogisticsInfo.getBookingStoreName());
                 }
                 orderListResponse.setOrderNo(orderBaseInfo.getOrderNumber());
-                orderListResponse.setStatus(orderBaseInfo.getStatus() == AppOrderStatus.PENDING_SHIPMENT ?
-                        AppOrderStatus.PENDING_RECEIVE.getValue() : orderBaseInfo.getStatus().getValue());
-                orderListResponse.setStatusDesc(orderBaseInfo.getStatus() == AppOrderStatus.PENDING_SHIPMENT ?
-                        AppOrderStatus.PENDING_RECEIVE.getDescription() : orderBaseInfo.getStatus().getDescription());
+                orderListResponse.setStatus(orderBaseInfo.getStatus().getValue());
+                orderListResponse.setStatusDesc(orderBaseInfo.getStatus().getDescription());
                 orderListResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
                 orderListResponse.setCount(appOrderService.querySumQtyByOrderNumber(orderBaseInfo.getOrderNumber()));
                 OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderBaseInfo.getOrderNumber());
