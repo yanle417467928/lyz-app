@@ -147,4 +147,19 @@ public interface WmsToAppOrderDAO {
      * @param deliveryClerk
      */
     void updateWtaReturnOrderDeliveryClerk(WtaReturnOrderDeliveryClerk deliveryClerk);
+
+    /**
+     * 更新出货单的处理状态
+     *
+     * @param header
+     */
+    void updateWtaShippingOrderHeader(WtaShippingOrderHeader header);
+
+    /**
+     * 查询未处理的出货单
+     *
+     * @param orderNo
+     * @return
+     */
+    WtaShippingOrderHeader getWtaShippingOrderHeaderNotHandling(String orderNo);
 }

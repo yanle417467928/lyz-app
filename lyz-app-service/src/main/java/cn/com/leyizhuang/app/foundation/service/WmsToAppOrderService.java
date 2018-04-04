@@ -142,5 +142,25 @@ public interface WmsToAppOrderService {
      */
     List<WtaReturningOrderGoods> findWtaReturningOrderGoodsByReturnOrderNo(String returnOrderNumber);
 
+    /**
+     * 根据退单号修改分配配送员信息
+     *
+     * @param deliveryClerk
+     */
     void updateWtaReturnOrderDeliveryClerk(WtaReturnOrderDeliveryClerk deliveryClerk);
+
+    /**
+     * 更新出货单的处理状态
+     *
+     * @param header
+     */
+    void updateWtaShippingOrderHeader(WtaShippingOrderHeader header);
+
+    /**
+     * 查询未处理的出货单
+     *
+     * @param orderNo
+     * @return
+     */
+    WtaShippingOrderHeader getWtaShippingOrderHeaderNotHandling(String orderNo);
 }
