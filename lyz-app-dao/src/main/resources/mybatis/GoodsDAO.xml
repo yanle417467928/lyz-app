@@ -280,9 +280,9 @@
         AND p.start_time &lt; NOW()
         AND (p.end_time IS NULL OR p.end_time &gt; NOW())
         INNER JOIN gds_goods g ON p.gid = g.gid
-        INNER JOIN gds_goods_category gc ON g.cid = gc.cid
-        INNER JOIN gds_goods_brand ggb ON g.brd_id = ggb.brd_id
-        INNER JOIN gds_goods_type ggt ON ggt.gtid =g.gtid
+        LEFT JOIN gds_goods_category gc ON g.cid = gc.cid
+        LEFT JOIN gds_goods_brand ggb ON g.brd_id = ggb.brd_id
+        LEFT JOIN gds_goods_type ggt ON ggt.gtid =g.gtid
         WHERE
         c.cus_id = #{userId}
         AND gc.p_category_code = #{categoryCode}
@@ -311,9 +311,9 @@
         AND p.start_time &lt; NOW()
         AND (p.end_time IS NULL OR p.end_time &gt; NOW())
         INNER JOIN gds_goods g ON p.gid = g.gid
-        INNER JOIN gds_goods_category gc ON g.cid = gc.cid
-        INNER JOIN gds_goods_brand ggb ON g.brd_id = ggb.brd_id
-        INNER JOIN gds_goods_type ggt ON ggt.gtid =g.gtid
+        LEFT JOIN gds_goods_category gc ON g.cid = gc.cid
+        LEFT JOIN gds_goods_brand ggb ON g.brd_id = ggb.brd_id
+        LEFT JOIN gds_goods_type ggt ON ggt.gtid =g.gtid
         WHERE
         e.emp_id = #{userId}
         AND gc.p_category_code = #{categoryCode}
@@ -342,9 +342,9 @@
         AND p.start_time &lt; NOW()
         AND (p.end_time IS NULL OR p.end_time &gt; NOW())
         INNER JOIN gds_goods g ON p.gid = g.gid
-        INNER JOIN gds_goods_category gc ON g.cid = gc.cid
-        INNER JOIN gds_goods_brand b ON g.brd_id = b.brd_id
-        INNER JOIN gds_goods_type ggt ON ggt.gtid =g.gtid
+        LEFT JOIN gds_goods_category gc ON g.cid = gc.cid
+        LEFT JOIN gds_goods_brand b ON g.brd_id = b.brd_id
+        LEFT JOIN gds_goods_type ggt ON ggt.gtid =g.gtid
         WHERE
         c.cus_id = #{userId}
         AND gc.p_category_code = #{categoryCode}
@@ -373,9 +373,9 @@
         AND p.start_time &lt; NOW()
         AND (p.end_time IS NULL OR p.end_time &gt; NOW())
         INNER JOIN gds_goods g ON p.gid = g.gid
-        INNER JOIN gds_goods_category gc ON g.cid = gc.cid
-        INNER JOIN gds_goods_brand b ON g.brd_id = b.brd_id
-        INNER JOIN gds_goods_type ggt ON ggt.gtid =g.gtid
+        LEFT JOIN gds_goods_category gc ON g.cid = gc.cid
+        LEFT JOIN gds_goods_brand b ON g.brd_id = b.brd_id
+        LEFT JOIN gds_goods_type ggt ON ggt.gtid =g.gtid
         WHERE
         e.emp_id = #{userId}
         AND gc.p_category_code = #{categoryCode}
@@ -404,9 +404,9 @@
         AND p.start_time &lt; NOW()
         AND (p.end_time IS NULL OR p.end_time &gt; NOW())
         INNER JOIN gds_goods g ON p.gid = g.gid
-        INNER JOIN gds_goods_category gc ON g.cid = gc.cid
-        INNER JOIN gds_goods_type t ON g.gtid = t.gtid
-        INNER JOIN gds_goods_brand b ON g.brd_id = b.brd_id
+        LEFT JOIN gds_goods_category gc ON g.cid = gc.cid
+        LEFT JOIN gds_goods_type t ON g.gtid = t.gtid
+        LEFT JOIN gds_goods_brand b ON g.brd_id = b.brd_id
         WHERE
         c.cus_id = #{userId}
         AND gc.p_category_code = #{categoryCode}
@@ -435,9 +435,9 @@
         AND p.start_time &lt; NOW()
         AND (p.end_time IS NULL OR p.end_time &gt; NOW())
         INNER JOIN gds_goods g ON p.gid = g.gid
-        INNER JOIN gds_goods_category gc ON g.cid = gc.cid
-        INNER JOIN gds_goods_type t ON g.gtid = t.gtid
-        INNER JOIN gds_goods_brand b ON g.brd_id = b.brd_id
+        LEFT JOIN gds_goods_category gc ON g.cid = gc.cid
+        LEFT JOIN gds_goods_type t ON g.gtid = t.gtid
+        LEFT JOIN gds_goods_brand b ON g.brd_id = b.brd_id
         WHERE
         e.emp_id = #{userId}
         AND gc.p_category_code = #{categoryCode}
@@ -467,9 +467,9 @@
         AND p.start_time &lt; NOW()
         AND (p.end_time IS NULL OR p.end_time &gt; NOW())
         INNER JOIN gds_goods g ON p.gid = g.gid
-        INNER JOIN gds_goods_category gc ON g.cid = gc.cid
-        INNER JOIN gds_goods_type t ON g.gtid = t.gtid
-        INNER JOIN gds_goods_brand b ON g.brd_id = b.brd_id
+        LEFT JOIN gds_goods_category gc ON g.cid = gc.cid
+        LEFT JOIN gds_goods_type t ON g.gtid = t.gtid
+        LEFT JOIN gds_goods_brand b ON g.brd_id = b.brd_id
         WHERE
         c.cus_id = #{userId}
         AND gc.p_category_code = #{categoryCode}
@@ -498,9 +498,9 @@
         AND p.start_time &lt; NOW()
         AND (p.end_time IS NULL OR p.end_time &gt; NOW())
         INNER JOIN gds_goods g ON p.gid = g.gid
-        INNER JOIN gds_goods_category gc ON g.cid = gc.cid
-        INNER JOIN gds_goods_type t ON g.gtid = t.gtid
-        INNER JOIN gds_goods_brand b ON g.brd_id = b.brd_id
+        LEFT JOIN gds_goods_category gc ON g.cid = gc.cid
+        LEFT JOIN gds_goods_type t ON g.gtid = t.gtid
+        LEFT JOIN gds_goods_brand b ON g.brd_id = b.brd_id
         WHERE
         e.emp_id = #{userId}
         AND gc.p_category_code = #{categoryCode}
