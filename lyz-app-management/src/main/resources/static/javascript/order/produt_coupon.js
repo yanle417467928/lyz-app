@@ -925,6 +925,7 @@ function goodsAndPriceDetail(details, tableId, totalMoney) {
     var otherMoney = $('#otherMoney').val();
     var collectMoneyTime = $('#collectMoneyTime').val();
     var customerType = $('#customerType').text();
+    var subAmount = $("#subAmount").val();
 
     if ('' == customerType) {
         $notify.warning("顾客类型未知，请联系管理员！");
@@ -973,15 +974,33 @@ function goodsAndPriceDetail(details, tableId, totalMoney) {
             retailPrice: $(n).find("#retailPrice").val()
         });
     });
+
+
     if ('RETAIL' == customerType) {
-        if (Number(retailTotalMoney) != Number(totalMoney)) {
-            $notify.warning("应付金额与收款金额不等，请检查！");
-            return 1;
+        if (null == subAmount){
+            if (Number(retailTotalMoney) != Number(totalMoney)) {
+                $notify.warning("应付金额与收款金额不等，请检查！");
+                return 1;
+            }
+        }else{
+            var  mon = (Number(retailTotalMoney)*100 - Number(subAmount)*100)/100;
+            if (Number(mon) != Number(totalMoney)) {
+                $notify.warning("应付金额与收款金额不等，请检查！");
+                return 1;
+            }
         }
     } else if ('MEMBER' == customerType) {
-        if (Number(memberTotalMoney) != Number(totalMoney)) {
-            $notify.warning("应付金额与收款金额不等，请检查！");
-            return 1;
+        if (null == subAmount) {
+            if (Number(memberTotalMoney) != Number(totalMoney)) {
+                $notify.warning("应付金额与收款金额不等，请检查！");
+                return 1;
+            }
+        }else{
+            var  mone = (Number(memberTotalMoney)*100 - Number(subAmount)*100)/100;
+            if (Number(mone) != Number(totalMoney)) {
+                $notify.warning("应付金额与收款金额不等，请检查！");
+                return 1;
+            }
         }
     }
     return 0;
@@ -1109,6 +1128,12 @@ function openGoPay() {
 
     var storeType = $('#storeType').text();
     var sellerId = $('#sellerId').text();
+    var customerType = $('#customerType').text();
+
+    if ('' == customerType) {
+        $notify.warning("顾客类型未知，请联系管理员！");
+        return;
+    }
 
     if ('' == sellerId || null == sellerId) {
         $notify.warning("请选择导购");
@@ -1170,20 +1195,37 @@ function openGoPay() {
         totalVipPrice += ($(n).find("#vipPrice").val() *100* num)/100;
 
         $("#totalGoodsPrice").text(totalPrice.toFixed(2));
-        $("#vipDiscount").text((totalVipPrice - totalPrice).toFixed(2));
+        $("#vipDiscount").text(((totalVipPrice*100 - totalPrice*100)/100).toFixed(2));
     });
     var amountsPayable1 = 0.00;
     var subAmount = $("#subAmount").val();
-    if (null == subAmount) {
-        //设置应付金额
-        $("#amountsPayable").text(totalVipPrice.toFixed(2))
-    } else {
-        amountsPayable1 = (Number(totalVipPrice)*100 - Number(subAmount)*100)/100;
-        //设置应付金额
-        $("#amountsPayable").text(amountsPayable1.toFixed(2))
-        //设置促销折扣
-        $("#promotionsDiscount").text(((0 - Number(subAmount)*100)/100).toFixed(2))
+
+    if ('RETAIL' == customerType) {
+        if (null == subAmount) {
+            //设置应付金额
+            $("#amountsPayable").text(totalPrice.toFixed(2))
+        } else {
+            amountsPayable1 = (Number(totalPrice)*100 - Number(subAmount)*100)/100;
+            //设置应付金额
+            $("#amountsPayable").text(amountsPayable1.toFixed(2))
+            //设置促销折扣
+            $("#promotionsDiscount").text(((0 - Number(subAmount)*100)/100).toFixed(2))
+        }
+
+    } else if ('MEMBER' == customerType) {
+        if (null == subAmount) {
+            //设置应付金额
+            $("#amountsPayable").text(totalVipPrice.toFixed(2))
+        } else {
+            amountsPayable1 = (Number(totalVipPrice)*100 - Number(subAmount)*100)/100;
+            //设置应付金额
+            $("#amountsPayable").text(amountsPayable1.toFixed(2))
+            //设置促销折扣
+            $("#promotionsDiscount").text(((0 - Number(subAmount)*100)/100).toFixed(2))
+        }
     }
+
+
     $("#goPay").show();
     $("#goPayType").val(0);
 }
