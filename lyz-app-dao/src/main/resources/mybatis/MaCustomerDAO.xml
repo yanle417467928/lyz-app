@@ -55,8 +55,8 @@
         SELECT
         c.*,
         ci.`name` as city_name ,
-        s.store_name
-        ,e.`name` as emp_name
+        s.store_name,
+        e.`name` as emp_name
         FROM
         cus_customer c
         LEFT JOIN st_store s ON c.store_id = s.store_id

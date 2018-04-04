@@ -77,7 +77,7 @@ public class OrderDeliveryInfoDetails {
 
         deliveryInfoDetails.setOrderNo(header.getOrderNo());
         deliveryInfoDetails.setIsRead(false);
-        deliveryInfoDetails.setCreateTime(header.getCreateTime());
+        deliveryInfoDetails.setCreateTime(header.getEndDt());
         deliveryInfoDetails.setLogisticStatus(LogisticStatus.SEALED_CAR);
         String description = "您的订单在乐易装在【" +
                 warehouseName +

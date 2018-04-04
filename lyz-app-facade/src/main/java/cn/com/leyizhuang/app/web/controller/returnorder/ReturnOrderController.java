@@ -152,6 +152,16 @@ public class ReturnOrderController {
                 logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
+            Double storePos = orderBillingDetails.getStorePosMoney() == null?0:orderBillingDetails.getStorePosMoney();
+            Double storeOther = orderBillingDetails.getStoreOtherMoney() == null?0:orderBillingDetails.getStoreOtherMoney();
+            Double storeCash = orderBillingDetails.getStoreCash() == null?0:orderBillingDetails.getStoreCash();
+            Double storeTotalMoney = CountUtil.add(storeCash,storeOther,storePos);
+            if (orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE) && storeTotalMoney > 0 ){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此订单已收款，无法取消！", null);
+                logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+
             if (AppOrderStatus.UNPAID.equals(orderBaseInfo.getStatus()) || AppOrderStatus.PENDING_SHIPMENT.equals(orderBaseInfo.getStatus())) {
                 //判断收货类型和订单状态
                 if (orderBaseInfo.getDeliveryType().equals(AppDeliveryType.HOUSE_DELIVERY) && AppOrderStatus.PENDING_SHIPMENT.equals(orderBaseInfo.getStatus())) {
