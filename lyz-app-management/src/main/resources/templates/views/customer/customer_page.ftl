@@ -34,16 +34,16 @@
         <div class="col-xs-12">
             <div class="box box-primary">
                 <div id="toolbar" class="form-inline">
-                    <@shiro.hasPermission name="/customer/add">
-                        <button id="btn_add" type="button" class="btn btn-default">
-                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
-                        </button>
-                    </@shiro.hasPermission>
-                    <@shiro.hasPermission name="/customer/add">
-                        <button id="btn_edit" type="button" class="btn btn-default">
-                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
-                        </button>
-                    </@shiro.hasPermission>
+                <@shiro.hasPermission name="/customer/add">
+                    <button id="btn_add" type="button" class="btn btn-default">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
+                    </button>
+                </@shiro.hasPermission>
+                <@shiro.hasPermission name="/customer/add">
+                    <button id="btn_edit" type="button" class="btn btn-default">
+                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
+                    </button>
+                </@shiro.hasPermission>
                     <select name="city" id="cityCode" class="form-control select" style="width:auto;"
                             onchange="findCusByCity(this.value)">
                         <option value="-1">选择城市</option>
@@ -432,8 +432,10 @@
 
                                 if ('APP_REGISTRY' === data.createType) {
                                     data.createType = 'APP注册';
-                                } else if ('Background add' === data.createType) {
+                                } else if ('ADMIN_CREATE' === data.createType) {
                                     data.createType = '后台创建';
+                                } else if ('QRCODE_REGISTRY' === data.createType) {
+                                    data.createType = '扫码注册';
                                 } else {
                                     data.createType = '-';
                                 }
