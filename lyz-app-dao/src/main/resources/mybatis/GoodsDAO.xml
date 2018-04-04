@@ -483,7 +483,7 @@
         <if test="null !=goodsBrand and ''!= goodsBrand ">
             AND b.brand_name=#{goodsBrand}
         </if>
-        ORDER BY t.sort_id
+        ORDER BY g.goods_specification
     </select>
 
 
@@ -514,7 +514,7 @@
         <if test="null !=goodsBrand and ''!= goodsBrand">
             AND b.brand_name=#{goodsBrand}
         </if>
-        ORDER BY t.sort_id
+        ORDER BY g.goods_specification
     </select>
 
 
