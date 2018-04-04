@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.dao.*;
 import cn.com.leyizhuang.app.foundation.pojo.SellZgCusTimes;
 import cn.com.leyizhuang.app.foundation.pojo.SellZgDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.activity.*;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
@@ -1373,5 +1374,49 @@ public class AppActServiceImpl implements AppActService {
             return actBaseDAO.queryById(promotionId);
         }
         return null;
+    }
+
+    /**
+     * 检查是否为工程单
+     * @return
+     */
+    public Boolean checkIsGcOrder(Long actId){
+        ActBaseDO actBaseDO = actBaseDAO.queryById(actId);
+
+        return actBaseDO.getIsGcOrder();
+    }
+
+    /**
+     * @param simpleInfo 简单促销集合
+     * @return 工程促销id + 每桶工程单促销差价
+     */
+    @Override
+    public Map<Long,Double> returnGcActIdAndJXDiscunt(List<PromotionSimpleInfo> simpleInfo){
+        Map<Long,Double> map = new HashMap<>();
+
+        for (PromotionSimpleInfo info : simpleInfo){
+            ActBaseDO actBaseDO = actBaseDAO.queryById(info.getPromotionId());
+
+            if (actBaseDO != null){
+                if (actBaseDO.getIsGcOrder()){
+                    ActSubAmountDO subAmountDO = actSubAmountDAO.queryByActId(actBaseDO.getId());
+
+                    if (subAmountDO != null){
+                        Integer qty = actBaseDO.getFullNumber();
+                        Double subAmount = 0.00;
+                        if (actBaseDO.getPromotionType().equals(ActPromotionType.SUB)){
+                            subAmount = subAmountDO.getSubAmount() == null ? 0.00 : subAmountDO.getSubAmount();
+                        }
+
+                        // 计算单桶工程差价
+                        Double gcDiff = CountUtil.div(subAmount,qty);
+
+                        map.put(actBaseDO.getId(),gcDiff);
+                    }
+
+                }
+            }
+        }
+        return map;
     }
 }

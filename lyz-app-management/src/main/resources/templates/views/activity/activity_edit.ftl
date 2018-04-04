@@ -143,7 +143,7 @@
                                            class="flat-red" <#if actBaseDO??><#if actBaseDO.isDouble?? && actBaseDO.isDouble == true >checked</#if></#if>>可叠加享受
 
                                     <input id="isGcOrder" type="checkbox"
-                                           class="flat-red" <#if actBaseDO??><#if actBaseDO.isGcOrder?? && actBaseDO.isGcOrder == true>checked</#if></#if>>工程单可享受
+                                           class="flat-red" <#if actBaseDO??><#if actBaseDO.isGcOrder?? && actBaseDO.isGcOrder == true>checked</#if></#if>>工程单促销
 
                                 </div>
                             </div>

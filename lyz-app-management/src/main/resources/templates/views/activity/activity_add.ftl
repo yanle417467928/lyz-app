@@ -140,7 +140,7 @@
                                 <div class="input-group">
                                     <input id="isReturnable" type="checkbox" class="flat-red" checked>可退货
                                     <input id="isDouble" type="checkbox" class="flat-red" checked>可叠加享受
-                                    <input id="isGcOrder" type="checkbox" class="flat-red">工程单可享受
+                                    <input id="isGcOrder" type="checkbox" class="flat-red">工程单促销 （工程单促销记得点上哟）
                                 </div>
                             </div>
                         </div>
@@ -292,7 +292,7 @@
                                             <div class="col-xs-12 col-md-2">
                                                 <div class="input-group">
                                                     <input name="fullNumber" type="number" class="form-control"
-                                                           id="fullNumber" placeholder="总数量">
+                                                           id="fullNumber" placeholder="总数量" onblur ="gcOrderTip(this)">
                                                 </div>
                                             </div>
                                         </div>

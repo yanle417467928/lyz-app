@@ -10,6 +10,11 @@ public class SellDetailsWeekFinishResponse {
     private Long id;
 
     /**
+     * 关联 sell_detail_single id
+     */
+    private Long headId;
+
+    /**
      * 导购Id
      */
     private Long sellerId;

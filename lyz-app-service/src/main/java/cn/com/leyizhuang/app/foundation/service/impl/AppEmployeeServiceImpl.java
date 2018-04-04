@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.AppSellerType;
 import cn.com.leyizhuang.app.core.constant.EmpCreditMoneyChangeType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppEmployeeDAO;
@@ -270,5 +271,10 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     @Override
     public List<AppEmployee> findAllSeller() {
         return employeeDAO.findAllSeller();
+    }
+
+    @Override
+    public List<SellerResponse> querySellerByStructureCode(String structureCode){
+        return employeeDAO.querySellerByStructureCode(structureCode);
     }
 }

@@ -239,7 +239,7 @@ function chooseGoods(tableId) {
                     "<td><input type='text' id='gid'value=" +item.id+ " style='width:90%;border: none;' readonly /></td>" +
                     "<td><input id='sku' type='text' value='"+item.sku+"' style='width:90%;border: none;' readonly></td>" +
                     "<td><input id='title' type='text' value='"+item.skuName+"' style='width:90%;border: none;' readonly></td>" +
-                    "<td><input id='qty' type='number' value='0'></td>" +
+                    "<td><input id='qty' type='number' value='0' onblur =\"gcOrderTip(this)\"></td>" +
                     "<td><a href='#'onclick='del_goods_comb(this);'>删除</td>" +
                     "</tr>"
             }
@@ -823,4 +823,23 @@ function initFileInput(ctrlName, type) {
             }
         }
     });
+}
+
+/**
+ * 工程单提示
+ */
+function gcOrderTip(node) {
+    var num = $(node).val();
+    var conditionType = $("#conditionType").val();
+    var resultType = $("#resultType").val();
+    var isGcOrder = $("#isGcOrder").prop("checked");
+
+    if (isGcOrder == false){
+        if (conditionType == "FQTY" && resultType == "SUB"){
+            if (num > 20){
+                // 大于20个 可能是工程单
+                $notify.warning("亲，如果是工程单促销，请勾选上门的工程单勾勾！否则影响返利计算");
+            }
+        }
+    }
 }

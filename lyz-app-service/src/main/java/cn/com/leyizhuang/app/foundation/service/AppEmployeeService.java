@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service;
 
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.AppSellerType;
 import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoneyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.SalesConsult;
@@ -86,4 +87,6 @@ public interface AppEmployeeService {
 
 
     List<AppEmployee> findAllSeller();
+
+    List<SellerResponse> querySellerByStructureCode(String structureCode);
 }

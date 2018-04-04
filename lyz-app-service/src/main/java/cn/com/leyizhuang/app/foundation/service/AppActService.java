@@ -6,12 +6,14 @@ import cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActGiftDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActGoodsMappingDO;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActStoreDO;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import com.github.pagehelper.PageInfo;
 import org.springframework.ui.ModelMap;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 促销服务
@@ -61,4 +63,6 @@ public interface AppActService {
     void publishAct(Long id);
 
     void inValid(Long id);
+
+    Map<Long,Double> returnGcActIdAndJXDiscunt(List<PromotionSimpleInfo> simpleInfo);
 }

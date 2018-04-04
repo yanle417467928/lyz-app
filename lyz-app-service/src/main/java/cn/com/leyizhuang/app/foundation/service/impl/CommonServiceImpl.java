@@ -19,6 +19,7 @@ import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitio
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.ProductCouponSimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
@@ -116,6 +117,9 @@ public class CommonServiceImpl implements CommonService {
 
     @Autowired
     private OrderAgencyFundService orderAgencyFundServiceImpl;
+
+    @Autowired
+    private AppActService actService;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -1247,6 +1251,49 @@ public class CommonServiceImpl implements CommonService {
                             details.setOrderNumber(orderBaseInfo.getOrderNumber());
                             details.setQuantity(orderGoodsInfo.getOrderQuantity());
                             details.setUnitPrice(orderGoodsInfo.getSettlementPrice() - orderGoodsInfo.getWholesalePrice());
+                            details.setReceiptNumber(OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+                            details.setSku(orderGoodsInfo.getSku());
+                            details.setStoreId(orderBaseInfo.getStoreId());
+                            details.setStoreCode(orderBaseInfo.getStoreCode());
+                            detailsList.add(details);
+                        }
+                    }
+                    return detailsList;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<OrderJxPriceDifferenceReturnDetails> createOrderJxPriceDifferenceReturnDetails(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList, List<PromotionSimpleInfo> promotionSimpleInfos) {
+        Map<Long,Double> map = actService.returnGcActIdAndJXDiscunt(promotionSimpleInfos);
+
+        AppStore store = storeService.findById(orderBaseInfo.getStoreId());
+        if (null != store && null != store.getStoreType()) {
+            if (store.getStoreType() == StoreType.FX || store.getStoreType() == StoreType.JM) {
+                if (null != orderGoodsInfoList && orderGoodsInfoList.size() > 0) {
+                    List<OrderJxPriceDifferenceReturnDetails> detailsList = new ArrayList<>(20);
+                    for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
+                        Long actId = Long.valueOf(orderGoodsInfo.getPromotionId());
+                        if (orderGoodsInfo.getGoodsLineType() == AppGoodsLineType.GOODS) {
+                            OrderJxPriceDifferenceReturnDetails details = new OrderJxPriceDifferenceReturnDetails();
+                            if (orderGoodsInfo.getPromotionId() != null){
+                                if (map.containsKey(actId)){
+                                    Double gcDiscount = map.get(actId);
+                                    details.setAmount((orderGoodsInfo.getSettlementPrice() - orderGoodsInfo.getWholesalePrice() - gcDiscount) * orderGoodsInfo.getOrderQuantity());
+                                    details.setUnitPrice(orderGoodsInfo.getSettlementPrice() - orderGoodsInfo.getWholesalePrice() - gcDiscount);
+                                }else {
+                                    details.setAmount((orderGoodsInfo.getSettlementPrice() - orderGoodsInfo.getWholesalePrice()) * orderGoodsInfo.getOrderQuantity());
+                                    details.setUnitPrice(orderGoodsInfo.getSettlementPrice() - orderGoodsInfo.getWholesalePrice());
+                                }
+                            }else{
+                                details.setAmount((orderGoodsInfo.getSettlementPrice() - orderGoodsInfo.getWholesalePrice()) * orderGoodsInfo.getOrderQuantity());
+                                details.setUnitPrice(orderGoodsInfo.getSettlementPrice() - orderGoodsInfo.getWholesalePrice());
+                            }
+                            details.setCreateTime(new Date());
+                            details.setOrderNumber(orderBaseInfo.getOrderNumber());
+                            details.setQuantity(orderGoodsInfo.getOrderQuantity());
                             details.setReceiptNumber(OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
                             details.setSku(orderGoodsInfo.getSku());
                             details.setStoreId(orderBaseInfo.getStoreId());

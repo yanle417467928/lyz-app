@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.core.constant.ActBaseType;
 import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.AppSellerType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.SellDetailsDAO;
 import cn.com.leyizhuang.app.foundation.dao.SellZgDetailsDAO;
@@ -12,11 +13,11 @@ import cn.com.leyizhuang.app.foundation.pojo.SellZgCusTimes;
 import cn.com.leyizhuang.app.foundation.pojo.SellZgDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.response.CustomerRankInfoResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
+import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +59,12 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
     @Resource
     private GoodsPriceService goodsPriceService;
 
+    @Resource
+    private AppEmployeeService appEmployeeService;
+
+    @Resource
+    private AppStoreService appStoreService;
+
     @Override
     public List<SellDetailsDO> statisticsCurrentDetails() {
         // 当前时间
@@ -73,6 +80,49 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
         List<SellDetailsDO> sellDetailsDOList = sellDetailsDAO.queryOneMonthSellDetails(year, month);
 
         return sellDetailsDOList;
+    }
+
+    /**
+     * 以为单位组织计算 并统计所有导购销量情况 持久化至sell_details_single
+     */
+    public void statisticsAllSellerSellDetails(List<String> structureCode){
+        // 当前时间
+        LocalDateTime now = LocalDateTime.now();
+        // 当月1号 0 点 0 分 0 秒
+        LocalDateTime firstDay = LocalDateTime.of(now.getYear(),now.getMonth(),1,0,0,0);
+
+        for (String code : structureCode){
+            // 获取组织下的导购
+            List<SellerResponse> employeeList = appEmployeeService.querySellerByStructureCode(code);
+
+            // 循环遍历
+            for (SellerResponse employee : employeeList) {
+
+                if (employee.getStatus().equals(false)){
+                    continue;
+                }
+
+                // 统计高端桶数
+                this.countGDTS(firstDay,now,employee.getSellerId(),code);
+
+                // 统计活跃会员数
+
+
+            }
+        }
+    }
+
+    public Integer countGDTS(LocalDateTime startTime,LocalDateTime endTime , Long sellerId , String structureCode){
+        Integer orderQty = sellDetailsDAO.countGDTS(startTime,endTime,sellerId,structureCode,"0");
+        Integer returnQty = sellDetailsDAO.countGDTS(startTime,endTime,sellerId,structureCode,"1");
+
+        Integer gdQty = (orderQty - returnQty) < 0 ? 0 : (orderQty - returnQty);
+        return  gdQty;
+    }
+
+    public Integer countHYS(LocalDateTime startTime,LocalDateTime endTime , Long sellerId){
+
+        return null;
     }
 
     public void addSellDetails(List<SellDetailsDO> sellDetailsDOS) {
@@ -434,7 +484,51 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
         }
     }
 
-/**
- * 统计个人总销量
- */
+    /**
+     * 统计个人当月高端桶数销量
+     */
+    public SellDetailsResponse currentTsSellDetails(Long empId){
+        // 当前时间
+        LocalDateTime now = LocalDateTime.now();
+        // 当月1号 0 点 0 分 0 秒
+        LocalDateTime firstDay = LocalDateTime.of(now.getYear(),now.getMonth(),1,0,0,0);
+
+        SellDetailsResponse sellDetailsResponse = sellDetailsDAO.statisticsSellDetailsSingle(now.getYear(),now.getMonthValue(),empId,"TS");
+
+        return sellDetailsResponse;
+    }
+
+    /**
+     * 统计活跃会员数
+     * @param empId
+     * @return
+     */
+    public SellDetailsResponse currentHYS(Long empId){
+        // 当前时间
+        LocalDateTime now = LocalDateTime.now();
+        // 当月1号 0 点 0 分 0 秒
+        LocalDateTime firstDay = LocalDateTime.of(now.getYear(),now.getMonth(),1,0,0,0);
+
+        SellDetailsResponse sellDetailsResponse = sellDetailsDAO.statisticsSellDetailsSingle(now.getYear(),now.getMonthValue(),empId,"HYS");
+
+        return sellDetailsResponse;
+    }
+
+    /**
+     * 新开 高端会员数
+     */
+    public SellDetailsResponse currentXKF(Long empId){
+        // 当前时间
+        LocalDateTime now = LocalDateTime.now();
+        // 当月1号 0 点 0 分 0 秒
+        LocalDateTime firstDay = LocalDateTime.of(now.getYear(),now.getMonth(),1,0,0,0);
+
+        SellDetailsResponse sellDetailsResponse = sellDetailsDAO.statisticsSellDetailsSingle(now.getYear(),now.getMonthValue(),empId,"XKF");
+
+        // 查询每周开发会员详情
+        List<SellDetailsWeekFinishResponse> sellDetailsWeekFinishResponses = sellDetailsDAO.getWeekFinishDetails(sellDetailsResponse.getLineId());
+
+        sellDetailsResponse.setWeekFinishDetails(sellDetailsWeekFinishResponses);
+        return sellDetailsResponse;
+    }
 }
