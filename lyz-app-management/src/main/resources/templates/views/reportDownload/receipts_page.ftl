@@ -205,7 +205,18 @@
         }, {
             field: 'payType',
             title: '支付方式',
-            align: 'center'
+            align: 'center',
+            formatter: function (value, row, index) {
+                if ('DELIVERY_CLERK' == row.paymentSubjectType) {
+                    if ('POS' == row.payTypes){
+                        return "配送POS";
+                    }
+                    if ('CASH' == row.payTypes){
+                        return "配送现金";
+                    }
+                }
+                return value;
+            }
         }, {
             field: 'money',
             title: '支付金额',

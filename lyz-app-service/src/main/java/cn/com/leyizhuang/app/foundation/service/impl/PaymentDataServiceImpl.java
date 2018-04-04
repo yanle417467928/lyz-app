@@ -48,4 +48,9 @@ public class PaymentDataServiceImpl implements PaymentDataService {
     public PaymentDataDO findPaymentDataDOByOutTradeNo(String outTradeNo) {
         return paymentDataDAO.findPaymentDataDOByOutTradeNo(outTradeNo);
     }
+
+    @Override
+    public PaymentDataDO findPaymentDataDOByOrderNumber(String orderNumber) {
+        return paymentDataDAO.findPaymentDataDOByOrderNumber(orderNumber);
+    }
 }

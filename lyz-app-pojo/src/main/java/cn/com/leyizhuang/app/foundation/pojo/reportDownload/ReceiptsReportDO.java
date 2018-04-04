@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo.reportDownload;
 
 import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
+import cn.com.leyizhuang.app.core.constant.PaymentSubjectType;
 import cn.com.leyizhuang.app.core.constant.StoreType;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,6 +33,8 @@ public class ReceiptsReportDO {
     private String remarks;
 
     private String payTypes;
+
+    private String paymentSubjectType;
 
     public void setPayType(OrderBillingPaymentType payType){
         this.payType = payType.getDescription();

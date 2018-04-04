@@ -36,13 +36,13 @@ function initDateGird(url) {
             }
         }
     }, {
-        field: 'meberName',
-        title: '下单人姓名',
+        field: 'customerName',
+        title: '顾客姓名',
         align: 'center'
 
     }, {
-        field: 'meberNumber',
-        title: '下单人电话',
+        field: 'customerPhone',
+        title: '顾客电话',
         align: 'center'
 
     }, {
@@ -97,6 +97,18 @@ function initDateGird(url) {
         field: 'storeName',
         title: '门店',
         align: 'center'
+
+    }, {
+        field: 'meberNumber',
+        title: '下单人电话',
+        align: 'center',
+        visible: false
+
+    }, {
+        field: 'meberName',
+        title: '下单人姓名',
+        align: 'center',
+        visible: false
 
     }, {
         field: 'createTime',

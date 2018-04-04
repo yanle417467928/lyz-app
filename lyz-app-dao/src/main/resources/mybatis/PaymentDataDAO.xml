@@ -50,6 +50,21 @@
         ORDER BY id DESC
     </select>
 
+    <select id="findPaymentDataDOByOrderNumber"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO">
+        SELECT
+        out_trade_no,
+        ord_no orderNumber,
+        total_fee,
+        create_time,
+        online_pay_type,
+        payment_type
+        FROM payment_data
+        WHERE ord_no = #{orderNumber}
+        ORDER BY id DESC
+    </select>
+
+
     <update id="updateByTradeStatusIsWaitPay" parameterType="cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO">
         UPDATE payment_data
         <set>
