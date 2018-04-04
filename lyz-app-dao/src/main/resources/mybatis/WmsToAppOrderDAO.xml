@@ -5,7 +5,7 @@
     <insert id="saveWtaShippingOrderHeader"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderHeader">
         INSERT INTO inter_wta_order_shipping_header (create_time, end_dt, wh_no, owner_no, task_no, c_task_type, car_no,
-                                                     op_status, driver, order_no, send_flag, error_message, send_time)
+        op_status, driver, order_no, send_flag, error_message, send_time)
             SELECT
                 #{createTime},
                 #{endDt},
@@ -300,5 +300,43 @@
         FROM inter_wta_return_order_back_goods g
             INNER JOIN inter_wta_return_order_back_header h ON h.rec_no = g.rec_no
         WHERE h.po_no = #{returnOrderNumber}
+    </select>
+
+    <update id="updateWtaShippingOrderHeader"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderHeader">
+        UPDATE inter_wta_order_shipping_header
+        <set>
+            <if test="null != sendFlag">
+                send_flag = #{sendFlag},
+            </if>
+            <if test="null != sendTime">
+                send_time = #{sendTime},
+            </if>
+            <if test="null != errorMessage">
+                error_message = #{errorMessage}
+            </if>
+        </set>
+        WHERE task_no = #{taskNo} AND order_no = #{orderNo}
+    </update>
+
+    <select id="getWtaShippingOrderHeaderNotHandling" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderHeader">
+        SELECT
+            id,
+            create_time   createTime,
+            end_dt        endDt,
+            wh_no         whNo,
+            owner_no      ownerNo,
+            task_no       taskNo,
+            c_task_type   cTaskType,
+            car_no        carNo,
+            op_status     opStatus,
+            driver        driver,
+            order_no      orderNo,
+            send_time     sendTime,
+            send_flag     sendFlag,
+            error_message errorMessage
+        FROM inter_wta_order_shipping_header
+        WHERE order_no = #{orderNo} AND send_flag = 0;
     </select>
 </mapper>

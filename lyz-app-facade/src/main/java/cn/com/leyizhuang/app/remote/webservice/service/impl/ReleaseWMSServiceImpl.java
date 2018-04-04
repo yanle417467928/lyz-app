@@ -143,12 +143,18 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         return AppXmlUtil.resultStrXml(1, "未查询该配送员,配送员编号" + header.getDriver());
                     }
                     header.setCreateTime(Calendar.getInstance().getTime());
+                    //这里保存了出货单头默认都是未处理状态使用send_flag字段
+                    header.setSendFlag(false);
                     int result = wmsToAppOrderService.saveWtaShippingOrderHeader(header);
                     if (result == 0) {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,该单已存在 出参 order_no:{}", header.getOrderNo());
                         return AppXmlUtil.resultStrXml(1, "重复传输,该单已存在!");
                     }
-                    this.handlingWtaShippingOrderHeaderAsync(header, clerk);
+                    //这里是出货封车判断物流信息是否传了装车信息,如果有正常执行,如果无不执行逻辑处理
+                    OrderDeliveryInfoDetails deliveryInfoDetails = orderDeliveryInfoDetailsService.findByOrderNumberAndLogisticStatus(header.getOrderNo(), LogisticStatus.LOADING);
+                    if (null != deliveryInfoDetails) {
+                        this.handlingWtaShippingOrderHeaderAsync(header, clerk);
+                    }
                 }
                 logger.info("GetWMSInfo OUT,获取wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
@@ -392,18 +398,25 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     }
                     String description = "商家" + orderDeliveryInfoDetails.getLogisticStatus().getDescription() + "完成！";
                     orderDeliveryInfoDetails.setDescription(description);
-//                    orderDeliveryInfoDetails.setCreateTime(Calendar.getInstance().getTime());
-                    orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
-
-                    //修改订单状态
-                    if ("出货装车单".equals(orderDeliveryInfoDetails.getOperationType())) {
-                        appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.PENDING_RECEIVE,
-                                orderDeliveryInfoDetails.getLogisticStatus(), orderDeliveryInfoDetails.getOrderNo());
-                    } else {
-                        appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(null,
-                                orderDeliveryInfoDetails.getLogisticStatus(), orderDeliveryInfoDetails.getOrderNo());
+                    //传输的物流信息先去判断时候存在装车信息,存在不刷新主单信息,不存在就随便加
+                    OrderDeliveryInfoDetails logisticStatusOfLoading = orderDeliveryInfoDetailsService.findByOrderNumberAndLogisticStatus(orderDeliveryInfoDetails.getOrderNo(), LogisticStatus.LOADING);
+                    if (null == logisticStatusOfLoading) {
+                        //修改订单状态
+                        if (LogisticStatus.LOADING.equals(orderDeliveryInfoDetails.getLogisticStatus())) {
+                            appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.PENDING_RECEIVE,
+                                    orderDeliveryInfoDetails.getLogisticStatus(), orderDeliveryInfoDetails.getOrderNo());
+                            //因为wms传输物流信息无序,这里需要判断是否在装车前就传了封车状态而做了未处理标识的封车信息
+                            WtaShippingOrderHeader shippingOrderHeader = wmsToAppOrderService.getWtaShippingOrderHeaderNotHandling(orderDeliveryInfoDetails.getOrderNo());
+                            if (null != shippingOrderHeader) {
+                                AppEmployee clerk = appEmployeeService.findDeliveryByClerkNo(shippingOrderHeader.getDriver());
+                                this.handlingWtaShippingOrderHeaderAsync(shippingOrderHeader, clerk);
+                            }
+                        } else {
+                            appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(null,
+                                    orderDeliveryInfoDetails.getLogisticStatus(), orderDeliveryInfoDetails.getOrderNo());
+                        }
                     }
-
+                    orderDeliveryInfoDetailsService.addOrderDeliveryInfoDetails(orderDeliveryInfoDetails);
                 }
                 logger.info("GetWMSInfo OUT,获取wms物流信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
@@ -1468,6 +1481,10 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
             NoticePushUtils.pushOrderLogisticInfo(header.getOrderNo());
             // rabbit 记录下单销量
             sellDetailsSender.sendOrderSellDetailsTOManagement(header.getOrderNo());
+            // 处理完这里逻辑需要修改出货头表的处理状态(暂时使用sendFlag字段代替)
+            header.setSendFlag(true);
+            header.setSendTime(Calendar.getInstance().getTime());
+            wmsToAppOrderService.updateWtaShippingOrderHeader(header);
         } catch (Exception e) {
             logger.info("GetWMSInfo OUT,获取出货单头档wms信息失败,发生未知异常 出参 e:{}", e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
