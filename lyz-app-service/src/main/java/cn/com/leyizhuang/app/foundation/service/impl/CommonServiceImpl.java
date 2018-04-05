@@ -1275,10 +1275,11 @@ public class CommonServiceImpl implements CommonService {
                 if (null != orderGoodsInfoList && orderGoodsInfoList.size() > 0) {
                     List<OrderJxPriceDifferenceReturnDetails> detailsList = new ArrayList<>(20);
                     for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
-                        Long actId = Long.valueOf(orderGoodsInfo.getPromotionId());
+
                         if (orderGoodsInfo.getGoodsLineType() == AppGoodsLineType.GOODS) {
                             OrderJxPriceDifferenceReturnDetails details = new OrderJxPriceDifferenceReturnDetails();
-                            if (orderGoodsInfo.getPromotionId() != null){
+                            if (null != orderGoodsInfo.getPromotionId()){
+                                Long actId = Long.valueOf(orderGoodsInfo.getPromotionId());
                                 if (map.containsKey(actId)){
                                     Double gcDiscount = map.get(actId);
                                     details.setAmount((orderGoodsInfo.getSettlementPrice() - orderGoodsInfo.getWholesalePrice() - gcDiscount) * orderGoodsInfo.getOrderQuantity());
