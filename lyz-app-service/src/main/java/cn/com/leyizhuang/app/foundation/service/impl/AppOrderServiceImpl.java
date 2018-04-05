@@ -19,10 +19,7 @@ import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.BillingSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
-import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
-import cn.com.leyizhuang.app.foundation.pojo.response.OrderArrearageInfoResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsListResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.OrderListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
@@ -36,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created with IntelliJ IDEA.
@@ -981,6 +979,28 @@ public class AppOrderServiceImpl implements AppOrderService {
         if (null != lifecycle) {
             orderDAO.saveOrderLifecycle(lifecycle);
         }
+    }
+
+    @Override
+    public PageInfo<OrderPageInfoVO> getOrderListPageInfoByUserIdAndIdentityType(Long userID, Integer identityType, Integer showStatus, Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        List<OrderPageInfoVO> orderPageInfoVOList = orderDAO.getOrderListPageInfoByUserIdAndIdentityType(userID, AppIdentityType.getAppIdentityTypeByValue(identityType), showStatus);
+        orderPageInfoVOList.forEach(p -> {
+            List<String> goodsImgList = p.getOrderGoodsInfoList().stream().map(OrderGoodsInfo::getCoverImageUri).collect(Collectors.toList());
+            Integer count = p.getOrderGoodsInfoList().stream().mapToInt(OrderGoodsInfo::getOrderQuantity).sum();
+            p.setGoodsImgList(goodsImgList);
+            p.setCount(count);
+            if ("UNPAID".equals(p.getStatus())) {
+                //计算剩余过期失效时间
+                Long time = ((p.getEffectiveEndTime().getTime()) - (System.currentTimeMillis()));
+                //设置
+                if (time > 0) {
+                    p.setEndTime(time);
+                }
+            }
+            p.setStatusDesc(AppOrderStatus.getAppDeliveryOrderStatusByValue(p.getStatus()).getDescription());
+        });
+        return new PageInfo<>(orderPageInfoVOList);
     }
 
     @Override
