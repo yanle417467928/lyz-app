@@ -9,10 +9,7 @@ import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.BillingSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
-import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
-import cn.com.leyizhuang.app.foundation.pojo.response.OrderArrearageInfoResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsListResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.OrderListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import com.github.pagehelper.PageInfo;
 
@@ -168,4 +165,6 @@ public interface AppOrderService {
     void addOrderLifecycle(OrderLifecycleType payed, String orderNumber);
 
     void saveOrderLifecycle(OrderLifecycle lifecycle);
+
+    PageInfo<OrderPageInfoVO> getOrderListPageInfoByUserIdAndIdentityType(Long userID, Integer identityType, Integer showStatus, Integer page, Integer size);
 }
