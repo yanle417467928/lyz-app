@@ -102,7 +102,7 @@ spring:
         username: root
         password: root
         initial-size: 10
-        max-active: 20
+        max-active: 100
         min-idle: 10
         max-wait: 60000
   rabbitmq:
