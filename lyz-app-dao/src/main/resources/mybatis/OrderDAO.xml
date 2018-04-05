@@ -1134,4 +1134,174 @@
             #{oid}, #{orderNumber}, #{operation}, #{postStatus}, #{operationTime}
         )
     </insert>
+
+    <select id="getOrderListPageInfoByUserIdAndIdentityType" resultMap="orderPageInfoListMap">
+
+        <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
+            SELECT
+            obi.ord_no,
+            obi.`status`,
+            obi.is_evaluated,
+            obi.effective_end_time,
+            obi.delivery_type,
+            obd.total_goods_price price ,
+            obd.amount_payable,
+            CASE WHEN obi.delivery_type='HOUSE_DELIVERY'
+            THEN oli.shipping_address
+            ELSE oli.booking_store_name
+            END AS shipping_address,
+            og.gid,
+            og.order_qty,
+            og.cover_image_uri,
+            og.oid
+            FROM
+            ord_base_info obi LEFT JOIN ord_billing_details obd ON obi.oid = obd.oid
+            LEFT JOIN ord_logistics_info oli ON obi.oid = oli.oid
+            LEFT JOIN ord_goods_info og ON obi.oid = og.oid
+            WHERE
+            obi.customer_id = #{userID}
+            <if test="null != showStatus and showStatus == 1">
+                AND obi.`status` = 'UNPAID'
+                AND obi.effective_end_time > NOW()
+            </if>
+            <if test="null != showStatus and showStatus == 2">
+                AND obi.`status` ='PENDING_RECEIVE'
+            </if>
+            <if test="null != showStatus and showStatus == 3">
+                AND obi.`status` = 'FINISHED'
+            </if>
+            <if test="null != showStatus and showStatus == 4">
+                AND obi.`status` = 'CANCELED'
+            </if>
+            <if test="null != showStatus and showStatus == 5">
+                AND obi.`status` = 'FINISHED'
+                AND obi.is_evaluated is FALSE
+                AND <![CDATA[obi.create_time >= DATE_ADD(NOW(),INTERVAL -6 MONTH )]]>
+            </if>
+            <if test="null != showStatus and showStatus == 6">
+                AND obi.`status` = 'PENDING_SHIPMENT'
+            </if>
+            ORDER BY obi.create_time DESC
+        </if>
+        <if test="null != identityType and identityType.toString() == 'DECORATE_MANAGER'">
+            SELECT
+            obi.`status`,
+            obi.is_evaluated,
+            obi.ord_no,
+            obi.effective_end_time,
+            obi.delivery_type,
+            obd.total_goods_price price ,
+            obd.amount_payable,
+            CASE WHEN obi.delivery_type='HOUSE_DELIVERY'
+            THEN oli.shipping_address
+            ELSE oli.booking_store_name
+            END AS shipping_address,
+            og.gid,
+            og.order_qty,
+            og.cover_image_uri,
+            og.oid
+            FROM
+            ord_base_info obi LEFT JOIN ord_billing_details obd ON obi.oid = obd.oid
+            LEFT JOIN ord_logistics_info oli ON obi.oid = oli.oid
+            LEFT JOIN ord_goods_info og ON obi.oid = og.oid
+            WHERE
+            obi.creator_id = #{userID}
+            AND creator_identity_type != 'CUSTOMER'
+            AND creator_identity_type != 'SELLER'
+            <if test="null != showStatus and showStatus == 1">
+                AND obi.`status` = 'UNPAID'
+                AND obi.effective_end_time > NOW()
+            </if>
+            <if test="null != showStatus and showStatus == 2">
+                AND obi.`status` ='PENDING_RECEIVE'
+            </if>
+            <if test="null != showStatus and showStatus == 3">
+                AND obi.`status` = 'FINISHED'
+            </if>
+            <if test="null != showStatus and showStatus == 4">
+                AND obi.`status` = 'CANCELED'
+            </if>
+            <if test="null != showStatus and showStatus == 5">
+                AND obi.`status` = 'FINISHED'
+                AND obi.is_evaluated is FALSE
+            </if>
+            <if test="null != showStatus and showStatus == 6">
+                AND obi.`status` = 'PENDING_SHIPMENT'
+            </if>
+            ORDER BY obi.create_time DESC
+        </if>
+        <if test="null != identityType and identityType.toString() == 'SELLER'">
+            SELECT
+            obi.`status`,
+            obi.is_evaluated,
+            obi.ord_no,
+            obi.effective_end_time,
+            obi.delivery_type,
+            obd.total_goods_price price ,
+            obd.amount_payable,
+            CASE WHEN obi.delivery_type='HOUSE_DELIVERY'
+            THEN oli.shipping_address
+            ELSE oli.booking_store_name
+            END AS shipping_address,
+            og.gid,
+            og.order_qty,
+            og.cover_image_uri,
+            og.oid,
+            obi.customer_id,
+            obi.customer_name,
+            obi.customer_phone
+            FROM
+            ord_base_info obi LEFT JOIN ord_billing_details obd ON obi.oid = obd.oid
+            LEFT JOIN ord_logistics_info oli ON obi.oid = oli.oid
+            LEFT JOIN ord_goods_info og ON obi.oid = og.oid
+            WHERE
+            obi.creator_id = #{userID}
+            AND creator_identity_type != 'CUSTOMER'
+            AND creator_identity_type != 'DECORATE_MANAGER'
+            <if test="null != showStatus and showStatus == 1">
+                AND obi.`status` = 'UNPAID'
+                AND obi.effective_end_time > NOW()
+            </if>
+            <if test="null != showStatus and showStatus == 2">
+                AND obi.`status` ='PENDING_RECEIVE'
+            </if>
+            <if test="null != showStatus and showStatus == 3">
+                AND obi.`status` = 'FINISHED'
+            </if>
+            <if test="null != showStatus and showStatus == 4">
+                AND obi.`status` = 'CANCELED'
+            </if>
+            <if test="null != showStatus and showStatus == 5">
+                AND obi.`status` = 'FINISHED'
+                AND obi.is_evaluated is FALSE
+            </if>
+            <if test="null != showStatus and showStatus == 6">
+                AND obi.`status` = 'PENDING_SHIPMENT'
+            </if>
+            ORDER BY obi.create_time DESC
+        </if>
+    </select>
+
+    <resultMap id="orderPageInfoListMap" type="cn.com.leyizhuang.app.foundation.pojo.response.OrderPageInfoVO">
+        <result column="ord_no" property="orderNo" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="effective_end_time" property="effectiveEndTime" jdbcType="TIMESTAMP"/>
+        <result column="is_evaluated" property="isEvaluated" jdbcType="BIT"/>
+        <result column="delivery_type" property="deliveryType" jdbcType="VARCHAR"/>
+
+        <result column="price" property="price" jdbcType="DECIMAL"/>
+        <result column="amount_payable" property="amountPayable" jdbcType="DECIMAL"/>
+        <result column="shipping_address" property="shippingAddress" jdbcType="VARCHAR"/>
+
+        <result column="customer_id" property="customerId" jdbcType="BIGINT"/>
+        <result column="customer_name" property="customerName" jdbcType="VARCHAR"/>
+        <result column="customer_phone" property="customerPhone" jdbcType="VARCHAR"/>
+
+        <collection property="orderGoodsInfoList" column="oid"
+                    ofType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
+            <id property="gid" column="gid"/>
+            <result property="orderQuantity" column="order_qty"/>
+            <result property="coverImageUri" column="cover_image_uri"/>
+        </collection>
+    </resultMap>
 </mapper>

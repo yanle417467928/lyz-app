@@ -5,10 +5,7 @@ import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
-import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
-import cn.com.leyizhuang.app.foundation.pojo.response.OrderArrearageInfoResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsListResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.OrderListResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -152,4 +149,8 @@ public interface OrderDAO {
                                                             @Param("identityType") AppIdentityType identityType);
 
     void saveOrderLifecycle(OrderLifecycle lifecycle);
+
+    List<OrderPageInfoVO> getOrderListPageInfoByUserIdAndIdentityType(@Param(value = "userID") Long userID,
+                                                                      @Param(value = "identityType") AppIdentityType identityType,
+                                                                      @Param(value = "showStatus") Integer showStatus);
 }

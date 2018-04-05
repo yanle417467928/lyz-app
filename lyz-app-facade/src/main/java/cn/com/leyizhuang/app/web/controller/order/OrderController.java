@@ -1095,7 +1095,7 @@ public class OrderController {
      * @param identityType 用户类型
      * @return 订单列表
      */
-    @PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
+    /*@PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> getOrderList(Long userID, Integer identityType, Integer showStatus, Integer page, Integer size) {
         ResultDTO<Object> resultDTO;
         logger.info("getOrderList CALLED,用户获取订单列表，入参 userID:{}, identityType:{}", userID, identityType);
@@ -1182,6 +1182,58 @@ public class OrderController {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     new GridDataVO<OrderListResponse>().transform(orderListResponses, orderBaseInfoLists));
             logger.info("getOrderList OUT,用户获取订单列表成功，出参 resultDTO:{}", orderListResponses);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，用户获取订单列表失败", null);
+            logger.warn("getOrderList EXCEPTION,用户获取订单列表失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }*/
+
+
+    /**
+     * 用户获取订单列表
+     *
+     * @param userID       用户id
+     * @param identityType 用户类型
+     * @return 订单列表
+     */
+    @PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getOrderList(Long userID, Integer identityType, Integer showStatus, Integer page, Integer size) {
+        ResultDTO<Object> resultDTO;
+        logger.info("getOrderList CALLED,用户获取订单列表，入参 userID:{}, identityType:{}", userID, identityType);
+        if (null == userID) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
+            logger.info("getOrderList OUT,用户获取订单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("getOrderList OUT,用户获取订单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getOrderList OUT,用户获取订单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getOrderList OUT,用户获取订单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            //获取用户所有订单列表
+            PageInfo<OrderPageInfoVO> orderListResponsePageInfo = appOrderService.getOrderListPageInfoByUserIdAndIdentityType(userID,identityType,showStatus,page,size);
+
+            //创建一个返回对象list
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                    new GridDataVO<OrderPageInfoVO>().transform(orderListResponsePageInfo));
+            logger.info("getOrderList OUT,用户获取订单列表成功，出参 resultDTO:{}", orderListResponsePageInfo);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
