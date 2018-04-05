@@ -1014,6 +1014,7 @@ public class AppOrderServiceImpl implements AppOrderService {
             p.setGoodsImgList(goodsImgList);
             p.setCount(count);
             p.setDeliveryType(AppDeliveryType.getAppDeliveryTypeByValue(p.getDeliveryType()).getDescription());
+            p.setDeliveryType(AppDeliveryType.getAppDeliveryTypeByValue(p.getDeliveryType()).getDescription());
             if ("UNPAID".equals(p.getStatus())) {
                 //计算剩余过期失效时间
                 Long time = ((p.getEffectiveEndTime().getTime()) - (System.currentTimeMillis()));
