@@ -53,7 +53,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="brandName" type="text" class="form-control" id="brandName"
-                                           value="${goodsBrand.brandName}">
+                                           value="${goodsBrand.brandName!''}">
                                 </div>
                             </div>
                         </div>
@@ -68,7 +68,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="brandCode" type="text" class="form-control" id="brandCode"
-                                           value="${goodsBrand.brandCode}">
+                                           value="${goodsBrand.brandCode!''}">
                                 </div>
                             </div>
                         </div>
