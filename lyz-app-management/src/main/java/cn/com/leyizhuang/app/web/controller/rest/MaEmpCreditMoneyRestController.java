@@ -84,7 +84,10 @@ public class MaEmpCreditMoneyRestController extends BaseRestController {
                 } else if (0 == isFixEqual && 0 != isTempEqual) {
                     guideCreditChangeDetail.setChangeType(EmpCreditMoneyChangeType.TEMPORARY_ADJUSTMENT);
                     guideCreditChangeDetail.setChangeTypeDesc(EmpCreditMoneyChangeType.TEMPORARY_ADJUSTMENT.getDescription());
-                } else {
+                } else if(0 == isFixEqual && 0 == isTempEqual){
+                    logger.info("固定额度和零时额度都未修改");
+                    return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "请修改你需要的额度", null);
+                } else{
                     logger.info("固定额度和零时额度都修改了,不能判断该导购的主要变更类型");
                     return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "请不要同时修改两个额度", null);
                 }
