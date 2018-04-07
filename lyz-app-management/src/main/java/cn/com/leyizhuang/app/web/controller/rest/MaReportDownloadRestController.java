@@ -188,7 +188,7 @@ public class MaReportDownloadRestController extends BaseRestController{
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "收款报表-"+ DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") +".xlsx";//如  D:/xx/xx/xxx.xls
+        String fileurl = "收款报表-"+ DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") +".xls";//如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
@@ -399,7 +399,7 @@ public class MaReportDownloadRestController extends BaseRestController{
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "未提货报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xlsx";//如  D:/xx/xx/xxx.xls
+        String fileurl = "未提货报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
@@ -529,7 +529,7 @@ public class MaReportDownloadRestController extends BaseRestController{
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "门店预存款-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xlsx";//如  D:/xx/xx/xxx.xls
+        String fileurl = "门店预存款-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
@@ -657,7 +657,7 @@ public class MaReportDownloadRestController extends BaseRestController{
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "对账商品明细报表-"+ DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") +".xlsx";//如  D:/xx/xx/xxx.xls
+        String fileurl = "对账商品明细报表-"+ DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") +".xls";//如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
@@ -800,7 +800,7 @@ public class MaReportDownloadRestController extends BaseRestController{
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "账单明细报表-"+ DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") +".xlsx";//如  D:/xx/xx/xxx.xls
+        String fileurl = "账单明细报表-"+ DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") +".xls";//如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
@@ -950,7 +950,7 @@ public class MaReportDownloadRestController extends BaseRestController{
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "配送员代收款报表-"+ DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") +".xlsx";//如  D:/xx/xx/xxx.xls
+        String fileurl = "配送员代收款报表-"+ DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") +".xls";//如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
