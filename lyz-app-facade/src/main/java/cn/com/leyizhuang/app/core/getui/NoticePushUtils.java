@@ -327,7 +327,7 @@ public class NoticePushUtils {
         // 配置推送目标
         List<Target> targetList = new ArrayList(5);
         List<AppUserDevice> userDeviceList = new ArrayList<>();
-        OrderBaseInfo orderBaseInfo = orderService.getOrderDetail(orderNo);
+        OrderBaseInfo orderBaseInfo = orderService.getOrderByOrderNumber(orderNo);
         if (orderBaseInfo.getCreatorIdentityType() == AppIdentityType.SELLER) {
             List<AppUserDevice> sellerDeviceList = userDeviceService.findAppUserDeviceByUserIdAndIdentityType(orderBaseInfo.getCreatorId(), AppIdentityType.SELLER);
             List<AppUserDevice> customerDeviceList = userDeviceService.findAppUserDeviceByUserIdAndIdentityType(orderBaseInfo.getCustomerId(), AppIdentityType.CUSTOMER);
