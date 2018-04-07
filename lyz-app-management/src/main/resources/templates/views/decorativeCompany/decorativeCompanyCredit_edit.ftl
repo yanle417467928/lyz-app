@@ -86,10 +86,10 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="cid" type="hidden" class="form-control" id="cid"
-                                           value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.credit??>${decorativeCompanyVO.credit.cid?c}</#if></#if>" />
+                                           value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.credit??&& decorativeCompanyVO.credit.cid??>${decorativeCompanyVO.credit.cid?c}</#if></#if>" />
                                     <input name="creditLastUpdateTime" type="hidden" class="form-control"
                                            id="creditLastUpdateTime"
-                                           value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.credit??>${decorativeCompanyVO.credit.creditLastUpdateTime?string("yyyy-MM-dd HH:mm:ss")}</#if></#if>" />
+                                           value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.credit??&& decorativeCompanyVO.credit.creditLastUpdateTime??>${decorativeCompanyVO.credit.creditLastUpdateTime?string("yyyy-MM-dd HH:mm:ss")}</#if></#if>" />
                                     <input name="credit" type="text" class="form-control" id="credit"
                                            placeholder="信用金余额"
                                            value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.credit??>${decorativeCompanyVO.credit.credit!''}</#if></#if>" />

@@ -35,7 +35,7 @@
                 </div>
                 <div class="col-sm-3">
                     <b>创建时间:</b>
-                    <spanp>${maOrderDetail.createTime?string("yyyy-MM-dd HH:mm:ss")!""}</spanp>
+                    <spanp><#if maOrderDetail??&&maOrderDetail.createTime??>${maOrderDetail.createTime?string("yyyy-MM-dd HH:mm:ss")}</#if></spanp>
                 </div>
                 <div class="col-sm-2">
                     <b>订单状态:</b>
@@ -59,7 +59,7 @@
                     </#if>
                     </spanp>
                     <input type="hidden" id="status" readonly value="${maOrderDetail.orderStatus!""}">
-                    <input type="hidden" id="isPayUp" readonly value="${isPayUp?c}">
+                    <input type="hidden" id="isPayUp" readonly value="<#if isPayUp??>${isPayUp?c}</#if>">
                     <input type="hidden" id="type" readonly value="${maOrderDetail.creatorIdentityType!""}">
                     <input type="hidden" id="orderNumber" readonly value="${maOrderDetail.orderNumber!""}">
                 </div>
@@ -240,7 +240,7 @@
                                 <#if paymentDetailList?? && paymentDetailList?size gt 0 >
                                     <#list paymentDetailList as paymentDetail>
                                     <tr>
-                                        <td align="center">${(paymentDetail.payTime?string("yyyy-MM-dd HH:mm:ss"))!""}</td>
+                                        <td align="center"><#if paymentDetail??&&paymentDetail.payTime??>${(paymentDetail.payTime?string("yyyy-MM-dd HH:mm:ss"))!""}</#if></td>
                                         <td>${paymentDetail.paymentType!"未知"}</td>
                                         <td align="center">${paymentDetail.amount!'0.00'}</td>
                                     </tr>

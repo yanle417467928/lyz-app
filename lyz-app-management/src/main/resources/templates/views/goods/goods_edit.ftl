@@ -64,7 +64,7 @@
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="id" type="text" class="form-control" id="id" readonly
                                            placeholder="商品ID"
-                                           value="${(goodsVO.id)?c}">
+                                           value="<#if goodsVO??&&goodsVO.id??>${(goodsVO.id)?c}</#if>">
                                 </div>
                             </div>
                         </div>
@@ -169,7 +169,7 @@
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="sortId" type="text" class="form-control" id="sortId"
                                            placeholder="排序号"
-                                           value="${(goodsVO.sortId)?c}">
+                                           value=" <#if goodsVO?? && goodsVO.sortId??>${(goodsVO.sortId)?c}</#if>">
                                 </div>
                             </div>
                         </div>
@@ -333,7 +333,7 @@
             allowFileManager: true
         });
         categoryName = '${(goodsVO.categoryName)!''}';
-        brandId = '${(goodsVO.brdId)?c}';
+        brandId = '<#if goodsVO??&& goodsVO.brdId??>${(goodsVO.brdId)?c}</#if>';
         findGoodsCategorySelection();
         findGoodsBrandSelection();
         var coverImageUri = '${(goodsVO.coverImageUri)!''}';
