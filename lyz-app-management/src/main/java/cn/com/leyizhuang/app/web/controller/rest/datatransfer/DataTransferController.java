@@ -2,7 +2,9 @@ package cn.com.leyizhuang.app.web.controller.rest.datatransfer;
 
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.DataTransferErrorLog;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.OrderBillingTransferService;
@@ -45,6 +47,9 @@ public class DataTransferController {
 
     @Resource
     private AppCustomerService customerService;
+
+    @Resource
+    private ArrearsAuditService arrearsAuditService;
 
 
     private static final Date JOB_END_TIME;
@@ -106,6 +111,7 @@ public class DataTransferController {
     public String transferArrearsAudit() {
         log.info("开始处理订单审核信息导入job,当前时间:{}", new Date());
         // *********************** 订单迁移处理 ***************
+        List<AppEmployee> employeeList = employeeService.findAllSeller();
         List<OrderBaseInfo> orderNumberList = this.dataTransferService.findNewOrderNumberByDeliveryType();
         List<String> error = new ArrayList<>();
         if (null != orderNumberList && orderNumberList.size() > 0) {
@@ -124,10 +130,8 @@ public class DataTransferController {
                 for (int j = 0; j < subList.size(); j++) {
                     String orderNumber = subList.get(j).getOrderNumber();
                     try {
-//                        Integer flag = this.dataTransferService.transferArrearsAudit(orderNumber);
-//                        if (flag > 0) {
-//                            errorOrderNumber.add(orderNumber + "--" + flag);
-//                        }
+                        OrderArrearsAuditDO orderArrearsAuditDO = this.dataTransferService.transferArrearsAudit(orderNumber, employeeList);
+                        arrearsAuditService.save(orderArrearsAuditDO);
                     } catch (Exception e) {
                         e.printStackTrace();
                         error.add(e.getMessage());
