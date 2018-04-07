@@ -503,6 +503,8 @@
         obi.order_subject_type = 'STORE'
         AND
         obi.delivery_type= 'SELF_TAKE'
+        AND
+        obi.status !='UNPAID'
         AND s.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
@@ -530,6 +532,8 @@
         obi.order_subject_type = 'STORE'
         AND
         obi.delivery_type= 'SELF_TAKE'
+        AND
+        obi.status !='UNPAID'
         <choose>
             <when test=" null!= status and 1==status">
                 AND
@@ -599,6 +603,8 @@
         AND
         obi.delivery_type= 'SELF_TAKE'
         AND
+        obi.status !='UNPAID'
+        AND
         obi.ord_no  LIKE CONCAT('%',#{info},'%')
         AND s.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
@@ -629,6 +635,8 @@
         obi.order_subject_type = 'STORE'
         AND
         obi.delivery_type= 'SELF_TAKE'
+        AND
+        obi.status !='UNPAID'
         <if test="beginTime != null and beginTime != ''">
             AND obi.create_time &gt;= #{beginTime}
         </if>
