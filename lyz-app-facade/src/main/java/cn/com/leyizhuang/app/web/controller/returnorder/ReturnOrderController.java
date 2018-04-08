@@ -162,7 +162,10 @@ public class ReturnOrderController {
                 return resultDTO;
             }
 
-            if (AppOrderStatus.UNPAID.equals(orderBaseInfo.getStatus()) || AppOrderStatus.PENDING_SHIPMENT.equals(orderBaseInfo.getStatus())) {
+            /*2018-04-08 generation 取消订单判断状态为待支付、配送代发货，自提待取货*/
+            if (AppOrderStatus.UNPAID.equals(orderBaseInfo.getStatus())
+                    || (orderBaseInfo.getDeliveryType().equals(AppDeliveryType.HOUSE_DELIVERY) && AppOrderStatus.PENDING_SHIPMENT.equals(orderBaseInfo.getStatus()))
+                    || (orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE) && AppOrderStatus.PENDING_RECEIVE.equals(orderBaseInfo.getStatus()))) {
                 //判断收货类型和订单状态
                 if (orderBaseInfo.getDeliveryType().equals(AppDeliveryType.HOUSE_DELIVERY) && AppOrderStatus.PENDING_SHIPMENT.equals(orderBaseInfo.getStatus())) {
                     //创建取消订单参数存储类
@@ -226,7 +229,9 @@ public class ReturnOrderController {
                     }
 
                     //如果是待发货的门店自提单发送退单拆单消息到拆单消息队列
-                    if (orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_SHIPMENT) && orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE)){
+                    /*2018-04-08 generation 改为待收货的自提单*/
+//                    if (orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_SHIPMENT) && orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE)){
+                    if (orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_RECEIVE) && orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE)){
                         sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
                     }
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);

@@ -677,12 +677,12 @@ public class OrderController {
                 //判断库存的特殊处理
                 List<Long> goodsIdList = appOrderService.existOrderGoodsInventory(cityId, goodsList, giftsList, couponList);
                 if (goodsIdList != null && goodsIdList.size() > 0) {
-                    String message = "商品";
+                    String message = "商品 ";
                     for (Long gid: goodsIdList) {
                         GoodsDO goodsDO = goodsService.queryById(gid);
-                        message += "'" ;
+                        message += "“" ;
                         message += goodsDO.getSkuName() ;
-                        message += "'" ;
+                        message += "” " ;
                     }
                     message += "仓库库存不足，请更改购买数量!";
                     //如果这里发现库存不足还是要返回去商品列表

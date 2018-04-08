@@ -396,7 +396,7 @@
 
     <select id="findAgencyFundDOAll" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.AgencyFundDO">
         SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, od.create_time orderTime,
-            obi.ord_no orderNumber, oli.warehouse warehouse, obi.sales_consult_name sellerName,
+            obi.ord_no orderNumber, w.wh_name warehouse, obi.sales_consult_name sellerName,
             oli.shipping_address, oli.delivery_clerk_name deliveryName, IFNULL(obd.collection_amount,0) agencyMoney,
             IFNULL(obd.delivery_cash,0) cashMoney, IFNULL(obd.delivery_pos,0) posMoney, oaf.remarks remarks,
             oaf.return_money returnMoney, oaf.real_money realMoney, obi.remark orderRemark
@@ -407,6 +407,7 @@
         LEFT JOIN ord_delivery_info_details od ON od.order_no = obi.ord_no AND od.logistic_status = 'SEALED_CAR'
         LEFT JOIN ord_logistics_info oli ON oli.ord_no = obi.ord_no
         LEFT JOIN ord_billing_details obd ON obd.ord_no = obi.ord_no
+        LEFT JOIN warehouse w ON w.wh_no = oli.warehouse
         WHERE 1=1
         <if test="null != cityId and cityId != -1">
             AND obi.city_id = #{cityId}
