@@ -176,12 +176,12 @@ public class GetGoodsMoneyController {
             //正品的数量这里需要判断是否和赠品有相同产品，然后算总数量检查库存
             List<Long> goodsIdList = appOrderService.existOrderGoodsInventory(employee.getCityId(), goodsList, giftsList, null);
             if (goodsIdList != null && goodsIdList.size() > 0) {
-                String message = "商品";
+                String message = "商品 ";
                 for (Long gid: goodsIdList) {
                     GoodsDO goodsDO = goodsService.queryById(gid);
-                    message += "'" ;
+                    message += "“" ;
                     message += goodsDO.getSkuName() ;
-                    message += "'" ;
+                    message += "” " ;
                 }
                 message += "仓库库存不足，请更改购买数量!";
 //                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该商品:" + goodsDO.getSkuName() + "" +

@@ -99,7 +99,7 @@
                 RESOURCE_TYPE = #{resourceType}
             </if>
         </set>
-        WHERE ID = #{id}
+        WHERE rs_id = #{rsId}
     </update>
     <select id="countByPId" parameterType="java.lang.Long" resultType="java.lang.Long">
         SELECT count(*)
