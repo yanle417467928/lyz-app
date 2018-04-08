@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.core.utils.order;
 
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.service.CityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -327,5 +328,39 @@ public class OrderUtils {
             return orderNumberTemp.toString();
         }
         return null;
+    }
+
+    /**
+     * 验证订单号
+     *
+     * @param orderNumber
+     * @return
+     */
+    public static Boolean validationOrderNumber(String orderNumber) {
+
+        if (StringUtils.isNotBlank(orderNumber)) {
+            if (orderNumber.contains("_XN")) {
+                int length = orderNumber.trim().length();
+                return (length == 25);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 验证退货单号
+     *
+     * @param returnNumber
+     * @return
+     */
+    public static Boolean validationReturnOrderNumber(String returnNumber) {
+
+        if (StringUtils.isNotBlank(returnNumber)) {
+            if (returnNumber.contains("T")) {
+                int length = returnNumber.trim().length();
+                return (length == 18);
+            }
+        }
+        return false;
     }
 }
