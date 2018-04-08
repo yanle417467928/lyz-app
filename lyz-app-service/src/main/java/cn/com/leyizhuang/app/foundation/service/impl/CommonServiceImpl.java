@@ -269,7 +269,8 @@ public class CommonServiceImpl implements CommonService {
                         StoreInventory storeInventory = storeService.findStoreInventoryByStoreIdAndGoodsId(deliverySimpleInfo.getBookingStoreId(), entry.getKey());
                         if (null != storeInventory) {
                             if (storeInventory.getAvailableIty() < entry.getValue()) {
-                                throw new LockStoreInventoryException("该门店下id为" + entry.getKey() + "的商品库存不足!");
+                                //  2018年4月8日 Jerry 修改提示语商品名称库存不足
+                                throw new LockStoreInventoryException("该门店下商品为" + storeInventory.getSkuName() + "的库存不足!");
                             }
                             Integer affectLine = storeService.lockStoreInventoryByStoreIdAndGoodsIdAndInventory(deliverySimpleInfo.getBookingStoreId(), entry.getKey(),
                                     entry.getValue(), storeInventory.getLastUpdateTime());
@@ -308,7 +309,7 @@ public class CommonServiceImpl implements CommonService {
                     CityInventory cityInventory = cityService.findCityInventoryByCityIdAndGoodsId(cityId, entry.getKey());
                     if (null != cityInventory) {
                         if (cityInventory.getAvailableIty() < entry.getValue()) {
-                            throw new LockCityInventoryException("该城市下id为" + entry.getKey() + "的商品库存不足!");
+                            throw new LockCityInventoryException("该城市下商品为" + cityInventory.getSkuName() + "库存不足!");
                         }
                         Integer affectLine = cityService.lockCityInventoryByCityIdAndGoodsIdAndInventory(cityId, entry.getKey(), entry.getValue(), cityInventory.getLastUpdateTime());
                         if (affectLine > 0) {
