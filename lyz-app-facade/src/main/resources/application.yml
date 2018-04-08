@@ -185,7 +185,7 @@ spring:
           username: magpie
           password: LEyizhuang2017
           initial-size: 10
-          max-active: 100
+          max-active: 200
           min-idle: 10
           max-wait: 60000
   rabbitmq:

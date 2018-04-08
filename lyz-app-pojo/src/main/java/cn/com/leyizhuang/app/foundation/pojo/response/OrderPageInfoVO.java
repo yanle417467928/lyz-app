@@ -91,4 +91,9 @@ public class OrderPageInfoVO {
      * 过期时间
      */
     private Date effectiveEndTime;
+
+    /**
+     * 订单id
+     */
+    private Long oid;
 }
