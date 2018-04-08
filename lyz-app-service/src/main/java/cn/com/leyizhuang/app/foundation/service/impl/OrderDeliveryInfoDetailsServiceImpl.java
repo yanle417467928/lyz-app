@@ -54,7 +54,6 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
 //        PageHelper.startPage(page, size);
         List<WaitDeliveryResponse> waitDeliveryResponseList = orderDeliveryInfoDetailsDAO.getOrderBeasInfoByOperatorNo(operatorNo);
         List<OrderArrearsAuditDO> orderArrearsAuditDOList = orderDeliveryInfoDetailsDAO.getArrearsAuditByOperatorNo(operatorNo);
-        List<WaitDeliveryResponse> waitDeliveryResponses = new ArrayList<>();
         if (null != waitDeliveryResponseList && waitDeliveryResponseList.size() > 0) {
             for(int i = 0;i<waitDeliveryResponseList.size();i++){
                 for (int j=0;j<orderArrearsAuditDOList.size();j++){
