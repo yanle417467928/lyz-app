@@ -981,7 +981,28 @@ public class AppOrderServiceImpl implements AppOrderService {
         }
     }
 
-
+    @Override
+    public PageInfo<OrderPageInfoVO> getOrderListPageInfoByUserIdAndIdentityType(Long userID, Integer identityType, Integer showStatus, Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        List<OrderPageInfoVO> orderPageInfoVOList = orderDAO.getOrderListPageInfoByUserIdAndIdentityType(userID, AppIdentityType.getAppIdentityTypeByValue(identityType), showStatus);
+        orderPageInfoVOList.forEach(p -> {
+            List<String> goodsImgList = p.getOrderGoodsInfoList().stream().map(OrderGoodsInfo::getCoverImageUri).collect(Collectors.toList());
+            Integer count = p.getOrderGoodsInfoList().stream().mapToInt(OrderGoodsInfo::getOrderQuantity).sum();
+            p.setGoodsImgList(goodsImgList);
+            p.setCount(count);
+            p.setDeliveryType(AppDeliveryType.getAppDeliveryTypeByValue(p.getDeliveryType()).getDescription());
+            if ("UNPAID".equals(p.getStatus())) {
+                //计算剩余过期失效时间
+                Long time = ((p.getEffectiveEndTime().getTime()) - (System.currentTimeMillis()));
+                //设置
+                if (time > 0) {
+                    p.setEndTime(time);
+                }
+            }
+            p.setStatusDesc(AppOrderStatus.getAppDeliveryOrderStatusByValue(p.getStatus()).getDescription());
+        });
+        return new PageInfo<>(orderPageInfoVOList);
+    }
 
 
 
