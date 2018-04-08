@@ -59,16 +59,14 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
             for(int i = 0;i<waitDeliveryResponseList.size();i++){
                 for (int j=0;j<orderArrearsAuditDOList.size();j++){
                     /*2018-04-07 generation 报IndexOutOfBoundsException，原因是remove后，size变短*/
-                    /*if (waitDeliveryResponseList.get(i).getOrderNumber().equals(orderArrearsAuditDOList.get(j).getOrderNumber())){
-                        waitDeliveryResponseList.remove(waitDeliveryResponseList.get(i));*/
-                    if (!waitDeliveryResponseList.get(i).getOrderNumber().equals(orderArrearsAuditDOList.get(j).getOrderNumber())){
-                        waitDeliveryResponses.add(waitDeliveryResponseList.get(i));
+                    if (waitDeliveryResponseList.get(i).getOrderNumber().equals(orderArrearsAuditDOList.get(j).getOrderNumber())) {
+                        waitDeliveryResponseList.remove(waitDeliveryResponseList.get(i));
+                        i--;
                     }
                 }
             }
         }
-       /* return waitDeliveryResponseList;*/
-        return waitDeliveryResponses;
+        return waitDeliveryResponseList;
     }
 
     @Override
