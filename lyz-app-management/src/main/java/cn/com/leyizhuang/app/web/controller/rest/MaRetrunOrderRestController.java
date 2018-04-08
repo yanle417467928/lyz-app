@@ -87,6 +87,7 @@ public class MaRetrunOrderRestController extends BaseRestController {
     public GridDataVO<MaReturnOrderInfo> restReturnOrderPageGirdByScreen(Integer offset, Integer size, String keywords, @RequestParam(value = "storeId") Long storeId, @RequestParam(value = "status") String status) {
         logger.info("restReturnOrderPageGirdByScreen 后台根据筛选条件分页查询退货单列表 ,入参offset:{}, size:{}, kewords:{},storeId:{},status:{}", offset, size, keywords, storeId, status);
         try {
+
             size = getSize(size);
             Integer page = getPage(offset, size);
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
