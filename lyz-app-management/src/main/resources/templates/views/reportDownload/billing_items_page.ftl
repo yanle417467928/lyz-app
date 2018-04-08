@@ -96,7 +96,7 @@
         findStorelist();
 
         //获取数据
-        initDateGird(null,null,null,null,null,null);
+//        initDateGird(null,null,null,null,null,null);
         //时间选择框样式
         $('.datepicker').datepicker({
             format: 'yyyy-mm-dd',
