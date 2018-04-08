@@ -873,7 +873,7 @@ public class CommonServiceImpl implements CommonService {
                 customerService.update(customer);
             }
             //增加订单生命周期信息
-            orderService.addOrderLifecycle(OrderLifecycleType.PAYED,orderNumber);
+            orderService.addOrderLifecycle(OrderLifecycleType.PAYED, orderNumber);
         }
     }
 
@@ -1021,6 +1021,9 @@ public class CommonServiceImpl implements CommonService {
                     hasPriceGoodsIdSet.add(goodsVO.getGid());
                 }
                 for (GoodsSimpleInfo info : goodsList) {
+                    if (null == info.getQty() || info.getQty().equals(0)) {
+                        throw new GoodsQtyErrorException("商品 '"+goodsVO.getSkuName() + "'数量出现异常(0或不存在)!");
+                    }
                     if (info.getId().equals(goodsVO.getGid())) {
                         goodsVO.setQty(info.getQty());
                     }
@@ -1122,6 +1125,9 @@ public class CommonServiceImpl implements CommonService {
                     hasPriceCouponGoodsIdSet.add(couponGoods.getGid());
                 }
                 for (ProductCouponSimpleInfo info : productCouponList) {
+                    if (null == info.getQty() || info.getQty().equals(0)) {
+                        throw new GoodsQtyErrorException("产品券商品 '"+couponGoods.getSkuName() + "'数量出现异常(0或不存在)!");
+                    }
                     if (info.getId().equals(couponGoods.getGid())) {
                         couponGoods.setQty(info.getQty());
                     }
@@ -1267,7 +1273,7 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public List<OrderJxPriceDifferenceReturnDetails> createOrderJxPriceDifferenceReturnDetails(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList, List<PromotionSimpleInfo> promotionSimpleInfos) {
-        Map<Long,Double> map = actService.returnGcActIdAndJXDiscunt(promotionSimpleInfos);
+        Map<Long, Double> map = actService.returnGcActIdAndJXDiscunt(promotionSimpleInfos);
 
         AppStore store = storeService.findById(orderBaseInfo.getStoreId());
         if (null != store && null != store.getStoreType()) {
@@ -1278,17 +1284,17 @@ public class CommonServiceImpl implements CommonService {
 
                         if (orderGoodsInfo.getGoodsLineType() == AppGoodsLineType.GOODS) {
                             OrderJxPriceDifferenceReturnDetails details = new OrderJxPriceDifferenceReturnDetails();
-                            if (null != orderGoodsInfo.getPromotionId()){
+                            if (null != orderGoodsInfo.getPromotionId()) {
                                 Long actId = Long.valueOf(orderGoodsInfo.getPromotionId());
-                                if (map.containsKey(actId)){
+                                if (map.containsKey(actId)) {
                                     Double gcDiscount = map.get(actId);
                                     details.setAmount((orderGoodsInfo.getSettlementPrice() - orderGoodsInfo.getWholesalePrice() - gcDiscount) * orderGoodsInfo.getOrderQuantity());
                                     details.setUnitPrice(orderGoodsInfo.getSettlementPrice() - orderGoodsInfo.getWholesalePrice() - gcDiscount);
-                                }else {
+                                } else {
                                     details.setAmount((orderGoodsInfo.getSettlementPrice() - orderGoodsInfo.getWholesalePrice()) * orderGoodsInfo.getOrderQuantity());
                                     details.setUnitPrice(orderGoodsInfo.getSettlementPrice() - orderGoodsInfo.getWholesalePrice());
                                 }
-                            }else{
+                            } else {
                                 details.setAmount((orderGoodsInfo.getSettlementPrice() - orderGoodsInfo.getWholesalePrice()) * orderGoodsInfo.getOrderQuantity());
                                 details.setUnitPrice(orderGoodsInfo.getSettlementPrice() - orderGoodsInfo.getWholesalePrice());
                             }
@@ -1702,20 +1708,21 @@ public class CommonServiceImpl implements CommonService {
                 customerService.update(customer);
             }
             //增加订单生命周期信息
-            orderService.addOrderLifecycle(OrderLifecycleType.PAYED,orderNumber);
+            orderService.addOrderLifecycle(OrderLifecycleType.PAYED, orderNumber);
         }
     }
 
     /**
      * 支付 0 元订单
+     *
      * @param orderNumber
      * @throws UnsupportedEncodingException
      */
     public void payZeroOrder(String orderNumber) throws UnsupportedEncodingException {
-        if (StringUtils.isNotBlank(orderNumber)){
+        if (StringUtils.isNotBlank(orderNumber)) {
             OrderBaseInfo baseInfo = orderService.getOrderByOrderNumber(orderNumber);
 
-            if (baseInfo != null){
+            if (baseInfo != null) {
                 //更新订单账单信息
                 OrderBillingDetails billingDetails = orderService.getOrderBillingDetail(orderNumber);
                 //发送提货码给顾客,及提示导购顾客下单信息
@@ -1783,7 +1790,7 @@ public class CommonServiceImpl implements CommonService {
                     customerService.update(customer);
                 }
                 //增加订单生命周期信息
-                orderService.addOrderLifecycle(OrderLifecycleType.PAYED,orderNumber);
+                orderService.addOrderLifecycle(OrderLifecycleType.PAYED, orderNumber);
             }
         }
     }

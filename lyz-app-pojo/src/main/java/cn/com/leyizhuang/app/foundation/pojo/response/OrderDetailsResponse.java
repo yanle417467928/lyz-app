@@ -127,4 +127,9 @@ public class OrderDetailsResponse {
      * 顾客电话
      */
     private String customerPhone;
+
+    /**
+     * 订单备注
+     */
+    private String remark;
 }
