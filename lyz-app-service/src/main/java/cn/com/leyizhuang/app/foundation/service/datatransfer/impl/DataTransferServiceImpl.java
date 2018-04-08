@@ -247,13 +247,13 @@ public class DataTransferServiceImpl implements DataTransferService {
                 throw new DataTransferException("订单审核未查到此订单代收款信息", DataTransferExceptionType.NOTORDERDATA);
             }
             TdOrder order = orders.get(0);
-//            Long employeeId = this.transferDAO.findEmployeeByMobile(order.getSellerUsername());
-            Long employeeId = null;
-            List<AppEmployee> filterSellerList = employeeList.stream().filter(p -> p.getMobile().equals(order.getSellerUsername())).
-                    collect(Collectors.toList());
-            if (null != filterSellerList && !filterSellerList.isEmpty()) {
-                employeeId = filterSellerList.get(0).getEmpId();
-            }
+            Long employeeId = this.transferDAO.findEmployeeByMobile(order.getSellerUsername());
+//            Long employeeId = null;
+//            List<AppEmployee> filterSellerList = employeeList.stream().filter(p -> p.getMobile().equals(order.getSellerUsername())).
+//                    collect(Collectors.toList());
+//            if (null != filterSellerList && !filterSellerList.isEmpty()) {
+//                employeeId = filterSellerList.get(0).getEmpId();
+//            }
             if (null == employeeId) {
                 log.warn("未查到此订单导购信息！订单号：", orderNumber);
                 throw new DataTransferException("订单审核未查到此订单导购信息", DataTransferExceptionType.SNF);
