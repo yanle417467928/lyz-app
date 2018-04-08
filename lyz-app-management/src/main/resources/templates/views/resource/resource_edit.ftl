@@ -119,7 +119,7 @@
                     data.status = (undefined === data.status) ? false : data.status;
                     $.ajax({
                         url: url,
-                        method: 'POST',
+                        method: data._method,
                         data: data,
                         error: function () {
                             clearTimeout($global.timer);
@@ -164,8 +164,8 @@
             <div class="tab-pane active" id="tab_1-1">
                 <form id="resource_edit">
                     <input type="hidden" id="id" name="id"
-                    <#if resource?? && resource.id??>
-                           value="${resource.id?c}"
+                    <#if resource?? && resource.rsId??>
+                           value="${resource.rsId?c}"
                     <#else>
                            value="0"
                     </#if>/>
@@ -295,7 +295,7 @@
                                         <option value="${(item.rsId!'0')?c}"
                                                 data-icon="${item.icon!'fa fa-circle-o'}"
                                                 <#if item.rsId == resource.pid >selected</#if>>
-                                        ${item.name!'加载失败...'}
+                                            ${item.name!'加载失败...'}
                                         </option>
                                     </#list>
                                 </#if>
