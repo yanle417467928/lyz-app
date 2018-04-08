@@ -8,9 +8,14 @@ package cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany;
  * Date: 2017/11/23.
  * Time: 10:41.
  */
+
 import cn.com.leyizhuang.app.foundation.pojo.management.city.SimpleCityParam;
 import cn.com.leyizhuang.app.foundation.vo.management.city.CityDetailVO;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.math.BigDecimal;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -24,8 +29,8 @@ public class DecorativeCompanyInfo {
     //装饰公司编码
     private String storeCode;
 
-    //城市ID
-    private SimpleCityParam cityCode;
+    //装饰公司Id
+    private Long storeId;
 
     //门店名称
     private String storeName;
@@ -34,8 +39,22 @@ public class DecorativeCompanyInfo {
     private Boolean enable;
 
     //信用金
-    private DecorativeCompanyCredit credit;
+    private BigDecimal credit;
+
+    //信用金上次更新时间
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date creditLastUpdateTime;
+
+    //城市名称
+    private String cityName;
 
     //赞助金
-    private DecorativeCompanySubvention sponsorship;
+    private BigDecimal sponsorship;
+
+    //赞助金上次更新时间
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date sponsorshipLastUpdateTime;
+
+    //签约信用金
+    private BigDecimal creditLimit;
 }

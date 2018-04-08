@@ -50,10 +50,8 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input type="hidden" name="storeId" id="id"
-                                    <#if decorativeCompanyVO?? && decorativeCompanyVO.id??>
-                                           value="${(decorativeCompanyVO.id)?c}"
-                                    <#else>
-                                           value="0"
+                                    <#if decorativeCompanyVO?? && decorativeCompanyVO.storeId??>
+                                           value="${(decorativeCompanyVO.storeId)?c}"
                                     </#if>/>
                                     <input name="name" type="text" class="form-control" id="name"
                                            placeholder="装饰公司名称" readonly
@@ -85,14 +83,12 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="cid" type="hidden" class="form-control" id="cid"
-                                           value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.credit??>${decorativeCompanyVO.credit.cid?c}</#if></#if>" />
                                     <input name="creditLastUpdateTime" type="hidden" class="form-control"
                                            id="creditLastUpdateTime"
-                                           value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.credit??>${decorativeCompanyVO.credit.creditLastUpdateTime?string("yyyy-MM-dd HH:mm:ss")}</#if></#if>" />
+                                           value="<#if decorativeCompanyVO??&&decorativeCompanyVO.creditLastUpdateTime??>${decorativeCompanyVO.creditLastUpdateTime?string("yyyy-MM-dd HH:mm:ss")}</#if>" />
                                     <input name="credit" type="text" class="form-control" id="credit"
                                            placeholder="信用金余额"
-                                           value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.credit??>${decorativeCompanyVO.credit.credit!''}</#if></#if>" />
+                                           value="${decorativeCompanyVO.credit!''}" />
                                 </div>
                             </div>
                         </div>
@@ -104,14 +100,12 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="sid" type="hidden" class="form-control" id="sid"
-                                           value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.sponsorship??>${decorativeCompanyVO.sponsorship.sid?c}</#if></#if>"/>
                                     <input name="sponsorshipLastUpdateTime" type="hidden" class="form-control"
                                            id="sponsorshipLastUpdateTime"
-                                           value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.sponsorship??>${decorativeCompanyVO.sponsorship.sponsorshipLastUpdateTime?string("yyyy-MM-dd HH:mm:ss")}</#if></#if>"/>
+                                           value="<#if decorativeCompanyVO??&&decorativeCompanyVO.sponsorshipLastUpdateTime??>${decorativeCompanyVO.sponsorshipLastUpdateTime?string("yyyy-MM-dd HH:mm:ss")}</#if>"/>
                                     <input name="sponsorship" type="text" class="form-control" id="sponsorship"
                                            placeholder="赞助金余额"
-                                           value="<#if decorativeCompanyVO??><#if decorativeCompanyVO.sponsorship??>${decorativeCompanyVO.sponsorship.sponsorship!''}</#if></#if>"/>
+                                           value="<#if decorativeCompanyVO??>${decorativeCompanyVO.sponsorship!''}</#if>"/>
                                 </div>
                             </div>
                         </div>
@@ -280,7 +274,7 @@
                             clearTimeout($global.timer);
                             $loading.close();
                             $global.timer = null;
-                            $notify.danger('装饰公司信用保存失败');
+                            $notify.danger('装饰公司信用金保存失败');
                             $('#decorativeCompanyCreditFrom').bootstrapValidator('disableSubmitButtons', false);
                         }
                     }

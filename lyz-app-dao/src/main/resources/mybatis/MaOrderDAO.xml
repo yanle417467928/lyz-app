@@ -498,11 +498,15 @@
         FROM
         ord_base_info AS obi
         INNER JOIN st_store AS s ON s.store_code = obi.store_code
-        INNER JOIN  ord_billing_details obd ON obi.oid=obd.oid
+        INNER JOIN ord_billing_details obd ON obi.oid=obd.oid
         WHERE
         obi.order_subject_type = 'STORE'
         AND
         obi.delivery_type= 'SELF_TAKE'
+        AND
+        obi.status !='UNPAID'
+        AND
+        obi.status !='CANCELED'
         AND s.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
@@ -530,24 +534,20 @@
         obi.order_subject_type = 'STORE'
         AND
         obi.delivery_type= 'SELF_TAKE'
+        AND
+        obi.status !='UNPAID'
+        AND
+        obi.status !='CANCELED'
         <choose>
             <when test=" null!= status and 1==status">
                 AND
-                obi.status !='PENDING_RECEIVE'
-                AND
-                obi.status !='UNPAID'
-                AND
-                obi.status !='CANCELED'
-                AND
-                obi.status !='CANCELING'
-            </when>
+            obi.status !='PENDING_RECEIVE'
+            AND
+            obi.status !='CANCELING'
+        </when>
             <when test=" null!= status and 0==status">
                 AND
                 (obi.status ='PENDING_RECEIVE'
-                OR
-                obi.status ='UNPAID'
-                OR
-                obi.status ='CANCELED'
                 OR
                 obi.status ='CANCELING')
             </when>
@@ -599,6 +599,10 @@
         AND
         obi.delivery_type= 'SELF_TAKE'
         AND
+        obi.status !='UNPAID'
+        AND
+        obi.status !='CANCELED'
+        AND
         obi.ord_no  LIKE CONCAT('%',#{info},'%')
         AND s.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
@@ -629,6 +633,10 @@
         obi.order_subject_type = 'STORE'
         AND
         obi.delivery_type= 'SELF_TAKE'
+        AND
+        obi.status !='UNPAID'
+        AND
+        obi.status !='CANCELED'
         <if test="beginTime != null and beginTime != ''">
             AND obi.create_time &gt;= #{beginTime}
         </if>

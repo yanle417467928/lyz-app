@@ -6,7 +6,19 @@
     <insert id="addCancelOrderParameters"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.CancelOrderParametersDO">
         INSERT INTO cancel_order_parameters (order_number, user_id, identity_type, reason_info, remarks_info, cancel_status)
-        VALUES (#{orderNumber}, #{userId}, #{identityType},#{reasonInfo}, #{remarksInfo}, #{cancelStatus})
+            SELECT
+                #{orderNumber},
+                #{userId},
+                #{identityType},
+                #{reasonInfo},
+                #{remarksInfo},
+                #{cancelStatus}
+            FROM DUAL
+            WHERE NOT EXISTS(
+                    SELECT 'X'
+                    FROM cancel_order_parameters
+                    WHERE order_number = #{orderNumber}
+            )
     </insert>
 
     <select id="findCancelOrderParametersByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.CancelOrderParametersDO">

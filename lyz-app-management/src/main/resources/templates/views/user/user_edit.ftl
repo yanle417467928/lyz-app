@@ -70,7 +70,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="name" type="text" class="form-control" id="name"
-                                           placeholder="用户姓名" value="${user.name}">
+                                           placeholder="用户姓名" value="${user.name!''}">
                                 </div>
                             </div>
                         </div>
@@ -182,7 +182,9 @@
                                         <#if storeList??>
                                             <#list storeList as item>
                                                 <#if item?? && item.cityId??>
-                                                    <label id="citys${item.cityId}" style="margin-right: 3px;" class="label label-success">${item.cityName}&nbsp;<span onclick="deleteHtml('citys${item.cityId}')">×</span></label>
+                                                    <label id="citys${item.cityId}" style="margin-right: 3px;"
+                                                           class="label label-success">${item.cityName}&nbsp;<span
+                                                            onclick="deleteHtml('citys${item.cityId}')">×</span></label>
                                                 </#if>
                                             </#list>
                                         </#if>
@@ -192,7 +194,9 @@
                                         <#if storeList??>
                                             <#list storeList as item>
                                                 <#if item?? && item.storeId??>
-                                                    <label id="stores${item.storeId}" style="margin-right: 3px;" class="label label-success">${item.storeName}&nbsp;<span onclick="deleteHtml('stores${item.storeId}')">×</span></label>
+                                                    <label id="stores${item.storeId}" style="margin-right: 3px;"
+                                                           class="label label-success">${item.storeName}&nbsp;<span
+                                                            onclick="deleteHtml('stores${item.storeId}')">×</span></label>
                                                 </#if>
                                             </#list>
                                         </#if>
@@ -222,7 +226,8 @@
                     <div class="modal-dialog" role="document" style="width: 60%">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h4>选择城市<span style="color: red; font-size: small">（注：如果选择城市，则该城市下的所有门店的数据都可查询）</span></h4>
+                                <h4>选择城市<span style="color: red; font-size: small">（注：如果选择城市，则该城市下的所有门店的数据都可查询）</span>
+                                </h4>
                             </div>
                             <div class="modal-body">
                                 <!--  设置这个div的大小，超出部分显示滚动条 -->
@@ -232,11 +237,14 @@
                                             <div class="col-xs-12">
                                                 <div class="box box-primary">
                                                     <div id="toolbar2" class="form-inline">
-                                                        <div class="input-group col-md-3" style="margin-top:0px positon:relative">
-                                                            <input type="text" name="queryCityInfo" id="queryCityInfo" class="form-control" style="width:auto;"
+                                                        <div class="input-group col-md-3"
+                                                             style="margin-top:0px positon:relative">
+                                                            <input type="text" name="queryCityInfo" id="queryCityInfo"
+                                                                   class="form-control" style="width:auto;"
                                                                    placeholder="请输入要查找的城市名或编码..">
                                                             <span class="input-group-btn">
-                                                                <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
+                                                                <button type="button" name="search" id="search-btn"
+                                                                        class="btn btn-info btn-search"
                                                                         onclick="return findCityByNameOrCode()">查找</button>
                                                             </span>
                                                         </div>
@@ -276,12 +284,18 @@
                                             <div class="col-xs-12">
                                                 <div class="box box-primary">
                                                     <div id="toolbar1" class="form-inline">
-                                                        <select name="city" id="cityCode" class="form-control selectpicker" data-width="120px" style="width:auto;"
-                                                                onchange="findStoreByCity(this.value)" data-live-search="true">
+                                                        <select name="city" id="cityCode"
+                                                                class="form-control selectpicker" data-width="120px"
+                                                                style="width:auto;"
+                                                                onchange="findStoreByCity(this.value)"
+                                                                data-live-search="true">
                                                             <option value="-1">选择城市</option>
                                                         </select>
-                                                        <select name="storeType" id="storeType" class="form-control selectpicker" data-width="120px" style="width:auto;"
-                                                                onchange="findStoreByStoreType(this.value)" data-live-search="true">
+                                                        <select name="storeType" id="storeType"
+                                                                class="form-control selectpicker" data-width="120px"
+                                                                style="width:auto;"
+                                                                onchange="findStoreByStoreType(this.value)"
+                                                                data-live-search="true">
                                                             <option value="-1">选择门店类型</option>
                                                         <#if storeTypes??>
                                                             <#list storeTypes as storeType>
@@ -290,11 +304,14 @@
                                                         </#if>
                                                         </select>
 
-                                                        <div class="input-group col-md-3" style="margin-top:0px positon:relative">
-                                                            <input type="text" name="queryStoreInfo" id="queryStoreInfo" class="form-control" style="width:auto;"
+                                                        <div class="input-group col-md-3"
+                                                             style="margin-top:0px positon:relative">
+                                                            <input type="text" name="queryStoreInfo" id="queryStoreInfo"
+                                                                   class="form-control" style="width:auto;"
                                                                    placeholder="请输入要查找的店名或编码..">
                                                             <span class="input-group-btn">
-                                                                <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
+                                                                <button type="button" name="search" id="search-btn"
+                                                                        class="btn btn-info btn-search"
                                                                         onclick="return findStoreByNameOrCode()">查找</button>
                                                             </span>
                                                         </div>

@@ -41,7 +41,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="brdId" type="text" class="form-control" id="brdId" readonly
-                                           value="${goodsBrand.brdId?c}">
+                                           value="<#if goodsBrand??&&goodsBrand.brdId??>${goodsBrand.brdId?c}</#if>">
                                 </div>
                             </div>
                         </div>
@@ -53,7 +53,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="brandName" type="text" class="form-control" id="brandName"
-                                           value="${goodsBrand.brandName}">
+                                           value="${goodsBrand.brandName!''}">
                                 </div>
                             </div>
                         </div>
@@ -68,7 +68,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="brandCode" type="text" class="form-control" id="brandCode"
-                                           value="${goodsBrand.brandCode}">
+                                           value="${goodsBrand.brandCode!''}">
                                 </div>
                             </div>
                         </div>
@@ -80,7 +80,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="sortId" type="text" class="form-control" id="sortId"
-                                           value="${goodsBrand.sortId?c}">
+                                           value="<#if goodsBrand??&&goodsBrand.sortId??>${goodsBrand.sortId?c}</#if>">
                                 </div>
                             </div>
                         </div>

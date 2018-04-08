@@ -55,12 +55,12 @@
                     </select>
 
                     <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px" style="width:auto;"
-                            onchange="findByCondition()" data-live-search="true">
+                            <#--onchange="findByCondition()"--> data-live-search="true">
                         <option value="-1">选择门店</option>
                     </select>
 
                     <select name="paymentType" id="paymentType" class="form-control selectpicker" data-width="120px" style="width:auto;"
-                            onchange="findByCondition()" data-live-search="true">
+                            <#--onchange="findByCondition()"--> data-live-search="true">
                         <option value="">选择支付方式</option>
                         <#if paymentTypes??>
                             <#list paymentTypes as paymentType>
@@ -69,8 +69,8 @@
                         </#if>
                     </select>
 
-                    <input name="startTime" onchange="findByCondition()" type="text" class="form-control datepicker" id="startTime" style="width: 120px;" placeholder="开始时间">
-                    <input name="endTime" onchange="findByCondition()" type="text" class="form-control datepicker" id="endTime" style="width: 120px;" placeholder="结束时间">
+                    <input name="startTime" <#--onchange="findByCondition()"--> type="text" class="form-control datepicker" id="startTime" style="width: 120px;" placeholder="开始时间">
+                    <input name="endTime" <#--onchange="findByCondition()"--> type="text" class="form-control datepicker" id="endTime" style="width: 120px;" placeholder="结束时间">
 
                     <div class="input-group col-md-3" style="margin-top:0px; positon:relative">
                         <input type="text" name="queryCusInfo" id="queryCusInfo" class="form-control" style="width:auto;"
@@ -106,7 +106,7 @@
         findStorelist();
 
         //获取数据
-        initDateGird(null,null,null,null,null,null,null);
+        /*initDateGird(null,null,null,null,null,null,null);*/
         //时间选择框样式
         $('.datepicker').datepicker({
             format: 'yyyy-mm-dd',
@@ -165,7 +165,7 @@
                 $("#storeCode").append(store);
                 $('#storeCode').selectpicker('refresh');
                 $('#storeCode').selectpicker('render');
-                findByCondition();
+//                findByCondition();
             }
         });
     }
@@ -247,7 +247,7 @@
     }
 
     function findByOrderNumber() {
-        $('#startTime').val('');
+       /* $('#startTime').val('');
         $('#endTime').val('');
         $("#storeCode").val(-1);
         $('#cityCode').val(-1);
@@ -260,7 +260,7 @@
         $('#storeType').selectpicker('refresh');
         $('#storeType').selectpicker('render');
         $('#paymentType').selectpicker('refresh');
-        $('#paymentType').selectpicker('render');
+        $('#paymentType').selectpicker('render');*/
         var queryCusInfo = $("#queryCusInfo").val();
         $("#dataGrid").bootstrapTable('destroy');
         var startTime = $('#startTime').val();

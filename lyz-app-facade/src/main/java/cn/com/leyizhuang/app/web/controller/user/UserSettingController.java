@@ -202,11 +202,36 @@ public class UserSettingController {
         }
         try {
             if (identityType == 6) {
+                //先去查是否已经存在重复手机号
+                AppCustomer appCustomer = customerService.findByMobile(mobile);
+                if (null != appCustomer) {
+                    if (userId.equals(appCustomer.getCusId())) {
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该手机号已绑定成功!", null);
+                        logger.info("personalMobileSet OUT,用户修改手机号码失败，出参 resultDTO:{}", resultDTO);
+                        return resultDTO;
+                    } else {
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该手机号已绑定其他账号!", null);
+                        logger.info("personalMobileSet OUT,用户修改手机号码失败，出参 resultDTO:{}", resultDTO);
+                        return resultDTO;
+                    }
+                }
                 customerService.modifyCustomerMobileByUserId(userId, mobile);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
                 logger.info("personalMobileSet OUT,用户修改手机号码成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             } else {
+                AppEmployee appEmployee = employeeService.findByMobile(mobile);
+                if (null != appEmployee) {
+                    if (userId.equals(appEmployee.getEmpId())) {
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该手机号已绑定成功!", null);
+                        logger.info("personalMobileSet OUT,用户修改手机号码失败，出参 resultDTO:{}", resultDTO);
+                        return resultDTO;
+                    } else {
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该手机号已绑定其他账号!", null);
+                        logger.info("personalMobileSet OUT,用户修改手机号码失败，出参 resultDTO:{}", resultDTO);
+                        return resultDTO;
+                    }
+                }
                 employeeService.modifyEmployeeMobileByUserId(userId, mobile);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
                 logger.info("personalMobileSet OUT,用户修改手机号码成功，出参 resultDTO:{}", resultDTO);

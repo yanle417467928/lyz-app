@@ -2,7 +2,9 @@ package cn.com.leyizhuang.app.web.controller.rest.datatransfer;
 
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.DataTransferErrorLog;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.OrderBillingTransferService;
@@ -45,6 +47,9 @@ public class DataTransferController {
 
     @Resource
     private AppCustomerService customerService;
+
+    @Resource
+    private ArrearsAuditService arrearsAuditService;
 
 
     private static final Date JOB_END_TIME;
@@ -106,28 +111,27 @@ public class DataTransferController {
     public String transferArrearsAudit() {
         log.info("开始处理订单审核信息导入job,当前时间:{}", new Date());
         // *********************** 订单迁移处理 ***************
+        List<AppEmployee> employeeList = employeeService.findAllSeller();
         List<OrderBaseInfo> orderNumberList = this.dataTransferService.findNewOrderNumberByDeliveryType();
         List<String> error = new ArrayList<>();
         if (null != orderNumberList && orderNumberList.size() > 0) {
             log.info("无订单信息 orderNumberList:{}", orderNumberList);
         }
-        int size = orderNumberList.size();
-        int nThreads = 6;
+//        int size = orderNumberList.size();
+//        int nThreads = 6;
         AtomicInteger countLine = new AtomicInteger();
-        ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
-        List<Future<List<String>>> futures = new ArrayList<>(nThreads);
-
-        for (int i = 0; i < nThreads; i++) {
-            final List<OrderBaseInfo> subList = orderNumberList.subList(size / nThreads * i, size / nThreads * (i + 1));
-            Callable<List<String>> task = () -> {
+//        ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
+//        List<Future<List<String>>> futures = new ArrayList<>(nThreads);
+//
+//        for (int i = 0; i < nThreads; i++) {
+//            final List<OrderBaseInfo> subList = orderNumberList.subList(size / nThreads * i, size / nThreads * (i + 1));
+//            Callable<List<String>> task = () -> {
                 List<String> errorOrderNumber = new ArrayList<>();
-                for (int j = 0; j < subList.size(); j++) {
-                    String orderNumber = subList.get(j).getOrderNumber();
+                for (int j = 0; j < orderNumberList.size(); j++) {
+                    String orderNumber = orderNumberList.get(j).getOrderNumber();
                     try {
-//                        Integer flag = this.dataTransferService.transferArrearsAudit(orderNumber);
-//                        if (flag > 0) {
-//                            errorOrderNumber.add(orderNumber + "--" + flag);
-//                        }
+                        OrderArrearsAuditDO orderArrearsAuditDO = this.dataTransferService.transferArrearsAudit(orderNumber, employeeList);
+                        arrearsAuditService.save(orderArrearsAuditDO);
                     } catch (Exception e) {
                         e.printStackTrace();
                         error.add(e.getMessage());
@@ -136,20 +140,20 @@ public class DataTransferController {
                     }
                     countLine.addAndGet(1);
                 }
-                return errorOrderNumber;
-            };
-            futures.add(executorService.submit(task));
-        }
-        for (Future<List<String>> future : futures) {
-            try {
-                error.addAll(future.get());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-        }
-        executorService.shutdown();
+//                return errorOrderNumber;
+//            };
+//            futures.add(executorService.submit(task));
+//        }
+//        for (Future<List<String>> future : futures) {
+//            try {
+//                error.addAll(future.get());
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            } catch (ExecutionException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        executorService.shutdown();
         log.info("订单审核信息err:{}", error);
         log.info("订单审核信息导入执行订单数num:{}", countLine);
         log.info("订单审核信息导入job处理完成,当前时间:{}", new Date());

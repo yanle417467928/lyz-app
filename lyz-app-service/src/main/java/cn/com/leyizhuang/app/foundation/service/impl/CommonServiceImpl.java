@@ -269,7 +269,8 @@ public class CommonServiceImpl implements CommonService {
                         StoreInventory storeInventory = storeService.findStoreInventoryByStoreIdAndGoodsId(deliverySimpleInfo.getBookingStoreId(), entry.getKey());
                         if (null != storeInventory) {
                             if (storeInventory.getAvailableIty() < entry.getValue()) {
-                                throw new LockStoreInventoryException("该门店下id为" + entry.getKey() + "的商品库存不足!");
+                                //  2018年4月8日 Jerry 修改提示语商品名称库存不足
+                                throw new LockStoreInventoryException("该门店下商品为" + storeInventory.getSkuName() + "的库存不足!");
                             }
                             Integer affectLine = storeService.lockStoreInventoryByStoreIdAndGoodsIdAndInventory(deliverySimpleInfo.getBookingStoreId(), entry.getKey(),
                                     entry.getValue(), storeInventory.getLastUpdateTime());
@@ -308,7 +309,7 @@ public class CommonServiceImpl implements CommonService {
                     CityInventory cityInventory = cityService.findCityInventoryByCityIdAndGoodsId(cityId, entry.getKey());
                     if (null != cityInventory) {
                         if (cityInventory.getAvailableIty() < entry.getValue()) {
-                            throw new LockCityInventoryException("该城市下id为" + entry.getKey() + "的商品库存不足!");
+                            throw new LockCityInventoryException("该城市下商品为" + cityInventory.getSkuName() + "库存不足!");
                         }
                         Integer affectLine = cityService.lockCityInventoryByCityIdAndGoodsIdAndInventory(cityId, entry.getKey(), entry.getValue(), cityInventory.getLastUpdateTime());
                         if (affectLine > 0) {
@@ -873,7 +874,7 @@ public class CommonServiceImpl implements CommonService {
                 customerService.update(customer);
             }
             //增加订单生命周期信息
-            orderService.addOrderLifecycle(OrderLifecycleType.PAYED,orderNumber);
+            orderService.addOrderLifecycle(OrderLifecycleType.PAYED, orderNumber);
         }
     }
 
@@ -1022,6 +1023,9 @@ public class CommonServiceImpl implements CommonService {
                 }
                 for (GoodsSimpleInfo info : goodsList) {
                     if (info.getId().equals(goodsVO.getGid())) {
+                        if (null == info.getQty() || info.getQty().equals(0)) {
+                            throw new GoodsQtyErrorException("商品 '"+goodsVO.getSkuName() + "'数量出现异常(0或不存在)!");
+                        }
                         goodsVO.setQty(info.getQty());
                     }
                 }
@@ -1122,6 +1126,9 @@ public class CommonServiceImpl implements CommonService {
                     hasPriceCouponGoodsIdSet.add(couponGoods.getGid());
                 }
                 for (ProductCouponSimpleInfo info : productCouponList) {
+                    if (null == info.getQty() || info.getQty().equals(0)) {
+                        throw new GoodsQtyErrorException("产品券商品 '"+couponGoods.getSkuName() + "'数量出现异常(0或不存在)!");
+                    }
                     if (info.getId().equals(couponGoods.getGid())) {
                         couponGoods.setQty(info.getQty());
                     }
@@ -1267,7 +1274,7 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public List<OrderJxPriceDifferenceReturnDetails> createOrderJxPriceDifferenceReturnDetails(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList, List<PromotionSimpleInfo> promotionSimpleInfos) {
-        Map<Long,Double> map = actService.returnGcActIdAndJXDiscunt(promotionSimpleInfos);
+        Map<Long, Double> map = actService.returnGcActIdAndJXDiscunt(promotionSimpleInfos);
 
         AppStore store = storeService.findById(orderBaseInfo.getStoreId());
         if (null != store && null != store.getStoreType()) {
@@ -1278,17 +1285,17 @@ public class CommonServiceImpl implements CommonService {
 
                         if (orderGoodsInfo.getGoodsLineType() == AppGoodsLineType.GOODS) {
                             OrderJxPriceDifferenceReturnDetails details = new OrderJxPriceDifferenceReturnDetails();
-                            if (null != orderGoodsInfo.getPromotionId()){
+                            if (null != orderGoodsInfo.getPromotionId()) {
                                 Long actId = Long.valueOf(orderGoodsInfo.getPromotionId());
-                                if (map.containsKey(actId)){
+                                if (map.containsKey(actId)) {
                                     Double gcDiscount = map.get(actId);
                                     details.setAmount((orderGoodsInfo.getSettlementPrice() - orderGoodsInfo.getWholesalePrice() - gcDiscount) * orderGoodsInfo.getOrderQuantity());
                                     details.setUnitPrice(orderGoodsInfo.getSettlementPrice() - orderGoodsInfo.getWholesalePrice() - gcDiscount);
-                                }else {
+                                } else {
                                     details.setAmount((orderGoodsInfo.getSettlementPrice() - orderGoodsInfo.getWholesalePrice()) * orderGoodsInfo.getOrderQuantity());
                                     details.setUnitPrice(orderGoodsInfo.getSettlementPrice() - orderGoodsInfo.getWholesalePrice());
                                 }
-                            }else{
+                            } else {
                                 details.setAmount((orderGoodsInfo.getSettlementPrice() - orderGoodsInfo.getWholesalePrice()) * orderGoodsInfo.getOrderQuantity());
                                 details.setUnitPrice(orderGoodsInfo.getSettlementPrice() - orderGoodsInfo.getWholesalePrice());
                             }
@@ -1672,7 +1679,8 @@ public class CommonServiceImpl implements CommonService {
                 deliveryInfoDetailsService.addOrderDeliveryInfoDetails(deliveryInfoDetails);
 
                 // ***********************发送WMS 在微信和支付宝完成支付回调方法中已发送***************************
-                //保存传wms配送单头档
+                // 2018-04-07 generation 传wms重复，创建订单已传wms，支付时不用再传，   注释代码
+//                //保存传wms配送单头档
                 AppStore store = storeService.findStoreByUserIdAndIdentityType(baseInfo.getCreatorId(),
                         baseInfo.getCreatorIdentityType().getValue());
                 List<OrderGoodsInfo> orderGoodsInfoList = orderService.getOrderGoodsInfoByOrderNumber(orderNumber);
@@ -1681,7 +1689,7 @@ public class CommonServiceImpl implements CommonService {
                 AtwRequisitionOrder requisitionOrder = AtwRequisitionOrder.transform(baseInfo, orderLogisticsInfo,
                         store, billingDetails, orderGoodsSize);
                 appToWmsOrderService.saveAtwRequisitionOrder(requisitionOrder);
-                //保存传wms配送单商品信息
+//                //保存传wms配送单商品信息
                 if (orderGoodsSize > 0) {
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                         AtwRequisitionOrderGoods requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
@@ -1701,20 +1709,21 @@ public class CommonServiceImpl implements CommonService {
                 customerService.update(customer);
             }
             //增加订单生命周期信息
-            orderService.addOrderLifecycle(OrderLifecycleType.PAYED,orderNumber);
+            orderService.addOrderLifecycle(OrderLifecycleType.PAYED, orderNumber);
         }
     }
 
     /**
      * 支付 0 元订单
+     *
      * @param orderNumber
      * @throws UnsupportedEncodingException
      */
     public void payZeroOrder(String orderNumber) throws UnsupportedEncodingException {
-        if (StringUtils.isNotBlank(orderNumber)){
+        if (StringUtils.isNotBlank(orderNumber)) {
             OrderBaseInfo baseInfo = orderService.getOrderByOrderNumber(orderNumber);
 
-            if (baseInfo != null){
+            if (baseInfo != null) {
                 //更新订单账单信息
                 OrderBillingDetails billingDetails = orderService.getOrderBillingDetail(orderNumber);
                 //发送提货码给顾客,及提示导购顾客下单信息
@@ -1782,7 +1791,7 @@ public class CommonServiceImpl implements CommonService {
                     customerService.update(customer);
                 }
                 //增加订单生命周期信息
-                orderService.addOrderLifecycle(OrderLifecycleType.PAYED,orderNumber);
+                orderService.addOrderLifecycle(OrderLifecycleType.PAYED, orderNumber);
             }
         }
     }

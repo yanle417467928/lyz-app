@@ -150,30 +150,27 @@ public class MaDecorativeCompanyCreditRestController extends BaseRestController 
     /**
      * 编辑装饰公司信用金
      *
-     * @param decorativeCompanyCredit
-     * @param decorativeCompanySubvention
+     * @param decorativeCompanyInfo
      * @param result
      * @return
      */
     @PutMapping
-    public ResultDTO<String> updateDecorativeCompanyCredit(@Valid DecorativeCompanyCredit decorativeCompanyCredit, @Valid DecorativeCompanySubvention decorativeCompanySubvention, BindingResult result, HttpServletRequest request) {
-        logger.info("updateDecorativeCompanyCredit 编辑装饰公司信用金 ,入参 decorativeCompanyCredit:{}, decorativeCompanySubvention:{}", decorativeCompanyCredit, decorativeCompanySubvention);
+    public ResultDTO<String> updateDecorativeCompanyCredit(@Valid DecorativeCompanyInfo decorativeCompanyInfo, BindingResult result, HttpServletRequest request) {
+        logger.info("updateDecorativeCompanyCredit 编辑装饰公司信用金 ,入参 decorativeCompanyInfo:{}", decorativeCompanyInfo);
         try {
             if (!result.hasErrors()) {
                 ShiroUser shiroUser = this.getShiroUser();
-                DecorativeCompanyCredit decorativeCompanyCreditBefore = maDecorativeCompanyCreditService.findDecorativeCompanyCreditByStoreId(decorativeCompanyCredit.getStoreId());
+                Date date = new Date();
                 StoreCreditMoneyChangeLog storeCreditMoneyChangeLog = new StoreCreditMoneyChangeLog();
-                storeCreditMoneyChangeLog.setChangeAmount(decorativeCompanyCredit.getCredit().subtract(decorativeCompanyCreditBefore.getCredit()).doubleValue());
                 storeCreditMoneyChangeLog.setChangeType(StoreCreditMoneyChangeType.ADMIN_RECHARGE);
                 storeCreditMoneyChangeLog.setChangeTypeDesc(StoreCreditMoneyChangeType.ADMIN_RECHARGE.getDescription());
-                storeCreditMoneyChangeLog.setCreateTime(new Date());
-                storeCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(decorativeCompanyCredit.getCredit().doubleValue());
-                storeCreditMoneyChangeLog.setStoreId(decorativeCompanyCredit.getStoreId());
+                storeCreditMoneyChangeLog.setCreateTime(date);
+                storeCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(decorativeCompanyInfo.getCredit().doubleValue());
+                storeCreditMoneyChangeLog.setStoreId(decorativeCompanyInfo.getStoreId());
                 storeCreditMoneyChangeLog.setOperatorType(AppIdentityType.ADMINISTRATOR);
                 storeCreditMoneyChangeLog.setOperatorId(shiroUser.getId());
                 storeCreditMoneyChangeLog.setOperatorIp(IpUtil.getIpAddress(request));
-                this.maDecorativeCompanyCreditService.updateDecorativeCompanyCredit(decorativeCompanyCredit,storeCreditMoneyChangeLog);
-                this.maDecorativeCompanyCreditService.updateDecorativeCompanySubvention(decorativeCompanySubvention);
+                this.maDecorativeCompanyCreditService.updateDecorativeCompanyCreditAndSubvention(decorativeCompanyInfo, storeCreditMoneyChangeLog);
                 logger.info("updateDecorativeCompanyCredit ,编辑装饰公司信用金成功");
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             } else {

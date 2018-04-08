@@ -11,7 +11,7 @@
                 credit_limit_available = #{credit},
             </if>
         </set>
-        WHERE id = #{cid}
+        WHERE store_id = #{storeId}
         AND
         last_update_time=#{creditLastUpdateTime}
     </update>
@@ -26,7 +26,7 @@
                 balance = #{sponsorship},
             </if>
         </set>
-        WHERE id = #{sid}
+        WHERE store_id = #{storeId}
         AND
         last_update_time=#{sponsorshipLastUpdateTime}
     </update>
@@ -43,5 +43,31 @@
         st_credit_money
         WHERE store_id = #{id}
     </select>
+
+    <select id="findDecorativeCompanySubventionByStoreId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanySubvention">
+        SELECT
+        id cid,
+        store_id storeId,
+        balance  sponsorship,
+        last_update_time sponsorshipLastUpdateTime
+        FROM
+        st_subvention
+        WHERE store_id = #{id}
+    </select>
+
+
+    <insert id="saveDecorativeCompanyCredit"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyCredit">
+        INSERT
+        st_credit_money(create_time,last_update_time,store_id,credit_limit,credit_limit_available) VALUES (#{createTime},#{creditLastUpdateTime},#{storeId},#{credit},#{credit})
+    </insert>
+
+
+    <insert id="saveDecorativeCompanySubvention"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanySubvention">
+        INSERT
+        st_subvention(create_time,last_update_time,store_id,balance,balance_limit) VALUES (#{createTime},#{sponsorshipLastUpdateTime},#{storeId},#{sponsorship},#{sponsorship})
+    </insert>
 
 </mapper>

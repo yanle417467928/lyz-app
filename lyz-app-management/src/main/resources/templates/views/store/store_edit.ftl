@@ -146,7 +146,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="createTime" type="text" class="form-control" readonly id="createTime"
-                                           value="${store.createTime?string("yyyy-MM-dd HH:mm:ss")}">
+                                           value="<#if store??&&store.createTime??>${store.createTime?string("yyyy-MM-dd HH:mm:ss")}</#if>">
                                 </div>
                             </div>
                         </div>

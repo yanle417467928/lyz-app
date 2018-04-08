@@ -148,12 +148,12 @@ public class OrderGiftController {
                             GoodsDO goodsDO = goodsService.findGoodsById(entry.getKey());
                             Boolean enoughInvFlag = appOrderService.existGoodsStoreInventory(storeId, entry.getKey(), entry.getValue());
                             if (!enoughInvFlag) {
-                                String message = "商品";
+                                String message = "商品 ";
                                 for (Long gid: goodsIds) {
                                     GoodsDO goods = goodsService.findGoodsById(gid);
-                                    message += "'" ;
+                                    message += "“" ;
                                     message += goods.getSkuName() ;
-                                    message += "'" ;
+                                    message += "” " ;
 
                                 }
                                 message += "仓库库存不足，请更改购买数量!";

@@ -109,7 +109,7 @@
                             <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                 <input name="sku" type="text" class="form-control" id="sku" readonly
-                                       value="${(orderFreightDetailVO.createTime?string("yyyy-MM-dd HH:mm:ss"))!''}">
+                                       value="<#if orderFreightDetailVO??&&orderFreightDetailVO.createTime??>${orderFreightDetailVO.createTime?string("yyyy-MM-dd HH:mm:ss")}</#if>">
                             </div>
                         </div>
                     </div>

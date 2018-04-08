@@ -479,6 +479,11 @@ public class MaOrderRestController extends BaseRestController {
             logger.warn("orderShipping OUT,后台自提单发货失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if ("CANCELED".equals(maOrderTempInfo.getStatus().getValue())||"UNPAID".equals(maOrderTempInfo.getStatus().getValue())) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "当前订单已取消或待付款,不能发货", null);
+            logger.warn("orderReceivablesForCustomer OUT,后台订单发货失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         try {
             ShiroUser shiroUser = this.getShiroUser();
             //后台发货并返回插入接口表数据的id
@@ -567,8 +572,8 @@ public class MaOrderRestController extends BaseRestController {
             logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (maOrderAmount.getPosAmount().add(maOrderAmount.getCashAmount()).compareTo(BigDecimal.ZERO) <= 0) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "现金和pos金额之和不为正数", null);
+        if (maOrderAmount.getPosAmount().add(maOrderAmount.getCashAmount()).compareTo(BigDecimal.ZERO) < 0) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "现金和pos金额之和应大于等于0", null);
             logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
@@ -587,8 +592,8 @@ public class MaOrderRestController extends BaseRestController {
             logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if ("CANCELED".equals(maOrderTempInfo.getStatus().getValue())) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "当前订单已取消,不能收款", null);
+        if ("CANCELED".equals(maOrderTempInfo.getStatus().getValue())||"UNPAID".equals(maOrderTempInfo.getStatus().getValue())) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "当前订单已取消或待付款,不能收款", null);
             logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
@@ -802,8 +807,8 @@ public class MaOrderRestController extends BaseRestController {
             logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (maOrderAmount.getPosAmount().add(maOrderAmount.getCashAmount()).compareTo(BigDecimal.ZERO) <= 0) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "现金和pos金额之和不为正数", null);
+        if (maOrderAmount.getPosAmount().add(maOrderAmount.getCashAmount()).compareTo(BigDecimal.ZERO) < 0) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "现金和pos金额之和应大于等于0", null);
             logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }

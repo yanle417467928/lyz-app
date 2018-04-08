@@ -31,4 +31,7 @@ public class DecorativeCompanyCredit {
     //上次更新时间
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date creditLastUpdateTime;
+    //创建时间
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
 }

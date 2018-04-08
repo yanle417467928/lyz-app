@@ -330,7 +330,7 @@ public class OrderController {
             support.setOrderGoodsInfoList(orderGoodsInfoList);
 
             //****************** 创建订单经销差价返还明细 ***********
-            List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetailsList = commonService.createOrderJxPriceDifferenceReturnDetails(orderBaseInfo, support.getOrderGoodsInfoList(),promotionSimpleInfoList);
+            List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetailsList = commonService.createOrderJxPriceDifferenceReturnDetails(orderBaseInfo, support.getOrderGoodsInfoList(), promotionSimpleInfoList);
             if (null != jxPriceDifferenceReturnDetailsList && jxPriceDifferenceReturnDetailsList.size() > 0) {
                 orderBillingDetails.setJxPriceDifferenceAmount(jxPriceDifferenceReturnDetailsList.stream().mapToDouble(OrderJxPriceDifferenceReturnDetails::getAmount).sum());
             }
@@ -356,7 +356,7 @@ public class OrderController {
                 //将该订单入拆单消息队列
                 sinkSender.sendOrder(orderBaseInfo.getOrderNumber());
                 //添加订单生命周期
-                appOrderService.addOrderLifecycle(OrderLifecycleType.PAYED,orderBaseInfo.getOrderNumber());
+                appOrderService.addOrderLifecycle(OrderLifecycleType.PAYED, orderBaseInfo.getOrderNumber());
 
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                         new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), true, false));
@@ -374,7 +374,7 @@ public class OrderController {
         } catch (LockStoreInventoryException | LockStorePreDepositException | LockCityInventoryException | LockCustomerCashCouponException |
                 LockCustomerLebiException | LockCustomerPreDepositException | LockEmpCreditMoneyException | LockStoreCreditMoneyException |
                 LockStoreSubventionException | SystemBusyException | LockCustomerProductCouponException | GoodsMultipartPriceException | GoodsNoPriceException |
-                OrderPayableAmountException | DutchException | OrderCreditMoneyException | OrderDiscountException e) {
+                OrderPayableAmountException | DutchException | OrderCreditMoneyException | OrderDiscountException | GoodsQtyErrorException e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, e.getMessage(), null);
             logger.warn("createOrder OUT,订单创建失败,出参 resultDTO:{}", resultDTO);
@@ -677,12 +677,12 @@ public class OrderController {
                 //判断库存的特殊处理
                 List<Long> goodsIdList = appOrderService.existOrderGoodsInventory(cityId, goodsList, giftsList, couponList);
                 if (goodsIdList != null && goodsIdList.size() > 0) {
-                    String message = "商品";
-                    for (Long gid: goodsIdList) {
+                    String message = "商品 ";
+                    for (Long gid : goodsIdList) {
                         GoodsDO goodsDO = goodsService.queryById(gid);
-                        message += "'" ;
-                        message += goodsDO.getSkuName() ;
-                        message += "'" ;
+                        message += "“";
+                        message += goodsDO.getSkuName();
+                        message += "” ";
                     }
                     message += "仓库库存不足，请更改购买数量!";
                     //如果这里发现库存不足还是要返回去商品列表
@@ -778,6 +778,8 @@ public class OrderController {
                 // 顾客信息
                 AppCustomer customer = appCustomerService.findById(usedCouponRequest.getCustomerId());
 
+                // 订单满足用券条件的金额
+                Double meetAmount = totalOrderAmount;
                 //遍历产品券列表
                 for (GoodsIdQtyParam aCashCouponsList : cashCouponsList) {
                     //根据券ID 去查产品券
@@ -801,11 +803,11 @@ public class OrderController {
                         }
 
                         AppCashCouponType cashCouponType = cashCoupon.getType();
-                        // 订单满足用券条件的金额
-                        Double meetAmount = 0.00;
+
                         if (cashCouponType.equals(AppCashCouponType.GENERAL)) {
                             // 通用现金券
-                            meetAmount = totalOrderAmount;
+
+//                            meetAmount = totalOrderAmount;
                         } else if (cashCouponType.equals(AppCashCouponType.COMPANY)) {
                             // 指定公司券
                             List<Long> goodsIds = new ArrayList<>();
@@ -927,9 +929,10 @@ public class OrderController {
 
                         //如果当前小计满足第一张券的满减条件就减去优惠券的折扣,循环判断
                         if (meetAmount >= cashCoupon.getCondition()) {
-                            Double couponDiscount = CountUtil.mul(cashCoupon.getCondition(), aCashCouponsList.getQty());
-                            cashCouponDiscount = CountUtil.add(cashCouponDiscount, couponDiscount);
-                            totalOrderAmount = CountUtil.sub(totalOrderAmount, couponDiscount);
+//                            Double couponDiscount = CountUtil.mul(cashCoupon.getDenomination(), aCashCouponsList.getQty());
+                            cashCouponDiscount = CountUtil.add(cashCouponDiscount, cashCoupon.getDenomination());
+                            totalOrderAmount = CountUtil.sub(totalOrderAmount, cashCoupon.getDenomination());
+                            meetAmount = CountUtil.sub(meetAmount, cashCoupon.getCondition(), cashCoupon.getDenomination());
                             index++;
                         } else {
                             //直到如有使用过多的券，返回最多可使用index张券
@@ -1228,7 +1231,7 @@ public class OrderController {
         }
         try {
             //获取用户所有订单列表
-            PageInfo<OrderPageInfoVO> orderListResponsePageInfo = appOrderService.getOrderListPageInfoByUserIdAndIdentityType(userID,identityType,showStatus,page,size);
+            PageInfo<OrderPageInfoVO> orderListResponsePageInfo = appOrderService.getOrderListPageInfoByUserIdAndIdentityType(userID, identityType, showStatus, page, size);
 
             //创建一个返回对象list
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
@@ -1374,6 +1377,7 @@ public class OrderController {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 //设值
                 orderDetailsResponse.setOrderNumber(orderNumber);
+                orderDetailsResponse.setRemark(StringUtils.isBlank(orderBaseInfo.getRemark()) ? "" : orderBaseInfo.getRemark());
                 orderDetailsResponse.setCreateTime(sdf.format(orderBaseInfo.getCreateTime()));
                 orderDetailsResponse.setStatus(orderBaseInfo.getStatus());
                 orderDetailsResponse.setStatusDesc(orderBaseInfo.getStatus().getDescription());
@@ -1662,13 +1666,14 @@ public class OrderController {
 
     /**
      * 支付 金额为0的订单
+     *
      * @param userId
      * @param identityType
      * @param orderNumber
      * @return
      */
     @PostMapping(value = "/pay/zero/order", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> payZeroOrder(Long userId, Integer identityType, String orderNumber){
+    public ResultDTO<Object> payZeroOrder(Long userId, Integer identityType, String orderNumber) {
         ResultDTO<Object> resultDTO;
         logger.info("payZeroOrder CALLED,待付款订单，入参 userID:{}, identityType:{}, orderNumber{}", userId, identityType, orderNumber);
 
@@ -1697,7 +1702,7 @@ public class OrderController {
 
         /** 校验订单状态 以及金额是否为 0 **/
         AppOrderStatus status = orderBaseInfo.getStatus();
-        if (!status.equals(AppOrderStatus.UNPAID)){
+        if (!status.equals(AppOrderStatus.UNPAID)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单状态不正确，非待付款状态！", null);
             logger.info("payZeroOrder OUT,待付款订单，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -1706,7 +1711,7 @@ public class OrderController {
         // 应付金额
         Double amount = appOrderService.getAmountPayableByOrderNumber(orderNumber);
 
-        if (!amount.equals(0D)){
+        if (!amount.equals(0D)) {
             // 应付金额不为0
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单未付清，金额有误！", null);
             logger.info("payZeroOrder OUT,待付款订单，出参 resultDTO:{}", resultDTO);

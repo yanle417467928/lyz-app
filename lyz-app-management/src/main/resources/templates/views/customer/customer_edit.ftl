@@ -224,7 +224,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                                     <input name="birthday" type="text" class="form-control datepicker" id="birthday"
-                                           value="${customer.birthday?string('yyyy-MM-dd')}" readonly placeholder="出生日期">
+                                           value="<#if customer??&&customer.birthday??>${customer.birthday?string('yyyy-MM-dd')}</#if>" readonly placeholder="出生日期">
                                 </div>
                             </div>
                         </div>
