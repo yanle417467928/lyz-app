@@ -100,7 +100,11 @@ public class EmployeeController {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有找到该用户！", null);
                 logger.info("employeeLogin OUT,员工登录失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
-            } else {
+            }else if (null != employee.getStatus() && !employee.getStatus()){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"该员工账号已被禁用!",null);
+                logger.info("employeeLogin OUT,员工登录失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }else {
                 String md5Password = DigestUtils.md5DigestAsHex((Base64Utils.decode(loginParam.getPassword()) + employee.getSalt()).getBytes("UTF-8"));
                 if (md5Password.compareTo(employee.getPassword()) != 0) {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "密码错误！", null);
