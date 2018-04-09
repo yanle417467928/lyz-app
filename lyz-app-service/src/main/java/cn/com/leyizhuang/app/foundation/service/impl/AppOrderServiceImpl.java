@@ -1012,4 +1012,9 @@ public class AppOrderServiceImpl implements AppOrderService {
         List<OrderBaseInfo> orderBaseInfoList = orderDAO.getPendingShipmentAndPendingReceive(userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
         return new PageInfo<>(orderBaseInfoList);
     }
+
+    @Override
+    public List<OrderBaseInfo> getSendToWMSFailedOrder() {
+        return orderDAO.getSendToWMSFailedOrder();
+    }
 }

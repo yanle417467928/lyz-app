@@ -702,6 +702,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                     orderBaseInfo.setStatus(AppOrderStatus.FINISHED);
                     break;
                 default:
+                    orderBaseInfo.setStatus(AppOrderStatus.FINISHED);
                     break;
             }
         }

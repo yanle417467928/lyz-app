@@ -1300,4 +1300,12 @@
         FROM ord_goods_info
         WHERE oid = #{oid}
     </select>
+
+    <select id="getSendToWMSFailedOrder" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
+        SELECT
+        <include refid="All_FIELD"/>
+        FROM ord_base_info WHERE ord_no IN (
+
+        )
+    </select>
 </mapper>
