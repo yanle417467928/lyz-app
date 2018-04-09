@@ -14,6 +14,7 @@ import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.utils.Base64Utils;
 import cn.com.leyizhuang.common.foundation.pojo.dto.HqAppEmployeeDTO;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
@@ -33,7 +34,7 @@ import java.io.UnsupportedEncodingException;
  * Created on 2017-09-20 13:14
  **/
 @RestController
-@RequestMapping(value = "/remote/employee")
+@RequestMapping(value = "/remote/employee", produces = "application/json;charset=UTF-8")
 public class HqAppEmployeeController {
     private static final Logger logger = LoggerFactory.getLogger(HqAppEmployeeController.class);
 
@@ -90,7 +91,7 @@ public class HqAppEmployeeController {
             employee.setStatus(employeeDTO.getStatus() != 0);
             employee.setPicUrl(employeeDTO.getPicUrl());
             employee.setManagerId(employeeDTO.getManagerId());
-            employee.setCreateTime(employeeDTO.getCreateTime());
+            employee.setCreateTime(TimeTransformUtils.UDateToLocalDateTime(employeeDTO.getCreateTime()));
             switch (employeeDTO.getPositionType()) {
                 case "DG":
                     employee.setIdentityType(AppIdentityType.SELLER);
@@ -167,7 +168,7 @@ public class HqAppEmployeeController {
             employee.setStatus(employeeDTO.getStatus() != 0);
             employee.setPicUrl(employeeDTO.getPicUrl());
             employee.setManagerId(employeeDTO.getManagerId());
-            employee.setCreateTime(employeeDTO.getCreateTime());
+            employee.setCreateTime(TimeTransformUtils.UDateToLocalDateTime(employeeDTO.getCreateTime()));
             switch (employeeDTO.getPositionType()) {
                 case "DG":
                     employee.setIdentityType(AppIdentityType.SELLER);
