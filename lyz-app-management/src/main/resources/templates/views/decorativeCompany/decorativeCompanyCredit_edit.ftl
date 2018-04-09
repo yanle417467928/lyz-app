@@ -211,11 +211,9 @@
                 credit: {
                     message: '信用金校验失败',
                     validators: {
-                        notEmpty: {
-                            message: '信用金不能为空'
-                        }, regexp: {
-                            regexp: /^((\d{1,3}(,\d{3})+?|\d+)(\.\d{2})?|(\.\d{2}))$/,
-                            message: '信用金只能为正实数(两位小数)'
+                       regexp: {
+                            regexp: /^((\d{1,3}(,\d{3})+?|\d+)(\.\d{1,2})?|(\.\d{1,2}))$/,
+                            message: '信用金只能为正实数(最多两位小数)'
                         }, stringLength: {
                             min: 1,
                             max: 10,
@@ -225,11 +223,9 @@
                 }, sponsorship: {
                     message: '赞助金校验失败',
                     validators: {
-                        notEmpty: {
-                            message: '赞助金不能为空'
-                        }, regexp: {
-                            regexp: /^((\d{1,3}(,\d{3})+?|\d+)(\.\d{2})?|(\.\d{2}))$/,
-                            message: '赞助金只能为正实数(两位小数)'
+                      regexp: {
+                            regexp: /^((\d{1,3}(,\d{3})+?|\d+)(\.\d{1,2})?|(\.\d{1,2}))$/,
+                            message: '赞助金只能为正实数(最多两位小数)'
                         }, stringLength: {
                             min: 1,
                             max: 10,

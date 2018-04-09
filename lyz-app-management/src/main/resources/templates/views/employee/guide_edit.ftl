@@ -28,7 +28,6 @@
     <div class="nav-tabs-custom">
         <ul class="nav nav-tabs">
             <li class="active"><a href="#tab_1-1" data-toggle="tab">基本信息</a></li>
-            <li><a href="#tab_1-2" data-toggle="tab" ">变更描述</a></li>
         </ul>
         <form id="guideCredit_edit">
             <div class="tab-content">
@@ -106,7 +105,8 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="lastUpdateTime" type="text" class="form-control" id="lastUpdateTime" readonly
+                                    <input name="lastUpdateTime" type="text" class="form-control" id="lastUpdateTime"
+                                           readonly
                                            value="<#if guideVO??><#if guideVO.guideCreditMoney??><#if guideVO.guideCreditMoney.lastUpdateTime??>${guideVO.guideCreditMoney.lastUpdateTime?string("yyyy-MM-dd HH:mm:ss")}</#if></#if></#if>">
                                 </div>
                             </div>
@@ -140,20 +140,16 @@
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane" id="tab_1-2">
-                    <div class="box-body table-reponsive">
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 col-xs-12">
-                            <div class="form-group">
-                                <label for="cityName">变更原因
-                                    <i class="fa fa-question-circle i-tooltip hidden-xs"></i>
-                                </label>
-                                <div>
+                <div class="row">
+                    <div class="col-md-6 col-xs-12">
+                        <div class="form-group">
+                            <label for="cityName">变更原因
+                                <i class="fa fa-question-circle i-tooltip hidden-xs"></i>
+                            </label>
+                            <div>
                                     <textarea id="modifyReason" class="form-control" rows="8"
                                               style="border-color:#808080">
                                     </textarea>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -251,7 +247,7 @@
                 }, creditLimitAvailable: {
                     message: '可用额度校验失败',
                     validators: {
-                       notEmpty: {
+                        notEmpty: {
                             message: '可用额度不能为空'
                         },
                         regexp: {
