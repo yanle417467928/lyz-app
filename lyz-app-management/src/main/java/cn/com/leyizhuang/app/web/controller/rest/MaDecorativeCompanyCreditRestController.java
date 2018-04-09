@@ -159,13 +159,19 @@ public class MaDecorativeCompanyCreditRestController extends BaseRestController 
         logger.info("updateDecorativeCompanyCredit 编辑装饰公司信用金 ,入参 decorativeCompanyInfo:{}", decorativeCompanyInfo);
         try {
             if (!result.hasErrors()) {
+                if (null == decorativeCompanyInfo.getCredit() && null == decorativeCompanyInfo.getSponsorship()) {
+                    return new ResultDTO<>(CommonGlobal.COMMON_FORBIDDEN_CODE,
+                            "装饰公司信用金和赞助金不能同时为空", null);
+                }
                 ShiroUser shiroUser = this.getShiroUser();
                 Date date = new Date();
                 StoreCreditMoneyChangeLog storeCreditMoneyChangeLog = new StoreCreditMoneyChangeLog();
                 storeCreditMoneyChangeLog.setChangeType(StoreCreditMoneyChangeType.ADMIN_RECHARGE);
                 storeCreditMoneyChangeLog.setChangeTypeDesc(StoreCreditMoneyChangeType.ADMIN_RECHARGE.getDescription());
                 storeCreditMoneyChangeLog.setCreateTime(date);
-                storeCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(decorativeCompanyInfo.getCredit().doubleValue());
+                if(null !=decorativeCompanyInfo.getCredit()){
+                    storeCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(decorativeCompanyInfo.getCredit().doubleValue());
+                }
                 storeCreditMoneyChangeLog.setStoreId(decorativeCompanyInfo.getStoreId());
                 storeCreditMoneyChangeLog.setOperatorType(AppIdentityType.ADMINISTRATOR);
                 storeCreditMoneyChangeLog.setOperatorId(shiroUser.getId());
