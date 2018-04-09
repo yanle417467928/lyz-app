@@ -195,8 +195,9 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         String orderNo = "";
                         City city = new City();
                         if (!orderNo.equals(goods.getOrderNo()) || StringUtils.isBlank(orderNo)) {
-                            OrderBaseInfo baseInfo = appOrderService.getOrderByOrderNumber(goods.getOrderNo());
-                            city = cityService.findById(baseInfo.getCityId());
+                            WtaShippingOrderHeader shippingOrderHeader = wmsToAppOrderService.getWtaShippingOrderHeaderNotHandling(goods.getOrderNo());
+                            WareHouseDO wareHouse = wareHouseService.findByWareHouseNo(shippingOrderHeader.getWhNo());
+                            city = cityService.findByCityNumber(wareHouse.getCityId().toString());
                             orderNo = goods.getOrderNo();
                         }
                         //wms扣减城市库存
