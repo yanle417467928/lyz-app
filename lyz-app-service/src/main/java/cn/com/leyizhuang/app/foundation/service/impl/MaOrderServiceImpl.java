@@ -126,14 +126,15 @@ public class MaOrderServiceImpl implements MaOrderService {
 
     @Override
     public List<MaOrderVO> findMaOrderVOAll(List<Long> storeIds) {
-        List<MaOrderVO> maOrderVOList = maOrderDAO.findMaOrderVOAll();
-        for (int i = 0;i<maOrderVOList.size();i++){
-            for (int j =0;j<storeIds.size();j++){
-                if (maOrderVOList.get(i).equals(storeIds.get(j))){
-                    maOrderVOList.remove(maOrderVOList.get(i));
-                }
-            }
-        }
+        List<MaOrderVO> maOrderVOList = maOrderDAO.findMaOrderVOAll(storeIds);
+//        List<MaOrderVO> orderVOList = new ArrayList<>();
+//        for (int i = 0;i<maOrderVOList.size();i++){
+//            for (int j =0;j<storeIds.size();j++){
+//                if (maOrderVOList.get(i).getStoreId().equals(storeIds.get(j))){
+//                    orderVOList.add(maOrderVOList.get(i));
+//                }
+//            }
+//        }
         return maOrderVOList;
     }
 
@@ -174,14 +175,14 @@ public class MaOrderServiceImpl implements MaOrderService {
 
     @Override
     public List<MaOrderVO> findCompanyOrderAll(List<Long> storeIds) {
-        List<MaOrderVO> maOrderVOList = maOrderDAO.findCompanyOrderAll();
-        for (int i = 0;i<maOrderVOList.size();i++){
-            for (int j =0;j<storeIds.size();j++){
-                if (maOrderVOList.get(i).equals(storeIds.get(j))){
-                    maOrderVOList.remove(maOrderVOList.get(i));
-                }
-            }
-        }
+        List<MaOrderVO> maOrderVOList = maOrderDAO.findCompanyOrderAll(storeIds);
+//        for (int i = 0;i<maOrderVOList.size();i++){
+//            for (int j =0;j<storeIds.size();j++){
+//                if (maOrderVOList.get(i).equals(storeIds.get(j))){
+//                    maOrderVOList.remove(maOrderVOList.get(i));
+//                }
+//            }
+//        }
         return maOrderVOList;
     }
 
@@ -191,15 +192,15 @@ public class MaOrderServiceImpl implements MaOrderService {
     }
 
     @Override
-    public List<MaOrderVO> findCompanyOrderByCondition(MaCompanyOrderVORequest maCompanyOrderVORequest, List<Long> storeIds) {
+    public List<MaOrderVO> findCompanyOrderByCondition(MaCompanyOrderVORequest maCompanyOrderVORequest) {
         List<MaOrderVO> maOrderVOList = maOrderDAO.findCompanyOrderByCondition(maCompanyOrderVORequest);
-        for (int i = 0;i<maOrderVOList.size();i++){
-            for (int j =0;j<storeIds.size();j++){
-                if (maOrderVOList.get(i).equals(storeIds.get(j))){
-                    maOrderVOList.remove(maOrderVOList.get(i));
-                }
-            }
-        }
+//        for (int i = 0;i<maOrderVOList.size();i++){
+//            for (int j =0;j<storeIds.size();j++){
+//                if (maOrderVOList.get(i).equals(storeIds.get(j))){
+//                    maOrderVOList.remove(maOrderVOList.get(i));
+//                }
+//            }
+//        }
         return maOrderVOList;
     }
 

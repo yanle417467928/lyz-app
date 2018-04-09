@@ -3,6 +3,8 @@ package cn.com.leyizhuang.app.foundation.pojo.request.management;
 import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import lombok.*;
 
+import java.util.List;
+
 /**
  * 后台多条件查询门店订单请求参数类
  * Created by caiyu on 2017/12/19.
@@ -57,4 +59,6 @@ public class MaOrderVORequest {
      * 收货人电话
      */
     private String receiverPhone;
+
+    private List<Long> list;
 }

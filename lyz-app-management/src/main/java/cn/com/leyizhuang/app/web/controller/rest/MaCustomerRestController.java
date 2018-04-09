@@ -375,11 +375,12 @@ public class MaCustomerRestController extends BaseRestController {
     public GridDataVO<CustomerDO> selectCustomer(Integer offset, Integer size, String keywords) {
         logger.info("selectCustomer 后台购买产品券选择顾客,入参 offset:{},size:{},keywords:{}", offset, size, keywords);
         try {
-            String userName = this.getShiroUser().getLoginName();
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
             size = getSize(size);
             Integer page = getPage(offset, size);
             PageHelper.startPage(page, size);
-            List<CustomerDO> customerList = this.maCustomerService.findCustomerByCityIdAndStoreId(null, null);
+            List<CustomerDO> customerList = this.maCustomerService.findCustomerByCityIdAndStoreId(storeIds);
             PageInfo<CustomerDO> customerDOPageInfo = new PageInfo<>(customerList);
             List<CustomerDO> customerDOList = customerDOPageInfo.getList();
             logger.warn("selectCustomer ,后台购买产品券选择顾客成功", customerDOList.size());
@@ -402,16 +403,15 @@ public class MaCustomerRestController extends BaseRestController {
      * @return
      */
     @GetMapping(value = "/select/customer/{customerQueryConditions}")
-    public GridDataVO<CustomerDO> selectCustomerBySellerNameOrSellerPhone(Integer offset, Integer size, String keywords, @PathVariable(value = "customerQueryConditions") String customerQueryConditions) {
-        logger.info("selectCustomerBySellerNameOrSellerPhone 后台购买产品券条件查询顾客,入参 offset:{},size:{},keywords:{},customerQueryConditions:{}", offset, size, keywords, customerQueryConditions);
+    public GridDataVO<CustomerDO> selectCustomerBySellerNameOrSellerPhone(Integer offset, Integer size, @PathVariable(value = "customerQueryConditions") String customerQueryConditions) {
+        logger.info("selectCustomerBySellerNameOrSellerPhone 后台购买产品券条件查询顾客,入参 offset:{},size:{},customerQueryConditions:{}", offset, size, customerQueryConditions);
         try {
-            String userName = this.getShiroUser().getLoginName();
-            Long cityId = null;
-            Long storeId = null;
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
             size = getSize(size);
             Integer page = getPage(offset, size);
             PageHelper.startPage(page, size);
-            List<CustomerDO> customerList = this.maCustomerService.findCustomerByCityIdAndStoreIdAndCustomerNameAndCustomerPhone(customerQueryConditions,cityId, storeId);
+            List<CustomerDO> customerList = this.maCustomerService.findCustomerByCityIdAndStoreIdAndCustomerNameAndCustomerPhone(customerQueryConditions,storeIds);
             PageInfo<CustomerDO> customerDOPageInfo = new PageInfo<>(customerList);
             List<CustomerDO> customerDOList = customerDOPageInfo.getList();
             logger.warn("selectCustomerBySellerNameOrSellerPhone ,后台购买产品券条件查询顾客成功", customerDOList.size());
