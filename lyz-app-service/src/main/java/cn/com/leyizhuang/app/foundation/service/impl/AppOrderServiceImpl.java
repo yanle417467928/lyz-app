@@ -981,7 +981,6 @@ public class AppOrderServiceImpl implements AppOrderService {
         }
     }
 
-
     @Override
     public PageInfo<OrderPageInfoVO> getOrderListPageInfoByUserIdAndIdentityType(Long userID, Integer identityType, Integer showStatus, Integer page, Integer size) {
         PageHelper.startPage(page, size);
@@ -1004,6 +1003,7 @@ public class AppOrderServiceImpl implements AppOrderService {
         });
         return new PageInfo<>(orderPageInfoVOList);
     }
+
 
 
     @Override

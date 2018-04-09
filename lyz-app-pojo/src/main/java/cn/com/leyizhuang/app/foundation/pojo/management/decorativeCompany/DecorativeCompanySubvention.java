@@ -27,4 +27,8 @@ public class DecorativeCompanySubvention {
     //上次更新时间
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date sponsorshipLastUpdateTime;
+
+    private Date createTime;
+
+    private Long storeId;
 }

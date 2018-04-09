@@ -564,8 +564,10 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
             StoreDetailVO storeVO = maStoreService.queryStoreVOById(storeId);
             if ("ZS".equals(storeVO.getStoreType())) {
                 DecorativeCompanyInfo decorativeCompanyInfo = maStoreService.queryDecorativeCompanyCreditById(storeId);
-                DecorativeCompanyCredit decorativeCompanyCredit = decorativeCompanyInfo.getCredit();
-                decorativeCompanyCredit.setCredit(decorativeCompanyCredit.getCredit().add(BigDecimal.valueOf(stCreditMoneyAmount)));
+                DecorativeCompanyCredit decorativeCompanyCredit = new DecorativeCompanyCredit();
+                decorativeCompanyCredit.setCreditLimit(decorativeCompanyInfo.getCreditLimit());
+                decorativeCompanyCredit.setStoreId(decorativeCompanyInfo.getStoreId());
+                decorativeCompanyCredit.setCredit(decorativeCompanyInfo.getCredit().add(BigDecimal.valueOf(stCreditMoneyAmount)));
                 StoreCreditMoneyChangeLog storeCreditMoneyChangeLog = new StoreCreditMoneyChangeLog();
                 storeCreditMoneyChangeLog.setChangeAmount(stCreditMoneyAmount);
                 storeCreditMoneyChangeLog.setChangeType(StoreCreditMoneyChangeType.RETURN_ORDER);

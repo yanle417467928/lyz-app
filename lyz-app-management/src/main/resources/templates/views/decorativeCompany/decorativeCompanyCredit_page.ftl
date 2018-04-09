@@ -72,7 +72,6 @@
                         <a href="javascript:$page.information.close();" class="pull-right btn-box-tool">
                             <i class="fa fa-times"></i>
                         </a>
-
                     </span>
                     <ul id="storeDetail" class="list-group list-group-unbordered" style="margin-top:10px;">
                         <li class="list-group-item">
@@ -115,7 +114,7 @@
         initDateGird('/rest/decorativeCredit/page/grid');
         findCitySelection();
         $('#btn_edit').on('click', function () {
-            $grid.modify($('#dataGrid'), '/views/admin/decorativeCredit/edit/{id}?parentMenuId=${parentMenuId!'0'}')
+            modify($('#dataGrid'), '/views/admin/decorativeCredit/edit/{id}?parentMenuId=${parentMenuId!'0'}')
         });
     });
 
@@ -152,6 +151,11 @@
             checkbox: true,
             title: '选择'
         }, {
+            field: 'storeId',
+            title: '门店id',
+            align: 'center',
+            visible: false
+        }, {
             field: 'storeCode',
             title: '装饰公司编码',
             align: 'center'
@@ -161,26 +165,26 @@
             align: 'center',
             events: {
                 'click .scan': function (e, value, row) {
-                    $page.information.show(row.id);
+                    $page.information.show(row.storeId);
                 }
             },
             formatter: function (value) {
                 return '<a class="scan" href="#">' + value + '</a>';
             }
-        }, {
-            field: 'cityCode.name',
+        },{
+            field: 'cityName',
             title: '所属城市',
             align: 'center'
         }, {
-            field: 'credit.creditLimit',
+            field: 'creditLimit',
             title: '签约信用金',
             align: 'center'
         }, {
-            field: 'credit.credit',
+            field: 'credit',
             title: '信用金余额',
             align: 'center'
         }, {
-            field: 'sponsorship.sponsorship',
+            field: 'sponsorship',
             title: '赞助金余额',
             align: 'center'
         }, {
@@ -231,32 +235,32 @@
                                 }
                                 $('#storeCode').html(data.storeCode);
 
-                                if (null === data.cityCode.name) {
+                                if (null === data.cityName) {
                                     data.cityCode.name = '-';
                                 }
-                                $('#cityName').html(data.cityCode.name);
+                                $('#cityName').html(data.cityName);
 
                                 if (null === data.storeName) {
                                     data.storeName = '-';
                                 }
                                 $('#storeName').html(data.storeName);
 
-                                if (null === data.credit) {
+                                if (null === data.creditLimit) {
                                     $('#creditLimit').html('-');
                                 }else {
-                                    $('#creditLimit').html(data.credit.creditLimit);
+                                    $('#creditLimit').html(data.creditLimit);
                                 }
 
                                 if (null === data.credit) {
                                     $('#credit').html('-');
                                 }else{
-                                    $('#credit').html(data.credit.credit);
+                                    $('#credit').html(data.credit);
                                 }
 
                                 if (null === data.sponsorship) {
                                     $('#sponsorship').html('-');
                                 }else {
-                                    $('#sponsorship').html(data.sponsorship.sponsorship);
+                                    $('#sponsorship').html(data.sponsorship);
                                 }
 
 
@@ -341,5 +345,30 @@
         second = second < 10 ? ('0' + second) : second;
         return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
     };
+
+
+    function modify(container, url) {
+        var selected = this.getSelectedIds(container);
+        var length = selected.length;
+        if (length === 0) {
+            $notify.warning('请在点击按钮前选中一条数据');
+        } else if (length > 1) {
+            $notify.warning('您每次只能选择一条数据进行修改');
+        } else {
+            var id = selected[0];
+            url = url.replace('{id}', id);
+            window.location.href = url;
+        }
+    }
+
+    function getSelectedIds(container) {
+        var ids = [];
+        var selected = container.bootstrapTable('getSelections');
+        for (var i = 0; i < selected.length; i++) {
+            var data = selected[i];
+            ids.push(data.storeId);
+        }
+        return ids;
+    }
 </script>
 </body>

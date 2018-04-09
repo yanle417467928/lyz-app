@@ -223,9 +223,11 @@ public class AppActServiceImpl implements AppActService {
             OrderGoodsSimpleResponse goods = goodsInfoList.get(i);
 
             skus.add(goods.getSku());
-            // 把商品注入本品池
-            goodsPool.put(goods.getSku(), goods);
-            goodsIdList.add(goods.getId());
+            // 把商品注入本品池 排除产品券商品
+            if (!goods.getGoodsLineType().equals(AppGoodsLineType.PRODUCT_COUPON)){
+                goodsPool.put(goods.getSku(), goods);
+                goodsIdList.add(goods.getId());
+            }
         }
 
         // 顾客身份
