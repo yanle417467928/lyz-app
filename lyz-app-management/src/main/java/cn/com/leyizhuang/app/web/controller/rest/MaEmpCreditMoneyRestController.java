@@ -64,6 +64,7 @@ public class MaEmpCreditMoneyRestController extends BaseRestController {
                 guideCreditChangeDetail.setOperatorName(shiroUser.getName());
                 guideCreditChangeDetail.setEmpId(guideCreditMoneyDetail.getEmpId());
                 guideCreditChangeDetail.setOperatorIp(IpUtil.getIpAddress(request));
+                guideCreditChangeDetail.setChangeReason(guideCreditMoneyDetail.getModifyReason());
                 //随即生成一个单号
                 guideCreditChangeDetail.setReferenceNumber(OrderUtils.getRefundNumber());
                 //判断修改类型
@@ -97,7 +98,6 @@ public class MaEmpCreditMoneyRestController extends BaseRestController {
                     maEmpCreditMoneyService.saveEmpCreditMoney(guideCreditMoneyDetail, guideCreditChangeDetail);
                 } else {
                    //更新并添加日志
-                    guideCreditChangeDetail.setChangeReason(guideCreditMoneyDetail.getModifyReason());
                     this.maEmpCreditMoneyService.update(guideCreditMoneyDetail, guideCreditChangeDetail);
                 }
                 logger.info("restGuideCreditMoneyVOPut ,后台修改员工额度成功");
