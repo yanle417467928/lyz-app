@@ -835,6 +835,14 @@ public class AppActServiceImpl implements AppActService {
             return giftListResponseList;
         }
 
+        // 排除掉华润以外的专供产品
+        for (int i = goodsZGList.size()-1 ; i >= 0; i--){
+            GiftListResponseGoods goods = goodsZGList.get(i);
+            if (!goods.getCompanyFlag().equals("HR")){
+                goodsZGList.remove(i);
+            }
+        }
+
         // 获取专供会员 专供产品销量
         List<SellZgDetailsDO> sellZgDetailsDOList = statisticsSellDetailsService.getZgDetailsByCusId(cusId);
 

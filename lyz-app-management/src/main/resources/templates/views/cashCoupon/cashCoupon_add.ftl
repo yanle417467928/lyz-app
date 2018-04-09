@@ -1,4 +1,4 @@
-<head>
+acti<head>
     <link href="/stylesheet/devkit.css" rel="stylesheet">
     <link href="/plugins/iCheck/all.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-select/1.12.2/css/bootstrap-select.min.css" rel="stylesheet">
@@ -31,6 +31,13 @@
     <script type="text/javascript" src="/javascript/cashCoupon/cashCoupon_add.js"></script>
 
 </head>
+<style>
+    #stores label{
+        white-space: normal!important;
+        margin: 5px!important;
+        display: inline-block!important;
+    }
+</style>
 
 <body>
 <section class="content-header">
