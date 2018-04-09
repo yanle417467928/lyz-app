@@ -8,6 +8,7 @@ import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerLebiVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
 import com.github.pagehelper.PageInfo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
@@ -59,18 +60,18 @@ public interface MaCustomerService {
 
     /**
      * 后台购买产品券选择顾客
-     * @param cityId    城市id
-     * @param storeId   门店id
+     * @param storeIds   门店id
      * @return  顾客列表
      */
-    List<CustomerDO> findCustomerByCityIdAndStoreId(Long cityId,Long storeId);
+    List<CustomerDO> findCustomerByCityIdAndStoreId(List<Long> storeIds);
 
     /**
      * 后台购买产品券条件查询顾客
      *
      * @return
      */
-    List<CustomerDO> findCustomerByCityIdAndStoreIdAndCustomerNameAndCustomerPhone(String customerQueryConditions,Long cityId,Long storeId);
+    List<CustomerDO> findCustomerByCityIdAndStoreIdAndCustomerNameAndCustomerPhone(String customerQueryConditions,List<Long> sotreIds);
+
 
     /**
      * 生成顾客预存款变更日志

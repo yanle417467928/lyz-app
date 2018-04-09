@@ -13,8 +13,9 @@
 
     <select id="findAllCusPredepositLog" resultType="cn.com.leyizhuang.app.foundation.vo.management.customer.CusPreDepositLogVO">
         SELECT
-        l.id, c.name, c.mobile, s.store_name, l.create_time, l.change_money, l.remarks, l.change_type, l.order_number, l.balance,
-        l.transfer_time, l.merchant_order_number
+        l.id, c.name, c.mobile, s.store_name, l.create_time,
+        (CASE WHEN l.change_type = 'PLACE_ORDER' THEN (-1 * IFNULL(l.change_money, 0)) ELSE IFNULL(l.change_money, 0) END ) changeMoney,
+        l.remarks, l.change_type, l.order_number, l.balance, l.transfer_time, l.merchant_order_number
         FROM cus_pre_deposit_log l
         LEFT JOIN cus_customer c on l.cus_id = c.cus_id
         LEFT JOIN st_store s ON s.store_id = c.store_id

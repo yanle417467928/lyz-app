@@ -31,6 +31,8 @@ public class GiftListResponseGoods{
     private Double retailPrice;
     //是否赠品
     private Boolean isGift;
+    //公司类型
+    private String companyFlag;
     /**
      * 商品类型
      */

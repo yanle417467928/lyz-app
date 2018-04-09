@@ -134,4 +134,6 @@ public interface GoodsService {
                                                                                           String categoryCode, Long storeId);
 
     List<String> getGoodsSkuNameListByGoodsIdList(List<Long> noPriceGoodsIdList);
+
+    GoodsDO findGoodsByUserIdAndIdentityType(Long userId, AppIdentityType identityType, Long gid);
 }

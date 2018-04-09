@@ -59,11 +59,10 @@ public interface MaCustomerDAO {
 
     /**
      * 后台购买产品券选择顾客
-     * @param cityId    城市id
-     * @param storeId   门店id
+     * @param storeIds   门店id
      * @return  顾客列表
      */
-    List<CustomerDO> findCustomerByCityIdAndStoreId(@Param("cityId") Long cityId, @Param("storeId")Long storeId);
+    List<CustomerDO> findCustomerByCityIdAndStoreId(@Param("list") List<Long> storeIds);
 
     /**
      * 后台购买产品券条件查询顾客
@@ -71,7 +70,15 @@ public interface MaCustomerDAO {
      * @return
      */
     List<CustomerDO> findCustomerByCityIdAndStoreIdAndCustomerNameAndCustomerPhone(@Param(value = "customerQueryConditions") String customerQueryConditions,
-                                                                               @Param(value = "cityId") Long cityId, @Param(value = "storeId") Long storeId);
+                                                                               @Param(value = "list") List<Long> storeIds);
+
+    /**
+     *  后台购买产品券电话号码查询顾客
+     * @param customerQueryConditions
+     * @return
+     */
+    List<CustomerDO> findCustomerByCustomerPhone(@Param(value = "customerQueryConditions") String customerQueryConditions);
+
     /**
      * 根据灯号返回顾客信息
      * @param light

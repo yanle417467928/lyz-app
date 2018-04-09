@@ -153,6 +153,7 @@
         g.cover_image_uri,
         g.goods_unit,
         g.sku,
+        g.company_flag,
         gp.retail_price
         FROM
         cus_customer c

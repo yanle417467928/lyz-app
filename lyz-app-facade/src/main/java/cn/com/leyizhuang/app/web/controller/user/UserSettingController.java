@@ -772,18 +772,18 @@ public class UserSettingController {
             AppCustomer customer = customerService.findById(userId);
             AppStore store = storeService.findById(customer.getStoreId());
             Date date = new Date();
-            if ((!store.getIsDefault()) && null != customer.getBindingTime() && DateUtil.intervalDay(customer.getBindingTime(), date) < 60) {
+            if ((!store.getIsDefault()) && null != customer.getBindingTime() && DateUtil.intervalDay(customer.getBindingTime(), date) < AppApplicationConstant.CHANGE_SELLER_DATE) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "您现在不能修改你的归属导购！", null);
                 logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (customer == null) {
+            if (null == customer) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户不存在！", null);
                 logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
             AppEmployee seller = employeeService.findById(sellerId);
-            if (null != seller && seller.getStoreId() == storeId) {
+            if (null != seller && storeId.equals(seller.getStoreId())) {
                 customer.setSalesConsultId(sellerId);
                 customer.setStoreId(storeId);
                 customer.setCustomerType(AppCustomerType.MEMBER);
@@ -793,7 +793,7 @@ public class UserSettingController {
                 logger.info("customerBindingSeller OUT,服务导购绑定成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             } else {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "服务导购绑定失败！", null);
                 logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }

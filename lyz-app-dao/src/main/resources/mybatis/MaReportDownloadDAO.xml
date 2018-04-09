@@ -398,8 +398,8 @@
         SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, od.create_time orderTime,
             obi.ord_no orderNumber, w.wh_name warehouse, obi.sales_consult_name sellerName,
             oli.shipping_address, oli.delivery_clerk_name deliveryName, IFNULL(obd.collection_amount,0) agencyMoney,
-            IFNULL(obd.delivery_cash,0) cashMoney, IFNULL(obd.delivery_pos,0) posMoney, oaf.remarks remarks,
-            oaf.return_money returnMoney, oaf.real_money realMoney, obi.remark orderRemark
+            IFNULL(oaf.cash_money,0) + IFNULL(obd.delivery_cash,0) cashMoney, IFNULL(oaf.pos_money,0) + IFNULL(obd.delivery_pos,0) posMoney,
+            oaf.remarks remarks, IFNULL(oaf.return_money,0) returnMoney, IFNULL(obd.delivery_cash,0) + IFNULL(obd.delivery_pos,0) realMoney, obi.remark orderRemark
         FROM
         ord_agency_fund oaf
         INNER JOIN ord_base_info obi ON obi.ord_no = oaf.ord_no

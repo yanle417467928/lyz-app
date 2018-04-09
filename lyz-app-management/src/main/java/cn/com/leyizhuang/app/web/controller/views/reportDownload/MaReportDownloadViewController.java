@@ -79,7 +79,7 @@ public class MaReportDownloadViewController extends BaseController {
      */
     @GetMapping(value = "/accountGoodsItems/list")
     public String getAccountGoodsItemsList(ModelMap map) {
-        map.addAttribute("storeTypes", StoreType.getNotZsType());
+        map.addAttribute("storeTypes", StoreType.getStoreTypeList());
         return "/views/reportDownload/account_goods_items_page";
     }
 
@@ -94,7 +94,7 @@ public class MaReportDownloadViewController extends BaseController {
      */
     @GetMapping(value = "/billingItems/list")
     public String getBillingItemsList(ModelMap map) {
-        map.addAttribute("storeTypes", StoreType.getNotZsType());
+        map.addAttribute("storeTypes", StoreType.getStoreTypeList());
         return "/views/reportDownload/billing_items_page";
     }
 

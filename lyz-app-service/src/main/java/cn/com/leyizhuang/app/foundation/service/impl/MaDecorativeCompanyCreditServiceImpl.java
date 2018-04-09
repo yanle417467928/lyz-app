@@ -29,31 +29,36 @@ public class MaDecorativeCompanyCreditServiceImpl implements MaDecorativeCompany
         DecorativeCompanyCredit decorativeCompanyCreditBefore = this.findDecorativeCompanyCreditByStoreId(decorativeCompanyInfo.getStoreId());
         DecorativeCompanySubvention decorativeCompanySubventionBefore = this.findDecorativeCompanySubventionByStoreId(decorativeCompanyInfo.getStoreId());
 
-        DecorativeCompanyCredit decorativeCompanyCredit = new DecorativeCompanyCredit();
-        decorativeCompanyCredit.setStoreId(decorativeCompanyInfo.getStoreId());
-        decorativeCompanyCredit.setCreditLimit(decorativeCompanyInfo.getCreditLimit());
-        decorativeCompanyCredit.setCredit(decorativeCompanyInfo.getCredit());
-        if (null == decorativeCompanyCreditBefore) {
-            decorativeCompanyCredit.setCreateTime(date);
-            storeCreditMoneyChangeLog.setChangeAmount(decorativeCompanyInfo.getCredit().doubleValue());
-            decorativeCompanyCredit.setCreditLastUpdateTime(date);
-            this.saveDecorativeCompanyCredit(decorativeCompanyCredit, storeCreditMoneyChangeLog);
-        } else {
-            decorativeCompanyCredit.setCreditLastUpdateTime(decorativeCompanyInfo.getCreditLastUpdateTime());
-            storeCreditMoneyChangeLog.setChangeAmount(decorativeCompanyInfo.getCredit().subtract(decorativeCompanyCreditBefore.getCredit()).doubleValue());
-            this.updateDecorativeCompanyCredit(decorativeCompanyCredit,storeCreditMoneyChangeLog);
+        if (null != decorativeCompanyInfo.getCredit()) {
+            DecorativeCompanyCredit decorativeCompanyCredit = new DecorativeCompanyCredit();
+            decorativeCompanyCredit.setStoreId(decorativeCompanyInfo.getStoreId());
+            decorativeCompanyCredit.setCreditLimit(decorativeCompanyInfo.getCreditLimit());
+            decorativeCompanyCredit.setCredit(decorativeCompanyInfo.getCredit());
+            if (null == decorativeCompanyCreditBefore) {
+                decorativeCompanyCredit.setCreateTime(date);
+                storeCreditMoneyChangeLog.setChangeAmount(decorativeCompanyInfo.getCredit().doubleValue());
+                decorativeCompanyCredit.setCreditLastUpdateTime(date);
+                this.saveDecorativeCompanyCredit(decorativeCompanyCredit, storeCreditMoneyChangeLog);
+            } else {
+                decorativeCompanyCredit.setCreditLastUpdateTime(decorativeCompanyInfo.getCreditLastUpdateTime());
+                storeCreditMoneyChangeLog.setChangeAmount(decorativeCompanyInfo.getCredit().subtract(decorativeCompanyCreditBefore.getCredit()).doubleValue());
+                this.updateDecorativeCompanyCredit(decorativeCompanyCredit, storeCreditMoneyChangeLog);
+            }
         }
-        DecorativeCompanySubvention decorativeCompanySubvention = new DecorativeCompanySubvention();
-        decorativeCompanySubvention.setStoreId(decorativeCompanyInfo.getStoreId());
-        decorativeCompanySubvention.setSponsorship(decorativeCompanyInfo.getSponsorship());
-        if(null ==decorativeCompanySubventionBefore){
-            decorativeCompanySubvention.setCreateTime(date);
-            decorativeCompanySubvention.setSponsorshipLastUpdateTime(date);
-            this.saveDecorativeCompanySubvention(decorativeCompanySubvention);
-        }else{
-            decorativeCompanySubvention.setSponsorshipLastUpdateTime(decorativeCompanyInfo.getSponsorshipLastUpdateTime());
-            this.updateDecorativeCompanySubvention(decorativeCompanySubvention);
+        if (null != decorativeCompanyInfo.getSponsorship()) {
+            DecorativeCompanySubvention decorativeCompanySubvention = new DecorativeCompanySubvention();
+            decorativeCompanySubvention.setStoreId(decorativeCompanyInfo.getStoreId());
+            decorativeCompanySubvention.setSponsorship(decorativeCompanyInfo.getSponsorship());
+            if (null == decorativeCompanySubventionBefore) {
+                decorativeCompanySubvention.setCreateTime(date);
+                decorativeCompanySubvention.setSponsorshipLastUpdateTime(date);
+                this.saveDecorativeCompanySubvention(decorativeCompanySubvention);
+            } else {
+                decorativeCompanySubvention.setSponsorshipLastUpdateTime(decorativeCompanyInfo.getSponsorshipLastUpdateTime());
+                this.updateDecorativeCompanySubvention(decorativeCompanySubvention);
+            }
         }
+
     }
 
 

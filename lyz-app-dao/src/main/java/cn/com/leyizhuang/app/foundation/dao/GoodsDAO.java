@@ -183,4 +183,6 @@ public interface GoodsDAO {
     );
 
     List<String> getGoodsSkuNameListByGoodsIdList(@Param(value = "noPriceGoodsIdList") List<Long> noPriceGoodsIdList);
+
+    GoodsDO findGoodsByUserIdAndIdentityType(@Param("userId") Long userId, @Param("identityType") AppIdentityType identityType, @Param("gid") Long gid);
 }
