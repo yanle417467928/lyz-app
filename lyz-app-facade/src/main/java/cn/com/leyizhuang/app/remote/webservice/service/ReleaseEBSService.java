@@ -8,7 +8,7 @@ import javax.jws.WebService;
  * @author liuh
  * Created on 2017-12-19 11:22
  **/
-@WebService(targetNamespace = "http://cn.com.leyizhuang.app.remote.webservice.service")
+@WebService(targetNamespace = "cn.com.leyizhuang.app.remote.webservice.service")
 public interface ReleaseEBSService {
 
     /**
