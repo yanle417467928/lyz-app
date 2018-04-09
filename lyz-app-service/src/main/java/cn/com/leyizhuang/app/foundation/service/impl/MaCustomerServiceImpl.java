@@ -191,13 +191,19 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     }
 
     @Override
-    public List<CustomerDO> findCustomerByCityIdAndStoreId(Long cityId, Long storeId) {
-        return this.maCustomerDAO.findCustomerByCityIdAndStoreId(cityId, storeId);
+    public List<CustomerDO> findCustomerByCityIdAndStoreId(List<Long> storeIds) {
+        return this.maCustomerDAO.findCustomerByCityIdAndStoreId(storeIds);
     }
 
     @Override
-    public List<CustomerDO> findCustomerByCityIdAndStoreIdAndCustomerNameAndCustomerPhone(String customerQueryConditions, Long cityId, Long storeId) {
-        return this.maCustomerDAO.findCustomerByCityIdAndStoreIdAndCustomerNameAndCustomerPhone(customerQueryConditions, cityId, storeId);
+    public List<CustomerDO> findCustomerByCityIdAndStoreIdAndCustomerNameAndCustomerPhone(String customerQueryConditions, List<Long> storeIds) {
+        List<CustomerDO> customerDOList = null;
+        if (customerQueryConditions.matches("[0-9]{11}")){
+            customerDOList = this.maCustomerDAO.findCustomerByCustomerPhone(customerQueryConditions);
+        }else {
+            customerDOList = this.maCustomerDAO.findCustomerByCityIdAndStoreIdAndCustomerNameAndCustomerPhone(customerQueryConditions,storeIds);
+        }
+        return customerDOList;
     }
 
     @Override

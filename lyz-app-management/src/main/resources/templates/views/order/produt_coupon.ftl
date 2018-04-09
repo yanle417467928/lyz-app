@@ -53,8 +53,8 @@
                         <label for="title">
                             门店
                         </label>
-                        <select name="store" id="storeId" class="form-control select"
-                                onchange="storeChangeRefresh()">
+                        <select name="store" id="storeId" class="selectpicker"
+                                onchange="storeChangeRefresh()" data-live-search="true">
                             <option value="-1">选择门店</option>
                         </select>
                     </div>

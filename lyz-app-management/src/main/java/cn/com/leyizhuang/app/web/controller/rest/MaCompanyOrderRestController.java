@@ -111,7 +111,8 @@ public class MaCompanyOrderRestController extends BaseRestController {
             size = getSize(size);
             Integer page = getPage(offset, size);
             PageHelper.startPage(page, size);
-            List<MaOrderVO> maOrderVOList = this.maOrderService.findCompanyOrderByCondition(maCompanyOrderVORequest,storeIds);
+            maCompanyOrderVORequest.setList(storeIds);
+            List<MaOrderVO> maOrderVOList = this.maOrderService.findCompanyOrderByCondition(maCompanyOrderVORequest);
             PageInfo<MaOrderVO> maOrderVOPageInfo = new PageInfo<>(maOrderVOList);
             List<MaOrderVO> orderVOList = maOrderVOPageInfo.getList();
             logger.info("getOrderByStoreIdAndCityIdAndDeliveryType ,多条件分页查询装饰公司订单列表成功", orderVOList.size());

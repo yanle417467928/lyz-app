@@ -2,6 +2,8 @@ package cn.com.leyizhuang.app.foundation.pojo.request.management;
 
 import lombok.*;
 
+import java.util.List;
+
 /**
  * 后台多条件查询装饰公司订单请求参数类
  * Created by caiyu on 2017/12/21.
@@ -48,4 +50,6 @@ public class MaCompanyOrderVORequest {
      * 收货人电话
      */
     private String receiverPhone;
+
+    private List<Long> list;
 }

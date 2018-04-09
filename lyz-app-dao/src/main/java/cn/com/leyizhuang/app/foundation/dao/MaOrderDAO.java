@@ -26,7 +26,7 @@ public interface MaOrderDAO {
      *
      * @return 订单列表
      */
-    List<MaOrderVO> findMaOrderVOAll();
+    List<MaOrderVO> findMaOrderVOAll(@Param("list") List<Long> storeIds);
 
     /**
      * 分页查看城市门店订单
@@ -77,7 +77,7 @@ public interface MaOrderDAO {
      *
      * @return 订单列表
      */
-    List<MaOrderVO> findCompanyOrderAll();
+    List<MaOrderVO> findCompanyOrderAll(@Param("list") List<Long> storeIds);
 
     /**
      * 根据订单号模糊查询装饰公司订单

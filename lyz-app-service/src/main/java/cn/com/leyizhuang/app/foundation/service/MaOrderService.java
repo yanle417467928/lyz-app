@@ -97,7 +97,7 @@ public interface MaOrderService {
      * @param maCompanyOrderVORequest 查询条件参数类
      * @return 订单列表
      */
-    List<MaOrderVO> findCompanyOrderByCondition(MaCompanyOrderVORequest maCompanyOrderVORequest,List<Long> storeIds);
+    List<MaOrderVO> findCompanyOrderByCondition(MaCompanyOrderVORequest maCompanyOrderVORequest);
 
     /**
      * 获取待发货订单列表

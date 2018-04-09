@@ -214,6 +214,7 @@ public class MaOrderRestController extends BaseRestController {
             } else if ("PRODUCT_COUPON".equals(deliveryType)) {
                 maOrderVORequest.setAppDeliveryType(AppDeliveryType.PRODUCT_COUPON);
             }
+            maOrderVORequest.setList(storeIds);
             List<MaOrderVO> maOrderVOList = this.maOrderService.findMaOrderVOByCondition(maOrderVORequest,storeIds);
             PageInfo<MaOrderVO> maOrderVOPageInfo = new PageInfo<>(maOrderVOList);
             List<MaOrderVO> orderVOList = maOrderVOPageInfo.getList();
