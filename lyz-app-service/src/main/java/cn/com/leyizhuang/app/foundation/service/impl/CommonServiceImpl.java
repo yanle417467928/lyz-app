@@ -1022,10 +1022,10 @@ public class CommonServiceImpl implements CommonService {
                     hasPriceGoodsIdSet.add(goodsVO.getGid());
                 }
                 for (GoodsSimpleInfo info : goodsList) {
-                    if (null == info.getQty() || info.getQty().equals(0)) {
-                        throw new GoodsQtyErrorException("商品 '"+goodsVO.getSkuName() + "'数量出现异常(0或不存在)!");
-                    }
                     if (info.getId().equals(goodsVO.getGid())) {
+                        if (null == info.getQty() || info.getQty().equals(0)) {
+                            throw new GoodsQtyErrorException("商品 '"+goodsVO.getSkuName() + "'数量出现异常(0或不存在)!");
+                        }
                         goodsVO.setQty(info.getQty());
                     }
                 }

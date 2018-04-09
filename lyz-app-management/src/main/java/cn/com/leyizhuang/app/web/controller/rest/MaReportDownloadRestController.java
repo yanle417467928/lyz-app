@@ -71,7 +71,7 @@ public class MaReportDownloadRestController extends BaseRestController{
         size = getSize(size);
         Integer page = getPage(offset, size);
         //查询登录用户门店权限的门店ID
-        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
         PageInfo<ReceiptsReportDO> receiptsReportDOPageInfo = this.maReportDownloadService.findReceiptsReportDOAll(cityId, storeId, storeType, startTime,
                 endTime, payType, keywords, storeIds, page, size);
         return new GridDataVO<ReceiptsReportDO>().transform(receiptsReportDOPageInfo.getList(), receiptsReportDOPageInfo.getTotal());
@@ -83,7 +83,7 @@ public class MaReportDownloadRestController extends BaseRestController{
         size = getSize(size);
         Integer page = getPage(offset, size);
         //查询登录用户门店权限的门店ID
-        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
         PageInfo<NotPickGoodsReportDO> notPickGoodsReportDOAll = this.maReportDownloadService.findNotPickGoodsReportDOAll(cityId, storeId, storeType, startTime,
                 endTime, pickType, storeIds, page, size);
         return new GridDataVO<NotPickGoodsReportDO>().transform(notPickGoodsReportDOAll.getList(), notPickGoodsReportDOAll.getTotal());
@@ -95,7 +95,7 @@ public class MaReportDownloadRestController extends BaseRestController{
         size = getSize(size);
         Integer page = getPage(offset, size);
         //查询登录用户门店权限的门店ID
-        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
         PageInfo<StorePredepositReportDO> storePredepositReportDOAll = this.maReportDownloadService.findStorePredepositReportDOAll(cityId, storeId, storeType, startTime,
                 endTime, storeIds, page, size);
         return new GridDataVO<StorePredepositReportDO>().transform(storePredepositReportDOAll.getList(), storePredepositReportDOAll.getTotal());
@@ -116,7 +116,7 @@ public class MaReportDownloadRestController extends BaseRestController{
         size = getSize(size);
         Integer page = getPage(offset, size);
         //查询登录用户门店权限的门店ID
-        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
         PageInfo<AccountGoodsItemsDO> accountGoodsItemsDOPageInfo = this.maReportDownloadService.findAccountGoodsItemsDOAll(cityId, storeId, storeType, startTime,
                 endTime, keywords, storeIds, page, size);
         return new GridDataVO<AccountGoodsItemsDO>().transform(accountGoodsItemsDOPageInfo.getList(), accountGoodsItemsDOPageInfo.getTotal());
@@ -137,7 +137,7 @@ public class MaReportDownloadRestController extends BaseRestController{
         size = getSize(size);
         Integer page = getPage(offset, size);
         //查询登录用户门店权限的门店ID
-        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
         PageInfo<BillingItemsDO> billingItemsDOPageInfo = this.maReportDownloadService.findBillingItemsDOAll(cityId, storeId, storeType, startTime,
                 endTime, keywords, storeIds, page, size);
         return new GridDataVO<BillingItemsDO>().transform(billingItemsDOPageInfo.getList(), billingItemsDOPageInfo.getTotal());
@@ -177,7 +177,7 @@ public class MaReportDownloadRestController extends BaseRestController{
     public void downloadReceipts(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId, String storeType, String startTime, String endTime,
                                  String payType, String keywords) {
         //查询登录用户门店权限的门店ID
-        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
         List<ReceiptsReportDO> receiptsReportDOS = this.maReportDownloadService.downloadReceipts(cityId, storeId, storeType, startTime,
                 endTime, payType, keywords, storeIds);
         ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
@@ -388,7 +388,7 @@ public class MaReportDownloadRestController extends BaseRestController{
     public void notPickGoodsDownload(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId, String storeType, String startTime, String endTime,
                                      String pickType) {
         //查询登录用户门店权限的门店ID
-        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
         List<NotPickGoodsReportDO> notPickGoodsReportDOS = this.maReportDownloadService.notPickGoodsDownload(cityId, storeId, storeType, startTime,
                 endTime, pickType, storeIds);
         ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
@@ -519,7 +519,7 @@ public class MaReportDownloadRestController extends BaseRestController{
     @GetMapping(value = "/store/predeposit/download")
     public void storePredepositDownload(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId, String storeType, String startTime, String endTime) {
         //查询登录用户门店权限的门店ID
-        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
         List<StorePredepositReportDO> storePredepositReportDOS = this.maReportDownloadService.storePredepositDownload(cityId, storeId, storeType, startTime, endTime, storeIds);
         ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
         String shiroName = "";
@@ -646,7 +646,7 @@ public class MaReportDownloadRestController extends BaseRestController{
     public void downloadAccountGoodsItems(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId, String storeType,
                                           String startTime, String endTime, String keywords) {
         //查询登录用户门店权限的门店ID
-        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
         List<AccountGoodsItemsDO> accountGoodsItemsDOList = this.maReportDownloadService.downloadAccountGoodsItems(cityId, storeId, storeType, startTime,
                 endTime, keywords, storeIds);
         ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
@@ -789,7 +789,7 @@ public class MaReportDownloadRestController extends BaseRestController{
     public void downloadBillingItems(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId, String storeType,
                                           String startTime, String endTime, String keywords) {
         //查询登录用户门店权限的门店ID
-        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
         List<BillingItemsDO> billingItemsDOList = this.maReportDownloadService.downloadBillingItems(cityId, storeId, storeType, startTime,
                 endTime, keywords, storeIds);
         ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();

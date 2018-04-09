@@ -64,7 +64,7 @@ public class MaReportDownloadViewController extends BaseController {
 
     @GetMapping(value = "/store/predeposit/list")
     public String getStorePredeposit(ModelMap map) {
-        map.addAttribute("storeTypes", StoreType.getNotZsType());
+        map.addAttribute("storeTypes", StoreType.getStoreTypeList());
         return "/views/reportDownload/store_predeposit_page";
     }
 
@@ -79,7 +79,7 @@ public class MaReportDownloadViewController extends BaseController {
      */
     @GetMapping(value = "/accountGoodsItems/list")
     public String getAccountGoodsItemsList(ModelMap map) {
-        map.addAttribute("storeTypes", StoreType.values());
+        map.addAttribute("storeTypes", StoreType.getStoreTypeList());
         return "/views/reportDownload/account_goods_items_page";
     }
 
@@ -94,7 +94,7 @@ public class MaReportDownloadViewController extends BaseController {
      */
     @GetMapping(value = "/billingItems/list")
     public String getBillingItemsList(ModelMap map) {
-        map.addAttribute("storeTypes", StoreType.values());
+        map.addAttribute("storeTypes", StoreType.getStoreTypeList());
         return "/views/reportDownload/billing_items_page";
     }
 
@@ -109,7 +109,7 @@ public class MaReportDownloadViewController extends BaseController {
      */
     @GetMapping(value = "/agencyFund/list")
     public String getAgencyFundList(ModelMap map) {
-        map.addAttribute("storeTypes", StoreType.values());
+        map.addAttribute("storeTypes", StoreType.getNotZsType());
         return "/views/reportDownload/agency_fund_page";
     }
 

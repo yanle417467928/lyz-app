@@ -47,9 +47,9 @@ public class CashCouponSendServiceImpl implements CashCouponSendService{
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发送失败，优惠券已经过期", null);
             }
 
-            if(cashCoupon.getCityId() != appCustomer.getCityId()){
-                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发送失败，"+appCustomer.getName()+"不再城市范围下！", null);
-            }
+//            if(cashCoupon.getCityId() != appCustomer.getCityId()){
+//                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发送失败，"+appCustomer.getName()+"不再城市范围下！", null);
+//            }
 
             if(cashCoupon.getIsSpecifiedStore() && !storeIds.contains(appCustomer.getStoreId())){
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发送失败，"+appCustomer.getName()+"不再指定门店范围下！", null);

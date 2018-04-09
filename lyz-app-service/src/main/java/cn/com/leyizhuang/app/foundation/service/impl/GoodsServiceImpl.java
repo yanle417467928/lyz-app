@@ -496,5 +496,10 @@ public class GoodsServiceImpl implements GoodsService {
         return null;
     }
 
+    @Override
+    public GoodsDO findGoodsByUserIdAndIdentityType(Long userId, AppIdentityType identityType, Long gid) {
+        return this.goodsDAO.findGoodsByUserIdAndIdentityType(userId, identityType, gid);
+    }
+
 
 }

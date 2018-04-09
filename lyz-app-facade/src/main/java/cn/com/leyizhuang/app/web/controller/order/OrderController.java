@@ -778,6 +778,8 @@ public class OrderController {
                 // 顾客信息
                 AppCustomer customer = appCustomerService.findById(usedCouponRequest.getCustomerId());
 
+                // 订单满足用券条件的金额
+                Double meetAmount = totalOrderAmount;
                 //遍历产品券列表
                 for (GoodsIdQtyParam aCashCouponsList : cashCouponsList) {
                     //根据券ID 去查产品券
@@ -801,11 +803,11 @@ public class OrderController {
                         }
 
                         AppCashCouponType cashCouponType = cashCoupon.getType();
-                        // 订单满足用券条件的金额
-                        Double meetAmount = 0.00;
+
                         if (cashCouponType.equals(AppCashCouponType.GENERAL)) {
                             // 通用现金券
-                            meetAmount = totalOrderAmount;
+
+//                            meetAmount = totalOrderAmount;
                         } else if (cashCouponType.equals(AppCashCouponType.COMPANY)) {
                             // 指定公司券
                             List<Long> goodsIds = new ArrayList<>();
@@ -927,9 +929,10 @@ public class OrderController {
 
                         //如果当前小计满足第一张券的满减条件就减去优惠券的折扣,循环判断
                         if (meetAmount >= cashCoupon.getCondition()) {
-                            Double couponDiscount = CountUtil.mul(cashCoupon.getDenomination(), aCashCouponsList.getQty());
-                            cashCouponDiscount = CountUtil.add(cashCouponDiscount, couponDiscount);
-                            totalOrderAmount = CountUtil.sub(totalOrderAmount, cashCouponDiscount);
+//                            Double couponDiscount = CountUtil.mul(cashCoupon.getDenomination(), aCashCouponsList.getQty());
+                            cashCouponDiscount = CountUtil.add(cashCouponDiscount, cashCoupon.getDenomination());
+                            totalOrderAmount = CountUtil.sub(totalOrderAmount, cashCoupon.getDenomination());
+                            meetAmount = CountUtil.sub(meetAmount, cashCoupon.getCondition(), cashCoupon.getDenomination());
                             index++;
                         } else {
                             //直到如有使用过多的券，返回最多可使用index张券
