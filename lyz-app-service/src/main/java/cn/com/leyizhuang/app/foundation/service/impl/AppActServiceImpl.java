@@ -224,7 +224,7 @@ public class AppActServiceImpl implements AppActService {
 
             skus.add(goods.getSku());
             // 把商品注入本品池 排除产品券商品
-            if (!goods.getGoodsLineType().equals(AppGoodsLineType.PRODUCT_COUPON)){
+            if (goods.getGoodsLineType() == null || !goods.getGoodsLineType().equals(AppGoodsLineType.PRODUCT_COUPON)){
                 goodsPool.put(goods.getSku(), goods);
                 goodsIdList.add(goods.getId());
             }
