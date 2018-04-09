@@ -209,7 +209,7 @@ public class DataTransferServiceImpl implements DataTransferService {
     }
 
     @Override
-    public List<TdOrderSmall> getPendingTransferOrderByOrderNo(Date startTime, Date endTime,String orderNO) {
+    public List<TdOrderSmall> getPendingTransferOrderByOrderNo(Date startTime, Date endTime, String orderNO) {
         if (null != startTime && null != endTime) {
             return transferDAO.getPendingTransferOrderByOrderNo(startTime, endTime, orderNO);
         }
@@ -479,131 +479,131 @@ public class DataTransferServiceImpl implements DataTransferService {
         TdOrderData tdOrderData = this.transferDAO.findOrderDataByOrderNumber(orderBaseInfo.getOrderNumber());
         TdOwnMoneyRecord tdOwnMoneyRecord = this.transferDAO.getOwnMoneyRecordByOrderNumber(orderBaseInfo.getOrderNumber());
 
-            Boolean b = this.transferDAO.existOrderBillingDetails(orderBaseInfo.getOrderNumber());
-            if (b) {
-                log.warn("此订单号账单已生成请检查！订单号：", orderBaseInfo.getOrderNumber());
-                throw new DataTransferException("此订单号账单已生成请检查", DataTransferExceptionType.UNKNOWN);
-            }
-            if (orderBaseInfo.getOrderSubjectType() == AppOrderSubjectType.STORE) {
-                orderBillingDetails = new OrderBillingDetails();
-                orderBillingDetails.setOid(orderBaseInfo.getId());
-                orderBillingDetails.setCreateTime(tdOrderData.getCreateTime());
-                orderBillingDetails.setOrderNumber(tdOrderData.getMainOrderNumber());
-                orderBillingDetails.setTotalGoodsPrice(tdOrderData.getTotalGoodsPrice());
-                orderBillingDetails.setMemberDiscount(tdOrderData.getMemberDiscount());
-                orderBillingDetails.setPromotionDiscount(tdOrderData.getActivitySub());
-                orderBillingDetails.setFreight(tdOrderData.getDeliveryFee());
-                orderBillingDetails.setUpstairsFee(0D);
-                orderBillingDetails.setLebiCashDiscount(0D);
-                orderBillingDetails.setLebiQuantity(0);
-                orderBillingDetails.setCashCouponDiscount(tdOrderData.getCashCouponFee());
-                orderBillingDetails.setProductCouponDiscount(tdOrderData.getProCouponFee());
-                orderBillingDetails.setCusPreDeposit(0D);
-                orderBillingDetails.setOnlinePayType(OnlinePayType.NO);
-                orderBillingDetails.setOnlinePayAmount(0D);
-                orderBillingDetails.setOnlinePayTime(null);
-                Double stPreDepsit = CountUtil.add(tdOrderData.getBalanceUsed() == null ? 0D : tdOrderData.getBalanceUsed(), tdOrderData.getOnlinePay() == null ? 0D : tdOrderData.getOnlinePay());
-                orderBillingDetails.setStPreDeposit(stPreDepsit);
-                orderBillingDetails.setEmpCreditMoney(tdOrderData.getLeftPrice());
-                orderBillingDetails.setStoreCreditMoney(0D);
-                orderBillingDetails.setStoreSubvention(0D);
-                Double totalGoodsPrice = CountUtil.sub(tdOrderData.getTotalGoodsPrice() == null ? 0D : tdOrderData.getTotalGoodsPrice(), tdOrderData.getMemberDiscount() == null ? 0D : tdOrderData.getMemberDiscount(),
-                        tdOrderData.getActivitySub() == null ? 0D : tdOrderData.getActivitySub(), tdOrderData.getCashCouponFee() == null ? 0D : tdOrderData.getCashCouponFee(), tdOrderData.getProCouponFee() == null ? 0D : tdOrderData.getProCouponFee());
-                Double orderAmountSubTotal = CountUtil.add(totalGoodsPrice == null ? 0d : totalGoodsPrice, tdOrderData.getDeliveryFee());
-                orderBillingDetails.setOrderAmountSubtotal(orderAmountSubTotal);
-                orderBillingDetails.setAmountPayable(CountUtil.sub(orderAmountSubTotal, stPreDepsit, tdOrderData.getLeftPrice() == null ? 0D : tdOrderData.getLeftPrice()));
-                orderBillingDetails.setCollectionAmount(tdOrderData.getAgencyRefund());
-                orderBillingDetails.setArrearage(tdOrderData.getDue());
-                orderBillingDetails.setIsOwnerReceiving(Boolean.FALSE);
-                orderBillingDetails.setIsPayUp(tdOrderData.getDue() > 0 ? Boolean.FALSE : Boolean.TRUE);
-                if (tdOrderData.getDue() > 0) {
-                    orderBillingDetails.setPayUpTime(null);
-                } else {
-                    orderBillingDetails.setPayUpTime(new Date());
-                }
-                Double jxTotalPrice = 0.00;
-                List<TdOrder> tdOrderList = this.transferDAO.findOrderInfoByOrderNumber(orderBaseInfo.getOrderNumber());
-                if (null != tdOrderList) {
-                    for (TdOrder tdOrder : tdOrderList) {
-                        jxTotalPrice = CountUtil.add(jxTotalPrice, tdOrder.getJxTotalPrice() == null ? 0D : tdOrder.getJxTotalPrice());
-                    }
-                } else {
-                    log.warn("未查到此订单头信息！订单号：", orderBaseInfo.getOrderNumber());
-                    throw new DataTransferException("未查到此订单头信息", DataTransferExceptionType.NDT);
-                }
-                orderBillingDetails.setJxPriceDifferenceAmount(jxTotalPrice);
-                orderBillingDetails.setStoreCash(tdOrderData.getSellerCash());
-                orderBillingDetails.setStoreOtherMoney(tdOrderData.getSellerOther());
-                orderBillingDetails.setStorePosMoney(tdOrderData.getSellerPos());
-                orderBillingDetails.setStorePosNumber(tdOwnMoneyRecord == null ? null : tdOwnMoneyRecord.getSerialNumber());
-                orderBillingDetails.setDeliveryCash(tdOrderData.getDeliveryCash());
-                orderBillingDetails.setDeliveryPos(tdOrderData.getDeliveryPos());
-                //this.transferDAO.saveOrderBillingDetails(orderBillingDetails);
+        Boolean b = this.transferDAO.existOrderBillingDetails(orderBaseInfo.getOrderNumber());
+        if (b) {
+            log.warn("此订单号账单已生成请检查！订单号：", orderBaseInfo.getOrderNumber());
+            throw new DataTransferException("此订单号账单已生成请检查", DataTransferExceptionType.UNKNOWN);
+        }
+        if (orderBaseInfo.getOrderSubjectType() == AppOrderSubjectType.STORE) {
+            orderBillingDetails = new OrderBillingDetails();
+            orderBillingDetails.setOid(orderBaseInfo.getId());
+            orderBillingDetails.setCreateTime(tdOrderData.getCreateTime());
+            orderBillingDetails.setOrderNumber(tdOrderData.getMainOrderNumber());
+            orderBillingDetails.setTotalGoodsPrice(tdOrderData.getTotalGoodsPrice());
+            orderBillingDetails.setMemberDiscount(tdOrderData.getMemberDiscount());
+            orderBillingDetails.setPromotionDiscount(tdOrderData.getActivitySub());
+            orderBillingDetails.setFreight(tdOrderData.getDeliveryFee());
+            orderBillingDetails.setUpstairsFee(0D);
+            orderBillingDetails.setLebiCashDiscount(0D);
+            orderBillingDetails.setLebiQuantity(0);
+            orderBillingDetails.setCashCouponDiscount(tdOrderData.getCashCouponFee());
+            orderBillingDetails.setProductCouponDiscount(tdOrderData.getProCouponFee());
+            orderBillingDetails.setCusPreDeposit(0D);
+            orderBillingDetails.setOnlinePayType(OnlinePayType.NO);
+            orderBillingDetails.setOnlinePayAmount(0D);
+            orderBillingDetails.setOnlinePayTime(null);
+            Double stPreDepsit = CountUtil.add(tdOrderData.getBalanceUsed() == null ? 0D : tdOrderData.getBalanceUsed(), tdOrderData.getOnlinePay() == null ? 0D : tdOrderData.getOnlinePay());
+            orderBillingDetails.setStPreDeposit(stPreDepsit);
+            orderBillingDetails.setEmpCreditMoney(tdOrderData.getLeftPrice());
+            orderBillingDetails.setStoreCreditMoney(0D);
+            orderBillingDetails.setStoreSubvention(0D);
+            Double totalGoodsPrice = CountUtil.sub(tdOrderData.getTotalGoodsPrice() == null ? 0D : tdOrderData.getTotalGoodsPrice(), tdOrderData.getMemberDiscount() == null ? 0D : tdOrderData.getMemberDiscount(),
+                    tdOrderData.getActivitySub() == null ? 0D : tdOrderData.getActivitySub(), tdOrderData.getCashCouponFee() == null ? 0D : tdOrderData.getCashCouponFee(), tdOrderData.getProCouponFee() == null ? 0D : tdOrderData.getProCouponFee());
+            Double orderAmountSubTotal = CountUtil.add(totalGoodsPrice == null ? 0d : totalGoodsPrice, tdOrderData.getDeliveryFee());
+            orderBillingDetails.setOrderAmountSubtotal(orderAmountSubTotal);
+            orderBillingDetails.setAmountPayable(CountUtil.sub(orderAmountSubTotal, stPreDepsit, tdOrderData.getLeftPrice() == null ? 0D : tdOrderData.getLeftPrice()));
+            orderBillingDetails.setCollectionAmount(tdOrderData.getAgencyRefund());
+            orderBillingDetails.setArrearage(tdOrderData.getDue());
+            orderBillingDetails.setIsOwnerReceiving(Boolean.FALSE);
+            orderBillingDetails.setIsPayUp(tdOrderData.getDue() > 0 ? Boolean.FALSE : Boolean.TRUE);
+            if (tdOrderData.getDue() > 0) {
+                orderBillingDetails.setPayUpTime(null);
             } else {
-                orderBillingDetails = new OrderBillingDetails();
-                Double totalGoodsPrice = 0.00;
-                Double storePreDeposit = 0.00;
-                Double creditMoney = 0.00;
-                Double memberMoney = 0.00;
-                Double memberTotalMoney = 0.00;
-                Date date = null;
-                List<TdOrder> tdOrderList = this.transferDAO.findOrderInfoByOrderNumber(orderBaseInfo.getOrderNumber());
-                if (null != tdOrderList) {
-                    for (TdOrder tdOrder : tdOrderList) {
-                        totalGoodsPrice = CountUtil.add(totalGoodsPrice, tdOrder.getTotalGoodsPrice() == null ? 0D : tdOrder.getTotalGoodsPrice());
-                        storePreDeposit = CountUtil.add(storePreDeposit, tdOrder.getWalletMoney() == null ? 0D : tdOrder.getWalletMoney());
-                        creditMoney = CountUtil.add(creditMoney, tdOrder.getCredit() == null ? 0D : tdOrder.getCredit());
-                        date = tdOrder.getPayTime() == null ? new Date() : tdOrder.getPayTime();
-                        List<TdOrderGoods> goodsList = this.transferDAO.getTdOrderGoodsByOrderNumber(tdOrder.getId());
-                        if (null != goodsList && goodsList.size() > 0) {
-                            for (TdOrderGoods goods : goodsList) {
-                                memberMoney = CountUtil.sub(goods.getPrice() == null ? 0D : goods.getPrice(), goods.getRealPrice() == null ? 0D : goods.getRealPrice());
-                                memberTotalMoney = CountUtil.add(memberTotalMoney, memberMoney);
-                            }
+                orderBillingDetails.setPayUpTime(new Date());
+            }
+            Double jxTotalPrice = 0.00;
+            List<TdOrder> tdOrderList = this.transferDAO.findOrderInfoByOrderNumber(orderBaseInfo.getOrderNumber());
+            if (null != tdOrderList) {
+                for (TdOrder tdOrder : tdOrderList) {
+                    jxTotalPrice = CountUtil.add(jxTotalPrice, tdOrder.getJxTotalPrice() == null ? 0D : tdOrder.getJxTotalPrice());
+                }
+            } else {
+                log.warn("未查到此订单头信息！订单号：", orderBaseInfo.getOrderNumber());
+                throw new DataTransferException("未查到此订单头信息", DataTransferExceptionType.NDT);
+            }
+            orderBillingDetails.setJxPriceDifferenceAmount(jxTotalPrice);
+            orderBillingDetails.setStoreCash(tdOrderData.getSellerCash());
+            orderBillingDetails.setStoreOtherMoney(tdOrderData.getSellerOther());
+            orderBillingDetails.setStorePosMoney(tdOrderData.getSellerPos());
+            orderBillingDetails.setStorePosNumber(tdOwnMoneyRecord == null ? null : tdOwnMoneyRecord.getSerialNumber());
+            orderBillingDetails.setDeliveryCash(tdOrderData.getDeliveryCash());
+            orderBillingDetails.setDeliveryPos(tdOrderData.getDeliveryPos());
+            //this.transferDAO.saveOrderBillingDetails(orderBillingDetails);
+        } else {
+            orderBillingDetails = new OrderBillingDetails();
+            Double totalGoodsPrice = 0.00;
+            Double storePreDeposit = 0.00;
+            Double creditMoney = 0.00;
+            Double memberMoney = 0.00;
+            Double memberTotalMoney = 0.00;
+            Date date = null;
+            List<TdOrder> tdOrderList = this.transferDAO.findOrderInfoByOrderNumber(orderBaseInfo.getOrderNumber());
+            if (null != tdOrderList) {
+                for (TdOrder tdOrder : tdOrderList) {
+                    totalGoodsPrice = CountUtil.add(totalGoodsPrice, tdOrder.getTotalGoodsPrice() == null ? 0D : tdOrder.getTotalGoodsPrice());
+                    storePreDeposit = CountUtil.add(storePreDeposit, tdOrder.getWalletMoney() == null ? 0D : tdOrder.getWalletMoney());
+                    creditMoney = CountUtil.add(creditMoney, tdOrder.getCredit() == null ? 0D : tdOrder.getCredit());
+                    date = tdOrder.getPayTime() == null ? new Date() : tdOrder.getPayTime();
+                    List<TdOrderGoods> goodsList = this.transferDAO.getTdOrderGoodsByOrderNumber(tdOrder.getId());
+                    if (null != goodsList && goodsList.size() > 0) {
+                        for (TdOrderGoods goods : goodsList) {
+                            memberMoney = CountUtil.sub(goods.getPrice() == null ? 0D : goods.getPrice(), goods.getRealPrice() == null ? 0D : goods.getRealPrice());
+                            memberTotalMoney = CountUtil.add(memberTotalMoney, memberMoney);
                         }
                     }
-                } else {
-                    log.warn("未查到此订单头信息！订单号：", orderBaseInfo.getOrderNumber());
-                    throw new DataTransferException("未查到此订单头信息", DataTransferExceptionType.NDT);
                 }
-                orderBillingDetails.setOid(orderBaseInfo.getId());
-                orderBillingDetails.setCreateTime(date);
-                orderBillingDetails.setOrderNumber(orderBaseInfo.getOrderNumber());
-                orderBillingDetails.setTotalGoodsPrice(totalGoodsPrice);
-                orderBillingDetails.setMemberDiscount(memberTotalMoney);
-                orderBillingDetails.setPromotionDiscount(0D);
-                orderBillingDetails.setFreight(0D);
-                orderBillingDetails.setUpstairsFee(0D);
-                orderBillingDetails.setLebiCashDiscount(0D);
-                orderBillingDetails.setLebiQuantity(0);
-                orderBillingDetails.setCashCouponDiscount(0D);
-                orderBillingDetails.setProductCouponDiscount(0D);
-                orderBillingDetails.setCusPreDeposit(0D);
-                orderBillingDetails.setOnlinePayType(OnlinePayType.NO);
-                orderBillingDetails.setOnlinePayAmount(0D);
-                orderBillingDetails.setOnlinePayTime(null);
-                orderBillingDetails.setStPreDeposit(storePreDeposit);
-                orderBillingDetails.setEmpCreditMoney(0D);
-                orderBillingDetails.setStoreCreditMoney(creditMoney);
-                orderBillingDetails.setStoreSubvention(0D);
-                Double orderAmountSubtotal = CountUtil.sub(totalGoodsPrice, memberTotalMoney);
-                orderBillingDetails.setOrderAmountSubtotal(orderAmountSubtotal);
-                orderBillingDetails.setAmountPayable(CountUtil.sub(orderAmountSubtotal, storePreDeposit, creditMoney));
-                orderBillingDetails.setCollectionAmount(0D);
-                orderBillingDetails.setArrearage(0D);
-                orderBillingDetails.setIsOwnerReceiving(Boolean.FALSE);
-                orderBillingDetails.setIsPayUp(Boolean.TRUE);
-                orderBillingDetails.setPayUpTime(date);
-                orderBillingDetails.setJxPriceDifferenceAmount(0D);
-                orderBillingDetails.setStoreCash(0D);
-                orderBillingDetails.setStoreOtherMoney(0D);
-                orderBillingDetails.setStorePosMoney(0D);
-                orderBillingDetails.setStorePosNumber(null);
-                orderBillingDetails.setDeliveryCash(0D);
-                orderBillingDetails.setDeliveryPos(0D);
-                //this.transferDAO.saveOrderBillingDetails(orderBillingDetails);
+            } else {
+                log.warn("未查到此订单头信息！订单号：", orderBaseInfo.getOrderNumber());
+                throw new DataTransferException("未查到此订单头信息", DataTransferExceptionType.NDT);
             }
-            return orderBillingDetails;
+            orderBillingDetails.setOid(orderBaseInfo.getId());
+            orderBillingDetails.setCreateTime(date);
+            orderBillingDetails.setOrderNumber(orderBaseInfo.getOrderNumber());
+            orderBillingDetails.setTotalGoodsPrice(totalGoodsPrice);
+            orderBillingDetails.setMemberDiscount(memberTotalMoney);
+            orderBillingDetails.setPromotionDiscount(0D);
+            orderBillingDetails.setFreight(0D);
+            orderBillingDetails.setUpstairsFee(0D);
+            orderBillingDetails.setLebiCashDiscount(0D);
+            orderBillingDetails.setLebiQuantity(0);
+            orderBillingDetails.setCashCouponDiscount(0D);
+            orderBillingDetails.setProductCouponDiscount(0D);
+            orderBillingDetails.setCusPreDeposit(0D);
+            orderBillingDetails.setOnlinePayType(OnlinePayType.NO);
+            orderBillingDetails.setOnlinePayAmount(0D);
+            orderBillingDetails.setOnlinePayTime(null);
+            orderBillingDetails.setStPreDeposit(storePreDeposit);
+            orderBillingDetails.setEmpCreditMoney(0D);
+            orderBillingDetails.setStoreCreditMoney(creditMoney);
+            orderBillingDetails.setStoreSubvention(0D);
+            Double orderAmountSubtotal = CountUtil.sub(totalGoodsPrice, memberTotalMoney);
+            orderBillingDetails.setOrderAmountSubtotal(orderAmountSubtotal);
+            orderBillingDetails.setAmountPayable(CountUtil.sub(orderAmountSubtotal, storePreDeposit, creditMoney));
+            orderBillingDetails.setCollectionAmount(0D);
+            orderBillingDetails.setArrearage(0D);
+            orderBillingDetails.setIsOwnerReceiving(Boolean.FALSE);
+            orderBillingDetails.setIsPayUp(Boolean.TRUE);
+            orderBillingDetails.setPayUpTime(date);
+            orderBillingDetails.setJxPriceDifferenceAmount(0D);
+            orderBillingDetails.setStoreCash(0D);
+            orderBillingDetails.setStoreOtherMoney(0D);
+            orderBillingDetails.setStorePosMoney(0D);
+            orderBillingDetails.setStorePosNumber(null);
+            orderBillingDetails.setDeliveryCash(0D);
+            orderBillingDetails.setDeliveryPos(0D);
+            //this.transferDAO.saveOrderBillingDetails(orderBillingDetails);
+        }
+        return orderBillingDetails;
 
     }
 
@@ -729,8 +729,10 @@ public class DataTransferServiceImpl implements DataTransferService {
                             break;
                     }
                 }
-            } else if (orderBaseInfo.getStatus() == AppOrderStatus.PENDING_RECEIVE || orderBaseInfo.getStatus() == AppOrderStatus.FINISHED) {
+            } else if (orderBaseInfo.getStatus() == AppOrderStatus.PENDING_RECEIVE) {
                 orderBaseInfo.setDeliveryStatus(LogisticStatus.SEALED_CAR);
+            } else if (orderBaseInfo.getStatus() == AppOrderStatus.FINISHED) {
+                orderBaseInfo.setDeliveryStatus(LogisticStatus.CONFIRM_ARRIVAL);
             }
 
         }
@@ -996,9 +998,9 @@ public class DataTransferServiceImpl implements DataTransferService {
         Date startTime = calendar.getTime();
         Date endTime = new Date();
         //查询所有待处理的主单
-        storeMainOrderNumberList = this.getPendingTransferOrderByOrderNo(startTime, endTime,orderNo);
+        storeMainOrderNumberList = this.getPendingTransferOrderByOrderNo(startTime, endTime, orderNo);
         if (storeMainOrderNumberList == null || storeMainOrderNumberList.isEmpty()) {
-            log.info("订单号："+orderNo+"查不到数据");
+            log.info("订单号：" + orderNo + "查不到数据");
             throw new DataTransferException("该订单号数据不存在", DataTransferExceptionType.NDT);
         }
 
@@ -1367,13 +1369,13 @@ public class DataTransferServiceImpl implements DataTransferService {
         List<GoodsDO> goodsDOList = this.queryAllGoodsTrans();
         for (GoodsDO goodsDO : goodsDOList) {
             String sku = goodsDO.getSku();
-            log.info("sku编码"+sku);
+            log.info("sku编码" + sku);
             String typeName = goodsDO.getTypeName();
-            log.info("typeName"+typeName);
+            log.info("typeName" + typeName);
             String brandName = goodsDO.getBrandName();
-            log.info("brandName"+brandName);
+            log.info("brandName" + brandName);
             String categoryName = goodsDO.getCategoryName();
-            log.info("categoryName"+categoryName);
+            log.info("categoryName" + categoryName);
             List<GoodsType> goodsTypes = this.queryAllGoodsType();
             for (GoodsType goodsType : goodsTypes) {
                 if (typeName.equals(goodsType.getTypeName())) {
@@ -1394,11 +1396,11 @@ public class DataTransferServiceImpl implements DataTransferService {
                     goodsDO.setCid(goodsCategory.getCid());
                 }
             }
-                if(!"喜鹊".equals(goodsDO.getBrandName())){
-                    GoodsDO goodsDOBefore = goodsService.queryBySku(sku);
-                    if(null!=goodsDOBefore){
-                        goodsDO.setGoodsDetial(goodsDOBefore.getGoodsDetial());
-                    }
+            if (!"喜鹊".equals(goodsDO.getBrandName())) {
+                GoodsDO goodsDOBefore = goodsService.queryBySku(sku);
+                if (null != goodsDOBefore) {
+                    goodsDO.setGoodsDetial(goodsDOBefore.getGoodsDetial());
+                }
             }
             this.updateGoodsTrans(goodsDO);
         }
