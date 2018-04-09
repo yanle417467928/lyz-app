@@ -90,6 +90,7 @@ var $commonForm = {
                     store += "<label id='"+item.storeId+"' class='label label-default' onclick='checkStore(this)'>"+item.storeName +"</label>";
                 })
                 $("#"+storesID).html(store);
+                $("#"+storesID+' label').css({'white-space':'normal','margin':'5px','display':'inline-block'});
             }
         });
 
@@ -227,6 +228,7 @@ function loadStore(url,citySelctId,storesID) {
                 store += "<label id='"+item.storeId+"' class='label label-default' onclick='checkStore(this)'>"+item.storeName +"</label>";
             })
             $("#"+storesID).html(store);
+            $("#"+storesID+' label').css({'white-space':'normal','margin':'5px','display':'inline-block'});
         }
     });
 
