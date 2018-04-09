@@ -153,4 +153,6 @@ public interface OrderDAO {
     List<OrderPageInfoVO> getOrderListPageInfoByUserIdAndIdentityType(@Param(value = "userID") Long userID,
                                                                       @Param(value = "identityType") AppIdentityType identityType,
                                                                       @Param(value = "showStatus") Integer showStatus);
+
+    List<OrderBaseInfo> getSendToWMSFailedOrder();
 }

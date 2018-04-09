@@ -2,6 +2,11 @@ package cn.com.leyizhuang.app.remote.webservice;
 
 import cn.com.leyizhuang.app.core.constant.ReturnOrderType;
 import cn.com.leyizhuang.app.core.pay.wechat.refund.OnlinePayRefundService;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelReturnOrderRequest;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
@@ -16,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Created on 2017-12-19 13:18
@@ -43,7 +49,8 @@ public class TestClient {
     private AppSeparateOrderService separateOrderService;
     @Resource
     private ReturnOrderDeliveryDetailsService returnOrderDeliveryDetailsService;
-
+    @Resource
+    private AppOrderService appOrderService;
 
     public static void main(String[] args) throws Exception {
 //       String STRTABLE = "tbw_send_task_m";
@@ -194,7 +201,7 @@ public class TestClient {
 //        newUser.setCustomerProfessionDesc(null != professions ? professions.stream().filter(p -> p.getTitle().equals("DG")).collect(Collectors.toList()).get(0).getDescription() : "");
 //
 //        System.out.println(newUser);
-        onlinePayRefundService.wechatReturnMoney(128L, 6, 70D, "CD_XN20180315145706348560", "T20180315150003738", 1333L);
+//        onlinePayRefundService.wechatReturnMoney(128L, 6, 70D, "CD_XN20180315145706348560", "T20180315150003738", 1333L);
 //
 //
 //        separateOrderService.separateOrderRefund("TK_20180311115824685");
@@ -206,6 +213,30 @@ public class TestClient {
         returnOrderDeliveryDetail.setPickersNumber("11111");
 //        returnOrderDeliveryDetailsService.addReturnOrderDeliveryInfoDetails(returnOrderDeliveryDetail);
 
-        separateOrderService.separateOrderRefund("T20180315135003341");
+//        separateOrderService.separateOrderRefund("T20180315135003341");
+
+
+        List<OrderBaseInfo> orderBaseInfoList = appOrderService.getSendToWMSFailedOrder();
+
+        for (OrderBaseInfo baseInfo : orderBaseInfoList) {
+
+            OrderBillingDetails billingDetails = appOrderService.getOrderBillingDetail(baseInfo.getOrderNumber());
+            AppStore store = storeService.findStoreByUserIdAndIdentityType(baseInfo.getCreatorId(),
+                    baseInfo.getCreatorIdentityType().getValue());
+            List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(baseInfo.getOrderNumber());
+            int orderGoodsSize = orderGoodsInfoList.size();
+            OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(baseInfo.getOrderNumber());
+            AtwRequisitionOrder requisitionOrder = AtwRequisitionOrder.transform(baseInfo, orderLogisticsInfo,
+                    store, billingDetails, orderGoodsSize);
+            appToWmsOrderService.saveAtwRequisitionOrder(requisitionOrder);
+            //保存传wms配送单商品信息
+            if (orderGoodsSize > 0) {
+                for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
+                    AtwRequisitionOrderGoods requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
+                            goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
+                    appToWmsOrderService.saveAtwRequisitionOrderGoods(requisitionOrderGoods);
+                }
+            }
+        }
     }
 }

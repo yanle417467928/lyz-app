@@ -167,4 +167,6 @@ public interface AppOrderService {
     void saveOrderLifecycle(OrderLifecycle lifecycle);
 
     PageInfo<OrderPageInfoVO> getOrderListPageInfoByUserIdAndIdentityType(Long userID, Integer identityType, Integer showStatus, Integer page, Integer size);
+
+    List<OrderBaseInfo> getSendToWMSFailedOrder();
 }
