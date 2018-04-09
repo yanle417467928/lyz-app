@@ -156,6 +156,16 @@ public class ProductCouponController {
                     int totalQty = goodsIdQtyParam.getTotalQty();
                     GoodsDO goodsDO = goodsService.findGoodsById(goodsId);
                     if (null != goodsDO) {
+                        /*产品卷对应的价目表不存在，提示用户不能加入购物车*/
+                        GoodsDO goods = this.goodsService.findGoodsByUserIdAndIdentityType(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsId);
+                        if (null == goods){
+                            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "加入下料清单失败, 产品卷 “" + goodsDO.getSkuName() + "”" +
+                                    " 对应的商品已下架!", null);
+                            logger.info("productCouponTransformMaterialList OUT,顾客点击使用产品券通过加入下料清单失败，出参 resultDTO:{}", resultDTO);
+                            return resultDTO;
+                        }
+                        /***************/
+
                         //查询下料清单中是否有重复产品券
                         MaterialListDO materialListDO = null;
                         if (identityType == 6) {
