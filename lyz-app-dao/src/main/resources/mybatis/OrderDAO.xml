@@ -1305,7 +1305,12 @@
         SELECT
         <include refid="All_FIELD"/>
         FROM ord_base_info WHERE ord_no IN (
-
+        'ZZ_XN20180410121039220757',
+        'ZZ_XN20180410121424337446',
+        'ZZ_XN20180410122412832577',
+        'ZZ_XN20180410131103273766',
+        'CD_XN20180410133713480915',
+        'CD_XN20180410141842793222'
         )
     </select>
 </mapper>

@@ -1838,6 +1838,15 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
         }
     }
 
+    /**
+     * 异步处理城市采购逻辑
+     */
+    @Async
+    @SuppressWarnings("WeakerAccess")
+    protected void handlingWtaWarehousePurchaseHeaderAsync() {
+
+    }
+
     //***************************下面是调用测试***********************************
     @Override
     public String getName(String userId) {
