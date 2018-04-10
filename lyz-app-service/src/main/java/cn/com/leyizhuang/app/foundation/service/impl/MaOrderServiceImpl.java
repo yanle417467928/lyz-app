@@ -43,6 +43,7 @@ import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.management.goodscategory.MaOrderGoodsDetailResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.*;
 import cn.com.leyizhuang.common.core.constant.ArrearsAuditStatus;
+import cn.com.leyizhuang.common.util.AssertUtil;
 import cn.com.leyizhuang.common.util.CountUtil;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import com.github.pagehelper.PageHelper;
@@ -162,9 +163,9 @@ public class MaOrderServiceImpl implements MaOrderService {
     public List<MaOrderVO> findMaOrderVOByCondition(MaOrderVORequest maOrderVORequest, List<Long> storeIds) {
         List<MaOrderVO> maOrderVOList = maOrderDAO.findMaOrderVOByCondition(maOrderVORequest);
 
-        for (int i = 0;i<maOrderVOList.size();i++){
-            for (int j =0;j<storeIds.size();j++){
-                if (maOrderVOList.get(i).equals(storeIds.get(j))){
+        for (int i = 0; i < maOrderVOList.size(); i++) {
+            for (int j = 0; j < storeIds.size(); j++) {
+                if (maOrderVOList.get(i).equals(storeIds.get(j))) {
                     maOrderVOList.remove(maOrderVOList.get(i));
                 }
             }
@@ -406,6 +407,16 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Override
     public List<OrderBaseInfo> scanningUnpaidOrder(String findDate) {
         return maOrderDAO.scanningUnpaidOrder(findDate);
+    }
+
+    @Override
+    public PageInfo<MaOrderVO> findMaOrderVOPageInfo(Integer page, Integer size, List<Long> storeIds) {
+        if (null != page && null != size && AssertUtil.isNotEmpty(storeIds)) {
+            PageHelper.startPage(page, size);
+            List<MaOrderVO> maOrderVOList = maOrderDAO.findMaOrderVOAll(storeIds);
+            return new PageInfo<>(maOrderVOList);
+        }
+        return null;
     }
 
     @Override

@@ -22,7 +22,7 @@
         LEFT JOIN st_store AS s ON s.store_code = obi.store_code
          WHERE
         obi.order_subject_type = 'STORE'
-        AND s.store_id IN
+        AND obi.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
