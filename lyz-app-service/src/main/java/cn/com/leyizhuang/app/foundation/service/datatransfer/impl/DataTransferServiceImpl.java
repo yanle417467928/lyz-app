@@ -988,7 +988,6 @@ public class DataTransferServiceImpl implements DataTransferService {
 
     public void transferOrderRelevantInfo(String orderNo) throws ExecutionException, InterruptedException {
         // *********************** 订单迁移处理 ***************
-        Queue<DataTransferErrorLog> errorLogQueue = new ConcurrentLinkedDeque<>();
         List<TdOrderSmall> storeMainOrderNumberList;
         List<AppEmployee> employeeList = employeeService.findAllSeller();
         List<AppCustomer> customerList = customerService.findAllCustomer();
@@ -1000,6 +999,7 @@ public class DataTransferServiceImpl implements DataTransferService {
         Date endTime = new Date();
         //查询所有待处理的主单
         storeMainOrderNumberList = this.getPendingTransferOrderByOrderNo(startTime, endTime, orderNo);
+        System.out.println("查询到的订单数量:" + storeMainOrderNumberList.size());
         if (storeMainOrderNumberList == null || storeMainOrderNumberList.isEmpty()) {
             log.info("订单号：" + orderNo + "查不到数据");
             throw new DataTransferException("该订单号数据不存在", DataTransferExceptionType.NDT);
@@ -1008,7 +1008,10 @@ public class DataTransferServiceImpl implements DataTransferService {
         for (TdOrderSmall tdOrder : storeMainOrderNumberList) {
             try {
                 //处理订单头
+
                 OrderBaseInfo orderBaseInfo = this.transferOrderBaseInfo(tdOrder, employeeList, customerList, storeList);
+
+                System.out.println("订单基础表处理完毕: " + orderBaseInfo);
 
                 // 根据主单号 找到旧订单分单
                 List<TdOrder> tdOrders = transferDAO.findOrderAllFieldByOrderNumber(orderBaseInfo.getOrderNumber());
@@ -1020,20 +1023,30 @@ public class DataTransferServiceImpl implements DataTransferService {
                 // 转换订单商品
                 List<OrderGoodsInfo> orderGoodsInfoList = orderGoodsTransferService.transferOne(orderBaseInfo, tdOrders);
 
+                System.out.println("订单商品表处理完毕: " + orderGoodsInfoList);
+
+
                 //处理订单账单信息
                 OrderBillingDetails orderBillingDetails = this.transferOrderBillingDetails(orderBaseInfo);
+
+                System.out.println("订单账单处理完毕: " + orderBillingDetails);
 
                 //****物流进度明细 begin****/
                 List<OrderDeliveryInfoDetails> deliveryInfoDetailsList = new ArrayList<>();
                 if (AppDeliveryType.HOUSE_DELIVERY.equals(orderBaseInfo.getDeliveryType())) {
                     deliveryInfoDetailsList = this.saveOrderDeliveryInfoDetails(orderBaseInfo);
                 }
+                System.out.println("订单物流进度明细处理完毕: " + deliveryInfoDetailsList);
+
 
                 //****经销差价返还 begin****/
                 List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetailsList = new ArrayList<>();
                 if (!orderBaseInfo.getOrderNumber().contains("YF")) {
                     jxPriceDifferenceReturnDetailsList = this.saveOrderJxPriceDifference(orderBaseInfo, tdOrders);
                 }
+
+                System.out.println("订单经销差价处理完毕: " + jxPriceDifferenceReturnDetailsList);
+
                 List<OrderBillingPaymentDetails> paymentDetailsList = new ArrayList<>();
                 //****装饰公司账单支付明细转换 begin****/
                 if (AppOrderSubjectType.FIT.equals(orderBaseInfo.getOrderSubjectType())) {
@@ -1043,24 +1056,37 @@ public class DataTransferServiceImpl implements DataTransferService {
                     paymentDetailsList = this.saveOrderBillingPaymentDetail(orderBaseInfo, tdOrder);
                 }
 
+                System.out.println("订单账单支付明细处理完毕: " + paymentDetailsList);
+
                 //处理订单物流信息
                 OrderLogisticsInfo orderLogisticsInfo = this.transferOrderLogisticsInfo(tdOrder, employeeList, storeList);
+
+                System.out.println("订单物流信息处理完毕: " + orderLogisticsInfo);
 
                 //订单券信息处理
                 Map<String, Object> map = this.transferCoupon(orderBaseInfo);
 
+                System.out.println("订单券信息处理完毕: " + map);
+
+
                 //订单欠款审核信息
                 OrderArrearsAuditDO orderArrearsAuditDO = this.transferArrearsAudit(orderBaseInfo.getOrderNumber(), employeeList);
+
+                System.out.println("订单欠款审核信息处理完毕: " + orderArrearsAuditDO);
 
                 //持久化订单相关信息
                 dataTransferSupportService.saveOrderRelevantInfo(orderBaseInfo, orderGoodsInfoList, orderBillingDetails, deliveryInfoDetailsList,
                         jxPriceDifferenceReturnDetailsList, paymentDetailsList, orderLogisticsInfo, map,
                         orderArrearsAuditDO);
+                System.out.println("订单相关信息存储完毕！");
             } catch (DataTransferException e) {
                 // 记录一条错误日志
+                System.out.println(e.getType().getDesc());
+                log.info("{}", e);
                 dataTransferSupportService.saveOneDataTransferErrolog(new DataTransferErrorLog(null, tdOrder.getMainOrderNumber(), e.getType().getDesc(), new Date()));
             } catch (Exception e) {
                 log.info(e.getMessage());
+                log.info("{}", e);
                 // 记录一条错误日志
                 dataTransferSupportService.saveOneDataTransferErrolog(new DataTransferErrorLog(null, tdOrder.getMainOrderNumber(), e.getMessage(),
                         new Date()));
