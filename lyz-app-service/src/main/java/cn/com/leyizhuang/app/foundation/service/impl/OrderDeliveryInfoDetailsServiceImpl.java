@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -54,19 +55,34 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
 //        PageHelper.startPage(page, size);
         List<WaitDeliveryResponse> waitDeliveryResponseList = orderDeliveryInfoDetailsDAO.getOrderBeasInfoByOperatorNo(operatorNo);
         List<OrderArrearsAuditDO> orderArrearsAuditDOList = orderDeliveryInfoDetailsDAO.getArrearsAuditByOperatorNo(operatorNo);
-        List<WaitDeliveryResponse> waitDeliveryResponses = new ArrayList<>();
-        if (null != waitDeliveryResponseList && waitDeliveryResponseList.size() > 0) {
-            for(int i = 0;i<waitDeliveryResponseList.size();i++){
-                for (int j=0;j<orderArrearsAuditDOList.size();j++){
-                    /*2018-04-07 generation 报IndexOutOfBoundsException，原因是remove后，size变短*/
-                    if (!waitDeliveryResponseList.get(i).getOrderNumber().equals(orderArrearsAuditDOList.get(j).getOrderNumber())) {
-                        waitDeliveryResponses.add(waitDeliveryResponseList.get(i));
-
-                    }
+        Iterator<WaitDeliveryResponse> waitDeliveryResponseIterator = waitDeliveryResponseList.iterator();
+        Iterator<OrderArrearsAuditDO> orderArrearsAuditDOIterator = orderArrearsAuditDOList.iterator();
+        while (waitDeliveryResponseIterator.hasNext()){
+            while (orderArrearsAuditDOIterator.hasNext()){
+                WaitDeliveryResponse waitDeliveryResponse = waitDeliveryResponseIterator.next();
+                OrderArrearsAuditDO orderArrearsAuditDO = orderArrearsAuditDOIterator.next();
+                if (waitDeliveryResponse.getOrderNumber().equals(orderArrearsAuditDO.getOrderNumber())){
+                    waitDeliveryResponseIterator.remove();
                 }
             }
         }
-        return waitDeliveryResponses;
+
+//        List<WaitDeliveryResponse> waitDeliveryResponses = new ArrayList<>();
+//        if (null != waitDeliveryResponseList && waitDeliveryResponseList.size() > 0) {
+//            for(int i = 0;i<waitDeliveryResponseList.size();i++){
+//                for (int j=0;j<orderArrearsAuditDOList.size();j++){
+//                    /*2018-04-07 generation 报IndexOutOfBoundsException，原因是remove后，size变短*/
+//                    if (!waitDeliveryResponseList.get(i).getOrderNumber().equals(orderArrearsAuditDOList.get(j).getOrderNumber())) {
+//                        waitDeliveryResponses.add(waitDeliveryResponseList.get(i));
+//
+//                    }
+//                }
+//            }
+//        }
+
+
+//
+        return waitDeliveryResponseList;
     }
 
     @Override
