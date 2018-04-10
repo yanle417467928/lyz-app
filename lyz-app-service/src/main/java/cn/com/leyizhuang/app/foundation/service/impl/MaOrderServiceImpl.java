@@ -378,7 +378,7 @@ public class MaOrderServiceImpl implements MaOrderService {
         maOrderReceiveInf.setSendTime(new Date());
         this.saveAppToEbsOrderReceiveInf(maOrderReceiveInf);
         //记录销量
-        statisticsSellDetailsService.addOrderSellDetails(orderNumber);
+        //statisticsSellDetailsService.addOrderSellDetails(orderNumber);
     }
 
     @Override
