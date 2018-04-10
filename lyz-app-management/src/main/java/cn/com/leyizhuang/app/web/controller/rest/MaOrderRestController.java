@@ -108,15 +108,14 @@ public class MaOrderRestController extends BaseRestController {
         try {
             //查询登录用户门店权限的门店ID
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
-
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageHelper.startPage(page, size);
-            List<MaOrderVO> maOrderVOList = this.maOrderService.findMaOrderVOAll(storeIds);
-            PageInfo<MaOrderVO> maOrderVOPageInfo = new PageInfo<>(maOrderVOList);
-            List<MaOrderVO> orderVOList = maOrderVOPageInfo.getList();
-            logger.warn("restOrderPageGird ,后台分页获取所有订单列表成功", orderVOList.size());
-            return new GridDataVO<MaOrderVO>().transform(orderVOList, maOrderVOPageInfo.getTotal());
+            //PageHelper.startPage(page, size);
+            // List<MaOrderVO> maOrderVOList = this.maOrderService.findMaOrderVOAll(storeIds);
+            // PageInfo<MaOrderVO> maOrderVOPageInfo = new PageInfo<>(maOrderVOList);
+            PageInfo<MaOrderVO> maOrderVOPageInfo = maOrderService.findMaOrderVOPageInfo(page, size, storeIds);
+            logger.warn("restOrderPageGird ,后台分页获取所有订单列表成功", maOrderVOPageInfo.getList().size());
+            return new GridDataVO<MaOrderVO>().transform(maOrderVOPageInfo.getList(), maOrderVOPageInfo.getTotal());
         } catch (Exception e) {
             e.printStackTrace();
             logger.warn("restOrderPageGird EXCEPTION,发生未知错误，后台分页获取所有订单列表失败");
@@ -144,7 +143,7 @@ public class MaOrderRestController extends BaseRestController {
             size = getSize(size);
             Integer page = getPage(offset, size);
             PageHelper.startPage(page, size);
-            List<MaOrderVO> maOrderVOList = this.maOrderService.findMaOrderVOByCityId(cityId,storeIds);
+            List<MaOrderVO> maOrderVOList = this.maOrderService.findMaOrderVOByCityId(cityId, storeIds);
             PageInfo<MaOrderVO> maOrderVOPageInfo = new PageInfo<>(maOrderVOList);
             List<MaOrderVO> orderVOList = maOrderVOPageInfo.getList();
             logger.warn("getOrderByCityId ,分页查询城市订单列表成功", orderVOList.size());
@@ -215,7 +214,7 @@ public class MaOrderRestController extends BaseRestController {
                 maOrderVORequest.setAppDeliveryType(AppDeliveryType.PRODUCT_COUPON);
             }
             maOrderVORequest.setList(storeIds);
-            List<MaOrderVO> maOrderVOList = this.maOrderService.findMaOrderVOByCondition(maOrderVORequest,storeIds);
+            List<MaOrderVO> maOrderVOList = this.maOrderService.findMaOrderVOByCondition(maOrderVORequest, storeIds);
             PageInfo<MaOrderVO> maOrderVOPageInfo = new PageInfo<>(maOrderVOList);
             List<MaOrderVO> orderVOList = maOrderVOPageInfo.getList();
             logger.warn("getOrderByStoreIdAndCityIdAndDeliveryType ,根据配送方式分页查询订单列表成功", orderVOList.size());
@@ -379,7 +378,7 @@ public class MaOrderRestController extends BaseRestController {
             size = getSize(size);
             Integer page = getPage(offset, size);
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
-            PageInfo<MaSelfTakeOrderVO> maSelfTakeOrderVOPageInfo = this.maOrderService.findSelfTakeOrderListByScreen(page, size, cityId, storeId, status, isPayUp,storeIds);
+            PageInfo<MaSelfTakeOrderVO> maSelfTakeOrderVOPageInfo = this.maOrderService.findSelfTakeOrderListByScreen(page, size, cityId, storeId, status, isPayUp, storeIds);
             List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maSelfTakeOrderVOPageInfo.getList();
             logger.info("restSelfTakeOrderPageGirdByCityId ,后台根据筛选条件分页查询所有自提订单列表成功", (maSelfTakeOrderVOList == null) ? 0 : maSelfTakeOrderVOList.size());
             return new GridDataVO<MaSelfTakeOrderVO>().transform(maSelfTakeOrderVOList, maSelfTakeOrderVOPageInfo.getTotal());
@@ -406,7 +405,7 @@ public class MaOrderRestController extends BaseRestController {
             size = getSize(size);
             Integer page = getPage(offset, size);
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
-            PageInfo<MaSelfTakeOrderVO> maSelfTakeOrderVOPageInfo = this.maOrderService.findSelfTakeOrderListByInfo(page, size, info,storeIds);
+            PageInfo<MaSelfTakeOrderVO> maSelfTakeOrderVOPageInfo = this.maOrderService.findSelfTakeOrderListByInfo(page, size, info, storeIds);
             List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maSelfTakeOrderVOPageInfo.getList();
             logger.info("restSelfTakeOrderPageGirdByInfo ,后台根据条件信息分页查询自提订单列表成功", (maSelfTakeOrderVOList == null) ? 0 : maSelfTakeOrderVOList.size());
             return new GridDataVO<MaSelfTakeOrderVO>().transform(maSelfTakeOrderVOList, maSelfTakeOrderVOPageInfo.getTotal());
@@ -480,7 +479,7 @@ public class MaOrderRestController extends BaseRestController {
             logger.warn("orderShipping OUT,后台自提单发货失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if ("CANCELED".equals(maOrderTempInfo.getStatus().getValue())||"UNPAID".equals(maOrderTempInfo.getStatus().getValue())) {
+        if ("CANCELED".equals(maOrderTempInfo.getStatus().getValue()) || "UNPAID".equals(maOrderTempInfo.getStatus().getValue())) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "当前订单已取消或待付款,不能发货", null);
             logger.warn("orderReceivablesForCustomer OUT,后台订单发货失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -593,7 +592,7 @@ public class MaOrderRestController extends BaseRestController {
             logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if ("CANCELED".equals(maOrderTempInfo.getStatus().getValue())||"UNPAID".equals(maOrderTempInfo.getStatus().getValue())) {
+        if ("CANCELED".equals(maOrderTempInfo.getStatus().getValue()) || "UNPAID".equals(maOrderTempInfo.getStatus().getValue())) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "当前订单已取消或待付款,不能收款", null);
             logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -603,7 +602,7 @@ public class MaOrderRestController extends BaseRestController {
             logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (BigDecimal.ZERO.compareTo(maOrderAmount.getPosAmount())!=0&&StringUtils.isBlank(maOrderAmount.getSerialNumber())) {
+        if (BigDecimal.ZERO.compareTo(maOrderAmount.getPosAmount()) != 0 && StringUtils.isBlank(maOrderAmount.getSerialNumber())) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "请填写Pos交易流水号", null);
             logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -618,7 +617,7 @@ public class MaOrderRestController extends BaseRestController {
             guideCreditChangeDetail.setCreateTime(new Date());
             guideCreditChangeDetail.setOperatorId(shiroUser.getId());
             guideCreditChangeDetail.setOperatorIp(IpUtil.getIpAddress(request));
-            List<String> ReceiptNumberList = this.maOrderService.selfTakeOrderReceivables(maOrderAmount,maOrderBillingDetailResponse,guideCreditChangeDetail);
+            List<String> ReceiptNumberList = this.maOrderService.selfTakeOrderReceivables(maOrderAmount, maOrderBillingDetailResponse, guideCreditChangeDetail);
             for (String receiptNumber : ReceiptNumberList) {
                 this.maSinkSender.sendOrderReceipt(receiptNumber);
             }
@@ -679,7 +678,7 @@ public class MaOrderRestController extends BaseRestController {
             size = getSize(size);
             Integer page = getPage(offset, size);
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
-            PageInfo<MaAgencyAndArrearsOrderVO> maAgencyAndArrearsOrderVOPageInfo = this.maOrderService.findMaAgencyAndArrearsOrderListByScreen(page, size, cityId, storeId, status, isPayUp,storeIds);
+            PageInfo<MaAgencyAndArrearsOrderVO> maAgencyAndArrearsOrderVOPageInfo = this.maOrderService.findMaAgencyAndArrearsOrderListByScreen(page, size, cityId, storeId, status, isPayUp, storeIds);
             List<MaAgencyAndArrearsOrderVO> maAgencyAndArrearsOrderVOList = maAgencyAndArrearsOrderVOPageInfo.getList();
             logger.info("restArrearsAndAgencyOrderPageGirdByScreen ,后台根据筛选条件分页查询所有欠款与还款订单列表成功", (maAgencyAndArrearsOrderVOList == null) ? 0 : maAgencyAndArrearsOrderVOList.size());
             return new GridDataVO<MaAgencyAndArrearsOrderVO>().transform(maAgencyAndArrearsOrderVOList, maAgencyAndArrearsOrderVOPageInfo.getTotal());
@@ -707,7 +706,7 @@ public class MaOrderRestController extends BaseRestController {
             size = getSize(size);
             Integer page = getPage(offset, size);
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
-            PageInfo<MaAgencyAndArrearsOrderVO> maAgencyAndArrearsOrderVOPageInfo = this.maOrderService.findMaAgencyAndArrearsOrderListByInfo(page, size, info,storeIds);
+            PageInfo<MaAgencyAndArrearsOrderVO> maAgencyAndArrearsOrderVOPageInfo = this.maOrderService.findMaAgencyAndArrearsOrderListByInfo(page, size, info, storeIds);
             List<MaAgencyAndArrearsOrderVO> maAgencyAndArrearsOrderVOList = maAgencyAndArrearsOrderVOPageInfo.getList();
             logger.info("restArrearsAndAgencyOrderPageGirdByInfo ,后台根据条件信息分页查询欠款与还款订单成功", (maAgencyAndArrearsOrderVOList == null) ? 0 : maAgencyAndArrearsOrderVOList.size());
             return new GridDataVO<MaAgencyAndArrearsOrderVO>().transform(maAgencyAndArrearsOrderVOList, maAgencyAndArrearsOrderVOPageInfo.getTotal());
@@ -823,7 +822,7 @@ public class MaOrderRestController extends BaseRestController {
             logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (BigDecimal.ZERO.compareTo(maOrderAmount.getPosAmount())!=0&&StringUtils.isBlank(maOrderAmount.getSerialNumber())) {
+        if (BigDecimal.ZERO.compareTo(maOrderAmount.getPosAmount()) != 0 && StringUtils.isBlank(maOrderAmount.getSerialNumber())) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "请填写Pos交易流水号", null);
             logger.warn("orderReceivablesForCustomer OUT,后台订单收款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -838,7 +837,7 @@ public class MaOrderRestController extends BaseRestController {
             guideCreditChangeDetail.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
             guideCreditChangeDetail.setOperatorIp(IpUtil.getIpAddress(request));
             guideCreditChangeDetail.setReferenceNumber(maOrderAmount.getOrderNumber());
-            List<String> receiptNumberList = this.maOrderService.arrearsOrderRepayment(maOrderAmount,maOrderBillingDetailResponse ,guideCreditChangeDetail);
+            List<String> receiptNumberList = this.maOrderService.arrearsOrderRepayment(maOrderAmount, maOrderBillingDetailResponse, guideCreditChangeDetail);
             for (String receiptNumber : receiptNumberList) {
                 this.maSinkSender.sendOrderReceipt(receiptNumber);
             }
@@ -1015,7 +1014,7 @@ public class MaOrderRestController extends BaseRestController {
 
             //********* 开始计算分摊 促销分摊可能产生新的行记录 所以优先分摊 ****************
             List<OrderGoodsInfo> orderGoodsInfoList;
-            orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(sellerId, AppIdentityType.getAppIdentityTypeByValue(0), giftList, support.getOrderGoodsInfoList(),customerId);
+            orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(sellerId, AppIdentityType.getAppIdentityTypeByValue(0), giftList, support.getOrderGoodsInfoList(), customerId);
 
             //******** 分摊完毕 计算退货 单价 ***************************
             orderGoodsInfoList = dutchService.countReturnPrice(orderGoodsInfoList);

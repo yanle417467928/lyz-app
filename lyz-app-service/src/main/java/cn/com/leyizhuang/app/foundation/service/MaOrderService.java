@@ -400,4 +400,6 @@ public interface MaOrderService {
      * @return
      */
     List<OrderBaseInfo> scanningUnpaidOrder(String findDate);
+
+    PageInfo<MaOrderVO> findMaOrderVOPageInfo(Integer page, Integer size, List<Long> storeIds);
 }
