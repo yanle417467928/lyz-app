@@ -609,57 +609,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,该单已存在 出参 order_no:{}", allocation.getAllocationNo());
                         return AppXmlUtil.resultStrXml(1, "重复传输,该单" + allocation.getAllocationNo() + "已存在!");
                     }
-                    List<WtaWarehouseAllocationGoods> allocationGoodsList = wmsToAppOrderService.findWtaWarehouseAllocationGoodsListByAllocationNo(allocation.getAllocationNo());
-                    for (WtaWarehouseAllocationGoods allocationGoods : allocationGoodsList) {
-                        GoodsDO goodsDO = goodsService.queryBySku(allocationGoods.getSku());
-                        if (null == goodsDO) {
-                            logger.info("GetWMSInfo OUT,获取wms信息失败,获取仓库调拨失败,任务编号 商品资料中没有查询到sku为" + allocationGoods.getSku() + "的商品信息!");
-                            return AppXmlUtil.resultStrXml(1, "商品资料中没有查询到sku为" + allocationGoods.getSku() + "的商品信息!");
-                        }
-                        Integer changeInventory = 0;
-                        CityInventoryAvailableQtyChangeType changeType = null;
-                        if ("in".equalsIgnoreCase(allocation.getUploadStatus())) {
-                            changeType = CityInventoryAvailableQtyChangeType.ALLOCATE_INBOUND;
-                            changeInventory = allocationGoods.getCheckQty();
-                        } else if ("out".equalsIgnoreCase(allocation.getUploadStatus())) {
-                            changeInventory = -allocationGoods.getCheckQty();
-                            changeType = CityInventoryAvailableQtyChangeType.ALLOCATE_OUTBOUND;
-                        }
-                        for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
-                            CityInventory cityInventory = cityService.findCityInventoryByCityCodeAndSku(allocation.getCompanyId(), allocationGoods.getSku());
-                            if (null == cityInventory) {
-                                cityInventory = CityInventory.transform(goodsDO, city);
-                                cityService.saveCityInventory(cityInventory);
-                            }
-                            if (cityInventory.getAvailableIty() < allocationGoods.getCheckQty() && changeInventory < 0) {
-                                logger.info("GetWMSInfo OUT,获取wms信息失败,获取仓库调拨失败,任务编号 出参 AllocationNo:{}", allocation.getAllocationNo());
-                                return AppXmlUtil.resultStrXml(1, "该城市下sku为" + allocationGoods.getSku() + "的商品库存不足!");
-                            }
-                            Integer affectLine = cityService.lockCityInventoryByCityCodeAndSkuAndInventory(
-                                    allocation.getCompanyId(), allocationGoods.getSku(), changeInventory, cityInventory.getLastUpdateTime());
-                            if (affectLine > 0) {
-                                CityInventoryAvailableQtyChangeLog log = new CityInventoryAvailableQtyChangeLog();
-                                log.setCityId(cityInventory.getCityId());
-                                log.setCityName(cityInventory.getCityName());
-                                log.setGid(cityInventory.getGid());
-                                log.setSku(cityInventory.getSku());
-                                log.setSkuName(cityInventory.getSkuName());
-                                log.setChangeQty(allocationGoods.getCheckQty());
-                                log.setAfterChangeQty(cityInventory.getAvailableIty() + changeInventory);
-                                log.setChangeTime(Calendar.getInstance().getTime());
-                                log.setChangeType(changeType);
-                                log.setChangeTypeDesc(changeType != null ? changeType.getDescription() : null);
-                                log.setReferenceNumber(allocation.getAllocationNo());
-                                cityService.addCityInventoryAvailableQtyChangeLog(log);
-                                break;
-                            } else {
-                                if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                    logger.info("GetWMSInfo OUT,获取wms信息失败,获取仓库调拨失败,任务编号 出参 AllocationNo:{}", allocation.getAllocationNo());
-                                    return AppXmlUtil.resultStrXml(1, "网络原因可能造成事务异常!");
-                                }
-                            }
-                        }
-                    }
+                    this.handlingWtaWarehouseAllocationHeaderAsync(allocation, city);
                 }
                 logger.info("GetWMSInfo OUT,获取仓库调拨头档wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
@@ -702,50 +652,13 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,获取仓库采购入库失败,任务编号 城市信息中没有查询到城市code为" + purchaseHeader.getCompanyId() + "的数据!");
                         return AppXmlUtil.resultStrXml(1, "城市信息中没有查询到城市code为" + purchaseHeader.getCompanyId() + "的数据!");
                     }
+                    purchaseHeader.setCreateTime(Calendar.getInstance().getTime());
                     int result = wmsToAppOrderService.saveWtaWarehousePurchaseHeader(purchaseHeader);
                     if (result == 0) {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,该单已存在 出参 order_no:{}", purchaseHeader.getPurchaseNo());
                         return AppXmlUtil.resultStrXml(1, "重复传输,该单" + purchaseHeader.getPurchaseNo() + "已存在!");
                     }
-
-                    List<WtaWarehousePurchaseGoods> purchaseGoodsList = wmsToAppOrderService.findWtaWarehousePurchaseGoodsListByPurchaseNo(purchaseHeader.getRecNo());
-                    for (WtaWarehousePurchaseGoods purchaseGoods : purchaseGoodsList) {
-                        GoodsDO goodsDO = goodsService.queryBySku(purchaseGoods.getSku());
-                        if (null == goodsDO) {
-                            logger.info("GetWMSInfo OUT,获取wms信息失败,获取仓库采购入库失败,任务编号 商品资料中没有查询到sku为" + purchaseGoods.getSku() + "的商品信息!");
-                            return AppXmlUtil.resultStrXml(1, "商品资料中没有查询到sku为" + purchaseGoods.getSku() + "的商品信息!");
-                        }
-                        for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
-                            CityInventory cityInventory = cityService.findCityInventoryByCityCodeAndSku(purchaseHeader.getCompanyId(), purchaseGoods.getSku());
-                            if (null == cityInventory) {
-                                cityInventory = CityInventory.transform(goodsDO, city);
-                                cityService.saveCityInventory(cityInventory);
-                            }
-                            Integer affectLine = cityService.lockCityInventoryByCityCodeAndSkuAndInventory(
-                                    purchaseHeader.getCompanyId(), purchaseGoods.getSku(), purchaseGoods.getRecQty(), cityInventory.getLastUpdateTime());
-                            if (affectLine > 0) {
-                                CityInventoryAvailableQtyChangeLog log = new CityInventoryAvailableQtyChangeLog();
-                                log.setCityId(cityInventory.getCityId());
-                                log.setCityName(cityInventory.getCityName());
-                                log.setGid(cityInventory.getGid());
-                                log.setSku(cityInventory.getSku());
-                                log.setSkuName(cityInventory.getSkuName());
-                                log.setChangeQty(purchaseGoods.getRecQty());
-                                log.setAfterChangeQty(cityInventory.getAvailableIty() + purchaseGoods.getRecQty());
-                                log.setChangeTime(Calendar.getInstance().getTime());
-                                log.setChangeType(CityInventoryAvailableQtyChangeType.CITY_PURCHASE_INBOUND);
-                                log.setChangeTypeDesc(CityInventoryAvailableQtyChangeType.CITY_PURCHASE_INBOUND.getDescription());
-                                log.setReferenceNumber(purchaseHeader.getPurchaseNo());
-                                cityService.addCityInventoryAvailableQtyChangeLog(log);
-                                break;
-                            } else {
-                                if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                    logger.info("GetWMSInfo OUT,获取wms信息失败,获取仓库采购失败,任务编号 出参 PurchaseNo:{}", purchaseHeader.getPurchaseNo());
-                                    return AppXmlUtil.resultStrXml(1, "网络原因可能造成事务异常!");
-                                }
-                            }
-                        }
-                    }
+                    this.handlingWtaWarehousePurchaseHeaderAsync(purchaseHeader, city);
                 }
                 logger.info("GetWMSInfo OUT,获取仓库采购主档wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
@@ -801,57 +714,13 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,获取报损报溢失败,任务编号 商品资料中没有查询到sku为" + damageAndOverflow.getSku() + "的商品信息!");
                         return AppXmlUtil.resultStrXml(1, "商品资料中没有查询到sku为" + damageAndOverflow.getSku() + "的商品信息!");
                     }
+                    damageAndOverflow.setCreateTime(Calendar.getInstance().getTime());
                     int result = wmsToAppOrderService.saveWtaWarehouseReportDamageAndOverflow(damageAndOverflow);
                     if (result == 0) {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,该单已存在 出参 order_no:{}", damageAndOverflow.getWasteNo());
                         return AppXmlUtil.resultStrXml(1, "重复传输,该单" + damageAndOverflow.getWasteNo() + "已存在!");
                     }
-
-                    Integer changeInventory = 0;
-                    CityInventoryAvailableQtyChangeType changeType = null;
-                    String cityCode = damageAndOverflow.getCompanyId();
-                    String sku = damageAndOverflow.getSku();
-                    Integer qty = damageAndOverflow.getQty();
-                    if (damageAndOverflow.getWasteType().contains("一般报溢")) {
-                        changeType = CityInventoryAvailableQtyChangeType.CITY_OVERFLOW;
-                        changeInventory = qty;
-                    } else {
-                        changeInventory = -qty;
-                        changeType = CityInventoryAvailableQtyChangeType.CITY_WASTAGE;
-                    }
-                    for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
-                        CityInventory cityInventory = cityService.findCityInventoryByCityCodeAndSku(cityCode, sku);
-                        if (null == cityInventory) {
-                            cityInventory = CityInventory.transform(goodsDO, city);
-                            cityService.saveCityInventory(cityInventory);
-                        }
-                        if (cityInventory.getAvailableIty() < qty && changeInventory < 0) {
-                            logger.info("GetWMSInfo OUT,获取wms信息失败,获取报损报溢失败,任务编号 出参 WasteNo:{}", damageAndOverflow.getWasteNo());
-                            return AppXmlUtil.resultStrXml(1, "该城市下sku为" + sku + "的商品库存不足!");
-                        }
-                        Integer affectLine = cityService.lockCityInventoryByCityCodeAndSkuAndInventory(cityCode, sku, changeInventory, cityInventory.getLastUpdateTime());
-                        if (affectLine > 0) {
-                            CityInventoryAvailableQtyChangeLog log = new CityInventoryAvailableQtyChangeLog();
-                            log.setCityId(cityInventory.getCityId());
-                            log.setCityName(cityInventory.getCityName());
-                            log.setGid(cityInventory.getGid());
-                            log.setSku(cityInventory.getSku());
-                            log.setSkuName(cityInventory.getSkuName());
-                            log.setChangeQty(damageAndOverflow.getQty());
-                            log.setAfterChangeQty(cityInventory.getAvailableIty() + changeInventory);
-                            log.setChangeTime(Calendar.getInstance().getTime());
-                            log.setChangeType(changeType);
-                            log.setChangeTypeDesc(changeType.getDescription());
-                            log.setReferenceNumber(damageAndOverflow.getWasteNo());
-                            cityService.addCityInventoryAvailableQtyChangeLog(log);
-                            break;
-                        } else {
-                            if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                logger.info("GetWMSInfo OUT,获取wms信息失败,获取报损报溢失败,任务编号 出参 WasteNo:{}", damageAndOverflow.getWasteNo());
-                                return AppXmlUtil.resultStrXml(1, "网络原因可能造成事务异常!");
-                            }
-                        }
-                    }
+                    this.handlingWtaWarehouseReportDamageAndOverflowAsync(damageAndOverflow, city, goodsDO);
                 }
                 logger.info("GetWMSInfo OUT,获取仓库报损报溢wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
@@ -1292,6 +1161,10 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
             } else if ("c_owner_no".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     returningOrderHeader.setOwnerNo(childNode.getChildNodes().item(0).getNodeValue());
+                }
+            } else if ("c_end_dt".equalsIgnoreCase(childNode.getNodeName())) {
+                if (null != childNode.getChildNodes().item(0)) {
+                    returningOrderHeader.setCEndDt(DateUtil.dateFromString(childNode.getChildNodes().item(0).getNodeValue()));
                 }
             } else if ("c_rec_no".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
@@ -1843,8 +1716,167 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
      */
     @Async
     @SuppressWarnings("WeakerAccess")
-    protected void handlingWtaWarehousePurchaseHeaderAsync() {
+    protected void handlingWtaWarehousePurchaseHeaderAsync(WtaWarehousePurchaseHeader purchaseHeader, City city) {
+        List<WtaWarehousePurchaseGoods> purchaseGoodsList = wmsToAppOrderService.findWtaWarehousePurchaseGoodsListByPurchaseNo(purchaseHeader.getRecNo());
+        for (WtaWarehousePurchaseGoods purchaseGoods : purchaseGoodsList) {
+            GoodsDO goodsDO = goodsService.queryBySku(purchaseGoods.getSku());
+            if (null == goodsDO) {
+                logger.info("GetWMSInfo OUT,获取wms信息失败,获取仓库采购入库失败,任务编号 商品资料中没有查询到sku为" + purchaseGoods.getSku() + "的商品信息!");
+                smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "获取wms信息失败,获取仓库采购入库失败,商品资料中没有查询到sku为" + purchaseGoods.getSku() + "的商品信息!");
+                return;
+            }
+            for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
+                CityInventory cityInventory = cityService.findCityInventoryByCityCodeAndSku(purchaseHeader.getCompanyId(), purchaseGoods.getSku());
+                if (null == cityInventory) {
+                    cityInventory = CityInventory.transform(goodsDO, city);
+                    cityService.saveCityInventory(cityInventory);
+                }
+                Integer affectLine = cityService.lockCityInventoryByCityCodeAndSkuAndInventory(
+                        purchaseHeader.getCompanyId(), purchaseGoods.getSku(), purchaseGoods.getRecQty(), cityInventory.getLastUpdateTime());
+                if (affectLine > 0) {
+                    CityInventoryAvailableQtyChangeLog log = new CityInventoryAvailableQtyChangeLog();
+                    log.setCityId(cityInventory.getCityId());
+                    log.setCityName(cityInventory.getCityName());
+                    log.setGid(cityInventory.getGid());
+                    log.setSku(cityInventory.getSku());
+                    log.setSkuName(cityInventory.getSkuName());
+                    log.setChangeQty(purchaseGoods.getRecQty());
+                    log.setAfterChangeQty(cityInventory.getAvailableIty() + purchaseGoods.getRecQty());
+                    log.setChangeTime(Calendar.getInstance().getTime());
+                    log.setChangeType(CityInventoryAvailableQtyChangeType.CITY_PURCHASE_INBOUND);
+                    log.setChangeTypeDesc(CityInventoryAvailableQtyChangeType.CITY_PURCHASE_INBOUND.getDescription());
+                    log.setReferenceNumber(purchaseHeader.getPurchaseNo());
+                    cityService.addCityInventoryAvailableQtyChangeLog(log);
+                    break;
+                } else {
+                    if (j == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                        logger.info("GetWMSInfo OUT,获取wms信息失败,获取仓库采购失败,任务编号 出参 PurchaseNo:{}", purchaseHeader.getPurchaseNo());
+                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                        smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "获取wms仓库采购失败!任务编号" + purchaseHeader.getPurchaseNo());
+                        return;
+                    }
+                }
+            }
+        }
+    }
 
+    /**
+     * 异步处理仓库调拨逻辑
+     */
+    @Async
+    @SuppressWarnings("WeakerAccess")
+    protected void handlingWtaWarehouseAllocationHeaderAsync(WtaWarehouseAllocationHeader allocation, City city) {
+        List<WtaWarehouseAllocationGoods> allocationGoodsList = wmsToAppOrderService.findWtaWarehouseAllocationGoodsListByAllocationNo(allocation.getAllocationNo());
+        for (WtaWarehouseAllocationGoods allocationGoods : allocationGoodsList) {
+            GoodsDO goodsDO = goodsService.queryBySku(allocationGoods.getSku());
+            if (null == goodsDO) {
+                logger.info("GetWMSInfo OUT,获取wms信息失败,获取仓库调拨失败,任务编号 商品资料中没有查询到sku为" + allocationGoods.getSku() + "的商品信息!");
+                smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "获取wms信息失败,获取仓库调拨失败,商品资料中没有查询到sku为" + allocationGoods.getSku() + "的商品信息!");
+                return;
+            }
+            Integer changeInventory = 0;
+            CityInventoryAvailableQtyChangeType changeType = null;
+            if ("in".equalsIgnoreCase(allocation.getUploadStatus())) {
+                changeType = CityInventoryAvailableQtyChangeType.ALLOCATE_INBOUND;
+                changeInventory = allocationGoods.getCheckQty();
+            } else if ("out".equalsIgnoreCase(allocation.getUploadStatus())) {
+                changeInventory = -allocationGoods.getCheckQty();
+                changeType = CityInventoryAvailableQtyChangeType.ALLOCATE_OUTBOUND;
+            }
+            for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
+                CityInventory cityInventory = cityService.findCityInventoryByCityCodeAndSku(allocation.getCompanyId(), allocationGoods.getSku());
+                if (null == cityInventory) {
+                    cityInventory = CityInventory.transform(goodsDO, city);
+                    cityService.saveCityInventory(cityInventory);
+                }
+                if (cityInventory.getAvailableIty() < allocationGoods.getCheckQty() && changeInventory < 0) {
+                    logger.info("GetWMSInfo OUT,获取wms信息失败,获取仓库调拨失败,任务编号 出参 AllocationNo:{}", allocation.getAllocationNo());
+                    smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "获取wms信息失败,获取仓库调拨失败,该城市下sku为" + allocationGoods.getSku() + "的商品库存不足!");
+                    return;
+                }
+                Integer affectLine = cityService.lockCityInventoryByCityCodeAndSkuAndInventory(
+                        allocation.getCompanyId(), allocationGoods.getSku(), changeInventory, cityInventory.getLastUpdateTime());
+                if (affectLine > 0) {
+                    CityInventoryAvailableQtyChangeLog log = new CityInventoryAvailableQtyChangeLog();
+                    log.setCityId(cityInventory.getCityId());
+                    log.setCityName(cityInventory.getCityName());
+                    log.setGid(cityInventory.getGid());
+                    log.setSku(cityInventory.getSku());
+                    log.setSkuName(cityInventory.getSkuName());
+                    log.setChangeQty(allocationGoods.getCheckQty());
+                    log.setAfterChangeQty(cityInventory.getAvailableIty() + changeInventory);
+                    log.setChangeTime(Calendar.getInstance().getTime());
+                    log.setChangeType(changeType);
+                    log.setChangeTypeDesc(changeType != null ? changeType.getDescription() : null);
+                    log.setReferenceNumber(allocation.getAllocationNo());
+                    cityService.addCityInventoryAvailableQtyChangeLog(log);
+                    break;
+                } else {
+                    if (j == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                        logger.info("GetWMSInfo OUT,获取wms信息失败,获取仓库调拨失败,任务编号 出参 AllocationNo:{}", allocation.getAllocationNo());
+                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                        smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "获取wms仓库调拨失败!任务编号" + allocation.getAllocationNo());
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 异步处理仓库报损报溢逻辑
+     */
+    @Async
+    @SuppressWarnings("WeakerAccess")
+    protected void handlingWtaWarehouseReportDamageAndOverflowAsync(WtaWarehouseReportDamageAndOverflow damageAndOverflow, City city, GoodsDO goodsDO) {
+        Integer changeInventory = 0;
+        CityInventoryAvailableQtyChangeType changeType = null;
+        String cityCode = damageAndOverflow.getCompanyId();
+        String sku = damageAndOverflow.getSku();
+        Integer qty = damageAndOverflow.getQty();
+        if (damageAndOverflow.getWasteType().contains("一般报溢")) {
+            changeType = CityInventoryAvailableQtyChangeType.CITY_OVERFLOW;
+            changeInventory = qty;
+        } else {
+            changeInventory = -qty;
+            changeType = CityInventoryAvailableQtyChangeType.CITY_WASTAGE;
+        }
+        for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
+            CityInventory cityInventory = cityService.findCityInventoryByCityCodeAndSku(cityCode, sku);
+            if (null == cityInventory) {
+                cityInventory = CityInventory.transform(goodsDO, city);
+                cityService.saveCityInventory(cityInventory);
+            }
+            if (cityInventory.getAvailableIty() < qty && changeInventory < 0) {
+                logger.info("GetWMSInfo OUT,获取wms信息失败,获取报损报溢失败,任务编号 出参 WasteNo:{}", damageAndOverflow.getWasteNo());
+                smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "获取wms信息失败,获取报损报溢失败,该城市下sku为" + damageAndOverflow.getSku() + "的商品库存不足!");
+                return;
+            }
+            Integer affectLine = cityService.lockCityInventoryByCityCodeAndSkuAndInventory(cityCode, sku, changeInventory, cityInventory.getLastUpdateTime());
+            if (affectLine > 0) {
+                CityInventoryAvailableQtyChangeLog log = new CityInventoryAvailableQtyChangeLog();
+                log.setCityId(cityInventory.getCityId());
+                log.setCityName(cityInventory.getCityName());
+                log.setGid(cityInventory.getGid());
+                log.setSku(cityInventory.getSku());
+                log.setSkuName(cityInventory.getSkuName());
+                log.setChangeQty(damageAndOverflow.getQty());
+                log.setAfterChangeQty(cityInventory.getAvailableIty() + changeInventory);
+                log.setChangeTime(Calendar.getInstance().getTime());
+                log.setChangeType(changeType);
+                log.setChangeTypeDesc(changeType.getDescription());
+                log.setReferenceNumber(damageAndOverflow.getWasteNo());
+                cityService.addCityInventoryAvailableQtyChangeLog(log);
+                break;
+            } else {
+                if (j == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                    logger.info("GetWMSInfo OUT,获取wms信息失败,获取报损报溢失败,任务编号 出参 WasteNo:{}", damageAndOverflow.getWasteNo());
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "获取wms报损报溢失败!任务编号" + damageAndOverflow.getWasteNo());
+                    return;
+                }
+            }
+        }
     }
 
     //***************************下面是调用测试***********************************
