@@ -191,34 +191,6 @@
                         </div>
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
-                                <label>产品档次
-                                    <i class="fa fa-question-circle i-tooltip hidden-xs" data-toggle="tooltip"
-                                       data-content="选择产品档次"></i>
-                                </label>
-                                <div class="input-group">
-                                    <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <select id="productGrade" name="productGrade" class="form-control select"
-                                            data-live-search="true">
-                                        <option value="1"
-                                                <#if goodsVO?? && goodsVO.productGrade?? && (goodsVO.productGrade) =='1'>selected</#if>>
-                                            高档
-                                        </option>
-                                        <option value="2"
-                                                <#if goodsVO?? && goodsVO.productGrade?? && (goodsVO.productGrade) == '2'>selected</#if>>
-                                            中档
-                                        </option>
-                                        <option value="3"
-                                                <#if goodsVO?? && goodsVO.productGrade?? && (goodsVO.productGrade) == '3'>selected</#if>>
-                                            低档
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 col-xs-12">
-                            <div class="form-group">
                                 <label for="typeName">类型名称
                                     <i class="fa fa-question-circle i-tooltip hidden-xs" data-toggle="tooltip"
                                        data-content="输入类型名称"></i>
@@ -323,7 +295,7 @@
     var brandId;
     $(function () {
         //初始化编辑器
-        var id = $('#id')
+        var id = $('#id');
         var editor = KindEditor.create('.editor', {
             width: '80%',
             height: '350px',
