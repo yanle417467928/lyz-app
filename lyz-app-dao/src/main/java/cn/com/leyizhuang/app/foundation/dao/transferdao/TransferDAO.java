@@ -142,4 +142,6 @@ public interface TransferDAO {
     List<StoreDetailVO> findStorehasInventory();
 
     void saveStoreInventory(StoreInventory storeInventory);
+
+    List<TdOrder> findOrderAllFieldBySubOrderNumber(String orderNo);
 }
