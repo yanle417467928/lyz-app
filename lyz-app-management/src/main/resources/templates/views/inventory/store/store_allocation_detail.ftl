@@ -183,7 +183,7 @@
                                         <#list trails as item>
                                             <li class="time-label">
                                                     <span class="bg-red">
-                                                    ${item.operateTime?string("yyyy-MM-dd")}
+                                                    ${item.operateTime?string("yyyy-MM-dd")!""}
                                                     </span>
                                             </li>
                                             <#if item.operation == "NEW">
@@ -192,7 +192,7 @@
                                                     <i class="fa fa-check bg-blue"></i>
                                                     <div class="timeline-item">
                                                         <span class="time"><i
-                                                                class="fa fa-clock-o"></i> ${item.operateTime?string("HH:mm:ss")}</span>
+                                                                class="fa fa-clock-o"></i> ${item.operateTime?string("HH:mm:ss")!""}</span>
                                                         <h3 class="timeline-header"><a>新建</a></h3>
 
                                                         <div class="timeline-body">
@@ -206,7 +206,7 @@
                                                     <i class="fa fa-check bg-green"></i>
                                                     <div class="timeline-item">
                                                         <span class="time"><i
-                                                                class="fa fa-clock-o"></i> ${item.operateTime?string("HH:mm:ss")}</span>
+                                                                class="fa fa-clock-o"></i> ${item.operateTime?string("HH:mm:ss")!""}</span>
                                                         <h3 class="timeline-header"><a>出库</a></h3>
 
                                                         <div class="timeline-body">
@@ -220,7 +220,7 @@
                                                     <i class="fa fa-check bg-green"></i>
                                                     <div class="timeline-item">
                                                         <span class="time"><i
-                                                                class="fa fa-clock-o"></i> ${item.operateTime?string("HH:mm:ss")}</span>
+                                                                class="fa fa-clock-o"></i> ${item.operateTime?string("HH:mm:ss")!""}</span>
                                                         <h3 class="timeline-header"><a>入库</a></h3>
 
                                                         <div class="timeline-body">
@@ -234,7 +234,7 @@
                                                     <i class="fa fa-check bg-red"></i>
                                                     <div class="timeline-item">
                                                         <span class="time"><i
-                                                                class="fa fa-clock-o"></i> ${item.operateTime?string("HH:mm:ss")}</span>
+                                                                class="fa fa-clock-o"></i> ${item.operateTime?string("HH:mm:ss")!""}</span>
                                                         <h3 class="timeline-header"><a>作废</a></h3>
 
                                                         <div class="timeline-body">

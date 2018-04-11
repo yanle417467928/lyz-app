@@ -9,6 +9,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.EtaReturnAndRequireGoodsInf;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.EtaReturnAndRequireGoodsInfLog;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.DiySiteInventoryEbsService;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
@@ -87,7 +88,6 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
             //直营要货退货
             if ("CUXAPP_INV_STORE_TRANS_OUT".equalsIgnoreCase(strTable)) {
                 for (int i = 0; i < nodeList.getLength(); i++) {
-
                     // 分公司ID
                     Long sobId = null;
                     // 事务唯一ID
@@ -184,16 +184,21 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                             }
                         }
                     }
+                    EtaReturnAndRequireGoodsInfLog etaReturnAndRequireGoodsInfLog = new EtaReturnAndRequireGoodsInfLog();
+                    etaReturnAndRequireGoodsInfLog.setCreatDate(new Date());
+                    etaReturnAndRequireGoodsInfLog.setTransId(transId);
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     try {
                         //判断门店是否存在
                         AppStore appStore = appStoreService.findByStoreCode(diySiteCode);
                         if (null == appStore) {
+                            etaReturnAndRequireGoodsInfLog.setMsg("门店编码为：" + diySiteCode + " 的门店不存在或者不可用");
                             return AppXmlUtil.generateResultXmlToEbs(1, "门店编码为：" + diySiteCode + " 的门店不存在或者不可用");
                         }
                         //判断商品是否存在
                         GoodsDO goodsDO = goodsService.queryBySku(itemCode);
                         if (null == goodsDO) {
+                            etaReturnAndRequireGoodsInfLog.setMsg("商品编码为：" + itemCode + " 的商品不存");
                             return AppXmlUtil.generateResultXmlToEbs(1, "商品编码为：" + itemCode + " 的商品不存");
                         }
 
@@ -211,9 +216,11 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                             goodsAvailableItyAfterChange = storeInventory.getAvailableIty() + quantity.intValue();
                         }
                         if (goodsQtyAfterChange < 0) {
+                            etaReturnAndRequireGoodsInfLog.setMsg("商品编码为：" + itemCode + "的商品库存不足");
                             return AppXmlUtil.generateResultXmlToEbs(1, "商品编码为：" + itemCode + "的商品库存不足");
                         }
                         if (goodsAvailableItyAfterChange < 0) {
+                            etaReturnAndRequireGoodsInfLog.setMsg("商品编码为：" + itemCode + "的商品可用量不足");
                             return AppXmlUtil.generateResultXmlToEbs(1, "商品编码为：" + itemCode + "的商品可用量不足");
                         }
 
@@ -242,6 +249,7 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                             etaReturnAndRequireGoodsInf.setAttribute5(attribute5);
                             diySiteInventoryEbsService.saveReturnAndRequireGoodsInf(etaReturnAndRequireGoodsInf);
                         } else {
+                            etaReturnAndRequireGoodsInfLog.setMsg("事物编码重复：" + transId);
                             return AppXmlUtil.generateResultXmlToEbs(1, "事物编码重复：" + transId);
                         }
 
@@ -249,12 +257,18 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                         iLog.setAfterChangeQty(goodsAvailableItyAfterChange);
                         iLog.setChangeQty(quantity.intValue());
                         iLog.setChangeTime(new Date());
-                        if (quantity > 0) {
+                        if("门店要货".equals(transType)){
                             iLog.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_IMPORT_GOODS);
                             iLog.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.STORE_IMPORT_GOODS.getDescription());
-                        } else {
+                        }else if("门店退货".equals(transType)){
                             iLog.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS);
                             iLog.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS.getDescription());
+                        }else if("盘点入库".equals(transType)){
+                            iLog.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_INVENTORY_INBOUND);
+                            iLog.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.STORE_INVENTORY_INBOUND.getDescription());
+                        }else if("盘点出库".equals(transType)){
+                            iLog.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_INVENTORY_OUTBOUND);
+                            iLog.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.STORE_INVENTORY_OUTBOUND.getDescription());
                         }
                         iLog.setCityId(appStore.getCityId());
                         iLog.setCityName(appStore.getCity());
@@ -291,6 +305,7 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                                     break;
                                 } else {
                                     if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                        etaReturnAndRequireGoodsInfLog.setMsg("直营要货退货失败,系统繁忙!");
                                         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                                         return AppXmlUtil.resultStrXml(1, "直营要货退货失败,系统繁忙!");
                                     }
@@ -299,8 +314,11 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                         }
                     } catch (Exception e) {
                         logger.info("GetEBSInfo OUT,直营要货退货发生未知异常 出参 e:{}", e);
+                        etaReturnAndRequireGoodsInfLog.setMsg("直营要货退货发生未知异常");
                         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                         return AppXmlUtil.resultStrXml(1, "直营要货退货失败!");
+                    }finally {
+                        diySiteInventoryEbsService.saveReturnAndRequireGoodsInfLog(etaReturnAndRequireGoodsInfLog);
                     }
                 }
                 logger.info("GetEBSInfo OUT,获取ebs信息成功 出参 code=0");

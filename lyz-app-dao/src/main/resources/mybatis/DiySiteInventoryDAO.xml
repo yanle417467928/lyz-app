@@ -15,4 +15,11 @@
         VALUES (#{sobId},#{transId},#{transType},#{transNumber},#{customerId},#{customerNumber},#{diySiteCode},#{shipDate},#{itemCode},#{quantity},#{attribute1}
         ,#{attribute2},#{attribute3},#{attribute4},#{attribute5})
     </insert>
+
+
+    <insert id="saveReturnAndRequireGoodsInfLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.EtaReturnAndRequireGoodsInfLog">
+        INSERT INTO inter_eta_store_goods_trans_inf_log
+        (trans_id,create_date,msg)
+        VALUES (#{transId},#{creatDate},#{msg})
+    </insert>
 </mapper>
