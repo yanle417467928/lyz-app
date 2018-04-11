@@ -43,7 +43,7 @@
                                     <input name="id" type="hidden" class="form-control" id="id" readonly
                                            value="${cityDeliveryTimeVO.id?c}">
                                     <input name="cityId" type="text" class="form-control" id="cityId" readonly
-                                           value="${cityDeliveryTimeVO.cityId?c}">
+                                           value="<#if cityDeliveryTimeVO??&&cityDeliveryTimeVO.cityId??>${cityDeliveryTimeVO.cityId?c}</#if>">
                                 </div>
                             </div>
                         </div>

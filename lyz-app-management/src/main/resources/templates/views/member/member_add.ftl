@@ -208,7 +208,7 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                    <input name="birthday" type="text" value="${(birthday?string('yyyy-MM-dd'))!}"
+                                    <input name="birthday" type="text" value="${(birthday?string('yyyy-MM-dd'))!""}"
                                            class="form-control datepicker"
                                            id="birthday" placeholder="出生日期">
                                 </div>

@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.DiySiteInventoryDAO;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.EtaReturnAndRequireGoodsInf;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.EtaReturnAndRequireGoodsInfLog;
 import cn.com.leyizhuang.app.foundation.service.DiySiteInventoryEbsService;
 import org.springframework.stereotype.Service;
 
@@ -19,5 +20,11 @@ public class DiySiteInventoryEbsServiceImpl implements DiySiteInventoryEbsServic
     @Override
     public void saveReturnAndRequireGoodsInf(EtaReturnAndRequireGoodsInf etaReturnAndRequireGoodsInf) {
          diySiteInventoryDAO.saveReturnAndRequireGoodsInf(etaReturnAndRequireGoodsInf);
+    }
+
+
+    @Override
+    public void saveReturnAndRequireGoodsInfLog(EtaReturnAndRequireGoodsInfLog etaReturnAndRequireGoodsInflog) {
+        diySiteInventoryDAO.saveReturnAndRequireGoodsInfLog(etaReturnAndRequireGoodsInflog);
     }
 }
