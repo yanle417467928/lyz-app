@@ -79,6 +79,9 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
                         break;
                     }
                 }
+//                if ((i+1) == waitDeliveryResponseList.size()){
+//                    break;
+//                }
             }
         }
         return waitDeliveryResponseList;
