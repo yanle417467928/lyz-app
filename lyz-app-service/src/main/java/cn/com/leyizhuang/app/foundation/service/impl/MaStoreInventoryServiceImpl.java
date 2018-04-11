@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventoryChange;
 import cn.com.leyizhuang.app.foundation.service.MaStoreInventoryService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -32,11 +33,13 @@ public class MaStoreInventoryServiceImpl implements MaStoreInventoryService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int updateStoreInventoryAndAvailableIty(Long storeId,Long goodsId,Integer goodsQty,Integer goodsAvailableIty,Date date){
         return maStoreInventoryDAO.updateStoreInventoryAndAvailableIty(storeId,goodsId,goodsQty,goodsAvailableIty,date);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveStoreInventory(MaStoreInventory storeInventory){
          this.maStoreInventoryDAO.saveStoreInventory(storeInventory);
     }
