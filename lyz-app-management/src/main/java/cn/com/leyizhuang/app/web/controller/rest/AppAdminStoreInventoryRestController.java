@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
+import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.AppAdminStoreInventoryService;
 import cn.com.leyizhuang.app.foundation.vo.AppAdminStoreInventoryVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -14,6 +15,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author CrazyApeDX
@@ -29,16 +33,29 @@ public class AppAdminStoreInventoryRestController extends BaseRestController {
 
     @Autowired
     private AppAdminStoreInventoryService storeInventoryService;
+    @Autowired
+    private AdminUserStoreService adminUserStoreService;
 
     @GetMapping(value = "/page/grid")
     public GridDataVO<AppAdminStoreInventoryVO> dataMenuPageGridGet(Integer offset, Integer size, String keywords) {
 
         logger.info("dataMenuPageGridGet CREATE,门店库存可用量分页查询, 入参 offset:{},size:{},keywords:{}", offset, size, keywords);
-
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
         // 根据偏移量计算当前页数
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<AppAdminStoreInventoryVO> storeInventoryPage = storeInventoryService.queryPage(page, size, keywords);
+        PageInfo<AppAdminStoreInventoryVO> storeInventoryPage = storeInventoryService.queryPage(page, size, keywords,storeIds);
+        return new GridDataVO<AppAdminStoreInventoryVO>().transform(storeInventoryPage.getList(), storeInventoryPage.getTotal());
+    }
+
+
+    @GetMapping(value = "/storeGrid/{storeId}")
+    public GridDataVO<AppAdminStoreInventoryVO> dataMenuPageGridGetByStoreId(Integer offset, Integer size, String keywords,@PathVariable("storeId") Long storeId) {
+        logger.info("dataMenuPageGridGetByStoreId CREATE,门店库存可用量分页查询, 入参 offset:{},size:{},keywords:{},storeId:{}", offset, size, keywords,storeId);
+        // 根据偏移量计算当前页数
+        size = getSize(size);
+        Integer page = getPage(offset, size);
+        PageInfo<AppAdminStoreInventoryVO> storeInventoryPage = storeInventoryService.queryPageByStoreId(page, size, keywords,storeId);
         return new GridDataVO<AppAdminStoreInventoryVO>().transform(storeInventoryPage.getList(), storeInventoryPage.getTotal());
     }
 

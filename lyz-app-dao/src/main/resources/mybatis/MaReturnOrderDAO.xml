@@ -20,7 +20,7 @@
         st_store AS s ON s.store_id = orbi.store_id
         WHERE
         1=1
-        AND s.store_id IN
+        AND orbi.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
@@ -55,7 +55,7 @@
             AND
             orbi.return_status =#{status}
         </if>
-        AND s.store_id IN
+        AND orbi.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
@@ -86,7 +86,7 @@
         (orbi.ord_no LIKE CONCAT('%',#{info},'%')
         OR
         orbi.return_no LIKE CONCAT('%',#{info},'%'))
-        AND s.store_id IN
+        AND orbi.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>

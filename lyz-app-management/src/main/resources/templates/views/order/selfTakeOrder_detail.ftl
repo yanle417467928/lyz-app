@@ -527,33 +527,41 @@
             var bv = form.data('bootstrapValidator');
             bv.validate();
             if (bv.isValid()) {
-                $.ajax({
-                    url: '/rest/order/orderReceivables',
-                    async: false,
-                    type: 'POST',
-                    data: form.serialize(),
-                    success: function (result) {
-                        if (result.code == 10100) {
-                            $('#confirmReceivables').modal();
-                            $("#message").html(result.message);
-                        } else if (result.code == -1) {
-                            $("#message").html(result.message);
-                        } else if (result.code == 0) {
-                            $("#message").html('');
-                            window.location.reload();
+                if (null === $global.timer) {
+                    $global.timer = setTimeout($loading.show, 2000);
+                    $.ajax({
+                        url: '/rest/order/orderReceivables',
+                        async: false,
+                        type: 'POST',
+                        data: form.serialize(),
+                        success: function (result) {
+                            if (result.code == 10100) {
+                                $('#confirmReceivables').modal();
+                                $("#message").html(result.message);
+                               // $loading.close();
+                               // $global.timer = null;
+                            } else if (result.code == -1) {
+                                $("#message").html(result.message);
+                              //  $loading.close();
+                              //  $global.timer = null;
+                            } else if (result.code == 0) {
+                                $("#message").html('');
+                                window.location.reload();
+                            }
+                        },
+                        error: function () {
+                            clearTimeout($global.timer);
+                            $loading.close();
+                            $global.timer = null;
+                            $notify.danger('网络异常，请稍后重试或联系管理员');
+                            $('#confirmSubmit').bootstrapValidator('disableSubmitButtons', false);
                         }
-                    },
-                    error: function () {
-                        clearTimeout($global.timer);
-                        $loading.close();
-                        $global.timer = null;
-                        $notify.danger('网络异常，请稍后重试或联系管理员');
-                        $('#confirmSubmit').bootstrapValidator('disableSubmitButtons', false);
-                    }
-                })
+                    })
+                }
             }
         });
     });
+
 
     function confirmShip() {
         var creatorIdentityType = $("#type").val();
@@ -582,24 +590,29 @@
         if (isBlank(orderNumber)) {
             return false;
         }
-        $.ajax({
-            url: '/rest/order/orderShipping',
-            method: 'GET',
-            data: {'orderNumber': orderNumber, 'code': code},
-            error: function () {
-                clearTimeout($global.timer);
-                $loading.close();
-                $global.timer = null;
-                $notify.danger('网络异常，请稍后重试或联系管理员');
-            },
-            success: function (result) {
-                if (0 === result.code) {
-                    window.location.reload();
-                } else {
-                    $notify.danger('发货失败，请稍后重试或联系管理员');
+        if (null === $global.timer) {
+            $global.timer = setTimeout($loading.show, 2000);
+            $.ajax({
+                url: '/rest/order/orderShipping',
+                method: 'GET',
+                data: {'orderNumber': orderNumber, 'code': code},
+                error: function () {
+                    clearTimeout($global.timer);
+                    $loading.close();
+                    $global.timer = null;
+                    $notify.danger('网络异常，请稍后重试或联系管理员');
+                },
+                success: function (result) {
+                    if (0 === result.code) {
+                        window.location.reload();
+                    } else {
+                        $loading.close();
+                        $global.timer = null;
+                        $notify.danger('发货失败，请稍后重试或联系管理员');
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     function judgmentVerification(data) {
@@ -609,25 +622,30 @@
             $('#msg').html('<font color="red">验证失败</font>')
             return false;
         }
-        $.ajax({
-            url: '/rest/order/judgmentVerification',
-            method: 'GET',
-            data: {'orderNumber': orderNumber, 'code': data},
-            error: function () {
-                clearTimeout($global.timer);
-                $loading.close();
-                $global.timer = null;
-            },
-            success: function (result) {
-                if (0 === result.code) {
-                    $('#secondCode').val(data);
-                    $('#confirmShip').attr("disabled", false);
-                    $('#msg').html('<font color="green">验证成功</font>')
-                } else {
-                    $('#msg').html('<font color="red">验证失败</font>')
+        if (null === $global.timer) {
+            $global.timer = setTimeout($loading.show, 2000);
+            $.ajax({
+                url: '/rest/order/judgmentVerification',
+                method: 'GET',
+                data: {'orderNumber': orderNumber, 'code': data},
+                error: function () {
+                    clearTimeout($global.timer);
+                    $loading.close();
+                    $global.timer = null;
+                },
+                success: function (result) {
+                    if (0 === result.code) {
+                        $('#secondCode').val(data);
+                        $('#confirmShip').attr("disabled", false);
+                        $('#msg').html('<font color="green">验证成功</font>')
+                    } else {
+                        $loading.close();
+                        $global.timer = null;
+                        $('#msg').html('<font color="red">验证失败</font>')
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
 
@@ -666,7 +684,7 @@
         }
         if (isPayUp == 'true') {
             $('#receivable').attr("disabled", true);
-        }else if(status == 'CANCELED'){
+        } else if (status == 'CANCELED') {
             $('#receivable').attr("disabled", true);
         }
         $('#confirmShip').attr("disabled", true);
