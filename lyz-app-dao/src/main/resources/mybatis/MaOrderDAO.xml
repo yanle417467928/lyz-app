@@ -16,7 +16,7 @@
 			obi.customer_name customerName,
 			obi.customer_phone customerPhone
         FROM
-            ord_base_info AS obi
+              ord_base_info AS obi
         LEFT JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
         LEFT JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
         LEFT JOIN st_store AS s ON s.store_code = obi.store_code
