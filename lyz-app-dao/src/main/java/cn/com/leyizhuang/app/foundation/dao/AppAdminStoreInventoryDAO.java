@@ -18,7 +18,7 @@ public interface AppAdminStoreInventoryDAO {
 
     StoreInventory queryByStoreId(Long storeId);
 
-    List<AppAdminStoreInventoryVO> queryListVO(@Param("keywords") String keywords);
+    List<AppAdminStoreInventoryVO> queryListVO(@Param("keywords") String keywords,@Param("list") List<Long> storeIds);
 
-
+    List<AppAdminStoreInventoryVO> queryListByStoreId(Long storeId);
 }

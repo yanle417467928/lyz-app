@@ -7,6 +7,8 @@
     <link href="https://cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.js"></script>
 </head>
 <body>
 
@@ -39,6 +41,11 @@
                     <button id="btn_delete" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除
                     </button>-->
+                    <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px"
+                            style="width:auto;"
+                            onchange="findOrderByCondition()" data-live-search="true">
+                        <option value="-1">选择门店</option>
+                    </select>
                 </div>
                 <div class="box-body table-reponsive">
                     <table id="dataGrid" class="table table-bordered table-hover">
@@ -112,6 +119,7 @@
 </div>
 <script>
     $(function () {
+        findStoreSelection();
         $grid.init($('#dataGrid'), $('#toolbar'), '/rest/store/inventory/page/grid', 'get', true, function (params) {
             return {
                 offset: params.offset,
@@ -157,17 +165,27 @@
 
         /* $('#btn_add').on('click', function () {
              $grid.add('/views/admin/menu/add?parentMenuId=${(parentMenuId!'0')}
-        ');
-                });
 
-                $('#btn_edit').on('click', function() {
-                    $grid.modify($('#dataGrid'), '/views/admin/menu/edit/{id}?parentMenuId=${parentMenuId!'0'}
-        ')
-                });
 
-                $('#btn_delete').on('click', function() {
-                    $grid.remove($('#dataGrid'), '/rest/menu', 'delete');
-                });*/
+
+
+
+                                                ');
+                                                        });
+
+                                                        $('#btn_edit').on('click', function() {
+                                                            $grid.modify($('#dataGrid'), '/views/admin/menu/edit/{id}?parentMenuId=${parentMenuId!'0'}
+
+
+
+
+
+                                                ')
+                                                        });
+
+                                                        $('#btn_delete').on('click', function() {
+                                                            $grid.remove($('#dataGrid'), '/rest/menu', 'delete');
+                                                        });*/
     });
 
     var $page = {
@@ -270,6 +288,86 @@
             }
         }
     }
+
+    function findStoreSelection() {
+        var store = "";
+        $.ajax({
+            url: '/rest/stores/findStoresListByStoreId',
+            method: 'GET',
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
+                })
+                $("#storeCode").append(store);
+                $('#storeCode').selectpicker('refresh');
+                $('#storeCode').selectpicker('render');
+            }
+        });
+    }
+
+    function findOrderByCondition() {
+        $("#queryOrderInfo").val('');
+        $("#dataGrid").bootstrapTable('destroy');
+        var storeId = $("#storeCode").val();
+        if (storeId == -1) {
+            initDateGird('/rest/store/inventory/page/grid');
+        } else if (storeId != -1) {
+            initDateGird('/rest/store/inventory/storeGrid/' + storeId);
+        }
+    }
+
+    function initDateGird(url) {
+        $grid.init($('#dataGrid'), $('#toolbar'), url, 'get', true, function (params) {
+            return {
+                offset: params.offset,
+                size: params.limit,
+                keywords: params.search
+            }
+        }, [{
+            checkbox: true,
+            title: '选择'
+        }, {
+            field: 'id',
+            title: 'ID',
+            align: 'center'
+        }, {
+            field: 'storeName',
+            title: '门店名称',
+            events: {
+                'click .scan': function (e, value, row) {
+                    $page.information.show(row.id);
+                }
+            },
+            formatter: function (value) {
+                return '<a class="scan" href="#">' + value + '</a>';
+            },
+            align: 'center'
+        }, {
+            field: 'goodsName',
+            title: '商品名称',
+            align: 'center'
+        }, {
+            field: 'goodsCode',
+            title: '商品编码',
+            align: 'center'
+        }, {
+            field: 'realInventory',
+            title: '真实库存',
+            align: 'center'
+        }, {
+            field: 'soldInventory',
+            title: '可售库存',
+            align: 'center'
+        }]);
+    }
+
 
 </script>
 </body>

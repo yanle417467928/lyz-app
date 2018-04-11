@@ -34,10 +34,35 @@
         inv.available_ity soldInventory
         FROM
         st_inventory inv
+        WHERE
+        1=1
         <if test="null != keywords">
-            WHERE inv.sku LIKE concat('%', #{keywords}, '%')
-            OR inv.sku_name LIKE concat('%', #{keywords}, '%')
+            AND (inv.sku LIKE concat('%', #{keywords}, '%')
+            OR inv.sku_name LIKE concat('%', #{keywords}, '%'))
         </if>
+        AND
+        inv.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+
+    <select id="queryListByStoreId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.vo.AppAdminStoreInventoryVO">
+        SELECT
+        inv.id id,
+        inv.store_id storeId,
+        inv.store_name storeName,
+        inv.gid goodsId,
+        inv.sku_name goodsName,
+        inv.sku goodsCode,
+        inv.real_ity realInventory,
+        inv.available_ity soldInventory
+        FROM
+        st_inventory inv
+        WHERE
+         inv.store_id =#{storeId}
     </select>
 
     <select id="queryByStoreId" parameterType="java.lang.Long"

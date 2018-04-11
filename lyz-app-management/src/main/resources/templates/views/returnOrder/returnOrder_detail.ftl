@@ -361,24 +361,28 @@
         if (isBlank(returnNumber)) {
             return false;
         }
-        $.ajax({
-            url: '/rest/returnOrder/returnOrderReceive',
-            method: 'PUT',
-            data: {"returnNumber": returnNumber},
-            error: function () {
-                clearTimeout($global.timer);
-                $loading.close();
-                $global.timer = null;
-                $notify.danger('网络异常，请稍后重试或联系管理员');
-            },
-            success: function (result) {
-                if (0 === result.code) {
-                    window.location.reload();
-                } else {
-                    $notify.danger('退货失败，请稍后重试或联系管理员');
+        if (null === $global.timer) {
+            $global.timer = setTimeout($loading.show, 2000);
+            $.ajax({
+                url: '/rest/returnOrder/returnOrderReceive',
+                method: 'PUT',
+                data: {"returnNumber": returnNumber},
+                error: function () {
+                    clearTimeout($global.timer);
+                    $loading.close();
+                    $global.timer = null;
+                    $notify.danger('网络异常，请稍后重试或联系管理员');
+                },
+                success: function (result) {
+                    if (0 === result.code) {
+                        window.location.reload();
+                    } else {
+                        $notify.danger('退货失败，请稍后重试或联系管理员');
+                        $global.timer = null;
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
 

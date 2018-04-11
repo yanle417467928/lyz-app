@@ -632,31 +632,38 @@
                 'otherAmount': otherAmount,
                 'serialNumber': serialNumber,
                 'date': date
-            }
+            };
             if (bv.isValid()) {
-                $.ajax({
-                    url: '/rest/order/arrearsAndAgencyOrder/arrearsOrderRepayment',
-                    async: false,
-                    type: 'PUT',
-                    data: data,
-                    success: function (result) {
-                        if (result.code == 10100) {
-                            $("#message").html(result.message);
-                        } else if (result.code == -1) {
-                            $("#message").html(result.message);
-                        } else if (result.code == 0) {
-                            $("#message").html('');
-                            window.location.reload();
+                if (null === $global.timer) {
+                    $global.timer = setTimeout($loading.show, 2000);
+                    $.ajax({
+                        url: '/rest/order/arrearsAndAgencyOrder/arrearsOrderRepayment',
+                        async: false,
+                        type: 'PUT',
+                        data: data,
+                        success: function (result) {
+                            if (result.code == 10100) {
+                                $("#message").html(result.message);
+                                $loading.close();
+                                $global.timer = null;
+                            } else if (result.code == -1) {
+                                $("#message").html(result.message);
+                                $loading.close();
+                                $global.timer = null;
+                            } else if (result.code == 0) {
+                                $("#message").html('');
+                                window.location.reload();
+                            }
+                        },
+                        error: function () {
+                            clearTimeout($global.timer);
+                            $loading.close();
+                            $global.timer = null;
+                            $notify.danger('网络异常，请稍后重试或联系管理员');
+                            $('#confirmSubmit').bootstrapValidator('disableSubmitButtons', false);
                         }
-                    },
-                    error: function () {
-                        clearTimeout($global.timer);
-                        $loading.close();
-                        $global.timer = null;
-                        $notify.danger('网络异常，请稍后重试或联系管理员');
-                        $('#confirmSubmit').bootstrapValidator('disableSubmitButtons', false);
-                    }
-                })
+                    })
+                }
             }
         });
     });
@@ -679,24 +686,29 @@
         if (isBlank(orderNumber)) {
             return false;
         }
-        $.ajax({
-            url: '/rest/order/arrearsAndAgencyOrder/auditOrderStatus',
-            method: 'PUT',
-            data: {"orderNumber": orderNumber, "status": statusType},
-            error: function () {
-                clearTimeout($global.timer);
-                $loading.close();
-                $global.timer = null;
-                $notify.danger('网络异常，请稍后重试或联系管理员');
-            },
-            success: function (result) {
-                if (0 === result.code) {
-                    window.location.reload();
-                } else {
-                    $notify.danger(result.message);
+        if (null === $global.timer) {
+            $global.timer = setTimeout($loading.show, 2000);
+            $.ajax({
+                url: '/rest/order/arrearsAndAgencyOrder/auditOrderStatus',
+                method: 'PUT',
+                data: {"orderNumber": orderNumber, "status": statusType},
+                error: function () {
+                    clearTimeout($global.timer);
+                    $loading.close();
+                    $global.timer = null;
+                    $notify.danger('网络异常，请稍后重试或联系管理员');
+                },
+                success: function (result) {
+                    if (0 === result.code) {
+                        window.location.reload();
+                    } else {
+                        $notify.danger(result.message);
+                        $loading.close();
+                        $global.timer = null;
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
 
