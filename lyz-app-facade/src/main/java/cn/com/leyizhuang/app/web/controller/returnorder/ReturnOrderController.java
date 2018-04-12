@@ -635,6 +635,15 @@ public class ReturnOrderController {
             ReturnOrderBilling returnOrderBilling = new ReturnOrderBilling(
                     returnNo, 0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D);
 
+            /**************/
+            //2018-04-03 generation 加盟门店自提单退货不用判断账单支付信息
+            Boolean jmSelfTakeOrder = false;
+            AppStore store = this.appStoreService.findById(returnOrderBaseInfo.getStoreId());
+            if (null != store && store.getStoreType() == StoreType.JM){
+                jmSelfTakeOrder = true;
+            }
+            /**************/
+
             //退款优先级:
             //顾客：现金POS ——> 第三方支付 ——> 预存款 ——> 未提货产品券
             //导购：现金POS ——> 第三方支付 ——> 门店预存款 ——> 未提货产品券
@@ -768,7 +777,7 @@ public class ReturnOrderController {
                     }
                 }
             } else {
-                if (!isReturnAllProCoupon) {
+                if (!isReturnAllProCoupon && !jmSelfTakeOrder) {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单缺少账单支付信息!", "");
                     logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
                     return resultDTO;

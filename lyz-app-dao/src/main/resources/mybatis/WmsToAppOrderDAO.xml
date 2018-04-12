@@ -29,7 +29,7 @@
 
     <insert id="saveWtaShippingOrderGoods"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderGoods">
-        INSERT INTO inter_wta_order_shipping_goods (order_no, task_type,
+        /*INSERT INTO inter_wta_order_shipping_goods (order_no, task_type,
                                                     task_no, g_code, d_ack_qty, op_status, source_no)
         SELECT
         #{orderNo},
@@ -44,7 +44,18 @@
         SELECT 'X'
         FROM inter_wta_order_shipping_goods
         WHERE task_no = #{taskNo} AND g_code = #{gCode}
-        );
+        );*/
+--         2018-04-11 generation
+        INSERT INTO inter_wta_order_shipping_goods (order_no, task_type,
+                                                    task_no, g_code, d_ack_qty, op_status, source_no)
+        VALUES (
+        #{orderNo},
+                #{taskType},
+                #{taskNo},
+                #{gCode},
+                #{dAckQty},
+                #{opStatus},
+        #{sourceNo})
     </insert>
 
     <insert id="saveWtaReturningOrderHeader"

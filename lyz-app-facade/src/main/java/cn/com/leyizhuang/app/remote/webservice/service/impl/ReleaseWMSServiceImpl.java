@@ -16,6 +16,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderLifecycle;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
@@ -32,6 +33,7 @@ import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -99,6 +101,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
      * @return 结果
      */
     @Override
+    @Transactional
     public String GetWMSInfo(String strTable, String strType, String xml) {
 
         logger.info("GetWMSInfo CALLED,获取wms信息，入参 strTable:{},strType:{},xml:{}", strTable, strType, xml);
@@ -167,6 +170,8 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
             //出货订单商品明细
             else if ("tbw_send_task_d".equalsIgnoreCase(strTable)) {
 
+                List<OrderGoodsInfo> orderGoodsInfoList = null;
+
                 for (int i = 0; i < nodeList.getLength(); i++) {
 
                     Node node = nodeList.item(i);
@@ -179,18 +184,53 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     }
                     GoodsDO goodsDO = goodsService.queryBySku(goods.getGCode());
                     if (goodsDO == null) {
+                        //手动回滚
+                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                         logger.info("GetWMSInfo OUT,获取wms信息失败,商品不存在 出参 c_gcode:{}", goods.getGCode());
                         return AppXmlUtil.resultStrXml(1, "编码为" + goods.getGCode() + "的商品不存在");
                     }
                     int result = wmsToAppOrderService.saveWtaShippingOrderGoods(goods);
                     if (result == 0) {
-                        logger.info("GetWMSInfo OUT,获取wms信息失败,商品已存在 出参 c_gcode:{}", goods.getGCode());
-                        return AppXmlUtil.resultStrXml(1, "重复传输,编码为" + goods.getGCode() + "的商品已存在");
+                        /*2018-04-11 generation*/
+//                        logger.info("GetWMSInfo OUT,获取wms信息失败,商品已存在 出参 c_gcode:{}", goods.getGCode());
+//                        return AppXmlUtil.resultStrXml(1, "重复传输,编码为" + goods.getGCode() + "的商品已存在");
+                        //手动回滚
+                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                        logger.info("GetWMSInfo OUT,获取wms信息失败,信息保存失败 出参 c_gcode:{}", goods.getGCode());
+                        return AppXmlUtil.resultStrXml(1, "编码为" + goods.getGCode() + "的商品信息保存失败");
+                        /**/
                     }
+
                     //这里判断是否是WMS的自己的单子,非APP订单,只做扣减城市库存操作
                     if (OrderUtils.validationOrderNumber(goods.getOrderNo())) {
                         //跟新订单的出货数量
                         appOrderService.updateOrderGoodsShippingQuantity(goods.getOrderNo(), goods.getGCode(), goods.getDAckQty());
+
+                        if (null == orderGoodsInfoList) {
+                            orderGoodsInfoList = this.appOrderService.getOrderGoodsQtyInfoByOrderNumber(goods.getOrderNo());
+                            if (null == orderGoodsInfoList || orderGoodsInfoList.size() == 0) {
+                                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                                logger.info("GetWMSInfo OUT,获取wms信息失败,未查到订单商品信息 出参 c_gcode:{}", goods.getOrderNo());
+                                return AppXmlUtil.resultStrXml(1, "单号为" + goods.getOrderNo() + "的商品信息未查到");
+                            }
+                        }
+                        Integer dAckQty = null == goods.getDAckQty() ? 0 : goods.getDAckQty();
+                        for (OrderGoodsInfo orderGoodsInfo: orderGoodsInfoList) {
+                            if (goods.getGCode().equals(orderGoodsInfo.getSku()) && (dAckQty + orderGoodsInfo.getShippingQuantity()) <= orderGoodsInfo.getOrderQuantity()){
+                                orderGoodsInfo.setShippingQuantity(dAckQty + orderGoodsInfo.getShippingQuantity());
+                                dAckQty = 0;
+                                break;
+                            } else if (goods.getGCode().equals(orderGoodsInfo.getSku()) && (dAckQty + orderGoodsInfo.getShippingQuantity()) > orderGoodsInfo.getOrderQuantity()){
+                                orderGoodsInfo.setShippingQuantity(orderGoodsInfo.getOrderQuantity() - orderGoodsInfo.getShippingQuantity());
+                                dAckQty = dAckQty - (orderGoodsInfo.getOrderQuantity() - orderGoodsInfo.getShippingQuantity());
+                            }
+                        }
+                        if (dAckQty > 0){
+                            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                            logger.info("GetWMSInfo OUT,获取wms信息失败,商品出货数量大于订单商品数量 出参 c_gcode:{}", goods.getGCode());
+                            return AppXmlUtil.resultStrXml(1, "编码为" + goods.getGCode() + "的商品出货数量大于订单商品数量");
+                        }
+
                     } else {
                         String orderNo = "";
                         City city = new City();
@@ -241,6 +281,16 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         }
                     }
                 }
+                for (OrderGoodsInfo orderGoodsInfo: orderGoodsInfoList) {
+                    if (orderGoodsInfo.getOrderQuantity().equals(orderGoodsInfo.getShippingQuantity())) {
+                        this.appOrderService.updateOrderGoodsShippingQuantityByid(orderGoodsInfo);
+                    }else {
+                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                        logger.info("GetWMSInfo OUT,获取wms信息失败,商品出货数量大于订单商品数量 出参 c_gcode:{}", orderGoodsInfo.getSku());
+                        return AppXmlUtil.resultStrXml(1, "编码为" + orderGoodsInfo.getSku() + "的商品出货数量大于订单商品数量");
+                    }
+                }
+
                 logger.info("GetWMSInfo OUT,获取wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
             }

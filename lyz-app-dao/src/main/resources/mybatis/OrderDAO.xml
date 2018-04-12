@@ -1308,4 +1308,29 @@
 
         )
     </select>
+
+
+    <select id="getOrderGoodsQtyInfoByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
+        SELECT
+        id                      id,
+        oid                     oid,
+        ord_no                  orderNumber,
+        gid                     gid,
+        sku                     sku,
+        IFNULL(order_qty,0)     orderQuantity,
+        IFNULL(shipping_qty,0)  shippingQuantity,
+        goods_line_type         goods_line_type
+        FROM
+        ord_goods_info
+        WHERE
+        ord_no = #{orderNumber}
+    </select>
+
+    <update id="updateOrderGoodsShippingQuantityByid" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
+        UPDATE ord_goods_info
+        SET shipping_qty = #{shippingQuantity}
+        WHERE sku = #{sku}
+              AND id = #{id}
+    </update>
+
 </mapper>

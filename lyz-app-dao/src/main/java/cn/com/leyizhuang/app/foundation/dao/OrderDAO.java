@@ -155,4 +155,8 @@ public interface OrderDAO {
                                                                       @Param(value = "showStatus") Integer showStatus);
 
     List<OrderBaseInfo> getSendToWMSFailedOrder();
+
+    List<OrderGoodsInfo> getOrderGoodsQtyInfoByOrderNumber(String orderNumber);
+
+    void updateOrderGoodsShippingQuantityByid(OrderGoodsInfo orderGoodsInfo);
 }

@@ -1017,4 +1017,16 @@ public class AppOrderServiceImpl implements AppOrderService {
     public List<OrderBaseInfo> getSendToWMSFailedOrder() {
         return orderDAO.getSendToWMSFailedOrder();
     }
+
+    @Override
+    public List<OrderGoodsInfo> getOrderGoodsQtyInfoByOrderNumber(String orderNumber) {
+        return this.orderDAO.getOrderGoodsQtyInfoByOrderNumber(orderNumber);
+    }
+
+    @Override
+    public void updateOrderGoodsShippingQuantityByid(OrderGoodsInfo orderGoodsInfo) {
+        if (null != orderGoodsInfo) {
+            this.orderDAO.updateOrderGoodsShippingQuantityByid(orderGoodsInfo);
+        }
+    }
 }
