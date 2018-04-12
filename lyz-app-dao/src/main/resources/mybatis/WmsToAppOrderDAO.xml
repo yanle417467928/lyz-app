@@ -60,11 +60,12 @@
 
     <insert id="saveWtaReturningOrderHeader"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturningOrderHeader">
-        INSERT INTO inter_wta_return_order_back_header (create_time, back_no, company_id, note, owner_no, po_no, rec_no,
+        INSERT INTO inter_wta_return_order_back_header (create_time, back_no, c_end_dt, company_id, note, owner_no, po_no, rec_no,
                                                         wh_no)
             SELECT
                 #{createTime},
                 #{backNo},
+                #{cEndDt},
                 #{companyId},
                 #{note},
                 #{ownerNo},
@@ -240,7 +241,7 @@
     <insert id="saveWtaWarehousePurchaseHeader"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaWarehousePurchaseHeader">
         INSERT INTO inter_wta_warehouse_purchase_header
-        (warehouse_no, rec_no, gather_rec_no, gather_no, in_no, note, purchase_no, company_id)
+        (warehouse_no, rec_no, gather_rec_no, gather_no, in_no, note, purchase_no, company_id, create_time)
             SELECT
                 #{warehouseNo},
                 #{recNo},
@@ -249,7 +250,8 @@
                 #{inNo},
                 #{note},
                 #{purchaseNo},
-                #{companyId}
+                #{companyId},
+                #{createTime}
             FROM DUAL
             WHERE NOT EXISTS(
                     SELECT 'X'
@@ -277,7 +279,7 @@
     <insert id="saveWtaWarehouseReportDamageAndOverflow"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaWarehouseReportDamageAndOverflow">
         INSERT INTO inter_wta_warehouse_report_damage_overflow
-        (warehouse_no, owner_no, waste_no, waste_id, waste_type, sku, qty, waste_status, company_id)
+        (warehouse_no, owner_no, waste_no, waste_id, waste_type, sku, qty, waste_status, company_id, create_time)
             SELECT
                 #{warehouseNo},
                 #{ownerNo},
@@ -287,7 +289,8 @@
                 #{sku},
                 #{qty},
                 #{wasteStatus},
-                #{companyId}
+                #{companyId},
+                #{createTime}
             FROM DUAL
             WHERE NOT EXISTS(
                     SELECT 'X'
@@ -355,6 +358,13 @@
             send_flag     sendFlag,
             error_message errorMessage
         FROM inter_wta_order_shipping_header
-        WHERE order_no = #{orderNo} AND send_flag = 0;
+        WHERE order_no = #{orderNo} AND send_flag = 0 AND task_no = #{taskNo};
+    </select>
+
+    <select id="getWtaReturningOrderHeaderByReturnNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturningOrderHeader">
+        SELECT *
+        FROM inter_wta_return_order_back_header
+        WHERE po_no = #{returnNo};
     </select>
 </mapper>
