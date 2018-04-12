@@ -32,6 +32,7 @@ import org.apache.commons.collections.map.HashedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -272,7 +273,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         return AppXmlUtil.resultStrXml(1, "重复传输,该单" + header.getBackNo() + "已存在!");
                     }
                     //判断是不是wms自己的退货单
-                    if (OrderUtils.validationReturnOrderNumber(header.getBackNo())) {
+                    if (OrderUtils.validationReturnOrderNumber(header.getPoNo())) {
                         this.handlingWtaReturningOrderHeaderAsync(header);
                     } else {
                         List<WtaReturningOrderGoods> wtaReturningOrderGoods = wmsToAppOrderService.findWtaReturningOrderGoodsByReturnOrderNo(header.getRecNo());
@@ -1431,6 +1432,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
      */
     @Async
     @SuppressWarnings("WeakerAccess")
+    @Transactional(rollbackFor = Exception.class)
     protected void handlingWtaShippingOrderHeaderAsync(WtaShippingOrderHeader header, AppEmployee clerk) {
         //查询是否存在
         List<OrderDeliveryInfoDetails> deliveryInfoDetailsList = orderDeliveryInfoDetailsService.queryListByOrderNumber(header.getOrderNo());
@@ -1471,6 +1473,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
      */
     @Async
     @SuppressWarnings("WeakerAccess")
+    @Transactional(rollbackFor = Exception.class)
     protected void handlingWtaReturningOrderHeaderAsync(WtaReturningOrderHeader header) {
         HashedMap maps = new HashedMap();
         ReturnOrderBaseInfo returnOrder = returnOrderService.queryByReturnNo(header.getPoNo());
@@ -1586,6 +1589,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
      */
     @Async
     @SuppressWarnings("WeakerAccess")
+    @Transactional(rollbackFor = Exception.class)
     protected void handlingWtaCancelOrderResultEnterAsync(WtaCancelOrderResultEnter orderResultEnter, OrderBaseInfo orderBaseInfo) {
 
         //获取订单账目明细
@@ -1636,6 +1640,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
      */
     @Async
     @SuppressWarnings("WeakerAccess")
+    @Transactional(rollbackFor = Exception.class)
     protected void handlingWtaWarehouseWholeSplitToUnitAsync(WtaWarehouseWholeSplitToUnit wholeSplitToUnit, GoodsDO goodsDO, GoodsDO dGoodsDO, City city) {
         //扣整商品仓库数量
         for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
@@ -1716,6 +1721,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
      */
     @Async
     @SuppressWarnings("WeakerAccess")
+    @Transactional(rollbackFor = Exception.class)
     protected void handlingWtaWarehousePurchaseHeaderAsync(WtaWarehousePurchaseHeader purchaseHeader, City city) {
         List<WtaWarehousePurchaseGoods> purchaseGoodsList = wmsToAppOrderService.findWtaWarehousePurchaseGoodsListByPurchaseNo(purchaseHeader.getRecNo());
         for (WtaWarehousePurchaseGoods purchaseGoods : purchaseGoodsList) {
@@ -1765,6 +1771,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
      */
     @Async
     @SuppressWarnings("WeakerAccess")
+    @Transactional(rollbackFor = Exception.class)
     protected void handlingWtaWarehouseAllocationHeaderAsync(WtaWarehouseAllocationHeader allocation, City city) {
         List<WtaWarehouseAllocationGoods> allocationGoodsList = wmsToAppOrderService.findWtaWarehouseAllocationGoodsListByAllocationNo(allocation.getAllocationNo());
         for (WtaWarehouseAllocationGoods allocationGoods : allocationGoodsList) {
@@ -1828,6 +1835,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
      */
     @Async
     @SuppressWarnings("WeakerAccess")
+    @Transactional(rollbackFor = Exception.class)
     protected void handlingWtaWarehouseReportDamageAndOverflowAsync(WtaWarehouseReportDamageAndOverflow damageAndOverflow, City city, GoodsDO goodsDO) {
         Integer changeInventory = 0;
         CityInventoryAvailableQtyChangeType changeType = null;
