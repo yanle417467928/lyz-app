@@ -171,4 +171,12 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
         }
         return null;
     }
+
+    @Override
+    public WtaReturningOrderHeader getWtaReturningOrderHeaderByReturnNumber(String returnNo) {
+        if (AssertUtil.isNotEmpty(returnNo)) {
+            return wmsToAppOrderDAO.getWtaReturningOrderHeaderByReturnNumber(returnNo);
+        }
+        return null;
+    }
 }
