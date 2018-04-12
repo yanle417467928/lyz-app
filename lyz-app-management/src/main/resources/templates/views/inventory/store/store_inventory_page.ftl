@@ -1,14 +1,14 @@
 <head>
     <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
-    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
-    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
-    <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/admin-lte/2.3.11/css/AdminLTE.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/i18n/defaults-zh_CN.js"></script>
 </head>
 <body>
 
@@ -31,7 +31,7 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="box box-primary">
-                <div id="toolbar" class="btn-group">
+                <div id="toolbar" class="form-inline">
                 <#--<button id="btn_add" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
                     </button>
@@ -46,6 +46,10 @@
                             onchange="findOrderByCondition()" data-live-search="true">
                         <option value="-1">选择门店</option>
                     </select>
+                    <button id="btn_add" type="button" class="form-control" onclick="openBillModal()">
+                        <i class="fa fa-download"></i>
+                        下载报表
+                    </button>
                 </div>
                 <div class="box-body table-reponsive">
                     <table id="dataGrid" class="table table-bordered table-hover">
@@ -321,6 +325,13 @@
         } else if (storeId != -1) {
             initDateGird('/rest/store/inventory/storeGrid/' + storeId);
         }
+    }
+
+    function openBillModal() {
+        var storeId = $("#storeCode").val();
+        var url = "/rest/reportDownload/storeInventory/download?storeId=" + storeId ;
+        var escapeUrl = url.replace(/\#/g, "%23");
+        window.open(escapeUrl);
     }
 
     function initDateGird(url) {

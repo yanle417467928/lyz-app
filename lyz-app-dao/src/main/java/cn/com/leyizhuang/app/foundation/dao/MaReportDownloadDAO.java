@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.reportDownload.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -37,5 +38,5 @@ public interface MaReportDownloadDAO {
                                                @Param("startTime")String startTime, @Param("endTime")String endTime,
                                                @Param("keywords")String keywords, @Param("list") List<Long> storeIds);
 
-
+    List<StoreInventory> findStoreInventorys(@Param("storeId") Long storeId,  @Param("list") List<Long> storeIds);
 }

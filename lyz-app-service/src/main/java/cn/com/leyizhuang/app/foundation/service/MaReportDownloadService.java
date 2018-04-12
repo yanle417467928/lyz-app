@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.reportDownload.*;
 import com.github.pagehelper.PageInfo;
 
@@ -43,4 +44,5 @@ public interface MaReportDownloadService {
     List<AgencyFundDO> downloadAgencyFund(Long cityId, Long storeId, String storeType, String startTime, String endTime,
                                               String keywords, List<Long> storeIds);
 
+    List<StoreInventory> downloadStoreInventorys(Long storeId, List<Long> storeIds);
 }
