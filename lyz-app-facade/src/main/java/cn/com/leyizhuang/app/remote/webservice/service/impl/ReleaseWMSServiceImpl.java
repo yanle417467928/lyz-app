@@ -203,8 +203,8 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
 
                     //这里判断是否是WMS的自己的单子,非APP订单,只做扣减城市库存操作
                     if (OrderUtils.validationOrderNumber(goods.getOrderNo())) {
-                        //跟新订单的出货数量
-                        appOrderService.updateOrderGoodsShippingQuantity(goods.getOrderNo(), goods.getGCode(), goods.getDAckQty());
+//                        //跟新订单的出货数量
+//                        appOrderService.updateOrderGoodsShippingQuantity(goods.getOrderNo(), goods.getGCode(), goods.getDAckQty());
 
                         if (null == orderGoodsInfoList) {
                             orderGoodsInfoList = this.appOrderService.getOrderGoodsQtyInfoByOrderNumber(goods.getOrderNo());
@@ -230,7 +230,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                             logger.info("GetWMSInfo OUT,获取wms信息失败,商品出货数量大于订单商品数量 出参 c_gcode:{}", goods.getGCode());
                             return AppXmlUtil.resultStrXml(1, "编码为" + goods.getGCode() + "的商品出货数量大于订单商品数量");
                         }
-
+                        /**/
                     } else {
                         String orderNo = "";
                         City city = new City();
@@ -286,8 +286,8 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         this.appOrderService.updateOrderGoodsShippingQuantityByid(orderGoodsInfo);
                     }else {
                         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                        logger.info("GetWMSInfo OUT,获取wms信息失败,商品出货数量大于订单商品数量 出参 c_gcode:{}", orderGoodsInfo.getSku());
-                        return AppXmlUtil.resultStrXml(1, "编码为" + orderGoodsInfo.getSku() + "的商品出货数量大于订单商品数量");
+                        logger.info("GetWMSInfo OUT,获取wms信息失败,商品出货数量小于订单商品数量 出参 c_gcode:{}， orderGoodsInfo{} ", orderGoodsInfo.getSku(), orderGoodsInfo);
+                        return AppXmlUtil.resultStrXml(1, "编码为" + orderGoodsInfo.getSku() + "的商品出货数量小于订单商品数量");
                     }
                 }
 
