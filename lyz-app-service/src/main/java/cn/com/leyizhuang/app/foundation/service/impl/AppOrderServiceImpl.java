@@ -607,16 +607,16 @@ public class AppOrderServiceImpl implements AppOrderService {
             if (identityType == AppIdentityType.SELLER.getValue()) {
                 if (null != orderBillingDetails.getFreight() && orderBillingDetails.getFreight() > AppConstant.DOUBLE_ZERO) {
                     if (Math.abs(orderBillingDetails.getAmountPayable()) > AppConstant.DOUBLE_ZERO &&
-                            Math.abs(orderBillingDetails.getAmountPayable() - orderBillingDetails.getFreight()) > AppConstant.PAY_UP_LIMIT) {
+                            Math.abs(orderBillingDetails.getAmountPayable() - orderBillingDetails.getFreight()) >= AppConstant.PAY_UP_LIMIT) {
                         throw new OrderCreditMoneyException("信用额度支付运费必须一次性付清,不能部分支付!");
                     }
                 } else {
-                    if (orderBillingDetails.getAmountPayable() > AppConstant.PAY_UP_LIMIT) {
+                    if (orderBillingDetails.getAmountPayable() >= AppConstant.PAY_UP_LIMIT) {
                         throw new OrderCreditMoneyException("使用信用额度的订单必须一次性付清，不能使用第三方支付！");
                     }
                 }
             } else {
-                if (orderBillingDetails.getAmountPayable() > AppConstant.PAY_UP_LIMIT) {
+                if (orderBillingDetails.getAmountPayable() >= AppConstant.PAY_UP_LIMIT) {
                     throw new OrderCreditMoneyException("使用信用额度的订单必须一次性付清，不能使用第三方支付！");
                 }
             }
