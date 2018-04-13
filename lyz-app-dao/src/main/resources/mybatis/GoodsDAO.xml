@@ -291,7 +291,7 @@
             AND ggb.brand_name =#{goodsBrand}
         </if>
         <if test="null !=specification and ''!= specification ">
-            AND g.goods_specification=#{specification}
+            AND g.specification_type=#{specification}
         </if>
         <if test="null !=goodsType and ''!= goodsType ">
             AND ggt.type_name=#{goodsType}
@@ -322,7 +322,7 @@
             AND ggb.brand_name =#{goodsBrand}
         </if>
         <if test="null !=specification and ''!= specification ">
-            AND g.goods_specification=#{specification}
+            AND g.specification_type=#{specification}
         </if>
         <if test="null !=goodsType and ''!= goodsType ">
             AND ggt.type_name=#{goodsType}
@@ -353,7 +353,7 @@
             AND gc.category_name =#{categorySecond}
         </if>
         <if test="null !=specification and ''!= specification ">
-            AND g.goods_specification=#{specification}
+            AND g.specification_type=#{specification}
         </if>
         <if test="null !=goodsType and ''!= goodsType ">
             AND ggt.type_name=#{goodsType}
@@ -384,7 +384,7 @@
             AND gc.category_name =#{categorySecond}
         </if>
         <if test="null !=specification and ''!= specification ">
-            AND g.goods_specification=#{specification}
+            AND g.specification_type=#{specification}
         </if>
         <if test="null !=goodsType and ''!= goodsType ">
             AND ggt.type_name=#{goodsType}
@@ -415,7 +415,7 @@
             AND gc.category_name =#{categorySecond}
         </if>
         <if test="null !=specification and ''!= specification ">
-            AND g.goods_specification=#{specification}
+            AND g.specification_type=#{specification}
         </if>
         <if test="null !=goodsBrand and ''!= goodsBrand ">
             AND b.brand_name=#{goodsBrand}
@@ -446,7 +446,7 @@
             AND gc.category_name =#{categorySecond}
         </if>
         <if test="null !=specification  and ''!= specification ">
-            AND g.goods_specification=#{specification}
+            AND g.specification_type=#{specification}
         </if>
         <if test="null !=goodsBrand  and ''!= goodsBrand ">
             AND b.brand_name=#{goodsBrand}
