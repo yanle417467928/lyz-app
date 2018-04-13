@@ -136,8 +136,16 @@ public class OrderGiftController {
                 //默认门店.装饰公司.普通门店都先判断城市库存
                 List<Long> goodsIds = appOrderService.existOrderGoodsInventory(cityId, goodsItyList, giftsList, couponList);
                 if (goodsIds != null && goodsIds.size() > 0) {
+
+                    /**************/
+                    //2018-04-03 generation 加盟门店自提不用判断库存
+                    if (StoreType.JM.equals(appStore.getStoreType())){
+                        deliveryType = AppDeliveryType.SELF_TAKE;
+                    }
+                    /**************/
+
                     if (StoreType.ZY.equals(appStore.getStoreType()) ||
-                            StoreType.JM.equals(appStore.getStoreType()) ||
+//                            StoreType.JM.equals(appStore.getStoreType()) ||
                             StoreType.FX.equals(appStore.getStoreType()) ||
                             StoreType.FXCK.equals(appStore.getStoreType())) {
                         /** 城市库存不足 直接判断不足的商品是否可自提 不可自提则提示错误讯息 **/
@@ -197,14 +205,21 @@ public class OrderGiftController {
                     deliveryType = AppDeliveryType.HOUSE_DELIVERY;
                 }
             } else {
-                for (Map.Entry<Long, Integer> entry : goodsQuantity.entrySet()) {
-                    GoodsDO goodsDO = goodsService.findGoodsById(entry.getKey());
-                    Boolean enoughInvFlag = appOrderService.existGoodsStoreInventory(storeId, entry.getKey(), entry.getValue());
-                    if (!enoughInvFlag) {
-                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该门店 '" + goodsDO.getSkuName()
-                                + "' 库存不足，请重新选购!", null);
-                        logger.info("materialListStepToGiftList OUT,下料清单跳转赠品列表判断库存不足失败，出参 resultDTO:{}", resultDTO);
-                        return resultDTO;
+
+                /**************/
+                //2018-04-03 generation 加盟门店自提不用判断库存
+                if (!(StoreType.JM.equals(appStore.getStoreType()))) {
+                /**************/
+
+                    for (Map.Entry<Long, Integer> entry : goodsQuantity.entrySet()) {
+                        GoodsDO goodsDO = goodsService.findGoodsById(entry.getKey());
+                        Boolean enoughInvFlag = appOrderService.existGoodsStoreInventory(storeId, entry.getKey(), entry.getValue());
+                        if (!enoughInvFlag) {
+                            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该门店 '" + goodsDO.getSkuName()
+                                    + "' 库存不足，请重新选购!", null);
+                            logger.info("materialListStepToGiftList OUT,下料清单跳转赠品列表判断库存不足失败，出参 resultDTO:{}", resultDTO);
+                            return resultDTO;
+                        }
                     }
                 }
                 deliveryType = AppDeliveryType.SELF_TAKE;

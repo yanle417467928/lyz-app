@@ -8,7 +8,17 @@
     </select>
 
     <select id="findByCityNumber" parameterType="java.lang.String" resultType="City">
-        SELECT *
+        SELECT
+        city_id,
+        name,
+        spell,
+        code number,
+        structure_id,
+        structure_title,
+        enable,
+        enable_false_time,
+        briefSpell,
+        is_open_delivery
         FROM city
         WHERE code = #{cityNumber}
     </select>
@@ -194,8 +204,8 @@
         WHERE
         gid = #{gid}
         AND city_id = (SELECT cus_customer.city_id
-                        FROM cus_customer
-                        WHERE cus_id = #{userId})
+        FROM cus_customer
+        WHERE cus_id = #{userId})
         AND last_update_time = #{version}
     </update>
 
@@ -205,15 +215,29 @@
         WHERE
         gid = #{gid}
         AND city_id = (SELECT emp_employee.city_id
-                        FROM emp_employee
-                        WHERE emp_id = #{userId})
+        FROM emp_employee
+        WHERE emp_id = #{userId})
         AND last_update_time = #{version}
     </update>
 
     <insert id="saveCityInventory"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory">
         INSERT INTO city_inventory (create_time, last_update_time, city_id, city_code, city_name, gid, sku, sku_name, available_ity)
-        VALUES (#{createTime}, #{lastUpdateTime}, #{cityId}, #{cityCode}, #{cityName}, #{gid}, #{sku}, #{skuName},
-                #{availableIty});
+        SELECT
+        #{createTime},
+        #{lastUpdateTime},
+        #{cityId},
+        #{cityCode},
+        #{cityName},
+        #{gid},
+        #{sku},
+        #{skuName},
+        #{availableIty}
+        FROM DUAL
+        WHERE NOT EXISTS(
+        SELECT 'X'
+        FROM city_inventory
+        WHERE city_code = #{cityCode} AND sku = #{sku}
+        );
     </insert>
 </mapper>

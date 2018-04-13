@@ -3,7 +3,9 @@ package cn.com.leyizhuang.app.remote;
 import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
+import cn.com.leyizhuang.app.foundation.service.CityService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.HqAppStoreDTO;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -29,6 +31,9 @@ public class HqAppStoreController {
 
     @Resource
     private AppStoreService appStoreService;
+
+    @Resource
+    private CityService cityService;
 
     /**
      * 同步添加门店信息
@@ -92,9 +97,14 @@ public class HqAppStoreController {
                 logger.warn("addStore OUT,同步添加门店信息失败，出参 IsSelfDelivery:{}", hqAppStoreDTO.getIsSelfDelivery());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "是否支持门店自提不允许为空！", null);
             }
+            if (StringUtils.isBlank(hqAppStoreDTO.getSboId())) {
+                logger.warn("addStore OUT,同步添加门店信息失败，出参 IsSelfDelivery:{}", hqAppStoreDTO.getSboId());
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "分公司id不能为空！", null);
+            }
 
             try {
                 AppStore store = appStoreService.findByStoreCode(hqAppStoreDTO.getStoreCode());
+                City city = cityService.findByCityNumber(hqAppStoreDTO.getCityCode());
                 if (null == store) {
                     AppStore appStore = new AppStore();
                     if (hqAppStoreDTO.getStoreType().equals("直营门店")) {
@@ -103,6 +113,8 @@ public class HqAppStoreController {
                         appStore.setStoreType(StoreType.JM);
                     } else if (hqAppStoreDTO.getStoreType().equals("分销门店")) {
                         appStore.setStoreType(StoreType.FX);
+                    }else if (hqAppStoreDTO.getStoreType().equals("分销仓库")) {
+                        appStore.setStoreType(StoreType.FXCK);
                     }
                     appStore.setCreatorType(hqAppStoreDTO.getCreatorType());
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -111,6 +123,8 @@ public class HqAppStoreController {
                     appStore.setStoreName(hqAppStoreDTO.getStoreName());
                     appStore.setStoreCode(hqAppStoreDTO.getStoreCode());
                     appStore.setCityCode(hqAppStoreDTO.getCityCode());
+                    appStore.setCityId(city == null?null:city.getCityId());
+                    logger.info(city == null?"没有城市信息":city.getCityId().toString());
                     appStore.setPhone(hqAppStoreDTO.getPhone());
                     appStore.setProvince(hqAppStoreDTO.getProvince());
                     appStore.setCity(hqAppStoreDTO.getCity());
@@ -119,7 +133,8 @@ public class HqAppStoreController {
                     appStore.setEnable(hqAppStoreDTO.getEnable());
                     appStore.setIsSelfDelivery(hqAppStoreDTO.getIsSelfDelivery());
                     appStore.setIsOpenDelivery(hqAppStoreDTO.getIsOpenDelivery());
-                    appStore.setSobId(null == hqAppStoreDTO.getCityCode() ? null : Long.parseLong(hqAppStoreDTO.getCityCode()));
+                    appStore.setSobId(Long.valueOf(hqAppStoreDTO.getSboId()));
+                    logger.info("+++++++++++++++++++++++++++++:"+hqAppStoreDTO.getSboId());
                     appStore.setStoreOrgId(hqAppStoreDTO.getStoreOrgId());
                     appStore.setStoreStructureCode(hqAppStoreDTO.getStoreStructureCode());
                     appStoreService.saveStore(appStore);
@@ -134,9 +149,10 @@ public class HqAppStoreController {
                 logger.warn("addStore EXCEPTION,同步添加门店信息失败，出参 resultDTO:{}", e);
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未知异常，同步添加门店信息失败！", null);
             }
+        }else {
+            logger.warn("addStore,门店信息为空，同步添加门店信息失败！");
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店信息为空，同步添加门店信息失败！", null);
         }
-        logger.warn("addStore,门店信息为空，同步添加门店信息失败！");
-        return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店信息为空，同步添加门店信息失败！", null);
     }
 
     /**
@@ -192,9 +208,10 @@ public class HqAppStoreController {
                 logger.warn("updateStore EXCEPTION,同步修改门店信息失败，出参 resultDTO:{}", e);
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未知异常，同步修改门店信息失败！", null);
             }
+        }else {
+            logger.warn("门店信息为空，同步修改门店信息失败！");
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店信息为空，同步修改门店信息失败！", null);
         }
-        logger.warn("门店信息为空，同步修改门店信息失败！");
-        return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店信息为空，同步修改门店信息失败！", null);
     }
 
     /**

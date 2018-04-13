@@ -130,7 +130,7 @@ public class ResendWmsOrEbsController {
         } catch (Exception e) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "重传失败!发生未知异常!", null);
             logger.info("retransmissionToWms OUT,重传订单到wms，出参 resultDTO:{}", resultDTO);
-            logger.debug(e.getMessage());
+            logger.debug("Exception:{}", e);
             return resultDTO;
         }
     }

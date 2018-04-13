@@ -118,4 +118,9 @@ public interface CommonService {
                      Double collectionAmount, Timestamp lastUpdateTime);
 
     void originalCustomerRegistry(AppCustomer phoneUser) throws UnsupportedEncodingException;
+
+    void saveOrderRelevantInfo(OrderBaseInfo orderBaseInfo, OrderLogisticsInfo orderLogisticsInfo,List<OrderGoodsInfo> orderGoodsInfoList,
+                               OrderBillingDetails orderBillingDetails) throws UnsupportedEncodingException;
+
+
 }

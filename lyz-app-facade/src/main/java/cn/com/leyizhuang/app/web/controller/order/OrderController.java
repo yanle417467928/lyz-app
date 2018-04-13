@@ -450,6 +450,7 @@ public class OrderController {
             List<CashCouponResponse> cashCouponResponseList = null;
             Map<String, Object> goodsSettlement = new HashMap<>();
             Long cityId = 0L;
+            AppStore appStore = null;
             AppCustomer customer = new AppCustomer();
             boolean isShowSalesNumber = false;
             if (identityType == 6) {
@@ -460,6 +461,7 @@ public class OrderController {
                     return resultDTO;
                 }
                 cityId = customer.getCityId();
+                appStore = appStoreService.findById(customer.getStoreId());
             } else if (identityType == 0) {
                 if (null == goodsSimpleRequest.getCustomerId()) {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "导购代下单客户不能为空", null);
@@ -476,7 +478,7 @@ public class OrderController {
                 //是否显示纸质销售单号
                 AppEmployee appEmployee = appEmployeeService.findById(userId);
                 cityId = appEmployee.getCityId();
-                AppStore appStore = appStoreService.findById(appEmployee.getStoreId());
+                appStore = appStoreService.findById(appEmployee.getStoreId());
                 //如果是四川直营门店导购返回门店编码
                 if ("ZY".equals(appStore.getStoreType().getValue()) && ("FZY009".equals(appStore.getStoreCode()) || "HLC004".equals(appStore.getStoreCode()) || "ML001".equals(appStore.getStoreCode()) || "QCMJ008".equals(appStore.getStoreCode()) ||
                         "SB010".equals(appStore.getStoreCode()) || "YC002".equals(appStore.getStoreCode()) || "ZC002".equals(appStore.getStoreCode()) || "RC005".equals(appStore.getStoreCode()) ||
@@ -692,6 +694,15 @@ public class OrderController {
                     return resultDTO;
                 }
             }
+
+            Boolean isSpecialSelfTake = false;
+            /**************/
+            //2018-04-03 generation 加盟门店自提为特殊自提单
+            if (null != appStore && StoreType.JM == appStore.getStoreType()) {
+                isSpecialSelfTake = true;
+            }
+            goodsSettlement.put("isSpecialSelfTake", isSpecialSelfTake);
+            /**************/
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     goodsSettlement.size() > 0 ? goodsSettlement : null);
@@ -1740,4 +1751,193 @@ public class OrderController {
             return resultDTO;
         }
     }
+
+    /**
+     * @title   创建加盟门店自提单
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/4/4
+     */
+    @ApiOperation(value = "创建订单", notes = "创建订单信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "cityId", value = "下单人城市id", required = true, dataType = "Long", example = "1"),
+            @ApiImplicitParam(name = "userId", value = "下单人id", required = true, dataType = "Long"),
+            @ApiImplicitParam(name = "identityType", value = "下单人身份类型", required = true, dataType = "Integer"),
+            @ApiImplicitParam(name = "customerId", value = "顾客id", required = true, dataType = "Long"),
+            @ApiImplicitParam(name = "remark", value = "备注信息", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "goodsInfo", value = "商品信息", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "productCouponInfo", value = "产品券商品信息", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "promotionInfo", value = "促销信息", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "deliveryInfo", value = "配送信息", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "billingInfo", value = "账单信息", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "auditNo", value = "物料审核单号", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "salesNumber", value = "纸质单号", required = false, dataType = "String")
+    })
+    @PostMapping(value = "/create/JMSelfTake", produces = "application/json;charset=UTF-8")
+//    @PostMapping(value = "/create", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> createJMSelfTakeOrder(OrderCreateParam orderParam, HttpServletRequest request) {
+        logger.info("createOrder CALLED,去支付生成订单,入参:{}", JSON.toJSONString(orderParam));
+        System.out.println(JSON.toJSONString(orderParam));
+        ResultDTO<Object> resultDTO;
+        //获取客户端ip地址
+        String ipAddress = IpUtils.getIpAddress(request);
+        if (null == orderParam.getCityId()) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市id不允许为空!", "");
+            logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        Long userId = orderParam.getUserId();
+        if (null == orderParam.getUserId()) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不允许为空!", "");
+            logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        Integer identityType = orderParam.getIdentityType();
+        if (null == orderParam.getIdentityType()) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份类型不允许为空!", "");
+            logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(orderParam.getGoodsInfo())) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品信息不允许为空!", "");
+            logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(orderParam.getDeliveryInfo())) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "配送信息不允许为空!", "");
+            logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+
+        //判断创单人身份是否合法
+        if (!(orderParam.getIdentityType() == 0 || orderParam.getIdentityType() == 6 || orderParam.getIdentityType() == 2)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "创单人身份不合法!", "");
+            logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+            JavaType goodsSimpleInfo = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, GoodsSimpleInfo.class);
+            JavaType cashCouponSimpleInfo = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, Long.class);
+            JavaType productCouponSimpleInfo = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, ProductCouponSimpleInfo.class);
+            JavaType promotionSimpleInfo = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, PromotionSimpleInfo.class);
+
+            //*************************** 转化前台提交过来的json类型参数 ************************
+
+            //商品信息
+            List<GoodsSimpleInfo> goodsList = objectMapper.readValue(orderParam.getGoodsInfo(), goodsSimpleInfo);
+            //配送信息
+            DeliverySimpleInfo deliverySimpleInfo = objectMapper.readValue(orderParam.getDeliveryInfo(), DeliverySimpleInfo.class);
+            if (StringUtils.isBlank(deliverySimpleInfo.getDeliveryType())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "配送方式不允许为空!", "");
+                logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            //优惠券信息
+            List<Long> cashCouponList = new ArrayList<>();
+            if (StringUtils.isNotBlank(orderParam.getCashCouponIds())) {
+                cashCouponList = objectMapper.readValue(orderParam.getCashCouponIds(), cashCouponSimpleInfo);
+            }
+            //产品券信息
+            List<ProductCouponSimpleInfo> productCouponList = new ArrayList<>();
+            if (StringUtils.isNotBlank(orderParam.getProductCouponInfo())) {
+                productCouponList = objectMapper.readValue(orderParam.getProductCouponInfo(), productCouponSimpleInfo);
+            }
+
+            //账单信息
+            BillingSimpleInfo billing = objectMapper.readValue(orderParam.getBillingInfo(), BillingSimpleInfo.class);
+
+
+            //**********************************开始创建订单 **************************
+
+            //******************* 创建订单基础信息 *****************
+            OrderBaseInfo orderBaseInfo = appOrderService.createOrderBaseInfo(orderParam.getCityId(), orderParam.getUserId(),
+                    orderParam.getIdentityType(), orderParam.getCustomerId(), deliverySimpleInfo.getDeliveryType(), orderParam.getRemark(), orderParam.getSalesNumber());
+            orderBaseInfo.setStatus(AppOrderStatus.FINISHED);
+
+            //****************** 创建订单物流信息 ******************
+            OrderLogisticsInfo orderLogisticsInfo = appOrderService.createOrderLogisticInfo(deliverySimpleInfo);
+            orderLogisticsInfo.setOrdNo(orderBaseInfo.getOrderNumber());
+
+            //****************** 创建订单商品信息 ******************
+            CreateOrderGoodsSupport support = commonService.createOrderGoodsInfo(goodsList, orderParam.getUserId(), orderParam.getIdentityType(),
+                    orderParam.getCustomerId(), productCouponList, orderBaseInfo.getOrderNumber());
+
+
+            //****************** 处理订单账单相关信息 ***************
+            OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
+            orderBillingDetails.setOrderNumber(orderBaseInfo.getOrderNumber());
+            orderBillingDetails.setIsOwnerReceiving(orderLogisticsInfo.getIsOwnerReceiving());
+            orderBillingDetails.setTotalGoodsPrice(support.getGoodsTotalPrice());
+            orderBillingDetails.setMemberDiscount(support.getMemberDiscount());
+            orderBillingDetails.setPromotionDiscount(billing.getOrderDiscount());
+            orderBillingDetails = appOrderService.createOrderBillingDetails(orderBillingDetails, orderParam.getUserId(), orderParam.getIdentityType(),
+                    billing, cashCouponList, support.getProductCouponGoodsList());
+            orderBillingDetails.setArrearage(0D);
+            orderBillingDetails.setIsPayUp(true);
+            orderBillingDetails.setPayUpTime(Calendar.getInstance().getTime());
+
+            orderBaseInfo.setTotalGoodsPrice(orderBillingDetails.getTotalGoodsPrice());
+
+            //****************** 处理订单账单支付明细信息 ************
+            List<OrderBillingPaymentDetails> paymentDetails = commonService.createOrderBillingPaymentDetails(orderBaseInfo, orderBillingDetails);
+
+            List<OrderGoodsInfo> orderGoodsInfoList = support.getPureOrderGoodsInfo();
+
+
+            //******** 分摊完毕 计算退货 单价 ***************************
+            orderGoodsInfoList = dutchService.countReturnPrice(orderGoodsInfoList, null, CountUtil.div(billing.getLeBiQuantity(), 10D), billing.getOrderDiscount());
+            //orderGoodsInfoList = dutchService.countReturnPrice(orderGoodsInfoList);
+
+            support.setOrderGoodsInfoList(orderGoodsInfoList);
+
+            //**************** 2、持久化订单相关实体信息 ****************
+            this.commonService.saveOrderRelevantInfo(orderBaseInfo, orderLogisticsInfo, orderGoodsInfoList, orderBillingDetails);
+
+            //****** 清空当单购物车商品 ******
+            commonService.clearOrderGoodsInMaterialList(orderParam.getUserId(), orderParam.getIdentityType(), goodsList, productCouponList);
+
+            //添加订单生命周期
+            appOrderService.addOrderLifecycle(OrderLifecycleType.PAYED,orderBaseInfo.getOrderNumber());
+
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                    new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), true, false));
+            logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+
+        } catch (LockStoreInventoryException | LockStorePreDepositException | LockCityInventoryException | LockCustomerCashCouponException |
+                LockCustomerLebiException | LockCustomerPreDepositException | LockEmpCreditMoneyException | LockStoreCreditMoneyException |
+                LockStoreSubventionException | SystemBusyException | LockCustomerProductCouponException | GoodsMultipartPriceException | GoodsNoPriceException |
+                OrderPayableAmountException | DutchException | OrderCreditMoneyException | OrderDiscountException e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, e.getMessage(), null);
+            logger.warn("createOrder OUT,订单创建失败,出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        } catch (IOException e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单参数转换异常!", null);
+            logger.warn("createOrder EXCEPTION,订单创建失败,出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        } catch (OrderSaveException e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单创建异常!", null);
+            logger.warn("createOrder EXCEPTION,订单创建失败,出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常,下单失败!", null);
+            logger.warn("createOrder EXCEPTION,订单创建失败,出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
 }

@@ -171,4 +171,8 @@ public interface AppOrderService {
     List<OrderBaseInfo> getSendToWMSFailedOrder();
 
     List<String> getNotSellDetailsOrderNOs(Boolean flag);
+
+    List<OrderGoodsInfo> getOrderGoodsQtyInfoByOrderNumber(String orderNumber);
+
+    void updateOrderGoodsShippingQuantityByid(OrderGoodsInfo orderGoodsInfo);
 }

@@ -531,7 +531,7 @@
         obi.status !='UNPAID'
         AND
         obi.status !='CANCELED'
-        AND s.store_id IN
+        AND obi.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
@@ -594,7 +594,7 @@
             AND
             obi.city_id =#{cityId}
         </if>
-        AND s.store_id IN
+        AND obi.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
@@ -628,7 +628,7 @@
         obi.status !='CANCELED'
         AND
         obi.ord_no  LIKE CONCAT('%',#{info},'%')
-        AND s.store_id IN
+        AND obi.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
@@ -848,7 +848,7 @@
         ord_billing_details obd ON obi.ord_no =obd.ord_no
         WHERE
         1=1
-        AND s.store_id IN
+        AND obi.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
@@ -911,7 +911,7 @@
             AND
             obi.city_id =#{cityId}
         </if>
-        AND s.store_id IN
+        AND obi.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
@@ -941,7 +941,7 @@
         ord_billing_details obd ON obi.ord_no =obd.ord_no
         WHERE
         obi.ord_no LIKE concat(concat('%',#{info}),'%')
-        AND s.store_id IN
+        AND obi.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
@@ -965,6 +965,10 @@
              oaa.seller_id
         FROM ord_arrears_audit oaa
         WHERE oaa.ord_no = #{orderNumber}
+        ORDER BY
+        create_time
+        DESC
+        LIMIT 1
     </select>
 
 
@@ -973,6 +977,10 @@
         SELECT oaa.order_money - oaa.real_money
         FROM ord_arrears_audit oaa
         WHERE oaa.ord_no = #{orderNumber}
+        ORDER BY
+        create_time
+        DESC
+        LIMIT 1
     </select>
 
 
@@ -1006,6 +1014,10 @@
         picture
         FROM ord_arrears_audit
         WHERE ord_no = #{orderNumber}
+        ORDER BY
+        create_time
+        DESC
+        LIMIT 1
     </select>
 
 

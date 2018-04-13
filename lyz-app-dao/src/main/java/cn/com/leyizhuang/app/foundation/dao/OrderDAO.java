@@ -158,4 +158,8 @@ public interface OrderDAO {
     List<OrderBaseInfo> getSendToWMSFailedOrder();
 
     List<String> getNotSellDetailsOrderNOs(@Param("flag") Boolean flag);
+
+    List<OrderGoodsInfo> getOrderGoodsQtyInfoByOrderNumber(String orderNumber);
+
+    void updateOrderGoodsShippingQuantityByid(OrderGoodsInfo orderGoodsInfo);
 }
