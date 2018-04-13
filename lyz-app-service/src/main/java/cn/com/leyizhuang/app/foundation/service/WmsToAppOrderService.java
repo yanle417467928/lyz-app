@@ -163,4 +163,12 @@ public interface WmsToAppOrderService {
      * @return
      */
     WtaShippingOrderHeader getWtaShippingOrderHeaderNotHandling(String orderNo);
+
+    /**
+     * 查询返配单号
+     *
+     * @param returnNo
+     * @return
+     */
+    WtaReturningOrderHeader getWtaReturningOrderHeaderByReturnNumber(String returnNo);
 }

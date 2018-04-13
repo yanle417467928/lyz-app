@@ -43,6 +43,11 @@ public class WtaReturningOrderHeader {
      * 返配单号
      */
     private String backNo;
+
+    /**
+     * 返配时间
+     */
+    private Date cEndDt;
     /**
      * 备注
      */

@@ -1305,7 +1305,37 @@
         SELECT
         <include refid="All_FIELD"/>
         FROM ord_base_info WHERE ord_no IN (
-
+        'ZZ_XN20180410121039220757',
+        'ZZ_XN20180410121424337446',
+        'ZZ_XN20180410122412832577',
+        'ZZ_XN20180410131103273766',
+        'CD_XN20180410133713480915',
+        'CD_XN20180410141842793222'
         )
     </select>
+
+
+    <select id="getOrderGoodsQtyInfoByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
+        SELECT
+        id                      id,
+        oid                     oid,
+        ord_no                  orderNumber,
+        gid                     gid,
+        sku                     sku,
+        IFNULL(order_qty,0)     orderQuantity,
+        IFNULL(shipping_qty,0)  shippingQuantity,
+        goods_line_type         goods_line_type
+        FROM
+        ord_goods_info
+        WHERE
+        ord_no = #{orderNumber}
+    </select>
+
+    <update id="updateOrderGoodsShippingQuantityByid" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
+        UPDATE ord_goods_info
+        SET shipping_qty = #{shippingQuantity}
+        WHERE sku = #{sku}
+              AND id = #{id}
+    </update>
+
 </mapper>

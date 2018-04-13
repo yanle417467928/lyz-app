@@ -43,26 +43,26 @@
         WHERE delivery_type = 'HOUSE_DELIVERY'*/
         SELECT
             t.ord_no orderNumber,
-            t.oid id
+        t.oid id
         FROM
             td_own_money_record_copy o
         INNER JOIN (
-                SELECT
-                    o.ord_no,
-                    o.oid
-                FROM
-                    ord_base_info o
-                LEFT JOIN ord_arrears_audit a ON a.ord_no = o.ord_no
-                WHERE
-                    o.delivery_type = 'HOUSE_DELIVERY'
-                AND a.id IS NULL
-            ) t ON t.ord_no = o.order_number
+        SELECT
+        o.ord_no,
+        o.oid
+        FROM
+        ord_base_info o
+        LEFT JOIN ord_arrears_audit a ON a.ord_no = o.ord_no
         WHERE
-            1=1
+        o.delivery_type = 'HOUSE_DELIVERY'
+        AND a.id IS NULL
+        ) t ON t.ord_no = o.order_number
+        WHERE
+        1 = 1
         AND (owned != 0
         OR payed != 0)
         GROUP BY
-	      order_number
+        order_number
     </select>
 
     <select id="findOwnMoneyRecordByOrderNumber" parameterType="java.lang.String"
@@ -144,8 +144,8 @@
 
     <select id="findDeliveryInfoByOrderNumber" parameterType="java.lang.String" resultType="java.lang.String">
         SELECT driver
-              FROM td_delivery_info_copy
-              WHERE order_number = #{orderNumber}
+        FROM td_delivery_info_copy
+        WHERE order_number = #{orderNumber}
         GROUP BY order_number
     </select>
 
@@ -188,9 +188,9 @@
         WHERE
             tdc.order_time > '2017-10-01 00:00:00'
             AND
-            tdc.main_order_number =#{orderNumber}
-              ORDER BY tdi.begin_dt desc
-            limit 1
+        tdc.main_order_number = #{orderNumber}
+        ORDER BY tdi.begin_dt DESC
+        LIMIT 1
 
     </select>
     <select id="findNewOrderByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
@@ -398,7 +398,9 @@
 
     <select id="findTdorderGoodsByPresentId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods">
-        select * from td_order_goods_copy where presented_list_id = #{presentId};
+        SELECT *
+        FROM td_order_goods_copy
+        WHERE presented_list_id = #{presentId};
     </select>
 
     <select id="isExitTdOrderGoodsLine" resultType="java.lang.Boolean">
@@ -500,7 +502,7 @@
         WHERE mobile = #{realUserUsername}
     </select>
 
-    <select id="getPendingTransferOrder" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderSmall">
+   <!-- <select id="getPendingTransferOrder" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderSmall">
         SELECT
             c.main_order_number,
             c.order_time,
@@ -524,10 +526,8 @@
         FROM td_order_copy c LEFT JOIN ord_base_info b ON c.main_order_number = b.ord_no
         WHERE b.ord_no IS NULL
         GROUP BY c.main_order_number;
-    </select>
-
-    <select id="getPendingTransferOrderByOrderNo"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderSmall">
+    </select>-->
+    <select id="getPendingTransferOrder" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderSmall">
         SELECT
         c.main_order_number,
         c.order_time,
@@ -549,8 +549,50 @@
         sum(c.total_goods_price) total_goods_price,
         c.real_user_id
         FROM td_order_copy c LEFT JOIN ord_base_info b ON c.main_order_number = b.ord_no
-        WHERE b.ord_no IS NULL and c.main_order_number = #{orderNo}
+        WHERE b.ord_no IS NULL
         GROUP BY c.main_order_number;
+    </select>
+
+    <select id="getPendingTransferReturnOrder"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdReturnSmall">
+        SELECT
+            cancel_time,
+            check_time,
+            diy_site_address,
+            diy_site_id,
+            diy_site_tel,
+            diy_site_title,
+            manager_remark_info,
+            order_number,
+            order_time,
+            pay_type_id,
+            pay_type_title,
+            remark_info,
+            return_number,
+            return_time,
+            status_id,
+            username,
+            deliver_type_title,
+            turn_price,
+            turn_type,
+            driver,
+            seller_real_name,
+            shopping_address,
+            diy_code,
+            status_name,
+            turn_type_name,
+            return_detail,
+            is_coupon,
+            cancel_return_time,
+            seller_username,
+            jx_return,
+            credit,
+            promotion_money_payed,
+            alipay_money,
+            wallet_money
+        FROM td_return_note_copy c LEFT JOIN ord_base_info b ON c.order_number = b.ord_no
+        WHERE b.ord_no IS NULL AND c.order_number = #{orderNo}
+        GROUP BY c.order_number;
     </select>
 
     <select id="queryTdOrderDataListByOrderNo" parameterType="java.lang.String"
@@ -606,13 +648,15 @@
 
     <insert id="saveDataTransferErrorLog"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.DataTransferErrorLog">
-        INSERT INTO data_transfer_error_log(order_number, error_msg, create_time)
+        INSERT INTO data_transfer_error_log (order_number, error_msg, create_time)
         VALUES
-        (#{orderNumber},#{errorMsg},#{createTime})
+        (#{orderNumber}, #{errorMsg}, #{createTime})
     </insert>
 
     <update id="updateTransferDate">
-        UPDATE td_order_copy set transfer_date = #{date} where main_order_number = #{orderNo}
+        UPDATE td_order_copy
+        SET transfer_date = #{date}
+        WHERE main_order_number = #{orderNo}
     </update>
 
 
@@ -632,24 +676,21 @@
 
     <select id="queryAllGoodsType"
             resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsType">
-        SELECT
-        *
+        SELECT *
         FROM gds_goods_type_copy
     </select>
 
 
     <select id="queryAllGoodsBrand"
             resultType="cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsBrand">
-        SELECT
-        *
+        SELECT *
         FROM gds_goods_brand_copy
     </select>
 
 
     <select id="queryAllGoodsCategory"
             resultType="cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsCategory">
-        SELECT
-        *
+        SELECT *
         FROM gds_goods_category_copy
     </select>
 
@@ -659,13 +700,13 @@
         c.city_id,
         c.name
         FROM st_store s
-        LEFT JOIN city  c
+        LEFT JOIN city c
         ON
-        s.city_id=c.city_id
+        s.city_id = c.city_id
         WHERE
-        store_type ='ZY'
+        store_type = 'ZY'
         OR
-        store_type='FXCK'
+        store_type = 'FXCK'
     </select>
 
 
@@ -690,8 +731,15 @@
     </update>
 
     <insert id="saveStoreInventory" parameterType="cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory">
-               INSERT st_inventory(create_time,last_update_time,city_id,city_code,city_name,store_id,store_code,store_name,gid,sku,sku_name,available_ity,real_ity)
-               VALUES (#{createTime},#{lastUpdateTime},#{cityId},#{cityCode},#{cityName},#{storeId},#{storeCode},#{storeName},#{gid},#{sku},#{skuName},#{availableIty},#{realIty})
+        INSERT st_inventory (create_time, last_update_time, city_id, city_code, city_name, store_id, store_code,
+        store_name, gid, sku, sku_name, available_ity, real_ity)
+        VALUES (#{createTime}, #{lastUpdateTime}, #{cityId}, #{cityCode}, #{cityName}, #{storeId}, #{storeCode},
+        #{storeName}, #{gid}, #{sku}, #{skuName}, #{availableIty}, #{realIty})
 
     </insert>
+
+    <select id="getTdReturnSmallBySize" parameterType="java.lang.Integer"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdReturnSmall">
+
+    </select>
 </mapper>

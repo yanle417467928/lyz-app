@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Date;
+
 /**
  * @author Jerry.Ren
  * create 2018-02-23 11:05
@@ -16,6 +18,10 @@ import lombok.ToString;
 public class WtaWarehousePurchaseHeader {
 
     private Long id;
+    /**
+     * 创建时间
+     */
+    private Date createTime;
     /**
      * 仓库号
      */

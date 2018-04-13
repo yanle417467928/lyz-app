@@ -1,7 +1,9 @@
 package cn.com.leyizhuang.app.web.controller.settlement;
 
 import cn.com.leyizhuang.app.core.constant.AppConstant;
+import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
@@ -220,13 +222,35 @@ public class SettlementController {
             JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, GoodsSimpleInfo.class);
             List<GoodsSimpleInfo> simpleInfos = objectMapper.readValue(goodsList, javaType1);
             Map<Long, Integer> goodsQuantity = new HashMap<>();
+            AppStore store = this.storeService.findById(storeId);
             for (GoodsSimpleInfo info : simpleInfos) {
                 if (!goodsQuantity.containsKey(info.getId())) {
                     goodsQuantity.put(info.getId(), info.getQty());
                 } else {
                     goodsQuantity.put(info.getId(), info.getQty() + goodsQuantity.get(info.getId()));
                 }
+
+                /**************/
+                //2018-04-03 generation 加盟门店自提不能用产品卷
+                if (null != store && StoreType.JM == store.getStoreType() && info.getGoodsLineType().equals(AppGoodsLineType.PRODUCT_COUPON.toString())) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "包含不支持自提的商品!", null);
+                    logger.info("chooseSelfTakeStore OUT,选择自提门店失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+                /**************/
             }
+
+            /**************/
+            //2018-04-03 generation 加盟门店自提不用判断库存
+
+            if(null != store && StoreType.JM == store.getStoreType()) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+                logger.info("chooseSelfTakeStore OUT,选择自提门店成功，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            /**************/
+
+
             for (Map.Entry<Long, Integer> entry : goodsQuantity.entrySet()) {
                 GoodsDO goodsDO = goodsService.findGoodsById(entry.getKey());
                 Boolean enoughInvFlag = orderService.existGoodsStoreInventory(storeId, entry.getKey(), entry.getValue());
