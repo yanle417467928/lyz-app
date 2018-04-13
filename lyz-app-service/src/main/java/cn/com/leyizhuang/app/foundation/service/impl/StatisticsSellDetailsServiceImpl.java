@@ -1,24 +1,22 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
-import cn.com.leyizhuang.app.core.constant.ActBaseType;
-import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
-import cn.com.leyizhuang.app.core.constant.AppIdentityType;
-import cn.com.leyizhuang.app.core.constant.AppSellerType;
+import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.SellDetailsDAO;
 import cn.com.leyizhuang.app.foundation.dao.SellZgDetailsDAO;
-import cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO;
-import cn.com.leyizhuang.app.foundation.pojo.SellDetailsErrorLogDO;
-import cn.com.leyizhuang.app.foundation.pojo.SellZgCusTimes;
-import cn.com.leyizhuang.app.foundation.pojo.SellZgDetailsDO;
+import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderHeader;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import cn.com.leyizhuang.common.util.CountUtil;
+import cn.com.leyizhuang.common.util.WeekDateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -26,13 +24,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by panjie on 2018/1/24.
@@ -65,6 +61,9 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
     @Resource
     private AppStoreService appStoreService;
 
+    @Resource
+    private WmsToAppOrderService wmsToAppOrderService;
+
     @Override
     public List<SellDetailsDO> statisticsCurrentDetails() {
         // 当前时间
@@ -91,6 +90,7 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
         // 当月1号 0 点 0 分 0 秒
         LocalDateTime firstDay = LocalDateTime.of(now.getYear(),now.getMonth(),1,0,0,0);
 
+
         for (String code : structureCode){
             // 获取组织下的导购
             List<SellerResponse> employeeList = appEmployeeService.querySellerByStructureCode(code);
@@ -98,16 +98,104 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
             // 循环遍历
             for (SellerResponse employee : employeeList) {
 
-                if (employee.getStatus().equals(false)){
-                    continue;
+                try{
+                    if (employee.getStatus().equals(false)){
+                        continue;
+                    }
+                    Long empId = employee.getSellerId();
+                    String empName = employee.getSellerName();
+                    if (empId.equals(205L)){
+                        System.out.println("123");
+                    }
+                    // 统计高端桶数
+                    Integer gdts = this.countGDTS(firstDay,now,empId,code);
+
+                    SellDetailsSingleDO gdtsDO = new SellDetailsSingleDO();
+
+                    gdtsDO.setCreateTime(now);
+                    gdtsDO.setUpdateTime(now);
+                    gdtsDO.setYear(now.getYear());
+                    gdtsDO.setMonth(now.getMonthValue());
+                    gdtsDO.setFinishQty(gdts);
+                    gdtsDO.setStructureCode(code);
+                    gdtsDO.setFlag("TS");
+                    gdtsDO.setSellerId(empId);
+                    gdtsDO.setSellerName(empName);
+
+                    Long id1 = sellDetailsDAO.isExitSellDetailsSingle(now.getYear(),now.getMonthValue(),empId,"TS");
+                    if (id1 != null){
+                        gdtsDO.setId(id1);
+                        sellDetailsDAO.updateSellDetailsSingle(gdtsDO);
+                    }else {
+                        sellDetailsDAO.addSellDetailsSingle(gdtsDO);
+                    }
+
+                    // 统计活跃会员数
+                    Integer hys = this.countHYS(firstDay,now,employee.getSellerId(),code);
+                    SellDetailsSingleDO hysDO = new SellDetailsSingleDO();
+
+                    hysDO.setCreateTime(now);
+                    hysDO.setUpdateTime(now);
+                    hysDO.setYear(now.getYear());
+                    hysDO.setMonth(now.getMonthValue());
+                    hysDO.setFinishQty(hys);
+                    hysDO.setStructureCode(code);
+                    hysDO.setFlag("HYS");
+                    hysDO.setSellerId(empId);
+                    hysDO.setSellerName(empName);
+
+                    Long id2 = sellDetailsDAO.isExitSellDetailsSingle(now.getYear(),now.getMonthValue(),empId,"HYS");
+                    if (id2 != null){
+                        hysDO.setId(id2);
+                        sellDetailsDAO.updateSellDetailsSingle(hysDO);
+                    }else {
+                        sellDetailsDAO.addSellDetailsSingle(hysDO);
+                    }
+
+                    if (empId.equals(386L)){
+                        System.out.println("123");
+                    }
+
+                    // 统计新开发高端会员数
+                    LocalDateTime halfYearAgoDate = LocalDateTime.now().plusMonths(6);
+                    Integer xkf = this.countXKF(firstDay,firstDay,LocalDateTime.now(),halfYearAgoDate,employee.getSellerId(),code);
+
+                    SellDetailsSingleDO xkfDO = new SellDetailsSingleDO();
+
+                    xkfDO.setCreateTime(now);
+                    xkfDO.setUpdateTime(now);
+                    xkfDO.setYear(now.getYear());
+                    xkfDO.setMonth(now.getMonthValue());
+                    xkfDO.setFinishQty(xkf);
+                    xkfDO.setStructureCode(code);
+                    xkfDO.setFlag("XKF");
+                    xkfDO.setSellerId(empId);
+                    xkfDO.setSellerName(empName);
+
+                    Long id3 = sellDetailsDAO.isExitSellDetailsSingle(now.getYear(),now.getMonthValue(),empId,"XKF");
+                    if (id3 != null){
+                        xkfDO.setId(id3);
+                        sellDetailsDAO.updateSellDetailsSingle(xkfDO);
+                    }else {
+                        sellDetailsDAO.addSellDetailsSingle(xkfDO);
+                    }
+
+                    // 统计周完成情况
+                    this.countWeekXKF(firstDay,halfYearAgoDate,empId,code,xkfDO.getId());
+
+                }catch (Exception e){
+                    logger.info(e.getLocalizedMessage());
+                    // 记录失败
+                    logger.info(now+ " 导购：" + employee.getSellerName() + "业绩统计失败！");
+                    e.printStackTrace();
+                    SellDetailsStatisticErrorLog log = new SellDetailsStatisticErrorLog();
+
+                    log.setCreateTime(new Date());
+                    log.setErrorMsg(e.getMessage());
+                    log.setSellerId(employee.getSellerId());
+
+                    sellDetailsDAO.addEmpPerformanceStatisticErrorLog(log);
                 }
-
-                // 统计高端桶数
-                this.countGDTS(firstDay,now,employee.getSellerId(),code);
-
-                // 统计活跃会员数
-
-
             }
         }
     }
@@ -116,13 +204,218 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
         Integer orderQty = sellDetailsDAO.countGDTS(startTime,endTime,sellerId,structureCode,"0");
         Integer returnQty = sellDetailsDAO.countGDTS(startTime,endTime,sellerId,structureCode,"1");
 
+        if (orderQty == null){
+            orderQty = 0;
+        }
+
+        if (returnQty == null){
+            returnQty = 0;
+        }
+
         Integer gdQty = (orderQty - returnQty) < 0 ? 0 : (orderQty - returnQty);
         return  gdQty;
     }
 
-    public Integer countHYS(LocalDateTime startTime,LocalDateTime endTime , Long sellerId){
+    public Integer countHYS(LocalDateTime startTime,LocalDateTime endTime , Long sellerId,String structureCode){
+        if (sellerId.equals(488L)){
+            System.out.println("123");
+        }
 
-        return null;
+        Integer qty = 0;
+        List<Long> list = sellDetailsDAO.countHYS(startTime,endTime,sellerId,structureCode);
+        if (list != null){
+            qty = list.size();
+        }
+        return qty;
+    }
+
+    public Integer countXKF(LocalDateTime firstDay,LocalDateTime startTime,LocalDateTime endTime,LocalDateTime halfYearAgoDate,Long sellerId,String  structureCode){
+        Integer qty = 0;
+        List<Long> list = sellDetailsDAO.countXKF(firstDay,startTime,endTime,halfYearAgoDate,sellerId,structureCode);
+
+        if(sellerId.equals(562L)){
+            System.out.println("123");
+        }
+
+        if (list != null && list.size() > 0){
+            /**  过滤2018年4月1号前 已经是高端的活跃会员 **/
+            /** 2018年10月1号之前都需要执行 **/
+
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime date = LocalDateTime.of(2018,10,1,0,0,1);
+
+            if (now.isBefore(date)){
+                list = sellDetailsDAO.cusIdFiltration(list,sellerId);
+            }
+
+            if (list != null || list.size() > 0) {
+                qty = list.size();
+            }
+        }
+
+        return qty;
+    }
+
+    public void countWeekXKF(LocalDateTime fristDay,LocalDateTime halfYearAgoDate,Long sellerId,String  structureCode,Long headId){
+        List<Map<String, LocalDateTime>> weekMapList =  WeekDateUtil.getWeekDate();
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startTime = null;
+        LocalDateTime endTime = null;
+        Integer xkfQty = 0;
+
+        for (int i = 0 ; i < weekMapList.size() ; i++){
+            Map<String , LocalDateTime> weekMap = weekMapList.get(i);
+
+            SellDetailsWeekFinishResponse response = new SellDetailsWeekFinishResponse();
+
+            response.setHeadId(headId);
+            response.setWeek(weekMapList.size() - i);
+            response.setSellerId(sellerId);
+
+            if (headId == 10843){
+                System.out.println("123");
+            }
+            if (i == weekMapList.size()-1){
+                // 第一周
+                startTime = fristDay;
+                endTime = weekMap.get("Sun");
+                endTime = LocalDateTime.of(endTime.getYear(),endTime.getMonthValue(),endTime.getDayOfMonth(),23,59,59);
+                xkfQty = this.countXKF(fristDay,startTime,endTime,halfYearAgoDate,sellerId,structureCode);
+            }else if (i == 0 && weekMapList.size() > 1){
+                // 当前周
+                startTime = weekMap.get("Mon");
+                endTime = now;
+                xkfQty = this.countXKF(fristDay,startTime,endTime,halfYearAgoDate,sellerId,structureCode);
+
+            }else  {
+                startTime = weekMap.get("Mon");
+                endTime = weekMap.get("Sun");
+                endTime = LocalDateTime.of(endTime.getYear(),endTime.getMonthValue(),endTime.getDayOfMonth(),23,59,59);
+                xkfQty = this.countXKF(fristDay,startTime,endTime,halfYearAgoDate,sellerId,structureCode);
+            }
+
+            if (xkfQty == null){
+                xkfQty = 0;
+            }
+
+            response.setStartDate(startTime);
+            response.setEndDate(endTime);
+            response.setFinishQty(xkfQty);
+
+            Long id = sellDetailsDAO.isExitSellDetailsWeek(headId,response.getWeek());
+
+            if (id == null){
+                sellDetailsDAO.addSellDetailsWeekFinish(response);
+            }else {
+                response.setId(id);
+                sellDetailsDAO.updateSellDetailsWeekFinish(response);
+            }
+
+        }
+
+    }
+
+    public void statisticOneSeller(Long empId){
+        // 当前时间
+        LocalDateTime now = LocalDateTime.now();
+        // 当月1号 0 点 0 分 0 秒
+        LocalDateTime firstDay = LocalDateTime.of(now.getYear(),now.getMonth(),1,0,0,0);
+        AppEmployee employee = appEmployeeService.findById(empId);
+
+        if (employee != null){
+            String structureCode = "";
+            AppStore store = appStoreService.findById(employee.getStoreId());
+
+            if(store != null){
+                String[] codeArr = store.getStoreStructureCode().split("|");
+                // 取第二个code
+                structureCode = codeArr[1];
+
+                String empName = employee.getName();
+
+                // 统计高端桶数
+                Integer gdts = this.countGDTS(firstDay,now,empId,structureCode);
+
+                SellDetailsSingleDO gdtsDO = new SellDetailsSingleDO();
+
+                gdtsDO.setCreateTime(now);
+                gdtsDO.setUpdateTime(now);
+                gdtsDO.setYear(now.getYear());
+                gdtsDO.setMonth(now.getMonthValue());
+                gdtsDO.setFinishQty(gdts);
+                gdtsDO.setStructureCode(structureCode);
+                gdtsDO.setFlag("TS");
+                gdtsDO.setSellerId(empId);
+                gdtsDO.setSellerName(empName);
+
+                Long id1 = sellDetailsDAO.isExitSellDetailsSingle(now.getYear(),now.getMonthValue(),empId,"TS");
+                if (id1 != null){
+                    gdtsDO.setId(id1);
+                    sellDetailsDAO.updateSellDetailsSingle(gdtsDO);
+                }else {
+                    sellDetailsDAO.addSellDetailsSingle(gdtsDO);
+                }
+
+                // 统计活跃会员数
+                Integer hys = this.countHYS(firstDay,now,employee.getEmpId(),structureCode);
+                SellDetailsSingleDO hysDO = new SellDetailsSingleDO();
+
+                hysDO.setCreateTime(now);
+                hysDO.setUpdateTime(now);
+                hysDO.setYear(now.getYear());
+                hysDO.setMonth(now.getMonthValue());
+                hysDO.setFinishQty(hys);
+                hysDO.setStructureCode(structureCode);
+                hysDO.setFlag("HYS");
+                hysDO.setSellerId(empId);
+                hysDO.setSellerName(empName);
+
+                Long id2 = sellDetailsDAO.isExitSellDetailsSingle(now.getYear(),now.getMonthValue(),empId,"HYS");
+                if (id2 != null){
+                    hysDO.setId(id2);
+                    sellDetailsDAO.updateSellDetailsSingle(hysDO);
+                }else {
+                    sellDetailsDAO.addSellDetailsSingle(hysDO);
+                }
+
+                if (empId.equals(386L)){
+                    System.out.println("123");
+                }
+
+                // 统计新开发高端会员数
+                LocalDateTime halfYearAgoDate = LocalDateTime.now().plusMonths(6);
+                Integer xkf = this.countXKF(firstDay,firstDay,LocalDateTime.now(),halfYearAgoDate,employee.getEmpId(),structureCode);
+
+                SellDetailsSingleDO xkfDO = new SellDetailsSingleDO();
+
+                xkfDO.setCreateTime(now);
+                xkfDO.setUpdateTime(now);
+                xkfDO.setYear(now.getYear());
+                xkfDO.setMonth(now.getMonthValue());
+                xkfDO.setFinishQty(xkf);
+                xkfDO.setStructureCode(structureCode);
+                xkfDO.setFlag("XKF");
+                xkfDO.setSellerId(empId);
+                xkfDO.setSellerName(empName);
+
+                Long id3 = sellDetailsDAO.isExitSellDetailsSingle(now.getYear(),now.getMonthValue(),empId,"XKF");
+                if (id3 != null){
+                    xkfDO.setId(id3);
+                    sellDetailsDAO.updateSellDetailsSingle(xkfDO);
+                }else {
+                    sellDetailsDAO.addSellDetailsSingle(xkfDO);
+                }
+
+                // 统计周完成情况
+                this.countWeekXKF(firstDay,halfYearAgoDate,empId,structureCode,xkfDO.getId());
+            }else {
+                logger.info("找不到门店");
+            }
+
+        }else {
+            logger.info("找不到导购");
+        }
+
     }
 
     public void addSellDetails(List<SellDetailsDO> sellDetailsDOS) {
@@ -134,19 +427,26 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
     }
 
     @Override
-    @Transactional
-    public void addOrderSellDetails(String orderNumber) {
+    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
+    public void addOrderSellDetails(String orderNumber) throws Exception {
         if (StringUtils.isNotBlank(orderNumber)) {
             OrderBaseInfo orderBaseInfo = orderService.getOrderByOrderNumber(orderNumber);
 
-            /**打上标记 标识已经记录销量**/
-            orderBaseInfo.setIsRecordSales(true);
-            orderService.updateOrderBaseInfo(orderBaseInfo);
 
             List<OrderGoodsInfo> orderGoodsInfos = orderService.getOrderGoodsInfoByOrderNumber(orderNumber);
 
             if (orderBaseInfo != null && orderBaseInfo != null && orderGoodsInfos.size() > 0) {
-                Date createDate = orderBaseInfo.getCreateTime();
+                Date createDate = new Date();
+
+//                AppDeliveryType deliveryType = orderBaseInfo.getDeliveryType();
+////                if (deliveryType.equals(AppDeliveryType.HOUSE_DELIVERY) || deliveryType.equals(AppDeliveryType.HOUSE_DELIVERY.getValue())){
+////                    // 配送单 取发货时间
+////                    WtaShippingOrderHeader header = wmsToAppOrderService.getWtaShippingOrderHeader(orderNumber);
+////                    if (header != null && header.getSendFlag().equals(true)){
+////                        createDate = header.getEndDt();
+////                    }
+////                }
+
                 //date 转 localDateTime
                 Instant instant = createDate.toInstant();
                 ZoneId zoneId = ZoneId.systemDefault();
@@ -166,7 +466,7 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
                         detailsDO.setCompanyId(orderBaseInfo.getSobId());
                         detailsDO.setYear(year);
                         detailsDO.setMonth(month);
-                        detailsDO.setCreateTime(new Date());
+                        detailsDO.setCreateTime(createDate);
                         detailsDO.setCityId(orderBaseInfo.getCityId());
                         detailsDO.setStoreId(orderBaseInfo.getStoreOrgId());
                         detailsDO.setSellerId(orderBaseInfo.getSalesConsultId());
@@ -196,22 +496,24 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
                 /*** 记录专供销量 ****/
                 this.recordZgSales(orderBaseInfo, goodsIds, orderGoodsInfos);
 
+                /**打上标记 标识已经记录销量**/
+                orderBaseInfo.setIsRecordSales(true);
+                orderService.updateOrderBaseInfo(orderBaseInfo);
             } else {
                 logger.info("订单：" + orderNumber + "数据异常，生成销量明细失败！");
                 //  记录错误日志
-                this.recordeErrorLog(orderNumber);
+                this.recordeErrorLog(orderNumber,"找不到订单");
+                throw new RuntimeException("找不到订单或者商品明细");
             }
         }
     }
 
     @Override
-    @Transactional
-    public void addReturnOrderSellDetails(String returnOrderNumber) {
+    @Transactional(rollbackFor={RuntimeException.class, Exception.class})
+    public void addReturnOrderSellDetails(String returnOrderNumber) throws Exception {
         if (StringUtils.isNotBlank(returnOrderNumber)) {
             ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(returnOrderNumber);
 
-            returnOrderBaseInfo.setIsRecordSales(true);
-            returnOrderService.modifyReturnOrderBaseInfo(returnOrderBaseInfo);
 
             List<ReturnOrderGoodsInfo> returnOrderGoodsInfos = returnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnOrderNumber);
             // 订单信息
@@ -219,7 +521,10 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
 
             if (orderBaseInfo != null && returnOrderBaseInfo != null && returnOrderGoodsInfos != null && returnOrderGoodsInfos.size() != 0) {
 
-                Date returnTime = returnOrderBaseInfo.getReturnTime();
+                Date returnTime = new Date();
+
+                // TODO 如果是配送单 取wms反配上架时间
+
                 //date 转 localDateTime
                 Instant instant = returnTime.toInstant();
                 ZoneId zoneId = ZoneId.systemDefault();
@@ -238,7 +543,7 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
                         detailsDO.setCompanyId(orderBaseInfo.getSobId());
                         detailsDO.setYear(year);
                         detailsDO.setMonth(month);
-                        detailsDO.setCreateTime(new Date());
+                        detailsDO.setCreateTime(returnTime);
                         detailsDO.setCityId(orderBaseInfo.getCityId());
                         detailsDO.setStoreId(orderBaseInfo.getStoreOrgId());
                         detailsDO.setSellerId(orderBaseInfo.getSalesConsultId());
@@ -262,10 +567,14 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
                         sellDetailsDAO.addOneDetail(detailsDO);
                     }
                 }
+
+                returnOrderBaseInfo.setIsRecordSales(true);
+                returnOrderService.modifyReturnOrderBaseInfo(returnOrderBaseInfo);
             } else {
                 logger.info("订单：" + returnOrderNumber + "数据异常，生成销量明细失败！");
                 // 记录错误日志
-                this.recordeErrorLog(returnOrderNumber);
+                this.recordeErrorLog(returnOrderNumber,"找不到退单,退单明细，或者订单信息");
+                throw  new RuntimeException("找不到退单");
             }
         }
     }
@@ -294,15 +603,59 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
     }
 
     @Override
-    public void recordeErrorLog(String orderNo) {
+    public void recordeErrorLog(String orderNo,String msg) {
         if (orderNo != null || !orderNo.equals("")) {
             SellDetailsErrorLogDO log = new SellDetailsErrorLogDO();
             log.setOrderNo(orderNo);
             log.setRecordTime(new Date());
             log.setStatus(false);
+            log.setErrorMsg(msg);
 
             sellDetailsDAO.recordeErrorLog(log);
         }
+    }
+
+    @Override
+    public void createAllOrderDetails() {
+        // 取所有已出货 没有记录销量的订单
+        List<String> orderNos = orderService.getNotSellDetailsOrderNOs(false);
+        LocalDateTime startTime = LocalDateTime.now();
+        logger.info("***********生成订单销量，一共有："+orderNos.size()+"条*****************");
+        for (String orderNo : orderNos){
+            try {
+                this.addOrderSellDetails(orderNo);
+            }catch (Exception e){
+                e.printStackTrace();
+                logger.info(e.getMessage());
+                // 记录错误日志
+                this.recordeErrorLog(orderNo,e.getMessage());
+            }
+        }
+        LocalDateTime endTime = LocalDateTime.now();
+        Duration duration = Duration.between(startTime,endTime);
+        logger.info("生成完毕，用时:"+duration.toMinutes() + "分钟");
+    }
+
+    @Override
+    public void createAllreturnOrderDetails(){
+        // 取出所有反配上架 没有记录退单销量的订单
+
+        List<String> orderNos = returnOrderService.getNotReturnDetailsReturnNos(false);
+        LocalDateTime startTime = LocalDateTime.now();
+        logger.info("***********生成订单销量，一共有："+orderNos.size()+"条*****************");
+        for (String orderNo : orderNos){
+            try {
+                this.addReturnOrderSellDetails(orderNo);
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.info(e.getMessage());
+                // 记录错误日志
+                this.recordeErrorLog(orderNo,e.getMessage());
+            }
+        }
+        LocalDateTime endTime = LocalDateTime.now();
+        Duration duration = Duration.between(startTime,endTime);
+        logger.info("生成完毕，用时:"+duration.toMinutes() + "分钟");
     }
 
     /******************************** 专供销量 *********************************************/
@@ -495,6 +848,15 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
 
         SellDetailsResponse sellDetailsResponse = sellDetailsDAO.statisticsSellDetailsSingle(now.getYear(),now.getMonthValue(),empId,"TS");
 
+        Integer targetQty = sellDetailsResponse.getTargetQty() == null ? 0 : sellDetailsResponse.getTargetQty();
+        Integer finishQty = sellDetailsResponse.getFinishQty() == null ? 0 : sellDetailsResponse.getFinishQty();
+
+        if (targetQty.equals(0) || targetQty < 0){
+            sellDetailsResponse.setFinishChance(0.00);
+        }else{
+            sellDetailsResponse.setFinishChance(CountUtil.div(finishQty,targetQty));
+        }
+
         return sellDetailsResponse;
     }
 
@@ -511,6 +873,15 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
 
         SellDetailsResponse sellDetailsResponse = sellDetailsDAO.statisticsSellDetailsSingle(now.getYear(),now.getMonthValue(),empId,"HYS");
 
+        Integer targetQty = sellDetailsResponse.getTargetQty() == null ? 0 : sellDetailsResponse.getTargetQty();
+        Integer finishQty = sellDetailsResponse.getFinishQty() == null ? 0 : sellDetailsResponse.getFinishQty();
+
+        if (targetQty.equals(0) || targetQty < 0){
+            sellDetailsResponse.setFinishChance(0.00);
+        }else{
+            sellDetailsResponse.setFinishChance(CountUtil.div(finishQty,targetQty));
+        }
+
         return sellDetailsResponse;
     }
 
@@ -525,10 +896,55 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
 
         SellDetailsResponse sellDetailsResponse = sellDetailsDAO.statisticsSellDetailsSingle(now.getYear(),now.getMonthValue(),empId,"XKF");
 
+        Integer targetQty = sellDetailsResponse.getTargetQty() == null ? 0 : sellDetailsResponse.getTargetQty();
+        Integer finishQty = sellDetailsResponse.getFinishQty() == null ? 0 : sellDetailsResponse.getFinishQty();
+
+        if (targetQty.equals(0) || targetQty < 0){
+            sellDetailsResponse.setFinishChance(0.00);
+        }else{
+            sellDetailsResponse.setFinishChance(CountUtil.div(finishQty,targetQty));
+        }
+
         // 查询每周开发会员详情
         List<SellDetailsWeekFinishResponse> sellDetailsWeekFinishResponses = sellDetailsDAO.getWeekFinishDetails(sellDetailsResponse.getLineId());
 
         sellDetailsResponse.setWeekFinishDetails(sellDetailsWeekFinishResponses);
         return sellDetailsResponse;
+    }
+
+    /**
+     * 分公司排名
+     */
+    public List<SellDetailsResponse> getFgsRank(Long empId,String flag){
+        String structureCode = "";
+        LocalDateTime now = LocalDateTime.now();
+        Integer year = now.getYear();
+        Integer month = now.getMonthValue();
+
+        AppEmployee employee = appEmployeeService.findById(empId);
+
+        if (employee == null){
+            return null;
+        }
+
+        AppStore store = appStoreService.findById(employee.getStoreId());
+        String storeStructureCode = store.getStoreStructureCode();
+
+        String[] structureArr = storeStructureCode.split("|");
+
+        structureCode = structureArr[1];
+
+        return sellDetailsDAO.getFgsRank(year,month,structureCode,flag);
+    }
+
+    /**
+     * 集团排名
+     */
+    public List<SellDetailsResponse> getJtRank(String flag){
+        LocalDateTime now = LocalDateTime.now();
+        Integer year = now.getYear();
+        Integer month = now.getMonthValue();
+
+        return sellDetailsDAO.getJtRank(year,month,flag);
     }
 }

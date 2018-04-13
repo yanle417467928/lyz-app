@@ -162,4 +162,6 @@ public interface WmsToAppOrderDAO {
      * @return
      */
     WtaShippingOrderHeader getWtaShippingOrderHeaderNotHandling(String orderNo);
+
+    WtaShippingOrderHeader getWtaShippingOrderHeader(String orderNo);
 }

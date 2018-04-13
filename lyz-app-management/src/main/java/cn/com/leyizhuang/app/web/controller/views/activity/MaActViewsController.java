@@ -4,10 +4,7 @@ import cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActStoreDO;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
-import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
-import cn.com.leyizhuang.app.foundation.service.AppActService;
-import cn.com.leyizhuang.app.foundation.service.CityService;
-import cn.com.leyizhuang.app.foundation.service.MaStoreService;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,10 +13,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 /**

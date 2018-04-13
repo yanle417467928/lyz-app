@@ -1026,6 +1026,17 @@
         </foreach>
     </select>
 
+    <select id="findGoodsByCompanyFlagAndIds" resultType="java.lang.String">
+        SELECT  sku_name from gds_goods where gid IN
+        <foreach collection="GoodsIds" item="gid" separator="," open="(" close=")">
+            #{gid}
+        </foreach>
+        and company_flag IN
+        <foreach collection="CompanyFlagList" item="flag" separator="," open="(" close=")">
+            #{flag}
+        </foreach>
+    </select>
+
     <select id="findOrderGoodsVOListByCustomerIdAndGoodsIds"
             resultType="cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO">
         SELECT

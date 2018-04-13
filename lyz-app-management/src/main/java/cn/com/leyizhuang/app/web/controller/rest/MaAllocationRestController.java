@@ -19,15 +19,18 @@ import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Jerry.Ren
@@ -255,5 +258,25 @@ public class MaAllocationRestController extends BaseRestController{
         ityAllocationService.cancel(allocation,user.getLoginName());
         return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
                 "作废成功", null);
+    }
+
+    /**
+     * 重传调拨单
+     */
+    @GetMapping(value = "/resendAll")
+    public Map<String, Object> resendAll(HttpServletRequest req) {
+        Map<String, Object> result = Maps.newHashMap();
+
+        try {
+            ityAllocationService.resendAllAllocation();
+            result.put("code", 0);
+            result.put("msg", "操作成功！");
+        } catch (Exception e) {
+            logger.error("调拨单重新发送错误, err=" + e.getMessage(), e);
+            result.put("code", -1);
+            result.put("msg", "系统正忙，请稍后重试！");
+        }
+
+        return result;
     }
 }

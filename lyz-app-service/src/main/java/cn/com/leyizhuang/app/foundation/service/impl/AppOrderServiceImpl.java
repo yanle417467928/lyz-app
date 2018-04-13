@@ -1017,4 +1017,9 @@ public class AppOrderServiceImpl implements AppOrderService {
     public List<OrderBaseInfo> getSendToWMSFailedOrder() {
         return orderDAO.getSendToWMSFailedOrder();
     }
+
+    @Override
+    public List<String> getNotSellDetailsOrderNOs(Boolean flag){
+        return orderDAO.getNotSellDetailsOrderNOs(flag);
+    }
 }

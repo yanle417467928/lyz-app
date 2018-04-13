@@ -163,4 +163,6 @@ public interface WmsToAppOrderService {
      * @return
      */
     WtaShippingOrderHeader getWtaShippingOrderHeaderNotHandling(String orderNo);
+
+    WtaShippingOrderHeader getWtaShippingOrderHeader(String orderNo);
 }

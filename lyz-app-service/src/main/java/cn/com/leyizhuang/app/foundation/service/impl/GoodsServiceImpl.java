@@ -306,6 +306,14 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
+    public List<String> findGoodsByCompanyFlagAndIds(List<Long> goodsIds,List<String> companyFlagList){
+        if (goodsIds != null && goodsIds.size() > 0 && companyFlagList != null && companyFlagList.size() > 0){
+            return goodsDAO.findGoodsByCompanyFlagAndIds(goodsIds,companyFlagList);
+        }
+        return null;
+    }
+
+    @Override
     public void saveSynchronize(GoodsDO goodsDO) {
         if (goodsDO != null) {
             goodsDAO.saveSynchronize(goodsDO);

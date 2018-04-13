@@ -1308,4 +1308,9 @@
 
         )
     </select>
+
+    <select id="getNotSellDetailsOrderNOs" resultType="java.lang.String">
+        SELECT  o.ord_no from ord_base_info o where o.status in ('PENDING_SHIPMENT','PENDING_RECEIVE','FINISHED') and o.is_record_sales = #{flag};
+
+    </select>
 </mapper>
