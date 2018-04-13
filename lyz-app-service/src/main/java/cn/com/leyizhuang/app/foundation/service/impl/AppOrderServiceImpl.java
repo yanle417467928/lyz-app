@@ -583,6 +583,8 @@ public class AppOrderServiceImpl implements AppOrderService {
             default:
                 break;
         }
+        log.info("应付款:{}", amountPayable);
+
         if (OrderUtils.replaceNullWithZero(orderBillingDetails.getCashCouponDiscount()) > 0
                 && OrderUtils.replaceNullWithZero(orderBillingDetails.getFreight()) > 0) {
             if (OrderUtils.replaceNullWithZero(orderBillingDetails.getOrderAmountSubtotal()) < OrderUtils.replaceNullWithZero(orderBillingDetails.getFreight())) {
@@ -593,7 +595,7 @@ public class AppOrderServiceImpl implements AppOrderService {
             throw new OrderPayableAmountException("订单应付款金额异常(<0)");
         }
         //根据应付金额判断订单账单是否已付清
-        if (orderBillingDetails.getArrearage() <= AppConstant.PAY_UP_LIMIT) {
+        if (Math.abs(orderBillingDetails.getArrearage()) <= AppConstant.PAY_UP_LIMIT) {
             orderBillingDetails.setIsPayUp(true);
         } else {
             orderBillingDetails.setIsPayUp(false);
@@ -1003,7 +1005,6 @@ public class AppOrderServiceImpl implements AppOrderService {
         });
         return new PageInfo<>(orderPageInfoVOList);
     }
-
 
 
     @Override
