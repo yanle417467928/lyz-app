@@ -608,7 +608,7 @@ public class AppOrderServiceImpl implements AppOrderService {
         if ((orderBillingDetails.getEmpCreditMoney() > 0 || orderBillingDetails.getStoreCreditMoney() > 0)) {
             if (identityType == AppIdentityType.SELLER.getValue()) {
                 if (null != orderBillingDetails.getFreight() && orderBillingDetails.getFreight() > AppConstant.DOUBLE_ZERO) {
-                    if (Math.abs(orderBillingDetails.getAmountPayable()) > AppConstant.DOUBLE_ZERO &&
+                    if (Math.abs(orderBillingDetails.getAmountPayable()) > AppConstant.PAY_UP_LIMIT &&
                             Math.abs(orderBillingDetails.getAmountPayable() - orderBillingDetails.getFreight()) >= AppConstant.PAY_UP_LIMIT) {
                         throw new OrderCreditMoneyException("信用额度支付运费必须一次性付清,不能部分支付!");
                     }
