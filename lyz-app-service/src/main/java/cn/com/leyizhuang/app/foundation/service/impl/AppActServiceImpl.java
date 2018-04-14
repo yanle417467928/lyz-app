@@ -35,9 +35,15 @@ public class AppActServiceImpl implements AppActService {
 
     private static final Logger logger = LoggerFactory.getLogger(AppActServiceImpl.class);
 
+    /**
+     * 不参与专供促销的商品
+     */
     private final String ZG_EXCLUDE_GOODS = "VHED8000-5L,";
 
-    private final String ZG_EXCLUDE_LEVEL = "D,";
+    /**
+     * 不参与专供促销的等级
+     */
+    private final String ZG_EXCLUDE_LEVEL = "D,B";
 
     @Autowired
     private ActBaseDAO actBaseDAO;
