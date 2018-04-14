@@ -552,8 +552,9 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     if (null == logisticStatusOfLoading) {
                         //修改订单状态
                         if (LogisticStatus.LOADING.equals(orderDeliveryInfoDetails.getLogisticStatus())) {
+                            OrderBaseInfo orderBase = appOrderService.getOrderDetail(orderDeliveryInfoDetails.getOrderNo());
                             appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.PENDING_RECEIVE,
-                                    orderDeliveryInfoDetails.getLogisticStatus(), orderDeliveryInfoDetails.getOrderNo());
+                                        orderDeliveryInfoDetails.getLogisticStatus(), orderDeliveryInfoDetails.getOrderNo());
                             //因为wms传输物流信息无序,这里需要判断是否在装车前就传了封车状态而做了未处理标识的封车信息
                             WtaShippingOrderHeader shippingOrderHeader = wmsToAppOrderService.getWtaShippingOrderHeaderNotHandling(orderDeliveryInfoDetails.getOrderNo());
                             if (null != shippingOrderHeader) {

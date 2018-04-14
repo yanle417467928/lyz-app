@@ -291,7 +291,7 @@
             AND ggb.brand_name =#{goodsBrand}
         </if>
         <if test="null !=specification and ''!= specification ">
-            AND g.goods_specification=#{specification}
+            AND g.specification_type=#{specification}
         </if>
         <if test="null !=goodsType and ''!= goodsType ">
             AND ggt.type_name=#{goodsType}
@@ -322,7 +322,7 @@
             AND ggb.brand_name =#{goodsBrand}
         </if>
         <if test="null !=specification and ''!= specification ">
-            AND g.goods_specification=#{specification}
+            AND g.specification_type=#{specification}
         </if>
         <if test="null !=goodsType and ''!= goodsType ">
             AND ggt.type_name=#{goodsType}
@@ -334,8 +334,8 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsBrandResponse">
         SELECT
         DISTINCT
-        g.brd_id brand_id,
-        g.brand_name brand_name
+        b.brd_id brand_id,
+        b.brand_name brand_name
         FROM
         cus_customer c
         INNER JOIN gds_goods_price p ON c.store_id = p.store_id
@@ -353,7 +353,7 @@
             AND gc.category_name =#{categorySecond}
         </if>
         <if test="null !=specification and ''!= specification ">
-            AND g.goods_specification=#{specification}
+            AND g.specification_type=#{specification}
         </if>
         <if test="null !=goodsType and ''!= goodsType ">
             AND ggt.type_name=#{goodsType}
@@ -365,8 +365,8 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsBrandResponse">
         SELECT
         DISTINCT
-        g.brd_id brand_id,
-        g.brand_name brand_name
+        b.brd_id brand_id,
+        b.brand_name brand_name
         FROM
         emp_employee e
         INNER JOIN gds_goods_price p ON e.store_id = p.store_id
@@ -384,7 +384,7 @@
             AND gc.category_name =#{categorySecond}
         </if>
         <if test="null !=specification and ''!= specification ">
-            AND g.goods_specification=#{specification}
+            AND g.specification_type=#{specification}
         </if>
         <if test="null !=goodsType and ''!= goodsType ">
             AND ggt.type_name=#{goodsType}
@@ -415,7 +415,7 @@
             AND gc.category_name =#{categorySecond}
         </if>
         <if test="null !=specification and ''!= specification ">
-            AND g.goods_specification=#{specification}
+            AND g.specification_type=#{specification}
         </if>
         <if test="null !=goodsBrand and ''!= goodsBrand ">
             AND b.brand_name=#{goodsBrand}
@@ -446,7 +446,7 @@
             AND gc.category_name =#{categorySecond}
         </if>
         <if test="null !=specification  and ''!= specification ">
-            AND g.goods_specification=#{specification}
+            AND g.specification_type=#{specification}
         </if>
         <if test="null !=goodsBrand  and ''!= goodsBrand ">
             AND b.brand_name=#{goodsBrand}
@@ -460,7 +460,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsSpecificationResponse">
         SELECT
         DISTINCT
-        g.goods_specification specificationName
+        g.specification_type specificationName
         FROM
         cus_customer c
         INNER JOIN gds_goods_price p ON c.store_id = p.store_id
@@ -491,7 +491,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsSpecificationResponse">
         SELECT
         DISTINCT
-        g.goods_specification  specificationName
+        g.specification_type  specificationName
         FROM
         emp_employee e
         INNER JOIN gds_goods_price p ON e.store_id = p.store_id
@@ -966,7 +966,7 @@
             AND g.gtid = #{typeId}
         </if>
         <if test="null != specification and specification != ''">
-            AND g.goods_specification = #{specification}
+            AND g.specification_type = #{specification}
         </if>
         AND p.price_type = 'COMMON'
     </select>
@@ -1009,7 +1009,7 @@
             AND g.gtid = #{typeId}
         </if>
         <if test="null != specification and specification != ''">
-            AND g.goods_specification = #{specification}
+            AND g.specification_type = #{specification}
         </if>
         AND p.price_type = 'COMMON'
     </select>

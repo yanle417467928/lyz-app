@@ -358,7 +358,7 @@
             send_flag     sendFlag,
             error_message errorMessage
         FROM inter_wta_order_shipping_header
-        WHERE order_no = #{orderNo} AND send_flag = 0 AND task_no = #{taskNo};
+        WHERE order_no = #{orderNo} AND send_flag = 0;
     </select>
 
     <select id="getWtaReturningOrderHeaderByReturnNumber" parameterType="java.lang.String"
