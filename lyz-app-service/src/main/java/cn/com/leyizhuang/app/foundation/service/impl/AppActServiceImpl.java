@@ -892,7 +892,7 @@ public class AppActServiceImpl implements AppActService {
             SellZgCusTimes sellZgCusTimes = statisticsSellDetailsService.getTimesByCusIdAndSku(cusId,null,ActBaseType.ZGFRIST);
             if (sellZgCusTimes == null){
                 // 首单
-                List<ActBaseDO> zgFirstList = actBaseDAO.queryZgFirstList(appCustomer.getStoreId(),LocalDateTime.now());
+                List<ActBaseDO> zgFirstList = actBaseDAO.queryZgFirstList(appCustomer.getCityId(),LocalDateTime.now());
 
                 if (zgFirstList != null && zgFirstList.size() > 0){
                     ActBaseDO actBaseDO = zgFirstList.get(0);
@@ -980,7 +980,7 @@ public class AppActServiceImpl implements AppActService {
         }
 
         // 享受 累积促销
-        List<ActBaseDO> actBaseDOList = actBaseDAO.queryZgList(appCustomer.getStoreId(),LocalDateTime.now());
+        List<ActBaseDO> actBaseDOList = actBaseDAO.queryZgList(appCustomer.getCityId(),LocalDateTime.now());
 
         if (actBaseDOList != null && actBaseDOList.size() > 0){
             ActBaseDO actBaseDO = actBaseDOList.get(0);

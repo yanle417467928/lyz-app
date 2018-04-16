@@ -170,15 +170,19 @@
             g.goods_specification,
             g.goods_unit    goods_unit,
             sum(c.quantity) left_number,
-            g.cover_image_uri
+            g.cover_image_uri,
+            CASE ggp.price_type WHEN "COMMON" THEN 0 ELSE 1 END as isZG
         FROM
             cus_customer_product_coupon c
             INNER JOIN gds_goods g ON c.gid = g.gid
+            LEFT JOIN cus_customer cu on c.cus_id = cu.cus_id
+            LEFT JOIN gds_goods_price ggp on g.sku = ggp.sku
         WHERE
             c.cus_id = #{userId}
             AND c.is_used IS FALSE
             AND effective_start_time &lt; NOW()
             AND (effective_end_time &gt; NOW() OR effective_end_time IS NULL)
+            and ggp.store_id = cu.store_id
         GROUP BY
             g.sku
     </select>
@@ -450,16 +454,20 @@
             g.goods_specification,
             g.goods_unit    goods_unit,
             sum(c.quantity) left_number,
-            g.cover_image_uri
+            g.cover_image_uri,
+            CASE ggp.price_type WHEN "COMMON" THEN 0 ELSE 1 END as isZG
         FROM
             cus_customer_product_coupon c
             INNER JOIN gds_goods g ON c.gid = g.gid
+            LEFT JOIN cus_customer cu on c.cus_id = cu.cus_id
+		    LEFT JOIN gds_goods_price ggp on g.sku = ggp.sku
         WHERE
             c.cus_id = #{cusId}
             AND c.seller_id = #{sellerId}
             AND c.is_used IS FALSE
             AND c.effective_start_time &lt; NOW()
             AND (c.effective_end_time &gt; NOW() OR c.effective_end_time IS NULL)
+            and ggp.store_id = cu.store_id
         GROUP BY
             g.sku
     </select>
