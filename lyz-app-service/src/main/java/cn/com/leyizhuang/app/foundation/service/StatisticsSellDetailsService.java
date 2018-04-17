@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.core.constant.ActBaseType;
 import cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.SellZgCusTimes;
 import cn.com.leyizhuang.app.foundation.pojo.SellZgDetailsDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,13 +31,13 @@ public interface StatisticsSellDetailsService {
      * 记录下单销量明细
      * orderNumeber 订单号
      */
-    void addOrderSellDetails(String orderNumber);
+    void addOrderSellDetails(String orderNumber) throws Exception;
 
     /**
      * 记录退单销量明细
      * returnOrderNo 退单号
      */
-    void addReturnOrderSellDetails(String returnOrderNo);
+    void addReturnOrderSellDetails(String returnOrderNo) throws Exception;
 
     /**
      * 查询用户近期90天内的4单 单号
@@ -58,7 +59,7 @@ public interface StatisticsSellDetailsService {
      * 记录错误日志
      * @param orderNo
      */
-    void recordeErrorLog(String orderNo);
+    void recordeErrorLog(String orderNo,String msg);
 
     /****** 专供 ********/
 
@@ -91,4 +92,18 @@ public interface StatisticsSellDetailsService {
     void addSellZgCusTimes(SellZgCusTimes sellZgCusTimes);
 
     void addOrUpdateSellZgCusTimes(Long cusId,String sku,Integer times,Integer qty,ActBaseType type);
+
+    void statisticsAllSellerSellDetails(List<String> structureCode);
+
+    void statisticOneSeller(Long empId);
+
+    SellDetailsResponse currentTsSellDetails(Long empId);
+
+    SellDetailsResponse currentHYS(Long empId);
+
+    SellDetailsResponse currentXKF(Long empId);
+
+    void createAllOrderDetails() ;
+
+    void createAllreturnOrderDetails() ;
 }

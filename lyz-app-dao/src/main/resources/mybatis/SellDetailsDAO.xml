@@ -17,6 +17,37 @@
       #{orderSubjectType},#{creatorIdentityType},#{creatorId},#{creatorName},#{companyFlag},#{goodsLineType},#{sellDetalsFlag})
     </insert>
 
+    <insert id="addSellDetailsSingle" parameterType="cn.com.leyizhuang.app.foundation.pojo.SellDetailsSingleDO" useGeneratedKeys="true" keyProperty="id">
+        insert into sell_details_single (id, create_time, updata_time,
+        seller_id, seller_name, target_qty,
+        finish_qty, finish_chance, flag,
+        structure_id, structure_code, structure_name,
+        year, month)
+        values (#{id,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
+        #{sellerId,jdbcType=BIGINT}, #{sellerName,jdbcType=VARCHAR}, #{targetQty,jdbcType=INTEGER},
+        #{finishQty,jdbcType=INTEGER}, #{finishChance,jdbcType=DECIMAL}, #{flag,jdbcType=VARCHAR},
+        #{structureId,jdbcType=BIGINT}, #{structureCode,jdbcType=VARCHAR}, #{structureName,jdbcType=VARCHAR},
+        #{year,jdbcType=INTEGER}, #{month,jdbcType=INTEGER})
+    </insert>
+
+    <insert id="addSellDetailsWeekFinish" parameterType="cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsWeekFinishResponse" >
+        insert into sell_details_week_finish (id, head_id, week,
+        start_time, end_time, finish_qty
+        )
+        values (#{id,jdbcType=INTEGER}, #{headId,jdbcType=INTEGER}, #{week,jdbcType=INTEGER},
+        #{startDate,jdbcType=TIMESTAMP}, #{endDate,jdbcType=TIMESTAMP}, #{finishQty,jdbcType=INTEGER}
+        )
+    </insert>
+
+    <insert id="addEmpPerformanceStatisticErrorLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.SellDetailsStatisticErrorLog" >
+        insert into sell_details_statistic_error_log (id, create_time, seller_id,
+        is_dispose, flag, error_msg
+        )
+        values (#{id,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{sellerId,jdbcType=BIGINT},
+        #{isDispose,jdbcType=BIT}, #{flag,jdbcType=VARCHAR}, #{errorMsg,jdbcType=LONGVARCHAR}
+        )
+    </insert>
+
     <update id="update" parameterType="cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO" >
         update sell_details
         <set >
@@ -98,6 +129,41 @@
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
+
+    <update id="updateSellDetailsSingle" parameterType="cn.com.leyizhuang.app.foundation.pojo.SellDetailsSingleDO" >
+        update sell_details_single
+        <set >
+
+            <if test="updateTime != null" >
+                updata_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="sellerName != null" >
+                seller_name = #{sellerName,jdbcType=VARCHAR},
+            </if>
+            <if test="finishQty != null" >
+                finish_qty = #{finishQty,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateSellDetailsWeekFinish" parameterType="cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsWeekFinishResponse" >
+        update sell_details_week_finish
+        <set >
+
+            <if test="startDate != null" >
+                start_time = #{startDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endDate != null" >
+                end_time = #{endDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test="finishQty != null" >
+                finish_qty = #{finishQty,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
     <select id="queryOneMonthSellDetails" resultType="cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO">
       select * from sell_details where
       `year` = #{year} and `month` = #{month} and company_flag = 'HR'
@@ -124,20 +190,19 @@
     </select>
 
     <select id="recordeErrorLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.SellDetailsErrorLogDO">
-        INSERT INTO  sell_details_error_log (order_no,record_time,status) VALUES (#{orderNo},#{recordTime},#{status})
+        INSERT INTO  sell_details_error_log (order_no,record_time,status,error_msg) VALUES (#{orderNo},#{recordTime},#{status},#{errorMsg})
     </select>
 
-    <select id="statisticsSelldetailsSingle" resultType="cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsResponse">
+    <select id="statisticsSellDetailsSingle" resultType="cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsResponse">
         SELECT
-        id lineId,
         seller_id id,
-        seller_name name,
+        seller_name `name`,
         target_qty targetQty,
         finish_qty finishQty,
         finish_chance finishChance,
-        flag
+        flag flag
         from sell_details_single
-        where "year" = #{year} and "month" = #{month} and flag = #{flag} and seller_id = #{sellerId}
+        where `year` = #{year} and `month` = #{month} and flag = #{flag} and seller_id = #{sellerId}
     </select>
 
     <select id="getWeekFinishDetails" resultType="cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsWeekFinishResponse">
@@ -161,9 +226,79 @@
 
     <select id="countHYS" resultType="java.lang.Long">
         SELECT
-        customer_id
-        from sell_details s
-        where seller_id = #{sellerId} and create_time > #{startTime}
-        GROUP BY customer_id HAVING SUM(quantity * amount) > 0;
+        s.customer_id
+        from sell_details s INNER JOIN gds_goods_grade gg ON s.sku = gg.sku
+        RIGHT JOIN cus_customer c on  s.seller_id = c.sales_consult_id
+        where s.seller_id = #{sellerId} and s.create_time > #{startTime} and gg.goods_grade = 2 and gg.structure_code = #{structureCode}
+        GROUP BY s.customer_id HAVING SUM(s.quantity * s.amount) > 0;
+    </select>
+
+    <select id="countXKF" resultType="java.lang.Long">
+        SELECT cid.customer_id from
+        (SELECT * from sell_details where create_time &lt; #{firstDay} and create_time &gt; #{halfYearAgoDate}) sd RIGHT JOIN
+        (SELECT customer_id FROM sell_details s
+        INNER JOIN gds_goods_grade g on s.sku = g.sku
+        where
+        s.create_time &gt; #{startTime}
+        AND s.seller_id = #{sellerId}
+        and s.create_time &lt; #{endTime}
+        and g.structure_code = #{structureCode}
+        and g.goods_grade = 2
+        GROUP BY customer_id HAVING SUM( s.amount * s.quantity ) &gt; 0) cid on sd.customer_id = cid.customer_id
+        where sd.customer_id is NULL
+        GROUP BY cid.customer_id
+
+    </select>
+
+    <select id="cusIdFiltration" resultType="java.lang.Long">
+
+        SELECT c.cus_id from cus_customer c
+        LEFT JOIN (SELECT * from emp_owned_high_cus where emp_id = #{empId}) eo on c.mobile = eo.cus_phone
+        where
+        eo.cus_phone is NULL
+        AND c.cus_id in
+        <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="isExitSellDetailsSingle" resultType="java.lang.Long">
+
+        SELECT  id from sell_details_single where `year` = #{year} and `month` = #{month} and seller_id = #{sellerId} and flag = #{flag}
+
+    </select>
+
+    <select id="isExitSellDetailsWeek" resultType="java.lang.Long">
+
+        SELECT  id from sell_details_week_finish where head_id = #{headId} and week = #{week}
+
+    </select>
+
+    <select id="getFgsRank"  resultType="cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsResponse">
+        SELECT
+        seller_id id,
+        seller_name `name`,
+        target_qty targetQty,
+        finish_qty finishQty,
+        finish_chance finishChance,
+        flag flag
+        from sell_details_single
+        where `year` = #{year} and `month` = #{month} and flag = #{flag} and structure_code = #{structureCode}
+        ORDER BY finishQty
+        limit 3
+    </select>
+
+    <select id="getJtRank"  resultType="cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsResponse">
+        SELECT
+        seller_id id,
+        seller_name `name`,
+        target_qty targetQty,
+        finish_qty finishQty,
+        finish_chance finishChance,
+        flag flag
+        from sell_details_single
+        where `year` = #{year} and `month` = #{month} and flag = #{flag}
+        ORDER BY finishQty
+        limit 3
     </select>
 </mapper>

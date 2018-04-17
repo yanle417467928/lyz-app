@@ -2,11 +2,14 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.DataTransferExceptionType;
 import cn.com.leyizhuang.app.core.exception.DataTransferException;
+import cn.com.leyizhuang.app.foundation.dao.SellDetailsDAO;
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
+import cn.com.leyizhuang.app.foundation.pojo.SellDetailsStatisticErrorLog;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.DataTransferErrorLog;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.service.StatisticsSellDetailsService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferSupportService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.OrderGoodsTransferService;
@@ -17,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -46,6 +50,8 @@ public class testSellDetails {
     @Resource
     private DataTransferService dataTransferService;
 
+    @Resource
+    private SellDetailsDAO sellDetailsDAO;
     @Test
     public void testInsert(){
         //statisticsSellDetailsService.addOrderSellDetails("CD_XN20180319095037659959");
@@ -80,5 +86,29 @@ public class testSellDetails {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void runSaleDetils(){
+
+        List<String> list = new ArrayList<>();
+        list.add("RCC001");
+        list.add("PCC001");
+        list.add("BYC001");
+        list.add("RDC001");
+        list.add("ZZC001");
+
+        statisticsSellDetailsService.statisticsAllSellerSellDetails(list);
+    }
+
+    @Test
+    public void test(){
+        SellDetailsStatisticErrorLog log = new SellDetailsStatisticErrorLog();
+
+        log.setCreateTime(new Date());
+        log.setErrorMsg("123");
+        log.setSellerId(1L);
+
+        sellDetailsDAO.addEmpPerformanceStatisticErrorLog(log);
     }
 }

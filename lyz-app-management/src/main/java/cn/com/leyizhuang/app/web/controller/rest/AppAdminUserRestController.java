@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
+import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
+import cn.com.leyizhuang.app.core.utils.csrf.EncryptUtils;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.management.User;
 import cn.com.leyizhuang.app.foundation.pojo.management.AdminUserStoreDO;
@@ -10,12 +12,17 @@ import cn.com.leyizhuang.app.foundation.service.UserService;
 import cn.com.leyizhuang.app.foundation.vo.UserVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.exception.data.InvalidDataException;
+import cn.com.leyizhuang.common.core.utils.Base64Utils;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ValidatorResultDTO;
 import com.github.pagehelper.PageInfo;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.DigestUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +32,7 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Richard
@@ -216,5 +224,64 @@ public class AppAdminUserRestController extends BaseRestController {
         return new ValidatorResultDTO(!result);
     }
 
+
+    /**
+     * 验证密码是否正确
+     *
+     * @param oldPassword
+     * @return
+     */
+    @PostMapping(value = "/validator/password", produces = "application/json;charset=UTF-8")
+    public ValidatorResultDTO userValidatorPasswordPost(@RequestParam String oldPassword) {
+        try {
+            Boolean result;
+            ShiroUser shiroUser = this.getShiroUser();
+            String loginName = shiroUser.getLoginName();
+            User user = userService.findByLoginName(loginName);
+            if (null == user) {
+                logger.warn("未找到该用户，loginName = {}", loginName);
+                return new ValidatorResultDTO(Boolean.FALSE);
+            } else {
+                Subject userLogin = SecurityUtils.getSubject();
+                UsernamePasswordToken token = new UsernamePasswordToken();
+                token.setUsername(loginName);
+                token.setPassword(oldPassword.toCharArray());
+                userLogin.login(token);
+                return new ValidatorResultDTO(Boolean.TRUE);
+            }
+        } catch (Exception e) {
+            logger.warn("editPassword,验证密码出现未知异常");
+            return new ValidatorResultDTO(Boolean.FALSE);
+        }
+    }
+
+
+    /**
+     * 修改密码
+     *
+     * @param
+     * @return
+     */
+    @PutMapping(value = "/editPassword", produces = "application/json;charset=UTF-8")
+    public ResultDTO<?> editPassword(@RequestParam String password) {
+        ResultDTO<String> resultDTO;
+        try {
+            ShiroUser shiroUser = this.getShiroUser();
+            String loginName = shiroUser.getLoginName();
+            User user = userService.findByLoginName(loginName);
+            Map<String, String> paramMap = EncryptUtils.getPasswordAndSalt(user.getLoginName(), password);
+            user.setSalt(paramMap.get("salt"));
+            user.setPassword(paramMap.get("encodedPassword"));
+            this.userService.update(user);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "密码修改成功", null);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常，密码修改失败", null);
+            logger.warn("editPassword,用户修改密码出现未知异常,返回值resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
 
 }

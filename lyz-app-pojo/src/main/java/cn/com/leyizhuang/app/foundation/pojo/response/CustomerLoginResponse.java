@@ -29,5 +29,7 @@ public class CustomerLoginResponse implements Serializable {
     private Long cityId;
     //等级编码
     private String rankCode;
+    //专供图片
+    private String rankUrl;
 
 }

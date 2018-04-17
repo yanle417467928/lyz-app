@@ -207,4 +207,12 @@
             #{id}
         </foreach>
     </update>
+
+    <select id="findAllocationInfByType" resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationInf">
+        SELECT * from inter_ate_allocation_inf where type = #{type}
+    </select>
+
+    <delete id="deleteAllocationInf" parameterType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationInf">
+        DELETE  from inter_ate_allocation_inf where id = #{id}
+    </delete>
 </mapper>

@@ -11,6 +11,7 @@ import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -70,10 +71,13 @@ public class StatisticsSellDetailsContrller {
             sellDetailsResponse.setFinishChance(0.9);
 
             if (flag.equals("TS")) {
+                sellDetailsResponse = statisticsSellDetailsService.currentTsSellDetails(sellerId);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", sellDetailsResponse);
             } else if (flag.equals("HYS")) {
+                sellDetailsResponse = statisticsSellDetailsService.currentHYS(sellerId);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", sellDetailsResponse);
             } else if(flag.equals("XKF")) {
+                sellDetailsResponse = statisticsSellDetailsService.currentXKF(sellerId);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", sellDetailsResponse);
             }
 
@@ -173,4 +177,5 @@ public class StatisticsSellDetailsContrller {
 
         return resultDTO;
     }
+
 }

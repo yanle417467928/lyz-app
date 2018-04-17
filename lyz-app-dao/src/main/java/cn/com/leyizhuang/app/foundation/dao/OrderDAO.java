@@ -8,6 +8,7 @@ import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -155,6 +156,8 @@ public interface OrderDAO {
                                                                       @Param(value = "showStatus") Integer showStatus);
 
     List<OrderBaseInfo> getSendToWMSFailedOrder();
+
+    List<String> getNotSellDetailsOrderNOs(@Param("flag") Boolean flag);
 
     List<OrderGoodsInfo> getOrderGoodsQtyInfoByOrderNumber(String orderNumber);
 

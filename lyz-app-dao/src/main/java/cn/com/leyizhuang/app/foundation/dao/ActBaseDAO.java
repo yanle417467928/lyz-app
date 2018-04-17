@@ -60,9 +60,9 @@ public interface ActBaseDAO{
 
     List<ActBaseDO> queryListByActBaseType(@Param("baseType") ActBaseType type,@Param("now") LocalDateTime now);
 
-    List<ActBaseDO> queryZgList(@Param("storeId") Long storeId,@Param("now") LocalDateTime now);
+    List<ActBaseDO> queryZgList(@Param("cityId") Long cityId,@Param("now") LocalDateTime now);
 
-    List<ActBaseDO> queryZgFirstList(@Param("storeId") Long storeId,@Param("now") LocalDateTime now);
+    List<ActBaseDO> queryZgFirstList(@Param("cityId") Long cityId,@Param("now") LocalDateTime now);
 
     /**
      * 批量插入

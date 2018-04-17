@@ -87,4 +87,8 @@ public interface ItyAllocationDAO {
                                        @Param(value = "sendTime") Date sendTime,
                                        @Param(value = "flag") AppWhetherFlag flag);
 
+    List<AllocationInf> findAllocationInfByType(Integer type);
+
+    void deleteAllocationInf(@Param("id") Long id);
+
 }

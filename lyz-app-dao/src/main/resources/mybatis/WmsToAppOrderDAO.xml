@@ -340,8 +340,7 @@
         WHERE task_no = #{taskNo} AND order_no = #{orderNo}
     </update>
 
-    <select id="getWtaShippingOrderHeaderNotHandling" parameterType="java.lang.String"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderHeader">
+    <select id="getWtaShippingOrderHeaderNotHandling" resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderHeader">
         SELECT
             id,
             create_time   createTime,
@@ -358,7 +357,10 @@
             send_flag     sendFlag,
             error_message errorMessage
         FROM inter_wta_order_shipping_header
-        WHERE order_no = #{orderNo} AND send_flag = 0 AND task_no = #{taskNo};
+        WHERE order_no = #{orderNo} AND send_flag = 0
+        <if test="null != taskNo">
+            AND task_no = #{taskNo}
+        </if>
     </select>
 
     <select id="getWtaReturningOrderHeaderByReturnNumber" parameterType="java.lang.String"
@@ -366,5 +368,26 @@
         SELECT *
         FROM inter_wta_return_order_back_header
         WHERE po_no = #{returnNo};
+    </select>
+
+    <select id="getWtaShippingOrderHeader" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderHeader">
+        SELECT
+        id,
+        create_time   createTime,
+        end_dt        endDt,
+        wh_no         whNo,
+        owner_no      ownerNo,
+        task_no       taskNo,
+        c_task_type   cTaskType,
+        car_no        carNo,
+        op_status     opStatus,
+        driver        driver,
+        order_no      orderNo,
+        send_time     sendTime,
+        send_flag     sendFlag,
+        error_message errorMessage
+        FROM inter_wta_order_shipping_header
+        WHERE order_no = #{orderNo};
     </select>
 </mapper>

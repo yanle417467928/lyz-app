@@ -312,7 +312,7 @@ public class OrderGoodsInoTransferServiceImpl implements OrderGoodsTransferServi
             }
 
             goodsInfo2.setReturnQuantity(0);
-            goodsInfo2.setReturnableQuantity(Integer.valueOf((int) (oderQty - couponNumber)));
+            goodsInfo2.setReturnableQuantity(Integer.valueOf(couponNumber.intValue()));
             goodsInfo2.setPriceItemId(null);
             if (companyFlag.contains("华润")) {
                 goodsInfo2.setCompanyFlag("HR");

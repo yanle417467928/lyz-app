@@ -44,13 +44,13 @@ public class MaSellDetailsReceiver {
                     log.warn("消息格式错误!");
                     e.printStackTrace();
                     // 记录日志
-                    statisticsSellDetailsService.recordeErrorLog(message.getContent());
+                    statisticsSellDetailsService.recordeErrorLog(message.getContent(),e.getMessage());
                 } catch (Exception e) {
                     log.warn("{}", e);
                     e.printStackTrace();
 
                     // 记录日志
-                    statisticsSellDetailsService.recordeErrorLog(message.getContent());
+                    statisticsSellDetailsService.recordeErrorLog(message.getContent(),e.getMessage());
                 }
                 break;
             case SELL_RETURN_ORDER_DETAILS:
@@ -63,13 +63,13 @@ public class MaSellDetailsReceiver {
                     log.warn("消息格式错误!");
                     e.printStackTrace();
                     // 记录日志
-                    statisticsSellDetailsService.recordeErrorLog(message.getContent());
+                    statisticsSellDetailsService.recordeErrorLog(message.getContent(),e.getMessage());
                 } catch (Exception e) {
                     log.warn("{}", e);
                     e.printStackTrace();
 
                     // 记录日志
-                    statisticsSellDetailsService.recordeErrorLog(message.getContent());
+                    statisticsSellDetailsService.recordeErrorLog(message.getContent(),e.getMessage());
                 }
                 break;
             default:
