@@ -1,8 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO;
-import cn.com.leyizhuang.app.foundation.pojo.SellDetailsErrorLogDO;
-import cn.com.leyizhuang.app.foundation.pojo.SellZgDetailsDO;
+import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsWeekFinishResponse;
 import org.apache.ibatis.annotations.Param;
@@ -21,6 +19,20 @@ public interface SellDetailsDAO {
     int addOneDetail(SellDetailsDO DO);
 
     void update(SellDetailsDO DO);
+
+    void addSellDetailsSingle(SellDetailsSingleDO DO);
+
+    void updateSellDetailsSingle(SellDetailsSingleDO DO);
+
+    void addSellDetailsWeekFinish(SellDetailsWeekFinishResponse response);
+
+    void updateSellDetailsWeekFinish(SellDetailsWeekFinishResponse response);
+
+    void addEmpPerformanceStatisticErrorLog(SellDetailsStatisticErrorLog log);
+
+    Long isExitSellDetailsSingle(@Param("year") Integer year,@Param("month") Integer month,@Param("sellerId") Long sellerId,@Param("flag") String flag);
+
+    Long isExitSellDetailsWeek(@Param("headId") Long headId , @Param("week") Integer week);
     /**
      * 查询某年某月销售明细
      *
@@ -88,8 +100,16 @@ public interface SellDetailsDAO {
      * @param sellerId
      * @return
      */
-    Integer countHYS(@Param("startTime") LocalDateTime startTime,@Param("endTime") LocalDateTime endTime,@Param("sellerId") Long sellerId);
+    List<Long> countHYS(@Param("startTime") LocalDateTime startTime,@Param("endTime") LocalDateTime endTime,@Param("sellerId") Long sellerId,@Param("structureCode") String structureCode);
 
+
+    List<Long> countXKF(@Param("firstDay") LocalDateTime firstDay,@Param("startTime") LocalDateTime startTime,@Param("endTime") LocalDateTime endTime,@Param("halfYearAgoDate") LocalDateTime halfYearAgoDate,@Param("sellerId") Long sellerId,@Param("structureCode") String structureCode);
+
+    List<SellDetailsResponse> getFgsRank(@Param("year") Integer year ,@Param("month") Integer month,@Param("structureCode") String structureCode,@Param("flag") String flag);
+
+    List<SellDetailsResponse> getJtRank(@Param("year") Integer year ,@Param("month") Integer month,@Param("flag") String flag);
+
+    List<Long> cusIdFiltration(@Param("list") List<Long> ids,@Param("empId") Long empId);
     /******              专供销量                *******/
 
     /**

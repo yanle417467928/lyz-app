@@ -169,4 +169,10 @@ public interface AppOrderService {
     PageInfo<OrderPageInfoVO> getOrderListPageInfoByUserIdAndIdentityType(Long userID, Integer identityType, Integer showStatus, Integer page, Integer size);
 
     List<OrderBaseInfo> getSendToWMSFailedOrder();
+
+    List<String> getNotSellDetailsOrderNOs(Boolean flag);
+
+    List<OrderGoodsInfo> getOrderGoodsQtyInfoByOrderNumber(String orderNumber);
+
+    void updateOrderGoodsShippingQuantityByid(OrderGoodsInfo orderGoodsInfo);
 }

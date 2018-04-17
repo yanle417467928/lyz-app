@@ -165,9 +165,25 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
     }
 
     @Override
-    public WtaShippingOrderHeader getWtaShippingOrderHeaderNotHandling(String orderNo) {
+    public WtaShippingOrderHeader getWtaShippingOrderHeaderNotHandling(String orderNo, String taskNo) {
         if (AssertUtil.isNotEmpty(orderNo)) {
-            return wmsToAppOrderDAO.getWtaShippingOrderHeaderNotHandling(orderNo);
+            return wmsToAppOrderDAO.getWtaShippingOrderHeaderNotHandling(orderNo, taskNo);
+        }
+        return null;
+    }
+
+    @Override
+    public WtaShippingOrderHeader getWtaShippingOrderHeader(String orderNo){
+        if (AssertUtil.isNotEmpty(orderNo)){
+            return wmsToAppOrderDAO.getWtaShippingOrderHeader(orderNo);
+        }
+        return  null;
+    }
+
+    @Override
+    public WtaReturningOrderHeader getWtaReturningOrderHeaderByReturnNumber(String returnNo) {
+        if (AssertUtil.isNotEmpty(returnNo)) {
+            return wmsToAppOrderDAO.getWtaReturningOrderHeaderByReturnNumber(returnNo);
         }
         return null;
     }

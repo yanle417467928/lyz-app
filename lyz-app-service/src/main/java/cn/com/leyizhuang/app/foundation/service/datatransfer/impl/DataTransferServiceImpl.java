@@ -6,7 +6,6 @@ import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.TimingTaskErrorMessageDAO;
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
 import cn.com.leyizhuang.app.foundation.pojo.*;
-import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.*;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsType;
@@ -14,6 +13,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsBrand;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsCategory;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
@@ -31,7 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.nio.file.Paths;
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.*;
@@ -84,6 +84,9 @@ public class DataTransferServiceImpl implements DataTransferService {
 
     @Resource
     private MaCityService cityService;
+
+    @Resource
+    private ReturnOrderService returnOrderService;
 
 
     public OrderGoodsInfo transferOne(TdOrderGoods tdOrderGoods) {
@@ -1469,5 +1472,132 @@ public class DataTransferServiceImpl implements DataTransferService {
         }
 
 
+    }
+
+
+    /**********************************下面是转退单的方法***************************************/
+    @Override
+    public Queue<DataTransferErrorLog> transferReturnOrderRelevantInfo() throws ExecutionException, InterruptedException {
+        // *********************** 退单迁移处理 ***************
+        Queue<DataTransferErrorLog> errorLogQueue = new ConcurrentLinkedDeque<>();
+        List<TdReturnSmall> storeMainReturnOrderList;
+        List<AppEmployee> employeeList = employeeService.findAllSeller();
+        List<AppCustomer> customerList = customerService.findAllCustomer();
+        List<AppStore> storeList = storeService.findAll();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2017, Calendar.NOVEMBER, 1, 0, 0, 0);
+        Date startTime = calendar.getTime();
+        Date endTime = new Date();
+        //查询所有待处理的主退单
+        storeMainReturnOrderList = transferDAO.getPendingTransferReturnOrder(startTime, endTime);
+        //多线程处理任务集
+        if (storeMainReturnOrderList == null || storeMainReturnOrderList.isEmpty()) {
+            throw new DataTransferException("没有要迁移的数据", DataTransferExceptionType.NDT);
+        }
+        int size = storeMainReturnOrderList.size();
+        int nThreads = 6;
+        AtomicInteger countLine = new AtomicInteger();
+        ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
+        List<Future<Queue<DataTransferErrorLog>>> futures = new ArrayList<>(nThreads);
+
+        for (int i = 0; i < nThreads; i++) {
+            final List<TdReturnSmall> subList = storeMainReturnOrderList.subList(size / nThreads * i, size / nThreads * (i + 1));
+            Callable<Queue<DataTransferErrorLog>> task = () -> {
+                Queue<DataTransferErrorLog> dataTransferErrorLogQueue = new ConcurrentLinkedDeque<>();
+                for (TdReturnSmall tdReturnSmall : subList) {
+                    try {
+                        countLine.addAndGet(1);
+                        //处理订单头
+//                        OrderBaseInfo orderBaseInfo = this.transferOrderBaseInfo(tdReturnSmall, employeeList, customerList, storeList);
+
+                        //持久化订单相关信息
+//                        dataTransferSupportService.saveOrderRelevantInfo();
+                    } catch (DataTransferException e) {
+                        dataTransferErrorLogQueue.add(new DataTransferErrorLog(null, tdReturnSmall.getReturnNumber(), e.getType().getDesc(), new Date()));
+                        // 记录一条错误日志
+                        dataTransferSupportService.saveOneDataTransferErrolog(new DataTransferErrorLog(null, tdReturnSmall.getReturnNumber(), e.getType().getDesc(), new Date()));
+                    } catch (Exception e) {
+                        log.warn(e.getMessage());
+                        dataTransferErrorLogQueue.add(new DataTransferErrorLog(null, tdReturnSmall.getReturnNumber(), e.getMessage(),
+                                new Date()));
+                        // 记录一条错误日志
+                        dataTransferSupportService.saveOneDataTransferErrolog(new DataTransferErrorLog(null, tdReturnSmall.getReturnNumber(), e.getMessage(),
+                                new Date()));
+                    }
+                }
+                return dataTransferErrorLogQueue;
+            };
+            futures.add(executorService.submit(task));
+        }
+        for (Future<Queue<DataTransferErrorLog>> future : futures) {
+            errorLogQueue.addAll(future.get());
+        }
+        dataTransferSupportService.saveDataTransferErrorLog(errorLogQueue);
+        executorService.shutdown();
+        System.out.println("未处理或处理失败的数据条数:" + errorLogQueue.size());
+        log.info("退单导入job处理完成,当前时间:{}", new Date());
+        return errorLogQueue;
+    }
+
+    public Boolean transReturnOrderData(int size) {
+
+        List<TdReturnSmall> tdReturnSmalls = transferDAO.getTdReturnSmallBySize(size);
+
+        for (TdReturnSmall tdReturnSmall : tdReturnSmalls) {
+            ReturnOrderBaseInfo returnOrderBaseInfo = new ReturnOrderBaseInfo();
+
+            OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(tdReturnSmall.getOrderNumber());
+
+            if (null == orderBaseInfo) {
+                return true;
+            }
+            returnOrderBaseInfo.setOrderId(orderBaseInfo.getId());
+            returnOrderBaseInfo.setOrderNo(tdReturnSmall.getOrderNumber());
+            returnOrderBaseInfo.setOrderTime(tdReturnSmall.getOrderTime());
+            returnOrderBaseInfo.setReturnNo(tdReturnSmall.getReturnNumber());
+            returnOrderBaseInfo.setReturnType(ReturnOrderType.NORMAL_RETURN);
+            returnOrderBaseInfo.setReturnPrice(tdReturnSmall.getTurnPrice());
+            returnOrderBaseInfo.setRemarksInfo(tdReturnSmall.getRemarkInfo());
+
+            AppEmployee appEmployee = employeeService.findByMobile(tdReturnSmall.getSellerUsername());
+            if (null != appEmployee) {
+
+                returnOrderBaseInfo.setCreatorId(appEmployee.getEmpId());
+                returnOrderBaseInfo.setCreatorName(appEmployee.getName());
+                returnOrderBaseInfo.setCreatorPhone(appEmployee.getMobile());
+                returnOrderBaseInfo.setCreatorIdentityType(AppIdentityType.SELLER);
+            } else {
+                returnOrderBaseInfo.setReturnPic("导购没有");
+            }
+
+            AppStore appStore = storeService.findByStoreCode(tdReturnSmall.getDiyCode());
+            if (null != appStore) {
+
+                returnOrderBaseInfo.setStoreId(appStore.getStoreId());
+                returnOrderBaseInfo.setStoreStructureCode(appStore.getStoreStructureCode());
+                returnOrderBaseInfo.setStoreCode(appStore.getStoreCode());
+            } else {
+                returnOrderBaseInfo.setReturnPic(returnOrderBaseInfo.getReturnPic() + "-门店没有");
+            }
+
+            try {
+                AppCustomer appCustomer = customerService.findByMobile(tdReturnSmall.getUsername());
+                if (null != appCustomer) {
+                    returnOrderBaseInfo.setCustomerId(appCustomer.getCusId());
+                    returnOrderBaseInfo.setCustomerPhone(appCustomer.getMobile());
+                    returnOrderBaseInfo.setCustomerName(appCustomer.getName());
+                    returnOrderBaseInfo.setCustomerType(appCustomer.getCustomerType());
+                }
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+                return true;
+            }
+            returnOrderBaseInfo.setReturnStatus(AppReturnOrderStatus.RETURNING);
+            returnOrderBaseInfo.setIsRecordSales(false);
+
+            returnOrderService.saveReturnOrderBaseInfo(returnOrderBaseInfo);
+        }
+        return false;
     }
 }

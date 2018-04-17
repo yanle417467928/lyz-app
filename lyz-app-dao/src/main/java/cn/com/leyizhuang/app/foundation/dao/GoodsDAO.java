@@ -8,6 +8,7 @@ import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import cn.com.leyizhuang.app.foundation.vo.management.MaBuyProductCouponGoodsResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Set;
@@ -108,6 +109,8 @@ public interface GoodsDAO {
     Boolean existGoodsBrandByGoodsIdAndBrandName(@Param("gId") Long id, @Param("brandName") String brandName);
 
     List<String> findCompanyFlagListById(@Param(value = "list") List<Long> goodsIdList);
+
+    List<String> findGoodsByCompanyFlagAndIds(@Param("GoodsIds") List<Long> GoodsIds,@Param("CompanyFlagList") List<String> CompanyFlagList);
 
     /**
      * HQ同步添加商品

@@ -76,6 +76,8 @@ public interface DataTransferService {
 
     public Queue<DataTransferErrorLog> transferOrderRelevantInfo() throws ExecutionException, InterruptedException;
 
+    Queue<DataTransferErrorLog> transferReturnOrderRelevantInfo() throws ExecutionException, InterruptedException;
+
     void transferOrderRelevantInfo(String orderNo) throws ExecutionException, InterruptedException;
 
     List<GoodsDO> queryAllGoodsTrans();
@@ -93,4 +95,6 @@ public interface DataTransferService {
     void storeInventoryInfoTransfer();
 
     List<StoreDetailVO> findStorehasInventory();
+
+
 }

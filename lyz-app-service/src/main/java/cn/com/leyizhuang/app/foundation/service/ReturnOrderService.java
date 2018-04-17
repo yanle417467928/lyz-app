@@ -242,4 +242,6 @@ public interface ReturnOrderService {
      * @param returnNo
      */
     void updateReturnLogisticInfoOfBackTime(String returnNo);
+
+    List<String> getNotReturnDetailsReturnNos(Boolean flag);
 }

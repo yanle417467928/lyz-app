@@ -33,4 +33,9 @@ public class SellDetailsErrorLogDO {
      * 状态
      */
     private Boolean status;
+
+    /**
+     * 错误信息
+     */
+    private String errorMsg;
 }

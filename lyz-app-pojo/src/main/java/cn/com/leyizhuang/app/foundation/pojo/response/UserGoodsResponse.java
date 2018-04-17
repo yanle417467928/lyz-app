@@ -27,6 +27,9 @@ public class UserGoodsResponse implements Serializable {
     //商品名称
     private String goodsName;
 
+    //商品sku
+    private String sku;
+
     //封面图片
     private String coverImageUri;
 

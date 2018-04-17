@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -52,6 +53,20 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
     @Override
     public List<WaitDeliveryResponse> getOrderBeasInfoByOperatorNo(String operatorNo) {
 //        PageHelper.startPage(page, size);
+//        List<WaitDeliveryResponse> waitDeliveryResponseList = orderDeliveryInfoDetailsDAO.getOrderBeasInfoByOperatorNo(operatorNo);
+//        List<OrderArrearsAuditDO> orderArrearsAuditDOList = orderDeliveryInfoDetailsDAO.getArrearsAuditByOperatorNo(operatorNo);
+//        Iterator<WaitDeliveryResponse> waitDeliveryResponseIterator = waitDeliveryResponseList.iterator();
+//        Iterator<OrderArrearsAuditDO> orderArrearsAuditDOIterator = orderArrearsAuditDOList.iterator();
+//        while (waitDeliveryResponseIterator.hasNext()){
+//            while (orderArrearsAuditDOIterator.hasNext()){
+//                WaitDeliveryResponse waitDeliveryResponse = waitDeliveryResponseIterator.next();
+//                OrderArrearsAuditDO orderArrearsAuditDO = orderArrearsAuditDOIterator.next();
+//                if (waitDeliveryResponse.getOrderNumber().equals(orderArrearsAuditDO.getOrderNumber())){
+//                    waitDeliveryResponseIterator.remove();
+//                }
+//            }
+//        }
+
         List<WaitDeliveryResponse> waitDeliveryResponseList = orderDeliveryInfoDetailsDAO.getOrderBeasInfoByOperatorNo(operatorNo);
         List<OrderArrearsAuditDO> orderArrearsAuditDOList = orderDeliveryInfoDetailsDAO.getArrearsAuditByOperatorNo(operatorNo);
         if (null != waitDeliveryResponseList && waitDeliveryResponseList.size() > 0) {
@@ -61,8 +76,12 @@ public class OrderDeliveryInfoDetailsServiceImpl implements OrderDeliveryInfoDet
                     if (waitDeliveryResponseList.get(i).getOrderNumber().equals(orderArrearsAuditDOList.get(j).getOrderNumber())) {
                         waitDeliveryResponseList.remove(waitDeliveryResponseList.get(i));
                         i--;
+                        break;
                     }
                 }
+//                if ((i+1) == waitDeliveryResponseList.size()){
+//                    break;
+//                }
             }
         }
         return waitDeliveryResponseList;

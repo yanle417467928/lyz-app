@@ -34,6 +34,17 @@ import java.util.*;
 public class AppActServiceImpl implements AppActService {
 
     private static final Logger logger = LoggerFactory.getLogger(AppActServiceImpl.class);
+
+    /**
+     * 不参与专供促销的商品
+     */
+    private final String ZG_EXCLUDE_GOODS = "VHED8000-5L,";
+
+    /**
+     * 不参与专供促销的等级
+     */
+    private final String ZG_EXCLUDE_LEVEL = "D,B";
+
     @Autowired
     private ActBaseDAO actBaseDAO;
 
@@ -827,12 +838,40 @@ public class AppActServiceImpl implements AppActService {
             return null;
         }
 
+        /** 一部等级分专供会员不享受促销 **/
+        String[] excludeLevel = this.ZG_EXCLUDE_LEVEL.split(",");
+        String[] excludeGoods = this.ZG_EXCLUDE_GOODS.split(",");
+
+        if (excludeLevel != null && excludeLevel.length > 0){
+            for (String level : excludeLevel){
+                if (level.equals(customerRankInfoResponse.getRankCode())){
+                    return null;
+                }
+            }
+        }
+
         // 根据用户购买产品id 返回专供产品
         List<GiftListResponseGoods> goodsZGList = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserId(goodsIdList,cusId,AppIdentityType.CUSTOMER);
 
         if (goodsZGList == null || goodsZGList.size() == 0){
             // 无专供产品
             return giftListResponseList;
+        }
+
+        /** 首先排除一部分不享受专供的商品 **/
+        if(customerRankInfoResponse.getCityId().equals(2L)){
+            // 目前只有郑州有这种神操作 C线 一部分商品没有促销
+            if (excludeGoods != null && excludeGoods.length > 0){
+                for (String sku : excludeGoods){
+                    for (int i = goodsZGList.size()-1 ; i >= 0; i--){
+                        GiftListResponseGoods goods = goodsZGList.get(i);
+                        if (sku.equals(goods.getSku())){
+                            goodsZGList.remove(i);
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
         // 排除掉华润以外的专供产品
@@ -853,7 +892,7 @@ public class AppActServiceImpl implements AppActService {
             SellZgCusTimes sellZgCusTimes = statisticsSellDetailsService.getTimesByCusIdAndSku(cusId,null,ActBaseType.ZGFRIST);
             if (sellZgCusTimes == null){
                 // 首单
-                List<ActBaseDO> zgFirstList = actBaseDAO.queryZgFirstList(appCustomer.getStoreId(),LocalDateTime.now());
+                List<ActBaseDO> zgFirstList = actBaseDAO.queryZgFirstList(appCustomer.getCityId(),LocalDateTime.now());
 
                 if (zgFirstList != null && zgFirstList.size() > 0){
                     ActBaseDO actBaseDO = zgFirstList.get(0);
@@ -941,7 +980,7 @@ public class AppActServiceImpl implements AppActService {
         }
 
         // 享受 累积促销
-        List<ActBaseDO> actBaseDOList = actBaseDAO.queryZgList(appCustomer.getStoreId(),LocalDateTime.now());
+        List<ActBaseDO> actBaseDOList = actBaseDAO.queryZgList(appCustomer.getCityId(),LocalDateTime.now());
 
         if (actBaseDOList != null && actBaseDOList.size() > 0){
             ActBaseDO actBaseDO = actBaseDOList.get(0);

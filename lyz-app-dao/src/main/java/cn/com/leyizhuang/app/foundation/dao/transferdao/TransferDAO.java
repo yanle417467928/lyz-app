@@ -113,6 +113,8 @@ public interface TransferDAO {
 
     List<TdOrderSmall> getPendingTransferOrder(Date startTime, Date endTime);
 
+    List<TdReturnSmall> getPendingTransferReturnOrder(Date startTime, Date endTime);
+
     List<TdOrderSmall> getPendingTransferOrderByOrderNo(Date startTime, Date endTime ,@Param("orderNo") String orderNO);
 
     List<TdOrderData> queryTdOrderDataListByOrderNo(String orderNo);
@@ -142,4 +144,8 @@ public interface TransferDAO {
     List<StoreDetailVO> findStorehasInventory();
 
     void saveStoreInventory(StoreInventory storeInventory);
+
+    List<TdOrder> findOrderAllFieldBySubOrderNumber(String orderNo);
+
+    List<TdReturnSmall> getTdReturnSmallBySize(int size);
 }

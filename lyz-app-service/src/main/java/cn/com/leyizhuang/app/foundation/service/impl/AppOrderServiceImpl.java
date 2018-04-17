@@ -583,6 +583,8 @@ public class AppOrderServiceImpl implements AppOrderService {
             default:
                 break;
         }
+        log.info("应付款:{}", amountPayable);
+
         if (OrderUtils.replaceNullWithZero(orderBillingDetails.getCashCouponDiscount()) > 0
                 && OrderUtils.replaceNullWithZero(orderBillingDetails.getFreight()) > 0) {
             if (OrderUtils.replaceNullWithZero(orderBillingDetails.getOrderAmountSubtotal()) < OrderUtils.replaceNullWithZero(orderBillingDetails.getFreight())) {
@@ -593,7 +595,7 @@ public class AppOrderServiceImpl implements AppOrderService {
             throw new OrderPayableAmountException("订单应付款金额异常(<0)");
         }
         //根据应付金额判断订单账单是否已付清
-        if (orderBillingDetails.getArrearage() <= AppConstant.PAY_UP_LIMIT) {
+        if (Math.abs(orderBillingDetails.getArrearage()) <= AppConstant.PAY_UP_LIMIT) {
             orderBillingDetails.setIsPayUp(true);
         } else {
             orderBillingDetails.setIsPayUp(false);
@@ -606,17 +608,17 @@ public class AppOrderServiceImpl implements AppOrderService {
         if ((orderBillingDetails.getEmpCreditMoney() > 0 || orderBillingDetails.getStoreCreditMoney() > 0)) {
             if (identityType == AppIdentityType.SELLER.getValue()) {
                 if (null != orderBillingDetails.getFreight() && orderBillingDetails.getFreight() > AppConstant.DOUBLE_ZERO) {
-                    if (Math.abs(orderBillingDetails.getAmountPayable()) > AppConstant.DOUBLE_ZERO &&
-                            Math.abs(orderBillingDetails.getAmountPayable() - orderBillingDetails.getFreight()) > AppConstant.PAY_UP_LIMIT) {
+                    if (Math.abs(orderBillingDetails.getAmountPayable()) > AppConstant.PAY_UP_LIMIT &&
+                            Math.abs(orderBillingDetails.getAmountPayable() - orderBillingDetails.getFreight()) >= AppConstant.PAY_UP_LIMIT) {
                         throw new OrderCreditMoneyException("信用额度支付运费必须一次性付清,不能部分支付!");
                     }
                 } else {
-                    if (orderBillingDetails.getAmountPayable() > AppConstant.PAY_UP_LIMIT) {
+                    if (orderBillingDetails.getAmountPayable() >= AppConstant.PAY_UP_LIMIT) {
                         throw new OrderCreditMoneyException("使用信用额度的订单必须一次性付清，不能使用第三方支付！");
                     }
                 }
             } else {
-                if (orderBillingDetails.getAmountPayable() > AppConstant.PAY_UP_LIMIT) {
+                if (orderBillingDetails.getAmountPayable() >= AppConstant.PAY_UP_LIMIT) {
                     throw new OrderCreditMoneyException("使用信用额度的订单必须一次性付清，不能使用第三方支付！");
                 }
             }
@@ -1016,5 +1018,22 @@ public class AppOrderServiceImpl implements AppOrderService {
     @Override
     public List<OrderBaseInfo> getSendToWMSFailedOrder() {
         return orderDAO.getSendToWMSFailedOrder();
+    }
+
+    @Override
+    public List<String> getNotSellDetailsOrderNOs(Boolean flag){
+        return orderDAO.getNotSellDetailsOrderNOs(flag);
+    }
+
+    @Override
+    public List<OrderGoodsInfo> getOrderGoodsQtyInfoByOrderNumber(String orderNumber) {
+        return this.orderDAO.getOrderGoodsQtyInfoByOrderNumber(orderNumber);
+    }
+
+    @Override
+    public void updateOrderGoodsShippingQuantityByid(OrderGoodsInfo orderGoodsInfo) {
+        if (null != orderGoodsInfo) {
+            this.orderDAO.updateOrderGoodsShippingQuantityByid(orderGoodsInfo);
+        }
     }
 }

@@ -69,7 +69,8 @@ public class HqAppEmployeeController {
             }
             if (!employeeDTO.getPosition().equalsIgnoreCase("导购") &&
                     !employeeDTO.getPosition().equalsIgnoreCase("店长") &&
-                    !employeeDTO.getPosition().equalsIgnoreCase("店经理")) {
+                    !employeeDTO.getPosition().equalsIgnoreCase("店经理") &&
+                    !employeeDTO.getPosition().equalsIgnoreCase("配送员")) {
                 logger.warn("employeeSync OUT,同步新增员工信息失败，出参 positionType:{}", employeeDTO.getPosition());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "职位类型不在约定范围之内！", null);
             }
@@ -144,9 +145,10 @@ public class HqAppEmployeeController {
             }
             logger.warn("employeeSync OUT,同步新增员工信息成功，出参 name:{}", employee);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+        }else {
+            logger.warn("employeeSync OUT,同步新增员工信息失败，出参 name:{}", employeeDTO);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "员工信息为空！", null);
         }
-        logger.warn("employeeSync OUT,同步新增员工信息失败，出参 name:{}", employeeDTO);
-        return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "员工信息为空！", null);
     }
 
     /**
@@ -217,9 +219,10 @@ public class HqAppEmployeeController {
                 logger.warn("deleteEmployee EXCEPTION,同步修改员工信息失败，出参 resultDTO:{}", e);
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "同步修改员工信息失败！", null);
             }
+        }else {
+            logger.warn("员工信息为空！");
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "员工信息为空！", null);
         }
-        logger.warn("员工信息为空！");
-        return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "员工信息为空！", null);
     }
 
     /**

@@ -769,10 +769,16 @@ public class CommonServiceImpl implements CommonService {
             billingDetails.setOnlinePayType(onlinePayType);
             billingDetails.setOnlinePayAmount(paymentData.getTotalFee());
             billingDetails.setOnlinePayTime(paymentData.getNotifyTime());
-            billingDetails.setArrearage(0D);
-            billingDetails.setIsPayUp(true);
-            billingDetails.setPayUpTime(paymentData.getNotifyTime());
-
+            /*2018-04-17 genaration 导购只支付运费的业务逻辑修改*/
+//            billingDetails.setArrearage(billingDetails.getArrearage());
+//            billingDetails.setIsPayUp(true);
+//            billingDetails.setPayUpTime(paymentData.getNotifyTime());
+            billingDetails.setArrearage(CountUtil.sub(billingDetails.getArrearage(), paymentData.getTotalFee()));
+            if (null != billingDetails.getArrearage() && billingDetails.getArrearage() <= 0) {
+                billingDetails.setIsPayUp(true);
+                billingDetails.setPayUpTime(paymentData.getNotifyTime());
+            }
+            /**/
 
             //新增订单账单支付明细
             OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails();
@@ -1874,6 +1880,66 @@ public class CommonServiceImpl implements CommonService {
             CustomerPreDeposit customerPreDeposit = customerService.findCustomerPreDepositByCustomerId(phoneUser.getCusId());
             if (null == customerPreDeposit) {
                 customerService.createCustomerPreDepositAccount(phoneUser.getCusId());
+            }
+        }
+    }
+
+    @Override
+    public void saveOrderRelevantInfo(OrderBaseInfo orderBaseInfo, OrderLogisticsInfo orderLogisticsInfo, List<OrderGoodsInfo> orderGoodsInfoList, OrderBillingDetails orderBillingDetails) throws UnsupportedEncodingException {
+        if (null != orderBaseInfo) {
+            if (null != orderBillingDetails && orderBillingDetails.getAmountPayable() <= AppConstant.PAY_UP_LIMIT) {
+                orderBillingDetails.setPayUpTime(new Date());
+                //发送提货码给顾客,及提示导购顾客下单信息
+                String pickUpCode = this.sendPickUpCodeAndRemindMessageAfterPayUp(orderBaseInfo);
+                orderBaseInfo.setPickUpCode(pickUpCode);
+
+                //修改顾客上一次下单时间
+                AppCustomer customer = new AppCustomer();
+                Long cusId = null;
+                if (orderBaseInfo.getCreatorIdentityType() != AppIdentityType.DECORATE_MANAGER) {
+                    if (orderBaseInfo.getCreatorIdentityType() == AppIdentityType.SELLER) {
+                        cusId = orderBaseInfo.getCustomerId();
+                    } else {
+                        cusId = orderBaseInfo.getCreatorId();
+                    }
+                    customer = customerService.findById(cusId);
+                    customer.setLastConsumptionTime(new Date());
+                }
+                // 更新顾客归属门店及导购
+                updateCustomerAttachedStoreAndSeller(orderBaseInfo, customer);
+
+                //更新顾客信息
+                if (null != customer.getCusId()) {
+                    customerService.update(customer);
+                }
+
+                //TODO 返还经销差价
+
+            }
+            /* ******************* 保存订单相关一系列信息 ******************* */
+            //保存订单基础信息
+            orderService.saveOrderBaseInfo(orderBaseInfo);
+
+            if (null != orderBaseInfo.getId()) {
+                //保存订单物流信息
+                if (null != orderLogisticsInfo) {
+                    orderLogisticsInfo.setOid(orderBaseInfo.getId());
+                    orderService.saveOrderLogisticsInfo(orderLogisticsInfo);
+                }
+                //保存订单商品信息
+                if (null != orderGoodsInfoList && orderGoodsInfoList.size() > 0) {
+                    for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
+                        goodsInfo.setOid(orderBaseInfo.getId());
+                        orderService.saveOrderGoodsInfo(goodsInfo);
+                    }
+                }
+                //保存订单账单信息
+                if (null != orderBillingDetails) {
+                    orderBillingDetails.setOid(orderBaseInfo.getId());
+                    orderService.saveOrderBillingDetails(orderBillingDetails);
+                }
+            } else {
+                throw new OrderSaveException("订单主键生成失败!");
             }
         }
     }
