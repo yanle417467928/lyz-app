@@ -61,6 +61,7 @@
         payment_type
         FROM payment_data
         WHERE ord_no = #{orderNumber}
+        AND trade_status = 'TRADE_SUCCESS'
         ORDER BY id DESC
     </select>
 
