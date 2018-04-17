@@ -769,10 +769,16 @@ public class CommonServiceImpl implements CommonService {
             billingDetails.setOnlinePayType(onlinePayType);
             billingDetails.setOnlinePayAmount(paymentData.getTotalFee());
             billingDetails.setOnlinePayTime(paymentData.getNotifyTime());
-            billingDetails.setArrearage(0D);
-            billingDetails.setIsPayUp(true);
-            billingDetails.setPayUpTime(paymentData.getNotifyTime());
-
+            /*2018-04-17 genaration 导购只支付运费的业务逻辑修改*/
+//            billingDetails.setArrearage(billingDetails.getArrearage());
+//            billingDetails.setIsPayUp(true);
+//            billingDetails.setPayUpTime(paymentData.getNotifyTime());
+            billingDetails.setArrearage(CountUtil.sub(billingDetails.getArrearage(), paymentData.getTotalFee()));
+            if (null != billingDetails.getArrearage() && billingDetails.getArrearage() <= 0) {
+                billingDetails.setIsPayUp(true);
+                billingDetails.setPayUpTime(paymentData.getNotifyTime());
+            }
+            /**/
 
             //新增订单账单支付明细
             OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails();

@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -161,7 +162,7 @@ public interface WmsToAppOrderDAO {
      * @param orderNo
      * @return
      */
-    WtaShippingOrderHeader getWtaShippingOrderHeaderNotHandling(String orderNo);
+    WtaShippingOrderHeader getWtaShippingOrderHeaderNotHandling(@Param("orderNo") String orderNo, @Param("taskNo") String taskNo);
 
     WtaShippingOrderHeader getWtaShippingOrderHeader(String orderNo);
 

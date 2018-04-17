@@ -1320,7 +1320,7 @@
     </select>
 
 
-    <select id="getOrderGoodsQtyInfoByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
+    <select id="getOrderGoodsQtyInfoByOrderNumber" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
         SELECT
         id                      id,
         oid                     oid,

@@ -30,7 +30,7 @@ public class CustomerRankInfoResponse {
     private String number;
     //创建时间
     private Date createTime;
-
-
+    //专供图片
+    private String rankUrl;
 
 }

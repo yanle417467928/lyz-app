@@ -162,7 +162,7 @@ public interface WmsToAppOrderService {
      * @param orderNo
      * @return
      */
-    WtaShippingOrderHeader getWtaShippingOrderHeaderNotHandling(String orderNo);
+    WtaShippingOrderHeader getWtaShippingOrderHeaderNotHandling(String orderNo, String taskNo);
 
     WtaShippingOrderHeader getWtaShippingOrderHeader(String orderNo);
 

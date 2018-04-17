@@ -809,7 +809,8 @@
             rc.rank_code,
             rc.city_id,
             cr.number,
-            cr.create_time
+            cr.create_time,
+            rc.rank_url
         FROM cus_customer c
             INNER JOIN cus_rank cr ON cr.cus_id = c.cus_id
             INNER JOIN rank_classification rc ON cr.rank_id = rc.rank_id
