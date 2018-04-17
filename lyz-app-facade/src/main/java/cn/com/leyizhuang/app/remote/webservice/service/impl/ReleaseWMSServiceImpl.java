@@ -546,6 +546,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     }
                     if (null == orderDeliveryInfoDetails.getLogisticStatus()) {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,获取物流状态失败,任务编号 出参 c_task_no:{}", orderDeliveryInfoDetails.getTaskNo());
+                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                         return AppXmlUtil.resultStrXml(1, "获取物流状态(c_value3)失败,c_out_no:{" + orderDeliveryInfoDetails.getTaskNo() + "}");
                     }
                     orderNumber = orderDeliveryInfoDetails.getOrderNo();
