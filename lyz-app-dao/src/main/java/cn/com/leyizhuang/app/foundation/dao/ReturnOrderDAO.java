@@ -163,4 +163,6 @@ public interface ReturnOrderDAO {
      * @param returnOrderLifecycle
      */
     void saveReturnOrderLifecycle(ReturnOrderLifecycle returnOrderLifecycle);
+
+    List<String> getNotReturnDetailsReturnNos(@Param("flag") Boolean flag);
 }

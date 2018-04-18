@@ -35,6 +35,7 @@ import org.springframework.ui.Model;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static cn.com.leyizhuang.app.core.utils.DateUtil.getCurrentTimeStr;
 
@@ -248,7 +249,47 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
 
     @Override
     public void resendAllAllocation() {
+        // 失败的调拨单ID集合
+        List<Long> faildIds = Lists.newArrayList();
 
+        // 查找所有失败的调拨单头记录和商品记录
+        List<AllocationInf> headerRecords = ityAllocationDAO.findAllocationInfByType(1);
+        logger.info("Resend allocaton header record, count=" + headerRecords.size());
+        for (AllocationInf record : headerRecords) {
+            Map<String, Object> result = ebsSenderService.sendFaildAllocationToEBS(record);
+            //if ((Boolean) result.get("success") || String.valueOf(result.get("msg")).contains("ORA-00001")) {
+            if ((Boolean) result.get("success") ) {
+                ityAllocationDAO.deleteAllocationInf(record.getId());
+            } else {
+                Date now = new Date();
+                record.setUpdatedTime(now);
+                record.setMsg((String) result.get("msg"));
+                record.setTimes(record.getTimes() + 1);
+                ityAllocationDAO.insertAllocationInf(record);
+                faildIds.add(record.getAllocationId());
+            }
+        }
+
+        // 查找所有失败的调拨入库记录
+        List<AllocationInf> receiveRecords = ityAllocationDAO.findAllocationInfByType(3);
+        logger.info("Resend allocaton receive record, count=" + receiveRecords.size());
+        for (AllocationInf record : receiveRecords) {
+            if (!faildIds.contains(record.getAllocationId())) {
+                Map<String, Object> result = ebsSenderService.sendFaildAllocationToEBS(record);
+                //if ((Boolean) result.get("success") || String.valueOf(result.get("msg")).contains("ORA-00001")) {
+                if ((Boolean) result.get("success") ) {
+                    ityAllocationDAO.deleteAllocationInf(record.getId());
+                } else {
+                    Date now = new Date();
+                    record.setUpdatedTime(now);
+                    record.setMsg((String) result.get("msg"));
+                    record.setTimes(record.getTimes() + 1);
+                    ityAllocationDAO.insertAllocationInf(record);
+                    faildIds.add(record.getAllocationId());
+                }
+            }
+        }
+        logger.info("Resend allocaton done, faild allocation ids=" + faildIds);
     }
 
     @Override

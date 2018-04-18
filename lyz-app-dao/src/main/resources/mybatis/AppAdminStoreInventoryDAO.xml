@@ -45,6 +45,9 @@
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
+        ORDER BY
+        inv.real_ity
+        DESC
     </select>
 
 
@@ -63,6 +66,9 @@
         st_inventory inv
         WHERE
          inv.store_id =#{storeId}
+         ORDER BY
+         inv.real_ity
+         DESC
     </select>
 
     <select id="queryByStoreId" parameterType="java.lang.Long"

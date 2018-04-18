@@ -1,10 +1,17 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
+import lombok.*;
+
 import java.time.LocalDateTime;
 
 /**
  * Created by panjie on 2018/3/27.
  */
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class SellDetailsWeekFinishResponse {
 
     private Long id;

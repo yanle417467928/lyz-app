@@ -64,6 +64,18 @@ public class AppAdminUserViewController extends BaseController {
         return "/views/user/user_add";
     }
 
+
+    /**
+     * 跳转到密码编辑页面
+     *
+     * @return
+     */
+    @GetMapping(value = "/passwordEdit")
+    public String passwordEdit(Model model) {
+        logger.info("编辑用户密码");
+        return "/views/user/user_password_edit";
+    }
+
     /**
      * 跳转到编辑用户页面
      *

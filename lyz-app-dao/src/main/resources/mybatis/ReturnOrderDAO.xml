@@ -641,5 +641,9 @@
         (#{roid}, #{returnNo}, #{operation}, #{postStatus}, #{operationTime})
     </insert>
 
-
+    <select id="getNotReturnDetailsReturnNos" resultType="java.lang.String">
+        SELECT return_no from ord_return_base_info ore
+        LEFT JOIN ord_base_info ob on ore.ord_no = ob.ord_no  where ob.`status` in ('FINISHED') and ore.is_record_sales = #{flag}
+    </select>
 </mapper>
+

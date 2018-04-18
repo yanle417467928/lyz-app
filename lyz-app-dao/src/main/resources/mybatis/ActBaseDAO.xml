@@ -198,21 +198,23 @@
     <select id="queryZgList" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO">
         SELECT
         <include refid="ALL_FIELDS"/>
-        FROM act_base a LEFT JOIN (SELECT  DISTINCT s.act_id from act_stores s where s.store_id = #{storeId}) st on a.id = st.act_id
+        FROM act_base a
         where
         a.base_type = 'ACCUMULATE'
         and a.end_time &gt; #{now}
         and a.status = 'PUBLISH'
+        and a.city_id = #{cityId}
     </select>
 
     <select id="queryZgFirstList" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO">
         SELECT
         <include refid="ALL_FIELDS"/>
-        FROM act_base a LEFT JOIN (SELECT  DISTINCT s.act_id from act_stores s where s.store_id = #{storeId}) st on a.id = st.act_id
+        FROM act_base a
         where
         a.base_type = 'ZGFRIST'
         and a.end_time &gt; #{now}
         and a.status = 'PUBLISH'
+        and a.city_id = #{cityId}
     </select>
 
     <select id="queryValidListByStoreId" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO">

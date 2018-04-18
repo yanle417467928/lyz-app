@@ -127,8 +127,24 @@ public class SettlementController {
             if (null != companyFlag && !companyFlag.isEmpty()) {
                 for (String flag : companyFlag) {
                     if (forbiddenSelfTakeCompanyList.contains(flag)) {
+
+                        /** 提示 哪些商品不能配送 2018-04-13 15：52**/
+                        List<String> goodsNames = goodsService.findGoodsByCompanyFlagAndIds(goodsIdList,companyFlag);
+                        StringBuffer msg = new StringBuffer();
+
+                        for (int i =0 ;i< goodsNames.size(); i++){
+                            msg.append("“"+goodsNames.get(i)+"”");
+
+                            if (i == 2){
+                                msg.append("等");
+                                break;
+                            }
+                        }
+                        msg.append("属于不能自提商品！");
+
+
                         response.setIsSelfTakePermitted(false);
-                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, response);
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, msg.toString(), response);
                         logger.info("getSelfTakeStoreAvailable CALLED,获取可选自提门店信息成功，出参 resultDTO:{}", resultDTO);
                         return resultDTO;
                     }

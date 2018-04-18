@@ -2085,5 +2085,10 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             returnOrderDAO.updateReturnLogisticInfoOfBackTime(returnNo);
         }
     }
+
+    @Override
+    public List<String> getNotReturnDetailsReturnNos(Boolean flag){
+        return returnOrderDAO.getNotReturnDetailsReturnNos(flag);
+    }
 }
 

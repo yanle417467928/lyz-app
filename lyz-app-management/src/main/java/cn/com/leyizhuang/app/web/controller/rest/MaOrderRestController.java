@@ -984,6 +984,7 @@ public class MaOrderRestController extends BaseRestController {
             orderBillingDetails.setTotalGoodsPrice(support.getGoodsTotalPrice());
             orderBillingDetails.setMemberDiscount(support.getMemberDiscount());
             orderBillingDetails.setPromotionDiscount(support.getPromotionDiscount());
+            orderBillingDetails.setFreight(0D);
             String payTime = "";
             if (null != preDepositMoney) {
                 cashMoney = null;

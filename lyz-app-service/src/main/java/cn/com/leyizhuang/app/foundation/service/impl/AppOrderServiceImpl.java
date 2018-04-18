@@ -1007,6 +1007,7 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
 
+
     @Override
     public PageInfo<OrderBaseInfo> getPendingShipmentAndPendingReceive(Long userId, Integer identityType, Integer page, Integer size) {
         PageHelper.startPage(page, size);
@@ -1017,6 +1018,11 @@ public class AppOrderServiceImpl implements AppOrderService {
     @Override
     public List<OrderBaseInfo> getSendToWMSFailedOrder() {
         return orderDAO.getSendToWMSFailedOrder();
+    }
+
+    @Override
+    public List<String> getNotSellDetailsOrderNOs(Boolean flag){
+        return orderDAO.getNotSellDetailsOrderNOs(flag);
     }
 
     @Override

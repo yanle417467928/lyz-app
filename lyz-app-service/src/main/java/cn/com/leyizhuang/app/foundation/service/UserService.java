@@ -32,4 +32,5 @@ public interface UserService {
     User queryByLoginName(UserVO userVO);
 
     User findByLoginName(String loginName);
+
 }

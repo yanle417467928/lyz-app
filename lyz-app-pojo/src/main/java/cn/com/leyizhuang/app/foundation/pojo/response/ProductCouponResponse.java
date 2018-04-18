@@ -33,4 +33,9 @@ public class ProductCouponResponse implements Serializable {
     private Integer leftNumber;
 
     private String coverImageUri;
+
+    /**
+     * 是否为专供
+     */
+    private Boolean isZG = false;
 }

@@ -1,10 +1,17 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
+import lombok.*;
+
 import java.time.LocalDateTime;
 
 /**
  * Created by panjie on 2018/4/3.
  */
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class SellDetailsSingleDO {
 
     private Long id;
@@ -16,12 +23,12 @@ public class SellDetailsSingleDO {
     /**
      * 年份
       */
-    private String year;
+    private Integer year;
 
     /**
      * 月份
      */
-    private String month;
+    private Integer month;
 
     /**
      * 导购id
@@ -52,6 +59,11 @@ public class SellDetailsSingleDO {
      * 组织id
      */
     private Long structureId;
+
+    /**
+     * 组织id
+     */
+    private String structureCode;
 
     /**
      * 组织名

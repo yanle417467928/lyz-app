@@ -611,6 +611,31 @@ public class EbsSenderServiceImpl implements EbsSenderService {
     }
 
     /**
+     * 发送失败调拨单头到EBS
+     *
+     * @param record
+     * @return
+     */
+    public Map<String, Object> sendFaildAllocationToEBS(AllocationInf record) {
+        log.info("sendFaildAllocationToEBS, record=" + record);
+        Map<String, Object> result;
+
+        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+        JSONObject jsonParams = JSON.parseObject(record.getContent());
+        if (record.getType() == 3) {
+            parameters.add(new BasicNameValuePair("allocationReceiveJson", jsonParams.getString("allocationReceiveJson")));
+            result = this.postToEbs(AppConstant.EBS_NEW_URL + "callAllocationReceive", parameters);
+
+        } else {
+            parameters.add(new BasicNameValuePair("allcationHeaderJson", jsonParams.getString("allcationHeaderJson")));
+            parameters.add(new BasicNameValuePair("allocationDetailsJson", jsonParams.getString("allocationDetailsJson")));
+            result = this.postToEbs(AppConstant.EBS_NEW_URL + "callAllocation", parameters);
+        }
+        log.info("sendFaildAllocationToEBS, result=" + result);
+        return result;
+    }
+
+    /**
      * 发送门店自提单发货到EBS
      *
      * @param receiveInfs 门店自提单信息

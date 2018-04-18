@@ -1,11 +1,13 @@
 package cn.com.leyizhuang.app.core.remote.ebs;
 
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation;
+import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationInf;
 import cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaStoreReturnOrderAppToEbsBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * EBS接口发送服务
@@ -35,6 +37,7 @@ public interface EbsSenderService {
      */
     void sendAllocationReceivedToEBSAndRecord(final Allocation allocation);
 
+    Map<String, Object> sendFaildAllocationToEBS(AllocationInf record);
 
     void sendOrderJxPriceDifferenceReturnInfAndRecord(List<OrderJxPriceDifferenceReturnInf> jxPriceDifferenceReturnInfs);
 

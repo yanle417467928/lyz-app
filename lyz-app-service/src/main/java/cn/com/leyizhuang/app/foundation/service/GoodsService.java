@@ -72,6 +72,8 @@ public interface GoodsService {
 
     List<String> findCompanyFlagListById(List<Long> goodsIdList);
 
+    List<String> findGoodsByCompanyFlagAndIds(List<Long> goodsIds,List<String> companyFlagList);
+
     /**
      * HQ同步添加商品
      * @param goodsDO   商品类
