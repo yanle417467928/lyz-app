@@ -41,15 +41,23 @@
                     <button id="btn_delete" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除
                     </button>-->
-                    <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px"
-                            style="width:auto;"
-                            onchange="findOrderByCondition()" data-live-search="true">
-                        <option value="-1">选择门店</option>
-                    </select>
                     <button id="btn_add" type="button" class="form-control" onclick="openBillModal()">
                         <i class="fa fa-download"></i>
                         下载报表
                     </button>
+                    <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px"
+                            style="width:auto;"
+                            onchange="findInventoryByCondition()" data-live-search="true">
+                        <option value="-1">选择门店</option>
+                    </select>
+                    <div class="input-group col-md-3" style="margin-top:0px positon:relative">
+                        <input type="text" name="inventoryInfo" id="inventoryInfo" class="form-control" style="width:auto;"
+                               placeholder="请输入要查找的商品或sku">
+                        <span class="input-group-btn">
+                            <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
+                                    onclick="return findInventoryByInfo()">查找</button>
+                        </span>
+                    </div>
                 </div>
                 <div class="box-body table-reponsive">
                     <table id="dataGrid" class="table table-bordered table-hover">
@@ -124,7 +132,7 @@
 <script>
     $(function () {
         findStoreSelection();
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/store/inventory/page/grid', 'get', true, function (params) {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/store/inventory/page/grid', 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
@@ -168,7 +176,7 @@
         }]);
 
         /* $('#btn_add').on('click', function () {
-             $grid.add('/views/admin/menu/add?parentMenuId=${(parentMenuId!'0')}
+             $grid.add('/views/admin/menu/add?parentMenuId
 
 
 
@@ -178,7 +186,7 @@
                                                         });
 
                                                         $('#btn_edit').on('click', function() {
-                                                            $grid.modify($('#dataGrid'), '/views/admin/menu/edit/{id}?parentMenuId=${parentMenuId!'0'}
+                                                            $grid.modify($('#dataGrid'), '/views/admin/menu/edit/{id}?parentMenu
 
 
 
@@ -316,14 +324,25 @@
         });
     }
 
-    function findOrderByCondition() {
-        $("#queryOrderInfo").val('');
-        $("#dataGrid").bootstrapTable('destroy');
+    function findInventoryByCondition() {
+        $("#inventoryInfo").val('');
         var storeId = $("#storeCode").val();
+        $("#dataGrid").bootstrapTable('destroy');
         if (storeId == -1) {
             initDateGird('/rest/store/inventory/page/grid');
         } else if (storeId != -1) {
             initDateGird('/rest/store/inventory/storeGrid/' + storeId);
+        }
+    }
+
+    function  findInventoryByInfo() {
+        var inventoryInfo =$("#inventoryInfo").val();
+        var storeId = $("#storeCode").val();
+        $("#dataGrid").bootstrapTable('destroy');
+        if (storeId == -1&& null == inventoryInfo) {
+            initDateGird('/rest/store/inventory/page/grid');
+        } else {
+            initDateGird('/rest/store/inventory/infoGrid?storeId=' + storeId+'&info='+inventoryInfo);
         }
     }
 
@@ -335,7 +354,7 @@
     }
 
     function initDateGird(url) {
-        $grid.init($('#dataGrid'), $('#toolbar'), url, 'get', true, function (params) {
+        $grid.init($('#dataGrid'), $('#toolbar'), url, 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,

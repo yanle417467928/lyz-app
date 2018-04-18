@@ -71,6 +71,36 @@
          DESC
     </select>
 
+
+    <select id="queryStoreInventoryByInfo" resultType="cn.com.leyizhuang.app.foundation.vo.AppAdminStoreInventoryVO">
+        SELECT
+        inv.id id,
+        inv.store_id storeId,
+        inv.store_name storeName,
+        inv.gid goodsId,
+        inv.sku_name goodsName,
+        inv.sku goodsCode,
+        inv.real_ity realInventory,
+        inv.available_ity soldInventory
+        FROM
+        st_inventory inv
+        WHERE
+        1=1
+        <if test="null !=storeId">
+            AND
+            inv.store_id =#{storeId}
+        </if>
+        <if test="null !=info and ''!= info ">
+            AND
+            (inv.sku_name like concat("%",#{info},"%")
+            OR
+            inv.sku like concat("%",#{info},"%"))
+        </if>
+        ORDER BY
+        inv.real_ity
+        DESC
+    </select>
+
     <select id="queryByStoreId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory">
         select *

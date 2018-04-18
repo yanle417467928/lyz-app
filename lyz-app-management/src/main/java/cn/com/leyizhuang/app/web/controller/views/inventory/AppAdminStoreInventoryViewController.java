@@ -87,7 +87,7 @@ public class AppAdminStoreInventoryViewController extends BaseController {
         AppStore appStore = storeService.findAppStoreByStoreId(storeIds.get(0));
 
         // 获取用户城市下门店信息
-        List<SimpleStoreParam> storeList =  storeService.findStoresListByCityIdExcludeStoreId(appStore.getCityId(),appStore.getStoreId());
+        List<SimpleStoreParam> storeList =  storeService.findStoresListByCityIdExcludeStoreId(appStore.getStoreId());
 
         model.addAttribute("stores",storeList);
         return "/views/inventory/store/store_allocation_add";

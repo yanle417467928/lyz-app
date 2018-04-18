@@ -538,12 +538,12 @@
                             if (result.code == 10100) {
                                 $('#confirmReceivables').modal();
                                 $("#message").html(result.message);
-                               // $loading.close();
-                               // $global.timer = null;
+                                $loading.close();
+                                $global.timer = null;
                             } else if (result.code == -1) {
                                 $("#message").html(result.message);
-                              //  $loading.close();
-                              //  $global.timer = null;
+                                $loading.close();
+                                $global.timer = null;
                             } else if (result.code == 0) {
                                 $("#message").html('');
                                 window.location.reload();
@@ -635,6 +635,8 @@
                 },
                 success: function (result) {
                     if (0 === result.code) {
+                        $loading.close();
+                        $global.timer = null;
                         $('#secondCode').val(data);
                         $('#confirmShip').attr("disabled", false);
                         $('#msg').html('<font color="green">验证成功</font>')

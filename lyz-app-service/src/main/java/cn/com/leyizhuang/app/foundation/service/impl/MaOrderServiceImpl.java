@@ -434,6 +434,7 @@ public class MaOrderServiceImpl implements MaOrderService {
         //得到订单基本信息
         MaOrderTempInfo maOrderTempInfo = this.getOrderInfoByOrderNo(maOrderAmount.getOrderNumber());
         //更新订单收款信息
+        maOrderAmount.setPayUpTime(new Date());
         this.updateOrderReceivablesStatus(maOrderAmount);
         //更新欠款审核表
         //this.updateOrderArrearsAudit(maOrderAmount.getOrderNumber(),maOrderAmount.getDate());

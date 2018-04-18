@@ -27,7 +27,7 @@ public class AppAdminStoreInventoryServiceImpl implements AppAdminStoreInventory
     @Override
     public PageInfo<AppAdminStoreInventoryVO> queryPage(Integer page, Integer size, String keywords, List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<AppAdminStoreInventoryVO> storeInventoryList = storeInventoryDAO.queryListVO(keywords,storeIds);
+        List<AppAdminStoreInventoryVO> storeInventoryList = storeInventoryDAO.queryListVO(keywords, storeIds);
         return new PageInfo<>(storeInventoryList);
     }
 
@@ -35,11 +35,21 @@ public class AppAdminStoreInventoryServiceImpl implements AppAdminStoreInventory
     @Override
     public PageInfo<AppAdminStoreInventoryVO> queryPageByStoreId(Integer page, Integer size, String keywords, Long storeId) {
         PageHelper.startPage(page, size);
-        if(null !=storeId){
+        if (null != storeId) {
             List<AppAdminStoreInventoryVO> storeInventoryList = storeInventoryDAO.queryListByStoreId(storeId);
             return new PageInfo<>(storeInventoryList);
         }
-        return  null;
+        return null;
+    }
+
+    @Override
+    public PageInfo<AppAdminStoreInventoryVO> queryStoreInventoryByInfo(Integer page, Integer size, String keywords, Long storeId, String info) {
+        PageHelper.startPage(page, size);
+        if (-1 == storeId) {
+            storeId = null;
+        }
+        List<AppAdminStoreInventoryVO> storeInventoryList = storeInventoryDAO.queryStoreInventoryByInfo(storeId,info);
+        return new PageInfo<>(storeInventoryList);
     }
 
     @Override
