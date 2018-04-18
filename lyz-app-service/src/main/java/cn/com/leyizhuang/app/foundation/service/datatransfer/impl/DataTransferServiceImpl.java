@@ -1511,7 +1511,13 @@ public class DataTransferServiceImpl implements DataTransferService {
                         countLine.addAndGet(1);
 //                        处理退单
                         ReturnOrderBaseInfo returnOrderBaseInfo = this.transReturnOrderData(tdReturnSmall, employeeList, customerList, storeList);
+                        List<TdOrder> tdOrderList = transferDAO.findOrderAllFieldBySubOrderNumber(tdReturnSmall.getOrderNumber());
 
+                        if (null == tdOrderList || tdOrderList.isEmpty()) {
+                            throw new DataTransferException("没有查到ZS/JM的支付信息", DataTransferExceptionType.NDT);
+                        }
+                        TdOrder tdOrder = tdOrderList.get(0);
+                        returnOrderBaseInfo.setReturnTime(tdOrder.getLastUpdateTime());
 
                         //退商品
                         Map<String, Object> returnOrderGoodsMap = this.transformReturnOrderGoods(returnOrderBaseInfo, tdReturnSmall);
@@ -1707,7 +1713,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                     ReturnOrderJxPriceDifferenceRefundDetails differenceRefundDetails = new ReturnOrderJxPriceDifferenceRefundDetails();
                     differenceRefundDetails.setOrderNumber(returnSmall.getOrderNumber());
                     differenceRefundDetails.setReturnNumber(returnSmall.getReturnNumber());
-                    differenceRefundDetails.setCreateTime(tdOrder.getOrderTime());
+                    differenceRefundDetails.setCreateTime(returnSmall.getReturnTime());
                     differenceRefundDetails.setStoreId(returnOrderBaseInfo.getStoreId());
                     differenceRefundDetails.setStoreCode(returnOrderBaseInfo.getStoreCode());
                     differenceRefundDetails.setSku(tdReturnOrderGoods.getSku());
