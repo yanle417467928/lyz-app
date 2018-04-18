@@ -113,4 +113,20 @@ public class MaReportDownloadViewController extends BaseController {
         return "/views/reportDownload/agency_fund_page";
     }
 
+
+    /**
+     * @title    商品出退货报表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/4/3
+     */
+    @GetMapping(value = "/goods/shipmentAndReturn/list")
+    public String getGoodsShipmentAndReturnList(ModelMap map) {
+        map.addAttribute("storeTypes", StoreType.getNotZsType());
+        return "/views/reportDownload/goods_shipmentAndReturn_page";
+    }
+
 }

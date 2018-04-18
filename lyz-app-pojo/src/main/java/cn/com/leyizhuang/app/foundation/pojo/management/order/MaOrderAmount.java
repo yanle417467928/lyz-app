@@ -51,4 +51,6 @@ public class MaOrderAmount {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date date;
 
+    private Date payUpTime;
+
 }
