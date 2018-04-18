@@ -104,4 +104,5 @@ public interface AppStoreService {
 
     Integer updateStoreDepositByStoreIdAndStoreDeposit(Long storeId, Double storeDeposit, Timestamp version);
 
+    List<AppStore> findStoreListByLoginAdministrator();
 }

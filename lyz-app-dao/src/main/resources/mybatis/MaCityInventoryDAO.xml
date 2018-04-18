@@ -24,23 +24,40 @@
         UPDATE city_inventory
         SET
         <if test="null != goodsQty">
-        available_ity = #{goodsQty},
+            available_ity = #{goodsQty},
         </if>
         <if test="null != date">
-        last_update_time = #{date}
+            last_update_time = #{date}
         </if>
         WHERE
-            gid = #{goodsId}
-            AND city_id = #{cityId}
+        gid = #{goodsId}
+        AND city_id = #{cityId}
 
     </update>
 
-    <insert id="addInventoryChangeLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.city.MaCityInventoryChange">
+    <insert id="addInventoryChangeLog"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.management.city.MaCityInventoryChange">
         INSERT INTO city_inventory_available_qty_change_log
         (city_id, city_name, gid, sku, sku_name, change_time, change_qty, after_change_qty, change_type,
          change_type_desc, reference_number)
         VALUES (#{cityId}, #{cityName}, #{gid}, #{sku}, #{skuName}, #{changeTime}, #{changeQty}, #{afterChangeQty},
                            #{changeType}, #{changeTypeDesc}, #{referenceNumber})
     </insert>
+
+    <select id="findCityInventoryListByCityIdAndSkuList"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory">
+        SELECT
+        city_id,
+        city_name,
+        gid,
+        sku,
+        sku_name,
+        available_ity
+        FROM city_inventory WHERE city_id = #{cityId}
+        AND sku in
+        <foreach collection="internalCodeList" separator="," open="(" close=")" item="item">
+            #{item}
+        </foreach>
+    </select>
 
 </mapper>

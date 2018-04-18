@@ -501,5 +501,21 @@ public class GoodsServiceImpl implements GoodsService {
         return this.goodsDAO.findGoodsByUserIdAndIdentityType(userId, identityType, gid);
     }
 
+    @Override
+    public List<GoodsDO> findGoodsListBySkuList(List<String> internalCodeList) {
+        if (AssertUtil.isNotEmpty(internalCodeList)){
+            return goodsDAO.findGoodsListBySkuList(internalCodeList);
+        }
+        return null;
+    }
+
+    @Override
+    public GoodsDO findBySku(String sku) {
+        if (StringUtils.isNotBlank(sku)){
+            return goodsDAO.findBySku(sku);
+        }
+        return null;
+    }
+
 
 }

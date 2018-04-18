@@ -8,6 +8,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoneyResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -92,4 +93,8 @@ public interface AppEmployeeDAO {
     List<AppEmployee> findAllSeller();
 
     List<SellerResponse> querySellerByStructureCode(@Param("structureCode") String structureCode);
+
+    List<EmployeeVO> findEmployeeListByStoreId(Long storeId);
+
+    List<EmployeeVO> findSellerListByStoreId(Long storeId);
 }

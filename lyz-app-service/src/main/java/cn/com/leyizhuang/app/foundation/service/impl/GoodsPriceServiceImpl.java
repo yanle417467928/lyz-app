@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.service.GoodsPriceService;
 import cn.com.leyizhuang.app.foundation.vo.GoodsPriceVO;
+import cn.com.leyizhuang.common.util.AssertUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,6 +83,14 @@ public class GoodsPriceServiceImpl implements GoodsPriceService {
             if (identityType.getValue() == AppIdentityType.CUSTOMER.getValue()) {
                 return goodsPriceDAO.findCustomerGoodsPriceListByGoodsIdsAndUserId(goodsIdList, userId);
             }
+        }
+        return null;
+    }
+
+    @Override
+    public List<GoodsPrice> findGoodsPriceListByStoreIdAndSkuList(Long storeId, List<String> internalCodeList) {
+        if (null != storeId && AssertUtil.isNotEmpty(internalCodeList)){
+            return goodsPriceDAO.findGoodsPriceListByStoreIdAndSkuList(storeId,internalCodeList);
         }
         return null;
     }

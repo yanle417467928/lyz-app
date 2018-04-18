@@ -47,4 +47,9 @@ public class NormalMaterialListResponse {
      */
     private Double retailPrice;
 
+    /**
+     * 备注信息
+     */
+    private String remark;
+
 }

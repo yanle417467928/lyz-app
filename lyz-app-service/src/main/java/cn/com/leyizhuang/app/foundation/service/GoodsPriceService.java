@@ -38,4 +38,6 @@ public interface GoodsPriceService {
 
     List<GiftListResponseGoods> findGoodsPriceListByGoodsIdsAndUserId(List<Long> goodsIdList, Long userId,
                                                                                      AppIdentityType identityType);
+
+    List<GoodsPrice> findGoodsPriceListByStoreIdAndSkuList(Long storeId, List<String> internalCodeList);
 }
