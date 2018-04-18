@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.datatransfer.impl;
 
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.exception.DataTransferException;
+import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.TimingTaskErrorMessageDAO;
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
@@ -13,7 +14,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsBrand;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsCategory;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
-import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
@@ -1496,7 +1497,7 @@ public class DataTransferServiceImpl implements DataTransferService {
             throw new DataTransferException("没有要迁移的数据", DataTransferExceptionType.NDT);
         }
         int size = storeMainReturnOrderList.size();
-        int nThreads = 6;
+        int nThreads = 1;
         AtomicInteger countLine = new AtomicInteger();
         ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
         List<Future<Queue<DataTransferErrorLog>>> futures = new ArrayList<>(nThreads);
@@ -1508,11 +1509,31 @@ public class DataTransferServiceImpl implements DataTransferService {
                 for (TdReturnSmall tdReturnSmall : subList) {
                     try {
                         countLine.addAndGet(1);
-                        //处理订单头
-//                        OrderBaseInfo orderBaseInfo = this.transferOrderBaseInfo(tdReturnSmall, employeeList, customerList, storeList);
+//                        处理退单
+                        ReturnOrderBaseInfo returnOrderBaseInfo = this.transReturnOrderData(tdReturnSmall, employeeList, customerList, storeList);
+
+
+                        //退商品
+                        Map<String, Object> returnOrderGoodsMap = this.transformReturnOrderGoods(returnOrderBaseInfo, tdReturnSmall);
+                        List<ReturnOrderGoodsInfo> returnOrderGoodsInfos = (List<ReturnOrderGoodsInfo>) returnOrderGoodsMap.get("returnOrderGoodsList");
+                        List<ReturnOrderJxPriceDifferenceRefundDetails> jxPriceDifferenceRefundDetails = (List<ReturnOrderJxPriceDifferenceRefundDetails>) returnOrderGoodsMap.get("jxPriceDifferenceRefundDetails");
+
+
+                        //退券，和新增顾客券，先存顾客券，取PCid 赋值给退单券
+                        List<Map<String, Object>> returnOrderProductCouponsMapList = this.transformReturnOrderProductCoupons(returnOrderGoodsInfos, returnOrderBaseInfo);
+//                        List<ReturnOrderProductCoupon> returnOrderProductCouponList = (List<ReturnOrderProductCoupon>) returnOrderGoodsMap.get("returnOrderProductCouponList");
+//                        List<CustomerProductCoupon> customerProductCouponList = (List<CustomerProductCoupon>) returnOrderProductCouponsMap.get("customerProductCouponList");
+
+
+                        //退款账单明细
+                        ReturnOrderBilling returnOrderBilling = this.transformReturnOrderBilling(tdReturnSmall);
+
+                        //退货物流详情
+                        ReturnOrderDeliveryDetail returnOrderDeliveryDetail = this.transformReturnOrderDeliveryDetail(returnOrderBaseInfo);
 
                         //持久化订单相关信息
-//                        dataTransferSupportService.saveOrderRelevantInfo();
+                        dataTransferSupportService.saveReturnOrderRelevantInfo(returnOrderBaseInfo, returnOrderGoodsInfos, jxPriceDifferenceRefundDetails,
+                                returnOrderProductCouponsMapList, returnOrderBilling, returnOrderDeliveryDetail);
                     } catch (DataTransferException e) {
                         dataTransferErrorLogQueue.add(new DataTransferErrorLog(null, tdReturnSmall.getReturnNumber(), e.getType().getDesc(), new Date()));
                         // 记录一条错误日志
@@ -1540,64 +1561,368 @@ public class DataTransferServiceImpl implements DataTransferService {
         return errorLogQueue;
     }
 
-    public Boolean transReturnOrderData(int size) {
+    private ReturnOrderBaseInfo transReturnOrderData(TdReturnSmall tdReturnSmall, List<AppEmployee> employeeList, List<AppCustomer> customerList, List<AppStore> storeList) {
 
-        List<TdReturnSmall> tdReturnSmalls = transferDAO.getTdReturnSmallBySize(size);
+//        List<TdReturnSmall> tdReturnSmalls = transferDAO.getTdReturnSmallBySize(size);
 
-        for (TdReturnSmall tdReturnSmall : tdReturnSmalls) {
-            ReturnOrderBaseInfo returnOrderBaseInfo = new ReturnOrderBaseInfo();
+        ReturnOrderBaseInfo returnOrderBaseInfo = new ReturnOrderBaseInfo();
 
-            OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(tdReturnSmall.getOrderNumber());
+//            OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(tdReturnSmall.getOrderNumber());
+//            returnOrderBaseInfo.setOrderId();
+        returnOrderBaseInfo.setOrderNo(tdReturnSmall.getOrderNumber());
+        returnOrderBaseInfo.setOrderTime(tdReturnSmall.getOrderTime());
+        returnOrderBaseInfo.setReturnNo(tdReturnSmall.getReturnNumber());
+        returnOrderBaseInfo.setReturnType(ReturnOrderType.NORMAL_RETURN);
+        returnOrderBaseInfo.setReturnPrice(tdReturnSmall.getTurnPrice());
+        returnOrderBaseInfo.setRemarksInfo(tdReturnSmall.getRemarkInfo());
+        returnOrderBaseInfo.setReturnTime(tdReturnSmall.getReturnTime());
 
-            if (null == orderBaseInfo) {
-                return true;
-            }
-            returnOrderBaseInfo.setOrderId(orderBaseInfo.getId());
-            returnOrderBaseInfo.setOrderNo(tdReturnSmall.getOrderNumber());
-            returnOrderBaseInfo.setOrderTime(tdReturnSmall.getOrderTime());
-            returnOrderBaseInfo.setReturnNo(tdReturnSmall.getReturnNumber());
-            returnOrderBaseInfo.setReturnType(ReturnOrderType.NORMAL_RETURN);
-            returnOrderBaseInfo.setReturnPrice(tdReturnSmall.getTurnPrice());
-            returnOrderBaseInfo.setRemarksInfo(tdReturnSmall.getRemarkInfo());
+        AppStore filterAppStoreList = storeService.findByStoreCode(tdReturnSmall.getDiyCode());
+        AppStore appStore = filterAppStoreList;
+        if (null != appStore) {
 
-            AppEmployee appEmployee = employeeService.findByMobile(tdReturnSmall.getSellerUsername());
-            if (null != appEmployee) {
+            returnOrderBaseInfo.setStoreId(appStore.getStoreId());
+            returnOrderBaseInfo.setStoreStructureCode(appStore.getStoreStructureCode());
+            returnOrderBaseInfo.setStoreCode(appStore.getStoreCode());
+        } else {
+            throw new DataTransferException("查不到门店", DataTransferExceptionType.STNF);
+        }
 
-                returnOrderBaseInfo.setCreatorId(appEmployee.getEmpId());
-                returnOrderBaseInfo.setCreatorName(appEmployee.getName());
-                returnOrderBaseInfo.setCreatorPhone(appEmployee.getMobile());
-                returnOrderBaseInfo.setCreatorIdentityType(AppIdentityType.SELLER);
+        if (StoreType.ZS.equals(appStore.getStoreType())) {
+            AppEmployee filterEmployeeList = employeeService.findByMobile(tdReturnSmall.getDiySiteTel());
+            if (null != filterEmployeeList) {
+                AppEmployee storeEmployee = filterEmployeeList;
+                if (null != storeEmployee) {
+
+                    returnOrderBaseInfo.setCreatorId(storeEmployee.getEmpId());
+                    returnOrderBaseInfo.setCreatorName(storeEmployee.getName());
+                    returnOrderBaseInfo.setCreatorPhone(storeEmployee.getMobile());
+                    returnOrderBaseInfo.setCreatorIdentityType(AppIdentityType.DECORATE_MANAGER);
+                    returnOrderBaseInfo.setCustomerPhone(storeEmployee.getMobile());
+                }
             } else {
-                returnOrderBaseInfo.setReturnPic("导购没有");
+                throw new DataTransferException("", DataTransferExceptionType.ENF);
             }
 
-            AppStore appStore = storeService.findByStoreCode(tdReturnSmall.getDiyCode());
-            if (null != appStore) {
+        } else {
+            AppEmployee filterEmployeeList = employeeService.findByMobile(tdReturnSmall.getSellerUsername());
+            if (null != filterEmployeeList) {
+                AppEmployee storeEmployee = filterEmployeeList;
+                if (null != storeEmployee) {
 
-                returnOrderBaseInfo.setStoreId(appStore.getStoreId());
-                returnOrderBaseInfo.setStoreStructureCode(appStore.getStoreStructureCode());
-                returnOrderBaseInfo.setStoreCode(appStore.getStoreCode());
-            } else {
-                returnOrderBaseInfo.setReturnPic(returnOrderBaseInfo.getReturnPic() + "-门店没有");
+                    returnOrderBaseInfo.setCreatorId(storeEmployee.getEmpId());
+                    returnOrderBaseInfo.setCreatorName(storeEmployee.getName());
+                    returnOrderBaseInfo.setCreatorPhone(storeEmployee.getMobile());
+                    returnOrderBaseInfo.setCreatorIdentityType(AppIdentityType.SELLER);
+                }
             }
 
+            AppCustomer filterCustomerList = null;
             try {
-                AppCustomer appCustomer = customerService.findByMobile(tdReturnSmall.getUsername());
+                filterCustomerList = customerService.findByMobile(tdReturnSmall.getUsername());
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            if (null != filterCustomerList) {
+                AppCustomer appCustomer = filterCustomerList;
                 if (null != appCustomer) {
                     returnOrderBaseInfo.setCustomerId(appCustomer.getCusId());
                     returnOrderBaseInfo.setCustomerPhone(appCustomer.getMobile());
                     returnOrderBaseInfo.setCustomerName(appCustomer.getName());
                     returnOrderBaseInfo.setCustomerType(appCustomer.getCustomerType());
+                    if (null == tdReturnSmall.getSellerUsername()) {
+                        List<AppEmployee> filterEmployeeList1 = employeeList.stream().filter(p -> p.getMobile().equals(appCustomer.getSalesPhone())).
+                                collect(Collectors.toList());
+                        if (null != filterEmployeeList1 && !filterEmployeeList1.isEmpty()) {
+                            AppEmployee storeEmployee = filterEmployeeList1.get(0);
+                            if (storeEmployee != null) {
+                                returnOrderBaseInfo.setCreatorId(storeEmployee.getEmpId());
+                                returnOrderBaseInfo.setCreatorName(storeEmployee.getName());
+                                returnOrderBaseInfo.setCreatorPhone(storeEmployee.getMobile());
+                                returnOrderBaseInfo.setCreatorIdentityType(AppIdentityType.SELLER);
+                            }
+                        }
+                    }
+                } else {
+                    throw new DataTransferException("退单没有顾客信息", DataTransferExceptionType.CNF);
                 }
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-                return true;
             }
-            returnOrderBaseInfo.setReturnStatus(AppReturnOrderStatus.RETURNING);
-            returnOrderBaseInfo.setIsRecordSales(false);
-
-            returnOrderService.saveReturnOrderBaseInfo(returnOrderBaseInfo);
         }
-        return false;
+
+        returnOrderBaseInfo.setReturnStatus(AppReturnOrderStatus.PENDING_REFUND);
+        returnOrderBaseInfo.setIsRecordSales(false);
+        returnOrderBaseInfo.setOrderType(AppOrderType.SHIPMENT);
+
+        return returnOrderBaseInfo;
+
     }
+
+    private Map<String, Object> transformReturnOrderGoods(ReturnOrderBaseInfo returnOrderBaseInfo, TdReturnSmall returnSmall) {
+
+        if (returnSmall == null) {
+            throw new DataTransferException("退单商品转行异常!找不到旧退单", DataTransferExceptionType.NDT);
+        } else {
+            Map<String, Object> map = new HashMap<>();
+            List<ReturnOrderGoodsInfo> allList = new ArrayList<>();
+            List<ReturnOrderJxPriceDifferenceRefundDetails> jxPriceDifferenceRefundDetails = new ArrayList<>();
+
+            // 新订单商品记录
+            List<ReturnOrderGoodsInfo> reOrderGoodsInfoList = new ArrayList<>();
+            List<ReturnOrderGoodsInfo> reProductGoodsinfo = new ArrayList<>();
+
+            // 不处理运费单
+            if (returnSmall.getOrderNumber().contains("YF")) {
+                return null;
+            }
+
+            //先根据退单去找退的所有商品
+            List<TdOrderGoods> unTypetdReturnOrderGoodsList = transferDAO.findTdorderGoodsByReturnId(returnSmall.getId());
+
+            //查一个ID
+            List<TdOrder> tdOrderList = transferDAO.findOrderAllFieldBySubOrderNumber(returnSmall.getOrderNumber());
+
+            if (null == tdOrderList || tdOrderList.isEmpty()) {
+                throw new DataTransferException("没有查到ZS/JM的支付信息", DataTransferExceptionType.NDT);
+            }
+            TdOrder tdOrder = tdOrderList.get(0);
+
+            // 转换每一个商品
+            for (TdOrderGoods tdReturnOrderGoods : unTypetdReturnOrderGoodsList) {
+                // 找到新商品
+                GoodsDO goodsDO = goodsService.queryBySku(tdReturnOrderGoods.getSku());
+
+                // 找到原来下单的订单商品行
+                TdOrderGoods tdOrderGoods = transferDAO.getTdOrderGoodsByOrderNumberAndSku(tdOrder.getId(), tdReturnOrderGoods.getSku());
+
+                List<ReturnOrderGoodsInfo> orderGoodsInfoList1 = this.transform(tdReturnOrderGoods, returnSmall, returnOrderBaseInfo, goodsDO, tdOrderGoods);
+
+                if (orderGoodsInfoList1 == null || orderGoodsInfoList1.size() == 0) {
+                    //throw  new Exception("订单商品转行异常,商品转换异常 商品id: "+ goodsDO.getGid());
+                    throw new DataTransferException("订单商品转行异常!找不到旧订单", DataTransferExceptionType.NDT);
+                }
+                allList.addAll(orderGoodsInfoList1);
+
+                //转化经销差价
+                if (null != tdReturnOrderGoods.getJxDif() && tdReturnOrderGoods.getJxDif() > 0) {
+                    ReturnOrderJxPriceDifferenceRefundDetails differenceRefundDetails = new ReturnOrderJxPriceDifferenceRefundDetails();
+                    differenceRefundDetails.setOrderNumber(returnSmall.getOrderNumber());
+                    differenceRefundDetails.setReturnNumber(returnSmall.getReturnNumber());
+                    differenceRefundDetails.setCreateTime(tdOrder.getOrderTime());
+                    differenceRefundDetails.setStoreId(returnOrderBaseInfo.getStoreId());
+                    differenceRefundDetails.setStoreCode(returnOrderBaseInfo.getStoreCode());
+                    differenceRefundDetails.setSku(tdReturnOrderGoods.getSku());
+                    differenceRefundDetails.setUnitPrice(tdReturnOrderGoods.getJxDif());
+                    differenceRefundDetails.setReturnQty(tdReturnOrderGoods.getQuantity().intValue());
+                    differenceRefundDetails.setAmount(tdReturnOrderGoods.getJxDif() * tdReturnOrderGoods.getQuantity().intValue());
+                    differenceRefundDetails.setRefundNumber(OrderUtils.getRefundNumber());
+                    jxPriceDifferenceRefundDetails.add(differenceRefundDetails);
+                }
+            }
+            // 分摊
+//                reOrderGoodsInfoList = dutchReturn(reOrderGoodsInfoList, returnSmall);
+//            reOrderGoodsInfoList.addAll(reProductGoodsinfo);
+            map.put("returnOrderGoodsList", allList);
+            map.put("jxPriceDifferenceRefundDetails", jxPriceDifferenceRefundDetails);
+            return map;
+        }
+    }
+
+    private List<ReturnOrderGoodsInfo> transform(TdOrderGoods tdReturnOrderGoods, TdReturnSmall
+            returnSmall, ReturnOrderBaseInfo returnOrderBaseInfo, GoodsDO goodsDO, TdOrderGoods tdOrderGoods) {
+
+
+        List<ReturnOrderGoodsInfo> goodsInfoList = new ArrayList<>();
+
+        if (tdOrderGoods == null) {
+            ReturnOrderGoodsInfo returnOrderGoodsInfo = new ReturnOrderGoodsInfo();
+            returnOrderGoodsInfo.setReturnNo(returnOrderBaseInfo.getReturnNo());
+            returnOrderGoodsInfo.setGid(goodsDO.getGid());
+            returnOrderGoodsInfo.setSku(goodsDO.getSku());
+            returnOrderGoodsInfo.setSkuName(goodsDO.getSkuName());
+            returnOrderGoodsInfo.setGoodsLineType(AppGoodsLineType.GOODS);
+            returnOrderGoodsInfo.setRetailPrice(tdReturnOrderGoods.getPrice());
+            returnOrderGoodsInfo.setVipPrice(tdReturnOrderGoods.getRealPrice());
+            returnOrderGoodsInfo.setSettlementPrice(tdReturnOrderGoods.getRealPrice());
+            returnOrderGoodsInfo.setWholesalePrice(tdReturnOrderGoods.getJxPrice());
+            returnOrderGoodsInfo.setReturnPrice(tdReturnOrderGoods.getReturnUnitPrice());
+            returnOrderGoodsInfo.setReturnQty(tdReturnOrderGoods.getQuantity().intValue());
+
+            if (tdReturnOrderGoods.getBrandTitle().contains("华润")) {
+                returnOrderGoodsInfo.setCompanyFlag("HR");
+            } else if (tdReturnOrderGoods.getBrandTitle().contains("乐易装")) {
+                returnOrderGoodsInfo.setCompanyFlag("LYZ");
+            } else if (tdReturnOrderGoods.getBrandTitle().contains("莹润")) {
+                returnOrderGoodsInfo.setCompanyFlag("YR");
+            }
+            goodsInfoList.add(returnOrderGoodsInfo);
+
+        } else {
+            Long couponNumber = tdOrderGoods.getCouponNumber() == null ? 0L : tdOrderGoods.getCouponNumber();
+            Long oderQty = tdOrderGoods.getQuantity() == null ? 0L : tdOrderGoods.getQuantity();
+            Long status = returnSmall.getStatusId() == null ? 0L : returnSmall.getStatusId();
+            String companyFlag = tdReturnOrderGoods.getBrandTitle();
+
+            if (oderQty > couponNumber) {
+                ReturnOrderGoodsInfo returnOrderGoodsInfo = new ReturnOrderGoodsInfo();
+
+//            returnOrderGoodsInfo.setRoid(returnOrderBaseInfo.getRoid());
+                returnOrderGoodsInfo.setReturnNo(returnOrderBaseInfo.getReturnNo());
+                returnOrderGoodsInfo.setGid(goodsDO.getGid());
+                returnOrderGoodsInfo.setSku(goodsDO.getSku());
+                returnOrderGoodsInfo.setSkuName(goodsDO.getSkuName());
+                //TODO 补充经销差价和退的产品券
+                if (tdOrderGoods.getTdOrderId() != null) {
+                    returnOrderGoodsInfo.setGoodsLineType(AppGoodsLineType.GOODS);
+                    returnOrderGoodsInfo.setRetailPrice(tdReturnOrderGoods.getPrice());
+                    returnOrderGoodsInfo.setVipPrice(tdReturnOrderGoods.getRealPrice());
+                    returnOrderGoodsInfo.setSettlementPrice(tdReturnOrderGoods.getRealPrice());
+                    returnOrderGoodsInfo.setWholesalePrice(tdReturnOrderGoods.getJxPrice());
+                    returnOrderGoodsInfo.setReturnPrice(tdReturnOrderGoods.getReturnUnitPrice());
+                } else {
+                    if (tdOrderGoods.getPresentedListId() != null) {
+                        returnOrderGoodsInfo.setGoodsLineType(AppGoodsLineType.PRESENT);
+                        returnOrderGoodsInfo.setRetailPrice(tdReturnOrderGoods.getPrice());
+                        returnOrderGoodsInfo.setVipPrice(tdReturnOrderGoods.getRealPrice());
+                        returnOrderGoodsInfo.setSettlementPrice(tdReturnOrderGoods.getRealPrice());
+                        returnOrderGoodsInfo.setWholesalePrice(tdReturnOrderGoods.getJxPrice());
+                        returnOrderGoodsInfo.setReturnPrice(tdReturnOrderGoods.getReturnUnitPrice());
+                    } else {
+                        throw new DataTransferException("无法判读商品类型", DataTransferExceptionType.OGNF);
+                    }
+                }
+                //除去产品券的数量
+                returnOrderGoodsInfo.setReturnQty(oderQty.intValue() - couponNumber.intValue());
+
+                if (companyFlag.contains("华润")) {
+                    returnOrderGoodsInfo.setCompanyFlag("HR");
+                } else if (companyFlag.contains("乐易装")) {
+                    returnOrderGoodsInfo.setCompanyFlag("LYZ");
+                } else if (companyFlag.contains("莹润")) {
+                    returnOrderGoodsInfo.setCompanyFlag("YR");
+                }
+
+                goodsInfoList.add(returnOrderGoodsInfo);
+
+            }
+
+            if (couponNumber > 0) {
+                // 产品券
+
+                ReturnOrderGoodsInfo goodsInfo2 = new ReturnOrderGoodsInfo();
+
+//                goodsInfo2.setRoid(returnOrderBaseInfo.getRoid());
+                goodsInfo2.setReturnNo(returnOrderBaseInfo.getReturnNo());
+                goodsInfo2.setGid(goodsDO.getGid());
+                goodsInfo2.setSku(goodsDO.getSku());
+                goodsInfo2.setSkuName(goodsDO.getSkuName());
+
+                goodsInfo2.setGoodsLineType(AppGoodsLineType.PRODUCT_COUPON);
+                goodsInfo2.setRetailPrice(tdReturnOrderGoods.getPrice());
+                goodsInfo2.setVipPrice(tdReturnOrderGoods.getRealPrice());
+                goodsInfo2.setSettlementPrice(tdReturnOrderGoods.getRealPrice());
+                goodsInfo2.setWholesalePrice(tdReturnOrderGoods.getJxPrice());
+                goodsInfo2.setReturnPrice(0D);
+
+                goodsInfo2.setReturnQty(couponNumber.intValue());
+
+                if (companyFlag.contains("华润")) {
+                    goodsInfo2.setCompanyFlag("HR");
+                } else if (companyFlag.contains("乐易装")) {
+                    goodsInfo2.setCompanyFlag("LYZ");
+                } else if (companyFlag.contains("莹润")) {
+                    goodsInfo2.setCompanyFlag("YR");
+                }
+
+                goodsInfoList.add(goodsInfo2);
+            }
+        }
+        return goodsInfoList;
+    }
+
+    public List<Map<String, Object>> transformReturnOrderProductCoupons
+            (List<ReturnOrderGoodsInfo> returnOrderGoodsInfoList, ReturnOrderBaseInfo returnOrderBaseInfo) {
+        Map<String, Object> map = new HashMap<>();
+//        List<ReturnOrderProductCoupon> returnOrderProductCouponList = new ArrayList<>();
+//        List<CustomerProductCoupon> couponList = new ArrayList<>();
+        List<Map<String, Object>> listCoupon = new ArrayList<>();
+        for (ReturnOrderGoodsInfo returnOrderGoodsInfo : returnOrderGoodsInfoList) {
+            if (returnOrderGoodsInfo.getGoodsLineType().equals(AppGoodsLineType.PRODUCT_COUPON)) {
+                int size = returnOrderGoodsInfo.getReturnQty();
+                for (int i = 0; i < size; i++) {
+                    ReturnOrderProductCoupon productCoupon = new ReturnOrderProductCoupon();
+                    productCoupon.setReturnNo(returnOrderGoodsInfo.getReturnNo());
+                    productCoupon.setGid(returnOrderGoodsInfo.getGid());
+                    productCoupon.setPcid(null);
+                    productCoupon.setQty(1);
+                    productCoupon.setReturnQty(1);
+                    productCoupon.setSku(returnOrderGoodsInfo.getSku());
+                    productCoupon.setPurchasePrice(0D);
+                    productCoupon.setIsReturn(false);
+
+//                    returnOrderProductCouponList.add(productCoupon);
+                    map.put("returnOrderProductCoupon", productCoupon);
+
+
+                    CustomerProductCoupon customerProductCoupon = new CustomerProductCoupon();
+                    customerProductCoupon.setCustomerId(returnOrderBaseInfo.getCustomerId());
+
+                    customerProductCoupon.setGoodsId(returnOrderGoodsInfo.getGid());
+                    customerProductCoupon.setQuantity(1);
+                    customerProductCoupon.setGetType(CouponGetType.HISTORY_IMPORT);
+                    customerProductCoupon.setGetTime(Calendar.getInstance().getTime());
+                    customerProductCoupon.setEffectiveStartTime(DateUtil.parseDateTime("2018-04-01 00:00:00"));
+                    customerProductCoupon.setEffectiveEndTime(DateUtil.parseDateTime("2018-06-30 00:00:00"));
+                    customerProductCoupon.setIsUsed(false);
+                    customerProductCoupon.setBuyPrice(0D);
+                    customerProductCoupon.setStoreId(returnOrderBaseInfo.getStoreId());
+                    customerProductCoupon.setSellerId(returnOrderBaseInfo.getCreatorId());
+                    customerProductCoupon.setStatus(true);
+//                    couponList.add(customerProductCoupon);
+                    map.put("customerProductCoupon", customerProductCoupon);
+                }
+            }
+        }
+        listCoupon.add(map);
+        return listCoupon;
+    }
+
+
+    private ReturnOrderBilling transformReturnOrderBilling(TdReturnSmall tdReturnSmall) {
+        ReturnOrderBilling returnOrderBilling = new ReturnOrderBilling(tdReturnSmall.getReturnNumber(),
+                0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D);
+        returnOrderBilling.setOnlinePayType(OnlinePayType.NO);
+        if (null == tdReturnSmall.getReturnDetail()) {
+            List<TdOrder> tdOrderList = transferDAO.findOrderAllFieldBySubOrderNumber(tdReturnSmall.getOrderNumber());
+
+            if (null == tdOrderList || tdOrderList.isEmpty()) {
+                throw new DataTransferException("没有查到ZS/JM的支付信息", DataTransferExceptionType.NDT);
+            }
+            TdOrder tdOrder = tdOrderList.get(0);
+            if (null != tdOrder.getCredit()) {
+                returnOrderBilling.setStCreditMoney(tdOrder.getCredit());
+            }
+            if (null != tdOrder.getAlipayMoney() && tdOrder.getAlipayMoney() > 0) {
+                returnOrderBilling.setOnlinePayType(OnlinePayType.ALIPAY);
+                returnOrderBilling.setOnlinePay(tdOrder.getAlipayMoney());
+            }
+
+        } else {
+            if (tdReturnSmall.getReturnDetail().contains("现金")) {
+                returnOrderBilling.setCash(tdReturnSmall.getTurnPrice());
+            } else if (tdReturnSmall.getReturnDetail().contains("预存款")) {
+                returnOrderBilling.setStPreDeposit(tdReturnSmall.getTurnPrice());
+            }
+        }
+        return returnOrderBilling;
+    }
+
+    private ReturnOrderDeliveryDetail transformReturnOrderDeliveryDetail(ReturnOrderBaseInfo returnOrderBaseInfo) {
+        ReturnOrderDeliveryDetail returnOrderDeliveryDetail = new ReturnOrderDeliveryDetail();
+        returnOrderDeliveryDetail.setCreateTime(returnOrderBaseInfo.getReturnTime());
+        returnOrderDeliveryDetail.setReturnNo(returnOrderBaseInfo.getReturnNo());
+        returnOrderDeliveryDetail.setReturnLogisticStatus(ReturnLogisticStatus.RECEIVED);
+        returnOrderDeliveryDetail.setDescription("该退货单已受理");
+        return returnOrderDeliveryDetail;
+    }
+
 }

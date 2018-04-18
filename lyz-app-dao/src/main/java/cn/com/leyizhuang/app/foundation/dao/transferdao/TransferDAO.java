@@ -147,5 +147,11 @@ public interface TransferDAO {
 
     List<TdOrder> findOrderAllFieldBySubOrderNumber(String orderNo);
 
-    List<TdReturnSmall> getTdReturnSmallBySize(int size);
+    List<TdOrderGoods> findTdorderGoodsByReturnId(Long tdReturnId);
+
+    TdOrderGoods getTdOrderGoodsByOrderNumberAndSku(@Param("tdOrderId") Long tdOrderId, @Param("sku") String sku);
+
+    Boolean isExitTdReturnOrderGoodsLine(@Param("returnNo") String returnNo, @Param("gid") Long gid, @Param("goodsLineType") String value);
+
+    void updateReturnTransferDate(@Param("date") Date date, @Param("returnNo") String returnNo);
 }

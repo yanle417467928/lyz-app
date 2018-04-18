@@ -86,10 +86,12 @@ public class ResendWmsOrEbsController {
                 return resultDTO;
             } else if (WmsInterfaceMethodType.C_ORDER.getValue().equals(method)) {
                 AtwCancelOrderRequest atwCancelOrderRequest = appToWmsOrderService.findAtwCancelOrderByOrderNo(orderNumber);
-                if (atwCancelOrderRequest.getSendFlag()) {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "已发送取消订单到wms,请勿重复发送!", null);
-                    logger.info("retransmissionToWms OUT,重传订单到wms，出参 resultDTO:{}", resultDTO);
-                    return resultDTO;
+                if (null != atwCancelOrderRequest.getSendFlag()) {
+                    if (atwCancelOrderRequest.getSendFlag()) {
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "已发送取消订单到wms,请勿重复发送!", null);
+                        logger.info("retransmissionToWms OUT,重传订单到wms，出参 resultDTO:{}", resultDTO);
+                        return resultDTO;
+                    }
                 }
                 iCallWms.sendToWmsCancelOrder(orderNumber);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "重传成功!", null);
@@ -97,10 +99,12 @@ public class ResendWmsOrEbsController {
                 return resultDTO;
             } else if (WmsInterfaceMethodType.C_RE_ORDER.getValue().equals(method)) {
                 AtwCancelReturnOrderRequest cancelReturnOrderRequest = appToWmsOrderService.findAtwCancelReturnOrderByReturnNo(orderNumber);
-                if (cancelReturnOrderRequest.getSendFlag()) {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "已发送取消退货单到wms,请勿重复发送!", null);
-                    logger.info("retransmissionToWms OUT,重传订单到wms，出参 resultDTO:{}", resultDTO);
-                    return resultDTO;
+                if (null != cancelReturnOrderRequest.getSendFlag()) {
+                    if (cancelReturnOrderRequest.getSendFlag()) {
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "已发送取消退货单到wms,请勿重复发送!", null);
+                        logger.info("retransmissionToWms OUT,重传订单到wms，出参 resultDTO:{}", resultDTO);
+                        return resultDTO;
+                    }
                 }
                 iCallWms.sendToWmsCancelReturnOrder(orderNumber);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "重传成功!", null);
@@ -108,10 +112,12 @@ public class ResendWmsOrEbsController {
                 return resultDTO;
             } else if (WmsInterfaceMethodType.RE_ORDER_ENTER.getValue().equals(method)) {
                 AtwReturnOrderCheckEnter atwReturnOrderCheckEnter = appToWmsOrderService.findAtwReturnOrderCheckEnterByReturnNo(orderNumber);
-                if (atwReturnOrderCheckEnter.getSendFlag()) {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "已发送退货单确认到wms,请勿重复发送!", null);
-                    logger.info("retransmissionToWms OUT,重传订单到wms，出参 resultDTO:{}", resultDTO);
-                    return resultDTO;
+                if (null != atwReturnOrderCheckEnter.getSendFlag()) {
+                    if (atwReturnOrderCheckEnter.getSendFlag()) {
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "已发送退货单确认到wms,请勿重复发送!", null);
+                        logger.info("retransmissionToWms OUT,重传订单到wms，出参 resultDTO:{}", resultDTO);
+                        return resultDTO;
+                    }
                 }
                 iCallWms.sendToWmsReturnOrderCheck(orderNumber);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "重传成功!", null);

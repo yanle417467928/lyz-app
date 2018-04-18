@@ -105,6 +105,7 @@ public class TdReturnSmall {
 
     private String sellerUsername;
 
+    private Date returnTime;
     /**
      * 退货金额
      */
