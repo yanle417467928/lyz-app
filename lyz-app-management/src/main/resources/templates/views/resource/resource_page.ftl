@@ -148,7 +148,7 @@
             field: 'resourceType',
             title: '资源类型',
             formatter: function (value) {
-                if (0 === value) {
+                if ('MENU'=== value) {
                     return '<i class="fa fa-list text-primary">&nbsp &nbsp<span class="label label-primary">菜单</span>'
                 } else {
                     return '<i class="fa fa-hand-pointer-o text-primary">&nbsp &nbsp<span class="label label-success">按钮</span>'

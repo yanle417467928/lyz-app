@@ -6,8 +6,8 @@
         INSERT INTO gds_goods_price
         (gid, store_id, sku, price_line_id, vip_price, retail_price, wholesale_price, start_time, end_time)
         VALUES
-        (#{gid}, #{storeId}, #{sku}, #{priceLineId}, #{VIPPrice}, #{retailPrice}, #{wholesalePrice}, #{startTime},
-        #{endTime})
+            (#{gid}, #{storeId}, #{sku}, #{priceLineId}, #{VIPPrice}, #{retailPrice}, #{wholesalePrice}, #{startTime},
+             #{endTime})
     </insert>
 
 
@@ -44,9 +44,9 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
         SELECT *
         FROM
-        gds_goods_price
+            gds_goods_price
         WHERE
-        price_line_id = #{priceLineId}
+            price_line_id = #{priceLineId}
     </select>
 
     <select id="findByStoreId" parameterType="java.lang.Long"
@@ -74,12 +74,12 @@
     <select id="findGoodsRetailPriceByGoodsIDAndStoreID" resultType="java.lang.Double">
         SELECT retail_price
         FROM
-        gds_goods_price
+            gds_goods_price
         WHERE
-        gid = #{goodsID}
-        AND store_id = #{storeID}
-        AND start_time &lt; NOW()
-        AND (end_time IS NULL OR end_time &gt; NOW())
+            gid = #{goodsID}
+            AND store_id = #{storeID}
+            AND start_time &lt; NOW()
+            AND (end_time IS NULL OR end_time &gt; NOW())
     </select>
 
     <select id="findCustomerGoodsPriceListByGoodsIdsAndUserIdAndIdentityType" resultType=
@@ -134,15 +134,14 @@
     </select>
 
     <select id="findGoodsPriceByGoodsIDAndStoreID" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
-        SELECT
-        *
+        SELECT *
         FROM
-        gds_goods_price
+            gds_goods_price
         WHERE
-        gid = #{goodsID}
-        AND store_id = #{storeID}
-        AND start_time &lt; NOW()
-        AND (end_time IS NULL OR end_time &gt; NOW())
+            gid = #{goodsID}
+            AND store_id = #{storeID}
+            AND start_time &lt; NOW()
+            AND (end_time IS NULL OR end_time &gt; NOW())
     </select>
     <select id="findCustomerGoodsPriceListByGoodsIdsAndUserId" resultType=
             "cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods">
@@ -170,5 +169,21 @@
             #{goodsId}
         </foreach>
         AND c.cus_id = #{userId}
+    </select>
+
+    <select id="findGoodsPriceListByStoreIdAndSkuList" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
+        SELECT
+        gid,
+        sku,
+        retail_price
+        FROM gds_goods_price
+        WHERE store_id = #{storeId}
+        AND sku in
+        <foreach collection="internalCodeList" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        AND start_time &lt; NOW()
+        AND (end_time IS NULL OR end_time &gt; NOW())
+        AND price_type = 'COMMON'
     </select>
 </mapper>

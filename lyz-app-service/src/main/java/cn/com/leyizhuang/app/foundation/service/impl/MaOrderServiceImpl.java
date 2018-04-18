@@ -787,8 +787,9 @@ public class MaOrderServiceImpl implements MaOrderService {
             orderBillingDetails.setStPreDeposit(0D);
         }
         orderBillingDetails.setStPreDeposit(stPreDeposit);
+        orderBillingDetails.setPayUpTime(new Date());
         if (StringUtils.isNotBlank(payTime)) {
-            orderBillingDetails.setPayUpTime(DateUtil.parseDateTime(payTime));
+            orderBillingDetails.setManageReceiptTime(DateUtil.parseDateTime(payTime));
         }
         return orderBillingDetails;
     }

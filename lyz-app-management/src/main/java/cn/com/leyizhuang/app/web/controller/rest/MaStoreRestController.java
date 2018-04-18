@@ -2,9 +2,11 @@ package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.core.constant.StoreType;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
 import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
+import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO;
@@ -17,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +37,9 @@ public class MaStoreRestController extends BaseRestController {
     @Autowired
     private AdminUserStoreService adminUserStoreService;
 
+    @Resource
+    private AppStoreService storeService;
+
     /**
      * 初始门店页面
      *
@@ -49,7 +55,7 @@ public class MaStoreRestController extends BaseRestController {
             size = getSize(size);
             Integer page = getPage(offset, size);
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
-            PageInfo<StoreVO> storePage = this.maStoreService.queryPageVO(page, size,storeIds);
+            PageInfo<StoreVO> storePage = this.maStoreService.queryPageVO(page, size, storeIds);
             List<StoreVO> pageAllStoresList = storePage.getList();
             logger.info("restStoresPageGird ,后台初始门店页面列表成功", pageAllStoresList.size());
             return new GridDataVO<StoreVO>().transform(pageAllStoresList, storePage.getTotal());
@@ -63,11 +69,11 @@ public class MaStoreRestController extends BaseRestController {
 
 
     /**
-     * @title   获取生效门店列表
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 获取生效门店列表
+     * @descripe
      * @author GenerationRoad
      * @date 2018/2/26
      */
@@ -166,7 +172,7 @@ public class MaStoreRestController extends BaseRestController {
         try {
             //查询登录用户门店权限的门店ID
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
-            List<SimpleStoreParam> storesList = this.maStoreService.findStoresListByCityId(cityId,storeIds);
+            List<SimpleStoreParam> storesList = this.maStoreService.findStoresListByCityId(cityId, storeIds);
             logger.info("findStoresListByCityId ,后台查询该城市ID的门店列表(下拉框)成功", storesList.size());
             return storesList;
         } catch (Exception e) {
@@ -252,7 +258,7 @@ public class MaStoreRestController extends BaseRestController {
         try {
             //查询登录用户门店权限的门店ID
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
-            List<StoreVO> storesList = this.maStoreService.findCompanyStoresListByCityId(cityId,storeIds);
+            List<StoreVO> storesList = this.maStoreService.findCompanyStoresListByCityId(cityId, storeIds);
             logger.info("findCompanyStoresListByCityId , 查询该城市ID的装饰公司门店列表(下拉框)成功", storesList.size());
             return storesList;
         } catch (Exception e) {
@@ -307,7 +313,7 @@ public class MaStoreRestController extends BaseRestController {
             size = getSize(size);
             Integer page = getPage(offset, size);
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
-            PageInfo<StoreVO> storePage = this.maStoreService.queryStoreListByCityId(page, size, cityId,storeIds);
+            PageInfo<StoreVO> storePage = this.maStoreService.queryStoreListByCityId(page, size, cityId, storeIds);
             List<StoreVO> pageAllStoresList = storePage.getList();
             logger.info("findStoresListByCity , 后台查询该城市下的门店成功", pageAllStoresList.size());
             return new GridDataVO<StoreVO>().transform(pageAllStoresList, storePage.getTotal());
@@ -336,7 +342,7 @@ public class MaStoreRestController extends BaseRestController {
             size = getSize(size);
             Integer page = getPage(offset, size);
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
-            PageInfo<StoreVO> storePage = this.maStoreService.findStoresListByCondition(page, size, enabled, cityId,storeIds);
+            PageInfo<StoreVO> storePage = this.maStoreService.findStoresListByCondition(page, size, enabled, cityId, storeIds);
             List<StoreVO> pageAllStoresList = storePage.getList();
             logger.info("findStoresListByCondition , 后台查询可用或不可用的门店成功", pageAllStoresList.size());
             return new GridDataVO<StoreVO>().transform(pageAllStoresList, storePage.getTotal());
@@ -365,7 +371,7 @@ public class MaStoreRestController extends BaseRestController {
             size = getSize(size);
             Integer page = getPage(offset, size);
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
-            PageInfo<StoreVO> storePage = this.maStoreService.findStoresListByStoreInfo(page, size, queryStoreInfo,storeIds);
+            PageInfo<StoreVO> storePage = this.maStoreService.findStoresListByStoreInfo(page, size, queryStoreInfo, storeIds);
             List<StoreVO> pageAllStoresList = storePage.getList();
             logger.info("findStoresListByStoreInfo , 后台通过门店名称或者门店编码查询门店成功", pageAllStoresList.size());
             return new GridDataVO<StoreVO>().transform(pageAllStoresList, storePage.getTotal());
@@ -407,11 +413,11 @@ public class MaStoreRestController extends BaseRestController {
     }
 
     /**
-     * @title   根据城市和门店权限查询门店列表
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 根据城市和门店权限查询门店列表
+     * @descripe
      * @author GenerationRoad
      * @date 2018/2/28
      */
@@ -433,11 +439,11 @@ public class MaStoreRestController extends BaseRestController {
     }
 
     /**
-     * @title   根据门店权限查询门店列表
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 根据门店权限查询门店列表
+     * @descripe
      * @author GenerationRoad
      * @date 2018/2/28
      */
@@ -459,11 +465,11 @@ public class MaStoreRestController extends BaseRestController {
     }
 
     /**
-     * @title   后台查询装饰公司列表(下拉框)
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 后台查询装饰公司列表(下拉框)
+     * @descripe
      * @author GenerationRoad
      * @date 2018/3/16
      */
@@ -487,11 +493,11 @@ public class MaStoreRestController extends BaseRestController {
     }
 
     /**
-     * @title   后台查询非装饰公司列表(下拉框)
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 后台查询非装饰公司列表(下拉框)
+     * @descripe
      * @author GenerationRoad
      * @date 2018/3/16
      */
@@ -514,17 +520,17 @@ public class MaStoreRestController extends BaseRestController {
     }
 
     /**
-     * @title   后台查询该城市ID和门店类型的门店列表
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 后台查询该城市ID和门店类型的门店列表
+     * @descripe
      * @author GenerationRoad
      * @date 2018/3/23
      */
     @GetMapping(value = "/findStoresListByCityIdAndStoreType")
     public List<SimpleStoreParam> findStoresListByCityIdAndStoreType(Long cityId, String storeType) {
-        logger.info("findStoresListByCityIdAndStoreType 后台查询该城市ID和门店类型的门店列表(下拉框) 入参 cityId:{},storeType{}", cityId,storeType);
+        logger.info("findStoresListByCityIdAndStoreType 后台查询该城市ID和门店类型的门店列表(下拉框) 入参 cityId:{},storeType{}", cityId, storeType);
         try {
             //查询登录用户门店权限的门店ID
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
@@ -535,6 +541,20 @@ public class MaStoreRestController extends BaseRestController {
             e.printStackTrace();
             logger.warn("findStoresListByCityIdAndStoreType EXCEPTION,发生未知错误，后台查询该城市ID和门店类型的门店列表(下拉框)失败");
             logger.warn("{}", e);
+            return null;
+        }
+    }
+
+    /**
+     * @return 管理员管辖门店列表
+     */
+    @GetMapping(value = "/findStoresListByLoginAdministrator")
+    public List<AppStore> findStoresListByLoginAdministrator() {
+        try {
+            //查询登录用户门店权限的门店ID
+            return storeService.findStoreListByLoginAdministrator();
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }

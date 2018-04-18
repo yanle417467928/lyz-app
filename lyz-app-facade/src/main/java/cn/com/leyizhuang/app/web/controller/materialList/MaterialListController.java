@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.web.controller.materialList;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.MaterialListType;
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.QuickOrderRelationDO;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
@@ -252,6 +253,14 @@ public class MaterialListController {
         }
         //所有用户返回自己的商品
         List<NormalMaterialListResponse> normalMaterialListRespons = this.materialListServiceImpl.findByUserIdAndIdentityType(userId, identityType);
+        //设置备注信息
+        String remark = "";
+        for (NormalMaterialListResponse response : normalMaterialListRespons) {
+            if (StringUtils.isNotBlank(response.getRemark())) {
+                remark = response.getRemark();
+                break;
+            }
+        }
         //创建工人料单返回对象
         MaterialWorkerAuditResponse materialWorkerAuditResponse = new MaterialWorkerAuditResponse();
         //创建顾客产品券返回对象
@@ -289,8 +298,8 @@ public class MaterialListController {
         }
         if (identityType == 6 || identityType == 0) {
             List<CouponMaterialListResponse> listResponses = null;
-            if (identityType == 0){
-                listResponses = materialListServiceImpl.findGuideMaterialListByUserIdAndCusIdAndIdentityType(userId,appIdentityType);
+            if (identityType == 0) {
+                listResponses = materialListServiceImpl.findGuideMaterialListByUserIdAndCusIdAndIdentityType(userId, appIdentityType);
             } else {
                 listResponses = materialListServiceImpl.findCustomerMaterialListByUserIdAndIdentityType(userId, appIdentityType);
             }
@@ -337,9 +346,10 @@ public class MaterialListController {
 //        }
 
 //        returnMap.put("photoListRes",materialPhotoOrderResponses);
-        returnMap.put("couponListRes",materialCustomerCouponResponse);
+        returnMap.put("couponListRes", materialCustomerCouponResponse);
         returnMap.put("auditListRes", materialWorkerAuditResponse);
         returnMap.put("materialListRes", normalMaterialListRespons);
+        returnMap.put("remark", remark);
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, returnMap);
         logger.info("getMaterialList OUT,获取下料清单列表成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
@@ -648,7 +658,7 @@ public class MaterialListController {
         }
     }
 
-    private MaterialListDO transformRepeat(GoodsDO goodsDO){
+    private MaterialListDO transformRepeat(GoodsDO goodsDO) {
         MaterialListDO materialListDOTemp = new MaterialListDO();
         materialListDOTemp.setGid(goodsDO.getGid());
         materialListDOTemp.setSku(goodsDO.getSku());

@@ -52,6 +52,7 @@ public class MaEmployeeRestController extends BaseRestController {
 
     @Autowired
     private AdminUserStoreService adminUserStoreService;
+
     /**
      * 显示所有员工信息
      *
@@ -126,6 +127,27 @@ public class MaEmployeeRestController extends BaseRestController {
             e.printStackTrace();
             logger.warn("findGuidesListById EXCEPTION,发生未知错误，后台查询该门店下的导购(下拉框)失败");
             logger.warn("{}", e);
+            return null;
+        }
+    }
+
+
+    @GetMapping(value = "/findEmployeeByStoreId/{storeId}")
+    public List<EmployeeVO> findEmployeeByStoreId(@PathVariable("storeId") Long storeId) {
+        try {
+            return maEmployeeService.findEmployeeListByStoreId(storeId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @GetMapping(value = "/findSellerByStoreId/{storeId}")
+    public List<EmployeeVO> findSellerByStoreId(@PathVariable("storeId") Long storeId) {
+        try {
+            return maEmployeeService.findSellerListByStoreId(storeId);
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -217,7 +239,7 @@ public class MaEmployeeRestController extends BaseRestController {
             Integer page = getPage(offset, size);
             //查询登录用户门店权限的门店ID
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
-            PageInfo<EmployeeDO> employeesPage = this.maEmployeeService.queryPageVOByCondition(page, size, identityType, storeId, cityId, enabled,storeIds);
+            PageInfo<EmployeeDO> employeesPage = this.maEmployeeService.queryPageVOByCondition(page, size, identityType, storeId, cityId, enabled, storeIds);
             List<EmployeeDO> employeesList = employeesPage.getList();
             List<EmployeeVO> employeesVOList = EmployeeVO.transform(employeesList);
             logger.info("restEmployeesPageGirdByCondition ,后台根据身份信息查询员工成功", employeesVOList.size());
@@ -247,7 +269,7 @@ public class MaEmployeeRestController extends BaseRestController {
             Integer page = getPage(offset, size);
             //查询登录用户门店权限的门店ID
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
-            PageInfo<EmployeeDO> employeesPage = this.maEmployeeService.queryPageVOByInfo(page, size, queryEmpInfo,storeIds);
+            PageInfo<EmployeeDO> employeesPage = this.maEmployeeService.queryPageVOByInfo(page, size, queryEmpInfo, storeIds);
             List<EmployeeDO> employeesList = employeesPage.getList();
             List<EmployeeVO> employeesVOList = EmployeeVO.transform(employeesList);
             logger.info("restEmployeesPageGirdByInfo ,后台根据搜索信息查询员工成功", employeesVOList.size());
@@ -276,7 +298,7 @@ public class MaEmployeeRestController extends BaseRestController {
             Integer page = getPage(offset, size);
             //查询登录用户门店权限的门店ID
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
-            PageInfo<GuideVO> guideVOPage = this.maEmployeeService.queryGuideVOPage(page, size,storeIds);
+            PageInfo<GuideVO> guideVOPage = this.maEmployeeService.queryGuideVOPage(page, size, storeIds);
             List<GuideVO> guideVOList = guideVOPage.getList();
             logger.info("restGuideVOPageGird ,后台显示导购列表成功", guideVOList.size());
             return new GridDataVO<GuideVO>().transform(guideVOList, guideVOPage.getTotal());
@@ -336,7 +358,7 @@ public class MaEmployeeRestController extends BaseRestController {
             Integer page = getPage(offset, size);
             //查询登录用户门店权限的门店ID
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
-            PageInfo<GuideVO> guideVOPage = this.maEmployeeService.queryGuideVOByCondition(page, size, cityId, storeId,storeIds);
+            PageInfo<GuideVO> guideVOPage = this.maEmployeeService.queryGuideVOByCondition(page, size, cityId, storeId, storeIds);
             List<GuideVO> guideVOList = guideVOPage.getList();
             logger.info("queryGuideVOByCondition ,后台根据身份信息查询员工额度成功");
             return new GridDataVO<GuideVO>().transform(guideVOList, guideVOPage.getTotal());
@@ -366,7 +388,7 @@ public class MaEmployeeRestController extends BaseRestController {
             Integer page = getPage(offset, size);
             //查询登录用户门店权限的门店ID
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
-            PageInfo<GuideVO> guideVOPage = this.maEmployeeService.queryGuideVOByInfo(page, size, queryGuideVOInfo,storeIds);
+            PageInfo<GuideVO> guideVOPage = this.maEmployeeService.queryGuideVOByInfo(page, size, queryGuideVOInfo, storeIds);
             List<GuideVO> guideVOList = guideVOPage.getList();
             logger.info("queryGuideVOByInfo ,后台根据搜索信息查询导购额度成功");
             return new GridDataVO<GuideVO>().transform(guideVOList, guideVOPage.getTotal());
@@ -531,7 +553,7 @@ public class MaEmployeeRestController extends BaseRestController {
         }
 
         try {
-            maEmployeeService.updatePhoto(url,empId);
+            maEmployeeService.updatePhoto(url, empId);
         } catch (Exception e) {
             logger.info("updatePhoto 更新导购头像失败");
             logger.info(e.getMessage());
@@ -556,20 +578,20 @@ public class MaEmployeeRestController extends BaseRestController {
 
         AppEmployee employeeDetailVO = appEmployeeService.findById(empId);
         String photo = employeeDetailVO.getPicUrl();
-        String registerUrl = qrcodeRegisterUrl+"/qrcode/register/" + empId;
+        String registerUrl = qrcodeRegisterUrl + "/qrcode/register/" + empId;
 
 
         try {
             File qrcodeFile = null;
             File photoFile = null;
-            if (photo == null || photo.equals("") || !photo.contains("http://")){
+            if (photo == null || photo.equals("") || !photo.contains("http://")) {
                 qrcodeFile = qrcodeProduceService.createQrcode(registerUrl);
-            }else{
+            } else {
                 URL url = new URL(photo);
                 photoFile = qrcodeProduceService.urlToFile(url);
-                qrcodeFile = qrcodeProduceService.createQrcode(registerUrl,photoFile);
+                qrcodeFile = qrcodeProduceService.createQrcode(registerUrl, photoFile);
 
-                if (photoFile.exists()){
+                if (photoFile.exists()) {
                     photoFile.delete();
                 }
             }
@@ -580,12 +602,12 @@ public class MaEmployeeRestController extends BaseRestController {
 
                 InputStream stream = new FileInputStream(qrcodeFile);
                 try {
-                    picUrl = ImageClientUtils.getInstance().uploadImage(stream,qrcodeFile.length(),qrcodeFile.getName(),"seller/qrcode/");
+                    picUrl = ImageClientUtils.getInstance().uploadImage(stream, qrcodeFile.length(), qrcodeFile.getName(), "seller/qrcode/");
                 } catch (ImageClientException e) {
                     e.printStackTrace();
                     return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,
                             "二维码上传失败", null);
-                }finally {
+                } finally {
                     stream.close();
                 }
 
@@ -595,12 +617,12 @@ public class MaEmployeeRestController extends BaseRestController {
                 appEmployeeService.update(employeeDetailVO);
 
                 //删除文件
-                if (qrcodeFile.exists()){
+                if (qrcodeFile.exists()) {
                     qrcodeFile.delete();
                 }
             } else {
                 //删除文件
-                if (qrcodeFile.exists()){
+                if (qrcodeFile.exists()) {
                     qrcodeFile.delete();
                 }
                 return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,
@@ -629,6 +651,7 @@ public class MaEmployeeRestController extends BaseRestController {
 
     /**
      * 为所有无二维码导购生成二维码
+     *
      * @return
      */
     @GetMapping("/create/qrcode/all")
@@ -641,17 +664,17 @@ public class MaEmployeeRestController extends BaseRestController {
             PrintWriter out = response.getWriter();
 
             out.println("开始生成所有无二维码导购二维码！》》》》》》》》》》》》");
-            for (AppEmployee appEmployee : appEmployeeList){
+            for (AppEmployee appEmployee : appEmployeeList) {
 
                 resultDTO = this.createQrcode(appEmployee.getEmpId());
-                if (resultDTO.getCode().equals(0)){
-                    out.println(appEmployee.getName()+"：二维码生成成功！");
-                }else{
-                    out.println(appEmployee.getName()+"：二维码生成 失败失败！！！");
+                if (resultDTO.getCode().equals(0)) {
+                    out.println(appEmployee.getName() + "：二维码生成成功！");
+                } else {
+                    out.println(appEmployee.getName() + "：二维码生成 失败失败！！！");
                 }
                 out.flush();
             }
-            out.println("生成完毕 共 ："+appEmployeeList.size()+"个");
+            out.println("生成完毕 共 ：" + appEmployeeList.size() + "个");
 
             out.flush();
             out.close();

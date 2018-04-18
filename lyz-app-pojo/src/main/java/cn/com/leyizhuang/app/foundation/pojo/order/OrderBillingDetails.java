@@ -164,4 +164,9 @@ public class OrderBillingDetails {
      * 配送pos
      */
     private Double deliveryPos;
+
+    /**
+     * 后台收款时间
+     */
+    private Date manageReceiptTime;
 }

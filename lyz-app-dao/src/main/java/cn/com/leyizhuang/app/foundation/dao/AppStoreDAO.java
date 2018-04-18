@@ -141,4 +141,6 @@ public interface AppStoreDAO {
 
     Integer updateStoreDepositByStoreIdAndStoreDeposit(@Param("storeId") Long storeId, @Param("deposit") Double storeDeposit,
                                                   @Param(value = "version") Timestamp version);
+
+    List<AppStore> findStoreListByLoginAdministrator(Long id);
 }

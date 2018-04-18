@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.StorePreDepositChangeType;
 import cn.com.leyizhuang.app.core.constant.StoreType;
@@ -13,6 +14,7 @@ import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.StorePreDepositLogService;
 import cn.com.leyizhuang.common.core.exception.AppConcurrentExcp;
 import cn.com.leyizhuang.common.util.CountUtil;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -386,6 +388,15 @@ public class AppStoreServiceImpl implements AppStoreService {
             return storeDAO.updateStoreDepositByStoreIdAndStoreDeposit(storeId, storeDeposit, version);
         }
         return 0;
+    }
+
+    @Override
+    public List<AppStore> findStoreListByLoginAdministrator() {
+        ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
+        if (null != shiroUser) {
+            return storeDAO.findStoreListByLoginAdministrator(shiroUser.getId());
+        }
+        return null;
     }
 
     @Override

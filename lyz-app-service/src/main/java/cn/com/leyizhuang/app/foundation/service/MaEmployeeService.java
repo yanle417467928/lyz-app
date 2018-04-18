@@ -67,4 +67,8 @@ public interface MaEmployeeService {
     void updateQrcode(String qrcodeUrl , Long empId);
 
     void updatePhoto(String url , Long empId);
+
+    List<EmployeeVO> findEmployeeListByStoreId(Long storeId);
+
+    List<EmployeeVO> findSellerListByStoreId(Long storeId);
 }

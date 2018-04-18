@@ -66,6 +66,12 @@ public class MaterialListDO {
      */
     private MaterialListType materialListType;
 
+    /**
+     * 备注信息
+     */
+    private String remark;
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -78,6 +84,9 @@ public class MaterialListDO {
         MaterialListDO that = (MaterialListDO) o;
 
         if (id != null ? !id.equals(that.id) : that.id != null) {
+            return false;
+        }
+        if (sku != null ? !sku.equals(that.sku) : that.sku != null) {
             return false;
         }
         return true;
