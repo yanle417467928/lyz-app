@@ -149,6 +149,7 @@
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
+        GROUP BY oi.ord_no
         UNION
         SELECT ord.create_time createTime, ori.return_no orderNumber, orb.st_credit_money creditMoney,
         ori.store_id storeId, ori.creator_name creatorName, ori.creator_id creatorId,
@@ -169,6 +170,7 @@
          <foreach collection="list" item="item" open="(" close=")" separator=",">
              #{item}
          </foreach>
+        GROUP BY orderNumber
         ) temp WHERE temp.orderNumber IS NOT null
         GROUP BY orderNumber
     </select>
