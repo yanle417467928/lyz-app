@@ -1190,11 +1190,6 @@ public class MaReportDownloadRestController extends BaseRestController{
         if (null != creditBillingVO) {
             creditBillingDetailsVOS = this.maDecorationCompanyCreditBillingService.getDecorationCompanyCreditBillingDetailsByCreditBillingNo(creditBillingVO.getCreditBillingNo());
         }
-        ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
-        String shiroName = "";
-        if (null != shiroUser) {
-            shiroName = shiroUser.getName();
-        }
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
@@ -1220,7 +1215,8 @@ public class MaReportDownloadRestController extends BaseRestController{
 
                 //工作表，参数0表示这是第一页
                 WritableSheet ws = wwb.createSheet("第" + (i + 1) + "页", i);
-                User user = userService.queryById(id);
+                User user = new User();
+                user = userService.queryById(creditBillingVO.getOperationId());
                 ws.mergeCells(0,0,6,0);
                 ws.addCell(new Label(0, 0, creditBillingVO.getBillName(), titleFormat));
                 ws.addCell(new Label(0, 1, "账单编号", textFormat));
