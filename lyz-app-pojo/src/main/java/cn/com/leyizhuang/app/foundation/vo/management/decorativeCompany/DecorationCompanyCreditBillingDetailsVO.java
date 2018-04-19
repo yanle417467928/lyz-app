@@ -28,4 +28,8 @@ public class DecorationCompanyCreditBillingDetailsVO {
     private String creatorName;
     //送货、收货地址
     private String deliveryAddress;
+    //收货人
+    private String receiver;
+    //商品数量
+    private Integer goodsQty;
 }

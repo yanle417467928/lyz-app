@@ -33,5 +33,7 @@ public class DecorationCompanyCreditBillingVO {
     private String createTime;
     //修改时间
     private String updateTime;
+    //操作人id
+    private Long operationId;
 
 }
