@@ -267,15 +267,16 @@ public class MaDecoratorPlaceOrderRestController {
     public void downloadSampleFile(HttpServletResponse res) {
         String fileName = "装饰公司下单模板";
         try {
-            fileName = new String(fileName.getBytes("GBK"), "ISO-8859-1");
+            fileName = new String(fileName.getBytes("GB2312"), "ISO-8859-1");
         } catch (UnsupportedEncodingException e1) {
             System.out.println("下载文件名格式转换错误！");
         }
         String fileNameInner = "fit_order_template.xlsx";
         //fileName = new String(".xlsx");
-        res.setContentType("application/octet-stream;charset=utf-8");
-        res.setHeader("Content-Disposition", "attachment;filename=" + fileName+".xlsx");
-        byte[] buff = new byte[1024];
+        //res.setContentType("application/octet-stream;charset=utf-8");
+        res.setContentType("application/x-download");
+        res.setHeader("Content-Disposition", "attachment;filename=" + fileName + ".xlsx");
+        byte[] buff = new byte[2048];
         BufferedInputStream bis = null;
         OutputStream os = null;
         try {
