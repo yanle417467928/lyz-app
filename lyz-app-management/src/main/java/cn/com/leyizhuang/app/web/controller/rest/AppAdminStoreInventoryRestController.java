@@ -11,10 +11,7 @@ import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -60,6 +57,22 @@ public class AppAdminStoreInventoryRestController extends BaseRestController {
     }
 
     /**
+     * 根据门店id和商品 查库存详情
+     *
+     * @param storeId
+     * @return
+     */
+    @GetMapping(value = "/infoGrid")
+    public  GridDataVO<AppAdminStoreInventoryVO> getStoreInventoryByInfo(Integer offset, Integer size, String keywords,@RequestParam(value = "storeId") Long storeId,@RequestParam(value = "info") String info) {
+        logger.info("dataMenuPageGridGetByStoreId CREATE,门店库存可用量分页查询, 入参 offset:{},size:{},keywords:{},storeId:{}", offset, size, keywords,storeId);
+        // 根据偏移量计算当前页数
+        size = getSize(size);
+        Integer page = getPage(offset, size);
+        PageInfo<AppAdminStoreInventoryVO> storeInventoryPage = storeInventoryService.queryStoreInventoryByInfo(page, size, keywords,storeId,info);
+        return new GridDataVO<AppAdminStoreInventoryVO>().transform(storeInventoryPage.getList(), storeInventoryPage.getTotal());
+    }
+
+    /**
      * 根据门店id 查库存详情
      *
      * @param storeId
@@ -77,6 +90,9 @@ public class AppAdminStoreInventoryRestController extends BaseRestController {
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, storeInventory);
         }
     }
+
+
+
    /* @PostMapping(value = "/validator/title")
     public ValidatorResultDTO restMenuValidatorTitlePost(@RequestParam Long id,@RequestParam String title){
         Boolean result = menuService.existsByTitleAndIdNot(title, id);

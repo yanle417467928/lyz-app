@@ -1,11 +1,8 @@
 package cn.com.leyizhuang.app.web.controller.rest.datatransfer;
 
-import cn.com.leyizhuang.app.core.constant.DataTransferExceptionType;
-import cn.com.leyizhuang.app.core.exception.DataTransferException;
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.DataTransferErrorLog;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
-import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
@@ -277,5 +274,30 @@ public class DataTransferController {
             log.warn("{}", e);
         }
 
+    }
+
+    /**
+     * 转换退单方法
+     *
+     * @return
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
+    @RequestMapping(value = "/data/transfer/returnOrderBaseInfo", method = RequestMethod.GET)
+    public String dataTransferReturnOrder() throws ExecutionException, InterruptedException {
+        Date startTime = new Date();
+        if (startTime.after(JOB_END_TIME)) {
+            return "当前时间不在该任务作业周期内!";
+        }
+        Date endTime;
+        log.info("开始处理退单导入job,当前时间:{}", startTime);
+        Queue<DataTransferErrorLog> queue = dataTransferService.transferReturnOrderRelevantInfo();
+        endTime = new Date();
+        log.info("退单导入job执行完成", endTime);
+        long from = startTime.getTime();
+        long to = endTime.getTime();
+        int seconds = (int) ((to - from) / (1000));
+        log.info("导入耗时: {} 秒", seconds);
+        return "退单导入完成,耗时: {} 秒" + seconds + "\n错误信息如下:\n" + queue.toString();
     }
 }

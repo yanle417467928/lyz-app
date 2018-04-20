@@ -235,9 +235,10 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         String orderNo = "";
                         City city = new City();
                         if (!orderNo.equals(goods.getOrderNo()) || StringUtils.isBlank(orderNo)) {
-                            WtaShippingOrderHeader shippingOrderHeader = wmsToAppOrderService.getWtaShippingOrderHeaderNotHandling(goods.getOrderNo(), goods.getTaskNo());
-                            WareHouseDO wareHouse = wareHouseService.findByWareHouseNo(shippingOrderHeader.getWhNo());
-                            city = cityService.findByCityNumber(wareHouse.getCityId().toString());
+//                            WtaShippingOrderHeader shippingOrderHeader = wmsToAppOrderService.getWtaShippingOrderHeaderNotHandling(goods.getOrderNo(), goods.getTaskNo());
+//                            WareHouseDO wareHouse = wareHouseService.findByWareHouseNo(shippingOrderHeader.getWhNo());
+                            OrderBaseInfo order = appOrderService.getOrderByOrderNumber(goods.getOrderNo());
+                            city = cityService.findById(order.getCityId());
                             orderNo = goods.getOrderNo();
                         }
                         //wms扣减城市库存
@@ -325,7 +326,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     if (OrderUtils.validationReturnOrderNumber(header.getPoNo())) {
                         this.handlingWtaReturningOrderHeaderAsync(header);
                     } else {
-                        List<WtaReturningOrderGoods> wtaReturningOrderGoods = wmsToAppOrderService.findWtaReturningOrderGoodsByReturnOrderNo(header.getRecNo());
+                        List<WtaReturningOrderGoods> wtaReturningOrderGoods = wmsToAppOrderService.findWtaReturningOrderGoodsByReturnOrderNo(header.getPoNo());
                         for (WtaReturningOrderGoods returningOrderGoods : wtaReturningOrderGoods) {
                             GoodsDO goodsDO = goodsService.queryBySku(returningOrderGoods.getGcode());
                             if (null == goodsDO) {

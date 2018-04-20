@@ -5,9 +5,8 @@ import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.DataTransferErrorLog;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
-import cn.com.leyizhuang.app.foundation.service.AppOrderService;
-import cn.com.leyizhuang.app.foundation.service.ArrearsAuditService;
-import cn.com.leyizhuang.app.foundation.service.OrderDeliveryInfoDetailsService;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferSupportService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -37,6 +36,13 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
 
     @Resource
     private ArrearsAuditService arrearsAuditService;
+    @Resource
+    private ReturnOrderService returnOrderService;
+
+    @Resource
+    private ReturnOrderDeliveryDetailsService returnOrderDeliveryDetailsService;
+    @Resource
+    private AppCustomerService appCustomerService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -59,8 +65,10 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
             });
         }
         //保存订单账单信息
-        orderBillingDetails.setOid(orderBaseInfo.getId());
-        orderService.saveOrderBillingDetails(orderBillingDetails);
+        if (orderBillingDetails != null) {
+            orderBillingDetails.setOid(orderBaseInfo.getId());
+            orderService.saveOrderBillingDetails(orderBillingDetails);
+        }
 
         //保存订单账单支付明细信息
         if (null != paymentDetailsList && !paymentDetailsList.isEmpty()) {
@@ -71,8 +79,10 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
         }
 
         //保存订单物流信息
-        orderLogisticsInfo.setOid(orderBaseInfo.getId());
-        orderService.saveOrderLogisticsInfo(orderLogisticsInfo);
+        if (orderLogisticsInfo != null) {
+            orderLogisticsInfo.setOid(orderBaseInfo.getId());
+            orderService.saveOrderLogisticsInfo(orderLogisticsInfo);
+        }
         //保存订单欠款审核信息
         if (null != orderArrearsAuditDO && StringUtils.isNotBlank(orderArrearsAuditDO.getOrderNumber())) {
             arrearsAuditService.save(orderArrearsAuditDO);
@@ -142,6 +152,63 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
         if (log != null){
             transferDAO.saveDataTransferErrorLog(log);
         }
+
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveReturnOrderRelevantInfo(ReturnOrderBaseInfo returnOrderBaseInfo, List<ReturnOrderGoodsInfo> returnOrderGoodsInfos,
+                                            List<ReturnOrderJxPriceDifferenceRefundDetails> jxPriceDifferenceRefundDetails,
+                                            List<Map<String, Object>> returnOrderProductCouponsMapList, ReturnOrderBilling returnOrderBilling,
+                                            ReturnOrderDeliveryDetail returnOrderDeliveryDetail) {
+        returnOrderService.saveReturnOrderBaseInfo(returnOrderBaseInfo);
+
+        //保存订单商品信息
+        if (null != returnOrderGoodsInfos && !returnOrderGoodsInfos.isEmpty()) {
+            returnOrderGoodsInfos.forEach(p -> {
+                p.setRoid(returnOrderBaseInfo.getRoid());
+                Boolean flag = transferDAO.isExitTdReturnOrderGoodsLine(p.getReturnNo(), p.getGid(), p.getGoodsLineType().getValue());
+                if (!flag) {
+                    returnOrderService.saveReturnOrderGoodsInfo(p);
+                }
+            });
+        }
+
+        //保存订单经销差价信息
+        if (null != jxPriceDifferenceRefundDetails && !jxPriceDifferenceRefundDetails.isEmpty()) {
+            jxPriceDifferenceRefundDetails.forEach(p -> {
+                p.setRoid(returnOrderBaseInfo.getRoid());
+                returnOrderService.saveReturnOrderJxPriceDifferenceRefundDetails(p);
+            });
+        }
+
+        //保存订单账单信息
+        returnOrderBilling.setRoid(returnOrderBaseInfo.getRoid());
+        returnOrderService.saveReturnOrderBilling(returnOrderBilling);
+
+        //保存物流信息
+        returnOrderDeliveryDetail.setRoid(returnOrderBaseInfo.getRoid());
+        returnOrderDeliveryDetailsService.addReturnOrderDeliveryInfoDetails(returnOrderDeliveryDetail);
+
+        //保存顾客产品券信息
+        if (null != returnOrderProductCouponsMapList && !returnOrderProductCouponsMapList.isEmpty()) {
+            for (int i = 0; i < returnOrderProductCouponsMapList.size(); i++) {
+                Map<String, Object> productMap = returnOrderProductCouponsMapList.get(i);
+                if (null != productMap && !productMap.isEmpty()) {
+                    CustomerProductCoupon productCoupon = (CustomerProductCoupon) productMap.get("customerProductCoupon");
+                    ReturnOrderProductCoupon returnOrderProductCoupon = (ReturnOrderProductCoupon) productMap.get("returnOrderProductCoupon");
+                    if (null != productCoupon && null != returnOrderProductCoupon && StringUtils.isNotBlank(returnOrderProductCoupon.getReturnNo())) {
+                        this.transferDAO.addCustomerProductCoupon(productCoupon);
+                        returnOrderProductCoupon.setRoid(returnOrderBaseInfo.getRoid());
+                        returnOrderProductCoupon.setPcid(productCoupon.getId());
+                        returnOrderService.saveReturnOrderProductCoupon(returnOrderProductCoupon);
+                    }
+                }
+            }
+        }
+
+        /** 记录退单转换成功时间 **/
+        transferDAO.updateReturnTransferDate(new Date(), returnOrderBaseInfo.getReturnNo());
 
     }
 }

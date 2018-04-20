@@ -30,7 +30,7 @@ public interface MaStoreDAO {
 
     List<SimpleStoreParam> findStoresListByCityId(@Param("cityId") Long cityId,@Param("list") List<Long> storeIds);
 
-    List<SimpleStoreParam> findStoresListByCityIdExcludeStoreId(@Param("cityId") Long cityId,@Param("storeId") Long storeId);
+    List<SimpleStoreParam> findStoresListByCityIdExcludeStoreId(@Param("storeId") Long storeId);
 
     List<SimpleStoreParam> findAllStoresListByCityId(Long cityId);
 

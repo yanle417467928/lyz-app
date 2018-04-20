@@ -5,9 +5,14 @@ import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
+import cn.com.leyizhuang.app.foundation.pojo.management.User;
 import cn.com.leyizhuang.app.foundation.pojo.reportDownload.*;
 import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
+import cn.com.leyizhuang.app.foundation.service.MaDecorationCompanyCreditBillingService;
 import cn.com.leyizhuang.app.foundation.service.MaReportDownloadService;
+import cn.com.leyizhuang.app.foundation.service.UserService;
+import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsVO;
+import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingVO;
 import cn.com.leyizhuang.common.util.CountUtil;
 import com.github.pagehelper.PageInfo;
 import jxl.Workbook;
@@ -27,6 +32,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -54,6 +60,12 @@ public class MaReportDownloadRestController extends BaseRestController{
 
     @Autowired
     private MaReportDownloadService maReportDownloadService;
+
+    @Autowired
+    private MaDecorationCompanyCreditBillingService maDecorationCompanyCreditBillingService;
+
+    @Resource
+    private UserService userService;
 
     private static final int maxRowNum = 60000;
 
@@ -1146,6 +1158,109 @@ public class MaReportDownloadRestController extends BaseRestController{
                     ws.addCell(new Label(3, j + row, storeInventory.getRealIty().toString(), textFormat));
                     ws.addCell(new Label(4, j + row, storeInventory.getAvailableIty().toString(), textFormat));
                 }
+            }
+        }catch(Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+        }finally {
+            if(wwb != null) {
+                try {
+                    wwb.write();//刷新（或写入），生成一个excel文档
+                    wwb.close();//关闭
+                }catch(Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * @title   装饰公司对账单下载
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/4/19
+     */
+    @GetMapping(value = "/creditBilling/download")
+    public void downloadCompanyCreditBilling(HttpServletRequest request, HttpServletResponse response, Long id) {
+        DecorationCompanyCreditBillingVO creditBillingVO = this.maDecorationCompanyCreditBillingService.getDecorationCompanyCreditBillingById(id);
+        List<DecorationCompanyCreditBillingDetailsVO> creditBillingDetailsVOS = null;
+        if (null != creditBillingVO) {
+            creditBillingDetailsVOS = this.maDecorationCompanyCreditBillingService.getDecorationCompanyCreditBillingDetailsByCreditBillingNo(creditBillingVO.getCreditBillingNo());
+        }
+
+        response.setContentType("text/html;charset=UTF-8");
+        //创建名称
+        String fileurl = "装饰公司对账单-"+ DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") +".xls";//如  D:/xx/xx/xxx.xls
+
+        WritableWorkbook wwb = null;
+        try {
+            //创建文件
+            wwb = exportXML(fileurl, response);
+
+            //excel单表最大行数是65535
+            int maxSize = 0;
+            if (creditBillingDetailsVOS != null) {
+                maxSize = creditBillingDetailsVOS.size();
+            }
+            int sheets = maxSize / maxRowNum + 1;
+            //设置excel的sheet数
+            for (int i = 0; i < sheets; i++) {
+                //标题格式
+                WritableCellFormat titleFormat = this.setTitleStyle();
+                //正文格式
+                WritableCellFormat textFormat = this.setTextStyle();
+
+                //工作表，参数0表示这是第一页
+                WritableSheet ws = wwb.createSheet("第" + (i + 1) + "页", i);
+                User user = new User();
+                user = userService.queryById(creditBillingVO.getOperationId());
+                ws.mergeCells(0,0,6,0);
+                ws.addCell(new Label(0, 0, creditBillingVO.getBillName(), titleFormat));
+                ws.addCell(new Label(0, 1, "账单编号", textFormat));
+                ws.addCell(new Label(1, 1, creditBillingVO.getCreditBillingNo(), textFormat));
+                ws.addCell(new Label(3, 1, "制单时间", textFormat));
+                ws.addCell(new Label(4, 1, creditBillingVO.getCreateTime(), textFormat));
+                ws.addCell(new Label(6, 1, "制单人", textFormat));
+                ws.addCell(new Label(7, 1, user.getName(), textFormat));
+
+                //列宽
+                int[] columnView = {10, 30, 15, 15, 50, 10, 15};
+                //列标题
+                String[] titles = {"序号", "订单号", "出&退货日期", "收货人姓名", "收货人地址", "商品总数", "总金额"};
+                //计算标题开始行号
+                int row = 3;
+
+                //设置标题
+                ws = this.setHeader(ws, titleFormat, columnView, titles, row);
+                row += 1;
+                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"),9,WritableFont.NO_BOLD,false,
+                        UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
+                Double credit = 0D;
+                Integer goodsQty = 0;
+                Integer rows = row;
+                //填写表体数据
+                for (int j = 0; j < maxRowNum; j++) {
+                    if (j + i * maxRowNum >= maxSize) {
+                        break;
+                    }
+                    DecorationCompanyCreditBillingDetailsVO creditBillingDetailsVO = creditBillingDetailsVOS.get(j + i * maxRowNum);
+                    ws.addCell(new Label(0, j + row, (j + 1) + "", textFormat));
+                    ws.addCell(new Label(1, j + row, creditBillingDetailsVO.getOrderNumber(), textFormat));
+                    ws.addCell(new Label(2, j + row, creditBillingDetailsVO.getCreateTime(), textFormat));
+                    ws.addCell(new Label(3, j + row, creditBillingDetailsVO.getReceiver(), textFormat));
+                    ws.addCell(new Label(4, j + row, creditBillingDetailsVO.getDeliveryAddress(), textFormat));
+                    ws.addCell(new Number(5, j + row, creditBillingDetailsVO.getGoodsQty()));
+                    ws.addCell(new Number(6, j + row, creditBillingDetailsVO.getCreditMoney(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    credit = CountUtil.add(credit, null==creditBillingDetailsVO.getCreditMoney()?0D:creditBillingDetailsVO.getCreditMoney());
+                    goodsQty += null==creditBillingDetailsVO.getGoodsQty()?0:creditBillingDetailsVO.getGoodsQty();
+                    rows += 1;
+                }
+                ws.addCell(new Label(4, rows, "总计", titleFormat));
+                ws.addCell(new Number(5, rows, goodsQty, textFormat));
+                ws.addCell(new Number(6, rows, credit, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
             }
         }catch(Exception e) {
             System.out.println(e);

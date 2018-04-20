@@ -744,7 +744,10 @@
             is_pay_up = 1,
             arrearage = 0,
             <if test="date != null">
-                pay_up_time = #{date},
+                manage_receipt_time= #{date},
+            </if>
+            <if test="payUpTime != null">
+                pay_up_time = #{payUpTime},
             </if>
             <if test="cashAmount != null">
                 store_cash = #{cashAmount},

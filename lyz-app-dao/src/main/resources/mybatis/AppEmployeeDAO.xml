@@ -260,8 +260,8 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
             e.emp_id sellerId,
             e.name   sellerName,
             e.status status
-        FROM emp_employee e LEFT JOIN  st_store s ON  e.store_id = s.store_id
-        where s.store_structure_code LIKE CONCAT(CONCAT('%',#{structureCode}),'%') and e.identity_type = 'seller';
+        FROM emp_employee e LEFT JOIN st_store s ON e.store_id = s.store_id
+        WHERE s.store_structure_code LIKE CONCAT(CONCAT('%', #{structureCode}), '%') AND e.identity_type = 'seller';
     </select>
 
     <select id="findSellerByEmpId" parameterType="java.lang.Long"
@@ -373,9 +373,10 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
     <select id="findQrcodeIsNull" resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee">
         SELECT *
         FROM emp_employee
-        WHERE qr_code IS NULL OR qr_code = "" AND  seller_type = 'SELLER'
+        WHERE qr_code IS NULL OR qr_code = "" AND seller_type = 'SELLER'
 
     </select>
+
     <select id="findAllSeller" resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee">
         SELECT
             e.emp_id,
@@ -383,5 +384,23 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
             e.mobile
         FROM emp_employee e
         WHERE e.identity_type = 'SELLER'
+    </select>
+
+    <select id="findEmployeeListByStoreId"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeVO">
+        SELECT
+            emp_id id,
+            name
+        FROM emp_employee
+        WHERE store_id = #{storeId}
+    </select>
+    <select id="findSellerListByStoreId"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeVO">
+        SELECT
+            emp_id id,
+            name
+        FROM emp_employee
+        WHERE store_id = #{storeId}
+              AND identity_type IN ('SELLER', 'DECORATE_MANAGER', 'DECORATE_EMPLOYEE')
     </select>
 </mapper>

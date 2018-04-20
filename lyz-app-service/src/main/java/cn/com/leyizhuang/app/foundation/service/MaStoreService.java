@@ -29,7 +29,7 @@ public interface MaStoreService {
 
     List<SimpleStoreParam> findStoresListByCityId(Long cityId,List<Long> storeIds);
 
-    List<SimpleStoreParam> findStoresListByCityIdExcludeStoreId(Long cityId,Long storeId);
+    List<SimpleStoreParam> findStoresListByCityIdExcludeStoreId(Long storeId);
 
     List<SimpleStoreParam> findAllStoresListByCityId(Long cityId);
 

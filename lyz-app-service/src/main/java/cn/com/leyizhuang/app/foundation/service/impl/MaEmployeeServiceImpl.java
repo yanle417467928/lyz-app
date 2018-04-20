@@ -270,4 +270,20 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
             appEmployeeDAO.update(employeeDO);
         }
     }
+
+    @Override
+    public List<EmployeeVO> findEmployeeListByStoreId(Long storeId) {
+        if (null != storeId){
+            return appEmployeeDAO.findEmployeeListByStoreId(storeId);
+        }
+        return null;
+    }
+
+    @Override
+    public List<EmployeeVO> findSellerListByStoreId(Long storeId) {
+        if (null != storeId){
+            return appEmployeeDAO.findSellerListByStoreId(storeId);
+        }
+        return null;
+    }
 }

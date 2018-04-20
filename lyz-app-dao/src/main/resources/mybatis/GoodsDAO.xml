@@ -1435,4 +1435,30 @@
         </if>
     </select>
 
+    <select id="findGoodsListBySkuList" resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
+        SELECT
+        gid,
+        sku,
+        sku_name
+        FROM gds_goods where sku in
+        <foreach collection="internalCodeList" separator="," open="(" close=")" item="item">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="findBySku" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
+        SELECT
+            gid,
+            sku,
+            sku_name,
+            cover_image_uri,
+            goods_specification,
+            goods_unit,
+            brd_id,
+            company_flag
+        FROM gds_goods
+        WHERE sku = #{sku}
+    </select>
+
 </mapper>

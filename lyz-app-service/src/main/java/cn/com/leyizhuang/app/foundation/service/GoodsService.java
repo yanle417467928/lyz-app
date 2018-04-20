@@ -151,4 +151,8 @@ public interface GoodsService {
     List<String> getGoodsSkuNameListByGoodsIdList(List<Long> noPriceGoodsIdList);
 
     GoodsDO findGoodsByUserIdAndIdentityType(Long userId, AppIdentityType identityType, Long gid);
+
+    List<GoodsDO> findGoodsListBySkuList(List<String> internalCodeList);
+
+    GoodsDO findBySku(String sku);
 }

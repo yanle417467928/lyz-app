@@ -31,4 +31,8 @@ public class DecorationCompanyCreditBillingDetailsDO implements Serializable{
     private Long storeId;
     //创建者id
     private Long creatorId;
+    //收货人
+    private String receiver;
+    //商品数量
+    private Integer goodsQty;
 }

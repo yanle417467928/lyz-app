@@ -26,6 +26,10 @@ public interface AppAdminStoreInventoryService{
 
     PageInfo<AppAdminStoreInventoryVO> queryPageByStoreId(Integer page, Integer size, String keywords,Long storeId);
 
+    PageInfo<AppAdminStoreInventoryVO> queryStoreInventoryByInfo(Integer page, Integer size, String keywords,Long storeId,String info);
+
 
     StoreInventory queryStoreInventoryById(Long storeId);
+
+
 }
