@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.dto.DecorationCompanyCreditBillingDTO;
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorationCompanyCreditBillingDO;
+import cn.com.leyizhuang.app.foundation.pojo.reportDownload.AccountGoodsItemsDO;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsVO;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingVO;
 import com.github.pagehelper.PageInfo;
@@ -34,5 +35,7 @@ public interface MaDecorationCompanyCreditBillingService {
     DecorationCompanyCreditBillingDO getCreditBillingById(Long id);
 
     DecorationCompanyCreditBillingDO getCreditBillingByCreditBillingNo(String creditBillingNo);
+
+    List<AccountGoodsItemsDO> findGoodsItemsDOAll(String creditBillingNo);
 
 }
