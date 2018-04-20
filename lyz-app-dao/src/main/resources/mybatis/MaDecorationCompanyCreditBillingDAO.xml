@@ -6,7 +6,7 @@
         SELECT * FROM (
             SELECT ol.create_time createTime, oi.ord_no orderNumber, od.st_credit_money creditMoney,
                 s.store_name storeName, oi.creator_name creatorName,
-                IF(og.delivery_type = 'HOUSE_DELIVERY', og.shipping_address, og.booking_store_address) deliveryAddress
+                IF(og.delivery_type = 'HOUSE_DELIVERY', og.shipping_address, og.booking_store_address) deliveryAddress, og.receiver
             FROM ord_base_info oi
             INNER JOIN ord_billing_details od ON oi.ord_no = od.ord_no
             INNER JOIN ord_delivery_info_details ol ON oi.ord_no = ol.order_no AND ol.logistic_status = 'SEALED_CAR'
@@ -38,14 +38,14 @@
             UNION
             SELECT ord.create_time createTime, ori.return_no orderNumber, orb.st_credit_money creditMoney,
                 s.store_name storeName, ori.creator_name creatorName,
-                IF(orl.delivery_type = 'HOUSE_PICK', orl.return_full_address, orl.return_store_address) deliveryAddress
+                IF(orl.delivery_type = 'HOUSE_PICK', orl.return_full_address, orl.return_store_address) deliveryAddress, orl.rejecter
             FROM ord_return_base_info ori
             INNER JOIN ord_return_billing orb ON ori.return_no = orb.return_no
             INNER JOIN ord_return_delivery_detail ord ON ori.return_no = ord.return_no AND ord.return_logistic_status = 'AGAIN_ON_SALE'
             INNER JOIN st_store s ON s.store_id = ori.store_id
             INNER JOIN ord_return_logistic_info orl ON ori.return_no = orl.return_no
             INNER JOIN ord_base_info oi ON ori.ord_no = oi.ord_no AND oi.order_subject_type = 'FIT'
-            LEFT JOIN decoration_company_credit_billing_details dcd ON dcd.order_number = ori.ord_no
+            LEFT JOIN decoration_company_credit_billing_details dcd ON dcd.order_number = ori.return_no
             WHERE  ori.return_status = 'FINISHED'
             AND orb.st_credit_money != 0
             AND ori.store_id = #{storeId}
@@ -106,17 +106,19 @@
 
     <insert id="saveCreditBillingDetailsDO" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsDO">
         INSERT INTO decoration_company_credit_billing_details
-        (store_id, credit_billing_no, order_number, creator_id, creator_name, order_time, delivery_address, credit_money)
+        (store_id, credit_billing_no, order_number, creator_id, creator_name, order_time, delivery_address, credit_money, receiver, goods_qty)
         VALUES
-        (#{storeId}, #{creditBillingNo}, #{orderNumber}, #{creatorId}, #{creatorName}, #{orderTime}, #{deliveryAddress}, #{creditMoney})
+        (#{storeId}, #{creditBillingNo}, #{orderNumber}, #{creatorId}, #{creatorName}, #{orderTime}, #{deliveryAddress}, #{creditMoney},
+        #{receiver}, #{goodsQty})
     </insert>
 
     <insert id="batchSaveCreditBillingDetailsDO" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsDO">
         INSERT INTO decoration_company_credit_billing_details
-        (store_id, credit_billing_no, order_number, creator_id, creator_name, order_time, delivery_address, credit_money)
+        (store_id, credit_billing_no, order_number, creator_id, creator_name, order_time, delivery_address, credit_money, receiver, goods_qty)
         VALUES
         <foreach collection="list" item="item" separator=",">
-            (#{item.storeId}, #{item.creditBillingNo}, #{item.orderNumber}, #{item.creatorId}, #{item.creatorName}, #{item.orderTime}, #{item.deliveryAddress}, #{item.creditMoney})
+            (#{item.storeId}, #{item.creditBillingNo}, #{item.orderNumber}, #{item.creatorId}, #{item.creatorName}, #{item.orderTime},
+            #{item.deliveryAddress}, #{item.creditMoney}, #{item.receiver}, #{item.goodsQty})
         </foreach>
 
     </insert>
@@ -126,11 +128,13 @@
         SELECT * FROM (
         SELECT ol.create_time orderTime, oi.ord_no orderNumber, od.st_credit_money creditMoney,
         oi.store_id storeId, oi.creator_name creatorName, oi.creator_id creatorId,
-        IF(og.delivery_type = 'HOUSE_DELIVERY', og.shipping_address, og.booking_store_address) deliveryAddress
+        IF(og.delivery_type = 'HOUSE_DELIVERY', og.shipping_address, og.booking_store_address) deliveryAddress, og.receiver,
+        SUM(IFNULL(ogi.order_qty, 0)) goodsQty
         FROM ord_base_info oi
         INNER JOIN ord_billing_details od ON oi.ord_no = od.ord_no
         INNER JOIN ord_delivery_info_details ol ON oi.ord_no = ol.order_no AND ol.logistic_status = 'SEALED_CAR'
         INNER JOIN ord_logistics_info og ON og.ord_no = oi.ord_no
+        INNER JOIN ord_goods_info ogi ON ogi.ord_no = oi.ord_no
         LEFT JOIN decoration_company_credit_billing_details dcd ON dcd.order_number = oi.ord_no
         WHERE oi.order_subject_type = 'FIT'
         AND (oi.`status` = 'FINISHED'
@@ -145,16 +149,19 @@
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
+        GROUP BY oi.ord_no
         UNION
         SELECT ord.create_time createTime, ori.return_no orderNumber, orb.st_credit_money creditMoney,
         ori.store_id storeId, ori.creator_name creatorName, ori.creator_id creatorId,
-        IF(orl.delivery_type = 'HOUSE_PICK', orl.return_full_address, orl.return_store_address) deliveryAddress
+        IF(orl.delivery_type = 'HOUSE_PICK', orl.return_full_address, orl.return_store_address) deliveryAddress, orl.rejecter,
+        -1 * SUM(IFNULL(orgi.return_qty, 0)) goodsQty
         FROM ord_return_base_info ori
         INNER JOIN ord_return_billing orb ON ori.return_no = orb.return_no
         INNER JOIN ord_return_delivery_detail ord ON ori.return_no = ord.return_no AND ord.return_logistic_status = 'AGAIN_ON_SALE'
         INNER JOIN ord_return_logistic_info orl ON ori.return_no = orl.return_no
         INNER JOIN ord_base_info oi ON ori.ord_no = oi.ord_no AND oi.order_subject_type = 'FIT'
-        LEFT JOIN decoration_company_credit_billing_details dcd ON dcd.order_number = ori.ord_no
+        INNER JOIN ord_return_goods_info orgi ON orgi.return_no = ori.return_no
+        LEFT JOIN decoration_company_credit_billing_details dcd ON dcd.order_number = ori.return_no
         WHERE  ori.return_status = 'FINISHED'
         AND orb.st_credit_money != 0
         AND ori.store_id = #{storeId}
@@ -163,7 +170,8 @@
          <foreach collection="list" item="item" open="(" close=")" separator=",">
              #{item}
          </foreach>
-        ) temp
+        GROUP BY orderNumber
+        ) temp WHERE temp.orderNumber IS NOT null
         GROUP BY orderNumber
     </select>
 
@@ -191,14 +199,14 @@
     </select>
 
     <select id="getDecorationCompanyCreditBillingById"  parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingVO">
-        SELECT id, store_name, CONCAT(DATE_FORMAT(start_time,'%y/%m/%d'),'~', DATE_FORMAT(end_time,'%y/%m/%d')) cycleTime, bill_name, bill_amount, repaid_amount,
-        is_pay_off, credit_billing_no, create_time, update_time
+        SELECT id, store_name, CONCAT(DATE_FORMAT(start_time,'%y/%m/%d'),'~', DATE_FORMAT(end_time,'%y/%m/%d')) cycleTime, bill_name, IFNULL(bill_amount, 0) bill_amount, IFNULL(repaid_amount, 0) repaid_amount,
+        is_pay_off, credit_billing_no, create_time, update_time, operation_id
         FROM decoration_company_credit_billing
         WHERE id = #{id}
     </select>
 
     <select id="getDecorationCompanyCreditBillingDetailsByCreditBillingNo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsVO">
-        SELECT creator_name, order_time createTime, delivery_address, credit_money, order_number
+        SELECT creator_name, order_time createTime, delivery_address, IFNULL(credit_money, 0) credit_money, order_number, receiver, IFNULL(goods_qty, 0) goods_qty
         FROM decoration_company_credit_billing_details
         WHERE credit_billing_no = #{creditBillingNo}
     </select>
@@ -222,6 +230,28 @@
         SELECT id, store_id, bill_amount, repaid_amount, is_pay_off, credit_billing_no, pay_off_operation_id
         FROM decoration_company_credit_billing
         WHERE credit_billing_no = #{creditBillingNo}
+    </select>
+
+    <select id="findGoodsItemsDOAll" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.AccountGoodsItemsDO">
+        SELECT ol.create_time orderTime, ogi.ord_no orderNumber, ogi.sku_name skuName,
+        IF(og.delivery_type = 'HOUSE_DELIVERY', og.shipping_address, og.booking_store_address) shippingAddress, og.receiver customerName,
+        IFNULL(ogi.order_qty, 0) quantity, IFNULL(ogi.settlement_price, 0) settlementPrice,
+        (IFNULL(ogi.order_qty, 0) * IFNULL(ogi.settlement_price, 0)) settlementTotlePrice
+        FROM ord_goods_info ogi
+        INNER JOIN ord_delivery_info_details ol ON ogi.ord_no = ol.order_no AND ol.logistic_status = 'SEALED_CAR'
+        INNER JOIN ord_logistics_info og ON og.ord_no = ogi.ord_no
+        INNER JOIN decoration_company_credit_billing_details dcd ON dcd.order_number = ogi.ord_no
+        WHERE dcd.credit_billing_no = #{creditBillingNo}
+        UNION
+        SELECT ord.create_time orderTime, orgi.return_no orderNumber, orgi.sku_name skuName,
+        IF(orl.delivery_type = 'HOUSE_PICK', orl.return_full_address, orl.return_store_address) shippingAddress, orl.rejecter customerName,
+        (-1 * IFNULL(orgi.return_qty,0)) quantity, IFNULL(orgi.settlement_price, 0) settlementPrice,
+        (-1 * IFNULL(orgi.return_qty, 0) * IFNULL(orgi.settlement_price, 0)) settlementTotlePrice
+        FROM ord_return_goods_info orgi
+        INNER JOIN ord_return_delivery_detail ord ON orgi.return_no = ord.return_no AND ord.return_logistic_status = 'AGAIN_ON_SALE'
+        INNER JOIN ord_return_logistic_info orl ON orgi.return_no = orl.return_no
+        LEFT JOIN decoration_company_credit_billing_details dcd ON dcd.order_number = orgi.return_no
+        WHERE  dcd.credit_billing_no = #{creditBillingNo}
     </select>
 
 </mapper>

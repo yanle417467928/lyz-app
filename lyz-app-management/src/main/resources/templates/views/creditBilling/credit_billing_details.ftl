@@ -125,7 +125,7 @@
                     </div>
                     <div class="col-xs-12 col-md-9">
                         <b></b>
-                        <spanp class="span">${creditBillingVO.billAmount!"0.00"}</spanp>
+                        <spanp class="span"><#if creditBillingVO?? && creditBillingVO.billAmount?? >${creditBillingVO.billAmount?c}<#else>0</#if></spanp>
                     </div>
                 </div>
                 <div class="col-xs-12 col-md-6">
@@ -144,7 +144,7 @@
                     </div>
                     <div class="col-xs-12 col-md-9">
                         <b></b>
-                        <spanp class="span">${creditBillingVO.repaidAmount!"0.00"}</spanp>
+                        <spanp class="span"><#if creditBillingVO?? && creditBillingVO.repaidAmount?? >${creditBillingVO.repaidAmount?c}<#else>0</#if></spanp>
                     </div>
                 </div>
             </div>
@@ -165,7 +165,7 @@
                         <tr>
                             <th width="13%">装饰公司</th>
                             <th width="18%">订/退单编号</th>
-                            <th width="13%">下单人</th>
+                            <th width="13%">收货人</th>
                             <th width="15%">出/退货时间</th>
                             <th width="34%">送货地址</th>
                             <th width="7%">总金额</th>
@@ -177,7 +177,7 @@
                                     <tr>
                                         <td>${creditBillingVO.storeName!""}</td>
                                         <td><#--<a class="scan" href="/views/admin/order/detail/${creditBillingDetails.orderNumber!''}">-->${creditBillingDetails.orderNumber!""}<#--</a>--></td>
-                                        <td>${creditBillingDetails.creatorName!""}</td>
+                                        <td>${creditBillingDetails.receiver!""}</td>
                                         <td>${creditBillingDetails.createTime!""}</td>
                                         <td>${creditBillingDetails.deliveryAddress!""}</td>
                                         <td>${creditBillingDetails.creditMoney!""}</td>
@@ -239,7 +239,7 @@
                                     <div class="col-md-4">
                                         <label for="allCreditMoney" style="margin-top: 8%">账单金额</label>
                                     </div><div class="col-md-7">
-                                    <input type="text" class="form-control" id="billAmount" value="${creditBillingVO.billAmount!'0.00'}" readonly>
+                                    <input type="text" class="form-control" id="billAmount" value="<#if creditBillingVO?? && creditBillingVO.billAmount?? >${creditBillingVO.billAmount?c}<#else>0</#if>" readonly>
                                 </div>
                                 </div>
                             </div>
@@ -248,7 +248,7 @@
                                     <div class="col-md-4">
                                         <label for="allCreditMoney" style="margin-top: 8%">已还金额</label>
                                     </div><div class="col-md-7">
-                                    <input type="text" class="form-control" id="repaidAmount" value="${creditBillingVO.repaidAmount!'0.00'}" readonly>
+                                    <input type="text" class="form-control" id="repaidAmount" value="<#if creditBillingVO?? && creditBillingVO.repaidAmount?? >${creditBillingVO.repaidAmount?c}<#else>0</#if>" readonly>
                                 </div>
                                 </div>
                             </div>

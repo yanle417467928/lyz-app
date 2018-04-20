@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorationCompanyCreditBillingDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsDO;
+import cn.com.leyizhuang.app.foundation.pojo.reportDownload.AccountGoodsItemsDO;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsVO;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingVO;
 import org.apache.ibatis.annotations.Param;
@@ -44,5 +45,7 @@ public interface MaDecorationCompanyCreditBillingDAO {
     DecorationCompanyCreditBillingDO getCreditBillingById(Long id);
 
     DecorationCompanyCreditBillingDO getCreditBillingByCreditBillingNo(String creditBillingNo);
+
+    List<AccountGoodsItemsDO> findGoodsItemsDOAll(String creditBillingNo);
 
 }

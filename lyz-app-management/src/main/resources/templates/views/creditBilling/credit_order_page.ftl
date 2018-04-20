@@ -274,8 +274,8 @@
             title: '装饰公司',
             align: 'center'
         }, {
-            field: 'creatorName',
-            title: '下单人',
+            field: 'receiver',
+            title: '收货人',
             align: 'center'
         },  {
             field: 'createTime',

@@ -10,6 +10,7 @@ import cn.com.leyizhuang.app.foundation.pojo.StoreCreditMoneyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorationCompanyCreditBillingDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyCredit;
+import cn.com.leyizhuang.app.foundation.pojo.reportDownload.AccountGoodsItemsDO;
 import cn.com.leyizhuang.app.foundation.service.MaDecorativeCompanyCreditService;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsVO;
@@ -165,6 +166,11 @@ public class MaDecorationCompanyCreditBillingServiceImpl implements MaDecoration
     @Override
     public DecorationCompanyCreditBillingDO getCreditBillingByCreditBillingNo(String creditBillingNo) {
         return this.maDecorationCompanyCreditBillingDAO.getCreditBillingByCreditBillingNo(creditBillingNo);
+    }
+
+    @Override
+    public List<AccountGoodsItemsDO> findGoodsItemsDOAll(String creditBillingNo) {
+        return this.maDecorationCompanyCreditBillingDAO.findGoodsItemsDOAll(creditBillingNo);
     }
 
 }

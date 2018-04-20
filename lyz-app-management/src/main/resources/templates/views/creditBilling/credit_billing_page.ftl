@@ -142,7 +142,8 @@
         }, {
             field: 'cycleTime',
             title: '记账周期',
-            align: 'center'
+            align: 'center',
+            width: '5%'
         },  {
             field: 'billName',
             title: '账单名称',
@@ -153,7 +154,7 @@
             align: 'center'
         }, {
             field: 'repaidAmount',
-            title: '已还金额(￥)',
+            title: '已还(￥)',
             align: 'center'
         }, {
             field: 'isPayOff',
@@ -175,7 +176,7 @@
             title: '操作',
             align: 'center',
             formatter: function(value,row) {
-                return '<button class="btn btn-primary btn-xs" onclick="showDetails('+row.id+')"> 查看账单</button>';
+                return '<button class="btn btn-primary btn-xs" onclick="showDetails('+row.id+')"> 查看</button><button class="btn btn-default btn-xs" onclick="download('+row.id+')"> <i class="fa fa-download"></i>下载</button>';
             }
         }
         ]);
@@ -206,10 +207,16 @@
         initDateGird(queryCusInfo,startTime,endTime,storeId,isPayOff);
     }
 
-
-
     function showDetails(id){
         window.location.href = '/views/decorationCompany/creditBilling/'+id;
+    }
+
+    function download(id) {
+
+        var url = "/rest/reportDownload/creditBilling/download?id="+ id;
+        var escapeUrl=url.replace(/\#/g,"%23");
+        window.open(escapeUrl);
+
     }
 
 </script>
