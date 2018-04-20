@@ -190,7 +190,7 @@ deploy:
   fit:
     order:
       template:
-        url:/mnt/root/template/
+        url: /mnt/root/template/
 ---
 ############################################## 生产环境配置 ##################################################
 server:
