@@ -11,6 +11,7 @@ import cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaReturnOrde
 import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.MaOrderService;
 import cn.com.leyizhuang.app.foundation.service.MaReturnOrderService;
+import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDetailResponse;
 import cn.com.leyizhuang.app.remote.queue.MaSinkSender;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -47,6 +48,7 @@ public class MaRetrunOrderRestController extends BaseRestController {
 
     @Resource
     private AdminUserStoreService adminUserStoreService;
+
     /**
      * 退货单列表
      *
@@ -91,7 +93,7 @@ public class MaRetrunOrderRestController extends BaseRestController {
             size = getSize(size);
             Integer page = getPage(offset, size);
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
-            PageInfo<MaReturnOrderInfo> ReturnOrderVOPageInfo = this.maReturnOrderService.findMaReturnOrderListByScreen(page, size, storeId, status,storeIds);
+            PageInfo<MaReturnOrderInfo> ReturnOrderVOPageInfo = this.maReturnOrderService.findMaReturnOrderListByScreen(page, size, storeId, status, storeIds);
             List<MaReturnOrderInfo> ReturnOrderVOList = ReturnOrderVOPageInfo.getList();
             logger.info("restReturnOrderPageGirdByScreen ,后台根据筛选条件分页查询退货单列表成功", (ReturnOrderVOList == null) ? 0 : ReturnOrderVOList.size());
             return new GridDataVO<MaReturnOrderInfo>().transform(ReturnOrderVOList, ReturnOrderVOPageInfo.getTotal());
@@ -118,7 +120,7 @@ public class MaRetrunOrderRestController extends BaseRestController {
             size = getSize(size);
             Integer page = getPage(offset, size);
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
-            PageInfo<MaReturnOrderInfo> maReturnOrderInfoPageInfo = this.maReturnOrderService.findMaReturnOrderPageGirdByInfo(page, size, info,storeIds);
+            PageInfo<MaReturnOrderInfo> maReturnOrderInfoPageInfo = this.maReturnOrderService.findMaReturnOrderPageGirdByInfo(page, size, info, storeIds);
             List<MaReturnOrderInfo> maReturnOrderList = maReturnOrderInfoPageInfo.getList();
             logger.info("restMaReturnOrderPageGirdByInfo ,后台根据条件信息分页查询退货单列表成功", (maReturnOrderList == null) ? 0 : maReturnOrderList.size());
             return new GridDataVO<MaReturnOrderInfo>().transform(maReturnOrderList, maReturnOrderInfoPageInfo.getTotal());
@@ -153,6 +155,13 @@ public class MaRetrunOrderRestController extends BaseRestController {
             logger.warn("returnOrderReceive OUT,后台到店退货单收货失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        String orderNumber = maReturnOrderDetailInfo.getOrderNo();
+        MaOrderDetailResponse maOrderDetailResponse = maOrderService.findMaOrderDetailByOrderNumber(orderNumber);
+        if (!"SELF_TAKE".equals(maOrderDetailResponse.getDeliveryType().getValue())) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "原订单配送方式不为自提单", null);
+            logger.warn("returnOrderReceive OUT,后台到店退货单收货失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         try {
             ShiroUser shiroUser = this.getShiroUser();
             MaOrdReturnBilling maOrdReturnBillingList = maReturnOrderService.findReturnOrderBillingList(maReturnOrderDetailInfo.getRoid());
@@ -171,7 +180,7 @@ public class MaRetrunOrderRestController extends BaseRestController {
                         if ("ALIPAY".equals(maPaymentData.getOnlinePayType().toString())) {
                             maOnlinePayRefundService.alipayRefundRequest(maReturnOrderDetailInfo.getCreatorId(), maReturnOrderDetailInfo.getCreatorIdentityType().getValue(), maReturnOrderDetailInfo.getOrderNo(), returnNumber, maPaymentData.getTotalFee());
                         } else if ("WE_CHAT".equals(maPaymentData.getOnlinePayType().toString())) {
-                            maOnlinePayRefundService.wechatReturnMoney(maReturnOrderDetailInfo.getCreatorId(), maReturnOrderDetailInfo.getCreatorIdentityType().getValue(), maPaymentData.getTotalFee(),maReturnOrderDetailInfo.getOrderNo(),returnNumber);
+                            maOnlinePayRefundService.wechatReturnMoney(maReturnOrderDetailInfo.getCreatorId(), maReturnOrderDetailInfo.getCreatorIdentityType().getValue(), maPaymentData.getTotalFee(), maReturnOrderDetailInfo.getOrderNo(), returnNumber);
                         } else if ("银联".equals(maPaymentData.getOnlinePayType().toString())) {
                             //TODO
                         }

@@ -8,6 +8,7 @@ import cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.MaReturnOrde
 import cn.com.leyizhuang.app.foundation.service.MaOrderService;
 import cn.com.leyizhuang.app.foundation.service.MaReturnOrderService;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
+import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDetailResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.returnOrder.MaReturnOrderDetailVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -37,6 +38,9 @@ public class MaReturnOrderViewController {
     @Resource
     private MaReturnOrderService maReturnOrderService;
 
+    @Resource
+    private MaOrderService maOrderService;
+
 
     /**
      * 跳转退货单页面
@@ -48,7 +52,9 @@ public class MaReturnOrderViewController {
         return "/views/returnOrder/returnOrder_page";
     }
 
-/*    *//**
+/*    */
+
+    /**
      * 查看退货单详情
      *
      * @param returnNumber 退单号
@@ -56,7 +62,7 @@ public class MaReturnOrderViewController {
      */
     @GetMapping(value = "/detail/{returnNumber}", produces = "application/json;charset=UTF-8")
     public String getMaReturnOrderDetail(@PathVariable(value = "returnNumber") String returnNumber, ModelMap map) {
-        logger.info("getMaReturnOrderDetail CALLED,查看退货单详情，入参 returnNumber:{}",returnNumber);
+        logger.info("getMaReturnOrderDetail CALLED,查看退货单详情，入参 returnNumber:{}", returnNumber);
         ResultDTO<Object> resultDTO;
         if (StringUtils.isBlank(returnNumber)) {
             logger.info("getMaReturnOrderDetail OUT,查看退货单详情失败");
@@ -85,9 +91,9 @@ public class MaReturnOrderViewController {
             maReturnOrderDetailVO.setOrderType(returnOrderDetailInfo.getOrderType());
             maReturnOrderDetailVO.setOrderNumber(returnOrderDetailInfo.getOrderNo());
             maReturnOrderDetailVO.setStoreName(returnOrderDetailInfo.getStoreName());
-            maReturnOrderDetailVO.setReturnStatus(null != returnOrderDetailInfo.getReturnStatus() ? returnOrderDetailInfo.getReturnStatus(): null);
+            maReturnOrderDetailVO.setReturnStatus(null != returnOrderDetailInfo.getReturnStatus() ? returnOrderDetailInfo.getReturnStatus() : null);
             maReturnOrderDetailVO.setReturnType(null != returnOrderDetailInfo.getReturnType() ? returnOrderDetailInfo.getReturnType().getDescription() : null);
-            if(null!=returnOrderLogisticInfo){
+            if (null != returnOrderLogisticInfo) {
                 maReturnOrderDetailVO.setShippingAddress(returnOrderLogisticInfo.getReturnFullAddress());
                 //取货方式（上门取货，送货到店）
                 if (AppDeliveryType.RETURN_STORE.equals(returnOrderLogisticInfo.getDeliveryType())) {
@@ -96,21 +102,26 @@ public class MaReturnOrderViewController {
             }
 
             //退货商品信息
-           List<MaReturnGoods>  maReturnGoodsList =maReturnOrderService.getMaReturnOrderGoodsDetails(returnNumber);
-            for(MaReturnGoods maReturnGoods :maReturnGoodsList){
-                maReturnGoods.setTotalPrice( maReturnGoods.getReturnPrice().multiply(BigDecimal.valueOf(maReturnGoods.getReturnQty())));
+            List<MaReturnGoods> maReturnGoodsList = maReturnOrderService.getMaReturnOrderGoodsDetails(returnNumber);
+            for (MaReturnGoods maReturnGoods : maReturnGoodsList) {
+                maReturnGoods.setTotalPrice(maReturnGoods.getReturnPrice().multiply(BigDecimal.valueOf(maReturnGoods.getReturnQty())));
             }
             maReturnOrderDetailVO.setGoodsList(maReturnGoodsList);
             //退货劵信息
             maReturnOrderDetailVO.setReturnOrderProductCouponList(maReturnOrderService.getReturnOrderProductCoupon(returnNumber));
             //退款信息
-            Long  returnBillingID = maReturnOrderService.findReturnOrderBillingId(returnNumber);
+            Long returnBillingID = maReturnOrderService.findReturnOrderBillingId(returnNumber);
             maReturnOrderDetailVO.setRetrunBillingList(maReturnOrderService.getMaReturnOrderBillingDetails(returnBillingID));
             //查询退单的配送方式
-            String returnOrderType =  maReturnOrderService.findReturnOrderTypeByReturnNumber(returnNumber);
+            String returnOrderType = maReturnOrderService.findReturnOrderTypeByReturnNumber(returnNumber);
+
+            String orderNumber = maReturnOrderDetailVO.getOrderNumber();
+            MaOrderDetailResponse maOrderDetailResponse = maOrderService.findMaOrderDetailByOrderNumber(orderNumber);
+            String deliveryType = maOrderDetailResponse.getDeliveryType().getValue();
             logger.info("getMaReturnOrderDetail OUT,查看退货单详情成功");
-            map.addAttribute("maReturnOrderDetailVO",maReturnOrderDetailVO);
-            map.addAttribute("returnOrderType",returnOrderType);
+            map.addAttribute("maReturnOrderDetailVO", maReturnOrderDetailVO);
+            map.addAttribute("returnOrderType", returnOrderType);
+            map.addAttribute("deliveryType", deliveryType);
             return "/views/returnOrder/returnOrder_detail";
         } catch (Exception e) {
             e.printStackTrace();
