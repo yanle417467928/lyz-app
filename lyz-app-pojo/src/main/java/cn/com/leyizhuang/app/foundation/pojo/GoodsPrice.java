@@ -46,4 +46,7 @@ public class GoodsPrice {
     // 生效结束时间
     private LocalDateTime endTime;
 
+    //商品价目类型（COMMON<一般>，A<专供A>，B<专供B>）
+    private String priceType;
+
 }

@@ -118,6 +118,12 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
         if (returnDeliveryInfo.getDeliveryType().equalsIgnoreCase(AppDeliveryType.RETURN_STORE.getValue())) {
             returnOrderLogisticInfo.setDeliveryType(AppDeliveryType.RETURN_STORE);
             returnOrderLogisticInfo.setReturnStoreCode(returnDeliveryInfo.getReturnStoreCode());
+            AppStore appStore = appStoreService.findByStoreCode(returnDeliveryInfo.getReturnStoreCode());
+            if (appStore != null) {
+                returnOrderLogisticInfo.setDeliveryProvince(appStore.getProvince());
+                returnOrderLogisticInfo.setDeliveryCity(appStore.getCity());
+                returnOrderLogisticInfo.setDeliveryCounty(appStore.getArea());
+            }
             returnOrderLogisticInfo.setReturnStoreName(returnDeliveryInfo.getReturnStoreName());
             returnOrderLogisticInfo.setReturnStoreAddress(returnDeliveryInfo.getReturnStoreAddress());
             returnOrderLogisticInfo.setReturnFullAddress(returnDeliveryInfo.getReturnStoreAddress());

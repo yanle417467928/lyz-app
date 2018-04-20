@@ -4,10 +4,10 @@
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
         INSERT INTO gds_goods_price
-        (gid, store_id, sku, price_line_id, vip_price, retail_price, wholesale_price, start_time, end_time)
+        (gid, store_id, sku, price_line_id, vip_price, retail_price, wholesale_price, start_time, end_time, price_type)
         VALUES
-            (#{gid}, #{storeId}, #{sku}, #{priceLineId}, #{VIPPrice}, #{retailPrice}, #{wholesalePrice}, #{startTime},
-             #{endTime})
+        (#{gid}, #{storeId}, #{sku}, #{priceLineId}, #{VIPPrice}, #{retailPrice}, #{wholesalePrice}, #{startTime},
+        #{endTime},#{priceType})
     </insert>
 
 
@@ -28,6 +28,9 @@
             </if>
             <if test="null != endTime">
                 end_time = #{endTime},
+            </if>
+            <if test="null != priceType">
+                price_type = #{priceType},
             </if>
         </set>
         WHERE
