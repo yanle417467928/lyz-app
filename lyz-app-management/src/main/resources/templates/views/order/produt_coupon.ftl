@@ -474,22 +474,30 @@
                                                     <div class="box box-primary">
                                                         <div id="toolbar" class="form-inline">
                                                             <select name="brandCode" id="brandCode"
-                                                                    class="form-control select" style="width:auto;"
+                                                                    class="selectpicker" data-width="120px" style="width:auto;"
                                                                     onchange="screenGoods()">
                                                                 <option value="-1">选择品牌</option>
                                                             </select>
                                                             <select name="categoryCode" id="categoryCode"
-                                                                    class="form-control select" style="width:auto;"
+                                                                    class="selectpicker" data-width="120px" style="width:auto;"
                                                                     onchange="screenGoods()">
                                                                 <option value="-1">选择分类</option>
                                                             </select>
                                                             <select name="companyCode" id="companyCode"
-                                                                    class="form-control select" style="width:auto;"
+                                                                    class="selectpicker" data-width="120px" style="width:auto;"
                                                                     onchange="screenGoods()">
                                                                 <option value="-1">选择公司</option>
                                                                 <option value="LYZ">乐易装</option>
                                                                 <option value="HR">华润</option>
                                                                 <option value="YR">莹润</option>
+                                                            </select>
+                                                            <select name="productType" id="productType"
+                                                                    class="selectpicker" data-width="120px" style="width:auto;"
+                                                                    onchange="screenGoods()">
+                                                                <option value="-1">产品类型</option>
+                                                                <option value="common">普通</option>
+                                                                <option value="zg">专供</option>
+
                                                             </select>
                                                             <div class="input-group col-md-3"
                                                                  style="margin-top:0px positon:relative">

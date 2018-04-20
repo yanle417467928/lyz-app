@@ -1085,6 +1085,38 @@
         </if>
     </select>
 
+    <select id="screenGoodsGridBuyCoupon" resultType="cn.com.leyizhuang.app.foundation.vo.management.MaBuyProductCouponGoodsResponse">
+        SELECT
+        gg.gid,
+        gg.sku,
+        gg.sku_name,
+        gg.goods_specification,
+        gg.brand_name,
+        gg.type_name,
+        gg.company_flag,
+        ggp.retail_price,
+        ggp.vip_price,
+        ggp.price_type
+        FROM
+        gds_goods gg
+        LEFT JOIN
+        gds_goods_price ggp on gg.gid = ggp.gid
+        WHERE
+        ggp.store_id = #{storeId}
+        <if test="null != brandCode ">
+            AND gg.brd_id = #{brandCode}
+        </if>
+        <if test="null != categoryCode ">
+            AND gg.physical_classify = #{categoryCode}
+        </if>
+        <if test="null != companyCode ">
+            AND gg.company_flag = #{companyCode}
+        </if>
+        <if test="null != productType ">
+            AND ggp.price_type = #{productType}
+        </if>
+    </select>
+
     <select id="queryGoodsPageByInfo" resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
         SELECT
         *
@@ -1215,6 +1247,34 @@
             INNER JOIN gds_goods_price AS ggp ON gg.gid = ggp.gid
         WHERE
             ggp.store_id = #{storeId}
+        ORDER BY gid DESC
+    </select>
+
+    <select id="findMaStoreGoodsByStoreIdAndPricceType"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.MaBuyProductCouponGoodsResponse">
+        SELECT
+        gg.gid,
+        gg.sku,
+        gg.sku_name,
+        gg.goods_specification,
+        gg.brand_name,
+        gg.type_name,
+        gg.company_flag,
+        ggp.retail_price,
+        ggp.vip_price,
+        ggp.price_type
+        FROM
+        gds_goods AS gg
+        INNER JOIN gds_goods_price AS ggp ON gg.gid = ggp.gid
+        WHERE
+        ggp.store_id = #{storeId}
+        <if test="null != queryGoodsInfo">
+            AND (gg.sku LIKE CONCAT('%' ,#{queryGoodsInfo},'%') OR gg.sku_name LIKE CONCAT('%' ,#{queryGoodsInfo},'%'))
+        </if>
+        and ggp.price_type = 'COMMON'
+        <if test="priceType != null">
+            or ggp.price_type = #{priceType}
+        </if>
         ORDER BY gid DESC
     </select>
 

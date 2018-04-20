@@ -345,7 +345,7 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-cny"></i></span>
-                                    <input name="fullAmount" type="number" class="form-control" id="fullAmount"
+                                    <input name="fullAmount" type="text" class="form-control" id="fullAmount"
                                            value="<#if actBaseDO?? && actBaseDO.fullAmount??>${actBaseDO.fullAmount?c}</#if>">
                                 </div>
                             </div>
@@ -361,7 +361,7 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-cny"></i></span>
-                                    <input name="subAmount" type="number" class="form-control" id="subAmount"
+                                    <input name="subAmount" type="text" class="form-control" id="subAmount"
                                            value="<#if actSubAmountDO?? && actSubAmountDO.subAmount??>${actSubAmountDO.subAmount?c}</#if>">
                                 </div>
                             </div>

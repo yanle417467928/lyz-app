@@ -178,6 +178,8 @@ function findSellerByNameOrMobil() {
 //按条件查询商品
 function screenGoods() {
     var storeId = $('#storeId').val();
+    var cusId = $("#customerId").html();
+    var sellerId = $("#sellerId").html();
 
     if (-1 === storeId) {
         $notify.warning("请先选择门店");
@@ -186,8 +188,12 @@ function screenGoods() {
     var brandCode = $('#brandCode').val();
     var categoryCode = $('#categoryCode').val();
     var companyCode = $('#companyCode').val();
+    var productType = $('#productType').val();
     $("#goodsDataGrid").bootstrapTable('destroy');
-    initGoodsGrid('/rest/goods/page/screen/maGoods?storeId=' + storeId + '&brandCode=' + brandCode + '&categoryCode=' + categoryCode + '&companyCode=' + companyCode);
+    initGoodsGrid('/rest/goods/page/screenGoodsGrid/buy/coupon?storeId='
+        + storeId + '&brandCode=' + brandCode + '&categoryCode='
+        + categoryCode + '&companyCode=' + companyCode+'&productType='+productType
+        + '&cusId='+cusId+'&sellerId='+sellerId);
 }
 //初始化商品信息
 function initGoodsGrid(url) {
@@ -268,6 +274,21 @@ function initGoodsGrid(url) {
                 return '<span class="scan" >' + '-' + '</span>';
             } else {
                 return '<sapn class="scan" >' + value + '</sapn>';
+            }
+        }
+    },{
+        field: 'priceType',
+        title: '产品类型',
+        align: 'center',
+        formatter: function (value) {
+            if (null == value) {
+                return '<span class="scan" >' + '-' + '</span>';
+            } else if (value == "A" || value == "C"){
+                return '<sapn class="scan" >钻石专供</sapn>';
+            }else if(value == "B" || value == "D"){
+                return '<sapn class="scan" >黄金专供</sapn>';
+            }else {
+                return '<sapn class="scan" >普通</sapn>';
             }
         }
     }
@@ -686,7 +707,7 @@ function openGoodsModal(id) {
         return false;
     }
     //初始化商品信息
-    initGoodsGrid("/rest/goods/page/grid/" + storeId);
+    initGoodsGrid("/rest/goods/page/grid/buy/coupon?storeId=" + storeId);
 
     $("#goodsModalConfirm").unbind('click').click(function () {
         chooseGoods(id);
@@ -1064,6 +1085,8 @@ function giftDetail(details, divId) {
 //模糊查询商品信息
 function findGoodsByNameOrCode() {
     var storeId = $('#storeId').val();
+    var cusId = $("#customerId").html();
+    var sellerId = $("#sellerId").html();
 
     if (-1 == storeId) {
         $notify.warning("请先选择门店");
@@ -1071,12 +1094,13 @@ function findGoodsByNameOrCode() {
     }
     var queryGoodsInfo = $("#queryGoodsInfo").val();
     $("#goodsDataGrid").bootstrapTable('destroy');
-    if (null == queryGoodsInfo || "" == queryGoodsInfo) {
-        //初始化商品信息
-        initGoodsGrid("/rest/goods/page/grid/" + storeId);
-    } else {
-        initGoodsGrid('/rest/goods/page/query/goodsInfo?queryGoodsInfo=' + queryGoodsInfo + '&storeId=' + storeId);
-    }
+    // if (null == queryGoodsInfo || "" == queryGoodsInfo) {
+    //     //初始化商品信息
+    //     initGoodsGrid("/rest/goods/page/grid/" + storeId);
+    // } else {
+    //     initGoodsGrid('/rest/goods/page/query/goodsInfo?queryGoodsInfo=' + queryGoodsInfo + '&storeId=' + storeId);
+    // }
+    initGoodsGrid('/rest/goods/page/grid/buy/coupon?storeId='+ storeId+'&cusId='+cusId+'&keywords='+queryGoodsInfo+'&sellerId='+sellerId);
 }
 
 

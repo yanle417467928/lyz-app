@@ -8,6 +8,7 @@ import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActGoodsMappingDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.PhysicalClassify;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.CustomerRankInfoResponse;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.app.foundation.service.MaPhysicalClassifyService;
 import cn.com.leyizhuang.app.foundation.vo.management.goods.MaGoodsVO;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 /**
@@ -62,6 +64,8 @@ public class GoodsRestController extends BaseRestController {
     @Autowired
     private MaPhysicalClassifyService physicalClassifyService;
 
+    @Autowired
+    private AppCustomerService appCustomerService;
     /**
      * @param
      * @return
@@ -309,6 +313,76 @@ public class GoodsRestController extends BaseRestController {
     }
 
     /**
+     * 后台买券专用
+     * @param offset
+     * @param size
+     * @param keywords
+     * @param brandCode
+     * @param categoryCode
+     * @param companyCode
+     * @param productType
+     * @return
+     */
+    @GetMapping(value = "/page/screenGoodsGrid/buy/coupon")
+    public GridDataVO<MaBuyProductCouponGoodsResponse> screenGoodsGridBuyCoupon(Integer offset, Integer size, String keywords,
+                                                          @RequestParam(value = "brandCode") Long brandCode,
+                                                          @RequestParam(value = "categoryCode") String categoryCode,
+                                                          @RequestParam(value = "companyCode") String companyCode,
+                                                          @RequestParam(value = "productType") String productType,
+                                                          @RequestParam(value = "storeId") Long storeId,
+                                                                                Long cusId,Long sellerId) {
+        // 检验顾客专供类型
+        CustomerRankInfoResponse customerRankInfoResponse = appCustomerService.findCusRankinfoByCusId(cusId);
+        String priceType = null;
+
+        size = getSize(size);
+        Integer page = getPage(offset, size);
+        PageInfo<MaBuyProductCouponGoodsResponse> goodsDOPage = null;
+
+        if (customerRankInfoResponse == null){
+            //非专供会员
+
+            if (productType.equals("ZG")){
+                goodsDOPage = null;
+            }else {
+                goodsDOPage = this.goodsService.screenGoodsGrid(page, size, brandCode, categoryCode, companyCode, "common",storeId);
+            }
+        }else {
+            // 校验 门店 导购信息是否准确
+            AppCustomer appCustomer = null;
+            try {
+                appCustomer = appCustomerService.findById(cusId);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+                logger.info("购买产品券失败，到不到id："+cusId+"顾客找不到");
+            }
+
+            Long cusStoreId = appCustomer.getStoreId();
+            Long cusSellerId = appCustomer.getSalesConsultId();
+
+            if (cusStoreId.equals(storeId) && cusSellerId.equals(sellerId)){
+                if (productType.equals("zg")){
+                    priceType = customerRankInfoResponse.getRankCode();
+                }else {
+                    priceType = productType;
+                }
+
+                goodsDOPage = this.goodsService.screenGoodsGrid(page, size, brandCode, categoryCode, companyCode, priceType,storeId);
+            }else{
+                if (productType.equals("ZG")){
+                    goodsDOPage = null;
+                }else {
+                    goodsDOPage = this.goodsService.screenGoodsGrid(page, size, brandCode, categoryCode, companyCode, "common",storeId);
+                }
+            }
+        }
+
+        List<MaBuyProductCouponGoodsResponse> goodsResponseList = goodsDOPage.getList();
+        logger.warn("restStoreGoodsPageGird ,门店商品信息分页查询成功", goodsResponseList.size());
+        return new GridDataVO<MaBuyProductCouponGoodsResponse>().transform(goodsResponseList, goodsDOPage.getTotal());
+    }
+
+    /**
      * 查询物理分类信息
      *
      * @return
@@ -377,6 +451,68 @@ public class GoodsRestController extends BaseRestController {
         logger.warn("restStoreGoodsPageGird ,门店商品信息分页查询成功", goodsResponseList.size());
         return new GridDataVO<MaBuyProductCouponGoodsResponse>().transform(goodsResponseList, goodsResponseListPageInfo.getTotal());
     }
+
+    /**
+     * 后台买券专用
+     * @param offset
+     * @param size
+     * @param keywords
+     * @param storeId
+     * @return
+     */
+    @GetMapping(value = "/page/grid/buy/coupon")
+    public GridDataVO<MaBuyProductCouponGoodsResponse> restStoreBuyCouponGoodsPageGird(Integer offset, Integer size,
+                                                                                       Long storeId, Long cusId, Long sellerId,
+                                                                                       String keywords) {
+        logger.info("restStoreGoodsPageGird 门店商品信息分页查询,入参 offset:{},size:{},keywords:{},storeId:{},cusId:{},sellerId:{}",
+                offset, size, storeId,cusId,sellerId);
+
+        if (StringUtils.isBlank(keywords)){
+            keywords = null;
+        }
+
+        //判断会员身份
+        CustomerRankInfoResponse customerRankInfoResponse = appCustomerService.findCusRankinfoByCusId(cusId);
+
+        //获取用户登录名
+        String userName = this.getShiroUser().getLoginName();
+        size = getSize(size);
+        Integer page = getPage(offset, size);
+        PageHelper.startPage(page, size);
+        List<MaBuyProductCouponGoodsResponse> goodsResponses = null;
+
+        if (customerRankInfoResponse == null){
+            // 非专供会员 只能找到门店下非专供产品
+            goodsResponses = goodsService.findGoodsForBuyCoupon(storeId,cusId,sellerId,keywords,null);
+        }else{
+            // 校验 门店 导购信息是否准确
+            AppCustomer appCustomer = null;
+            try {
+                appCustomer = appCustomerService.findById(cusId);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+                logger.info("购买产品券失败，到不到id："+cusId+"顾客找不到");
+            }
+
+            Long cusStoreId = appCustomer.getStoreId();
+            Long cusSellerId = appCustomer.getSalesConsultId();
+
+            if (cusStoreId.equals(storeId) && cusSellerId.equals(sellerId)){
+               String priceType = customerRankInfoResponse.getRankCode();
+
+                goodsResponses = goodsService.findGoodsForBuyCoupon(storeId,cusId,sellerId,keywords,priceType);
+            }else{
+                goodsResponses = goodsService.findGoodsForBuyCoupon(storeId,cusId,sellerId,keywords,null);
+            }
+
+        }
+
+        PageInfo<MaBuyProductCouponGoodsResponse> goodsResponseListPageInfo = new PageInfo<>(goodsResponses);
+        List<MaBuyProductCouponGoodsResponse> goodsResponseList = goodsResponseListPageInfo.getList();
+        logger.warn("restStoreGoodsPageGird ,门店商品信息分页查询成功", goodsResponseList.size());
+        return new GridDataVO<MaBuyProductCouponGoodsResponse>().transform(goodsResponseList, goodsResponseListPageInfo.getTotal());
+    }
+
 
     /**
      * 门店商品信息分页条件查询

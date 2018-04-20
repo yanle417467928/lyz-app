@@ -227,10 +227,12 @@
         p.retail_price
         FROM material_list m
         LEFT JOIN cus_customer c ON c.cus_id = m.user_id
+        LEFT JOIN cus_rank cr on c.cus_id = cr.cus_id
+        LEFT JOIN  rank_classification rc on cr.rank_id = rc.rank_id
         INNER JOIN gds_goods_price p ON c.store_id = p.store_id AND m.gid = p.gid
         AND p.start_time &lt; NOW()
         AND (p.end_time IS NULL OR p.end_time &gt; NOW())
-        AND p.price_type = 'COMMON'
+        AND (p.price_type = 'COMMON' or p.price_type = rc.rank_code)
         WHERE m.user_id = #{userId}
               AND m.identity_type = #{identityType}
               AND m.material_list_type = 'COUPON_TRANSFORM'

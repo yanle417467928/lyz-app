@@ -56,4 +56,9 @@ public class MaBuyProductCouponGoodsResponse {
      * 商品会员价
      */
     private Double vipPrice;
+
+    /**
+     * 价目表类型
+     */
+    private String priceType;
 }

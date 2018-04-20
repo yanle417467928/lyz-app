@@ -5,12 +5,10 @@ import cn.com.leyizhuang.app.core.constant.MaterialListType;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.request.ProductCouponRequest;
+import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderUsableProductCouponResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.UsedMoreProductCoupon;
-import cn.com.leyizhuang.app.foundation.service.CommonService;
-import cn.com.leyizhuang.app.foundation.service.GoodsService;
-import cn.com.leyizhuang.app.foundation.service.MaterialListService;
-import cn.com.leyizhuang.app.foundation.service.ProductCouponService;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
@@ -23,7 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author GenerationRoad
@@ -45,6 +45,9 @@ public class ProductCouponController {
 
     @Autowired
     private CommonService commonService;
+
+    @Autowired
+    private GoodsPriceService goodsPriceService;
 
     /**
      * @param
@@ -145,6 +148,19 @@ public class ProductCouponController {
                     if (isOther) {
                         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "下料清单中已存在其他顾客的产品券", null);
                         logger.info("productCouponTransformMaterialList OUT,顾客点击使用产品券通过加入下料清单失败，出参 resultDTO:{}", resultDTO);
+                        return resultDTO;
+                    }
+
+                    /** 判断是否有专供产品券 导购不能提货 **/
+                    Set<Long> goodsIdSet = new HashSet<>();
+                    for (UsedMoreProductCoupon goodsIdQtyParam : requestList) {
+                        goodsIdSet.add(goodsIdQtyParam.getGid());
+                    }
+                    List<Long> goodsIdList = new ArrayList<>(goodsIdSet);
+                    List<GiftListResponseGoods> goodsZGList = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserId(goodsIdList, cusId, AppIdentityType.CUSTOMER);
+                    if (goodsZGList != null && goodsZGList.size() > 0){
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "包含专供产品券，不能提货", null);
+                        logger.info("productCouponTransformMaterialList OUT,导购点击使用产品券通过加入下料清单失败，出参 resultDTO:{}", resultDTO);
                         return resultDTO;
                     }
                 }

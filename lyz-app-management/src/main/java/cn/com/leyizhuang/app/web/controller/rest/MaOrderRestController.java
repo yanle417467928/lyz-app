@@ -22,6 +22,8 @@ import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.response.CustomerRankInfoResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
@@ -48,6 +50,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -89,6 +92,8 @@ public class MaOrderRestController extends BaseRestController {
     private UserService userService;
     @Resource
     private AppOrderService appOrderService;
+    @Autowired
+    private GoodsPriceService goodsPriceService;
 
     @Autowired
     private AdminUserStoreService adminUserStoreService;
@@ -905,6 +910,7 @@ public class MaOrderRestController extends BaseRestController {
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "当现金金额为负数时，POS金额+现金金额必须大于0！", null);
             }
         }
+
         try {
 
             // 当前登录帐号
@@ -916,6 +922,40 @@ public class MaOrderRestController extends BaseRestController {
             JavaType javaType2 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, PromotionSimpleInfo.class);
             //商品信息
             List<MaActGoodsMapping> goodsList = objectMapper.readValue(goodsDetails, javaType1);
+
+            /** 新增对于专供产品券校验<<<<<<<<<<<< **/
+            List<Long> goodsIdList = new ArrayList<>();
+            for (MaActGoodsMapping goods : goodsList) {
+                goodsIdList.add(goods.getGid());
+            }
+            List<GiftListResponseGoods> goodsZGList = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserId(goodsIdList, customerId, AppIdentityType.CUSTOMER);
+            if (goodsZGList != null && goodsZGList.size() > 0) {
+                // 校验专供会员身份
+                CustomerRankInfoResponse customerRankInfoResponse = appCustomerService.findCusRankinfoByCusId(customerId);
+
+                if (customerRankInfoResponse == null) {
+                    logger.warn("saveMaProductCoupon OUT,买券订单创建失败,出参 resultDTO:{}", "非专供会员不能购买专供产品，请重新下单！");
+                    return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "非专供会员不能购买专供产品，请重新下单！", null);
+                } else {
+                    // 校验 门店 导购信息是否准确
+                    AppCustomer appCustomer = null;
+                    try {
+                        appCustomer = appCustomerService.findById(customerId);
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                        logger.info("购买产品券失败，到不到id：" + customerId + "顾客找不到");
+                    }
+
+                    Long cusSellerId = appCustomer.getSalesConsultId();
+
+                    if (!cusSellerId.equals(sellerId)) {
+                        logger.warn("saveMaProductCoupon OUT,买券订单创建失败,出参 resultDTO:{}", "专供会员绑定导购信息不正确，不能购买专供产品，请重新下单！");
+                        return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "专供会员绑定导购信息不正确，不能购买专供产品，请重新下单！", null);
+                    }
+                }
+            }
+            /**>>>>>>>>>>> 新增对于专供产品券校验 **/
+
             //促销信息
             List<PromotionSimpleInfo> giftList = new ArrayList<>();
             if (StringUtils.isNotBlank(giftDetails)) {

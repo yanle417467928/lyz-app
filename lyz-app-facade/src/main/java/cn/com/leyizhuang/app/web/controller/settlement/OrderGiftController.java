@@ -137,6 +137,36 @@ public class OrderGiftController {
                 List<Long> goodsIds = appOrderService.existOrderGoodsInventory(cityId, goodsItyList, giftsList, couponList);
                 if (goodsIds != null && goodsIds.size() > 0) {
 
+                    /** 城市库存不足 直接判断不足的商品是否可自提 不可自提则提示错误讯息 **/
+                    /** 提示 哪些商品不能配送 2018-04-13 15：52**/
+                    String[] forbiddenSelfTakeCompany = AppConstant.FORBIDDEN_SELF_TAKE_COMPANY_FLAG.split("\\|");
+                    List<String> forbiddenSelfTakeCompanyList = Arrays.asList(forbiddenSelfTakeCompany);
+                    // 所以商品品牌
+                    List<String> companyFlag = goodsService.findCompanyFlagListById(goodsIdList);
+                    List<String> goodsNames = goodsService.findGoodsByCompanyFlagAndIds(goodsIds, companyFlag);
+
+                    for (String flag : companyFlag) {
+                        if (forbiddenSelfTakeCompanyList.contains(flag)) {
+
+                            StringBuffer msg = new StringBuffer();
+
+                            for (int i =0 ;i< goodsNames.size(); i++){
+                                msg.append("“"+goodsNames.get(i)+"”");
+
+                                if (i == 2){
+                                    msg.append("等");
+                                    break;
+                                }
+                            }
+                            msg.append("配送仓库存不足，请更改购买数量！");
+
+                            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, msg.toString(), null);
+                            logger.info("materialListStepToGiftList OUT,下料清单跳转赠品列表失败，出参 resultDTO:{}", resultDTO);
+                            return resultDTO;
+                        }
+                    }
+                    /** end **/
+
                     /**************/
                     //2018-04-03 generation 加盟门店自提不用判断库存
                     if (StoreType.JM.equals(appStore.getStoreType())){
@@ -148,34 +178,6 @@ public class OrderGiftController {
 //                            StoreType.JM.equals(appStore.getStoreType()) ||
                             StoreType.FX.equals(appStore.getStoreType()) ||
                             StoreType.FXCK.equals(appStore.getStoreType())) {
-                        /** 城市库存不足 直接判断不足的商品是否可自提 不可自提则提示错误讯息 **/
-                        /** 提示 哪些商品不能配送 2018-04-13 15：52**/
-                        String[] forbiddenSelfTakeCompany = AppConstant.FORBIDDEN_SELF_TAKE_COMPANY_FLAG.split("\\|");
-                        List<String> forbiddenSelfTakeCompanyList = Arrays.asList(forbiddenSelfTakeCompany);
-                        List<String> companyFlag = goodsService.findCompanyFlagListById(goodsIds);
-                        List<String> goodsNames = goodsService.findGoodsByCompanyFlagAndIds(goodsIds, companyFlag);
-
-                        for (String flag : companyFlag) {
-                            if (forbiddenSelfTakeCompanyList.contains(flag)) {
-
-                                StringBuffer msg = new StringBuffer();
-
-                                for (int i =0 ;i< goodsNames.size(); i++){
-                                    msg.append("“"+goodsNames.get(i)+"”");
-
-                                    if (i == 2){
-                                        msg.append("等");
-                                        break;
-                                    }
-                                }
-                                msg.append("仓库库存不足，请更改购买数量！");
-
-                                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, msg.toString(), null);
-                                logger.info("materialListStepToGiftList OUT,下料清单跳转赠品列表失败，出参 resultDTO:{}", resultDTO);
-                                return resultDTO;
-                            }
-                        }
-                        /** end **/
 
                         //如果城市库存不足则判断门店库存,若无就报错提示库存不足
                         for (Map.Entry<Long, Integer> entry : goodsQuantity.entrySet()) {

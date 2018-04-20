@@ -8,6 +8,8 @@ import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsBrand;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.app.foundation.service.MaGoodsBrandService;
 import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
@@ -16,10 +18,13 @@ import cn.com.leyizhuang.app.foundation.vo.management.goods.MaGoodsVO;
 import cn.com.leyizhuang.common.util.AssertUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Set;
 
@@ -30,12 +35,16 @@ import java.util.Set;
 @Service
 public class GoodsServiceImpl implements GoodsService {
 
+    private final Logger logger = LoggerFactory.getLogger(GoodsServiceImpl.class);
+
     @Autowired
     private GoodsDAO goodsDAO;
 
     @Autowired
     private MaGoodsBrandService maGoodsBrandService;
 
+    @Autowired
+    private AppCustomerService appCustomerService;
 
     /**
      * @param page
@@ -425,6 +434,29 @@ public class GoodsServiceImpl implements GoodsService {
         return new PageInfo<>(goodsDOList);
     }
 
+    @Override
+    public PageInfo<MaBuyProductCouponGoodsResponse> screenGoodsGrid(Integer page, Integer size, Long brandCode,
+                                                                     String categoryCode, String companyCode,
+                                                                     String productType,Long storeId) {
+        PageHelper.startPage(page, size);
+        if ("-1".equals(categoryCode)) {
+            categoryCode = null;
+        }
+        if ("-1".equals(companyCode)) {
+            companyCode = null;
+        }
+        if (-1 == brandCode) {
+            brandCode = null;
+        }
+
+        if (productType.equals("-1")){
+            productType = null;
+        }
+
+        List<MaBuyProductCouponGoodsResponse> goodsDOList = goodsDAO.screenGoodsGridBuyCoupon(brandCode, categoryCode, companyCode,productType,storeId);
+        return new PageInfo<>(goodsDOList);
+    }
+
     /**
      * 更新商品信息
      *
@@ -469,6 +501,12 @@ public class GoodsServiceImpl implements GoodsService {
     @Override
     public List<MaBuyProductCouponGoodsResponse> findMaStoreGoodsByStoreId(Long storeId) {
         return goodsDAO.findMaStoreGoodsByStoreId(storeId);
+    }
+
+    @Override
+    public List<MaBuyProductCouponGoodsResponse> findGoodsForBuyCoupon(Long storeId,Long cusId,Long sellerId,String queryGoodsInfo,String priceType){
+
+            return goodsDAO.findMaStoreGoodsByStoreIdAndPricceType(storeId,priceType,queryGoodsInfo);
     }
 
     @Override

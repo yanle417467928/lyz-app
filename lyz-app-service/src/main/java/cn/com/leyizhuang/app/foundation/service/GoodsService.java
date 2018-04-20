@@ -99,6 +99,10 @@ public interface GoodsService {
 
     PageInfo<GoodsDO> screenGoodsGrid(Integer page, Integer size,Long brandCode,String categoryCode,String companyCode);
 
+    PageInfo<MaBuyProductCouponGoodsResponse> screenGoodsGrid(Integer page, Integer size,
+                                                              Long brandCode,String categoryCode,
+                                                              String companyCode,String productType,Long storeId);
+
     void updateGoods(MaGoodsVO goodsVO);
 
     Boolean isExistSkuName(String skuName,Long id);
@@ -111,6 +115,15 @@ public interface GoodsService {
      * @return
      */
     List<MaBuyProductCouponGoodsResponse> findMaStoreGoodsByStoreId(Long storeId);
+
+    /**
+     * 后台买券专用
+     * @param storeId
+     * @param cusId
+     * @param empId
+     * @return
+     */
+    List<MaBuyProductCouponGoodsResponse> findGoodsForBuyCoupon(Long storeId,Long cusId,Long empId,String queryGoodsInfo,String priceType);
 
     /**
      * 后台购买产品券条件查询商品信息

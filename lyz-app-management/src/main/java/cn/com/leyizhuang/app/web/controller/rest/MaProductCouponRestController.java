@@ -104,8 +104,8 @@ public class MaProductCouponRestController extends BaseRestController {
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发送失败,参数有误", null);
         }
 
-        productCouponSendService.send(customerId, productCouponId, sellerId, qty);
-        return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "发券成功", null);
+
+        return productCouponSendService.send(customerId, productCouponId, sellerId, qty);
     }
 
     @PostMapping(value = "/sendBatch")
