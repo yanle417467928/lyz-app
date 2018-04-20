@@ -111,6 +111,7 @@
                                 }
                                 $("#remark").val(result.remark);
                                 $("#remarkDiv").attr("style", "display:block;");//显示div
+                                $("#downloadTemplate").attr("style", "display:none;");//显示div
                                 //$("#submitGoods").attr("disabled","false");
                             } else {
                                 clearTimeout($global.timer);
@@ -261,7 +262,9 @@
                         clearTimeout($global.timer);
                         $loading.close();
                         $notify.info("加入下料清单成功!");
-                        setTimeout(function(){window.location.href = document.referrer}, 2000);
+                        setTimeout(function () {
+                            window.location.href = document.referrer
+                        }, 2000);
 
                     } else {
                         clearTimeout($global.timer);
@@ -345,6 +348,13 @@
                             <button type="button" class="btn btn-primary footer-btn" id="uploadSubmit"
                                     style="margin-top: 18%;padding-left: 1%" onclick="submitForm();">
                                 <i class="fa fa-check"></i> 上传
+                            </button>
+                        </div>
+                        <div class="col-xs-12 col-md-2">
+                            <button type="button" class="btn btn-success pull-left" id="downloadTemplate"
+                                    style="margin-top: 18%"
+                                    onclick="window.location.href='/rest/admin/fit/place/order/download/sample'">
+                                <i class="fa fa-download"></i> 下载模板
                             </button>
                         </div>
                         <div class="col-xs-12 col-md-6">

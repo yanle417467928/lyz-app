@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
+import cn.com.leyizhuang.app.core.constant.ApplicationConstant;
 import cn.com.leyizhuang.app.core.constant.FitExcelImportGoodsErrorType;
 import cn.com.leyizhuang.app.core.constant.MaterialListType;
 import cn.com.leyizhuang.app.core.utils.ExcelImportUtil;
@@ -23,8 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -214,7 +215,7 @@ public class MaDecoratorPlaceOrderRestController {
                                     materialListDOTemp.setQty(materialListDOTemp.getQty() + goodsList.get(i).getQty());
                                     materialListSave.remove(materialListDOTemp);
                                     materialListSave.add(materialListDOTemp);
-                                }else {
+                                } else {
                                     MaterialListDO materialListDOTemp = transformRepeat(goodsDO);
                                     materialListDOTemp.setUserId(guideId);
                                     materialListDOTemp.setIdentityType(employee.getIdentityType());
@@ -262,6 +263,44 @@ public class MaDecoratorPlaceOrderRestController {
         }
     }
 
+    @RequestMapping(value = "/download/sample", method = RequestMethod.GET)
+    public void downloadSampleFile(HttpServletResponse res) {
+        String fileName = "装饰公司下单模板";
+        try {
+            fileName = new String(fileName.getBytes("GBK"), "ISO-8859-1");
+        } catch (UnsupportedEncodingException e1) {
+            System.out.println("下载文件名格式转换错误！");
+        }
+        String fileNameInner = "fit_order_template.xlsx";
+        //fileName = new String(".xlsx");
+        res.setContentType("application/octet-stream;charset=utf-8");
+        res.setHeader("Content-Disposition", "attachment;filename=" + fileName+".xlsx");
+        byte[] buff = new byte[1024];
+        BufferedInputStream bis = null;
+        OutputStream os = null;
+        try {
+            os = res.getOutputStream();
+            bis = new BufferedInputStream(new FileInputStream(new File(ApplicationConstant.FIT_ORDER_TEMPLATE_URL
+                    + fileNameInner)));
+            int i = bis.read(buff);
+            while (i != -1) {
+                os.write(buff, 0, buff.length);
+                os.flush();
+                i = bis.read(buff);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (bis != null) {
+                try {
+                    bis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        System.out.println("success");
+    }
 
     private MaterialListDO transformRepeat(GoodsDO goodsDO) {
         MaterialListDO materialListDOTemp = new MaterialListDO();

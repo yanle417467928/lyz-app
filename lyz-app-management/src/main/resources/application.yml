@@ -132,6 +132,10 @@ deploy:
   lyz:
     qrcodeRegister: http://eqtest.leyizhuang.com.cn:8089
     baseUrl: \lyz-app-management\src\main\resources\static\images\
+  fit:
+    order:
+      template:
+        url: ${basedir}/src/main/resources/template/
 
 ---
 ##################################################### 测试环境配置 #################################################
@@ -183,6 +187,10 @@ deploy:
   lyz:
       qrcodeRegister: http://eqtest.leyizhuang.com.cn:8089
       baseUrl: /mnt/root/qrcode/
+  fit:
+    order:
+      template:
+        url:/mnt/root/template/
 ---
 ############################################## 生产环境配置 ##################################################
 server:
@@ -234,3 +242,7 @@ deploy:
   lyz:
     qrcodeRegister: http://admin.leyizhuang.com.cn
     baseUrl: /mnt/root/qrcode/
+  fit:
+    order:
+      template:
+        url: /mnt/root/template/

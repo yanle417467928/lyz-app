@@ -39,6 +39,9 @@ public class DeployConfiguration {
     @Value("${deploy.oss.bucket}")
     private String ossBucket;
 
+    @Value("${deploy.fit.order.template.url}")
+    private String fitOrderTemplateUrl;
+
     @Bean
     public ApplicationConstant applicationConstant() {
         LOG.info("imagePath : {}", imagePath);
@@ -49,6 +52,7 @@ public class DeployConfiguration {
         LOG.info("cdnHosts : {}", Arrays.toString(cdnHosts));
         LOG.info("ossFolder : {}", ossFolder);
         LOG.info("ossBucket : {}", ossBucket);
+        LOG.info("fitOrderTemplateUrl : {}", fitOrderTemplateUrl);
 
         ApplicationConstant constant = new ApplicationConstant();
         constant.setImagePath(imagePath);
@@ -59,6 +63,7 @@ public class DeployConfiguration {
         constant.setCdnHosts(cdnHosts);
         constant.setOssFolder(ossFolder);
         constant.setOssBucket(ossBucket);
+        constant.setFitOrderTemplateUrl(fitOrderTemplateUrl);
         return constant;
     }
 
