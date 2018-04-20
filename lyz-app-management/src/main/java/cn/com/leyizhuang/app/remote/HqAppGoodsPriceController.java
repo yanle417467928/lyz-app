@@ -77,6 +77,11 @@ public class HqAppGoodsPriceController {
                 logger.info("addGoodsPrice OUT,同步新增商品价目表行失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
+            if (StringUtils.isBlank(goodsPriceDTO.getPriceType())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品价目类型不能为空！", null);
+                logger.info("addGoodsPrice OUT,同步新增商品价目表行失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
             try {
                 GoodsPrice goodsPrice = this.GoodsPriceServiceImpl.findGoodsPrice(goodsPriceDTO.getPriceLineId());
                 if (null == goodsPrice) {
@@ -91,6 +96,7 @@ public class HqAppGoodsPriceController {
                         goodsPrice.setWholesalePrice(goodsPriceDTO.getWholesalePrice());
                     }
                     goodsPrice.setVIPPrice(goodsPriceDTO.getVIPPrice());
+                    goodsPrice.setPriceType(goodsPriceDTO.getPriceType());
                     if (null != goodsPriceDTO.getEndTime() && !"".equals(goodsPriceDTO.getEndTime())) {
                         goodsPrice.setEndTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getEndTime()));
                     }

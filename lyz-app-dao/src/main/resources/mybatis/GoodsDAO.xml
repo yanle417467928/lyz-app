@@ -906,7 +906,7 @@
         g.cover_image_uri,
         g.goods_specification,
         g.goods_unit,
-        p.vip_price,
+        MIN(p.vip_price) vip_price,
         p.retail_price,
         g.cid category_id,
         g.brd_id brand_id,
@@ -1047,7 +1047,7 @@
         g.sku_name,
         g.cover_image_uri,
         gp.retail_price,
-        gp.vip_price,
+        MIN(gp.vip_price) vip_price,
         gp.wholesale_price,
         g.company_flag,
         gp.price_line_id price_item_id
