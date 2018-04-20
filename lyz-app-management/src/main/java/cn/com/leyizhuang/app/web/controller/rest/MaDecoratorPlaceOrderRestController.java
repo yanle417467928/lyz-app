@@ -263,44 +263,49 @@ public class MaDecoratorPlaceOrderRestController {
         }
     }
 
+
     @RequestMapping(value = "/download/sample", method = RequestMethod.GET)
-    public void downloadSampleFile(HttpServletResponse res) {
-        String fileName = "装饰公司下单模板";
+    public void downloadSampleFile(HttpServletResponse response) {
+        String templateName = "fit_order_template.xlsx";
+        // 下载文件名
+        String fileName = "装饰公司下单模板.xlsx";
         try {
-            fileName = new String(fileName.getBytes("GB2312"), "ISO-8859-1");
+            fileName = new String(fileName.getBytes("GBK"), "ISO-8859-1");
         } catch (UnsupportedEncodingException e1) {
-            System.out.println("下载文件名格式转换错误！");
+            e1.printStackTrace();
         }
-        String fileNameInner = "fit_order_template.xlsx";
-        //fileName = new String(".xlsx");
-        //res.setContentType("application/octet-stream;charset=utf-8");
-        res.setContentType("application/x-download");
-        res.setHeader("Content-Disposition", "attachment;filename=" + fileName + ".xlsx");
-        byte[] buff = new byte[2048];
-        BufferedInputStream bis = null;
-        OutputStream os = null;
+        // 获取模板位置，读取数据库（也可以读取配置文件或写死）
+        String templatePath = ApplicationConstant.FIT_ORDER_TEMPLATE_URL;
+        // 实际位置
+        String path = templatePath + File.separator + templateName;
+        System.out.println(path);
+        // 1.设置文件ContentType类型，这样设置，会自动判断下载文件类型
+        response.setContentType("multipart/form-data");
+        // 2.设置文件头：最后一个参数是设置下载文件名
+        response.setHeader("Content-Disposition", "attachment;fileName="
+                + fileName);
+        response.addHeader("Content-Type", "application/vnd.ms-excel");
+        OutputStream out;
+        // 通过文件路径获得File对象(假如此路径中有一个download.pdf文件)
+        File file = new File(path);
         try {
-            os = res.getOutputStream();
-            bis = new BufferedInputStream(new FileInputStream(new File(ApplicationConstant.FIT_ORDER_TEMPLATE_URL
-                    + fileNameInner)));
-            int i = bis.read(buff);
-            while (i != -1) {
-                os.write(buff, 0, buff.length);
-                os.flush();
-                i = bis.read(buff);
+            FileInputStream inputStream = new FileInputStream(file);
+            // 3.通过response获取OutputStream对象(out)
+            out = response.getOutputStream();
+            byte[] buffer = new byte[512];
+            int b = inputStream.read(buffer);
+            while (b != -1) {
+                // 4.写到输出流(out)中
+                out.write(buffer, 0, b);
+                b = inputStream.read(buffer);
             }
+            inputStream.close();
+            out.close();
+            out.flush();
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            if (bis != null) {
-                try {
-                    bis.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
-        System.out.println("success");
+
     }
 
     private MaterialListDO transformRepeat(GoodsDO goodsDO) {
