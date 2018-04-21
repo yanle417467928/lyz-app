@@ -16,6 +16,8 @@ public class ApplicationConstant {
     public static String wmsUrl;
     public static String ebsUrl;
 
+    public static String FIT_ORDER_TEMPLATE_URL;
+
     public String getImagePath() {
         return imagePath;
     }
@@ -96,5 +98,13 @@ public class ApplicationConstant {
 
     public void setWechatApiClinetCert(String wechatApiClinetCert) {
         ApplicationConstant.wechatApiClinetCert = wechatApiClinetCert;
+    }
+
+    public String getFitOrderTemplateUrl() {
+        return FIT_ORDER_TEMPLATE_URL;
+    }
+
+    public void setFitOrderTemplateUrl(String fitOrderTemplateUrl) {
+        FIT_ORDER_TEMPLATE_URL = fitOrderTemplateUrl;
     }
 }

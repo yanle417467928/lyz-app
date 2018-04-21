@@ -213,8 +213,10 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
     }
 
     @Override
-    public List<MaEmployeeResponse> findMaEmployeeByCityIdAndStoreId(List<Long> storeIds) {
-        return this.maEmployeeDAO.findEmployeeByCityIdAndStoreId(storeIds);
+    public PageInfo<MaEmployeeResponse> findMaEmployeeByCityIdAndStoreId(Integer page, Integer size, List<Long> storeIds) {
+        PageHelper.startPage(page, size);
+        List<MaEmployeeResponse> pageGuideVOList = this.maEmployeeDAO.findEmployeeByCityIdAndStoreId(storeIds);
+        return new PageInfo<>(pageGuideVOList);
     }
 
     /**

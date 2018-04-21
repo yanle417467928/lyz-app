@@ -415,15 +415,12 @@ public class MaEmployeeRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageHelper.startPage(page, size);
             //查询登录用户门店权限的门店ID
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
-            List<MaEmployeeResponse> employeeDOList = this.maEmployeeService.findMaEmployeeByCityIdAndStoreId(storeIds);
-
-            PageInfo<MaEmployeeResponse> maEmployeeDOPageInfo = new PageInfo<>(employeeDOList);
-            List<MaEmployeeResponse> EmployeeDOList = maEmployeeDOPageInfo.getList();
-            logger.warn("selectSeller ,后台购买产品券选择导购成功", EmployeeDOList.size());
-            return new GridDataVO<MaEmployeeResponse>().transform(EmployeeDOList, maEmployeeDOPageInfo.getTotal());
+            PageInfo<MaEmployeeResponse> employeeDOListPage = this.maEmployeeService.findMaEmployeeByCityIdAndStoreId(page, size, storeIds);
+            List<MaEmployeeResponse> employeeDOList = employeeDOListPage.getList();
+            logger.warn("selectSeller ,后台购买产品券选择导购成功", employeeDOList.size());
+            return new GridDataVO<MaEmployeeResponse>().transform(employeeDOList, employeeDOListPage.getTotal());
         } catch (Exception e) {
             e.printStackTrace();
             logger.warn("selectSeller EXCEPTION,发生未知错误，后台购买产品券选择导购失败");

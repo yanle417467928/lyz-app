@@ -6,6 +6,7 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -132,39 +133,53 @@ public class ExcelImportUtil {
         List<FitOrderExcelModel> list = new ArrayList<FitOrderExcelModel>();
         if (xssfWorkbook != null) {
             // Read the Sheet
-            for (int numSheet = 0; numSheet < xssfWorkbook.getNumberOfSheets(); numSheet++) {
+            for (int numSheet = 0; numSheet < 1; numSheet++) {
                 XSSFSheet xssfSheet = xssfWorkbook.getSheetAt(numSheet);
                 if (xssfSheet == null) {
                     continue;
                 }
                 //read first row
                 XSSFCell firstRowCell1 = xssfSheet.getRow(0).getCell(0);
-                String remark = getValue(firstRowCell1);
+                String remark = getValue(firstRowCell1, xssfWorkbook);
                 fitOrderExcel.setRemark(remark);
                 // Read the Row
-                for (int rowNum = 2; rowNum <= xssfSheet.getLastRowNum(); rowNum++) {
+                int emptyCount = 0;
+                for (int rowNum = 2; rowNum <= xssfSheet.getLastRowNum() && emptyCount <= 10; rowNum++) {
                     XSSFRow xssfRow = xssfSheet.getRow(rowNum);
-                    if (xssfRow != null) {
+                    if (xssfRow.getCell(0) != null && !xssfRow.getCell(0).getStringCellValue().equals("")
+                            && !xssfRow.getCell(2).getStringCellValue().equals("0")) {
                         excelModel = new FitOrderExcelModel();
                         XSSFCell externalCode = xssfRow.getCell(0);
                         XSSFCell qty = xssfRow.getCell(1);
                         XSSFCell internalCode = xssfRow.getCell(2);
                         XSSFCell internalName = xssfRow.getCell(3);
-                        if (StringUtils.isNotBlank(getValue(externalCode))) {
-                            excelModel.setExternalCode(getValue(externalCode));
+                        try {
+                            if (StringUtils.isNotBlank(getValue(externalCode, xssfWorkbook))) {
+                                excelModel.setExternalCode(getValue(externalCode, xssfWorkbook));
+                            }
+                            if (StringUtils.isNotBlank(getValue(qty, xssfWorkbook))) {
+                                excelModel.setQty(Double.valueOf(getValue(qty, xssfWorkbook)).intValue());
+                            }
+                            if (StringUtils.isNotBlank(getValue(internalCode, xssfWorkbook))) {
+                                excelModel.setInternalCode(getValue(internalCode, xssfWorkbook));
+                            }
+                            if (StringUtils.isNotBlank(getValue(internalName, xssfWorkbook))) {
+                                excelModel.setInternalName(getValue(internalName, xssfWorkbook));
+                            }
+                            if (null != excelModel.getExternalCode() && null != excelModel.getQty()) {
+                                list.add(excelModel);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            System.out.println(rowNum);
+                            System.out.println(getValue(externalCode, xssfWorkbook));
+                            System.out.println(getValue(qty, xssfWorkbook));
+                            System.out.println(getValue(internalCode, xssfWorkbook));
+                            System.out.println(getValue(internalName, xssfWorkbook));
                         }
-                        if (StringUtils.isNotBlank(getValue(qty))) {
-                            excelModel.setQty(Double.valueOf(getValue(qty)).intValue());
-                        }
-                        if (StringUtils.isNotBlank(getValue(internalCode))) {
-                            excelModel.setInternalCode(getValue(internalCode));
-                        }
-                        if (StringUtils.isNotBlank(getValue(internalName))) {
-                            excelModel.setInternalName(getValue(internalName));
-                        }
-                        if (null != excelModel.getExternalCode() && null != excelModel.getQty()) {
-                            list.add(excelModel);
-                        }
+
+                    } else {
+                        emptyCount++;
                     }
                 }
             }
@@ -197,13 +212,34 @@ public class ExcelImportUtil {
      * @author zhang 2015-08-18 00:12
      */
     @SuppressWarnings("static-access")
-    private static String getValue(XSSFCell xssfRow) {
+    private static String getValue(XSSFCell xssfRow, XSSFWorkbook workbook) {
+        //布尔值
         if (xssfRow.getCellType() == xssfRow.CELL_TYPE_BOOLEAN) {
             return String.valueOf(xssfRow.getBooleanCellValue());
-        } else if (xssfRow.getCellType() == xssfRow.CELL_TYPE_NUMERIC) {
+        }
+        //数字
+        else if (xssfRow.getCellType() == xssfRow.CELL_TYPE_NUMERIC) {
             return String.valueOf(xssfRow.getNumericCellValue());
-        } else {
+        }
+        //字符串
+        else if (xssfRow.getCellType() == xssfRow.CELL_TYPE_STRING) {
             return String.valueOf(xssfRow.getStringCellValue());
+        }
+        //公式
+        else if (xssfRow.getCellType() == xssfRow.CELL_TYPE_FORMULA) {
+            FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+            String result = evaluator.evaluate(xssfRow).getStringValue();
+            return result;
+        }
+        //空值
+        else if (xssfRow.getCellType() == xssfRow.CELL_TYPE_BLANK) {
+            return "";
+        }
+        //故障
+        else if (xssfRow.getCellType() == xssfRow.CELL_TYPE_ERROR) {
+            return "非法字符";
+        } else {
+            return "未知类型";
         }
     }
 

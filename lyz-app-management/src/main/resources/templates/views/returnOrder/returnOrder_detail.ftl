@@ -58,6 +58,7 @@
                 <input type="hidden" id="returnNumber" value="${maReturnOrderDetailVO.returnNumber}">
                 <input type="hidden" id="orderStatus" value="${maReturnOrderDetailVO.returnStatus}">
                 <input type="hidden" id="returnOrderType" value="${returnOrderType!''}">
+                <input type="hidden" id="deliveryType" value="${deliveryType!''}">
             </div>
         </div>
         <HR>
@@ -415,7 +416,8 @@
     function Initialization() {
         var orderStatus = $('#orderStatus').val();
         var returnOrderType = $('#returnOrderType').val();
-        if (orderStatus == 'PENDING_PICK_UP' && returnOrderType == 'RETURN_STORE') {
+        var deliveryType = $('#deliveryType').val();
+        if (orderStatus == 'PENDING_PICK_UP' && returnOrderType == 'RETURN_STORE'&&deliveryType=='SELF_TAKE') {
             $('#receiving').attr("disabled", false);
         } else {
             $('#receiving').attr("disabled", true);

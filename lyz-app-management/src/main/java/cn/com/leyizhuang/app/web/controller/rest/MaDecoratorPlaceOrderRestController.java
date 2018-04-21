@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
+import cn.com.leyizhuang.app.core.constant.ApplicationConstant;
 import cn.com.leyizhuang.app.core.constant.FitExcelImportGoodsErrorType;
 import cn.com.leyizhuang.app.core.constant.MaterialListType;
 import cn.com.leyizhuang.app.core.utils.ExcelImportUtil;
@@ -23,8 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -214,7 +215,7 @@ public class MaDecoratorPlaceOrderRestController {
                                     materialListDOTemp.setQty(materialListDOTemp.getQty() + goodsList.get(i).getQty());
                                     materialListSave.remove(materialListDOTemp);
                                     materialListSave.add(materialListDOTemp);
-                                }else {
+                                } else {
                                     MaterialListDO materialListDOTemp = transformRepeat(goodsDO);
                                     materialListDOTemp.setUserId(guideId);
                                     materialListDOTemp.setIdentityType(employee.getIdentityType());
@@ -262,6 +263,50 @@ public class MaDecoratorPlaceOrderRestController {
         }
     }
 
+
+    @RequestMapping(value = "/download/sample", method = RequestMethod.GET)
+    public void downloadSampleFile(HttpServletResponse response) {
+        String templateName = "fit_order_template.xlsx";
+        // 下载文件名
+        String fileName = "装饰公司下单模板.xlsx";
+        try {
+            fileName = new String(fileName.getBytes("GBK"), "ISO-8859-1");
+        } catch (UnsupportedEncodingException e1) {
+            e1.printStackTrace();
+        }
+        // 获取模板位置，读取数据库（也可以读取配置文件或写死）
+        String templatePath = ApplicationConstant.FIT_ORDER_TEMPLATE_URL;
+        // 实际位置
+        String path = templatePath + File.separator + templateName;
+        System.out.println(path);
+        // 1.设置文件ContentType类型，这样设置，会自动判断下载文件类型
+        response.setContentType("multipart/form-data");
+        // 2.设置文件头：最后一个参数是设置下载文件名
+        response.setHeader("Content-Disposition", "attachment;fileName="
+                + fileName);
+        response.addHeader("Content-Type", "application/vnd.ms-excel");
+        OutputStream out;
+        // 通过文件路径获得File对象(假如此路径中有一个download.pdf文件)
+        File file = new File(path);
+        try {
+            FileInputStream inputStream = new FileInputStream(file);
+            // 3.通过response获取OutputStream对象(out)
+            out = response.getOutputStream();
+            byte[] buffer = new byte[512];
+            int b = inputStream.read(buffer);
+            while (b != -1) {
+                // 4.写到输出流(out)中
+                out.write(buffer, 0, b);
+                b = inputStream.read(buffer);
+            }
+            inputStream.close();
+            out.close();
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     private MaterialListDO transformRepeat(GoodsDO goodsDO) {
         MaterialListDO materialListDOTemp = new MaterialListDO();

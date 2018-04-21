@@ -10,10 +10,7 @@ import cn.com.leyizhuang.app.core.remote.ebs.EbsSenderService;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
-import cn.com.leyizhuang.app.foundation.dao.MaEmpCreditMoneyDAO;
-import cn.com.leyizhuang.app.foundation.dao.MaGoodsDAO;
-import cn.com.leyizhuang.app.foundation.dao.MaOrderDAO;
-import cn.com.leyizhuang.app.foundation.dao.TimingTaskErrorMessageDAO;
+import cn.com.leyizhuang.app.foundation.dao.*;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
@@ -119,6 +116,8 @@ public class MaOrderServiceImpl implements MaOrderService {
     private TimingTaskErrorMessageDAO timingTaskErrorMessageDAO;
     @Resource
     private RechargeService rechargeService;
+    @Resource
+    private ReturnOrderDAO returnOrderDAO;
     @Resource
     private MaDecorativeCompanyCreditService maDecorativeCompanyCreditService;
 
@@ -1755,6 +1754,25 @@ public class MaOrderServiceImpl implements MaOrderService {
 
                 }
             }
+            if (!orderBaseInfo.getStatus().equals(AppOrderStatus.UNPAID)) {
+                //*******************************记录订单生命周期**************************
+                OrderLifecycle orderLifecycle = new OrderLifecycle();
+                orderLifecycle.setOid(orderBaseInfo.getId());
+                orderLifecycle.setOrderNumber(orderBaseInfo.getOrderNumber());
+                orderLifecycle.setOperation(OrderLifecycleType.CANCEL_ORDER);
+                orderLifecycle.setPostStatus(AppOrderStatus.CANCELED);
+                orderLifecycle.setOperationTime(new Date());
+                returnOrderDAO.saveOrderLifecycle(orderLifecycle);
+                //********************************保存退单生命周期信息***********************
+                ReturnOrderLifecycle returnOrderLifecycle = new ReturnOrderLifecycle();
+                returnOrderLifecycle.setRoid(returnOrderBaseInfo.getRoid());
+                returnOrderLifecycle.setReturnNo(returnOrderBaseInfo.getReturnNo());
+                returnOrderLifecycle.setOperation(OrderLifecycleType.CANCEL_ORDER);
+                returnOrderLifecycle.setPostStatus(AppReturnOrderStatus.FINISHED);
+                returnOrderLifecycle.setOperationTime(new Date());
+                returnOrderDAO.saveReturnOrderLifecycle(returnOrderLifecycle);
+            }
+
             //修改订单状态为已取消
             appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.CANCELED, null, orderBaseInfo.getOrderNumber());
             return returnNumber;
