@@ -141,9 +141,9 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                         giftIdsList.add(param.getId());
                     }
 
-                    // 根据用户身份 返回有价格信息的赠品集合
+                    // 根据用户身份 返回有价格信息的赠品集合 专供产品都是会员专享，所以这里传顾客id
                     List<OrderGoodsVO> giftGoodsVOList = goodsService.findOrderGoodsVOListByUserIdAndIdentityTypeAndGoodsIds(
-                            userId, identityType.getValue(), giftIdsList);
+                            cusId, 6, giftIdsList);
 
                     // 设置数量 新增赠品明细
                     for (OrderGoodsVO goods : giftGoodsVOList) {
@@ -190,7 +190,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                         }
 
                         /** 记录该顾客参与首单促销参与次数 **/
-                        statisticsSellDetailsService.addOrUpdateSellZgCusTimes(userId,goods.getSku(),1,orderGoodsInfo.getOrderQuantity(),ActBaseType.ZGFRIST);
+                        statisticsSellDetailsService.addOrUpdateSellZgCusTimes(cusId,goods.getSku(),1,orderGoodsInfo.getOrderQuantity(),ActBaseType.ZGFRIST);
                     }
 
                     //计算分摊
@@ -224,7 +224,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
 
                     // 根据用户身份 返回有价格信息的赠品集合
                     List<OrderGoodsVO> giftGoodsVOList = goodsService.findOrderGoodsVOListByUserIdAndIdentityTypeAndGoodsIds(
-                            userId, identityType.getValue(), giftIdsList);
+                            cusId, 6, giftIdsList);
 
                     // 设置数量 新增赠品明细
                     for (OrderGoodsVO goods : giftGoodsVOList) {
@@ -281,7 +281,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                         }
 
                         /** 记录该顾客参累积促销参与次数 **/
-                        statisticsSellDetailsService.addOrUpdateSellZgCusTimes(userId,goods.getSku(),1,orderGoodsInfo.getOrderQuantity(),ActBaseType.ACCUMULATE);
+                        statisticsSellDetailsService.addOrUpdateSellZgCusTimes(cusId,goods.getSku(),1,orderGoodsInfo.getOrderQuantity(),ActBaseType.ACCUMULATE);
                     }
 
                     //计算分摊

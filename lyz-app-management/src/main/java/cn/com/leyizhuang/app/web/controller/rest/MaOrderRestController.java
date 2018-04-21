@@ -1012,7 +1012,7 @@ public class MaOrderRestController extends BaseRestController {
                     preDepositMoney, remarks, preDepositRemarks, totalMoney, orderNumber, salesNumber);
 
             //******************************创建买券订单商品信息******************************
-            CreateOrderGoodsSupport support = commonService.createMaOrderGoodsInfo(goodsList, appCustomer, sellerId, 0, orderNumber);
+            CreateOrderGoodsSupport support = commonService.createMaOrderGoodsInfo(goodsList, appCustomer, appCustomer.getCusId(), 6, orderNumber);
 
             //****************** 创建订单物流信息 ******************
             OrderLogisticsInfo orderLogisticsInfo = maOrderService.createMaOrderLogisticsInfo(appStore, orderNumber);

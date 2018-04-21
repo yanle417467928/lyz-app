@@ -927,7 +927,7 @@
         <foreach collection="list" item="gid" index="index" open="(" close=")" separator=",">
             #{gid}
         </foreach>
-
+        GROUP BY g.sku
     </select>
 
     <select id="filterGoodsCustomer" resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
@@ -1065,6 +1065,7 @@
         <foreach collection="goodsIdSet" item="item" separator="," open="(" close=")">
             #{item}
         </foreach>
+        GROUP BY g.sku
     </select>
 
     <select id="screenGoodsGrid" resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">

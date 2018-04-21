@@ -342,7 +342,7 @@ public class GoodsRestController extends BaseRestController {
         if (customerRankInfoResponse == null){
             //非专供会员
 
-            if (productType.equals("ZG")){
+            if (productType.equals("zg")){
                 goodsDOPage = null;
             }else {
                 goodsDOPage = this.goodsService.screenGoodsGrid(page, size, brandCode, categoryCode, companyCode, "common",storeId);
@@ -369,7 +369,7 @@ public class GoodsRestController extends BaseRestController {
 
                 goodsDOPage = this.goodsService.screenGoodsGrid(page, size, brandCode, categoryCode, companyCode, priceType,storeId);
             }else{
-                if (productType.equals("ZG")){
+                if (productType.equals("zg")){
                     goodsDOPage = null;
                 }else {
                     goodsDOPage = this.goodsService.screenGoodsGrid(page, size, brandCode, categoryCode, companyCode, "common",storeId);

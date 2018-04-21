@@ -1732,6 +1732,9 @@ public class CommonServiceImpl implements CommonService {
             if (baseInfo != null) {
                 //更新订单账单信息
                 OrderBillingDetails billingDetails = orderService.getOrderBillingDetail(orderNumber);
+                billingDetails.setIsPayUp(true);
+                billingDetails.setPayUpTime(new Date());
+
                 //发送提货码给顾客,及提示导购顾客下单信息
                 String pickUpCode = this.sendPickUpCodeAndRemindMessageAfterPayUp(baseInfo);
                 baseInfo.setPickUpCode(pickUpCode);

@@ -270,13 +270,15 @@ public class AppActServiceImpl implements AppActService {
             }
 
             /** 计算专供促销 **/
-//            List<PromotionsGiftListResponse> zgGiftResponse = this.countZgPromotion(cusId,goodsIdList,goodsPool);
-//            if (zgGiftResponse != null && zgGiftResponse.size() > 0){
-//                proGiftList.addAll(zgGiftResponse);
-//            }
+            List<PromotionsGiftListResponse> zgGiftResponse = this.countZgPromotion(cusId,goodsIdList,goodsPool);
+            if (zgGiftResponse != null && zgGiftResponse.size() > 0){
+                proGiftList.addAll(zgGiftResponse);
+            }
 
             actList = this.getActList(employee, skus);
             customerType = AppCustomerType.MEMBER;
+
+            result.setPromotionGiftList(proGiftList);
         }
 
         if (actList == null || actList.size() == 0) {
