@@ -374,7 +374,7 @@ public class MaOrderServiceImpl implements MaOrderService {
         maOrderReceiveInf.setSobId(maOrderTempInfo.getSobId());
         maOrderReceiveInf.setInitDate(maOrderTempInfo.getCreateTime());
         maOrderReceiveInf.setHeaderId(maOrderTempInfo.getId());
-        maOrderReceiveInf.setSendTime(new Date());
+        //maOrderReceiveInf.setSendTime(new Date());
         this.saveAppToEbsOrderReceiveInf(maOrderReceiveInf);
         //记录销量
         //statisticsSellDetailsService.addOrderSellDetails(orderNumber);
