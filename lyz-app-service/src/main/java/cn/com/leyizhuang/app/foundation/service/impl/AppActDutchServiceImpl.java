@@ -61,6 +61,9 @@ public class AppActDutchServiceImpl implements AppActDutchService {
      * @return
      */
     public List<OrderGoodsInfo> addGoodsDetailsAndDutch(Long userId, AppIdentityType identityType, List<PromotionSimpleInfo> promotionSimpleInfoList, List<OrderGoodsInfo> orderGoodsInfoList,Long cusId) throws UnsupportedEncodingException {
+        if(identityType.getValue() == 6){
+            cusId = userId;
+        }
 
         // 最终商品明细集合
         List<OrderGoodsInfo> finallyOrderGoodsInfo = new ArrayList<>();
