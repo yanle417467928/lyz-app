@@ -39,40 +39,46 @@
         <div class="col-xs-12">
             <div class="box box-primary">
                 <div id="toolbar" class="form-inline">
-                <#--<@shiro.hasPermission name="/views/admin/resource/add">-->
-                    <button id="btn_add" type="button" class=" btn btn-default" onclick="openBillModal()">
-                        <i class="fa fa-download"></i>
-                        下载报表
-                    </button>
-                <#--</@shiro.hasPermission>-->
-                    <select name="city" id="cityCode" class="form-control selectpicker" data-width="120px"
-                            style="width:auto;"
-                            onchange="findStorelist()" data-live-search="true">
-                        <option value="-1">选择城市</option>
-                    </select>
-                    <select name="storeType" id="storeType" class="form-control selectpicker" data-width="120px"
-                            style="width:auto;"
-                            onchange="findStorelist()" data-live-search="true">
-                        <option value="">选择门店类型</option>
-                    <#if storeTypes??>
-                        <#list storeTypes as storeType>
-                            <option value="${storeType.value}">${storeType.description}</option>
-                        </#list>
-                    </#if>
-                    </select>
-                    <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px"
-                            style="width:auto;"
-                    <#--onchange="findByCondition()"--> data-live-search="true">
-                        <option value="-1">选择门店</option>
-                    </select>
+                    <form>
+                    <#--<@shiro.hasPermission name="/views/admin/resource/add">-->
+                        <button id="btn_add" type="button" class=" btn btn-default" onclick="openBillModal()">
+                            <i class="fa fa-download"></i>
+                            下载报表
+                        </button>
+                    <#--</@shiro.hasPermission>-->
+                        <select name="city" id="cityCode" class="form-control selectpicker" data-width="120px"
+                                style="width:auto;"
+                                onchange="findStorelist()" data-live-search="true">
+                            <option value="-1">选择城市</option>
+                        </select>
+                        <select name="storeType" id="storeType" class="form-control selectpicker" data-width="120px"
+                                style="width:auto;"
+                                onchange="findStorelist()" data-live-search="true">
+                            <option value="-1">选择门店类型</option>
+                        <#if storeTypes??>
+                            <#list storeTypes as storeType>
+                                <option value="${storeType.value}">${storeType.description}</option>
+                            </#list>
+                        </#if>
+                        </select>
+                        <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px"
+                                style="width:auto;"
+                        <#--onchange="findByCondition()"--> data-live-search="true">
+                            <option value="-1">选择门店</option>
+                        </select>
 
-                    <input name="startTime" <#--onchange="findByCondition()"--> type="text"
-                           class="form-control datepicker" id="startTime" style="width: 120px;" placeholder="开始时间">
-                    <input name="endTime" <#--onchange="findByCondition()"--> type="text"
-                           class="form-control datepicker" id="endTime" style="width: 120px;" placeholder="结束时间">
-                    <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
-                            onclick="return findByOrderNumber()">查找
-                    </button>
+                        <input name="startTime" <#--onchange="findByCondition()"--> type="text"
+                               class="form-control datepicker" id="startTime" style="width: 140px;" placeholder="开始时间"
+                               readonly>
+                        <input name="endTime" <#--onchange="findByCondition()"--> type="text"
+                               class="form-control datepicker" id="endTime" style="width: 140px;" placeholder="结束时间"
+                               readonly>
+                        <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
+                                onclick="return findByOrderNumber()">查找
+                        </button>
+                        <button type="reset" class="btn btn-default" onclick="clearAll()">重置
+                        </button>
+                    </form>
                 </div>
                 <div class="box-body table-reponsive">
                     <table id="dataGrid" class="table table-bordered table-hover">
@@ -91,7 +97,7 @@
         findStorelist();
 
         //获取数据
-        initDateGird(null, null, null, null, null, null);
+        //initDateGird(null, null, null, null, null, null);
         //时间选择框样式
         $('.datepicker').datepicker({
             format: 'yyyy-mm-dd',
@@ -155,8 +161,8 @@
         });
     }
 
-    function initDateGird(keywords, time, storeId, storeType, cityId) {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/reportDownload/accountGoodsItems/page/grid', 'get', false, function (params) {
+    function initDateGird(keywords, storeId, storeType, cityId, starTime, endTime) {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/reportDownload/goodsShipmentAndReturn/page/grid', 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
@@ -183,8 +189,8 @@
             title: '门店类型',
             align: 'center'
         }, {
-            field: 'orderNumber',
-            title: '订/退单号',
+            field: 'orderNo',
+            title: '订单号',
             align: 'center'
         }, {
             field: 'deliveryStatus',
@@ -215,9 +221,8 @@
         var storeId = $("#storeCode").val();
         var cityId = $('#cityCode').val();
         var storeType = $('#storeType').val();
-        initDateGird(keywords, startTime, endTime, storeId, storeType, cityId);
+        initDateGird(keywords, storeId, storeType, cityId, startTime, endTime);
     }
-
     function findByOrderNumber() {
         /*$('#startTime').val('');
         $('#endTime').val('');
@@ -237,7 +242,7 @@
         var storeId = $("#storeCode").val();
         var cityId = $('#cityCode').val();
         var storeType = $('#storeType').val();
-        initDateGird(queryCusInfo, startTime, endTime, storeId, storeType, cityId);
+        initDateGird(queryCusInfo, storeId, storeType, cityId, startTime, endTime);
     }
 
 
@@ -261,6 +266,13 @@
         window.open(escapeUrl);
 
     }
+
+      function clearAll() {
+          $('select').prop('selectedIndex', 0);
+          $("select").selectpicker('refresh');
+          $("#dataGrid").bootstrapTable('destroy');
+          initDateGird(null, null, null, null, null, null);
+      }
 
 </script>
 </body>

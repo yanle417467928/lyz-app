@@ -41,6 +41,9 @@ public interface MaReportDownloadService {
     PageInfo<AgencyFundDO> findAgencyFundDOAll(Long cityId, Long storeId, String storeType, String startTime, String endTime,
                                                    String keywords, List<Long> storeIds, Integer page, Integer size);
 
+    PageInfo<ShipmentAndReturnGoods> findGoodsShipmentAndReturnOrder(Long cityId, Long storeId, String storeType, String startTime, String endTime,
+                                                           String keywords, List<Long> storeIds, Integer page, Integer size);
+
     List<AgencyFundDO> downloadAgencyFund(Long cityId, Long storeId, String storeType, String startTime, String endTime,
                                               String keywords, List<Long> storeIds);
 

@@ -38,5 +38,14 @@ public interface MaReportDownloadDAO {
                                                @Param("startTime")String startTime, @Param("endTime")String endTime,
                                                @Param("keywords")String keywords, @Param("list") List<Long> storeIds);
 
+
+
+
+
+    List<ShipmentAndReturnGoods> queryGoodsShipmentAndReturnOrder(@Param("cityId") Long cityId, @Param("storeId") Long storeId, @Param("storeType") String storeType,
+                                           @Param("startTime")String startTime, @Param("endTime")String endTime,
+                                           @Param("keywords")String keywords, @Param("list") List<Long> storeIds);
+
+
     List<StoreInventory> findStoreInventorys(@Param("storeId") Long storeId,  @Param("list") List<Long> storeIds);
 }

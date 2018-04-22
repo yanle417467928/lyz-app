@@ -493,4 +493,240 @@
     </select>
 
 
+    <select id="queryGoodsShipmentAndReturnOrder"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.ShipmentAndReturnGoods">
+        select
+        DISTINCT
+        ss.city as cityName,
+        ss.store_name as storeName ,
+        ss.store_type as storeType,
+        orbi.ord_no as ordNo,
+        orbi.order_time as createTime,
+        orbi.store_id as store_id,
+        obi.customer_id as customerId,
+        obi.customer_phone as customerPhone,
+        obi.customer_name as customerName,
+        obi.customer_type as customerType,
+        obi.sales_consult_name as salesConsultName,
+        orgi.company_flag as companyFlag,
+        orgi.sku as sku,
+        orgi.sku_name as skuName,
+        orgi.goods_line_type as goodsLineType,
+        orgi.return_qty as orderQty,
+        orgi.return_price as returnPrice,
+        ordd.create_time as operationTime,
+        orpc.purchase_price as purchasePrice
+        from ord_return_base_info orbi
+        LEFT JOIN ord_return_goods_info orgi ON orgi.return_no =orbi.return_no
+        LEFT JOIN ord_base_info obi ON orbi.ord_no=obi.ord_no
+        LEFT JOIN ord_return_delivery_detail ordd ON orbi.return_no = ordd.return_no
+        LEFT JOIN st_store ss ON orbi.store_id = ss.store_id
+        LEFT JOIN ord_return_logistic_info orli on orli.return_no = orbi.return_no
+        LEFT JOIN  ord_return_product_coupon orpc on orbi.return_no =orpc.return_no
+        where
+        orli.delivery_type='HOUSE_PICK'
+        AND
+        ordd.return_logistic_status='AGAIN_ON_SALE'
+        <if test="null !=storeId">
+            AND
+            orbi.store_id =#{storeId}
+        </if>
+        <if test="null !=cityId">
+            AND
+            ss.city_id =#{cityId}
+        </if>
+        <if test="null !=storeType and ''!=storeType">
+            AND
+            ss.store_type =#{storeType}
+        </if>
+        <if test="null !=startTime  and ''!=startTime">
+            AND
+            ordd.create_time >= #{startTime}
+        </if>
+        <if test="null !=endTime  and ''!=endTime">
+            AND
+            <![CDATA[ordd.create_time<= #{endTime}]]>
+        </if>
+        AND orbi.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+
+        UNION
+        select
+        DISTINCT
+        ss.city as cityName,
+        ss.store_name as storeName,
+        ss.store_type as storeType,
+        orbi.ord_no as ordNo,
+        orbi.store_id as store_id,
+        orl.operation_time as operationTime,
+        orbi.order_time as createTime,
+        orbi.cus_id as customerId,
+        orbi.cus_phone as customerPhone,
+        orbi.cus_name as customerName,
+        orbi.cus_type as customerType,
+        obi.sales_consult_name as salesConsultName,
+        orgi.company_flag as companyFlag,
+        orgi.sku as sku,
+        orgi.sku_name as skuName,
+        orgi.goods_line_type as goodsLineType,
+        orgi.return_qty as orderQty,
+        orgi.return_price as returnPrice,
+        orpc.purchase_price as purchasePrice
+        from ord_return_base_info orbi
+        LEFT JOIN ord_return_goods_info orgi ON orgi.return_no =orbi.return_no
+        LEFT JOIN ord_base_info obi ON orbi.ord_no=obi.ord_no
+        LEFT JOIN st_store ss ON orbi.store_id = ss.store_id
+        LEFT JOIN ord_return_lifecycle orl ON orbi.return_no = orl.return_no
+        LEFT JOIN ord_return_logistic_info orli on orli.return_no = orbi.return_no
+        LEFT JOIN  ord_return_product_coupon orpc on orbi.return_no =orpc.return_no
+        where
+        orli.delivery_type='RETURN_STORE'
+        AND
+        orbi.return_status ='FINISHED'
+        AND
+        orl.post_status = 'FINISHED'
+        <if test="null !=storeId">
+            AND
+            orbi.store_id =#{storeId}
+        </if>
+        <if test="null !=cityId">
+            AND
+            ss.city_id =#{cityId}
+        </if>
+        <if test="null !=storeType and ''!=storeType">
+            AND
+            ss.store_type =#{storeType}
+        </if>
+        <if test="null !=startTime  and ''!=startTime">
+            AND
+            orl.operation_time >= #{startTime}
+        </if>
+        <if test="null !=endTime  and ''!=endTime">
+            AND
+            <![CDATA[orl.operation_time<= #{endTime}]]>
+        </if>
+        AND orbi.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+
+        UNION
+        select
+        DISTINCT
+        obi.city_name as cityName,
+        obi.store_id as store_id,
+        ss.store_name as storeName,
+        ss.store_type as storeType,
+        obi.ord_no as ordNo,
+        odid.create_time as operationTime,
+        obi.create_time as createTime,
+        obi.customer_id as customerId,
+        obi.customer_phone as customerPhone,
+        obi.customer_name as customerName,
+        obi.customer_type as customerType,
+        obi.sales_consult_name as salesConsultName,
+        ogi.company_flag as companyFlag,
+        ogi.sku as sku,
+        ogi.sku_name as skuName,
+        ogi.goods_line_type as goodsLineType,
+        ogi.order_qty as orderQty,
+        ogi.return_price as returnPrice,
+        oci.purchase_price as purchasePrice
+        from ord_base_info obi
+        LEFT JOIN ord_goods_info ogi ON obi.ord_no =ogi.ord_no
+        LEFT JOIN ord_delivery_info_details odid ON obi.ord_no = odid.order_no
+        LEFT JOIN st_store ss ON obi.store_id = ss.store_id
+        LEFT JOIN ord_coupon_info oci ON obi.ord_no= oci.ord_no
+        where
+        obi.delivery_type ='HOUSE_DELIVERY'
+        AND
+        odid.logistic_status='SEALED_CAR'
+        <if test="null !=storeId">
+            AND
+            obi.store_id =#{storeId}
+        </if>
+        <if test="null !=cityId">
+            AND
+            obi.city_id =#{cityId}
+        </if>
+        <if test="null !=storeType and ''!=storeType">
+            AND
+            ss.store_type =#{storeType}
+        </if>
+        <if test="null !=startTime  and ''!=startTime">
+            AND
+            odid.create_time >= #{startTime}
+        </if>
+        <if test="null !=endTime  and ''!=endTime">
+            AND
+            <![CDATA[odid.create_time<= #{endTime}]]>
+        </if>
+        AND obi.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+
+        UNION
+
+        select
+        DISTINCT
+        obi.city_name as cityName,
+        obi.store_id as store_id,
+        ss.store_name as storeName,
+        ss.store_type as storeType,
+        obi.ord_no as ordNo,
+        ol.operation_time as operationTime,
+        obi.create_time as createTime,
+        obi.customer_id as customerId,
+        obi.customer_phone as customerPhone,
+        obi.customer_name as customerName ,
+        obi.customer_type as customerType,
+        obi.sales_consult_name as salesConsultName,
+        ogi.company_flag as companyFlag,
+        ogi.sku as sku,
+        ogi.sku_name as skuName,
+        ogi.goods_line_type as goodsLineType,
+        ogi.order_qty as orderQty,
+        ogi.return_price as returnPrice,
+        oci.purchase_price as purchasePrice
+        from ord_base_info obi
+        LEFT JOIN ord_goods_info ogi ON ogi.ord_no =obi.ord_no
+        LEFT JOIN st_store ss ON obi.store_id = ss.store_id
+        LEFT JOIN ord_lifecycle ol ON obi.ord_no = ol.ord_no
+        LEFT JOIN ord_coupon_info oci ON obi.ord_no= oci.ord_no
+        where
+        obi.delivery_type ='SELF_TAKE'
+        AND
+        obi.status ='FINISHED'
+        AND
+        ol.post_status = 'FINISHED'
+        <if test="null !=storeId">
+            AND
+            obi.store_id =#{storeId}
+        </if>
+        <if test="null !=cityId">
+            AND
+            obi.city_id =#{cityId}
+        </if>
+        <if test="null !=storeType and ''!=storeType">
+            AND
+            ss.store_type =#{storeType}
+        </if>
+        <if test="null !=startTime  and ''!=startTime ">
+            AND
+            ol.operation_time >= #{startTime}
+        </if>
+        <if test="null !=endTime and ''!=endTime">
+            AND
+            <![CDATA[ol.operation_time<= #{endTime} ]]>
+        </if>
+        AND obi.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+
 </mapper>

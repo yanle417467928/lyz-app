@@ -177,6 +177,32 @@ public class MaReportDownloadRestController extends BaseRestController{
         return new GridDataVO<AgencyFundDO>().transform(agencyFundDOPageInfo.getList(), agencyFundDOPageInfo.getTotal());
     }
 
+
+    /**
+     * @title   商品要退货报表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/4/3
+     */
+    @GetMapping(value = "/goodsShipmentAndReturn/page/grid")
+    public GridDataVO<ShipmentAndReturnGoods> restGoodsShipmentAndReturnPageGird(Integer offset, Integer size, Long cityId, Long storeId, String storeType,
+                                                             String startTime, String endTime, String keywords) {
+        size = getSize(size);
+        Integer page = getPage(offset, size);
+        //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
+        PageInfo<ShipmentAndReturnGoods> shipmentAndReturnGoodsList = this.maReportDownloadService.findGoodsShipmentAndReturnOrder(cityId, storeId, storeType, startTime,
+                endTime, keywords, storeIds, page, size);
+        logger.info("查询商品要退货成功");
+
+        return new GridDataVO<ShipmentAndReturnGoods>().transform(shipmentAndReturnGoodsList.getList(), shipmentAndReturnGoodsList.getTotal());
+    }
+
+
+
     /**
      * @title   订单收款报表下载
      * @descripe
