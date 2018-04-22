@@ -185,7 +185,7 @@
             AND effective_start_time &lt; NOW()
             AND (effective_end_time &gt; NOW() OR effective_end_time IS NULL)
             AND ggp.store_id = cu.store_id
-            AND ggp.price_type = rc.rank_code
+            AND (ggp.price_type = rc.rank_code OR cr.cus_id is NULL)
         GROUP BY
             g.sku
     </select>
