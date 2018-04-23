@@ -81,6 +81,11 @@
                                 clearTimeout($global.timer);
                                 $loading.close();
                                 $global.timer = null;
+                                var stockOutStr = "";
+                                var str = "";
+                                // 计数
+                                var num = 0;
+                                var num2 = 0;
                                 $.each(result.content, function (i, item) {
                                     var status;
                                     if (item.errorType === 'GOODS_NOT_EXISTS') {
@@ -92,22 +97,57 @@
                                     } else {
                                         status = "<span class='label label-success'>OK</span>";
                                     }
-                                    var str = "<tr>" +
-                                            "<td><input id='externalCode' type='text' value='" + item.externalCode + "' style='width:90%;border: none;' readonly></td>" +
-                                            "<td><input id='qty' type='number' value='" + item.qty + "' style='width:90%;border: none;' readonly></td>" +
-                                            "<td><input id='internalCode' type='text' value='" + item.internalCode + "' style='width:90%;border: none;' readonly></td>" +
-                                            "<td><input id='internalName' type='text' value='" + item.internalName + "' style='width:90%;border: none;' readonly></td>" +
-                                            "<td><input id='inventory' type='number' value='" + item.inventory + "' style='width:90%;border: none;' readonly></td>" +
-                                            "<td><input id='invDifference' type='number' value='" + item.invDifference + "' style='width:90%;border: none;' readonly></td>" +
-                                            "<td>" + status + "</td>" +
-                                            /* "<td><input id='status' type='text' value='" + item.status + "' style='width:90%;border: none;' readonly></td>" +*/
-                                            "</tr>"
-                                    $("#selectedGoodsTable").append(str)
+
+                                    if(status != "<span class='label label-success'>OK</span>"){
+                                        num += 1;
+                                        stockOutStr +=  "<tr>" +
+                                                "<td>"+(num)+"</td>"+
+                                                "<td><input id='externalCode' type='text' value='" + item.externalCode + "' style='width:90%;border: none;' readonly></td>" +
+                                                "<td><input id='qty' type='number' value='" + item.qty + "' style='width:90%;border: none;' readonly></td>" +
+                                                "<td><input id='internalCode' type='text' value='" + item.internalCode + "' style='width:90%;border: none;' readonly></td>" +
+                                                "<td><input id='internalName' type='text' value='" + item.internalName + "' style='width:90%;border: none;' readonly></td>" +
+                                                "<td><input id='inventory' type='number' value='" + item.inventory + "' style='width:90%;border: none;' readonly></td>" +
+                                                "<td><input id='invDifference' type='number' value='" + item.invDifference + "' style='width:90%;border: none;' readonly></td>" +
+                                                "<td>" + status + "</td>" +
+                                                "<td><a href='#'onclick='del_goods_comb(this);'>删除</td>"+
+                                                /* "<td><input id='status' type='text' value='" + item.status + "' style='width:90%;border: none;' readonly></td>" +*/
+                                                "</tr>"
+                                    }
                                 })
+                                $.each(result.content, function (i, item) {
+                                    var status;
+                                    if (item.errorType === 'GOODS_NOT_EXISTS') {
+                                        status = "<span class='label label-danger'>商品不存在</span>";
+                                    } else if (item.errorType === 'INV_NOT_ENOUGH') {
+                                        status = "<span class='label label-danger'>库存不足</span>";
+                                    } else if (item.errorType === 'PRICE_NOT_EXISTS') {
+                                        status = "<span class='label label-danger'>没有价目表</span>";
+                                    } else {
+                                        status = "<span class='label label-success'>OK</span>";
+                                    }
+
+                                    if(status == "<span class='label label-success'>OK</span>"){
+                                        num2 += 1;
+                                        str +=  "<tr>" +
+                                                "<td>"+(num+num2)+"</td>"+
+                                                "<td><input id='externalCode' type='text' value='" + item.externalCode + "' style='width:90%;border: none;' readonly></td>" +
+                                                "<td><input id='qty' type='number' value='" + item.qty + "' style='width:90%;border: none;' readonly></td>" +
+                                                "<td><input id='internalCode' type='text' value='" + item.internalCode + "' style='width:90%;border: none;' readonly></td>" +
+                                                "<td><input id='internalName' type='text' value='" + item.internalName + "' style='width:90%;border: none;' readonly></td>" +
+                                                "<td><input id='inventory' type='number' value='" + item.inventory + "' style='width:90%;border: none;' readonly></td>" +
+                                                "<td><input id='invDifference' type='number' value='" + item.invDifference + "' style='width:90%;border: none;' readonly></td>" +
+                                                "<td>" + status + "</td>" +
+                                                "<td><a href='#'onclick='del_goods_comb(this);'>删除</td>"+
+                                                /* "<td><input id='status' type='text' value='" + item.status + "' style='width:90%;border: none;' readonly></td>" +*/
+                                                "</tr>"
+                                    }
+                                })
+                                $("#selectedGoodsTable").append(stockOutStr);
+                                $("#selectedGoodsTable").append(str);
                                 $('#goods_import').bootstrapValidator('disableSubmitButtons', false);
                                 if (result.submitFlag === true) {
                                     $("#submitGoods").removeAttr("disabled");
-                                    $("#uploadSubmit").attr("disabled", "true");
+                                    //$("#uploadSubmit").attr("disabled", "true");
                                 }
                                 $("#remark").val(result.remark);
                                 $("#remarkDiv").attr("style", "display:block;");//显示div
@@ -263,7 +303,8 @@
                         $loading.close();
                         $notify.info("加入下料清单成功!");
                         setTimeout(function () {
-                            window.location.href = document.referrer
+                            //window.location.href = document.referrer
+                            location.reload();
                         }, 2000);
 
                     } else {
@@ -277,6 +318,24 @@
             });
             console.log(goodsDetails);
         }
+
+    //删除商品节点
+    function del_goods_comb(obj) {
+        $(obj).parent().parent().remove();
+
+        var trs = $("#selectedGoodsTable").find("tr");
+        var flag = true;
+        trs.each(function (i, n) {
+            var qty = $(n).find("#invDifference").val();
+            if (qty < 0){
+                flag = false;
+            }
+        });
+
+        if (flag){
+            $("#submitGoods").removeAttr("disabled");
+        }
+    }
     </script>
 
 </head>
@@ -377,13 +436,15 @@
                             <table class="table table-bordered">
                                 <thead>
                                 <tr>
+                                    <th>序号</th>
                                     <th>商品外部编码</th>
                                     <th>数量</th>
                                     <th>商品内部编码</th>
                                     <th>商品内部名称</th>
                                     <th>库存</th>
-                                    <th>库存差异</th>
+                                    <th>缺货数量</th>
                                     <th>状态</th>
+                                    <th>操作</th>
                                 </tr>
                                 </thead>
                                 <tbody id="selectedGoodsTable">
