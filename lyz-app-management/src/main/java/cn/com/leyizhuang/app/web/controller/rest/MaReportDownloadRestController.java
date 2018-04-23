@@ -49,7 +49,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping(value = MaReportDownloadRestController.PRE_URL, produces = "application/json;charset=utf-8")
-public class MaReportDownloadRestController extends BaseRestController{
+public class MaReportDownloadRestController extends BaseRestController {
 
     protected static final String PRE_URL = "/rest/reportDownload";
 
@@ -70,17 +70,17 @@ public class MaReportDownloadRestController extends BaseRestController{
     private static final int maxRowNum = 60000;
 
     /**
-     * @title   订单收款报表查询
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 订单收款报表查询
+     * @descripe
      * @author GenerationRoad
      * @date 2018/4/2
      */
     @GetMapping(value = "/receipts/page/grid")
     public GridDataVO<ReceiptsReportDO> restReceiptsReportDOPageGird(Integer offset, Integer size, Long cityId, Long storeId, String storeType,
-                                                                    String startTime, String endTime, String payType, String keywords) {
+                                                                     String startTime, String endTime, String payType, String keywords) {
         size = getSize(size);
         Integer page = getPage(offset, size);
         //查询登录用户门店权限的门店ID
@@ -114,18 +114,18 @@ public class MaReportDownloadRestController extends BaseRestController{
         return new GridDataVO<StorePredepositReportDO>().transform(storePredepositReportDOAll.getList(), storePredepositReportDOAll.getTotal());
     }
 
-    /**  
-     * @title   对账商品明细报表查询
+    /**
+     * @param
+     * @return
+     * @throws
+     * @title 对账商品明细报表查询
      * @descripe
-     * @param 
-     * @return 
-     * @throws 
      * @author GenerationRoad
      * @date 2018/4/2
      */
     @GetMapping(value = "/accountGoodsItems/page/grid")
     public GridDataVO<AccountGoodsItemsDO> restAccountGoodsItemsDOPageGird(Integer offset, Integer size, Long cityId, Long storeId, String storeType,
-                                                                       String startTime, String endTime, String keywords) {
+                                                                           String startTime, String endTime, String keywords) {
         size = getSize(size);
         Integer page = getPage(offset, size);
         //查询登录用户门店权限的门店ID
@@ -135,12 +135,12 @@ public class MaReportDownloadRestController extends BaseRestController{
         return new GridDataVO<AccountGoodsItemsDO>().transform(accountGoodsItemsDOPageInfo.getList(), accountGoodsItemsDOPageInfo.getTotal());
     }
 
-    /**  
-     * @title   账单明细报表查询
+    /**
+     * @param
+     * @return
+     * @throws
+     * @title 账单明细报表查询
      * @descripe
-     * @param 
-     * @return 
-     * @throws 
      * @author GenerationRoad
      * @date 2018/4/3
      */
@@ -155,19 +155,19 @@ public class MaReportDownloadRestController extends BaseRestController{
                 endTime, keywords, storeIds, page, size);
         return new GridDataVO<BillingItemsDO>().transform(billingItemsDOPageInfo.getList(), billingItemsDOPageInfo.getTotal());
     }
-    
-    /**  
-     * @title   配送员代收款报表查询
-     * @descripe
+
+    /**
      * @param
-     * @return 
-     * @throws 
+     * @return
+     * @throws
+     * @title 配送员代收款报表查询
+     * @descripe
      * @author GenerationRoad
      * @date 2018/4/3
      */
     @GetMapping(value = "/agencyFund/page/grid")
     public GridDataVO<AgencyFundDO> restAgencyFundDOPageGird(Integer offset, Integer size, Long cityId, Long storeId, String storeType,
-                                                                 String startTime, String endTime, String keywords) {
+                                                             String startTime, String endTime, String keywords) {
         size = getSize(size);
         Integer page = getPage(offset, size);
         //查询登录用户门店权限的门店ID
@@ -179,17 +179,17 @@ public class MaReportDownloadRestController extends BaseRestController{
 
 
     /**
-     * @title   商品要退货报表
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 商品要退货报表
+     * @descripe
      * @author GenerationRoad
      * @date 2018/4/3
      */
     @GetMapping(value = "/goodsShipmentAndReturn/page/grid")
     public GridDataVO<ShipmentAndReturnGoods> restGoodsShipmentAndReturnPageGird(Integer offset, Integer size, Long cityId, Long storeId, String storeType,
-                                                             String startTime, String endTime, String keywords) {
+                                                                                 String startTime, String endTime, String keywords) {
         size = getSize(size);
         Integer page = getPage(offset, size);
         //查询登录用户门店权限的门店ID
@@ -202,13 +202,12 @@ public class MaReportDownloadRestController extends BaseRestController{
     }
 
 
-
     /**
-     * @title   订单收款报表下载
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 订单收款报表下载
+     * @descripe
      * @author GenerationRoad
      * @date 2018/4/2
      */
@@ -227,7 +226,7 @@ public class MaReportDownloadRestController extends BaseRestController{
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "收款报表-"+ DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") +".xls";//如  D:/xx/xx/xxx.xls
+        String fileurl = "收款报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
@@ -252,37 +251,37 @@ public class MaReportDownloadRestController extends BaseRestController{
 
                 //筛选条件
                 Map<String, String> map = new HashMap<>();
-                if (null != cityId && !(cityId.equals(-1L)) && null != receiptsReportDOS && receiptsReportDOS.size() > 0){
+                if (null != cityId && !(cityId.equals(-1L)) && null != receiptsReportDOS && receiptsReportDOS.size() > 0) {
                     map.put("城市", receiptsReportDOS.get(0).getCityName());
                 } else {
                     map.put("城市", "无");
                 }
-                if (null != storeId && !(storeId.equals(-1L)) && null != receiptsReportDOS && receiptsReportDOS.size() > 0){
+                if (null != storeId && !(storeId.equals(-1L)) && null != receiptsReportDOS && receiptsReportDOS.size() > 0) {
                     map.put("门店", receiptsReportDOS.get(0).getStoreName());
                 } else {
                     map.put("门店", "无");
                 }
-                if (null != storeType && !("".equals(storeType)) && null != receiptsReportDOS && receiptsReportDOS.size() > 0){
+                if (null != storeType && !("".equals(storeType)) && null != receiptsReportDOS && receiptsReportDOS.size() > 0) {
                     map.put("门店类型", receiptsReportDOS.get(0).getStoreType());
                 } else {
                     map.put("门店类型", "无");
                 }
-                if (null != payType && !("".equals(payType)) && null != receiptsReportDOS && receiptsReportDOS.size() > 0){
+                if (null != payType && !("".equals(payType)) && null != receiptsReportDOS && receiptsReportDOS.size() > 0) {
                     map.put("支付方式", receiptsReportDOS.get(0).getPayType());
                 } else {
                     map.put("支付方式", "无");
                 }
-                if (null != startTime && !("".equals(startTime))){
+                if (null != startTime && !("".equals(startTime))) {
                     map.put("开始时间", startTime);
                 } else {
                     map.put("开始时间", "无");
                 }
-                if (null != keywords && !("".equals(keywords))){
+                if (null != keywords && !("".equals(keywords))) {
                     map.put("关键字", keywords);
                 } else {
                     map.put("关键字", "无");
                 }
-                if (null != endTime && !("".equals(endTime))){
+                if (null != endTime && !("".equals(endTime))) {
                     map.put("结束时间", endTime);
                 } else {
                     map.put("结束时间", "无");
@@ -295,8 +294,8 @@ public class MaReportDownloadRestController extends BaseRestController{
                 String[] titles = {"城市", "门店名称", "门店类型", "付款/退款时间", "支付方式", "支付金额", "订/退单号", "备注"};
                 //计算标题开始行号
                 int row = 1;
-                if (null != map && map.size() > 0){
-                    row = (map.size() + 1)/2 + 4;
+                if (null != map && map.size() > 0) {
+                    row = (map.size() + 1) / 2 + 4;
                 }
 
 
@@ -330,7 +329,7 @@ public class MaReportDownloadRestController extends BaseRestController{
                 Double totle = 0D;
                 Double deliveryPos = 0D;
                 Double deliveryCash = 0D;
-                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"),9,WritableFont.NO_BOLD,false,
+                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.NO_BOLD, false,
                         UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
                 //填写表体数据
                 for (int j = 0; j < maxRowNum; j++) {
@@ -344,43 +343,43 @@ public class MaReportDownloadRestController extends BaseRestController{
                     ws.addCell(new Label(3, j + row, receiptsReportDO.getPayTime(), textFormat));
                     ws.addCell(new Label(4, j + row, receiptsReportDO.getPayType(), textFormat));
                     if ("DELIVERY_CLERK".equals(receiptsReportDO.getPaymentSubjectType())) {
-                        if ("CASH".equals(receiptsReportDO.getPayTypes())){
+                        if ("CASH".equals(receiptsReportDO.getPayTypes())) {
                             ws.addCell(new Label(4, j + row, "配送现金", textFormat));
                         }
-                        if ("POS".equals(receiptsReportDO.getPayTypes())){
+                        if ("POS".equals(receiptsReportDO.getPayTypes())) {
                             ws.addCell(new Label(4, j + row, "配送POS", textFormat));
                         }
                     }
                     ws.addCell(new Number(5, j + row, receiptsReportDO.getMoney(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     ws.addCell(new Label(6, j + row, receiptsReportDO.getOrderNumber(), textFormat));
                     ws.addCell(new Label(7, j + row, receiptsReportDO.getRemarks(), textFormat));
-                    if ("CUS_PREPAY".equals(receiptsReportDO.getPayTypes())){
-                        cusPrepay = CountUtil.add(cusPrepay, null==receiptsReportDO.getMoney()?0D:receiptsReportDO.getMoney());
-                    } else if ("ST_PREPAY".equals(receiptsReportDO.getPayTypes())){
-                        stPrepay = CountUtil.add(stPrepay, null==receiptsReportDO.getMoney()?0D:receiptsReportDO.getMoney());
-                    } else if ("ALIPAY".equals(receiptsReportDO.getPayTypes())){
-                        alipay = CountUtil.add(alipay, null==receiptsReportDO.getMoney()?0D:receiptsReportDO.getMoney());
-                    } else if ("WE_CHAT".equals(receiptsReportDO.getPayTypes())){
-                        weChat = CountUtil.add(weChat, null==receiptsReportDO.getMoney()?0D:receiptsReportDO.getMoney());
-                    } else if ("UNION_PAY".equals(receiptsReportDO.getPayTypes())){
-                        unionPay = CountUtil.add(unionPay, null==receiptsReportDO.getMoney()?0D:receiptsReportDO.getMoney());
-                    } else if ("POS".equals(receiptsReportDO.getPayTypes())){
+                    if ("CUS_PREPAY".equals(receiptsReportDO.getPayTypes())) {
+                        cusPrepay = CountUtil.add(cusPrepay, null == receiptsReportDO.getMoney() ? 0D : receiptsReportDO.getMoney());
+                    } else if ("ST_PREPAY".equals(receiptsReportDO.getPayTypes())) {
+                        stPrepay = CountUtil.add(stPrepay, null == receiptsReportDO.getMoney() ? 0D : receiptsReportDO.getMoney());
+                    } else if ("ALIPAY".equals(receiptsReportDO.getPayTypes())) {
+                        alipay = CountUtil.add(alipay, null == receiptsReportDO.getMoney() ? 0D : receiptsReportDO.getMoney());
+                    } else if ("WE_CHAT".equals(receiptsReportDO.getPayTypes())) {
+                        weChat = CountUtil.add(weChat, null == receiptsReportDO.getMoney() ? 0D : receiptsReportDO.getMoney());
+                    } else if ("UNION_PAY".equals(receiptsReportDO.getPayTypes())) {
+                        unionPay = CountUtil.add(unionPay, null == receiptsReportDO.getMoney() ? 0D : receiptsReportDO.getMoney());
+                    } else if ("POS".equals(receiptsReportDO.getPayTypes())) {
                         if ("DELIVERY_CLERK".equals(receiptsReportDO.getPaymentSubjectType())) {
-                            deliveryPos = CountUtil.add(deliveryPos, null==receiptsReportDO.getMoney()?0D:receiptsReportDO.getMoney());
+                            deliveryPos = CountUtil.add(deliveryPos, null == receiptsReportDO.getMoney() ? 0D : receiptsReportDO.getMoney());
                         } else {
-                            pos = CountUtil.add(pos, null==receiptsReportDO.getMoney()?0D:receiptsReportDO.getMoney());
+                            pos = CountUtil.add(pos, null == receiptsReportDO.getMoney() ? 0D : receiptsReportDO.getMoney());
                         }
 
-                    } else if ("CASH".equals(receiptsReportDO.getPayTypes())){
+                    } else if ("CASH".equals(receiptsReportDO.getPayTypes())) {
                         if ("DELIVERY_CLERK".equals(receiptsReportDO.getPaymentSubjectType())) {
-                            deliveryCash = CountUtil.add(deliveryCash, null == receiptsReportDO.getMoney()?0D : receiptsReportDO.getMoney());
+                            deliveryCash = CountUtil.add(deliveryCash, null == receiptsReportDO.getMoney() ? 0D : receiptsReportDO.getMoney());
                         } else {
-                            cash = CountUtil.add(cash, null == receiptsReportDO.getMoney()?0D : receiptsReportDO.getMoney());
+                            cash = CountUtil.add(cash, null == receiptsReportDO.getMoney() ? 0D : receiptsReportDO.getMoney());
                         }
                     } else {
-                        other = CountUtil.add(other, null==receiptsReportDO.getMoney()?0D:receiptsReportDO.getMoney());
+                        other = CountUtil.add(other, null == receiptsReportDO.getMoney() ? 0D : receiptsReportDO.getMoney());
                     }
-                    totle = CountUtil.add(totle, null==receiptsReportDO.getMoney()?0D:receiptsReportDO.getMoney());
+                    totle = CountUtil.add(totle, null == receiptsReportDO.getMoney() ? 0D : receiptsReportDO.getMoney());
                 }
                 ws.addCell(new Number(0, collectRow, weChat, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                 ws.addCell(new Number(1, collectRow, alipay, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
@@ -396,15 +395,15 @@ public class MaReportDownloadRestController extends BaseRestController{
                 ws.addCell(new Number(9, collectRow, deliveryCash, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                 ws.addCell(new Number(10, collectRow, totle, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
             }
-        }catch(Exception e) {
+        } catch (Exception e) {
             System.out.println(e);
             e.printStackTrace();
-        }finally {
-            if(wwb != null) {
+        } finally {
+            if (wwb != null) {
                 try {
                     wwb.write();//刷新（或写入），生成一个excel文档
                     wwb.close();//关闭
-                }catch(Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -673,11 +672,11 @@ public class MaReportDownloadRestController extends BaseRestController{
 
 
     /**
-     * @title   对账商品明细报表下载
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 对账商品明细报表下载
+     * @descripe
      * @author GenerationRoad
      * @date 2018/4/2
      */
@@ -696,7 +695,7 @@ public class MaReportDownloadRestController extends BaseRestController{
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "对账商品明细报表-"+ DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") +".xls";//如  D:/xx/xx/xxx.xls
+        String fileurl = "对账商品明细报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
@@ -721,32 +720,32 @@ public class MaReportDownloadRestController extends BaseRestController{
 
                 //筛选条件
                 Map<String, String> map = new HashMap<>();
-                if (null != cityId && !(cityId.equals(-1L)) && null != accountGoodsItemsDOList && accountGoodsItemsDOList.size() > 0){
+                if (null != cityId && !(cityId.equals(-1L)) && null != accountGoodsItemsDOList && accountGoodsItemsDOList.size() > 0) {
                     map.put("城市", accountGoodsItemsDOList.get(0).getCityName());
                 } else {
                     map.put("城市", "无");
                 }
-                if (null != storeId && !(storeId.equals(-1L)) && null != accountGoodsItemsDOList && accountGoodsItemsDOList.size() > 0){
+                if (null != storeId && !(storeId.equals(-1L)) && null != accountGoodsItemsDOList && accountGoodsItemsDOList.size() > 0) {
                     map.put("门店", accountGoodsItemsDOList.get(0).getStoreName());
                 } else {
                     map.put("门店", "无");
                 }
-                if (null != storeType && !("".equals(storeType)) && null != accountGoodsItemsDOList && accountGoodsItemsDOList.size() > 0){
+                if (null != storeType && !("".equals(storeType)) && null != accountGoodsItemsDOList && accountGoodsItemsDOList.size() > 0) {
                     map.put("门店类型", accountGoodsItemsDOList.get(0).getStoreType());
                 } else {
                     map.put("门店类型", "无");
                 }
-                if (null != startTime && !("".equals(startTime))){
+                if (null != startTime && !("".equals(startTime))) {
                     map.put("开始时间", startTime);
                 } else {
                     map.put("开始时间", "无");
                 }
-                if (null != keywords && !("".equals(keywords))){
+                if (null != keywords && !("".equals(keywords))) {
                     map.put("关键字", keywords);
                 } else {
                     map.put("关键字", "无");
                 }
-                if (null != endTime && !("".equals(endTime))){
+                if (null != endTime && !("".equals(endTime))) {
                     map.put("结束时间", endTime);
                 } else {
                     map.put("结束时间", "无");
@@ -761,14 +760,14 @@ public class MaReportDownloadRestController extends BaseRestController{
                         "成交单价", "成交总价", "单个产品经销差价", "总经销差价"};
                 //计算标题开始行号
                 int row = 1;
-                if (null != map && map.size() > 0){
-                    row = (map.size() + 1)/2 + 4;
+                if (null != map && map.size() > 0) {
+                    row = (map.size() + 1) / 2 + 4;
                 }
 
                 //设置标题
                 ws = this.setHeader(ws, titleFormat, columnView, titles, row);
                 row += 1;
-                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"),9,WritableFont.NO_BOLD,false,
+                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.NO_BOLD, false,
                         UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
                 //填写表体数据
                 for (int j = 0; j < maxRowNum; j++) {
@@ -800,33 +799,33 @@ public class MaReportDownloadRestController extends BaseRestController{
 
                 }
             }
-        }catch(Exception e) {
+        } catch (Exception e) {
             System.out.println(e);
             e.printStackTrace();
-        }finally {
-            if(wwb != null) {
+        } finally {
+            if (wwb != null) {
                 try {
                     wwb.write();//刷新（或写入），生成一个excel文档
                     wwb.close();//关闭
-                }catch(Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
     }
 
-    /**  
-     * @title   账单明细报表下载
+    /**
+     * @param
+     * @return
+     * @throws
+     * @title 账单明细报表下载
      * @descripe
-     * @param 
-     * @return 
-     * @throws 
      * @author GenerationRoad
      * @date 2018/4/3
      */
     @GetMapping(value = "/billingItems/download")
     public void downloadBillingItems(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId, String storeType,
-                                          String startTime, String endTime, String keywords) {
+                                     String startTime, String endTime, String keywords) {
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
         List<BillingItemsDO> billingItemsDOList = this.maReportDownloadService.downloadBillingItems(cityId, storeId, storeType, startTime,
@@ -839,7 +838,7 @@ public class MaReportDownloadRestController extends BaseRestController{
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "账单明细报表-"+ DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") +".xls";//如  D:/xx/xx/xxx.xls
+        String fileurl = "账单明细报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
@@ -864,32 +863,32 @@ public class MaReportDownloadRestController extends BaseRestController{
 
                 //筛选条件
                 Map<String, String> map = new HashMap<>();
-                if (null != cityId && !(cityId.equals(-1L)) && null != billingItemsDOList && billingItemsDOList.size() > 0){
+                if (null != cityId && !(cityId.equals(-1L)) && null != billingItemsDOList && billingItemsDOList.size() > 0) {
                     map.put("城市", billingItemsDOList.get(0).getCityName());
                 } else {
                     map.put("城市", "无");
                 }
-                if (null != storeId && !(storeId.equals(-1L)) && null != billingItemsDOList && billingItemsDOList.size() > 0){
+                if (null != storeId && !(storeId.equals(-1L)) && null != billingItemsDOList && billingItemsDOList.size() > 0) {
                     map.put("门店", billingItemsDOList.get(0).getStoreName());
                 } else {
                     map.put("门店", "无");
                 }
-                if (null != storeType && !("".equals(storeType)) && null != billingItemsDOList && billingItemsDOList.size() > 0){
+                if (null != storeType && !("".equals(storeType)) && null != billingItemsDOList && billingItemsDOList.size() > 0) {
                     map.put("门店类型", billingItemsDOList.get(0).getStoreType());
                 } else {
                     map.put("门店类型", "无");
                 }
-                if (null != startTime && !("".equals(startTime))){
+                if (null != startTime && !("".equals(startTime))) {
                     map.put("开始时间", startTime);
                 } else {
                     map.put("开始时间", "无");
                 }
-                if (null != keywords && !("".equals(keywords))){
+                if (null != keywords && !("".equals(keywords))) {
                     map.put("关键字", keywords);
                 } else {
                     map.put("关键字", "无");
                 }
-                if (null != endTime && !("".equals(endTime))){
+                if (null != endTime && !("".equals(endTime))) {
                     map.put("结束时间", endTime);
                 } else {
                     map.put("结束时间", "无");
@@ -904,14 +903,14 @@ public class MaReportDownloadRestController extends BaseRestController{
                         "微信", "支付宝", "银联", "门店现金", "门店POS", "配送现金", "配送POS", "其他", "门店预存款", "顾客预存款", "支付总额"};
                 //计算标题开始行号
                 int row = 1;
-                if (null != map && map.size() > 0){
-                    row = (map.size() + 1)/2 + 4;
+                if (null != map && map.size() > 0) {
+                    row = (map.size() + 1) / 2 + 4;
                 }
 
                 //设置标题
                 ws = this.setHeader(ws, titleFormat, columnView, titles, row);
                 row += 1;
-                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"),9,WritableFont.NO_BOLD,false,
+                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.NO_BOLD, false,
                         UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
                 //填写表体数据
                 for (int j = 0; j < maxRowNum; j++) {
@@ -950,15 +949,15 @@ public class MaReportDownloadRestController extends BaseRestController{
 
                 }
             }
-        }catch(Exception e) {
+        } catch (Exception e) {
             System.out.println(e);
             e.printStackTrace();
-        }finally {
-            if(wwb != null) {
+        } finally {
+            if (wwb != null) {
                 try {
                     wwb.write();//刷新（或写入），生成一个excel文档
                     wwb.close();//关闭
-                }catch(Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -966,17 +965,17 @@ public class MaReportDownloadRestController extends BaseRestController{
     }
 
     /**
-     * @title   配送员代收款报表下载
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 配送员代收款报表下载
+     * @descripe
      * @author GenerationRoad
      * @date 2018/4/3
      */
     @GetMapping(value = "/agencyFund/download")
     public void downloadAgencyFund(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId, String storeType,
-                                     String startTime, String endTime, String keywords) {
+                                   String startTime, String endTime, String keywords) {
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
         List<AgencyFundDO> agencyFundDOList = this.maReportDownloadService.downloadAgencyFund(cityId, storeId, storeType, startTime,
@@ -989,7 +988,7 @@ public class MaReportDownloadRestController extends BaseRestController{
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "配送员代收款报表-"+ DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") +".xls";//如  D:/xx/xx/xxx.xls
+        String fileurl = "配送员代收款报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
@@ -1014,32 +1013,32 @@ public class MaReportDownloadRestController extends BaseRestController{
 
                 //筛选条件
                 Map<String, String> map = new HashMap<>();
-                if (null != cityId && !(cityId.equals(-1L)) && null != agencyFundDOList && agencyFundDOList.size() > 0){
+                if (null != cityId && !(cityId.equals(-1L)) && null != agencyFundDOList && agencyFundDOList.size() > 0) {
                     map.put("城市", agencyFundDOList.get(0).getCityName());
                 } else {
                     map.put("城市", "无");
                 }
-                if (null != storeId && !(storeId.equals(-1L)) && null != agencyFundDOList && agencyFundDOList.size() > 0){
+                if (null != storeId && !(storeId.equals(-1L)) && null != agencyFundDOList && agencyFundDOList.size() > 0) {
                     map.put("门店", agencyFundDOList.get(0).getStoreName());
                 } else {
                     map.put("门店", "无");
                 }
-                if (null != storeType && !("".equals(storeType)) && null != agencyFundDOList && agencyFundDOList.size() > 0){
+                if (null != storeType && !("".equals(storeType)) && null != agencyFundDOList && agencyFundDOList.size() > 0) {
                     map.put("门店类型", agencyFundDOList.get(0).getStoreType());
                 } else {
                     map.put("门店类型", "无");
                 }
-                if (null != startTime && !("".equals(startTime))){
+                if (null != startTime && !("".equals(startTime))) {
                     map.put("开始时间", startTime);
                 } else {
                     map.put("开始时间", "无");
                 }
-                if (null != keywords && !("".equals(keywords))){
+                if (null != keywords && !("".equals(keywords))) {
                     map.put("关键字", keywords);
                 } else {
                     map.put("关键字", "无");
                 }
-                if (null != endTime && !("".equals(endTime))){
+                if (null != endTime && !("".equals(endTime))) {
                     map.put("结束时间", endTime);
                 } else {
                     map.put("结束时间", "无");
@@ -1053,14 +1052,14 @@ public class MaReportDownloadRestController extends BaseRestController{
                         "订单代收金额", "配送员实际收款现金", "配送员实际收款POS", "配送员备注", "应退门店", "仓库应存回公司货款", "订单备注"};
                 //计算标题开始行号
                 int row = 1;
-                if (null != map && map.size() > 0){
-                    row = (map.size() + 1)/2 + 4;
+                if (null != map && map.size() > 0) {
+                    row = (map.size() + 1) / 2 + 4;
                 }
 
                 //设置标题
                 ws = this.setHeader(ws, titleFormat, columnView, titles, row);
                 row += 1;
-                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"),9,WritableFont.NO_BOLD,false,
+                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.NO_BOLD, false,
                         UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
                 //填写表体数据
                 for (int j = 0; j < maxRowNum; j++) {
@@ -1086,15 +1085,15 @@ public class MaReportDownloadRestController extends BaseRestController{
                     ws.addCell(new Label(15, j + row, agencyFundDO.getOrderRemark(), textFormat));
                 }
             }
-        }catch(Exception e) {
+        } catch (Exception e) {
             System.out.println(e);
             e.printStackTrace();
-        }finally {
-            if(wwb != null) {
+        } finally {
+            if (wwb != null) {
                 try {
                     wwb.write();//刷新（或写入），生成一个excel文档
                     wwb.close();//关闭
-                }catch(Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -1103,14 +1102,15 @@ public class MaReportDownloadRestController extends BaseRestController{
 
 
     /**
-     * @title   对账商品明细报表下载
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 对账商品明细报表下载
+     * @descripe
      * @author GenerationRoad
      * @date 2018/4/2
      */
+
     @GetMapping(value = "/storeInventory/download")
     public void downloadStoreInventory(HttpServletRequest request, HttpServletResponse response, Long storeId){
         //查询登录用户门店权限的门店ID
@@ -1200,12 +1200,156 @@ public class MaReportDownloadRestController extends BaseRestController{
         }
     }
 
+
     /**
-     * @title   装饰公司对账单下载
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 商品要货退货报表下载
+     * @descripe
+     * @author GenerationRoad
+     * @date 2018/4/2
+     */
+    @GetMapping(value = "/goodsShipmentAndReturn/download")
+    public void downloadGoodsShipmentAndReturn(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId, String storeType,
+                                               String startTime, String endTime, String keywords) {
+        //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
+        List<ShipmentAndReturnGoods> shipmentAndReturnGoodsList = this.maReportDownloadService.downShipmentAndReturnOrder( cityId,  storeId,  storeType,  startTime,  endTime,keywords, storeIds);
+        ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
+        String shiroName = "";
+        if (null != shiroUser) {
+            shiroName = shiroUser.getName();
+        }
+
+        response.setContentType("text/html;charset=UTF-8");
+        //创建名称
+        String fileurl = "商品要货退货明细报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls"; //如  D:/xx/xx/xxx.xls
+
+        WritableWorkbook wwb = null;
+        try {
+            //创建文件
+            wwb = exportXML(fileurl, response);
+
+            //excel单表最大行数是65535
+            int maxSize = 0;
+            if (shipmentAndReturnGoodsList != null) {
+                maxSize = shipmentAndReturnGoodsList.size();
+            }
+            int sheets = maxSize / maxRowNum + 1;
+            //设置excel的sheet数
+            for (int i = 0; i < sheets; i++) {
+                //标题格式
+                WritableCellFormat titleFormat = this.setTitleStyle();
+                //正文格式
+                WritableCellFormat textFormat = this.setTextStyle();
+
+                //工作表，参数0表示这是第一页
+                WritableSheet ws = wwb.createSheet("第" + (i + 1) + "页", i);
+
+                //筛选条件
+                Map<String, String> map = new HashMap<>();
+
+                if (null != cityId && !(cityId.equals(-1L)) && null != shipmentAndReturnGoodsList && shipmentAndReturnGoodsList.size() > 0) {
+                    map.put("城市", shipmentAndReturnGoodsList.get(0).getCityName());
+                } else {
+                    map.put("城市", "无");
+                }
+                if (null != storeId && !(storeId.equals(-1L)) && null != shipmentAndReturnGoodsList && shipmentAndReturnGoodsList.size() > 0) {
+                    map.put("门店", shipmentAndReturnGoodsList.get(0).getStoreName());
+                } else {
+                    map.put("门店", "无");
+                }
+                if (null != storeType && !("".equals(storeType)) && null != shipmentAndReturnGoodsList && shipmentAndReturnGoodsList.size() > 0) {
+                    map.put("门店类型", shipmentAndReturnGoodsList.get(0).getStoreType());
+                } else {
+                    map.put("门店类型", "无");
+                }
+                if (null != startTime && !("".equals(startTime))) {
+                    map.put("开始时间", startTime);
+                } else {
+                    map.put("开始时间", "无");
+                }
+                if (null != keywords && !("".equals(keywords))) {
+                    map.put("关键字", keywords);
+                } else {
+                    map.put("关键字", "无");
+                }
+                if (null != endTime && !("".equals(endTime))) {
+                    map.put("结束时间", endTime);
+                } else {
+                    map.put("结束时间", "无");
+                }
+                //设置筛选条件
+                ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
+                //列宽
+                int[] columnView = {10, 40, 20, 20, 30, 15, 15};
+                //列标题城市
+
+                String[] titles = {"城市","门店名称", "门店类型", "项目", "订单号", "出退货日期", "原订单日期", "客户编号", "客户电话", "客户姓名", "客户类型", "销顾姓名", "公司标识", "商品编码", "商品名称", "产品类型", "数量", "成交单价", "成交总价"};
+                //计算标题开始行号
+                int row = 1;
+                if (null != map && map.size() > 0) {
+                    row = (map.size() + 1) / 2 + 4;
+                }
+
+                //设置标题
+                ws = this.setHeader(ws, titleFormat, columnView, titles, row);
+                row += 1;
+                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.NO_BOLD, false,
+                        UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
+                //填写表体数据
+                for (int j = 0; j < maxRowNum; j++) {
+                    if (j + i * maxRowNum >= maxSize) {
+                        break;
+                    }
+                    ShipmentAndReturnGoods shipmentAndReturnGoods = shipmentAndReturnGoodsList.get(j + i * maxRowNum);
+                    ws.addCell(new Label(0, j + row, shipmentAndReturnGoods.getCityName(), textFormat));
+                    ws.addCell(new Label(1, j + row, shipmentAndReturnGoods.getStoreName(), textFormat));
+                    ws.addCell(new Label(2, j + row, shipmentAndReturnGoods.getStoreType(), textFormat));
+                    ws.addCell(new Label(3, j + row, shipmentAndReturnGoods.getOrderType(), textFormat));
+                    ws.addCell(new Label(4, j + row, shipmentAndReturnGoods.getOrdNo(), textFormat));
+                    ws.addCell(new Label(5, j + row, shipmentAndReturnGoods.getOperationTime(), textFormat));
+                    ws.addCell(new Label(6, j + row, shipmentAndReturnGoods.getCreateTime(), textFormat));
+                    if(null != shipmentAndReturnGoods.getCustomerId()){
+                        ws.addCell(new Label(7, j + row, shipmentAndReturnGoods.getCustomerId().toString(), textFormat));
+                    }
+                    ws.addCell(new Label(8, j + row, shipmentAndReturnGoods.getCustomerPhone(), textFormat));
+                    ws.addCell(new Label(9, j + row, shipmentAndReturnGoods.getCustomerName(), textFormat));
+                    ws.addCell(new Label(10, j + row, shipmentAndReturnGoods.getCustomerType(), textFormat));
+                    ws.addCell(new Label(11, j + row, shipmentAndReturnGoods.getSalesConsultName(), textFormat));
+                    ws.addCell(new Label(12, j + row, shipmentAndReturnGoods.getCompanyFlag(), textFormat));
+                    ws.addCell(new Label(13, j + row, shipmentAndReturnGoods.getSku(), textFormat));
+                    ws.addCell(new Label(14, j + row, shipmentAndReturnGoods.getSkuName(), textFormat));
+                    ws.addCell(new Label(15, j + row, shipmentAndReturnGoods.getGoodsLineType(), textFormat));
+                    ws.addCell(new Label(16, j + row, shipmentAndReturnGoods.getOrderQty().toString(), textFormat));
+                    ws.addCell(new Label(17, j + row, shipmentAndReturnGoods.getReturnPrice().toString(), textFormat));
+                    if(null != shipmentAndReturnGoods.getAmount()) {
+                        ws.addCell(new Label(18, j + row, shipmentAndReturnGoods.getAmount().toString(), textFormat));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+        } finally {
+            if (wwb != null) {
+                try {
+                    wwb.write();//刷新（或写入），生成一个excel文档
+                    wwb.close();//关闭
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * @param
+     * @return
+     * @throws
+     * @title 装饰公司对账单下载
+     * @descripe
      * @author GenerationRoad
      * @date 2018/4/19
      */
@@ -1221,7 +1365,7 @@ public class MaReportDownloadRestController extends BaseRestController{
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "装饰公司对账单-"+ DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") +".xls";//如  D:/xx/xx/xxx.xls
+        String fileurl = "装饰公司对账单-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
@@ -1255,7 +1399,7 @@ public class MaReportDownloadRestController extends BaseRestController{
                 //设置标题
                 ws = this.setHeader(ws, titleFormat, columnView, titles, row);
                 row += 1;
-                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"),9,WritableFont.NO_BOLD,false,
+                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.NO_BOLD, false,
                         UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
                 //填写表体数据
                 for (int j = 0; j < maxRowNum; j++) {
@@ -1288,7 +1432,7 @@ public class MaReportDownloadRestController extends BaseRestController{
                 WritableSheet ws = wwb.createSheet("账单（第" + (i + 1) + "页）", i);
                 User user = new User();
                 user = userService.queryById(creditBillingVO.getOperationId());
-                ws.mergeCells(0,0,6,0);
+                ws.mergeCells(0, 0, 6, 0);
                 ws.addCell(new Label(0, 0, creditBillingVO.getBillName(), titleFormat));
                 ws.addCell(new Label(0, 1, "账单编号", textFormat));
                 ws.addCell(new Label(1, 1, creditBillingVO.getCreditBillingNo(), textFormat));
@@ -1307,7 +1451,7 @@ public class MaReportDownloadRestController extends BaseRestController{
                 //设置标题
                 ws = this.setHeader(ws, titleFormat, columnView, titles, row);
                 row += 1;
-                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"),9,WritableFont.NO_BOLD,false,
+                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.NO_BOLD, false,
                         UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
                 Double credit = 0D;
                 Integer goodsQty = 0;
@@ -1325,8 +1469,8 @@ public class MaReportDownloadRestController extends BaseRestController{
                     ws.addCell(new Label(4, j + row, creditBillingDetailsVO.getDeliveryAddress(), textFormat));
                     ws.addCell(new Number(5, j + row, creditBillingDetailsVO.getGoodsQty()));
                     ws.addCell(new Number(6, j + row, creditBillingDetailsVO.getCreditMoney(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                    credit = CountUtil.add(credit, null==creditBillingDetailsVO.getCreditMoney()?0D:creditBillingDetailsVO.getCreditMoney());
-                    goodsQty += null==creditBillingDetailsVO.getGoodsQty()?0:creditBillingDetailsVO.getGoodsQty();
+                    credit = CountUtil.add(credit, null == creditBillingDetailsVO.getCreditMoney() ? 0D : creditBillingDetailsVO.getCreditMoney());
+                    goodsQty += null == creditBillingDetailsVO.getGoodsQty() ? 0 : creditBillingDetailsVO.getGoodsQty();
                     rows += 1;
                 }
                 ws.addCell(new Label(4, rows, "总计", titleFormat));
@@ -1334,21 +1478,20 @@ public class MaReportDownloadRestController extends BaseRestController{
                 ws.addCell(new Number(6, rows, credit, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
             }
 
-        }catch(Exception e) {
+        } catch (Exception e) {
             System.out.println(e);
             e.printStackTrace();
-        }finally {
-            if(wwb != null) {
+        } finally {
+            if (wwb != null) {
                 try {
                     wwb.write();//刷新（或写入），生成一个excel文档
                     wwb.close();//关闭
-                }catch(Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
     }
-
 
 
     public WritableWorkbook exportXML(String fileurl, HttpServletResponse response)
@@ -1364,39 +1507,39 @@ public class MaReportDownloadRestController extends BaseRestController{
     }
 
     /**
-     * @title   创建文件
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 创建文件
+     * @descripe
      * @author GenerationRoad
      * @date 2018/3/24
      */
-    public WritableWorkbook getWorkbook(String fileurl){
+    public WritableWorkbook getWorkbook(String fileurl) {
         WritableWorkbook wwb = null;
         try {
-            File file=new File(fileurl);
+            File file = new File(fileurl);
             if (!file.exists()) {
                 file.createNewFile();
             }
             //打开文件
             wwb = Workbook.createWorkbook(file);
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return wwb;
     }
 
     /**
-     * @title   添加筛选条件
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 添加筛选条件
+     * @descripe
      * @author GenerationRoad
      * @date 2018/3/24
      */
-    public WritableSheet setCondition(WritableSheet ws, Map<String,String> map, WritableCellFormat titleFormat, String shiroName, WritableCellFormat textFormat){
+    public WritableSheet setCondition(WritableSheet ws, Map<String, String> map, WritableCellFormat titleFormat, String shiroName, WritableCellFormat textFormat) {
         try {
             ws.addCell(new Label(0, 0, "筛选条件:", titleFormat));
 
@@ -1414,7 +1557,7 @@ public class MaReportDownloadRestController extends BaseRestController{
                     column = 1;
                 }
                 row += 1;
-             }
+            }
             row += 1;
             ws.addCell(new Label(3, row, "导出时间:", titleFormat));
             ws.addCell(new Label(4, row, DateUtil.getDateTimeStr(new Date()), textFormat));
@@ -1430,19 +1573,19 @@ public class MaReportDownloadRestController extends BaseRestController{
     }
 
     /**
-     * @title   设置样式
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 设置样式
+     * @descripe
      * @author GenerationRoad
      * @date 2018/3/24
      */
-    public WritableCellFormat setTitleStyle(){
+    public WritableCellFormat setTitleStyle() {
         try {
-            WritableFont titleFont = new WritableFont(WritableFont.createFont("微软雅黑"),9,WritableFont.BOLD,false,
+            WritableFont titleFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.BOLD, false,
                     UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
-            WritableCellFormat titleFormat=new WritableCellFormat();
+            WritableCellFormat titleFormat = new WritableCellFormat();
             //设置字体格式
             titleFormat.setFont(titleFont);
             //设置文本水平居中对齐
@@ -1459,8 +1602,8 @@ public class MaReportDownloadRestController extends BaseRestController{
         return null;
     }
 
-    public WritableCellFormat setTextStyle(){
-        WritableFont titleFont = new WritableFont(WritableFont.createFont("微软雅黑"),9,WritableFont.NO_BOLD,false,
+    public WritableCellFormat setTextStyle() {
+        WritableFont titleFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.NO_BOLD, false,
                 UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
         WritableCellFormat titleText = new WritableCellFormat();
         //设置字体格式
@@ -1470,18 +1613,18 @@ public class MaReportDownloadRestController extends BaseRestController{
     }
 
     /**
-     * @title   添加标题
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 添加标题
+     * @descripe
      * @author GenerationRoad
      * @date 2018/3/24
      */
-    public WritableSheet setHeader(WritableSheet ws, WritableCellFormat titleFormat, int[] columnView, String[] titles, int row){
+    public WritableSheet setHeader(WritableSheet ws, WritableCellFormat titleFormat, int[] columnView, String[] titles, int row) {
         try {
             //设置列宽
-            if (null != columnView){
+            if (null != columnView) {
                 for (int i = 0; i < columnView.length; i++) {
                     ws.setColumnView(i, columnView[i]);
                 }

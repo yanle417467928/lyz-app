@@ -48,4 +48,9 @@ public interface MaReportDownloadService {
                                               String keywords, List<Long> storeIds);
 
     List<StoreInventory> downloadStoreInventorys(Long storeId, List<Long> storeIds);
+
+    List<ShipmentAndReturnGoods> downShipmentAndReturnOrder(Long cityId, Long storeId, String storeType, String startTime, String endTime,
+                                                                     String keywords, List<Long> storeIds);
+
+
 }

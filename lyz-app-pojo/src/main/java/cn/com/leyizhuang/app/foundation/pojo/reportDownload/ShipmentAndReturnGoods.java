@@ -24,6 +24,8 @@ public class ShipmentAndReturnGoods {
     private String storeName;
     //门店类型
     private String storeType;
+    //项目类型 出货 要货
+    private String orderType;
     //订单号
     private String ordNo;
     //出退货时间
@@ -56,7 +58,8 @@ public class ShipmentAndReturnGoods {
     private BigDecimal amount;
     //产品劵购买价格
     private BigDecimal purchasePrice;
-
+    //相关单号
+    private String referenceNumber;
 
     public void setCustomerType(AppCustomerType appCustomerType) {
         this.customerType = appCustomerType.getDescription();
@@ -73,15 +76,20 @@ public class ShipmentAndReturnGoods {
     public static final List<ShipmentAndReturnGoods> transformList(List<ShipmentAndReturnGoods> shipmentAndReturnGoodsList) {
         if (null != shipmentAndReturnGoodsList && shipmentAndReturnGoodsList.size() > 0) {
             for (ShipmentAndReturnGoods shipmentAndReturnGoods : shipmentAndReturnGoodsList) {
-                if ("PRODUCT_COUPON".equals(shipmentAndReturnGoods.getGoodsLineType()) && null != shipmentAndReturnGoods.getPurchasePrice() && null != shipmentAndReturnGoods.getOrderQty()) {
+                if ("产品券".equals(shipmentAndReturnGoods.getGoodsLineType()) && null != shipmentAndReturnGoods.getPurchasePrice() && null != shipmentAndReturnGoods.getOrderQty()) {
                     shipmentAndReturnGoods.setReturnPrice(shipmentAndReturnGoods.getPurchasePrice());
                     shipmentAndReturnGoods.setAmount(shipmentAndReturnGoods.getPurchasePrice().multiply(BigDecimal.valueOf(shipmentAndReturnGoods.getOrderQty())));
-                } else if ("GOODS".equals(shipmentAndReturnGoods.getGoodsLineType()) && null != shipmentAndReturnGoods.getReturnPrice() && null != shipmentAndReturnGoods.getOrderQty()) {
+                } else if ("本品".equals(shipmentAndReturnGoods.getGoodsLineType()) && null != shipmentAndReturnGoods.getReturnPrice() && null != shipmentAndReturnGoods.getOrderQty()) {
                     shipmentAndReturnGoods.setAmount(shipmentAndReturnGoods.getReturnPrice().multiply(BigDecimal.valueOf(shipmentAndReturnGoods.getOrderQty())));
-                } else if ("PRESENT".equals(shipmentAndReturnGoods.getGoodsLineType()) && null != shipmentAndReturnGoods.getReturnPrice() && null != shipmentAndReturnGoods.getOrderQty()) {
+                } else if ("赠品".equals(shipmentAndReturnGoods.getGoodsLineType()) && null != shipmentAndReturnGoods.getReturnPrice() && null != shipmentAndReturnGoods.getOrderQty()) {
                     shipmentAndReturnGoods.setAmount(shipmentAndReturnGoods.getReturnPrice().multiply(BigDecimal.valueOf(shipmentAndReturnGoods.getOrderQty())));
                 } else {
                     shipmentAndReturnGoods.setAmount(BigDecimal.ZERO);
+                }
+                if(shipmentAndReturnGoods.getReferenceNumber().startsWith("T")){
+                    shipmentAndReturnGoods.setOrderType("退货");
+                }else{
+                    shipmentAndReturnGoods.setOrderType("要货");
                 }
             }
             return shipmentAndReturnGoodsList;
