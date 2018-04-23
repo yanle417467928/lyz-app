@@ -173,4 +173,15 @@ public interface WmsToAppOrderDAO {
      * @return
      */
     WtaReturningOrderHeader getWtaReturningOrderHeaderByReturnNumber(String returnNo);
+
+    int saveWtaOrderLogistics(WtaOrderLogistics wtaOrderLogistics);
+
+    List<WtaOrderLogistics> getWtaOrderLogistics(String orderNo);
+
+    void updateWtaOrderLogistics(WtaOrderLogistics wtaOrderLogistics);
+
+    WtaShippingOrderHeader getWtaShippingOrderHeaderByOrderNoAndTaskNo(@Param("orderNo") String orderNo, @Param("taskNo") String taskNo);
+
+    List<WtaShippingOrderGoods> getWtaShippingOrderGoods(@Param("orderNo") String orderNo, @Param("taskNo") String taskNo);
+
 }

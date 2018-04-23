@@ -1036,4 +1036,10 @@ public class AppOrderServiceImpl implements AppOrderService {
             this.orderDAO.updateOrderGoodsShippingQuantityByid(orderGoodsInfo);
         }
     }
+
+    @Override
+    @Transactional
+    public void updateOrderBaseInfoStatus(OrderBaseInfo baseInfo) {
+        this.orderDAO.updateOrderBaseInfoStatus(baseInfo);
+    }
 }

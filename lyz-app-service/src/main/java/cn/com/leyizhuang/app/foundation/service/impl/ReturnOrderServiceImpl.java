@@ -192,6 +192,16 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                 if (null != atwReturnOrder) {
                         appToWmsOrderService.saveAtwReturnOrder(atwReturnOrder);
                 }
+                if (returnOrderBaseInfo.getReturnStatus() == AppReturnOrderStatus.FINISHED){
+                    //********************************保存退单生命周期信息***********************
+                    ReturnOrderLifecycle returnOrderLifecycle = new ReturnOrderLifecycle();
+                    returnOrderLifecycle.setRoid(roid);
+                    returnOrderLifecycle.setReturnNo(returnOrderBaseInfo.getReturnNo());
+                    returnOrderLifecycle.setOperation(OrderLifecycleType.NORMAL_RETURN);
+                    returnOrderLifecycle.setPostStatus(AppReturnOrderStatus.FINISHED);
+                    returnOrderLifecycle.setOperationTime(new Date());
+                    returnOrderDAO.saveReturnOrderLifecycle(returnOrderLifecycle);
+                }
             } else {
                 throw new OrderSaveException("退单主键生成失败!");
             }

@@ -47,7 +47,7 @@
         );
         2018-04-11 generation-->
         INSERT INTO inter_wta_order_shipping_goods (order_no, task_type,
-                                                    task_no, g_code, d_ack_qty, op_status, source_no)
+                                                    task_no, g_code, d_ack_qty, op_status, source_no, create_time)
         VALUES (
         #{orderNo},
                 #{taskType},
@@ -55,7 +55,7 @@
                 #{gCode},
                 #{dAckQty},
                 #{opStatus},
-        #{sourceNo})
+        #{sourceNo}, #{createTime})
     </insert>
 
     <insert id="saveWtaReturningOrderHeader"
@@ -390,4 +390,73 @@
         FROM inter_wta_order_shipping_header
         WHERE order_no = #{orderNo};
     </select>
+
+    <insert id="saveWtaOrderLogistics"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaOrderLogistics">
+        INSERT INTO inter_wta_order_logistics (order_no, logistic_status, create_time, operation_type, warehouse_no, task_no, receive_time, handle_flag)
+        SELECT
+        #{orderNo},
+        #{logisticStatus},
+        #{createTime},
+        #{operationType},
+        #{warehouseNo},
+        #{taskNo},
+        #{receiveTime},
+        #{handleFlag}
+        FROM DUAL
+        WHERE NOT EXISTS(
+        SELECT 'X'
+        FROM inter_wta_order_logistics
+        WHERE order_no = #{orderNo} AND logistic_status = #{logisticStatus}
+        );
+    </insert>
+
+    <select id="getWtaOrderLogistics" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaOrderLogistics">
+        SELECT id, order_no, logistic_status, create_time, operation_type, warehouse_no, task_no, receive_time, handle_flag, handle_time, err_message
+        FROM inter_wta_order_logistics WHERE handle_flag = 0 AND order_no = #{orderNo}
+    </select>
+
+    <update id="updateWtaOrderLogistics" parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaOrderLogistics">
+        UPDATE inter_wta_order_logistics
+        SET handle_flag = #{handleFlag},
+          err_message = #{errMessage},
+          handle_time = #{handleTime}
+      WHERE id = #{id}
+    </update>
+
+    <select id="getWtaShippingOrderHeaderByOrderNoAndTaskNo" resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderHeader">
+        SELECT  id,
+        create_time   createTime,
+        end_dt        endDt,
+        wh_no         whNo,
+        owner_no      ownerNo,
+        task_no       taskNo,
+        c_task_type   cTaskType,
+        car_no        carNo,
+        op_status     opStatus,
+        driver        driver,
+        order_no      orderNo,
+        send_time     sendTime,
+        send_flag     sendFlag,
+        error_message errorMessage
+        FROM inter_wta_order_shipping_header
+        WHERE task_no = #{taskNo} AND order_no = #{orderNo}
+    </select>
+
+    <select id="getWtaShippingOrderGoods" resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderGoods">
+        SELECT  id,
+        modified_userno,
+        op_user,
+        order_no,
+        task_type,
+        task_no,
+        g_code,
+        d_ack_qty,
+        op_status,
+        source_no,
+        owner_no
+        FROM inter_wta_order_shipping_goods
+        WHERE task_no = #{taskNo} AND order_no = #{orderNo}
+    </select>
+
 </mapper>

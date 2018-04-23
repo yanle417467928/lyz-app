@@ -175,4 +175,6 @@ public interface AppOrderService {
     List<OrderGoodsInfo> getOrderGoodsQtyInfoByOrderNumber(String orderNumber);
 
     void updateOrderGoodsShippingQuantityByid(OrderGoodsInfo orderGoodsInfo);
+
+    void updateOrderBaseInfoStatus(OrderBaseInfo baseInfo);
 }

@@ -40,4 +40,13 @@ public enum LogisticStatus {
         }
         return null;
     }
+
+    public static LogisticStatus getLogisticStatusByDescription(String description) {
+        for (LogisticStatus logisticStatus : LogisticStatus.values()) {
+            if (logisticStatus.getDescription().equals(description)) {
+                return logisticStatus;
+            }
+        }
+        return null;
+    }
 }

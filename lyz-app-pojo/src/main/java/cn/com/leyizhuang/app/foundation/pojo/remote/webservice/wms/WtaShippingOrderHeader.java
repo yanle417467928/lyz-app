@@ -63,7 +63,7 @@ public class WtaShippingOrderHeader {
     /**
      * 接口传输标识
      */
-    private Boolean sendFlag;
+    private String sendFlag;
     /**
      * 接口错误信息
      */

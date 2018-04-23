@@ -1343,4 +1343,20 @@
               AND id = #{id}
     </update>
 
+
+    <update id="updateOrderBaseInfoStatus" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
+        UPDATE ord_base_info
+        <set>
+            <if test="null != status">
+                status = #{status},
+            </if>
+            <if test="null != deliveryStatus">
+                delivery_status = #{deliveryStatus}
+            </if>
+        </set>
+        WHERE ord_no = #{orderNumber} AND delivery_status != 'SEALED_CAR'
+        AND delivery_status != 'CONFIRM_ARRIVAL'
+        AND delivery_status != 'REJECT'
+    </update>
+
 </mapper>

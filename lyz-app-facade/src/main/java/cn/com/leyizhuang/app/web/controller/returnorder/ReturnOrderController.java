@@ -641,6 +641,7 @@ public class ReturnOrderController {
             AppStore store = this.appStoreService.findById(returnOrderBaseInfo.getStoreId());
             if (null != store && store.getStoreType() == StoreType.JM){
                 jmSelfTakeOrder = true;
+                returnOrderBaseInfo.setReturnStatus(AppReturnOrderStatus.FINISHED);
             }
             /**************/
 

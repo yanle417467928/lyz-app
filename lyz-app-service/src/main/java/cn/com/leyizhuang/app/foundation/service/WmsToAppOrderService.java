@@ -173,4 +173,13 @@ public interface WmsToAppOrderService {
      * @return
      */
     WtaReturningOrderHeader getWtaReturningOrderHeaderByReturnNumber(String returnNo);
+
+    int saveWtaOrderLogistics(WtaOrderLogistics wtaOrderLogistics);
+
+    void handleWtaOrderLogistics(String orderNo);
+
+    Boolean handleWtaShippingOrder(String orderNo, String taskNo);
+
+    void updateWtaOrderLogistics(WtaOrderLogistics wtaOrderLogistics);
+
 }
