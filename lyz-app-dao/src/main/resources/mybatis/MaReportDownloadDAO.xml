@@ -3,7 +3,7 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaReportDownloadDAO">
     <select id="findReceiptsReportDOAll"
             resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.ReceiptsReportDO">
-        SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, obpd.pay_time payTime,
+        SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, obi.sales_consult_name sellerName, obpd.pay_time payTime,
         obpd.pay_type payTypes, obpd.pay_type payType, IFNULL(obpd.amount, 0) money, obi.ord_no orderNumber,
         IF(obpd.pay_type = 'POS',obd.store_pos_number,null) remarks, obpd.payment_subject_type paymentSubjectType
         FROM
@@ -38,7 +38,7 @@
             #{item}
         </foreach>
         UNION
-        SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, orbd.create_time
+        SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, obi.sales_consult_name sellerName, orbd.create_time
         payTime,
         orbd.return_pay_type payTypes, orbd.return_pay_type payType, (-1 * IFNULL(orbd.return_money, 0)) money,
         orbi.return_no orderNumber,
@@ -216,9 +216,9 @@
     <select id="findAccountGoodsItemsDOAll"
             resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.AccountGoodsItemsDO">
         SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, ol.operation_time
-        orderTime,
-        obi.ord_no orderNumber, obi.customer_name customerName, obi.sales_consult_name sellerName, obi.delivery_type
-        deliveryType,
+        orderTime, obi.ord_no orderNumber, st.store_type storeTypes,
+        null returnNumber, obi.customer_name customerName, obi.sales_consult_name sellerName, obi.delivery_type
+        deliveryType, oli.receiver receiver, oli.receiver_phone receiverPhone,
         (CASE WHEN obi.`status` = 'FINISHED' OR obi.`status` = 'CLOSED' OR obi.`status` = 'REJECTED'
         OR (obi.`status` = 'PENDING_RECEIVE' AND obi.delivery_type = 'HOUSE_DELIVERY')THEN '已出货'
         WHEN obi.`status` = 'CANCELED' OR obi.`status` = 'CANCELING' OR obi.`status` = 'PENDING_SHIPMENT'
@@ -230,18 +230,13 @@
         settlementPrice,
         (IFNULL(og.order_qty, 0) * IFNULL(og.settlement_price, 0)) settlementTotlePrice,
         IFNULL(og.return_price, 0) promotionSharePrice,(IFNULL(og.order_qty, 0) * IFNULL(og.return_price, 0))
-        promotionShareTotlePrice,
-        (CASE WHEN st.store_type = 'JM' OR st.store_type = 'FX' THEN (-1 * IFNULL(oj.unit_price, 0)) ELSE 0 END)
-        wholesalePrice,
-        (CASE WHEN st.store_type = 'JM' OR st.store_type = 'FX' THEN (IFNULL(oj.unit_price, 0) * IFNULL(oj.quantity, 0))
-        ELSE 0 END) wholesaleTotlePrice
+        promotionShareTotlePrice
         FROM
         ord_base_info obi
         INNER JOIN st_store st ON st.store_id = obi.store_id
         LEFT JOIN ord_lifecycle ol ON obi.ord_no = ol.ord_no
         LEFT JOIN ord_logistics_info oli ON oli.ord_no = obi.ord_no
         LEFT JOIN ord_goods_info og ON og.ord_no = oli.ord_no
-        LEFT JOIN ord_jx_price_difference_return_details oj ON oj.ord_no = og.ord_no AND oj.sku = og.sku
         WHERE obi.`status` != 'UNPAID'
         AND (ol.post_status = 'PENDING_SHIPMENT' OR (ol.post_status = 'PENDING_RECEIVE' AND obi.delivery_type =
         'SELF_TAKE'))
@@ -269,9 +264,9 @@
         </foreach>
         UNION
         SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, rl.operation_time
-        orderTime,
-        orbi.return_no orderNumber, orbi.cus_name customerName, obi.sales_consult_name sellerName, obi.delivery_type
-        deliveryType,
+        orderTime, obi.ord_no orderNumber, st.store_type storeTypes,
+        orbi.return_no returnNumber, orbi.cus_name customerName, obi.sales_consult_name sellerName, obi.delivery_type
+        deliveryType, orli.rejecter receiver, orli.rejecter_phone receiverPhone,
         (CASE WHEN orbi.return_type = 'REFUSED_RETURN' OR orbi.return_type = 'NORMAL_RETURN' THEN '已取货'
         WHEN orbi.return_type = 'CANCEL_RETURN' THEN '订单取消' ELSE '未知' END) deliveryStatus,
         orli.return_full_address, org.sku sku, org.sku_name skuName, (CASE WHEN org.company_flag = 'HR' THEN '华润'
@@ -280,19 +275,13 @@
         settlementPrice,
         (-1 * IFNULL(org.return_qty, 0) * IFNULL(org.settlement_price, 0)) settlementTotlePrice,
         IFNULL(org.return_price, 0) promotionSharePrice, (-1 * IFNULL(org.return_qty, 0) * IFNULL(org.return_price, 0))
-        promotionShareTotlePrice,
-        (CASE WHEN st.store_type = 'JM' OR st.store_type = 'FX' THEN (-1 * IFNULL(orj.unit_price, 0)) ELSE 0 END)
-        wholesalePrice,
-        (CASE WHEN st.store_type = 'JM' OR st.store_type = 'FX' THEN (IFNULL(orj.unit_price, 0) * IFNULL(orj.return_qty,
-        0)) ELSE 0 END) wholesaleTotlePrice
+        promotionShareTotlePrice
         FROM ord_return_base_info orbi
         LEFT JOIN ord_return_lifecycle rl ON orbi.return_no = rl.return_no
         LEFT JOIN st_store st ON st.store_id = orbi.store_id
         LEFT JOIN ord_base_info obi ON obi.ord_no = orbi.ord_no
         LEFT JOIN ord_return_logistic_info orli ON orli.return_no = orbi.return_no
         LEFT JOIN ord_return_goods_info org ON org.return_no = orbi.return_no
-        LEFT JOIN ord_return_jx_price_difference_return_details orj ON orj.return_no = org.return_no AND orj.sku =
-        org.sku
         WHERE orbi.return_status = 'FINISHED' AND rl.post_status = 'FINISHED'
         <if test="null != cityId and cityId != -1">
             AND obi.city_id = #{cityId}
@@ -321,8 +310,8 @@
 
     <select id="findBillingItemsDOAll" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.BillingItemsDO">
         SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, ol.operation_time
-        orderTime,
-        obi.ord_no orderNumber, obi.customer_name customerName, obi.sales_consult_name sellerName, obi.delivery_type
+        orderTime, obi.ord_no orderNumber,
+        null returnNumber, obi.customer_name customerName, obi.sales_consult_name sellerName, obi.delivery_type
         deliveryType,
         (CASE WHEN obi.`status` = 'FINISHED' OR obi.`status` = 'CLOSED' OR obi.`status` = 'REJECTED'
         OR (obi.`status` = 'PENDING_RECEIVE' AND obi.delivery_type = 'HOUSE_DELIVERY')THEN '已出货'
@@ -333,7 +322,7 @@
         memberDiscount,
         IFNULL(obd.promotion_discount,0) promotionDiscount, IFNULL(obd.freight,0) freight,
         IFNULL(obd.cash_coupon_discount,0) cashCouponDiscount,
-        IFNULL(obd.product_coupon_discount,0) productCouponDiscount, IFNULL(obd.amount_payable,0) amountPayable,
+        IFNULL(obd.product_coupon_discount,0) productCouponDiscount, IFNULL(obd.order_amount_subtotal,0)-IFNULL(obd.freight,0) amountPayable,
         (CASE WHEN obd.online_pay_type = 'WE_CHAT' THEN IFNULL(obd.online_pay_amount,0) ELSE 0 END) weChat,
         (CASE WHEN obd.online_pay_type = 'ALIPAY' THEN IFNULL(obd.online_pay_amount,0) ELSE 0 END) alipay,
         (CASE WHEN obd.online_pay_type = 'UNION_PAY' THEN IFNULL(obd.online_pay_amount,0) ELSE 0 END) unionPay,
@@ -377,13 +366,14 @@
         </foreach>
         UNION
         SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, rl.operation_time
-        orderTime,
-        orbi.return_no orderNumber, orbi.cus_name customerName, obi.sales_consult_name sellerName, obi.delivery_type
+        orderTime, obi.ord_no orderNumber,
+        orbi.return_no returnNumber, orbi.cus_name customerName, obi.sales_consult_name sellerName, obi.delivery_type
         deliveryType,
         (CASE WHEN orbi.return_type = 'REFUSED_RETURN' OR orbi.return_type = 'NORMAL_RETURN' THEN '已取货'
         WHEN orbi.return_type = 'CANCEL_RETURN' THEN '订单取消' ELSE '未知' END) deliveryStatus,
-        orli.return_full_address, 0 totalGoodsPrice, 0 memberDiscount, 0 promotionDiscount, 0 freight, 0
-        cashCouponDiscount,
+        orli.return_full_address, (CASE WHEN orbi.return_type = 'CANCEL_RETURN' THEN (-1 * IFNULL(obd.total_goods_price,0)) ELSE (-1 * IFNULL(orbi.return_price,0)) END) totalGoodsPrice,
+        (CASE WHEN orbi.return_type = 'CANCEL_RETURN' THEN IFNULL(obd.member_discount,0) ELSE 0 END) memberDiscount,
+        0 promotionDiscount, 0 freight, 0 cashCouponDiscount,
         0 productCouponDiscount, (-1 * IFNULL(orbi.return_price,0)) amountPayable,
         (CASE WHEN orb.online_pay_type = 'WE_CHAT' THEN (-1 * IFNULL(orb.online_pay,0)) ELSE 0 END) weChat,
         (CASE WHEN orb.online_pay_type = 'ALIPAY' THEN (-1 * IFNULL(orb.online_pay,0)) ELSE 0 END) alipay,
@@ -397,6 +387,7 @@
         LEFT JOIN ord_return_lifecycle rl ON orbi.return_no = rl.return_no
         LEFT JOIN st_store st ON st.store_id = orbi.store_id
         LEFT JOIN ord_base_info obi ON obi.ord_no = orbi.ord_no
+        LEFT JOIN ord_billing_details obd ON obd.ord_no = obi.ord_no
         LEFT JOIN ord_return_logistic_info orli ON orli.return_no = orbi.return_no
         LEFT JOIN ord_return_billing orb ON orb.return_no = orbi.return_no
         WHERE orbi.return_status = 'FINISHED' AND rl.post_status = 'FINISHED'
@@ -726,6 +717,22 @@
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
+    </select>
+
+    <select id="getJxPriceByOrderNoAndSku" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.AccountGoodsItemsDO">
+        SELECT
+          IFNULL(unit_price, 0) wholesalePrice, IFNULL(unit_price, 0) * IFNULL(quantity, 0) wholesaleTotlePrice
+        FROM
+          ord_jx_price_difference_return_details
+        WHERE ord_no = #{orderNumber} AND sku = #{sku}
+          GROUP BY sku
+        UNION
+        SELECT
+          IFNULL(unit_price, 0) wholesalePrice, IFNULL(unit_price, 0) * IFNULL(return_qty, 0) wholesaleTotlePrice
+        FROM
+          ord_return_jx_price_difference_return_details
+        WHERE return_no = #{orderNumber} AND sku = #{sku}
+          GROUP BY sku
     </select>
 
 

@@ -23,7 +23,7 @@ public class AccountGoodsItemsDO {
     private String storeType;
     //下单/退单时间
     private String orderTime;
-    //订/退单号
+    //订单号
     private String orderNumber;
     //顾客姓名
     private String customerName;
@@ -57,6 +57,15 @@ public class AccountGoodsItemsDO {
     private Double wholesalePrice;
     //总经销差价
     private Double wholesaleTotlePrice;
+    //退单号
+    private String returnNumber;
+    //收货人姓名
+    private String receiver;
+    //收货人电话
+    private String receiverPhone;
+    //门店类型
+    private StoreType storeTypes;
+
 
     public void setGoodsLineType(AppGoodsLineType goodsLineType){
         this.goodsLineType = goodsLineType.getDescription();

@@ -70,6 +70,8 @@ public class BillingItemsDO {
     private Double cusPreDeposit;
     //支付总额
     private Double totalPay;
+    //退单号
+    private String returnNumber;
 
     public void setStoreType(StoreType storeType){
         this.storeType = storeType.getDescription();

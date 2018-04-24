@@ -149,4 +149,9 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
         }
         return this.maReportDownloadDAO.findStoreInventorys(storeId, storeIds);
     }
+
+    @Override
+    public AccountGoodsItemsDO getJxPriceByOrderNoAndSku(String orderNumber, String sku) {
+        return this.maReportDownloadDAO.getJxPriceByOrderNoAndSku(orderNumber, sku);
+    }
 }
