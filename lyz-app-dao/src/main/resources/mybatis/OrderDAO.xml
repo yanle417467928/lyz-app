@@ -183,7 +183,15 @@
             ord_base_info AS obi
             INNER JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
             WHERE
-            obi.creator_id = #{userID}
+            <choose>
+                <when test="sellerType !=null and sellerType == 'SUPERVISOR'">
+                    obi.store_id = #{storeId}
+                </when>
+                <otherwise>
+                    obi.creator_id = #{userID}
+                </otherwise>
+            </choose>
+
             AND
             (oli.ord_no LIKE concat(concat('%',#{condition}),'%') OR oli.shipping_address LIKE
             concat(concat('%',#{condition}),'%') OR oli.receiver LIKE concat(concat('%',#{condition}),'%')
@@ -1203,7 +1211,14 @@
             ord_base_info obi LEFT JOIN ord_billing_details obd ON obi.oid = obd.oid
             LEFT JOIN ord_logistics_info oli ON obi.oid = oli.oid
             WHERE
-            obi.creator_id = #{userID}
+            <choose>
+                <when test="sellerType !=null and sellerType == 'SUPERVISOR'">
+                    obi.store_id = #{storeId}
+                </when>
+                <otherwise>
+                    obi.creator_id = #{userID}
+                </otherwise>
+            </choose>
             AND creator_identity_type != 'CUSTOMER'
             AND creator_identity_type != 'SELLER'
             <if test="null != showStatus and showStatus == 1">

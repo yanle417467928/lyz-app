@@ -42,7 +42,11 @@ public interface OrderDAO {
     Integer querySumQtyByOrderNumber(@Param("orderNumber") String orderNumber);
 
     //模糊查询订单
-    List<OrderBaseInfo> getFuzzyQuery(@Param("userID") Long userID, @Param("identityType") AppIdentityType identityType, @Param("condition") String condition);
+    List<OrderBaseInfo> getFuzzyQuery(@Param("userID") Long userID,
+                                      @Param("identityType") AppIdentityType identityType,
+                                      @Param("condition") String condition,
+                                      @Param("sellerType") String sellerType,
+                                      @Param("storeId") Long storeId);
 
     OrderBaseInfo findByOrderNumber(@Param("orderNumber") String orderNumber);
 
@@ -153,7 +157,9 @@ public interface OrderDAO {
 
     List<OrderPageInfoVO> getOrderListPageInfoByUserIdAndIdentityType(@Param(value = "userID") Long userID,
                                                                       @Param(value = "identityType") AppIdentityType identityType,
-                                                                      @Param(value = "showStatus") Integer showStatus);
+                                                                      @Param(value = "showStatus") Integer showStatus,
+                                                                      @Param(value = "sellerType") String sellerType,
+                                                                      @Param(value = "storeId") Long storeId);
 
     List<OrderBaseInfo> getSendToWMSFailedOrder();
 

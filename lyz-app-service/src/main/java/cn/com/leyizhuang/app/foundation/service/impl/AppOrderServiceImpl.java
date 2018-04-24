@@ -164,7 +164,22 @@ public class AppOrderServiceImpl implements AppOrderService {
 
     @Override
     public List<OrderBaseInfo> getFuzzyQuery(Long userID, Integer identityType, String condition) {
-        return orderDAO.getFuzzyQuery(userID, AppIdentityType.getAppIdentityTypeByValue(identityType), condition);
+        List<OrderBaseInfo> orderPageInfoVOList = new ArrayList<>();
+        if (identityType == AppIdentityType.DECORATE_MANAGER.getValue()){
+            // 装饰公司经理
+            AppEmployee employee = employeeService.findById(userID);
+            String sellerType = null;
+            if (employee != null){
+                if (employee.getSellerType() != null){
+                    sellerType = employee.getSellerType().getValue();
+                }
+                orderPageInfoVOList = orderDAO.getFuzzyQuery(userID, AppIdentityType.getAppIdentityTypeByValue(identityType), condition,sellerType,employee.getStoreId());
+            }
+        }else {
+            orderPageInfoVOList = orderDAO.getFuzzyQuery(userID, AppIdentityType.getAppIdentityTypeByValue(identityType), condition,null,null);
+        }
+
+        return orderPageInfoVOList;
     }
 
     @Override
@@ -986,7 +1001,21 @@ public class AppOrderServiceImpl implements AppOrderService {
     @Override
     public PageInfo<OrderPageInfoVO> getOrderListPageInfoByUserIdAndIdentityType(Long userID, Integer identityType, Integer showStatus, Integer page, Integer size) {
         PageHelper.startPage(page, size);
-        List<OrderPageInfoVO> orderPageInfoVOList = orderDAO.getOrderListPageInfoByUserIdAndIdentityType(userID, AppIdentityType.getAppIdentityTypeByValue(identityType), showStatus);
+        List<OrderPageInfoVO> orderPageInfoVOList = new ArrayList<>();
+        if (identityType == AppIdentityType.DECORATE_MANAGER.getValue()){
+            // 装饰公司经理
+            AppEmployee employee = employeeService.findById(userID);
+            String sellerType = null;
+            if (employee != null){
+                if (employee.getSellerType() != null){
+                    sellerType = employee.getSellerType().getValue();
+                }
+                orderPageInfoVOList = orderDAO.getOrderListPageInfoByUserIdAndIdentityType(userID, AppIdentityType.getAppIdentityTypeByValue(identityType), showStatus,sellerType,employee.getStoreId());
+            }
+        }else {
+            orderPageInfoVOList = orderDAO.getOrderListPageInfoByUserIdAndIdentityType(userID, AppIdentityType.getAppIdentityTypeByValue(identityType), showStatus,null,null);
+        }
+
         orderPageInfoVOList.forEach(p -> {
             List<String> goodsImgList = p.getOrderGoodsInfoList().stream().map(OrderGoodsInfo::getCoverImageUri).collect(Collectors.toList());
             Integer count = p.getOrderGoodsInfoList().stream().mapToInt(OrderGoodsInfo::getOrderQuantity).sum();
