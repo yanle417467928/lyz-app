@@ -69,6 +69,7 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
     @Override
     public PageInfo<AllocationVO> queryPage(Integer offset, Integer size, String keywords, AllocationQuery query,Long storeId) {
         PageHelper.startPage(offset, size);
+
         List<AllocationVO> allocationVOList;
         if (StringUtils.isNotBlank(keywords)) {
             allocationVOList = ityAllocationDAO.queryListVO(keywords,storeId);

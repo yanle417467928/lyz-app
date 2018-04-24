@@ -73,8 +73,8 @@ public class MaAllocationRestController extends BaseRestController{
         if (storeIds != null && storeIds.size() == 1){
             storeId = storeIds.get(0);
         }
-
-        PageInfo<AllocationVO> allocationVOPageInfo = ityAllocationService.queryPage(offset, size, keywords, query,storeId);
+        Integer page = getPage(offset, size);
+        PageInfo<AllocationVO> allocationVOPageInfo = ityAllocationService.queryPage(page, size, keywords, query,storeId);
         return new GridDataVO<AllocationVO>().transform(allocationVOPageInfo.getList(), allocationVOPageInfo.getTotal());
     }
 
