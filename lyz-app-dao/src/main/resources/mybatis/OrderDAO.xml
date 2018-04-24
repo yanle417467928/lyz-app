@@ -166,7 +166,9 @@
             obi.customer_id = #{userID}
             AND
             (oli.ord_no LIKE concat(concat('%',#{condition}),'%') OR oli.shipping_address LIKE
-            concat(concat('%',#{condition}),'%') OR oli.receiver LIKE concat(concat('%',#{condition}),'%'))
+            concat(concat('%',#{condition}),'%') OR oli.receiver LIKE concat(concat('%',#{condition}),'%')
+            OR obi.customer_name LIKE concat(concat('%',#{condition}),'%') OR obi.customer_phone LIKE concat(concat('%',#{condition}),'%')
+            OR oli.receiver_phone LIKE concat(concat('%',#{condition}),'%'))
         </if>
         <if test="null != identityType and identityType.toString() == 'DECORATE_MANAGER'">
             SELECT
@@ -184,7 +186,9 @@
             obi.creator_id = #{userID}
             AND
             (oli.ord_no LIKE concat(concat('%',#{condition}),'%') OR oli.shipping_address LIKE
-            concat(concat('%',#{condition}),'%') OR oli.receiver LIKE concat(concat('%',#{condition}),'%'))
+            concat(concat('%',#{condition}),'%') OR oli.receiver LIKE concat(concat('%',#{condition}),'%')
+            OR obi.customer_name LIKE concat(concat('%',#{condition}),'%') OR obi.customer_phone LIKE concat(concat('%',#{condition}),'%')
+            OR oli.receiver_phone LIKE concat(concat('%',#{condition}),'%'))
         </if>
         <if test="null != identityType and identityType.toString() == 'SELLER'">
             SELECT
@@ -202,7 +206,9 @@
             obi.sales_consult_id = #{userID}
             AND
             (oli.ord_no LIKE concat(concat('%',#{condition}),'%') OR oli.shipping_address LIKE
-            concat(concat('%',#{condition}),'%') OR oli.receiver LIKE concat(concat('%',#{condition}),'%'))
+            concat(concat('%',#{condition}),'%') OR oli.receiver LIKE concat(concat('%',#{condition}),'%')
+            OR obi.customer_name LIKE concat(concat('%',#{condition}),'%') OR obi.customer_phone LIKE concat(concat('%',#{condition}),'%')
+            OR oli.receiver_phone LIKE concat(concat('%',#{condition}),'%'))
         </if>
     </select>
 
