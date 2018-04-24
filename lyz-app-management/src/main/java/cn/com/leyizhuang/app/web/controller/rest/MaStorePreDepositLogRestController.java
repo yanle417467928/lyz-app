@@ -45,12 +45,12 @@ public class MaStorePreDepositLogRestController extends BaseRestController {
      * @date 2018/1/11
      */
     @GetMapping(value = "/page/grid")
-    public GridDataVO<StorePreDepositLogVO> restStorePreDepositPageGird(Integer offset, Integer size, Long storeId, String keywords, Long cityId, String storeType) {
+    public GridDataVO<StorePreDepositLogVO> restStorePreDepositPageGird(Integer offset, Integer size, Long storeId, String keywords, Long cityId, String storeType, String changeType) {
         size = getSize(size);
         Integer page = getPage(offset, size);
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
-        PageInfo<StorePreDepositLogVO> storePreDepositLogVOPageInfo = this.maStorePreDepositLogService.findAllStorePredepositLog(page, size, storeId, cityId, storeType, keywords, storeIds);
+        PageInfo<StorePreDepositLogVO> storePreDepositLogVOPageInfo = this.maStorePreDepositLogService.findAllStorePredepositLog(page, size, storeId, cityId, storeType, keywords, storeIds, changeType);
         return new GridDataVO<StorePreDepositLogVO>().transform(storePreDepositLogVOPageInfo.getList(), storePreDepositLogVOPageInfo.getTotal());
     }
 

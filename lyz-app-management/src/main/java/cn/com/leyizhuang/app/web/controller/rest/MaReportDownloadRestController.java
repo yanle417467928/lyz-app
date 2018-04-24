@@ -528,7 +528,7 @@ public class MaReportDownloadRestController extends BaseRestController{
                     ws.addCell(new Label(3, j + row, notPickGoodsReportDO.getPickType(), textFormat));
                     ws.addCell(new Label(4, j + row, notPickGoodsReportDO.getBuyTime(), textFormat));
                     ws.addCell(new Label(5, j + row, notPickGoodsReportDO.getEffectiveTime(), textFormat));
-                    ws.addCell(new Number(6, j + row, notPickGoodsReportDO.getCustomerId()));
+                    ws.addCell(new Label(6, j + row, notPickGoodsReportDO.getCustomerId()+"", textFormat));
                     ws.addCell(new Label(7, j + row, notPickGoodsReportDO.getCustomerName(), textFormat));
                     ws.addCell(new Label(8, j + row, notPickGoodsReportDO.getCustomerPhone(), textFormat));
                     ws.addCell(new Label(9, j + row, notPickGoodsReportDO.getCustomerType(), textFormat));

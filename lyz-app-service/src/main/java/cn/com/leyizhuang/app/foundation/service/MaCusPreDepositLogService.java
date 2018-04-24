@@ -15,7 +15,7 @@ public interface MaCusPreDepositLogService {
 
     CusPreDepositLogDO save(CusPreDepositDTO cusPreDepositDTO);
 
-    PageInfo<CusPreDepositLogVO> findAllCusPredepositLog(Integer page, Integer size, Long cusId, Long cityId, Long storeId, String keywords, List<Long> storeIds);
+    PageInfo<CusPreDepositLogVO> findAllCusPredepositLog(Integer page, Integer size, Long cusId, Long cityId, Long storeId, String keywords, List<Long> storeIds, String changeType);
 
     CusPreDepositLogVO findCusPredepositLogById(Long id);
 }

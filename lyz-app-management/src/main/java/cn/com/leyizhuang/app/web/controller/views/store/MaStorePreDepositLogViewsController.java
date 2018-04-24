@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.views.store;
 
+import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
+import cn.com.leyizhuang.app.core.constant.StorePreDepositChangeType;
 import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import cn.com.leyizhuang.app.web.controller.views.customer.MaCustomerPreDepositLogViewsController;
@@ -9,6 +11,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author GenerationRoad
@@ -34,6 +39,7 @@ public class MaStorePreDepositLogViewsController  extends BaseController {
     public String storePreDepositLogListPage(ModelMap map, @PathVariable(value = "storeId") Long storeId) {
         map.addAttribute("storeId",storeId);
         map.addAttribute("storeTypes", StoreType.values());
+        map.addAttribute("changeTypes", StorePreDepositChangeType.values());
         return "/views/store/store_pre_deposit_log_page";
     }
 

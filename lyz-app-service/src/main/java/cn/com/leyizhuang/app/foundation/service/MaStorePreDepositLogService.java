@@ -15,7 +15,7 @@ public interface MaStorePreDepositLogService {
 
     StPreDepositLogDO save(StorePreDepositDTO storePreDepositDTO);
 
-    PageInfo<StorePreDepositLogVO> findAllStorePredepositLog(Integer page, Integer size, Long storeId, Long cityId, String storeType, String keywords, List<Long> storeIds);
+    PageInfo<StorePreDepositLogVO> findAllStorePredepositLog(Integer page, Integer size, Long storeId, Long cityId, String storeType, String keywords, List<Long> storeIds, String changeType);
 
     StorePreDepositLogVO findStorePredepositLogById(Long id);
 }

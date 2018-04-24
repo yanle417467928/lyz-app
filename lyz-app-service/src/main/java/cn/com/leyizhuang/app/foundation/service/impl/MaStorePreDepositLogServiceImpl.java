@@ -45,9 +45,9 @@ public class MaStorePreDepositLogServiceImpl implements MaStorePreDepositLogServ
     }
 
     @Override
-    public PageInfo<StorePreDepositLogVO> findAllStorePredepositLog(Integer page, Integer size, Long storeId, Long cityId, String storeType, String keywords, List<Long> storeIds) {
+    public PageInfo<StorePreDepositLogVO> findAllStorePredepositLog(Integer page, Integer size, Long storeId, Long cityId, String storeType, String keywords, List<Long> storeIds, String changeType) {
         PageHelper.startPage(page, size);
-        List<StorePreDepositLogVO> list = this.maStorePreDepositLogDAO.findAllStorePredepositLog(storeId, cityId, storeType, keywords, storeIds);
+        List<StorePreDepositLogVO> list = this.maStorePreDepositLogDAO.findAllStorePredepositLog(storeId, cityId, storeType, keywords, storeIds, changeType);
         return new PageInfo<>(list);
     }
 

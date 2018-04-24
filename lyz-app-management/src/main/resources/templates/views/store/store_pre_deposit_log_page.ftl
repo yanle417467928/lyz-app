@@ -47,11 +47,21 @@
                     <select name="storeType" id="storeType" class="form-control selectpicker" data-width="120px" style="width:auto;"
                             onchange="findStorePreByStoreType(this.value)" data-live-search="true">
                         <option value="-1">选择门店类型</option>
-                    <#if storeTypes??>
-                        <#list storeTypes as storeType>
-                            <option value="${storeType.value}">${storeType.description}</option>
-                        </#list>
-                    </#if>
+                        <#if storeTypes??>
+                            <#list storeTypes as storeType>
+                                <option value="${storeType.value}">${storeType.description}</option>
+                            </#list>
+                        </#if>
+                    </select>
+
+                    <select name="changeType" id="changeType" class="form-control selectpicker" data-width="120px" style="width:auto;"
+                            onchange="findStorePreByChangeType(this.value)" data-live-search="true">
+                        <option value="-1">选择变更类型</option>
+                        <#if changeTypes??>
+                            <#list changeTypes as changeType>
+                                <option value="${changeType.value}">${changeType.description}</option>
+                            </#list>
+                        </#if>
                     </select>
 
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
@@ -150,7 +160,7 @@
 
     $(function () {
         findCitylist();
-        showAvailableCredit(null,null,'-1');
+        showAvailableCredit(null,null,'-1','-1');
         $('#btn_back').on('click', function () {
             window.history.back()
         });
@@ -180,7 +190,7 @@
     }
 
 
-    function showAvailableCredit(keywords,cityId,storeType){
+    function showAvailableCredit(keywords,cityId,storeType,changeType){
         $("#dataGrid").bootstrapTable('destroy');
         var storeId=$('#storeId').val();
         $grid.init($('#dataGrid'), $('#toolbar'),'/rest/store/preDeposit/log/page/grid', 'get', false, function (params) {
@@ -190,7 +200,8 @@
                 keywords: keywords,
                 cityId: cityId,
                 storeId: storeId,
-                storeType: storeType
+                storeType: storeType,
+                changeType: changeType
             }
         }, [{
             checkbox: true,
@@ -258,7 +269,8 @@
         var keywords = $('#queryCusInfo').val();
         $("#dataGrid").bootstrapTable('destroy');
         var storeType = $("#storeType").val();
-        findStorePreByCityIdOrKeywords(keywords,cityId,storeType);
+        var changeType = $("#changeType").val();
+        findStorePreByCityIdOrKeywords(keywords,cityId,storeType,changeType);
     }
 
     function findStorePreByNameOrCode() {
@@ -266,7 +278,8 @@
         $("#dataGrid").bootstrapTable('destroy');
         var cityId = $("#cityCode").val();
         var storeType = $("#storeType").val();
-        findStorePreByCityIdOrKeywords(queryCusInfo,cityId,storeType);
+        var changeType = $("#changeType").val();
+        findStorePreByCityIdOrKeywords(queryCusInfo,cityId,storeType,changeType);
     }
 
     function findStorePreByStoreType(storeType) {
@@ -274,11 +287,21 @@
         var queryCusInfo = $("#queryCusInfo").val();
         $("#dataGrid").bootstrapTable('destroy');
         var cityId = $("#cityCode").val();
-        findStorePreByCityIdOrKeywords(queryCusInfo,cityId,storeType);
+        var changeType = $("#changeType").val();
+        findStorePreByCityIdOrKeywords(queryCusInfo,cityId,storeType,changeType);
     }
 
-    function findStorePreByCityIdOrKeywords(keywords,cityId,storeType){
-        showAvailableCredit(keywords,cityId,storeType);
+    function findStorePreByChangeType(changeType) {
+        $("#queryCusInfo").val('');
+        var queryCusInfo = $("#queryCusInfo").val();
+        $("#dataGrid").bootstrapTable('destroy');
+        var cityId = $("#cityCode").val();
+        var storeType = $("#storeType").val();
+        findStorePreByCityIdOrKeywords(queryCusInfo,cityId,storeType,changeType);
+    }
+
+    function findStorePreByCityIdOrKeywords(keywords,cityId,storeType,changeType){
+        showAvailableCredit(keywords,cityId,storeType,changeType);
     }
 
     var $page = {

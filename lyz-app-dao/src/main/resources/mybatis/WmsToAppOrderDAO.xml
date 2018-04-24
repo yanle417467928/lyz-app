@@ -407,7 +407,7 @@
         WHERE NOT EXISTS(
         SELECT 'X'
         FROM inter_wta_order_logistics
-        WHERE order_no = #{orderNo} AND logistic_status = #{logisticStatus}
+        WHERE order_no = #{orderNo} AND logistic_status = #{logisticStatus} AND task_no = #{taskNo}
         );
     </insert>
 

@@ -145,11 +145,11 @@
         ccpc.use_ord_no referenceNumber
         FROM cus_customer_product_coupon ccpc
         INNER JOIN cus_customer c ON ccpc.cus_id = c.cus_id
-        LEFT JOIN emp_employee e ON c.sales_consult_id = e.emp_id
-        INNER JOIN st_store st ON st.store_id = c.store_id
+        LEFT JOIN emp_employee e ON ccpc.seller_id = e.emp_id
+        INNER JOIN st_store st ON st.store_id = ccpc.store_id
         INNER JOIN city ON c.city_id = city.city_id
         INNER JOIN gds_goods g ON ccpc.gid = g.gid
-        WHERE ccpc.is_used = 0 AND ccpc.effective_end_time &lt; now()
+        WHERE ccpc.is_used = 0 AND (ccpc.effective_end_time > now() OR ccpc.effective_end_time IS NULL)
         <if test="null != cityId and cityId != -1">
             AND city.city_id = #{cityId}
         </if>

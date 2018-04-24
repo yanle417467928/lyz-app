@@ -30,6 +30,9 @@
         <if test="null != storeId and storeId != 0">
             AND s.store_id = #{storeId}
         </if>
+        <if test="null != changeType and changeType != '-1'">
+            AND l.change_type = #{changeType}
+        </if>
         <if test="null != keywords and keywords != ''">
             AND (s.store_code LIKE concat(concat('%',#{keywords}),'%')
             OR s.store_name LIKE concat(concat('%',#{keywords}),'%')

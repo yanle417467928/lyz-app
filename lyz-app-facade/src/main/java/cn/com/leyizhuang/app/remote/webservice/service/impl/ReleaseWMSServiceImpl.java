@@ -361,7 +361,6 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                                 } else {
                                     if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
                                         logger.info("GetWMSInfo OUT,获取wms信息失败,获取返配退货增加城市库存失败,任务编号 出参 backNo:{}", header.getBackNo());
-                                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                                         smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "获取wms仓库退货信息失败,增加城市库存失败!任务编号" + header.getBackNo());
                                         return AppXmlUtil.resultStrXml(1, "网络原因可能造成事务异常!");
                                     }
@@ -751,7 +750,6 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     }
                     int result = wmsToAppOrderService.saveWtaWarehousePurchaseGoods(purchaseGoods);
                     if (result == 0) {
-                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                         logger.info("GetWMSInfo OUT,获取wms信息失败,商品已存在 出参 c_gcode:{}", purchaseGoods.getSku());
                         return AppXmlUtil.resultStrXml(1, "重复传输,编码为" + purchaseGoods.getSku() + "的商品已存在");
                     }
@@ -1541,7 +1539,6 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
             wmsToAppOrderService.updateWtaShippingOrderHeader(header);
         } catch (Exception e) {
             logger.info("GetWMSInfo OUT,获取出货单头档wms信息失败,发生未知异常 出参 e:{}", e);
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "获取出货单头档wms信息失败!处理出货单头档事务失败!order:" + header.getOrderNo());
         }
     }
@@ -1652,7 +1649,6 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 logger.info("cancelOrderToWms OUT,正常退货成功");
             } catch (Exception e) {
                 logger.info("GetWMSInfo OUT,获取返配单头档wms信息失败,发生未知异常 出参 e:{}", e);
-                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "处理退货业务逻辑事务失败!order:" + returnOrderBaseInfo.getReturnNo());
             }
         } else {
@@ -1755,7 +1751,6 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
             } else {
                 if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
                     logger.warn("GetWMSInfo OUT,获取wms整转零信息失败,扣整商品仓库数量失败,任务编号 出参 DirectNo:{}", wholeSplitToUnit.getDirectNo());
-                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                     smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "获取wms整转零信息失败,扣整商品仓库数量失败!任务编号" + wholeSplitToUnit.getDirectNo());
                     return;
                 }
@@ -1788,7 +1783,6 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
             } else {
                 if (j == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
                     logger.warn("GetWMSInfo OUT,获取wms整转零信息失败,增加零商品仓库数量失败,任务编号 出参 DirectNo:{}", wholeSplitToUnit.getDirectNo());
-                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                     smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "获取wms整转零信息失败,增加零商品仓库数量失败!任务编号" + wholeSplitToUnit.getDirectNo());
                     return;
                 }
@@ -1837,7 +1831,6 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 } else {
                     if (j == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,获取仓库采购失败,任务编号 出参 PurchaseNo:{}", purchaseHeader.getPurchaseNo());
-                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                         smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "获取wms仓库采购失败!任务编号" + purchaseHeader.getPurchaseNo());
                         return;
                     }
@@ -1901,7 +1894,6 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 } else {
                     if (j == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,获取仓库调拨失败,任务编号 出参 AllocationNo:{}", allocation.getAllocationNo());
-                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                         smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "获取wms仓库调拨失败!任务编号" + allocation.getAllocationNo());
                         return;
                     }
@@ -1959,7 +1951,6 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
             } else {
                 if (j == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
                     logger.info("GetWMSInfo OUT,获取wms信息失败,获取报损报溢失败,任务编号 出参 WasteNo:{}", damageAndOverflow.getWasteNo());
-                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                     smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "获取wms报损报溢失败!任务编号" + damageAndOverflow.getWasteNo());
                     return;
                 }

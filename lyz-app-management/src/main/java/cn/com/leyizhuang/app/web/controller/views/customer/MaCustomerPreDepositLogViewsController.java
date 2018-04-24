@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.views.customer;
 
+import cn.com.leyizhuang.app.core.constant.CustomerPreDepositChangeType;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ public class MaCustomerPreDepositLogViewsController extends BaseController {
     @RequestMapping(value = "/list/{cusId}")
     public String cusPreDepositLogListPage(ModelMap map, @PathVariable(value = "cusId") Long cusId) {
         map.addAttribute("cusId",cusId);
+        map.addAttribute("changeTypes", CustomerPreDepositChangeType.values());
         return "/views/customer/customer_pre_deposit_log_page";
     }
 

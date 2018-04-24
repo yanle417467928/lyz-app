@@ -49,6 +49,16 @@
                         <option value="-1">选择门店</option>
                     </select>
 
+                    <select name="changeType" id="changeType" class="form-control selectpicker" data-width="120px" style="width:auto;"
+                            onchange="findStorePreByChangeType(this.value)" data-live-search="true">
+                        <option value="-1">选择变更类型</option>
+                        <#if changeTypes??>
+                            <#list changeTypes as changeType>
+                                <option value="${changeType.value}">${changeType.description}</option>
+                            </#list>
+                        </#if>
+                    </select>
+
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
                         <input type="text" name="queryCusInfo" id="queryCusInfo" class="form-control" style="width:auto;"
                                placeholder="请输入要查找的姓名或电话、单号">
@@ -143,7 +153,7 @@
     $(function () {
         findCitylist();
         findStorelist();
-        showAvailableCredit(null,null,null);
+        showAvailableCredit(null,null,null,'-1');
         $('#btn_back').on('click', function () {
             window.history.back()
         });
@@ -196,7 +206,7 @@
         });
     }
 
-    function showAvailableCredit(keywords,cityId,storeId){
+    function showAvailableCredit(keywords,cityId,storeId,changeType){
         $("#dataGrid").bootstrapTable('destroy');
         var cusId=$('#cusId').val();
         $grid.init($('#dataGrid'), $('#toolbar'),'/rest/customer/preDeposit/log/page/grid', 'get', false, function (params) {
@@ -206,7 +216,8 @@
                 keywords: keywords,
                 cityId: cityId,
                 storeId: storeId,
-                cusId: cusId
+                cusId: cusId,
+                changeType: changeType
             }
         }, [{
             checkbox: true,
@@ -275,7 +286,8 @@
         var storeId = $("#storeCode").val();
         var keywords = $('#queryCusInfo').val();
         $("#dataGrid").bootstrapTable('destroy');
-        findCusPreLogByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId);
+        var changeType = $("#changeType").val();
+        findCusPreLogByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId,changeType);
         if(cityId==-1){
             findStorelist();
             return false;
@@ -302,8 +314,8 @@
         });
     }
 
-    function findCusPreLogByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId){
-        showAvailableCredit(keywords,cityId,storeId);
+    function findCusPreLogByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId,changeType){
+        showAvailableCredit(keywords,cityId,storeId,changeType);
     }
 
     function findCusByStoreId() {
@@ -312,7 +324,8 @@
         var cityId = $("#cityCode").val();
         $("#dataGrid").bootstrapTable('destroy');
         var keywords = $('#queryCusInfo').val();
-        findCusPreLogByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId);
+        var changeType = $("#changeType").val();
+        findCusPreLogByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId,changeType);
 
     }
 
@@ -321,7 +334,17 @@
         $("#dataGrid").bootstrapTable('destroy');
         var storeId = $("#storeCode").val();
         var cityId = $("#cityCode").val();
-        findCusPreLogByCityIdOrstoreIdOrKeywords(queryCusInfo,cityId,storeId);
+        var changeType = $("#changeType").val();
+        findCusPreLogByCityIdOrstoreIdOrKeywords(queryCusInfo,cityId,storeId,changeType);
+    }
+
+    function findStorePreByChangeType(changeType) {
+        $("#queryCusInfo").val('');
+        var queryCusInfo = $("#queryCusInfo").val();
+        $("#dataGrid").bootstrapTable('destroy');
+        var cityId = $("#cityCode").val();
+        var storeId = $("#storeCode").val();
+        findCusPreLogByCityIdOrstoreIdOrKeywords(queryCusInfo,cityId,storeId,changeType);
     }
 
 
