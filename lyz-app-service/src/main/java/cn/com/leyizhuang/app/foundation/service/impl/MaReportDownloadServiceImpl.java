@@ -118,7 +118,7 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
     public PageInfo<ShipmentAndReturnGoods> findGoodsShipmentAndReturnOrder(Long cityId, Long storeId, String storeType, String startTime, String endTime, String keywords, List<Long> storeIds, Integer page, Integer size) {
         PageHelper.startPage(page, size);
         if (null != startTime && !("".equals(startTime))) {
-            endTime += " 00:00:00";
+            startTime += " 00:00:00";
         }
         if (null != endTime && !("".equals(endTime))) {
             endTime += " 23:59:59";
@@ -129,8 +129,33 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
         if (null != storeId && -1 == storeId) {
             storeId = null;
         }
+        if (null != storeType && "-1".equals(storeType)) {
+            storeType = null;
+        }
         List<ShipmentAndReturnGoods> shipmentAndReturnGoodsList = maReportDownloadDAO.queryGoodsShipmentAndReturnOrder(cityId, storeId, storeType, startTime, endTime, keywords, storeIds);
-        return new PageInfo<>(shipmentAndReturnGoodsList);
+        return new PageInfo<>( ShipmentAndReturnGoods.transformList(shipmentAndReturnGoodsList));
+    }
+
+
+    @Override
+    public List<ShipmentAndReturnGoods> downShipmentAndReturnOrder(Long cityId, Long storeId, String storeType, String startTime, String endTime, String keywords, List<Long> storeIds) {
+        if (null != startTime && !("".equals(startTime))) {
+            startTime += " 00:00:00";
+        }
+        if (null != endTime && !("".equals(endTime))) {
+            endTime += " 23:59:59";
+        }
+        if (null != cityId && -1 == cityId) {
+            cityId = null;
+        }
+        if (null != storeId && -1 == storeId) {
+            storeId = null;
+        }
+        if (null != storeType && "-1".equals(storeType)) {
+            storeType = null;
+        }
+        List<ShipmentAndReturnGoods> shipmentAndReturnGoodsList = maReportDownloadDAO.queryGoodsShipmentAndReturnOrder(cityId, storeId, storeType, startTime, endTime, keywords, storeIds);
+        return ShipmentAndReturnGoods.transformList(shipmentAndReturnGoodsList);
     }
 
 

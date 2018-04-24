@@ -489,11 +489,12 @@
         select
         DISTINCT
         ss.city as cityName,
+        orbi.store_id as store_id,
         ss.store_name as storeName ,
         ss.store_type as storeType,
         orbi.ord_no as ordNo,
+        ordd.create_time as operationTime,
         orbi.order_time as createTime,
-        orbi.store_id as store_id,
         obi.customer_id as customerId,
         obi.customer_phone as customerPhone,
         obi.customer_name as customerName,
@@ -505,8 +506,8 @@
         orgi.goods_line_type as goodsLineType,
         orgi.return_qty as orderQty,
         orgi.return_price as returnPrice,
-        ordd.create_time as operationTime,
-        orpc.purchase_price as purchasePrice
+        orpc.purchase_price as purchasePrice,
+        orbi.return_no as referenceNumber
         from ord_return_base_info orbi
         LEFT JOIN ord_return_goods_info orgi ON orgi.return_no =orbi.return_no
         LEFT JOIN ord_base_info obi ON orbi.ord_no=obi.ord_no
@@ -547,10 +548,10 @@
         select
         DISTINCT
         ss.city as cityName,
+        orbi.store_id as store_id,
         ss.store_name as storeName,
         ss.store_type as storeType,
         orbi.ord_no as ordNo,
-        orbi.store_id as store_id,
         orl.operation_time as operationTime,
         orbi.order_time as createTime,
         orbi.cus_id as customerId,
@@ -564,7 +565,8 @@
         orgi.goods_line_type as goodsLineType,
         orgi.return_qty as orderQty,
         orgi.return_price as returnPrice,
-        orpc.purchase_price as purchasePrice
+        orpc.purchase_price as purchasePrice,
+        orbi.return_no as referenceNumber
         from ord_return_base_info orbi
         LEFT JOIN ord_return_goods_info orgi ON orgi.return_no =orbi.return_no
         LEFT JOIN ord_base_info obi ON orbi.ord_no=obi.ord_no
@@ -624,7 +626,8 @@
         ogi.goods_line_type as goodsLineType,
         ogi.order_qty as orderQty,
         ogi.return_price as returnPrice,
-        oci.purchase_price as purchasePrice
+        oci.purchase_price as purchasePrice,
+        obi.ord_no as referenceNumber
         from ord_base_info obi
         LEFT JOIN ord_goods_info ogi ON obi.ord_no =ogi.ord_no
         LEFT JOIN ord_delivery_info_details odid ON obi.ord_no = odid.order_no
@@ -681,7 +684,8 @@
         ogi.goods_line_type as goodsLineType,
         ogi.order_qty as orderQty,
         ogi.return_price as returnPrice,
-        oci.purchase_price as purchasePrice
+        oci.purchase_price as purchasePrice,
+        obi.ord_no as referenceNumber
         from ord_base_info obi
         LEFT JOIN ord_goods_info ogi ON ogi.ord_no =obi.ord_no
         LEFT JOIN st_store ss ON obi.store_id = ss.store_id

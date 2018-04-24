@@ -161,14 +161,14 @@
         });
     }
 
-    function initDateGird(keywords, storeId, storeType, cityId, starTime, endTime) {
+    function initDateGird(keywords, storeId, storeType, cityId, startTime, endTime) {
         $grid.init($('#dataGrid'), $('#toolbar'), '/rest/reportDownload/goodsShipmentAndReturn/page/grid', 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
                 keywords: keywords,
                 storeId: storeId,
-                starTime: starTime,
+                startTime: startTime,
                 endTime: endTime,
                 storeType: storeType,
                 cityId: cityId
@@ -189,11 +189,11 @@
             title: '门店类型',
             align: 'center'
         }, {
-            field: 'orderNo',
+            field: 'ordNo',
             title: '订单号',
             align: 'center'
         }, {
-            field: 'deliveryStatus',
+            field: 'operationTime',
             title: '出/退货时间',
             align: 'center'
         }, {
@@ -205,7 +205,7 @@
             title: '产品名称',
             align: 'center'
         }, {
-            field: 'quantity',
+            field: 'orderQty',
             title: '数量',
             align: 'center'
         }
@@ -260,7 +260,7 @@
         var cityId = $('#cityCode').val();
         var storeType = $('#storeType').val();
 
-        var url = "/rest/reportDownload/accountGoodsItems/download?keywords=" + keywords + "&storeId=" + storeId + "&startTime=" + startTime
+        var url = "/rest/reportDownload/goodsShipmentAndReturn/download?storeId=" + storeId + "&startTime=" + startTime
                 + "&endTime=" + endTime + "&storeType=" + storeType + "&cityId=" + cityId;
         var escapeUrl = url.replace(/\#/g, "%23");
         window.open(escapeUrl);

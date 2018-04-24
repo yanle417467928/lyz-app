@@ -50,4 +50,9 @@ public interface MaReportDownloadService {
     List<StoreInventory> downloadStoreInventorys(Long storeId, List<Long> storeIds);
 
     AccountGoodsItemsDO getJxPriceByOrderNoAndSku(String orderNumber, String sku);
+
+    List<ShipmentAndReturnGoods> downShipmentAndReturnOrder(Long cityId, Long storeId, String storeType, String startTime, String endTime,
+                                                                     String keywords, List<Long> storeIds);
+
+
 }
