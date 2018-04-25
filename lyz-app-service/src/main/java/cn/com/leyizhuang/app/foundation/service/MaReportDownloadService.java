@@ -53,6 +53,9 @@ public interface MaReportDownloadService {
 
     List<ShipmentAndReturnGoods> downShipmentAndReturnOrder(Long cityId, Long storeId, String storeType, String startTime, String endTime,
                                                                      String keywords, List<Long> storeIds);
+    PageInfo<SalesReportDO> findSalesList(String companyCode, String storeType,
+                                      String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds, Integer page, Integer size);
 
-
+    List<SalesReportDO> downSalesReport(String companyCode, String storeType,
+                                            String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds);
 }
