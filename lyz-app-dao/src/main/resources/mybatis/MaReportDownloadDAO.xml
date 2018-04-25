@@ -782,13 +782,16 @@
             <![CDATA[ obd.pay_up_time< #{endTime}]]>
         </if>
         and ob.delivery_type = 'HOUSE_DELIVERY'
-        and obd.is_pay_up = 1
         <if test="null!=companyCode and ''!=companyCode">
             and s.store_structure_code like concat('%',#{companyCode},'%')
         </if>
         <if test="null != storeType and ''!=storeType">
             and s.store_type = #{storeType}
         </if>
+        AND ob.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         order by s.store_id,ob.sales_consult_id,ob.create_time)
 
         UNION
@@ -841,7 +844,6 @@
             <![CDATA[ obd.pay_up_time< #{endTime}]]>
         </if>
         AND ob.delivery_type = 'SELF_TAKE'
-        and obd.is_pay_up = 1
         <if test="null !=companyCode and ''!=companyCode">
             and s.store_structure_code like concat('%',#{companyCode},'%')
         </if>
@@ -849,6 +851,10 @@
         <if test="null!=storeType and ''!=storeType">
             and s.store_type = #{storeType}
         </if>
+        AND ob.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         order by s.store_id,ob.sales_consult_id,ob.create_time)
 
         UNION
@@ -915,6 +921,10 @@
         <if test="null !=storeType and ''!=storeType">
             and s.store_type =#{storeType}
         </if>
+        AND ob.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         order by s.store_id,ob.sales_consult_id,ob.create_time)
 
         UNION
@@ -982,6 +992,10 @@
         <if test="null !=storeType and ''!=storeType">
             and s.store_type = #{storeType}
         </if>
+        AND ob.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         order by s.store_id,ob.sales_consult_id,ob.create_time)
 
         UNION
@@ -1031,6 +1045,10 @@
         <if test="null !=storeType and ''!=storeType">
             and s.store_type = #{storeType}
         </if>
+        AND orb.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         )
     </select>
 
@@ -1086,13 +1104,16 @@
             <![CDATA[  obd.pay_up_time<#{endTime} ]]>
         </if>
         and ob.delivery_type = 'HOUSE_DELIVERY'
-        and obd.is_pay_up = 1
         <if test="null!=companyCode and ''!=companyCode">
             and s.store_structure_code like concat('%',#{companyCode},'%')
         </if>
         <if test="null!=storeType and ''!=storeType">
             and s.store_type =#{storeType}
         </if>
+        AND ob.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         order by s.store_id,ob.sales_consult_id,ob.create_time)
 
         UNION
@@ -1149,7 +1170,6 @@
             and   <![CDATA[ obd.pay_up_time < #{endTime}]]>
         </if>
         AND ob.delivery_type = 'SELF_TAKE'
-        and obd.is_pay_up = 1
         <if test="null!=companyCode and ''!=companyCode">
             and s.store_structure_code like concat('%',#{companyCode},'%')
         </if>
@@ -1157,6 +1177,10 @@
         <if test="null!=storeType and ''!=storeType">
             and s.store_type = #{storeType}
         </if>
+        AND ob.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         order by s.store_id,ob.sales_consult_id,ob.create_time)
 
 
@@ -1227,6 +1251,10 @@
         <if test="null!=storeType and ''!=storeType">
             and s.store_type =#{storeType}
         </if>
+        AND ob.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         order by s.store_id,ob.sales_consult_id,ob.create_time)
 
         UNION
@@ -1299,6 +1327,10 @@
         <if test="null!=storeType and ''!=storeType">
             and s.store_type =#{storeType}
         </if>
+        AND ob.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         order by s.store_id,ob.sales_consult_id,ob.create_time)
 
 
@@ -1351,8 +1383,11 @@
         <if test="null!=storeType and ''!=storeType">
             and s.store_type = #{storeType}
         </if>
+        AND orb.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         )
-
     </select>
 
 </mapper>
