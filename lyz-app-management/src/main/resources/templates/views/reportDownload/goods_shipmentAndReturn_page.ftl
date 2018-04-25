@@ -271,7 +271,7 @@
           $('select').prop('selectedIndex', 0);
           $("select").selectpicker('refresh');
           $("#dataGrid").bootstrapTable('destroy');
-          initDateGird(null, null, null, null, null, null);
+          //initDateGird(null, null, null, null, null, null);
       }
 
 </script>

@@ -50,4 +50,9 @@ public interface MaReportDownloadDAO {
     List<StoreInventory> findStoreInventorys(@Param("storeId") Long storeId,  @Param("list") List<Long> storeIds);
 
     AccountGoodsItemsDO getJxPriceByOrderNoAndSku(@Param("orderNumber")String orderNumber, @Param("sku")String sku);
+
+
+    List<SalesReportDO> findNoProductSalesList(@Param("companyCode") String companyCode, @Param("storeType") String storeType,@Param("startTime") String startTime,@Param("endTime") String endTime, @Param("list") List<Long> storeIds);
+
+    List<SalesReportDO> findProductSalesList(@Param("companyCode") String companyCode, @Param("storeType") String storeType,@Param("startTime") String startTime,@Param("endTime") String endTime, @Param("list") List<Long> storeIds);
 }
