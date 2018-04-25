@@ -176,7 +176,7 @@
             cus_customer_product_coupon c
             INNER JOIN gds_goods g ON c.gid = g.gid
             LEFT JOIN cus_customer cu on c.cus_id = cu.cus_id
-            LEFT JOIN gds_goods_price ggp on (g.sku = ggp.sku AND ggp.store_id = cu.store_id) OR ggp.sku IS NULL
+            LEFT JOIN gds_goods_price ggp on (g.sku = ggp.sku AND ggp.store_id = cu.store_id) OR ggp.price_type IS NULL
             LEFT JOIN cus_rank cr on cu.cus_id = cr.cus_id
             LEFT JOIN rank_classification rc on rc.rank_id = cr.rank_id
         WHERE
@@ -466,7 +466,7 @@
             cus_customer_product_coupon c
             INNER JOIN gds_goods g ON c.gid = g.gid
             LEFT JOIN cus_customer cu on c.cus_id = cu.cus_id
-		    LEFT JOIN gds_goods_price ggp on (g.sku = ggp.sku AND ggp.store_id = cu.store_id) OR ggp.sku IS NULL
+		    LEFT JOIN gds_goods_price ggp on (g.sku = ggp.sku AND ggp.store_id = cu.store_id) OR ggp.price_type IS NULL
 		    LEFT JOIN cus_rank cr on cu.cus_id = cr.cus_id
             LEFT JOIN rank_classification rc on rc.rank_id = cr.rank_id
         WHERE
@@ -482,6 +482,7 @@
             )
         GROUP BY
             g.sku,ggp.price_type
+
     </select>
 
     <select id="findProductCouponCustomerBySellerId"
@@ -885,4 +886,150 @@
     </select>
 
 
+    <!-- 优化查询性能 -->
+    <select id="findProductCouponBySellerIdAndCustomerIdNew" resultType=
+            "cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse">
+        SELECT
+        uc.goods_id,
+        uc.goods_name,
+        uc.goods_code,
+        uc.goods_specification,
+        uc.goods_unit,
+        uc.left_number,
+        uc.cover_image_uri,
+        uc.isZG
+        FROM
+        (SELECT
+        g.gid           goods_id,
+        g.sku_name      goods_name,
+        g.sku           goods_code,
+        g.goods_specification,
+        g.goods_unit    goods_unit,
+        sum(c.quantity) left_number,
+        g.cover_image_uri,
+        CASE WHEN ggp.price_type = "COMMON" THEN 0 ELSE 1 END AS isZG
+        FROM
+        cus_customer_product_coupon c
+        INNER JOIN gds_goods g ON c.gid = g.gid
+        LEFT JOIN cus_customer cu on c.cus_id = cu.cus_id
+        LEFT JOIN gds_goods_price ggp on (g.sku = ggp.sku AND ggp.store_id = cu.store_id)
+        LEFT JOIN cus_rank cr on cu.cus_id = cr.cus_id
+        LEFT JOIN rank_classification rc on rc.rank_id = cr.rank_id
+        WHERE
+        c.cus_id = #{cusId}
+        AND c.seller_id = #{sellerId}
+        AND c.is_used IS FALSE
+        AND c.effective_start_time &lt; NOW()
+        AND (c.effective_end_time &gt; NOW() OR c.effective_end_time IS NULL)
+        AND (
+        ggp.price_type = rc.rank_code
+        OR ggp.price_type = 'common'
+        )
+        GROUP BY
+        g.sku,ggp.price_type
+          UNION ALL
+        <!-- 没有价目表的产品券 -->
+        SELECT
+        g.gid goods_id,
+        g.sku_name goods_name,
+        g.sku goods_code,
+        g.goods_specification,
+        g.goods_unit goods_unit,
+        sum(c.quantity) left_number,
+        g.cover_image_uri,
+        0 as isZG
+        FROM
+        cus_customer_product_coupon c
+        INNER JOIN gds_goods g ON c.gid = g.gid
+        LEFT JOIN cus_customer cu ON c.cus_id = cu.cus_id
+        LEFT JOIN gds_goods_price ggp ON (
+        g.sku = ggp.sku
+        AND ggp.store_id = cu.store_id
+        )
+        WHERE
+        c.cus_id = #{cusId}
+        AND c.seller_id = #{sellerId}
+        AND c.is_used IS FALSE
+        AND c.effective_start_time &lt; NOW()
+        AND (
+        c.effective_end_time &gt; NOW()
+        OR c.effective_end_time IS NULL
+        )
+        and ggp.price_type is NULL
+        GROUP BY
+        g.sku,
+        ggp.price_type) uc
+    </select>
+
+    <select id="findProductCouponByCustomerIdNew" resultType=
+            "cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse">
+        SELECT
+        uc.goods_id,
+        uc.goods_name,
+        uc.goods_code,
+        uc.goods_specification,
+        uc.goods_unit,
+        uc.left_number,
+        uc.cover_image_uri,
+        uc.isZG
+        FROM
+        (SELECT
+        g.gid           goods_id,
+        g.sku_name      goods_name,
+        g.sku           goods_code,
+        g.goods_specification,
+        g.goods_unit    goods_unit,
+        sum(c.quantity) left_number,
+        g.cover_image_uri,
+        CASE WHEN ggp.price_type = "COMMON" THEN 0 ELSE 1 END AS isZG
+        FROM
+        cus_customer_product_coupon c
+        INNER JOIN gds_goods g ON c.gid = g.gid
+        LEFT JOIN cus_customer cu on c.cus_id = cu.cus_id
+        LEFT JOIN gds_goods_price ggp on (g.sku = ggp.sku AND ggp.store_id = cu.store_id)
+        LEFT JOIN cus_rank cr on cu.cus_id = cr.cus_id
+        LEFT JOIN rank_classification rc on rc.rank_id = cr.rank_id
+        WHERE
+        c.cus_id = #{userId}
+        AND c.is_used IS FALSE
+        AND c.effective_start_time &lt; NOW()
+        AND (c.effective_end_time &gt; NOW() OR c.effective_end_time IS NULL)
+        AND (
+        ggp.price_type = rc.rank_code
+        OR ggp.price_type = 'common'
+        )
+        GROUP BY
+        g.sku,ggp.price_type
+        UNION ALL
+        <!-- 没有价目表的产品券 -->
+        SELECT
+        g.gid goods_id,
+        g.sku_name goods_name,
+        g.sku goods_code,
+        g.goods_specification,
+        g.goods_unit goods_unit,
+        sum(c.quantity) left_number,
+        g.cover_image_uri,
+        0 as isZG
+        FROM
+        cus_customer_product_coupon c
+        INNER JOIN gds_goods g ON c.gid = g.gid
+        LEFT JOIN cus_customer cu ON c.cus_id = cu.cus_id
+        LEFT JOIN gds_goods_price ggp ON (
+        g.sku = ggp.sku
+        AND ggp.store_id = cu.store_id
+        )
+        WHERE
+        c.cus_id = #{userId}
+        AND c.is_used IS FALSE
+        AND c.effective_start_time &lt; NOW()
+        AND (
+        c.effective_end_time &gt; NOW()
+        OR c.effective_end_time IS NULL
+        )
+        and ggp.price_type is NULL
+        GROUP BY
+        g.sku,
+        ggp.price_type) uc
+    </select>
 </mapper>

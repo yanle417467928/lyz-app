@@ -564,8 +564,8 @@ public class GoodsRestController extends BaseRestController {
         List<OrderGoodsSimpleResponse> orderGoodsSimpleResponseList = new ArrayList<>();
         for (MaActGoodsMapping goodsMappingDO : goodsList) {
             OrderGoodsSimpleResponse orderGoodsSimpleResponse = new OrderGoodsSimpleResponse();
-            //根据商品id和门店id查询商品价格
-            GoodsPrice goodsPrice = goodsPriceService.findGoodsPriceByGoodsIDAndStoreID(goodsMappingDO.getGid(), appEmployee.getStoreId());
+            //根据商品id和门店id查询商品价格+ 顾客id
+            GoodsPrice goodsPrice = goodsPriceService.findGoodsPriceByGoodsIDAndStoreID(goodsMappingDO.getGid(), appEmployee.getStoreId(),customerId);
             orderGoodsSimpleResponse.setId(goodsMappingDO.getGid());
             orderGoodsSimpleResponse.setSku(goodsMappingDO.getSku());
             orderGoodsSimpleResponse.setGoodsQty(goodsMappingDO.getQty());

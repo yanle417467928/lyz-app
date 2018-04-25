@@ -40,7 +40,7 @@ public interface GoodsPriceDAO {
      * @param storeID 门店id
      * @return
      */
-    GoodsPrice findGoodsPriceByGoodsIDAndStoreID(@Param("goodsID") Long goodsID, @Param("storeID") Long storeID);
+    GoodsPrice findGoodsPriceByGoodsIDAndStoreID(@Param("goodsID") Long goodsID, @Param("storeID") Long storeID,@Param("cusId") Long cusId);
 
     List<GiftListResponseGoods> findCustomerGoodsPriceListByGoodsIdsAndUserId(@Param(value = "list") List<Long> goodsIdList,
                                                                               @Param(value = "userId") Long userId);

@@ -72,8 +72,8 @@ public class GoodsPriceServiceImpl implements GoodsPriceService {
     }
 
     @Override
-    public GoodsPrice findGoodsPriceByGoodsIDAndStoreID(Long goodsID, Long storeID) {
-        return goodsPriceDAO.findGoodsPriceByGoodsIDAndStoreID(goodsID, storeID);
+    public GoodsPrice findGoodsPriceByGoodsIDAndStoreID(Long goodsID, Long storeID,Long cusId) {
+        return goodsPriceDAO.findGoodsPriceByGoodsIDAndStoreID(goodsID, storeID,cusId);
     }
 
     @Override
