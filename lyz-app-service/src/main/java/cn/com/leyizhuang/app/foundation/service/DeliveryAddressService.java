@@ -5,6 +5,8 @@ import cn.com.leyizhuang.app.foundation.pojo.request.DeliveryAddressRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse;
 import com.github.pagehelper.PageInfo;
 
+import java.util.List;
+
 /**
  * @author GenerationRoad
  * @date 2017/9/28
@@ -24,4 +26,6 @@ public interface DeliveryAddressService {
     void clearDefaultAddressByUserIdAndIdentityType(Long userId, AppIdentityType appIdentityTypeByValue);
 
     DeliveryAddressResponse getTopDeliveryAddressByUserIdAndIdentityType(Long userId, AppIdentityType appIdentityTypeByValue);
+
+    List<DeliveryAddressResponse> queryListByUserIdAndIdentityTypeAndStatusIsTrueAndKeywords(Long userId, AppIdentityType identityType, String keywords);
 }

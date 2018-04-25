@@ -89,6 +89,14 @@ public class DeliveryAddressServiceImpl implements DeliveryAddressService {
         return null;
     }
 
+    @Override
+    public List<DeliveryAddressResponse> queryListByUserIdAndIdentityTypeAndStatusIsTrueAndKeywords(Long userId, AppIdentityType identityType, String keywords) {
+        if (null != userId && null != identityType) {
+            return deliveryAddressDAO.queryListByUserIdAndIdentityTypeAndStatusIsTrueAndKeywords(userId, identityType, keywords);
+        }
+        return null;
+    }
+
     private DeliveryAddressDO transform(Long userId, AppIdentityType identityType, DeliveryAddressRequest deliveryAddress) {
         if (null != userId && null != deliveryAddress && null != identityType) {
             DeliveryAddressDO deliveryAddressDO = new DeliveryAddressDO();

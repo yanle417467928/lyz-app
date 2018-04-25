@@ -287,6 +287,43 @@ public class UserSettingController {
     }
 
     /**
+     * @title   搜索收货地址
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/4/25
+     */
+    @PostMapping(value = "/search/deliveryAddress", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> searchDeliveryAddress(Long userId, Integer identityType, String keywords) {
+        logger.info("searchDeliveryAddress CALLED,搜索收货地址，入参 userId {},identityType,keywords:{}", userId, identityType, keywords);
+
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户信息不能为空！", null);
+            logger.info("searchDeliveryAddress OUT,搜索收货地址失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("searchDeliveryAddress OUT,搜索收货地址失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == keywords) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("searchDeliveryAddress OUT,搜索收货地址失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        List<DeliveryAddressResponse> deliveryAddressResponseList = this.deliveryAddressServiceImpl.queryListByUserIdAndIdentityTypeAndStatusIsTrueAndKeywords(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), keywords);
+        deliveryAddressResponseList.sort(Comparator.comparing(DeliveryAddressResponse::getIsDefault).reversed());
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, deliveryAddressResponseList);
+        logger.info("searchDeliveryAddress OUT,搜索收货地址成功，出参 resultDTO:{}", resultDTO);
+        return resultDTO;
+    }
+
+    /**
      * @param userId
      * @param identityType
      * @param deliveryAddress

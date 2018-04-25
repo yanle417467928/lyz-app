@@ -34,4 +34,8 @@ public interface DeliveryAddressDAO {
 
     DeliveryAddressResponse getTopDeliveryAddressByUserIdAndIdentityType(@Param(value = "userId") Long userId,
                                                                          @Param(value = "identityType") AppIdentityType identityType);
+
+    List<DeliveryAddressResponse> queryListByUserIdAndIdentityTypeAndStatusIsTrueAndKeywords(@Param(value = "userId") Long userId,
+                                                                                             @Param(value = "identityType") AppIdentityType identityType,
+                                                                                             @Param(value = "keywords")String keywords);
 }
