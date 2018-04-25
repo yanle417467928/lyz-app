@@ -676,7 +676,9 @@
         SELECT
             COVER_IMAGE_URI,
             ROTATION_IMAGE_URI,
-            goods_detail goodsDetial
+            goods_detail goodsDetial,
+            work_area,
+            work_cost
         FROM
             gds_goods
         WHERE
