@@ -1797,7 +1797,7 @@ public class DataTransferServiceImpl implements DataTransferService {
                     }
                 }
                 //除去产品券的数量
-                returnOrderGoodsInfo.setReturnQty(oderQty.intValue() - couponNumber.intValue());
+                returnOrderGoodsInfo.setReturnQty(tdReturnOrderGoods.getQuantity().intValue());
 
                 if (companyFlag.contains("华润")) {
                     returnOrderGoodsInfo.setCompanyFlag("HR");

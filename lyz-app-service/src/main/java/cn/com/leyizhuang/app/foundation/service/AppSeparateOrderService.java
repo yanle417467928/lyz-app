@@ -127,5 +127,13 @@ public interface AppSeparateOrderService {
 
     void sendCreditRechargeReceiptInf(String receiptNumber);
 
+    void separateOrderAndGoodsInf(String orderNumber);
 
+    void separateOrderCouponInf(String orderNumber);
+
+    void separateOrderReceiptInf(String orderNumber);
+
+    void separateOrderJxPriceInf(String orderNumber);
+
+    void separateOrderKeyInfInf(String orderNumber);
 }

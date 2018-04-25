@@ -1,11 +1,14 @@
 package cn.com.leyizhuang.app.foundation.pojo.remote.queue;
 
+import java.util.Objects;
+
 /**
  * 消息队列消息类型
  *
  * @author Richard
  * Created on 2018-01-02 8:59
  **/
+
 public enum MqMessageType {
 
     ORDER("ORDER", "订单头"),
@@ -31,5 +34,22 @@ public enum MqMessageType {
     MqMessageType(String value, String description) {
         this.value = value;
         this.description = description;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public static MqMessageType getMqMessageTypeByValue(String value) {
+        for (MqMessageType mqMessageType : MqMessageType.values()) {
+            if (Objects.equals(value, mqMessageType.getValue())) {
+                return mqMessageType;
+            }
+        }
+        return null;
     }
 }
