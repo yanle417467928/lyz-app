@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.Boolean;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -199,6 +200,27 @@ public class MaReportDownloadRestController extends BaseRestController{
         logger.info("查询商品要退货成功");
 
         return new GridDataVO<ShipmentAndReturnGoods>().transform(shipmentAndReturnGoodsList.getList(), shipmentAndReturnGoodsList.getTotal());
+    }
+
+    /**
+     * @param
+     * @return
+     * @throws
+     * @title 每月销量报表
+     * @descripe
+     * @author GenerationRoad
+     * @date 2018/4/3
+     */
+    @GetMapping(value = "/salesReport/page/grid")
+    public GridDataVO<SalesReportDO> restSalesReportPageGird(Integer offset, Integer size, String companyCode, String storeType,
+                                                             String startTime, String endTime, Boolean isProductCoupon) {
+        size = getSize(size);
+        Integer page = getPage(offset, size);
+        //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
+        PageInfo<SalesReportDO> SalesList = this.maReportDownloadService.findSalesList(companyCode, storeType, startTime,
+                endTime, isProductCoupon, storeIds, page, size);
+        return new GridDataVO<SalesReportDO>().transform(SalesList.getList(), SalesList.getTotal());
     }
 
 
