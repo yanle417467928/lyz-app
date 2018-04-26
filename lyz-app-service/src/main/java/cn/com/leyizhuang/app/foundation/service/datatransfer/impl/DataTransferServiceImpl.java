@@ -901,7 +901,7 @@ public class DataTransferServiceImpl implements DataTransferService {
             throw new DataTransferException("没有要迁移的数据", DataTransferExceptionType.NDT);
         }
         int size = storeMainOrderNumberList.size();
-        int nThreads = 6;
+        int nThreads = 1;
         AtomicInteger countLine = new AtomicInteger();
         ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
         List<Future<Queue<DataTransferErrorLog>>> futures = new ArrayList<>(nThreads);
