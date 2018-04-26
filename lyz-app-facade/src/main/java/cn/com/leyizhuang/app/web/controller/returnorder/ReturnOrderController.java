@@ -639,7 +639,7 @@ public class ReturnOrderController {
             //2018-04-03 generation 加盟门店自提单退货不用判断账单支付信息
             Boolean jmSelfTakeOrder = false;
             AppStore store = this.appStoreService.findById(returnOrderBaseInfo.getStoreId());
-            if (null != store && store.getStoreType() == StoreType.JM){
+            if (null != store && store.getStoreType() == StoreType.JM && AppDeliveryType.SELF_TAKE.equals(order.getDeliveryType())){
                 jmSelfTakeOrder = true;
                 returnOrderBaseInfo.setReturnStatus(AppReturnOrderStatus.FINISHED);
             }

@@ -37,4 +37,9 @@ public class WtaCancelOrderResultEnter {
      * 接口错误信息
      */
     private String errorMessage;
+
+    //处理标记
+    private String handleFlag;
+    //处理时间
+    private Date handleTime;
 }

@@ -992,6 +992,44 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void addAllOrderLifecycle(OrderLifecycleType lifecycleType, AppOrderStatus orderStatus, String orderNumber) {
+        if (null != lifecycleType && null != orderNumber) {
+            OrderBaseInfo orderBaseInfo = this.getOrderDetail(orderNumber);
+            if (null != orderBaseInfo) {
+                OrderLifecycle lifecycle = new OrderLifecycle();
+                lifecycle.setOid(orderBaseInfo.getId());
+                lifecycle.setOperation(lifecycleType);
+                lifecycle.setOperationTime(new Date());
+                lifecycle.setOrderNumber(orderNumber);
+                lifecycle.setPostStatus(orderStatus);
+                this.saveOrderLifecycle(lifecycle);
+            }
+
+        }
+    }
+
+    @Override
+    public void addAllOrderShipping(String shippingNo, String orderNumber) {
+        if (null != orderNumber) {
+            OrderBaseInfo orderBaseInfo = this.getOrderDetail(orderNumber);
+            if (null != orderBaseInfo) {
+                OrderShipping orderShipping = new OrderShipping();
+                orderShipping.setOid(orderBaseInfo.getId());
+                orderShipping.setOrdNo(orderNumber);
+                orderShipping.setShippingNo(shippingNo);
+                orderShipping.setShippingTime(new Date());
+                this.saveOrderShipping(orderShipping);
+            }
+        }
+    }
+
+    @Override
+    public void saveOrderShipping(OrderShipping orderShipping) {
+        this.orderDAO.saveOrderShipping(orderShipping);
+    }
+
+    @Override
     public void saveOrderLifecycle(OrderLifecycle lifecycle) {
         if (null != lifecycle) {
             orderDAO.saveOrderLifecycle(lifecycle);

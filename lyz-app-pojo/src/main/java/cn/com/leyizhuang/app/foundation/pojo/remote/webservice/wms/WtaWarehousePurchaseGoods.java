@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Date;
+
 /**
  * @author Jerry.Ren
  * create 2018-02-23 11:06
@@ -31,4 +33,6 @@ public class WtaWarehousePurchaseGoods {
      * 商品编码
      */
     private String sku;
+    //接收时间
+    private Date receiveTime;
 }

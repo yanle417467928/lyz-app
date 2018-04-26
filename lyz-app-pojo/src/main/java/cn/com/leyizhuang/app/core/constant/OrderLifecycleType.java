@@ -11,7 +11,8 @@ public enum OrderLifecycleType {
     NORMAL_RETURN("NORMAL_RETURN", "正常退货"),
     CANCELED("CANCELED", "已取消"),
     REJECTED("REJECTED", "拒签"),
-    FINISHED("FINISHED","已完成");
+    FINISHED("FINISHED","已完成"),
+    SEALED_CAR("SEALED_CAR","已出货");
 
 
     private String value;

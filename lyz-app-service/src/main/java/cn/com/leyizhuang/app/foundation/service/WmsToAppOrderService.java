@@ -182,4 +182,12 @@ public interface WmsToAppOrderService {
 
     void updateWtaOrderLogistics(WtaOrderLogistics wtaOrderLogistics);
 
+    void handleWtaWarehouseAllocation(String allocationNo);
+
+    void handleWtaWarehousePurchase(String purchaseNo);
+
+    WtaCancelOrderResultEnter getWtaCancelOrderResult(String orderNo);
+
+    void  updateWtaCancelOrderResult(WtaCancelOrderResultEnter cancelOrderResultEnter);
+
 }

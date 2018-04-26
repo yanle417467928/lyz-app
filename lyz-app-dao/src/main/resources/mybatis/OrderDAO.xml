@@ -1380,4 +1380,11 @@
         AND delivery_status != 'REJECT'
     </update>
 
+    <insert id="saveOrderShipping" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderShipping">
+        INSERT
+        ord_shipping(oid,ord_no,shipping_no,shipping_time)
+        VALUES
+        (#{oid},#{ordNo},#{shippingNo},#{shippingTime})
+    </insert>
+
 </mapper>

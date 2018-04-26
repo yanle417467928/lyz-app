@@ -129,10 +129,10 @@ public interface WmsToAppOrderDAO {
     /**
      * 根据采购单查询调采购商品
      *
-     * @param purchaseNo
+     * @param recNo
      * @return
      */
-    List<WtaWarehousePurchaseGoods> findWtaWarehousePurchaseGoodsListByPurchaseNo(String purchaseNo);
+    List<WtaWarehousePurchaseGoods> findWtaWarehousePurchaseGoodsListByPurchaseNo(String recNo);
 
     /**
      * 根据退货单号查询返配商品
@@ -183,5 +183,17 @@ public interface WmsToAppOrderDAO {
     WtaShippingOrderHeader getWtaShippingOrderHeaderByOrderNoAndTaskNo(@Param("orderNo") String orderNo, @Param("taskNo") String taskNo);
 
     List<WtaShippingOrderGoods> getWtaShippingOrderGoods(@Param("orderNo") String orderNo, @Param("taskNo") String taskNo);
+
+    WtaWarehouseAllocationHeader getWtaWarehouseAllocationHeader(String allocationNo);
+
+    void updateWtaWarehouseAllocation(WtaWarehouseAllocationHeader wtaWarehouseAllocationHeader);
+
+    WtaWarehousePurchaseHeader getWtaWarehousePurchaseHeader(String purchaseNo);
+
+    void updateWtaWarehousePurchaseHeader(WtaWarehousePurchaseHeader purchaseHeader);
+
+    WtaCancelOrderResultEnter getWtaCancelOrderResult(String orderNo);
+
+    void  updateWtaCancelOrderResult(WtaCancelOrderResultEnter cancelOrderResultEnter);
 
 }
