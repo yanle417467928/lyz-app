@@ -7,10 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.management.User;
 import cn.com.leyizhuang.app.foundation.pojo.reportDownload.*;
-import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
-import cn.com.leyizhuang.app.foundation.service.MaDecorationCompanyCreditBillingService;
-import cn.com.leyizhuang.app.foundation.service.MaReportDownloadService;
-import cn.com.leyizhuang.app.foundation.service.UserService;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsVO;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingVO;
 import cn.com.leyizhuang.common.util.CountUtil;
@@ -67,6 +64,9 @@ public class MaReportDownloadRestController extends BaseRestController{
 
     @Resource
     private UserService userService;
+
+    @Autowired
+    private MaStoreService maStoreService;
 
     private static final int maxRowNum = 60000;
 
@@ -218,8 +218,10 @@ public class MaReportDownloadRestController extends BaseRestController{
         Integer page = getPage(offset, size);
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
+        List<Long> storeIdInCompany= maStoreService.findStoresIdByStructureCode(companyCode);
+        storeIds.retainAll(storeIdInCompany);
         PageInfo<SalesReportDO> SalesList = this.maReportDownloadService.findSalesList(companyCode, storeType, startTime,
-                endTime, isProductCoupon, storeIds, page, size);
+                endTime, isProductCoupon, storeIdInCompany, page, size);
         return new GridDataVO<SalesReportDO>().transform(SalesList.getList(), SalesList.getTotal());
     }
 
@@ -1398,6 +1400,8 @@ public class MaReportDownloadRestController extends BaseRestController{
                                     String startTime, String endTime, Boolean isProductCoupon) {
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
+        List<Long> storeIdInCompany= maStoreService.findStoresIdByStructureCode(companyCode);
+        storeIds.retainAll(storeIdInCompany);
         List<SalesReportDO> salesList = this.maReportDownloadService.downSalesReport(companyCode, storeType,
                 startTime, endTime, isProductCoupon, storeIds);
         ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();

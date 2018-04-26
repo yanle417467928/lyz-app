@@ -789,9 +789,9 @@
             <![CDATA[ obd.pay_up_time< #{endTime}]]>
         </if>
         and ob.delivery_type = 'HOUSE_DELIVERY'
-        <if test="null!=companyCode and ''!=companyCode">
+      <!--  <if test="null!=companyCode and ''!=companyCode">
             and s.store_structure_code like concat('%',#{companyCode},'%')
-        </if>
+        </if>-->
         <if test="null != storeType and ''!=storeType">
             and s.store_type = #{storeType}
         </if>
@@ -851,9 +851,9 @@
             <![CDATA[ obd.pay_up_time< #{endTime}]]>
         </if>
         AND ob.delivery_type = 'SELF_TAKE'
-        <if test="null !=companyCode and ''!=companyCode">
+      <!--  <if test="null !=companyCode and ''!=companyCode">
             and s.store_structure_code like concat('%',#{companyCode},'%')
-        </if>
+        </if>-->
 
         <if test="null!=storeType and ''!=storeType">
             and s.store_type = #{storeType}
@@ -922,9 +922,9 @@
         </if>
         and ob.delivery_type = 'HOUSE_DELIVERY'
         and obd.is_pay_up = 1
-        <if test="null !=companyCode and ''!=companyCode">
+      <!--  <if test="null !=companyCode and ''!=companyCode">
             and s.store_structure_code like concat('%',#{companyCode},'%')
-        </if>
+        </if>-->
         <if test="null !=storeType and ''!=storeType">
             and s.store_type =#{storeType}
         </if>
@@ -992,9 +992,9 @@
         </if>
         AND ob.delivery_type = 'SELF_TAKE'
         and obd.is_pay_up = 1
-        <if test="null !=companyCode and ''!=companyCode">
+      <!--  <if test="null !=companyCode and ''!=companyCode">
             and s.store_structure_code like concat('%',#{companyCode},'%')
-        </if>
+        </if>-->
 
         <if test="null !=storeType and ''!=storeType">
             and s.store_type = #{storeType}
@@ -1046,9 +1046,9 @@
             AND
             wro.create_time > #{startTime}
         </if>
-        <if test="null!=companyCode and ''!=companyCode">
+      <!--  <if test="null!=companyCode and ''!=companyCode">
             and s.store_structure_code like concat('%',#{companyCode},'%')
-        </if>
+        </if>-->
         <if test="null !=storeType and ''!=storeType">
             and s.store_type = #{storeType}
         </if>
