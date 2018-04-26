@@ -163,6 +163,10 @@ public class HqAppEmployeeController {
         if (null != employeeDTO) {
             String password = Base64Utils.decode(employeeDTO.getPassword());
             AppEmployee employee = employeeService.findByLoginName(employeeDTO.getNumber());
+            if(null ==employee){
+                logger.warn("employeeSync OUT,同步修改员工信息失败，出参 employee:{}", employee);
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "为找到该员工信息！", null);
+            }
             employee.setName(employeeDTO.getName());
             employee.setMobile(employeeDTO.getMobile());
             employee.setBirthday(employeeDTO.getBirthday());
