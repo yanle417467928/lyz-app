@@ -137,14 +137,20 @@
     </select>
 
     <select id="findGoodsPriceByGoodsIDAndStoreID" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
-        SELECT *
+        SELECT ggp.*
         FROM
-            gds_goods_price
+            gds_goods_price ggp
+            LEFT JOIN  cus_customer c on c.store_id = ggp.store_id
+			LEFT JOIN cus_rank cr on cr.cus_id = c.cus_id
+			LEFT JOIN rank_classification rc on rc.rank_id = cr.rank_id
         WHERE
-            gid = #{goodsID}
-            AND store_id = #{storeID}
-            AND start_time &lt; NOW()
-            AND (end_time IS NULL OR end_time &gt; NOW())
+            ggp.gid = #{goodsID}
+            AND ggp.store_id = #{storeID}
+            AND ggp.start_time &lt; NOW()
+            AND (ggp.end_time IS NULL OR ggp.end_time &gt; NOW())
+            and c.cus_id = #{cusId}
+			and (ggp.price_type = rc.rank_code or ggp.price_type = 'common')
+			ORDER BY ggp.vip_price LIMIT 1
     </select>
     <select id="findCustomerGoodsPriceListByGoodsIdsAndUserId" resultType=
             "cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods">

@@ -378,6 +378,9 @@ function openCustomerModal() {
     $("#customerModalConfirm").unbind('click').click(function () {
     });
     $('#selectCustomer').modal('show');
+    //清空赠品信息
+    document.getElementById('giftMessage').innerHTML = "";
+    document.getElementById('subAmount_div').innerHTML = "";
 }
 
 //条件查询顾客

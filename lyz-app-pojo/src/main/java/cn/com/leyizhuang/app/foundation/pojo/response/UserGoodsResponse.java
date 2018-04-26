@@ -57,6 +57,12 @@ public class UserGoodsResponse implements Serializable {
     //下料清单商品数量
     private Integer materialQty;
 
+    // 施工面积
+    private String workArea;
+
+    // 施工成不
+    private String workCost;
+
 //    public void setCoverImageUri(String coverImageUri){
 //        String[] urlArr = coverImageUri.split(",");
 //        if (urlArr != null || urlArr.length > 0){

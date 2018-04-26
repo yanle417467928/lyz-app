@@ -120,7 +120,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     @Override
     public List<ProductCouponResponse> findProductCouponByCustomerId(Long userId) {
         if (null != userId) {
-            return customerDAO.findProductCouponByCustomerId(userId);
+            return customerDAO.findProductCouponByCustomerIdNew(userId);
         }
         return null;
     }
@@ -344,7 +344,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     @Override
     public List<ProductCouponResponse> findProductCouponBySellerIdAndCustomerId(Long sellerId, Long cusId) {
         if (null != sellerId && null != cusId) {
-            return customerDAO.findProductCouponBySellerIdAndCustomerId(sellerId, cusId);
+            return customerDAO.findProductCouponBySellerIdAndCustomerIdNew(sellerId, cusId);
         }
         return null;
     }

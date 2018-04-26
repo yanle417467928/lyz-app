@@ -676,7 +676,9 @@
         SELECT
             COVER_IMAGE_URI,
             ROTATION_IMAGE_URI,
-            goods_detail goodsDetial
+            goods_detail goodsDetial,
+            work_area,
+            work_cost
         FROM
             gds_goods
         WHERE
@@ -786,7 +788,7 @@
             LEFT JOIN gds_goods_price p on p.store_id = c.store_id AND p.gid = #{goodsId} AND p.start_time &lt; NOW()
             AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             AND (rc.rank_code = p.price_type OR p.price_type = 'COMMON'),
-            (SELECT gid id, sku_name skuName, goods_specification goodsSpecification, goods_unit goodsUnit FROM
+            (SELECT gid id, sku_name skuName, goods_specification goodsSpecification, goods_unit goodsUnit,work_area workArea,work_cost workCost FROM
             gds_goods WHERE gid = #{goodsId}) g
             WHERE
             g.id = p.gid;
@@ -799,7 +801,7 @@
             LEFT JOIN gds_goods_price p on p.store_id = e.store_id AND p.gid = #{goodsId} AND p.start_time &lt; NOW()
             AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             AND p.price_type = 'COMMON',
-            (SELECT gid id, sku_name skuName, goods_specification goodsSpecification, goods_unit goodsUnit FROM
+            (SELECT gid id, sku_name skuName, goods_specification goodsSpecification, goods_unit goodsUnit,work_area workArea,work_cost workCost FROM
             gds_goods WHERE gid = #{goodsId}) g
             WHERE
             g.id = p.gid;
@@ -1345,7 +1347,10 @@
             g.cid category_id,
             g.brd_id brand_id,
             g.gtid type_id,
-            m.qty materialQty
+            m.qty materialQty,
+            g.work_area,
+            g.work_cost
+
             FROM
             cus_customer c
             LEFT JOIN cus_rank cr ON cr.cus_id = c.cus_id

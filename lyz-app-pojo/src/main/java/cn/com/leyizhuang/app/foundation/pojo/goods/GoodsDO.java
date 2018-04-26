@@ -102,6 +102,11 @@ public class GoodsDO {
     //物料名称
     private String materialsName;
 
+    // 施工面积
+    private String workArea;
+
+    // 施工成不
+    private String workCost;
 
     public static final GoodsDO transform(MaGoodsVO goodsVO) {
         if (null != goodsVO) {

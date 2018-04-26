@@ -33,7 +33,7 @@ public interface GoodsPriceService {
      * @param storeID   门店id
      * @return
      */
-    GoodsPrice findGoodsPriceByGoodsIDAndStoreID(Long goodsID,Long storeID);
+    GoodsPrice findGoodsPriceByGoodsIDAndStoreID(Long goodsID,Long storeID,Long cusId);
 
 
     List<GiftListResponseGoods> findGoodsPriceListByGoodsIdsAndUserId(List<Long> goodsIdList, Long userId,

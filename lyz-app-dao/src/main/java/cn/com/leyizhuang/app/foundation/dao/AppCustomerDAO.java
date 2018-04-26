@@ -180,4 +180,11 @@ public interface AppCustomerDAO {
     CustomerPreDeposit findCustomerPreDepositByCustomerId(@Param(value = "cusId") Long cusId);
 
     List<AppCustomer> findAllCustomer();
+
+    List<ProductCouponResponse> findProductCouponByCustomerIdNew(
+            @Param(value = "userId") Long userId);
+
+    List<ProductCouponResponse> findProductCouponBySellerIdAndCustomerIdNew(@Param(value = "sellerId") Long sellerId,
+                                                                         @Param(value = "cusId") Long cusId);
+
 }

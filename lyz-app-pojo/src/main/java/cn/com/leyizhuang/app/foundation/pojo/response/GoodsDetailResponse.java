@@ -34,6 +34,10 @@ public class GoodsDetailResponse {
     private Boolean isCollect;
     //商品详情
     private String goodsDetail;
+    // 施工面积
+    private String workArea;
+    // 施工成不
+    private String workCost;
 
     public static final GoodsDetailResponse transform(GoodsDetailResponse goodsDetailResponse, GoodsDO goodsDO) {
         if (null != goodsDO) {
@@ -42,6 +46,8 @@ public class GoodsDetailResponse {
             }
             String coverImageUri = goodsDO.getDetailsImageUri();
             String rotationImageUri = goodsDO.getRotationImageUri();
+            goodsDetailResponse.setWorkArea(goodsDO.getWorkArea());
+            goodsDetailResponse.setWorkCost(goodsDO.getWorkCost());
             goodsDetailResponse.setGoodsDetail(goodsDO.getGoodsDetial());
             if (null != coverImageUri) {
                 List<String> list = new ArrayList<>();
