@@ -641,6 +641,35 @@ public class MaResendWmsOrEbsController {
     }
 
     /**
+     * EBS重传运费信息
+     *
+     * @param orderNumber
+     * @return
+     */
+    @RequestMapping(value = "/EBS/order/keyInfo/{orderNumber}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public ResultDTO retransmissionOrderKeyInfoToEBS(@PathVariable String orderNumber) {
+        ResultDTO<Object> resultDTO;
+        logger.info("retransmissionOrderKeyInfoToEBS CALLED,EBS重传运费信息，入参 orderNumber:{}", orderNumber);
+        if (null == orderNumber) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单号不能为空!", null);
+            logger.info("retransmissionOrderKeyInfoToEBS OUT,EBS重传运费信息失败！出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+
+        try {
+            separateOrderService.sendOrderKeyInf(orderNumber);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "重传成功!", null);
+            logger.info("retransmissionOrderKeyInfoToEBS OUT,EBS重传运费信息失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "传输失败!发生未知异常!", null);
+            logger.info("retransmissionOrderKeyInfoToEBS OUT,EBS重传运费信息失败，出参 resultDTO:{}", resultDTO);
+            logger.debug("Exception:{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
      * EBS重传充值收款
      *
      * @param rechargeNo
@@ -1108,5 +1137,115 @@ public class MaResendWmsOrEbsController {
         }
     }
 
+    /**
+     * EBS生成退货单头和商品信息
+     *
+     * @param returnNumber
+     * @return
+     */
+    @RequestMapping(value = "/EBS/return/generate/goods/{returnNumber}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public ResultDTO retransmissionReturnOrderAndGoodsInfToEBS(@PathVariable String returnNumber) {
+        ResultDTO<Object> resultDTO;
+        logger.info("retransmissionReturnOrderAndGoodsInfToEBS CALLED,EBS生成退货单头和商品信息，入参 returnNumber:{}", returnNumber);
+        if (null == returnNumber) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单号不能为空!", null);
+            logger.info("retransmissionReturnOrderAndGoodsInfToEBS OUT,EBS生成退货单头和商品信息失败！出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            separateOrderService.separateReturnOrderAndGoodsInf(returnNumber);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "重传成功!", null);
+            logger.info("retransmissionReturnOrderAndGoodsInfToEBS OUT,EBS生成退货单头和商品信息失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "传输失败!发生未知异常!", null);
+            logger.info("retransmissionReturnOrderAndGoodsInfToEBS OUT,EBS生成退货单头和商品信息失败，出参 resultDTO:{}", resultDTO);
+            logger.debug("Exception:{}", e);
+            return resultDTO;
+        }
+    }
 
+    /**
+     * EBS生成退货单券信息
+     *
+     * @param returnNumber
+     * @return
+     */
+    @RequestMapping(value = "/EBS/return/generate/coupon/{returnNumber}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public ResultDTO retransmissionReturnOrderCouponToEBS(@PathVariable String returnNumber) {
+        ResultDTO<Object> resultDTO;
+        logger.info("retransmissionReturnOrderCouponToEBS CALLED,EBS生成退货单券信息，入参 returnNumber:{}", returnNumber);
+        if (null == returnNumber) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单号不能为空!", null);
+            logger.info("retransmissionReturnOrderCouponToEBS OUT,EBS生成退货单券信息失败！出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            separateOrderService.separateReturnOrderCouponInf(returnNumber);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "重传成功!", null);
+            logger.info("retransmissionReturnOrderCouponToEBS OUT,EBS生成退货单券信息失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "传输失败!发生未知异常!", null);
+            logger.info("retransmissionReturnOrderCouponToEBS OUT,EBS生成退货单券信息失败，出参 resultDTO:{}", resultDTO);
+            logger.debug("Exception:{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * EBS生成退货单退款信息
+     *
+     * @param returnNumber
+     * @return
+     */
+    @RequestMapping(value = "/EBS/return/generate/refund/{returnNumber}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public ResultDTO retransmissionReturnOrderRefundInfoToEBS(@PathVariable String returnNumber) {
+        ResultDTO<Object> resultDTO;
+        logger.info("retransmissionReturnOrderRefundInfoToEBS CALLED,EBS生成退货单退款信息，入参 returnNumber:{}", returnNumber);
+        if (null == returnNumber) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单号不能为空!", null);
+            logger.info("retransmissionReturnOrderRefundInfoToEBS OUT,EBS生成退货单退款信息失败！出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            separateOrderService.separateReturnOrderRefundInf(returnNumber);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "重传成功!", null);
+            logger.info("retransmissionReturnOrderRefundInfoToEBS OUT,EBS生成退货单退款信息失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "传输失败!发生未知异常!", null);
+            logger.info("retransmissionReturnOrderRefundInfoToEBS OUT,EBS生成退货单退款信息失败，出参 resultDTO:{}", resultDTO);
+            logger.debug("Exception:{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * EBS生成退货单经销差价信息
+     *
+     * @param returnNumber
+     * @return
+     */
+    @RequestMapping(value = "/EBS/return/generate/jxPrice/{returnNumber}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public ResultDTO retransmissionReturnOrderJxPriceInfoToEBS(@PathVariable String returnNumber) {
+        ResultDTO<Object> resultDTO;
+        logger.info("retransmissionReturnOrderJxPriceInfoToEBS CALLED,EBS生成退货单经销差价信息，入参 returnNumber:{}", returnNumber);
+        if (null == returnNumber) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单号不能为空!", null);
+            logger.info("retransmissionReturnOrderJxPriceInfoToEBS OUT,EBS生成退货单经销差价信息失败！出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            separateOrderService.separateReturnOrderJxPriceInf(returnNumber);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "重传成功!", null);
+            logger.info("retransmissionReturnOrderJxPriceInfoToEBS OUT,EBS生成退货单经销差价信息失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "传输失败!发生未知异常!", null);
+            logger.info("retransmissionReturnOrderJxPriceInfoToEBS OUT,EBS生成退货单经销差价信息失败，出参 resultDTO:{}", resultDTO);
+            logger.debug("Exception:{}", e);
+            return resultDTO;
+        }
+    }
 }
