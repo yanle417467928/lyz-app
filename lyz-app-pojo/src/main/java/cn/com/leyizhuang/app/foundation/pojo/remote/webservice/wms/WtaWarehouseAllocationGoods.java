@@ -53,4 +53,9 @@ public class WtaWarehouseAllocationGoods {
      * 调拨单号
      */
     private String allocationNo;
+
+    /*
+    * 接收时间
+    * */
+    private Date receiveTime;
 }

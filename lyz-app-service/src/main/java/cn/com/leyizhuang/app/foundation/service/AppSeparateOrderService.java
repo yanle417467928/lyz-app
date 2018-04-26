@@ -136,4 +136,12 @@ public interface AppSeparateOrderService {
     void separateOrderJxPriceInf(String orderNumber);
 
     void separateOrderKeyInfInf(String orderNumber);
+
+    void separateReturnOrderAndGoodsInf(String returnNumber);
+
+    void separateReturnOrderCouponInf(String returnNumber);
+
+    void separateReturnOrderRefundInf(String returnNumber);
+
+    void separateReturnOrderJxPriceInf(String returnNumber);
 }
