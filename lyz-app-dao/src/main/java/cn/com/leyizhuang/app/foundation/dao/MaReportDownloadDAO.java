@@ -39,9 +39,6 @@ public interface MaReportDownloadDAO {
                                                @Param("keywords")String keywords, @Param("list") List<Long> storeIds);
 
 
-
-
-
     List<ShipmentAndReturnGoods> queryGoodsShipmentAndReturnOrder(@Param("cityId") Long cityId, @Param("storeId") Long storeId, @Param("storeType") String storeType,
                                            @Param("startTime")String startTime, @Param("endTime")String endTime,
                                            @Param("keywords")String keywords, @Param("list") List<Long> storeIds);
@@ -55,4 +52,8 @@ public interface MaReportDownloadDAO {
     List<SalesReportDO> findNoProductSalesList(@Param("companyCode") String companyCode, @Param("storeType") String storeType,@Param("startTime") String startTime,@Param("endTime") String endTime, @Param("list") List<Long> storeIds);
 
     List<SalesReportDO> findProductSalesList(@Param("companyCode") String companyCode, @Param("storeType") String storeType,@Param("startTime") String startTime,@Param("endTime") String endTime, @Param("list") List<Long> storeIds);
+
+    List<AccountGoodsItemsDO> findAccountZGGoodsItemsDOAll(@Param("cityId") Long cityId, @Param("storeId") Long storeId,
+                                                         @Param("startTime")String startTime, @Param("endTime")String endTime,
+                                                         @Param("keywords")String keywords, @Param("list") List<Long> storeIds);
 }

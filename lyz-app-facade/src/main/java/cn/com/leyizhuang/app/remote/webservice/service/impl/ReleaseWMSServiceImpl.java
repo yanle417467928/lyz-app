@@ -148,6 +148,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     header.setCreateTime(Calendar.getInstance().getTime());
                     //这里保存了出货单头默认都是未处理状态使用send_flag字段
 //                    header.setSendFlag(false);
+                    header.setSendFlag("0");
                     int result = wmsToAppOrderService.saveWtaShippingOrderHeader(header);
                     if (result == 0) {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,该单已存在 出参 order_no:{}", header.getOrderNo());
@@ -1676,48 +1677,55 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
         //获取订单头信息
         OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderResultEnter.getOrderNo());
         if (null != orderResultEnter.getIsCancel() && orderResultEnter.getIsCancel()) {
+            try {
 
-            //获取订单账目明细
-            OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderResultEnter.getOrderNo());
-            //获取取消订单相关参数
-            CancelOrderParametersDO cancelOrderParametersDO = cancelOrderParametersService.findCancelOrderParametersByOrderNumber(orderResultEnter.getOrderNo());
-            //调用取消订单通用方法
-            Map<Object, Object> maps = returnOrderService.cancelOrderUniversal(cancelOrderParametersDO.getUserId(), cancelOrderParametersDO.getIdentityType(), cancelOrderParametersDO.getOrderNumber(), cancelOrderParametersDO.getReasonInfo(), cancelOrderParametersDO.getRemarksInfo(), orderBaseInfo, orderBillingDetails);
-            ReturnOrderBaseInfo returnOrderBaseInfo = (ReturnOrderBaseInfo) maps.get("returnOrderBaseInfo");
-            //如果是待收货、门店自提单则需要返回第三方支付金额
-            if (null != orderBillingDetails.getOnlinePayType()) {
-                if (OnlinePayType.ALIPAY.equals(orderBillingDetails.getOnlinePayType())) {
-                    //支付宝退款
-                    onlinePayRefundService.alipayRefundRequest(cancelOrderParametersDO.getUserId(), cancelOrderParametersDO.getIdentityType(), cancelOrderParametersDO.getOrderNumber(), returnOrderBaseInfo.getReturnNo(), orderBillingDetails.getOnlinePayAmount(), returnOrderBaseInfo.getRoid());
-                } else if (OnlinePayType.WE_CHAT.equals(orderBillingDetails.getOnlinePayType())) {
-                    //微信退款方法类
-                    onlinePayRefundService.wechatReturnMoney(cancelOrderParametersDO.getUserId(), cancelOrderParametersDO.getIdentityType(), orderBillingDetails.getOnlinePayAmount(), cancelOrderParametersDO.getOrderNumber(), returnOrderBaseInfo.getReturnNo(), returnOrderBaseInfo.getRoid());
-                } else if (OnlinePayType.UNION_PAY.equals(orderBillingDetails.getOnlinePayType())) {
-                    //创建退单退款详情实体
-                    ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
-                    returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
-                    returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
-                    returnOrderBillingDetail.setReturnNo(returnOrderBaseInfo.getReturnNo());
-                    returnOrderBillingDetail.setRefundNumber(returnOrderBaseInfo.getReturnNo());
-                    //TODO 时间待定
-                    returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
-                    //TODO 第三方回复码
-                    returnOrderBillingDetail.setReplyCode("");
-                    returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getOnlinePayAmount());
-                    returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.UNION_PAY);
+                //获取订单账目明细
+                OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderResultEnter.getOrderNo());
+                //获取取消订单相关参数
+                CancelOrderParametersDO cancelOrderParametersDO = cancelOrderParametersService.findCancelOrderParametersByOrderNumber(orderResultEnter.getOrderNo());
+                //调用取消订单通用方法
+                Map<Object, Object> maps = returnOrderService.cancelOrderUniversal(cancelOrderParametersDO.getUserId(), cancelOrderParametersDO.getIdentityType(), cancelOrderParametersDO.getOrderNumber(), cancelOrderParametersDO.getReasonInfo(), cancelOrderParametersDO.getRemarksInfo(), orderBaseInfo, orderBillingDetails);
+                ReturnOrderBaseInfo returnOrderBaseInfo = (ReturnOrderBaseInfo) maps.get("returnOrderBaseInfo");
+                //如果是待收货、门店自提单则需要返回第三方支付金额
+                if (null != orderBillingDetails.getOnlinePayType()) {
+                    if (OnlinePayType.ALIPAY.equals(orderBillingDetails.getOnlinePayType())) {
+                        //支付宝退款
+                        onlinePayRefundService.alipayRefundRequest(cancelOrderParametersDO.getUserId(), cancelOrderParametersDO.getIdentityType(), cancelOrderParametersDO.getOrderNumber(), returnOrderBaseInfo.getReturnNo(), orderBillingDetails.getOnlinePayAmount(), returnOrderBaseInfo.getRoid());
+                    } else if (OnlinePayType.WE_CHAT.equals(orderBillingDetails.getOnlinePayType())) {
+                        //微信退款方法类
+                        onlinePayRefundService.wechatReturnMoney(cancelOrderParametersDO.getUserId(), cancelOrderParametersDO.getIdentityType(), orderBillingDetails.getOnlinePayAmount(), cancelOrderParametersDO.getOrderNumber(), returnOrderBaseInfo.getReturnNo(), returnOrderBaseInfo.getRoid());
+                    } else if (OnlinePayType.UNION_PAY.equals(orderBillingDetails.getOnlinePayType())) {
+                        //创建退单退款详情实体
+                        ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                        returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
+                        returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                        returnOrderBillingDetail.setReturnNo(returnOrderBaseInfo.getReturnNo());
+                        returnOrderBillingDetail.setRefundNumber(returnOrderBaseInfo.getReturnNo());
+                        //TODO 时间待定
+                        returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
+                        //TODO 第三方回复码
+                        returnOrderBillingDetail.setReplyCode("");
+                        returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getOnlinePayAmount());
+                        returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.UNION_PAY);
+                    }
                 }
+                //修改取消订单处理状态
+                cancelOrderParametersService.updateCancelStatusByOrderNumber(orderResultEnter.getOrderNo());
+
+                orderResultEnter.setHandleFlag("1");
+                orderResultEnter.setHandleTime(new Date());
+                this.wmsToAppOrderService.updateWtaCancelOrderResult(orderResultEnter);
+
+                //发送退单拆单消息到拆单消息队列
+                sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
+                logger.info("cancelOrderToWms OUT,取消订单成功");
+            } catch (Exception e) {
+                orderResultEnter.setHandleFlag("0");
+                orderResultEnter.setHandleTime(new Date());
+                orderResultEnter.setErrorMessage(e.getMessage());
+                this.wmsToAppOrderService.updateWtaCancelOrderResult(orderResultEnter);
             }
-            //修改取消订单处理状态
-            cancelOrderParametersService.updateCancelStatusByOrderNumber(orderResultEnter.getOrderNo());
-
-            orderResultEnter.setHandleFlag("1");
-            orderResultEnter.setHandleTime(new Date());
-            this.wmsToAppOrderService.updateWtaCancelOrderResult(orderResultEnter);
-
-            //发送退单拆单消息到拆单消息队列
-            sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
-            logger.info("cancelOrderToWms OUT,取消订单成功");
-        } else {
+        } else{
             String info = "您取消的订单" + orderResultEnter.getOrderNo() + "，取消失败，请联系管理人员！";
             logger.info("取消失败订单号:{}", orderResultEnter.getOrderNo());
             smsAccountService.commonSendSms(orderBaseInfo.getCreatorPhone(), info);

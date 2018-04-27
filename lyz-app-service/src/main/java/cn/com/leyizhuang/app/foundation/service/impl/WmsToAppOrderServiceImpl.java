@@ -645,4 +645,9 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
     public void updateWtaCancelOrderResult(WtaCancelOrderResultEnter cancelOrderResultEnter) {
         this.wmsToAppOrderDAO.updateWtaCancelOrderResult(cancelOrderResultEnter);
     }
+
+    @Override
+    public List<WtaShippingOrderHeader> getAllWtaShippingOrderHeader() {
+        return this.wmsToAppOrderDAO.getAllWtaShippingOrderHeader();
+    }
 }

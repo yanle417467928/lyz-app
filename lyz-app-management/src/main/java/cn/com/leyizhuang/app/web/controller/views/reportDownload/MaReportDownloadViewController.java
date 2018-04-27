@@ -145,4 +145,18 @@ public class MaReportDownloadViewController extends BaseController {
         return "/views/reportDownload/sales_volume_page";
     }
 
+    /**
+     * @title    对账商品明细报表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/4/2
+     */
+    @GetMapping(value = "/accountZGGoodsItems/list")
+    public String getAccountZGGoodsItemsList(ModelMap map) {
+        return "/views/reportDownload/account_ZG_goods_items_page";
+    }
+
 }

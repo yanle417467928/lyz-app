@@ -190,4 +190,6 @@ public interface WmsToAppOrderService {
 
     void  updateWtaCancelOrderResult(WtaCancelOrderResultEnter cancelOrderResultEnter);
 
+    List<WtaShippingOrderHeader> getAllWtaShippingOrderHeader();
+
 }

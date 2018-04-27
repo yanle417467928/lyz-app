@@ -196,4 +196,6 @@ public interface WmsToAppOrderDAO {
 
     void  updateWtaCancelOrderResult(WtaCancelOrderResultEnter cancelOrderResultEnter);
 
+    List<WtaShippingOrderHeader> getAllWtaShippingOrderHeader();
+
 }

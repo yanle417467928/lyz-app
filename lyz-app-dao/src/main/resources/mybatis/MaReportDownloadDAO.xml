@@ -1405,4 +1405,95 @@
         )
     </select>
 
+    <select id="findAccountZGGoodsItemsDOAll"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.AccountGoodsItemsDO">
+        SELECT DISTINCT obi.city_name cityName, st.store_name storeName, ol.operation_time
+        orderTime, obi.ord_no orderNumber,
+        null returnNumber, obi.customer_name customerName, obi.sales_consult_name sellerName, obi.delivery_type
+        deliveryType, oli.receiver receiver, oli.receiver_phone receiverPhone,
+        (CASE WHEN obi.`status` = 'FINISHED' OR obi.`status` = 'CLOSED' OR obi.`status` = 'REJECTED'
+        OR (obi.`status` = 'PENDING_RECEIVE' AND obi.delivery_type = 'HOUSE_DELIVERY')THEN '已出货'
+        WHEN obi.`status` = 'CANCELED' OR obi.`status` = 'CANCELING' OR obi.`status` = 'PENDING_SHIPMENT'
+        OR (obi.`status` = 'PENDING_RECEIVE' AND obi.delivery_type = 'SELF_TAKE') THEN '未出货' ELSE '未知'
+        END)deliveryStatus,
+        oli.shipping_address, og.sku sku, og.sku_name skuName, (CASE WHEN og.company_flag = 'HR' THEN '华润'
+        WHEN og.company_flag = 'LYZ' THEN '乐意装' WHEN og.company_flag = 'YR' THEN '莹润' ELSE '其他' END)companyFlag,
+        og.goods_line_type goodsLineType, IFNULL(og.order_qty, 0) quantity, IFNULL(og.settlement_price, 0)
+        settlementPrice,
+        (IFNULL(og.order_qty, 0) * IFNULL(og.settlement_price, 0)) settlementTotlePrice,
+        IFNULL(og.return_price, 0) promotionSharePrice,(IFNULL(og.order_qty, 0) * IFNULL(og.return_price, 0))
+        promotionShareTotlePrice, obi.customer_phone customerPhone, st.company_name companyName
+        FROM
+        ord_base_info obi
+        LEFT JOIN ord_goods_info og ON og.ord_no = obi.ord_no
+        INNER JOIN rank_store st ON st.store_id = obi.store_id
+        INNER JOIN rank_goods rg ON rg.gid = og.gid
+        LEFT JOIN ord_lifecycle ol ON obi.ord_no = ol.ord_no
+        LEFT JOIN ord_logistics_info oli ON oli.ord_no = obi.ord_no
+        WHERE obi.`status` != 'UNPAID'
+        AND (ol.post_status = 'PENDING_SHIPMENT' OR (ol.post_status = 'PENDING_RECEIVE' AND obi.delivery_type =
+        'SELF_TAKE'))
+        <if test="null != cityId and cityId != -1">
+            AND obi.city_id = #{cityId}
+        </if>
+        <if test="null != storeId and storeId != -1">
+            AND obi.store_id = #{storeId}
+        </if>
+        <if test="null != startTime and startTime != ''">
+            AND ol.operation_time &gt;= #{startTime}
+        </if>
+        <if test="null != endTime and endTime != ''">
+            AND ol.operation_time &lt;= #{endTime}
+        </if>
+        <if test="null != keywords and keywords != ''">
+            AND obi.ord_no LIKE concat(concat('%',#{keywords}),'%')
+        </if>
+        AND obi.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        UNION
+        SELECT DISTINCT obi.city_name cityName, st.store_name storeName, rl.operation_time
+        orderTime, obi.ord_no orderNumber,
+        orbi.return_no returnNumber, orbi.cus_name customerName, obi.sales_consult_name sellerName, obi.delivery_type
+        deliveryType, orli.rejecter receiver, orli.rejecter_phone receiverPhone,
+        (CASE WHEN orbi.return_type = 'REFUSED_RETURN' OR orbi.return_type = 'NORMAL_RETURN' THEN '已取货'
+        WHEN orbi.return_type = 'CANCEL_RETURN' THEN '订单取消' ELSE '未知' END) deliveryStatus,
+        orli.return_full_address, org.sku sku, org.sku_name skuName, (CASE WHEN org.company_flag = 'HR' THEN '华润'
+        WHEN org.company_flag = 'LYZ' THEN '乐意装' WHEN org.company_flag = 'YR' THEN '莹润' ELSE '其他' END) companyFlag,
+        org.goods_line_type goodsLineType, (-1 * IFNULL(org.return_qty,0)) quantity, IFNULL(org.settlement_price, 0)
+        settlementPrice,
+        (-1 * IFNULL(org.return_qty, 0) * IFNULL(org.settlement_price, 0)) settlementTotlePrice,
+        IFNULL(org.return_price, 0) promotionSharePrice, (-1 * IFNULL(org.return_qty, 0) * IFNULL(org.return_price, 0))
+        promotionShareTotlePrice, obi.customer_phone customerPhone, st.company_name companyName
+        FROM ord_return_base_info orbi
+        LEFT JOIN ord_return_goods_info org ON org.return_no = orbi.return_no
+        INNER JOIN rank_goods rg ON rg.gid = org.gid
+        INNER JOIN rank_store st ON st.store_id = orbi.store_id
+        LEFT JOIN ord_return_lifecycle rl ON orbi.return_no = rl.return_no
+        LEFT JOIN ord_base_info obi ON obi.ord_no = orbi.ord_no
+        LEFT JOIN ord_return_logistic_info orli ON orli.return_no = orbi.return_no
+        WHERE orbi.return_status = 'FINISHED' AND rl.post_status = 'FINISHED'
+        <if test="null != cityId and cityId != -1">
+            AND obi.city_id = #{cityId}
+        </if>
+        <if test="null != storeId and storeId != -1">
+            AND orbi.store_id = #{storeId}
+        </if>
+        <if test="null != startTime and startTime != ''">
+            AND rl.operation_time &gt;= #{startTime}
+        </if>
+        <if test="null != endTime and endTime != ''">
+            AND rl.operation_time &lt;= #{endTime}
+        </if>
+        <if test="null != keywords and keywords != ''">
+            AND orbi.return_no LIKE concat(concat('%',#{keywords}),'%')
+        </if>
+        AND orbi.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        ORDER BY orderTime DESC
+    </select>
+
 </mapper>

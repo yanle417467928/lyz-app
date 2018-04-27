@@ -222,4 +222,22 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
     public AccountGoodsItemsDO getJxPriceByOrderNoAndSku(String orderNumber, String sku) {
         return this.maReportDownloadDAO.getJxPriceByOrderNoAndSku(orderNumber, sku);
     }
+
+    @Override
+    public PageInfo<AccountGoodsItemsDO> findAccountZGGoodsItemsDOAll(Long cityId, Long storeId, String startTime, String endTime, String keywords, List<Long> storeIds, Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        if (null != endTime && !("".equals(endTime))) {
+            endTime += " 23:59:59";
+        }
+        List<AccountGoodsItemsDO> accountGoodsItemsDOS = this.maReportDownloadDAO.findAccountZGGoodsItemsDOAll(cityId, storeId,  startTime, endTime, keywords, storeIds);
+        return new PageInfo<>(accountGoodsItemsDOS);
+    }
+
+    @Override
+    public List<AccountGoodsItemsDO> downloadAccountZGGoodsItems(Long cityId, Long storeId,  String startTime, String endTime, String keywords, List<Long> storeIds) {
+        if (null != endTime && !("".equals(endTime))) {
+            endTime += " 23:59:59";
+        }
+        return this.maReportDownloadDAO.findAccountZGGoodsItemsDOAll(cityId, storeId, startTime, endTime, keywords, storeIds);
+    }
 }

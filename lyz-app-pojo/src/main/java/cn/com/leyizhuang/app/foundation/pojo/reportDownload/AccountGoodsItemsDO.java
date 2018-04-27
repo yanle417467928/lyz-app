@@ -65,6 +65,10 @@ public class AccountGoodsItemsDO {
     private String receiverPhone;
     //门店类型
     private StoreType storeTypes;
+    //顾客姓名
+    private String customerPhone;
+    //顾客姓名
+    private String companyName;
 
 
     public void setGoodsLineType(AppGoodsLineType goodsLineType){

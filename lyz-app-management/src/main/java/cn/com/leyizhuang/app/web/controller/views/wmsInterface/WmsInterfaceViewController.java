@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.views.wmsInterface;
 
 import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderHeader;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
 import cn.com.leyizhuang.app.foundation.service.WmsToAppOrderService;
 import cn.com.leyizhuang.app.foundation.vo.management.BankVO;
@@ -43,6 +44,18 @@ public class WmsInterfaceViewController extends BaseController {
     @GetMapping(value = "/handle/orderShipping/{orderNumber}/{taskNo}")
     public String handleOrderShipping(ModelMap map, @PathVariable(value = "orderNumber") String orderNumber, @PathVariable(value = "taskNo") String taskNo) {
         this.wmsToAppOrderService.handleWtaShippingOrder(orderNumber, taskNo);
+        return "sueesess";
+    }
+
+    @GetMapping(value = "/handle/orderShipping/all")
+    public String handleOrderShippingALL() {
+        List<WtaShippingOrderHeader> shippingOrderHeaders = this.wmsToAppOrderService.getAllWtaShippingOrderHeader();
+        if (null != shippingOrderHeaders){
+            for (WtaShippingOrderHeader shippingOrderHeader: shippingOrderHeaders) {
+                this.wmsToAppOrderService.handleWtaShippingOrder(shippingOrderHeader.getOrderNo(), shippingOrderHeader.getTaskNo());
+            }
+        }
+
         return "sueesess";
     }
 }
