@@ -68,8 +68,8 @@ public class HqAppEmployeeController {
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "职位{positionType} 不允许为空！", null);
             }
             if (!employeeDTO.getPosition().equalsIgnoreCase("导购") &&
-                    !employeeDTO.getPosition().equalsIgnoreCase("店长") &&
-                    !employeeDTO.getPosition().equalsIgnoreCase("店经理") &&
+                    !employeeDTO.getPosition().equalsIgnoreCase("装饰公司经理") &&
+                    !employeeDTO.getPosition().equalsIgnoreCase("装饰公司员工") &&
                     !employeeDTO.getPosition().equalsIgnoreCase("配送员")) {
                 logger.warn("employeeSync OUT,同步新增员工信息失败，出参 positionType:{}", employeeDTO.getPosition());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "职位类型不在约定范围之内！", null);

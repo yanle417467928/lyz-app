@@ -140,6 +140,7 @@ public class ReturnOrderController {
         try {
             //获取订单头信息
             OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
+            String orderStatus = orderBaseInfo.getStatus().getValue();
             //获取订单账目明细
             OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderNumber);
             if (null == orderBaseInfo) {
@@ -202,15 +203,15 @@ public class ReturnOrderController {
                             if (OnlinePayType.ALIPAY.equals(orderBillingDetails.getOnlinePayType())) {
                                 //支付宝退款
                                 Map<String, String> map = onlinePayRefundService.alipayRefundRequest(userId, identityType, orderNumber, returnOrderBaseInfo.getReturnNo(), orderBillingDetails.getOnlinePayAmount(), returnOrderBaseInfo.getRoid());
-                                if ("FAILURE".equals(map.get("code"))) {
-                                    returnOrderService.updateReturnOrderBaseInfoByReturnNo(returnOrderBaseInfo.getReturnNo(), AppReturnOrderStatus.PENDING_REFUND);
-                                }
+//                                if ("FAILURE".equals(map.get("code"))) {
+//                                    returnOrderService.updateReturnOrderBaseInfoByReturnNo(returnOrderBaseInfo.getReturnNo(), AppReturnOrderStatus.PENDING_REFUND);
+//                                }
                             } else if (OnlinePayType.WE_CHAT.equals(orderBillingDetails.getOnlinePayType())) {
                                 //微信退款方法类
                                 Map<String, String> map = onlinePayRefundService.wechatReturnMoney(userId, identityType, orderBillingDetails.getOnlinePayAmount(), orderNumber, returnOrderBaseInfo.getReturnNo(), returnOrderBaseInfo.getRoid());
-                                if ("FAILURE".equals(map.get("code"))) {
-                                    returnOrderService.updateReturnOrderBaseInfoByReturnNo(returnOrderBaseInfo.getReturnNo(), AppReturnOrderStatus.PENDING_REFUND);
-                                }
+//                                if ("FAILURE".equals(map.get("code"))) {
+//                                    returnOrderService.updateReturnOrderBaseInfoByReturnNo(returnOrderBaseInfo.getReturnNo(), AppReturnOrderStatus.PENDING_REFUND);
+//                                }
                             } else if (OnlinePayType.UNION_PAY.equals(orderBillingDetails.getOnlinePayType())) {
                                 //创建退单退款详情实体
                                 ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
@@ -231,7 +232,7 @@ public class ReturnOrderController {
                     //如果是待发货的门店自提单发送退单拆单消息到拆单消息队列
                     /*2018-04-08 generation 改为待收货的自提单*/
 //                    if (orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_SHIPMENT) && orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE)){
-                    if (orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_RECEIVE) && orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE)){
+                    if (orderStatus.equals(AppOrderStatus.PENDING_RECEIVE.getValue()) && orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE)){
                         sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
                     }
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
