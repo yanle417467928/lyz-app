@@ -119,5 +119,5 @@ public interface MaStoreDAO {
 
     List<SimpleStoreParam> findStoresListByCityIdAndStoreType(@Param("cityId") Long cityId, @Param("storeType")String storeType, @Param("list") List<Long> storeIds);
 
-
+    List<Long> findStoresIdByStructureCode(String structureCode);
 }

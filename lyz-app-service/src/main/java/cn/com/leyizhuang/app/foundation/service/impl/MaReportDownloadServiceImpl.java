@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.foundation.dao.MaReportDownloadDAO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.reportDownload.*;
 import cn.com.leyizhuang.app.foundation.service.MaReportDownloadService;
+import cn.com.leyizhuang.app.foundation.service.MaStoreService;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDetailResponse;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -24,6 +25,8 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
     @Autowired
     private MaReportDownloadDAO maReportDownloadDAO;
 
+    @Autowired
+    private MaStoreService maStoreService;
 
     @Override
     public PageInfo<ReceiptsReportDO> findReceiptsReportDOAll(Long cityId, Long storeId, String storeType, String startTime, String endTime, String payType, String keywords, List<Long> storeIds, Integer page, Integer size) {
@@ -174,7 +177,6 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
             shipmentAndReturnGoodsList = maReportDownloadDAO.findProductSalesList(companyCode, storeType, startTime, endTime, storeIds);
         } else {
             shipmentAndReturnGoodsList = maReportDownloadDAO.findNoProductSalesList(companyCode, storeType, startTime, endTime, storeIds);
-
         }
         return new PageInfo<>(shipmentAndReturnGoodsList);
     }

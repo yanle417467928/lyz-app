@@ -3,7 +3,8 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaReportDownloadDAO">
     <select id="findReceiptsReportDOAll"
             resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.ReceiptsReportDO">
-        SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, obi.sales_consult_name sellerName, obpd.pay_time payTime,
+        SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, obi.sales_consult_name
+        sellerName, obpd.pay_time payTime,
         obpd.pay_type payTypes, obpd.pay_type payType, IFNULL(obpd.amount, 0) money, obi.ord_no orderNumber,
         IF(obpd.pay_type = 'POS',obd.store_pos_number,null) remarks, obpd.payment_subject_type paymentSubjectType
         FROM
@@ -38,7 +39,8 @@
             #{item}
         </foreach>
         UNION
-        SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, obi.sales_consult_name sellerName, orbd.create_time
+        SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, obi.sales_consult_name
+        sellerName, orbd.create_time
         payTime,
         orbd.return_pay_type payTypes, orbd.return_pay_type payType, (-1 * IFNULL(orbd.return_money, 0)) money,
         orbi.return_no orderNumber,
@@ -322,7 +324,8 @@
         memberDiscount,
         IFNULL(obd.promotion_discount,0) promotionDiscount, IFNULL(obd.freight,0) freight,
         IFNULL(obd.cash_coupon_discount,0) cashCouponDiscount,
-        IFNULL(obd.product_coupon_discount,0) productCouponDiscount, IFNULL(obd.order_amount_subtotal,0)-IFNULL(obd.freight,0) amountPayable,
+        IFNULL(obd.product_coupon_discount,0) productCouponDiscount,
+        IFNULL(obd.order_amount_subtotal,0)-IFNULL(obd.freight,0) amountPayable,
         (CASE WHEN obd.online_pay_type = 'WE_CHAT' THEN IFNULL(obd.online_pay_amount,0) ELSE 0 END) weChat,
         (CASE WHEN obd.online_pay_type = 'ALIPAY' THEN IFNULL(obd.online_pay_amount,0) ELSE 0 END) alipay,
         (CASE WHEN obd.online_pay_type = 'UNION_PAY' THEN IFNULL(obd.online_pay_amount,0) ELSE 0 END) unionPay,
@@ -371,7 +374,8 @@
         deliveryType,
         (CASE WHEN orbi.return_type = 'REFUSED_RETURN' OR orbi.return_type = 'NORMAL_RETURN' THEN '已取货'
         WHEN orbi.return_type = 'CANCEL_RETURN' THEN '订单取消' ELSE '未知' END) deliveryStatus,
-        orli.return_full_address, (CASE WHEN orbi.return_type = 'CANCEL_RETURN' THEN (-1 * IFNULL(obd.total_goods_price,0)) ELSE (-1 * IFNULL(orbi.return_price,0)) END) totalGoodsPrice,
+        orli.return_full_address, (CASE WHEN orbi.return_type = 'CANCEL_RETURN' THEN (-1 *
+        IFNULL(obd.total_goods_price,0)) ELSE (-1 * IFNULL(orbi.return_price,0)) END) totalGoodsPrice,
         (CASE WHEN orbi.return_type = 'CANCEL_RETURN' THEN IFNULL(obd.member_discount,0) ELSE 0 END) memberDiscount,
         0 promotionDiscount, 0 freight, 0 cashCouponDiscount,
         0 productCouponDiscount, (-1 * IFNULL(orbi.return_price,0)) amountPayable,
@@ -723,7 +727,8 @@
         </foreach>
     </select>
 
-    <select id="getJxPriceByOrderNoAndSku" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.AccountGoodsItemsDO">
+    <select id="getJxPriceByOrderNoAndSku"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.AccountGoodsItemsDO">
         SELECT
           IFNULL(unit_price, 0) wholesalePrice, IFNULL(unit_price, 0) * IFNULL(quantity, 0) wholesaleTotlePrice
         FROM
@@ -754,7 +759,8 @@
         CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
         CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
         og.sku as 'sku',
-        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END as'goodsType',
+        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END
+        as'goodsType',
         og.company_flag as 'companyFlag',
         if(og.goods_line_type = "PRODUCT_COUPON" ,(SELECT SUM(purchase_price) from ord_coupon_info where ord_no =
         ob.ord_no and og.sku = sku) , (og.order_qty ) * og.return_price ) as 'financialSales',
@@ -789,17 +795,17 @@
             <![CDATA[ obd.pay_up_time< #{endTime}]]>
         </if>
         and ob.delivery_type = 'HOUSE_DELIVERY'
-        <if test="null!=companyCode and ''!=companyCode">
+    <!--<if test="null!=companyCode and ''!=companyCode">
             and s.store_structure_code like concat('%',#{companyCode},'%')
-        </if>
+        </if>-->
         <if test="null != storeType and ''!=storeType">
             and s.store_type = #{storeType}
         </if>
-        AND ob.store_id IN
+       AND ob.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
-        order by s.store_id,ob.sales_consult_id,ob.create_time)
+        order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
         UNION
 
@@ -817,7 +823,8 @@
         CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
         CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
         og.sku as 'sku',
-        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END as'goodsType',
+        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END
+        as'goodsType',
         og.company_flag as 'companyFlag',
         if(og.goods_line_type = "PRODUCT_COUPON" ,(SELECT SUM(purchase_price) from ord_coupon_info where ord_no =
         ob.ord_no and og.sku = sku) , (og.order_qty ) * og.return_price ) as 'financialSales',
@@ -851,9 +858,9 @@
             <![CDATA[ obd.pay_up_time< #{endTime}]]>
         </if>
         AND ob.delivery_type = 'SELF_TAKE'
-        <if test="null !=companyCode and ''!=companyCode">
+  <!--      <if test="null !=companyCode and ''!=companyCode">
             and s.store_structure_code like concat('%',#{companyCode},'%')
-        </if>
+        </if>-->
 
         <if test="null!=storeType and ''!=storeType">
             and s.store_type = #{storeType}
@@ -862,7 +869,7 @@
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
-        order by s.store_id,ob.sales_consult_id,ob.create_time)
+        order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
         UNION
 
@@ -922,17 +929,17 @@
         </if>
         and ob.delivery_type = 'HOUSE_DELIVERY'
         and obd.is_pay_up = 1
-        <if test="null !=companyCode and ''!=companyCode">
+       <!-- <if test="null !=companyCode and ''!=companyCode">
             and s.store_structure_code like concat('%',#{companyCode},'%')
-        </if>
+        </if>-->
         <if test="null !=storeType and ''!=storeType">
             and s.store_type =#{storeType}
         </if>
-        AND ob.store_id IN
+       AND ob.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
-        order by s.store_id,ob.sales_consult_id,ob.create_time)
+        order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
         UNION
 
@@ -992,18 +999,18 @@
         </if>
         AND ob.delivery_type = 'SELF_TAKE'
         and obd.is_pay_up = 1
-        <if test="null !=companyCode and ''!=companyCode">
+    <!--    <if test="null !=companyCode and ''!=companyCode">
             and s.store_structure_code like concat('%',#{companyCode},'%')
-        </if>
+        </if>-->
 
         <if test="null !=storeType and ''!=storeType">
             and s.store_type = #{storeType}
         </if>
-        AND ob.store_id IN
+       AND ob.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
-        order by s.store_id,ob.sales_consult_id,ob.create_time)
+        order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
         UNION
 
@@ -1021,7 +1028,8 @@
         CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
         CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
         org.sku as 'sku',
-        CASE org.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END as 'goodsType',
+        CASE org.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END as
+        'goodsType',
         org.company_flag as 'companyFlag',
         -ABS(org.return_price * org.return_qty) as 'financialSales',
         -ABS(org.wholesale_price * org.return_qty) as 'distributionSales',
@@ -1046,9 +1054,9 @@
             AND
             wro.create_time > #{startTime}
         </if>
-        <if test="null!=companyCode and ''!=companyCode">
+     <!--   <if test="null!=companyCode and ''!=companyCode">
             and s.store_structure_code like concat('%',#{companyCode},'%')
-        </if>
+        </if>-->
         <if test="null !=storeType and ''!=storeType">
             and s.store_type = #{storeType}
         </if>
@@ -1108,12 +1116,12 @@
         </if>
         <if test="null!=endTime and ''!=endTime">
             and
-            <![CDATA[  obd.pay_up_time<#{endTime} ]]>
+            <![CDATA[obd.pay_up_time<#{endTime}]]>
         </if>
         and ob.delivery_type = 'HOUSE_DELIVERY'
-        <if test="null!=companyCode and ''!=companyCode">
+ <!--       <if test="null!=companyCode and ''!=companyCode">
             and s.store_structure_code like concat('%',#{companyCode},'%')
-        </if>
+        </if>-->
         <if test="null!=storeType and ''!=storeType">
             and s.store_type =#{storeType}
         </if>
@@ -1121,7 +1129,7 @@
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
-        order by s.store_id,ob.sales_consult_id,ob.create_time)
+        order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
         UNION
 
@@ -1177,9 +1185,9 @@
             and   <![CDATA[ obd.pay_up_time < #{endTime}]]>
         </if>
         AND ob.delivery_type = 'SELF_TAKE'
-        <if test="null!=companyCode and ''!=companyCode">
+<!--        <if test="null!=companyCode and ''!=companyCode">
             and s.store_structure_code like concat('%',#{companyCode},'%')
-        </if>
+        </if>-->
 
         <if test="null!=storeType and ''!=storeType">
             and s.store_type = #{storeType}
@@ -1188,7 +1196,7 @@
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
-        order by s.store_id,ob.sales_consult_id,ob.create_time)
+        order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
 
         UNION
@@ -1252,9 +1260,9 @@
         </if>
         and ob.delivery_type = 'HOUSE_DELIVERY'
         and obd.is_pay_up = 1
-        <if test="null!=companyCode and ''!=companyCode">
+<!--        <if test="null!=companyCode and ''!=companyCode">
             and s.store_structure_code like concat('%',#{companyCode},'%')
-        </if>
+        </if>-->
         <if test="null!=storeType and ''!=storeType">
             and s.store_type =#{storeType}
         </if>
@@ -1262,7 +1270,7 @@
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
-        order by s.store_id,ob.sales_consult_id,ob.create_time)
+        order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
         UNION
 
@@ -1328,9 +1336,9 @@
         </if>
         AND ob.delivery_type = 'SELF_TAKE'
         and obd.is_pay_up = 1
-        <if test="null!=companyCode and ''!=companyCode">
+      <!--  <if test="null!=companyCode and ''!=companyCode">
             and s.store_structure_code like concat('%',#{companyCode},'%')
-        </if>
+        </if>-->
         <if test="null!=storeType and ''!=storeType">
             and s.store_type =#{storeType}
         </if>
@@ -1338,7 +1346,7 @@
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
-        order by s.store_id,ob.sales_consult_id,ob.create_time)
+        order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
 
         UNION
@@ -1384,9 +1392,9 @@
             AND
             wro.create_time > #{startTime}
         </if>
-        <if test="null!=companyCode and ''!=companyCode">
+     <!--   <if test="null!=companyCode and ''!=companyCode">
             and s.store_structure_code like concat('%',#{companyCode},'%')
-        </if>
+        </if>-->
         <if test="null!=storeType and ''!=storeType">
             and s.store_type = #{storeType}
         </if>

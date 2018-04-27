@@ -71,4 +71,13 @@ public class WtaWarehouseAllocationHeader {
      * 城市编码
      */
     private String companyId;
+
+    //接收时间
+    private Date receiveTime;
+    //处理标记
+    private String handleFlag;
+    //错误信息
+    private String errMessage;
+    //处理时间
+    private Date handleTime;
 }

@@ -43,8 +43,8 @@
                         <div class="col-xs-12">
                             <div class="form-group">
                                 <label class="control-label col-md-2 col-xs-3" for="number" style="text-align: center">分公司:</label>
-                                <div class="col-md-2 col-xs-3">
-                                    <select id="companyCode" name="companyCode" class="form-control selectpicker ">
+                                <div class="col-md-2 col-xs-3" style="text-align: left">
+                                    <select id="companyCode" name="companyCode" class="form-control selectpicker">
                                         <option value="RCC001">润成分公司</option>
                                         <option value="PCC001">鹏成分公司</option>
                                         <option value="BYC001">北宇分公司</option>
@@ -81,20 +81,17 @@
                                            checked>
                                     直营
                                 </label>
-                                &nbsp;
                                 <label class="control-label margin-6" style="margin-left: 5%">
                                     <input type="radio" name="storeType" value="JM" class="iradio_square-blue ">
                                     加盟
                                 </label>
-                                &nbsp;
-                                <label class="control-label margin-6" style="margin-left: 5%">
-                                    <input type="radio" name="storeType" value="FX" class="iradio_square-blue ">
-                                    装饰公司
-                                </label>
-                                &nbsp;
                                 <label class="control-label margin-6" style="margin-left: 5%">
                                     <input type="radio" name="storeType" value="ZS" class="iradio_square-blue ">
                                     分销
+                                </label>
+                                <label class="control-label margin-6" style="margin-left: 5%">
+                                    <input type="radio" name="storeType" value="FX" class="iradio_square-blue ">
+                                    装饰公司
                                 </label>
                             </div>
                         </div>
@@ -106,9 +103,8 @@
                                 <label class="control-label margin-6" style="margin-left: 5%">
                                     <input type="radio" name="product" value="1" class="iradio_square-blue "
                                            checked>
-                                    是
+                                    是&nbsp;&nbsp;&nbsp;
                                 </label>
-                                &nbsp;
                                 <label class="control-label margin-6" style="margin-left: 5%">
                                     <input type="radio" name="product" value="0" class="iradio_square-blue ">
                                     否

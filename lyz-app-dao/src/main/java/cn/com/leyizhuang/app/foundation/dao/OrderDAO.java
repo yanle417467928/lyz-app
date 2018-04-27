@@ -170,4 +170,7 @@ public interface OrderDAO {
     void updateOrderGoodsShippingQuantityByid(OrderGoodsInfo orderGoodsInfo);
 
     void updateOrderBaseInfoStatus(OrderBaseInfo baseInfo);
+
+    void saveOrderShipping(OrderShipping orderShipping);
+
 }

@@ -177,4 +177,10 @@ public interface AppOrderService {
     void updateOrderGoodsShippingQuantityByid(OrderGoodsInfo orderGoodsInfo);
 
     void updateOrderBaseInfoStatus(OrderBaseInfo baseInfo);
+
+    void addAllOrderLifecycle(OrderLifecycleType lifecycleType, AppOrderStatus orderStatus, String orderNumber);
+
+    void addAllOrderShipping(String shippingNo, String orderNumber);
+
+    void saveOrderShipping(OrderShipping orderShipping);
 }
