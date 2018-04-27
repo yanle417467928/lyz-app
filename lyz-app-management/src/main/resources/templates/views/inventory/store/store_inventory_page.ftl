@@ -304,7 +304,7 @@
     function findStoreSelection() {
         var store = "";
         $.ajax({
-            url: '/rest/stores/findStoresListByStoreId',
+            url: '/rest/stores/findZYStoresListByStoreId',
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);

@@ -5,10 +5,10 @@ import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
 import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyInfo;
+import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.SimpleDecorativeCompany;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.StoreDO;
-import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.SimpleDecorativeCompany;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO;
@@ -118,6 +118,8 @@ public interface MaStoreDAO {
     Long findCityIdByStoreId(Long storeId);
 
     List<SimpleStoreParam> findStoresListByCityIdAndStoreType(@Param("cityId") Long cityId, @Param("storeType")String storeType, @Param("list") List<Long> storeIds);
+
+    List<SimpleStoreParam> findAllStoresListByCityIdAndStoreType(@Param("cityId") Long cityId, @Param("storeType") String storeType);
 
     List<Long> findStoresIdByStructureCode(String structureCode);
 }
