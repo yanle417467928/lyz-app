@@ -548,7 +548,7 @@
             #{item}
         </foreach>
 
-        UNION
+        UNION ALL
         select
         DISTINCT
         ss.city as cityName,
@@ -609,7 +609,7 @@
             #{item}
         </foreach>
 
-        UNION
+        UNION ALL
         select
         DISTINCT
         obi.city_name as cityName,
@@ -666,7 +666,7 @@
             #{item}
         </foreach>
 
-        UNION
+        UNION ALL
 
         select
         DISTINCT
@@ -807,7 +807,7 @@
         </foreach>
         order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
-        UNION
+        UNION ALL
 
         (SELECT
         s.city as 'cityName',
@@ -871,7 +871,7 @@
         </foreach>
         order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
-        UNION
+        UNION ALL
 
         (SELECT
         s.city as 'cityName',
@@ -941,7 +941,7 @@
         </foreach>
         order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
-        UNION
+        UNION ALL
 
         (SELECT
         s.city as 'cityName',
@@ -1012,7 +1012,7 @@
         </foreach>
         order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
-        UNION
+        UNION ALL
 
         (SELECT
         s.city as 'cityName',
@@ -1131,7 +1131,7 @@
         </foreach>
         order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
-        UNION
+        UNION ALL
 
         (SELECT
         s.city as 'cityName',
@@ -1199,7 +1199,7 @@
         order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
 
-        UNION
+        UNION ALL
 
         (SELECT
         s.city as 'cityName',
@@ -1272,7 +1272,7 @@
         </foreach>
         order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
-        UNION
+        UNION ALL
 
         (SELECT
         s.city as 'cityName',
@@ -1349,7 +1349,7 @@
         order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
 
-        UNION
+        UNION ALL
 
         (SELECT
         s.city as 'cityName',
