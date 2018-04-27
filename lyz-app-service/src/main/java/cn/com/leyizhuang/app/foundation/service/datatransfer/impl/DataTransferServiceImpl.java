@@ -126,9 +126,10 @@ public class DataTransferServiceImpl implements DataTransferService {
             orderLogisticsInfo.setReceiverPhone(null);
             orderLogisticsInfo.setShippingAddress(null);
 
-            List<AppStore> filterStoreList = storeList.stream().filter(p -> p.getStoreCode().equals(tdOrder.getDiySiteCode())).
-                    collect(Collectors.toList());
-            AppStore store = filterStoreList.get(0);
+//            List<AppStore> filterStoreList = storeList.stream().filter(p -> p.getStoreCode().equals(tdOrder.getDiySiteCode())).
+//                    collect(Collectors.toList());
+            AppStore store = storeService.findByStoreCode(tdOrder.getDiySiteCode());
+//            AppStore store = filterStoreList.get(0);
             if (null != store) {
                 orderLogisticsInfo.setBookingStoreCode(tdOrder.getDiySiteCode());
                 orderLogisticsInfo.setBookingStoreAddress(store.getDetailedAddress());
@@ -773,11 +774,11 @@ public class DataTransferServiceImpl implements DataTransferService {
                 }
                 break;
             case SELLER:
-                //AppEmployee storeEmployee = dataTransferService.findStoreEmployeeById(tdOrder.getSellerId());
-                List<AppEmployee> filterEmployeeList = employeeList.stream().filter(p -> p.getMobile().equals(tdOrder.getSellerUsername())).
-                        collect(Collectors.toList());
-                if (null != filterEmployeeList && !filterEmployeeList.isEmpty()) {
-                    AppEmployee storeEmployee = filterEmployeeList.get(0);
+                AppEmployee storeEmployee = employeeService.findByMobile(tdOrder.getSellerUsername());
+//                List<AppEmployee> filterEmployeeList = employeeList.stream().filter(p -> p.getMobile().equals(tdOrder.getSellerUsername())).
+//                        collect(Collectors.toList());
+                if (null != storeEmployee) {
+//                    AppEmployee storeEmployee = filterEmployeeList.get(0);
                     orderBaseInfo.setCreatorId(storeEmployee.getEmpId());
                     orderBaseInfo.setCreatorName(storeEmployee.getName());
                     orderBaseInfo.setCreatorPhone(storeEmployee.getMobile());
@@ -785,11 +786,16 @@ public class DataTransferServiceImpl implements DataTransferService {
                     orderBaseInfo.setSalesConsultName(orderBaseInfo.getCreatorName());
                     orderBaseInfo.setSalesConsultPhone(orderBaseInfo.getCreatorPhone());
                     //AppCustomer customer = dataTransferService.findCustomerById(tdOrder.getUserId());
-                    // AppCustomer customer = dataTransferService.findCustomerByCustomerMobile(tdOrder.getRealUserUsername());
-                    List<AppCustomer> filterCustomerList = customerList.stream().filter(p -> p.getMobile().equals(tdOrder.getRealUserUsername())).
-                            collect(Collectors.toList());
-                    if (null != filterCustomerList && !filterCustomerList.isEmpty()) {
-                        AppCustomer customer = filterCustomerList.get(0);
+                    AppCustomer customer = new AppCustomer();
+                    try {
+                        customer = customerService.findByMobile(tdOrder.getRealUserUsername());
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+//                    List<AppCustomer> filterCustomerList = customerList.stream().filter(p -> p.getMobile().equals(tdOrder.getRealUserUsername())).
+//                            collect(Collectors.toList());
+                    if (null != customer) {
+//                        AppCustomer customer = filterCustomerList.get(0);
                         orderBaseInfo.setCustomerId(customer.getCusId());
                         orderBaseInfo.setCustomerName(customer.getName());
                         orderBaseInfo.setCustomerPhone(customer.getMobile());
@@ -808,11 +814,16 @@ public class DataTransferServiceImpl implements DataTransferService {
                 break;
             case CUSTOMER:
                 //AppCustomer customer = dataTransferService.findCustomerById(tdOrder.getUserId());
-                // AppCustomer customer = dataTransferService.findCustomerByCustomerMobile(tdOrder.getRealUserUsername());
-                List<AppCustomer> filterCustomerList = customerList.stream().filter(p -> p.getMobile().equals(tdOrder.getRealUserUsername())).
-                        collect(Collectors.toList());
-                if (null != filterCustomerList && !filterCustomerList.isEmpty()) {
-                    AppCustomer customer = filterCustomerList.get(0);
+                AppCustomer customer = new AppCustomer();
+                try {
+                    customer = customerService.findByMobile(tdOrder.getRealUserUsername());
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+//                List<AppCustomer> filterCustomerList = customerList.stream().filter(p -> p.getMobile().equals(tdOrder.getRealUserUsername())).
+//                        collect(Collectors.toList());
+                if (null != customer) {
+//                    AppCustomer customer = filterCustomerList.get(0);
                     orderBaseInfo.setCreatorId(customer.getCusId());
                     orderBaseInfo.setCreatorName(customer.getName());
                     orderBaseInfo.setCreatorPhone(customer.getMobile());
@@ -820,11 +831,11 @@ public class DataTransferServiceImpl implements DataTransferService {
                     orderBaseInfo.setCustomerName(orderBaseInfo.getCreatorName());
                     orderBaseInfo.setCustomerPhone(orderBaseInfo.getCreatorPhone());
                     orderBaseInfo.setCustomerType(customer.getCustomerType());
-                    //AppEmployee sellerEmployee = dataTransferService.findStoreEmployeeById(tdOrder.getSellerId());
-                    List<AppEmployee> filterSellerList = employeeList.stream().filter(p -> p.getMobile().equals(tdOrder.getSellerUsername())).
-                            collect(Collectors.toList());
-                    if (null != filterSellerList && !filterSellerList.isEmpty()) {
-                        AppEmployee sellerEmployee = filterSellerList.get(0);
+                    AppEmployee sellerEmployee = employeeService.findByMobile(tdOrder.getSellerUsername());
+//                    List<AppEmployee> filterSellerList = employeeList.stream().filter(p -> p.getMobile().equals(tdOrder.getSellerUsername())).
+//                            collect(Collectors.toList());
+                    if (null != sellerEmployee) {
+//                        AppEmployee sellerEmployee = filterSellerList.get(0);
 
                         orderBaseInfo.setSalesConsultId(sellerEmployee.getEmpId());
                         orderBaseInfo.setSalesConsultName(sellerEmployee.getName());
@@ -846,9 +857,10 @@ public class DataTransferServiceImpl implements DataTransferService {
                 break;
         }
         //设置门店信息
-        List<AppStore> filterStoreList = storeList.stream().filter(p -> p.getStoreCode().equals(tdOrder.getDiySiteCode())).
-                collect(Collectors.toList());
-        AppStore store = filterStoreList.get(0);
+        AppStore store = storeService.findByStoreCode(tdOrder.getDiySiteCode());
+//        List<AppStore> filterStoreList = storeList.stream().filter(p -> p.getStoreCode().equals(tdOrder.getDiySiteCode())).
+//                collect(Collectors.toList());
+//        AppStore store = filterStoreList.get(0);
         if (null != store) {
             orderBaseInfo.setStoreId(store.getStoreId());
             orderBaseInfo.setStoreCode(store.getStoreCode());
@@ -886,9 +898,9 @@ public class DataTransferServiceImpl implements DataTransferService {
         // *********************** 订单迁移处理 ***************
         Queue<DataTransferErrorLog> errorLogQueue = new ConcurrentLinkedDeque<>();
         List<TdOrderSmall> storeMainOrderNumberList;
-        List<AppEmployee> employeeList = employeeService.findAllSeller();
-        List<AppCustomer> customerList = customerService.findAllCustomer();
-        List<AppStore> storeList = storeService.findAll();
+        List<AppEmployee> employeeList = new ArrayList<>();
+        List<AppCustomer> customerList = new ArrayList<>();
+        List<AppStore> storeList = new ArrayList<>();
 
         Calendar calendar = Calendar.getInstance();
         calendar.set(2017, Calendar.NOVEMBER, 1, 0, 0, 0);
