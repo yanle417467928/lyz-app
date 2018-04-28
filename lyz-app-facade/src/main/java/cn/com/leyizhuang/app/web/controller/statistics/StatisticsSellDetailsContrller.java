@@ -1,13 +1,16 @@
 package cn.com.leyizhuang.app.web.controller.statistics;
 
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsRankReponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
+import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.StatisticsSellDetailsService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import com.netflix.discovery.converters.Auto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +38,9 @@ public class StatisticsSellDetailsContrller {
     @Autowired
     private StatisticsSellDetailsService statisticsSellDetailsService;
 
+    @Autowired
+    private AppStoreService appStoreService;
+
     /**
      * 导购当月 个人销量统计
      * flag : TS ：桶数；HYS：活跃数 ; XKF :新开发高端会员数
@@ -45,7 +51,7 @@ public class StatisticsSellDetailsContrller {
     public ResultDTO<Object> statisticsPersonalSellDetais(Long sellerId, Long identityType, String flag) {
         /** 4月31号以前无销量 则提示功能暂未开放 **/
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime dateTime = LocalDateTime.of(2018,4,30,23,59,59);
+        LocalDateTime dateTime = LocalDateTime.of(2018,5,30,23,59,59);
 
         if (now.isBefore(dateTime)){
             ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此功能暂未开放，敬请期待", "");
@@ -100,7 +106,7 @@ public class StatisticsSellDetailsContrller {
 
         /** 4月31号以前无销量 则提示功能暂未开放 **/
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime dateTime = LocalDateTime.of(2018,4,30,23,59,59);
+        LocalDateTime dateTime = LocalDateTime.of(2018,5,30,23,59,59);
 
         if (now.isBefore(dateTime)){
             ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此功能暂未开放，敬请期待", "");
@@ -111,19 +117,7 @@ public class StatisticsSellDetailsContrller {
 
         List<SellDetailsRankReponse> reponseList = new ArrayList<>();
 
-        SellDetailsRankReponse rankReponse = new SellDetailsRankReponse();
-        rankReponse.setId(1L);
-        rankReponse.setName("张三");
-        rankReponse.setFinishQty(3000);
-        rankReponse.setRank(1);
-        rankReponse.setOrganizationName("公司1");
 
-        SellDetailsRankReponse rankReponse2 = new SellDetailsRankReponse();
-        rankReponse2.setId(2L);
-        rankReponse2.setName("张三2");
-        rankReponse2.setFinishQty(2000);
-        rankReponse2.setRank(2);
-        rankReponse2.setOrganizationName("公司2");
 
         SellDetailsRankReponse rankReponse3 = new SellDetailsRankReponse();
         rankReponse3.setId(3L);
@@ -132,47 +126,71 @@ public class StatisticsSellDetailsContrller {
         rankReponse3.setRank(3);
         rankReponse3.setOrganizationName("公司3");
 
-        reponseList.add(rankReponse);
-        reponseList.add(rankReponse2);
-        reponseList.add(rankReponse3);
 
         List<SellDetailsRankReponse> reponseList2 = new ArrayList<>();
 
-        SellDetailsRankReponse rankReponse4 = new SellDetailsRankReponse();
-        rankReponse4.setId(1L);
-        rankReponse4.setName("张三");
-        rankReponse4.setFinishQty(3000);
-        rankReponse4.setRank(1);
-        rankReponse4.setOrganizationName("门店1");
 
-        SellDetailsRankReponse rankReponse5 = new SellDetailsRankReponse();
-        rankReponse5.setId(2L);
-        rankReponse5.setName("张三2");
-        rankReponse5.setFinishQty(2000);
-        rankReponse5.setRank(2);
-        rankReponse5.setOrganizationName("门店2");
-
-        SellDetailsRankReponse rankReponse6 = new SellDetailsRankReponse();
-        rankReponse6.setId(3L);
-        rankReponse6.setName("张三3");
-        rankReponse6.setFinishQty(1000);
-        rankReponse6.setRank(3);
-        rankReponse6.setOrganizationName("门店3");
-
-        reponseList2.add(rankReponse4);
-        reponseList2.add(rankReponse5);
-        reponseList2.add(rankReponse6);
 
         if (flag.equals("FGS") && rankType.equals("TS")) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", reponseList2);
+            List<SellDetailsResponse> reponses = statisticsSellDetailsService.getFgsRank(sellerId,"TS");
+            for (int i=0 ;i<reponses.size();i++){
+                SellDetailsResponse response = reponses.get(i);
+                AppEmployee employee = appEmployeeService.findById(response.getId());
+                AppStore store = appStoreService.findById(employee.getStoreId());
+                SellDetailsRankReponse rankReponse = new SellDetailsRankReponse();
+                rankReponse.setId(response.getId());
+                rankReponse.setName(response.getName());
+                rankReponse.setFinishQty(response.getFinishQty());
+                rankReponse.setRank(i+1);
+                rankReponse.setOrganizationName(store.getStoreName());
+                reponseList.add(rankReponse);
+            }
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", reponseList);
         } else if (flag.equals("FGS")  && rankType.equals("HYS")) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", reponseList2);
+            List<SellDetailsResponse> reponses = statisticsSellDetailsService.getFgsRank(sellerId,"HYS");
+            for (int i=0 ;i<reponses.size();i++){
+                SellDetailsResponse response = reponses.get(i);
+                AppEmployee employee = appEmployeeService.findById(response.getId());
+                AppStore store = appStoreService.findById(employee.getStoreId());
+                SellDetailsRankReponse rankReponse = new SellDetailsRankReponse();
+                rankReponse.setId(response.getId());
+                rankReponse.setName(response.getName());
+                rankReponse.setFinishQty(response.getFinishQty());
+                rankReponse.setRank(i+1);
+                rankReponse.setOrganizationName(store.getStoreName());
+                reponseList.add(rankReponse);
+            }
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", reponseList);
         }else if (flag.equals("JT")  && rankType.equals("TS")) {
+            List<SellDetailsResponse> reponses = statisticsSellDetailsService.getJtRank("TS");
+            for (int i=0 ;i<reponses.size();i++){
+                SellDetailsResponse response = reponses.get(i);
+                AppEmployee employee = appEmployeeService.findById(response.getId());
+                AppStore store = appStoreService.findById(employee.getStoreId());
+                SellDetailsRankReponse rankReponse = new SellDetailsRankReponse();
+                rankReponse.setId(response.getId());
+                rankReponse.setName(response.getName());
+                rankReponse.setFinishQty(response.getFinishQty());
+                rankReponse.setRank(i+1);
+                rankReponse.setOrganizationName(store.getStoreName());
+                reponseList.add(rankReponse);
+            }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", reponseList);
         }else if (flag.equals("JT") && rankType.equals("HYS")) {
+            List<SellDetailsResponse> reponses = statisticsSellDetailsService.getJtRank("HYS");
+            for (int i=0 ;i<reponses.size();i++){
+                SellDetailsResponse response = reponses.get(i);
+                AppEmployee employee = appEmployeeService.findById(response.getId());
+                AppStore store = appStoreService.findById(employee.getStoreId());
+                SellDetailsRankReponse rankReponse = new SellDetailsRankReponse();
+                rankReponse.setId(response.getId());
+                rankReponse.setName(response.getName());
+                rankReponse.setFinishQty(response.getFinishQty());
+                rankReponse.setRank(i+1);
+                rankReponse.setOrganizationName(store.getStoreName());
+                reponseList.add(rankReponse);
+            }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", reponseList);
-        } else {
-
         }
 
         return resultDTO;
