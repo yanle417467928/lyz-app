@@ -1,4 +1,4 @@
-package cn.com.leyizhuang.app.web.controller.views.wmsInterface;
+package cn.com.leyizhuang.app.web.controller.rest.wmsInterface;
 
 import cn.com.leyizhuang.app.core.constant.OnlinePayType;
 import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
@@ -11,31 +11,32 @@ import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOr
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBillingDetail;
 import cn.com.leyizhuang.app.foundation.service.*;
-import cn.com.leyizhuang.app.foundation.vo.management.BankVO;
-import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO;
 import cn.com.leyizhuang.app.remote.queue.MaSinkSender;
-import cn.com.leyizhuang.app.web.controller.BaseController;
-import cn.com.leyizhuang.app.web.controller.views.store.MaStorePreDepositViewsController;
+import cn.com.leyizhuang.app.web.controller.rest.BaseRestController;
+import cn.com.leyizhuang.app.web.controller.views.wmsInterface.WmsInterfaceViewController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author GenerationRoad
- * @date 2018/4/23
+ * @date 2018/4/28
  */
-@Controller
-@RequestMapping(value = WmsInterfaceViewController.PRE_URL, produces = "application/json;charset=utf-8")
-public class WmsInterfaceViewController extends BaseController {
-    protected final static String PRE_URL = "/views/admin/wmsInterface";
+@RestController
+@RequestMapping(value = WmsInterfaceRestController.PRE_URL, produces = "application/json;charset=utf-8")
+public class WmsInterfaceRestController extends BaseRestController {
+    protected static final String PRE_URL = "/rest/admin/wmsInterface";
 
     private final Logger logger = LoggerFactory.getLogger(WmsInterfaceViewController.class);
 
