@@ -27,7 +27,7 @@ public class WareHouseDO {
     /**
      * 城市id
      */
-    private Long cityId;
+    private String cityId;
     /**
      * 城市名称
      */

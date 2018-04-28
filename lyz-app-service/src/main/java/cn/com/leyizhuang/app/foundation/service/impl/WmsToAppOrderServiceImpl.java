@@ -337,8 +337,8 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                         } else {
                             if (null == city) {
                                 city = new City();
-                                OrderBaseInfo order = appOrderService.getOrderByOrderNumber(wtaShippingOrderGoods.getOrderNo());
-                                city = cityService.findById(order.getCityId());
+                                WareHouseDO wareHouse = wareHouseService.findByWareHouseNo(wtaShippingOrderHeader.getWhNo());
+                                city = cityService.findByCityNumber(wareHouse.getCityId());
                             }
                             //wms扣减城市库存
                             for (int w = 1; w <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; w++) {
