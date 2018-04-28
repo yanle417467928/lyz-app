@@ -58,4 +58,12 @@ public interface MaReportDownloadService {
 
     List<SalesReportDO> downSalesReport(String companyCode, String storeType,
                                             String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds);
+
+    PageInfo<AccountGoodsItemsDO> findAccountZGGoodsItemsDOAll(Long cityId, Long storeId, String startTime, String endTime,
+                                                             String keywords, List<Long> storeIds, Integer page, Integer size);
+
+    List<AccountGoodsItemsDO> downloadAccountZGGoodsItems(Long cityId, Long storeId, String startTime, String endTime,
+                                                        String keywords, List<Long> storeIds);
+
+
 }

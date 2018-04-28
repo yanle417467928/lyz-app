@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.foundation.dao.MaReportDownloadDAO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.reportDownload.*;
 import cn.com.leyizhuang.app.foundation.service.MaReportDownloadService;
+import cn.com.leyizhuang.app.foundation.service.MaStoreService;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDetailResponse;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -24,6 +25,8 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
     @Autowired
     private MaReportDownloadDAO maReportDownloadDAO;
 
+    @Autowired
+    private MaStoreService maStoreService;
 
     @Override
     public PageInfo<ReceiptsReportDO> findReceiptsReportDOAll(Long cityId, Long storeId, String storeType, String startTime, String endTime, String payType, String keywords, List<Long> storeIds, Integer page, Integer size) {
@@ -171,10 +174,11 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
         }
         List<SalesReportDO> shipmentAndReturnGoodsList = new ArrayList<>();
         if (isProductCoupon) {
+            //平铺产品劵
             shipmentAndReturnGoodsList = maReportDownloadDAO.findProductSalesList(companyCode, storeType, startTime, endTime, storeIds);
         } else {
+            //不平铺产品劵
             shipmentAndReturnGoodsList = maReportDownloadDAO.findNoProductSalesList(companyCode, storeType, startTime, endTime, storeIds);
-
         }
         return new PageInfo<>(shipmentAndReturnGoodsList);
     }
@@ -219,5 +223,23 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
     @Override
     public AccountGoodsItemsDO getJxPriceByOrderNoAndSku(String orderNumber, String sku) {
         return this.maReportDownloadDAO.getJxPriceByOrderNoAndSku(orderNumber, sku);
+    }
+
+    @Override
+    public PageInfo<AccountGoodsItemsDO> findAccountZGGoodsItemsDOAll(Long cityId, Long storeId, String startTime, String endTime, String keywords, List<Long> storeIds, Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        if (null != endTime && !("".equals(endTime))) {
+            endTime += " 23:59:59";
+        }
+        List<AccountGoodsItemsDO> accountGoodsItemsDOS = this.maReportDownloadDAO.findAccountZGGoodsItemsDOAll(cityId, storeId,  startTime, endTime, keywords, storeIds);
+        return new PageInfo<>(accountGoodsItemsDOS);
+    }
+
+    @Override
+    public List<AccountGoodsItemsDO> downloadAccountZGGoodsItems(Long cityId, Long storeId,  String startTime, String endTime, String keywords, List<Long> storeIds) {
+        if (null != endTime && !("".equals(endTime))) {
+            endTime += " 23:59:59";
+        }
+        return this.maReportDownloadDAO.findAccountZGGoodsItemsDOAll(cityId, storeId, startTime, endTime, keywords, storeIds);
     }
 }

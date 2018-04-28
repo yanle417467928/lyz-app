@@ -99,7 +99,7 @@
                     <div class="row">
                         <div class="col-xs-12">
                             <div class="form-group">
-                                <label class="control-label col-md-2 col-xs-3" for="number" style="text-align: center">是否平铺产品劵:</label>
+                                <label class="control-label col-md-2 col-xs-3" for="number" style="text-align: center">是否含产品劵:</label>
                                 <label class="control-label margin-6" style="margin-left: 5%">
                                     <input type="radio" name="product" value="1" class="iradio_square-blue "
                                            checked>
@@ -245,7 +245,7 @@
         var endTime = $('#endTime').val();
         var companyCode = $('#companyCode').val();
         var isProductCoupon = $('input[name="product"]:checked ').val()
-        var storeType =  $('input[name="storeType"]:checked ').val()
+        var storeType = $('input[name="storeType"]:checked ').val()
 
         var url = "/rest/reportDownload/salesReport/download?companyCode=" + companyCode + "&startTime=" + startTime
                 + "&endTime=" + endTime + "&storeType=" + storeType + "&isProductCoupon=" + isProductCoupon;

@@ -1197,7 +1197,7 @@ public class MaOrderServiceImpl implements MaOrderService {
             returnOrderBaseInfo.setCustomerName(orderBaseInfo.getCustomerName());
             returnOrderBaseInfo.setReasonInfo("超过待付款时间");
             returnOrderBaseInfo.setOrderType(orderBaseInfo.getOrderType());
-            returnOrderBaseInfo.setReturnStatus(AppReturnOrderStatus.CANCELED);
+            returnOrderBaseInfo.setReturnStatus(AppReturnOrderStatus.FINISHED);
             //保存退单头信息
             returnOrderService.saveReturnOrderBaseInfo(returnOrderBaseInfo);
             //获取退单头id

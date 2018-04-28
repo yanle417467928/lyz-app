@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
-import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
@@ -13,7 +12,6 @@ import cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;
-import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -459,6 +457,41 @@ public class MaStoreRestController extends BaseRestController {
         } catch (Exception e) {
             e.printStackTrace();
             logger.warn("findStoresListByStoreId EXCEPTION,发生未知错误，后台查询门店列表(下拉框)失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
+    /**
+     * @param
+     * @return
+     * @throws
+     * @title 后台根据当前门店查询其他直营门店列表(下拉框)门店库存查看专用
+     * @descripe
+     * @author Jerry.Ren
+     * @date 2018/3/16
+     */
+    @GetMapping(value = "/findZYStoresListByStoreId")
+    public List<SimpleStoreParam> findZYStoresListByStoreId() {
+        logger.info("findZYStoresListByStoreId 查询其他直营门店列表(下拉框)门店库存查看专用");
+        try {
+
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            AppStore appStore = this.maStoreService.findAppStoreByStoreId(storeIds.get(0));
+            if (StoreType.ZY.equals(appStore.getStoreType())) {
+                List<SimpleStoreParam> storesList = this.maStoreService.findStoresListByCityIdAndStoreType(appStore.getCityId(), StoreType.ZY.getValue());
+                logger.info("findZYStoresListByStoreId ,查询其他直营门店列表(下拉框)成功", storesList.size());
+                return storesList;
+            } else {
+
+                List<SimpleStoreParam> storesList = this.maStoreService.findStoresListByStoreId(storeIds);
+                logger.info("findZYStoresListByStoreId ,查询其他直营门店列表(下拉框)成功", storesList.size());
+                return storesList;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("findZYStoresListByStoreId EXCEPTION,发生未知错误，查询其他直营门店列表(下拉框)失败");
             logger.warn("{}", e);
             return null;
         }

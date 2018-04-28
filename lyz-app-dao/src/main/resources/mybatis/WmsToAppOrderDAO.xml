@@ -136,13 +136,14 @@
     <insert id="saveWtaCancelOrderResultEnter"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaCancelOrderResultEnter">
 
-        INSERT INTO inter_wta_order_result_enter (create_time, order_no, is_cancel, error_message)
+        INSERT INTO inter_wta_order_result_enter (create_time, order_no, is_cancel, error_message, handle_flag)
 
             SELECT
                 #{createTime},
                 #{orderNo},
                 #{isCancel},
-                #{errorMessage}
+                #{errorMessage},
+                #{handleFlag}
             FROM DUAL
             WHERE NOT EXISTS(
                     SELECT 'X'
@@ -196,7 +197,7 @@
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaWarehouseAllocationHeader">
         INSERT INTO inter_wta_warehouse_allocation_header
         (warehouse_no, owner_no, allocation_no, allocation_type, allocation_status, shipping_warehouse_no, po_no, po_type,
-         note, modify_time, create_time, upload_status, company_id)
+         note, modify_time, create_time, upload_status, company_id, receive_time, handle_flag)
             SELECT
                 #{warehouseNo},
                 #{ownerNo},
@@ -210,7 +211,9 @@
                 #{modifyTime},
                 #{createTime},
                 #{uploadStatus},
-                #{companyId}
+                #{companyId},
+                #{receiveTime},
+                #{handleFlag}
             FROM DUAL
             WHERE NOT EXISTS(
                     SELECT 'X'
@@ -221,7 +224,7 @@
 
     <insert id="saveWtaWarehouseAllocationGoods"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaWarehouseAllocationGoods">
-        INSERT INTO inter_wta_warehouse_allocation_goods (ack_qty, check_time, check_qty, sku, note, allocation_id, allocation_no)
+        INSERT INTO inter_wta_warehouse_allocation_goods (ack_qty, check_time, check_qty, sku, note, allocation_id, allocation_no, receive_time)
             SELECT
                 #{ackQty},
                 #{checkTime},
@@ -229,7 +232,8 @@
                 #{sku},
                 #{note},
                 #{allocationId},
-                #{allocationNo}
+                #{allocationNo},
+                #{receiveTime}
             FROM DUAL
             WHERE NOT EXISTS(
                     SELECT 'X'
@@ -241,7 +245,7 @@
     <insert id="saveWtaWarehousePurchaseHeader"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaWarehousePurchaseHeader">
         INSERT INTO inter_wta_warehouse_purchase_header
-        (warehouse_no, rec_no, gather_rec_no, gather_no, in_no, note, purchase_no, company_id, create_time)
+        (warehouse_no, rec_no, gather_rec_no, gather_no, in_no, note, purchase_no, company_id, receive_time, handle_flag)
             SELECT
                 #{warehouseNo},
                 #{recNo},
@@ -251,7 +255,8 @@
                 #{note},
                 #{purchaseNo},
                 #{companyId},
-                #{createTime}
+                #{receiveTime},
+                #{handleFlag}
             FROM DUAL
             WHERE NOT EXISTS(
                     SELECT 'X'
@@ -262,12 +267,13 @@
 
     <insert id="saveWtaWarehousePurchaseGoods"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaWarehousePurchaseGoods">
-        INSERT INTO inter_wta_warehouse_purchase_goods (rec_id, rec_no, rec_qty, sku)
+        INSERT INTO inter_wta_warehouse_purchase_goods (rec_id, rec_no, rec_qty, sku, receive_time)
             SELECT
                 #{recId},
                 #{recNo},
                 #{recQty},
-                #{sku}
+                #{sku},
+                #{receiveTime}
             FROM DUAL
             WHERE NOT EXISTS(
                     SELECT 'X'
@@ -312,7 +318,7 @@
 
         SELECT *
         FROM inter_wta_warehouse_purchase_goods
-        WHERE rec_no = #{purchaseNo}
+        WHERE rec_no = #{recNo}
     </select>
 
     <select id="findWtaReturningOrderGoodsByReturnOrderNo" parameterType="java.lang.String"
@@ -413,7 +419,7 @@
 
     <select id="getWtaOrderLogistics" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaOrderLogistics">
         SELECT id, order_no, logistic_status, create_time, operation_type, warehouse_no, task_no, receive_time, handle_flag, handle_time, err_message
-        FROM inter_wta_order_logistics WHERE handle_flag = 0 AND order_no = #{orderNo}
+        FROM inter_wta_order_logistics WHERE (handle_flag = 0 OR handle_flag IS NULL) AND order_no = #{orderNo}
     </select>
 
     <update id="updateWtaOrderLogistics" parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaOrderLogistics">
@@ -421,7 +427,7 @@
         SET handle_flag = #{handleFlag},
           err_message = #{errMessage},
           handle_time = #{handleTime}
-      WHERE id = #{id}
+        WHERE id = #{id}
     </update>
 
     <select id="getWtaShippingOrderHeaderByOrderNoAndTaskNo" resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderHeader">
@@ -440,7 +446,7 @@
         send_flag     sendFlag,
         error_message errorMessage
         FROM inter_wta_order_shipping_header
-        WHERE task_no = #{taskNo} AND order_no = #{orderNo}
+        WHERE task_no = #{taskNo} AND order_no = #{orderNo} AND (send_flag = 0 OR send_flag IS NULL)
     </select>
 
     <select id="getWtaShippingOrderGoods" resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderGoods">
@@ -457,6 +463,70 @@
         owner_no
         FROM inter_wta_order_shipping_goods
         WHERE task_no = #{taskNo} AND order_no = #{orderNo}
+    </select>
+
+    <select id="getWtaWarehouseAllocationHeader" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaWarehouseAllocationHeader">
+        SELECT id, warehouse_no, owner_no, allocation_no, allocation_type, allocation_status, shipping_warehouse_no, po_no, po_type,
+         note, modify_time, create_time, upload_status, company_id, receive_time, handle_flag, err_message, handle_time
+         FROM inter_wta_warehouse_allocation_header
+         WHERE allocation_no = #{allocationNo} AND (handle_flag = 0 OR handle_flag IS NULL)
+    </select>
+
+    <update id="updateWtaWarehouseAllocation" parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaWarehouseAllocationHeader">
+        UPDATE inter_wta_warehouse_allocation_header
+        SET handle_flag = #{handleFlag},
+          err_message = #{errMessage},
+          handle_time = #{handleTime}
+        WHERE allocation_no = #{allocationNo}
+    </update>
+
+    <select id="getWtaWarehousePurchaseHeader" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaWarehousePurchaseHeader">
+        SELECT id,warehouse_no, rec_no, gather_rec_no, gather_no, in_no, note, purchase_no, company_id, receive_time, handle_flag, err_message, handle_time
+        FROM inter_wta_warehouse_purchase_header
+        WHERE purchase_no = #{purchaseNo} AND (handle_flag = 0 OR handle_flag IS NULL)
+    </select>
+
+    <update id="updateWtaWarehousePurchaseHeader" parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaWarehousePurchaseHeader">
+        UPDATE inter_wta_warehouse_purchase_header
+        SET handle_flag = #{handleFlag},
+        err_message = #{errMessage},
+        handle_time = #{handleTime}
+        WHERE purchase_no = #{purchaseNo}
+    </update>
+
+    <select id="getWtaCancelOrderResult" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaCancelOrderResultEnter">
+        SELECT id, create_time, order_no, is_cancel, error_message, handle_flag, handle_time
+        FROM inter_wta_order_result_enter
+        WHERE order_no = #{orderNo} AND (handle_flag = 0 OR handle_flag IS NULL)
+    </select>
+
+    <update id="updateWtaCancelOrderResult" parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaCancelOrderResultEnter">
+        UPDATE inter_wta_order_result_enter
+        SET handle_flag = #{handleFlag},
+        error_message = #{errorMessage},
+        handle_time = #{handleTime}
+        WHERE order_no = #{orderNo}
+    </update>
+
+    <select id="getAllWtaShippingOrderHeader" resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderHeader">
+        SELECT  id,
+        create_time   createTime,
+        end_dt        endDt,
+        wh_no         whNo,
+        owner_no      ownerNo,
+        task_no       taskNo,
+        c_task_type   cTaskType,
+        car_no        carNo,
+        op_status     opStatus,
+        driver        driver,
+        order_no      orderNo,
+        send_time     sendTime,
+        send_flag     sendFlag,
+        error_message errorMessage
+        FROM inter_wta_order_shipping_header
+        WHERE send_flag = 0 OR send_flag IS NULL
     </select>
 
 </mapper>

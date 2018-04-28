@@ -127,4 +127,7 @@ public interface MaStoreService {
 
     List<SimpleStoreParam> findStoresListByCityIdAndStoreType(Long cityId, String storeType, List<Long> storeIds);
 
+    List<SimpleStoreParam> findStoresListByCityIdAndStoreType(Long cityId, String storeType);
+
+    List<Long> findStoresIdByStructureCode(String structureCode);
 }

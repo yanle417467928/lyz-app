@@ -20,6 +20,8 @@ import java.util.List;
 public class SalesReportDO {
     //城市
     private String cityName;
+    //storeId
+    private Long storeId;
     //门店名称
     private String storeName;
     //顾客名称
