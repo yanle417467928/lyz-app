@@ -1446,7 +1446,6 @@ public class MaReportDownloadRestController extends BaseRestController{
 
                 //工作表，参数0表示这是第一页
                 WritableSheet ws = wwb.createSheet("第" + (i + 1) + "页", i);
-
                 //筛选条件
                 Map<String, String> map = new HashMap<>();
 
@@ -1477,8 +1476,10 @@ public class MaReportDownloadRestController extends BaseRestController{
                 }
                 //设置筛选条件
                 ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
+
+
                 //列宽
-                int[] columnView = {10, 40, 20, 20, 30, 15, 15};
+                int[] columnView = {10, 20, 10, 10, 30, 10, 10,15,15,15,15,15,20,15,15,15,15,15,15,15,15,15};
                 //列标题城市
 
                 String[] titles = {"城市", "门店", "名称", "会员名称", "订单号", "配送/自提", "订单状态", "自提提货日期", "订单日期", "出货时间", "是否结清", "订单还清日期", "编号", "品牌", "财务销量", "经销财务销量", "经销单价", "原单价", "结算单价", "会员折扣", "折扣或者赠品分摊", "现金券", "下单数量"
@@ -1488,7 +1489,26 @@ public class MaReportDownloadRestController extends BaseRestController{
                 if (null != map && map.size() > 0) {
                     row = (map.size() + 1) / 2 + 4;
                 }
-
+                String str= "配送单：　\n" +
+                        "1： 订单还清日期 >＝ 挑选日期   并且为已出货\n" +
+                        "2： 订单还清日期 <   挑选日期   并且本月出货\n" +
+                        "3:  出货定义：已完成／待收货\n" +
+                        "\n" +
+                        "自提单：　\n" +
+                        "1： 订单还清日期 >＝ 挑选日期   \n" +
+                        "并且为已出货\n" +
+                        "2： 订单还清日期 <   挑选日期   并且本月出货\n" +
+                        "3:  出货定义：已完成（按出货确认键）\n" +
+                        "\n" +
+                        "1.财务销量    =[结算价－（会员折扣－折扣或者赠品分摊－现金券）] * 下单数量\n" +
+                        "2.经销财务销量=[经销价 * 下单数量]\n" +
+                        "若退货则下单数量＝负数";
+                ws.mergeCells(0,(map.size() + 1),22,(map.size() + 1));
+                WritableCellFormat textFormat1 = this.setTextStyle();
+                textFormat1.setWrap(true);
+                ws.addCell(new Label(0, (map.size() + 1), str, textFormat1));
+                ws.setRowView(row-1,4000);
+                row += 2;
                 //设置标题
                 ws = this.setHeader(ws, titleFormat, columnView, titles, row);
                 row += 1;
