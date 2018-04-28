@@ -217,9 +217,11 @@ public class MaReportDownloadRestController extends BaseRestController{
         size = getSize(size);
         Integer page = getPage(offset, size);
         //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
         List<Long> storeIdInCompany= maStoreService.findStoresIdByStructureCode(companyCode);
+        storeIds.retainAll(storeIdInCompany);
         PageInfo<SalesReportDO> SalesList = this.maReportDownloadService.findSalesList(companyCode, storeType, startTime,
-                endTime, isProductCoupon, storeIdInCompany, page, size);
+                endTime, isProductCoupon, storeIds, page, size);
         return new GridDataVO<SalesReportDO>().transform(SalesList.getList(), SalesList.getTotal());
     }
 
@@ -1409,9 +1411,11 @@ public class MaReportDownloadRestController extends BaseRestController{
     public void downloadSalesReport(HttpServletRequest request, HttpServletResponse response, String companyCode, String storeType,
                                     String startTime, String endTime, Boolean isProductCoupon) {
         //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
         List<Long> storeIdInCompany= maStoreService.findStoresIdByStructureCode(companyCode);
+        storeIds.retainAll(storeIdInCompany);
         List<SalesReportDO> salesList = this.maReportDownloadService.downSalesReport(companyCode, storeType,
-                startTime, endTime, isProductCoupon, storeIdInCompany);
+                startTime, endTime, isProductCoupon, storeIds);
         ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
         String shiroName = "";
         if (null != shiroUser) {

@@ -174,8 +174,10 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
         }
         List<SalesReportDO> shipmentAndReturnGoodsList = new ArrayList<>();
         if (isProductCoupon) {
+            //平铺产品劵
             shipmentAndReturnGoodsList = maReportDownloadDAO.findProductSalesList(companyCode, storeType, startTime, endTime, storeIds);
         } else {
+            //不平铺产品劵
             shipmentAndReturnGoodsList = maReportDownloadDAO.findNoProductSalesList(companyCode, storeType, startTime, endTime, storeIds);
         }
         return new PageInfo<>(shipmentAndReturnGoodsList);

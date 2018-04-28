@@ -744,7 +744,7 @@
           GROUP BY sku
     </select>
 
-    <select id="findProductSalesList" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.SalesReportDO">
+    <select id="findNoProductSalesList" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.SalesReportDO">
         (SELECT
         s.city as 'cityName',
         s.store_name as 'storeName',
@@ -788,11 +788,11 @@
         'FINISHED'
         )
         <if test="null !=startTime and ''!=startTime">
-            AND obd.pay_up_time > #{startTime}
+            AND obd.pay_up_time >= #{startTime}
         </if>
         <if test=" null != endTime and ''!=endTime">
             and
-            <![CDATA[ obd.pay_up_time< #{endTime}]]>
+            <![CDATA[ obd.pay_up_time<= #{endTime}]]>
         </if>
         and ob.delivery_type = 'HOUSE_DELIVERY'
     <!--<if test="null!=companyCode and ''!=companyCode">
@@ -851,11 +851,11 @@
         'FINISHED'
         )
         <if test="null != startTime and ''!=startTime">
-            AND obd.pay_up_time > #{startTime}
+            AND obd.pay_up_time >= #{startTime}
         </if>
         <if test=" null!=endTime and ''!=endTime">
             and
-            <![CDATA[ obd.pay_up_time< #{endTime}]]>
+            <![CDATA[ obd.pay_up_time<= #{endTime}]]>
         </if>
         AND ob.delivery_type = 'SELF_TAKE'
   <!--      <if test="null !=companyCode and ''!=companyCode">
@@ -915,17 +915,17 @@
         'FINISHED'
         )
         <if test="null !=startTime and ''!=startTime">
-            AND wa.end_dt > #{startTime}
+            AND wa.end_dt >= #{startTime}
         </if>
 
         <if test="null !=endTime and ''!=endTime">
             and
-            <![CDATA[  wa.end_dt< #{endTime} ]]>
+            <![CDATA[  wa.end_dt<= #{endTime} ]]>
         </if>
 
         <if test="null !=startTime and ''!=startTime">
             and
-            <![CDATA[ obd.pay_up_time< #{startTime} ]]>
+            <![CDATA[ obd.pay_up_time<= #{startTime} ]]>
         </if>
         and ob.delivery_type = 'HOUSE_DELIVERY'
         and obd.is_pay_up = 1
@@ -986,16 +986,16 @@
         )
         <if test="null!=startTime and ''!=startTime">
             AND
-            <![CDATA[  os.shipping_time > #{startTime} ]]>
+            <![CDATA[  os.shipping_time >= #{startTime} ]]>
         </if>
         <if test="null!=endTime and ''!=endTime">
             and
-            <![CDATA[ os.shipping_time< #{endTime} ]]>
+            <![CDATA[ os.shipping_time<= #{endTime} ]]>
         </if>
 
         <if test="null!=startTime and ''!=startTime">
             and
-            <![CDATA[  obd.pay_up_time< #{startTime} ]]>
+            <![CDATA[  obd.pay_up_time<= #{startTime} ]]>
         </if>
         AND ob.delivery_type = 'SELF_TAKE'
         and obd.is_pay_up = 1
@@ -1052,7 +1052,7 @@
         1=1
         <if test="null !=startTime and ''!=startTime">
             AND
-            wro.create_time > #{startTime}
+            wro.create_time >= #{startTime}
         </if>
      <!--   <if test="null!=companyCode and ''!=companyCode">
             and s.store_structure_code like concat('%',#{companyCode},'%')
@@ -1068,7 +1068,7 @@
     </select>
 
 
-    <select id="findNoProductSalesList" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.SalesReportDO">
+    <select id="findProductSalesList" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.SalesReportDO">
         (SELECT
         s.city as 'cityName',
         s.store_name as 'storeName',
@@ -1105,18 +1105,18 @@
         -- LEFT JOIN gds_goods_grade gp on og.sku = gp.sku
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
         LEFT JOIN inter_wta_order_shipping_header wa ON ob.ord_no = wa.order_no
-        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku
+        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku  and og.goods_line_type = 'PRODUCT_COUPON'
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
         'FINISHED'
         )
         <if test="null!=startTime and ''!=startTime">
-            AND obd.pay_up_time > #{startTime}
+            AND obd.pay_up_time >= #{startTime}
         </if>
         <if test="null!=endTime and ''!=endTime">
             and
-            <![CDATA[obd.pay_up_time<#{endTime}]]>
+            <![CDATA[obd.pay_up_time<= #{endTime}]]>
         </if>
         and ob.delivery_type = 'HOUSE_DELIVERY'
  <!--       <if test="null!=companyCode and ''!=companyCode">
@@ -1172,17 +1172,17 @@
         LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
         LEFT JOIN ord_shipping os on ob.oid = os.oid
-        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku
+        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku  and og.goods_line_type = 'PRODUCT_COUPON'
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
         'FINISHED'
         )
         <if test="null!=startTime and ''!=startTime">
-            AND obd.pay_up_time > #{startTime}
+            AND obd.pay_up_time >= #{startTime}
         </if>
         <if test="null!=endTime and ''!=endTime">
-            and   <![CDATA[ obd.pay_up_time < #{endTime}]]>
+            and   <![CDATA[ obd.pay_up_time <= #{endTime}]]>
         </if>
         AND ob.delivery_type = 'SELF_TAKE'
 <!--        <if test="null!=companyCode and ''!=companyCode">
@@ -1240,23 +1240,23 @@
         LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
         LEFT JOIN inter_wta_order_shipping_header wa ON ob.ord_no = wa.order_no
-        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku
+        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku  and og.goods_line_type = 'PRODUCT_COUPON'
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
         'FINISHED'
         )
         <if test="null!=startTime and ''!=startTime">
-            AND wa.end_dt > #{startTime}
+            AND wa.end_dt >= #{startTime}
         </if>
         <if test="null!=endTime and ''!=endTime">
             and
-            <![CDATA[wa.end_dt < #{endTime} ]]>
+            <![CDATA[wa.end_dt <= #{endTime} ]]>
         </if>
 
         <if test="null!=startTime and ''!=startTime">
             and
-            <![CDATA[ obd.pay_up_time<#{startTime} ]]>
+            <![CDATA[ obd.pay_up_time<= #{startTime} ]]>
         </if>
         and ob.delivery_type = 'HOUSE_DELIVERY'
         and obd.is_pay_up = 1
@@ -1317,22 +1317,21 @@
         LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
         LEFT JOIN ord_shipping os on ob.oid = os.oid
-        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku =
-        oci.sku
+        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku =oci.sku  and og.goods_line_type = 'PRODUCT_COUPON'
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
         'FINISHED'
         )
         <if test="null!=startTime and ''!=startTime">
-            AND os.shipping_time > #{startTime}
+            AND os.shipping_time >= #{startTime}
         </if>
         <if test="null!=endTime and ''!=endTime">
             and
-            <![CDATA[ os.shipping_time < #{endTime} ]]>
+            <![CDATA[ os.shipping_time <= #{endTime} ]]>
         </if>
         <if test="null!=startTime and ''!=startTime">
-            and  <![CDATA[ obd.pay_up_time< #{startTime}]]>
+            and  <![CDATA[ obd.pay_up_time<= #{startTime}]]>
         </if>
         AND ob.delivery_type = 'SELF_TAKE'
         and obd.is_pay_up = 1
@@ -1385,12 +1384,12 @@
         LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
         LEFT JOIN inter_wta_return_order_back_header wro ON wro.po_no = orb.return_no
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
-        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and org.sku = oci.sku
+        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and org.sku = oci.sku and org.goods_line_type = 'PRODUCT_COUPON'
         where
         1=1
         <if test="null!=startTime and ''!=startTime">
             AND
-            wro.create_time > #{startTime}
+            wro.create_time >= #{startTime}
         </if>
      <!--   <if test="null!=companyCode and ''!=companyCode">
             and s.store_structure_code like concat('%',#{companyCode},'%')

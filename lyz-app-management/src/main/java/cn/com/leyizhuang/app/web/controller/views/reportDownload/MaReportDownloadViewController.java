@@ -159,4 +159,20 @@ public class MaReportDownloadViewController extends BaseController {
         return "/views/reportDownload/account_ZG_goods_items_page";
     }
 
+
+    /**
+     * @title    销量报表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/4/3
+     */
+    @GetMapping(value = "/arrears/list")
+    public String getArrearsList(ModelMap map) {
+        map.addAttribute("storeTypes", StoreType.getNotZsType());
+        return "/views/reportDownload/arrears_page";
+    }
+
 }
