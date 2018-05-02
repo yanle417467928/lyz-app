@@ -106,4 +106,8 @@ public interface StatisticsSellDetailsService {
     void createAllOrderDetails() ;
 
     void createAllreturnOrderDetails() ;
+
+    List<SellDetailsResponse> getFgsRank(Long empId,String flag);
+
+    List<SellDetailsResponse> getJtRank(String flag);
 }
