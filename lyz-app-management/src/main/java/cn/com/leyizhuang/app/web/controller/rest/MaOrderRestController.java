@@ -3,8 +3,10 @@ package cn.com.leyizhuang.app.web.controller.rest;
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.constant.AppLock;
 import cn.com.leyizhuang.app.core.constant.EmpCreditMoneyChangeType;
 import cn.com.leyizhuang.app.core.exception.*;
+import cn.com.leyizhuang.app.core.lock.RedisLock;
 import cn.com.leyizhuang.app.core.utils.IpUtil;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
@@ -98,6 +100,8 @@ public class MaOrderRestController extends BaseRestController {
     @Autowired
     private AdminUserStoreService adminUserStoreService;
 
+    @Resource
+    private RedisLock redisLock;
 
     /**
      * 后台分页查询所有订单
@@ -561,6 +565,8 @@ public class MaOrderRestController extends BaseRestController {
      */
     @PostMapping(value = "/orderReceivables")
     public ResultDTO<Object> orderReceivables(MaOrderAmount maOrderAmount, HttpServletRequest request) {
+
+
         logger.warn("orderReceivables 后台订单收款 ,maOrderAmount:{}", maOrderAmount);
         ResultDTO<Object> resultDTO;
         if (null == maOrderAmount.getCashAmount()) {
@@ -613,29 +619,40 @@ public class MaOrderRestController extends BaseRestController {
             return resultDTO;
         }
         try {
-            ShiroUser shiroUser = this.getShiroUser();
-            GuideCreditChangeDetail guideCreditChangeDetail = new GuideCreditChangeDetail();
-            guideCreditChangeDetail.setReferenceNumber(maOrderTempInfo.getOrderNumber());
-            guideCreditChangeDetail.setEmpId(maOrderTempInfo.getSalesConsultId());
-            guideCreditChangeDetail.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
-            guideCreditChangeDetail.setChangeTypeDesc(EmpCreditMoneyChangeType.ORDER_REPAYMENT.getDescription());
-            guideCreditChangeDetail.setCreateTime(new Date());
-            guideCreditChangeDetail.setOperatorId(shiroUser.getId());
-            guideCreditChangeDetail.setOperatorIp(IpUtil.getIpAddress(request));
-            List<String> ReceiptNumberList = this.maOrderService.selfTakeOrderReceivables(maOrderAmount, maOrderBillingDetailResponse, guideCreditChangeDetail);
-            for (String receiptNumber : ReceiptNumberList) {
-                this.maSinkSender.sendOrderReceipt(receiptNumber);
+            if (redisLock.lock(AppLock.SELF_TAKE_ORDER_RECEIPT, maOrderAmount.getOrderNumber(), 30)) {
+                Thread.sleep(5000);
+                ShiroUser shiroUser = this.getShiroUser();
+                GuideCreditChangeDetail guideCreditChangeDetail = new GuideCreditChangeDetail();
+                guideCreditChangeDetail.setReferenceNumber(maOrderTempInfo.getOrderNumber());
+                guideCreditChangeDetail.setEmpId(maOrderTempInfo.getSalesConsultId());
+                guideCreditChangeDetail.setChangeType(EmpCreditMoneyChangeType.ORDER_REPAYMENT);
+                guideCreditChangeDetail.setChangeTypeDesc(EmpCreditMoneyChangeType.ORDER_REPAYMENT.getDescription());
+                guideCreditChangeDetail.setCreateTime(new Date());
+                guideCreditChangeDetail.setOperatorId(shiroUser.getId());
+                guideCreditChangeDetail.setOperatorIp(IpUtil.getIpAddress(request));
+                List<String> ReceiptNumberList = this.maOrderService.selfTakeOrderReceivables(maOrderAmount, maOrderBillingDetailResponse, guideCreditChangeDetail);
+                for (String receiptNumber : ReceiptNumberList) {
+                    this.maSinkSender.sendOrderReceipt(receiptNumber);
+                }
+                logger.warn("orderReceivablesForCustomer ,后台订单收款成功");
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
+                        "后台订单收款成功", null);
+            } else {
+                logger.warn("orderReceivablesForCustomer,门店自提单收款重复提交");
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
+                        "订单收款处理中，请勿重复操作!", null);
             }
-            logger.warn("orderReceivablesForCustomer ,后台订单收款成功");
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
-                    "后台订单收款成功", null);
+
         } catch (Exception e) {
             e.printStackTrace();
             logger.warn("orderReceivablesForCustomer EXCEPTION,发生未知错误，后台订单收款失败");
             logger.warn("{}", e);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
                     "后台订单收款失败", null);
+        } finally {
+            redisLock.unlock(AppLock.SELF_TAKE_ORDER_RECEIPT, maOrderAmount.getOrderNumber());
         }
+
     }
 
 
