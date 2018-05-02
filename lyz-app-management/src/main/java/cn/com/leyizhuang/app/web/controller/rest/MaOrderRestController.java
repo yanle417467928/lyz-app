@@ -620,7 +620,6 @@ public class MaOrderRestController extends BaseRestController {
         }
         try {
             if (redisLock.lock(AppLock.SELF_TAKE_ORDER_RECEIPT, maOrderAmount.getOrderNumber(), 30)) {
-                Thread.sleep(5000);
                 ShiroUser shiroUser = this.getShiroUser();
                 GuideCreditChangeDetail guideCreditChangeDetail = new GuideCreditChangeDetail();
                 guideCreditChangeDetail.setReferenceNumber(maOrderTempInfo.getOrderNumber());
