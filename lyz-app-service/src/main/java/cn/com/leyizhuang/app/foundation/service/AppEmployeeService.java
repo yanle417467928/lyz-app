@@ -7,10 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.EmpCreditMoneyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.SalesConsult;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
-import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeListResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoneyResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import com.github.pagehelper.PageInfo;
 
@@ -89,4 +86,6 @@ public interface AppEmployeeService {
     List<AppEmployee> findAllSeller();
 
     List<SellerResponse> querySellerByStructureCode(String structureCode);
+
+    List<StoreRankClassification> getStoreRankClassification(Long userId, AppIdentityType identityType);
 }

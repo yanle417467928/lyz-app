@@ -7,10 +7,7 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppEmployeeDAO;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
-import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeListResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoneyResponse;
-import cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -276,5 +273,10 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     @Override
     public List<SellerResponse> querySellerByStructureCode(String structureCode){
         return employeeDAO.querySellerByStructureCode(structureCode);
+    }
+
+    @Override
+    public List<StoreRankClassification> getStoreRankClassification(Long userId, AppIdentityType identityType) {
+        return employeeDAO.getStoreRankClassification(userId, identityType);
     }
 }

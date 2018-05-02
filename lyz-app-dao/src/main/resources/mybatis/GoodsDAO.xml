@@ -1467,4 +1467,35 @@
         WHERE sku = #{sku}
     </select>
 
+
+    <select id="findGoodsListBySellerIdAndIdentityTypeAndRankCode"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
+        <if test="null != identityType and identityType.toString() == 'SELLER'">
+            SELECT
+            g.cover_image_uri,
+            g.sku_name goods_name,
+            g.gid id,
+            g.goods_specification,
+            g.goods_unit,
+            p.vip_price,
+            p.retail_price,
+            g.cid category_id,
+            g.brd_id brand_id,
+            g.gtid type_id,
+            g.work_area,
+            g.work_cost
+            FROM
+            emp_employee e
+            INNER JOIN gds_goods_price p ON e.store_id = p.store_id
+            AND p.price_type != 'COMMON'
+            AND p.start_time &lt; NOW()
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+            INNER JOIN gds_goods g ON p.gid = g.gid
+            INNER JOIN gds_goods_category gc ON g.cid = gc.cid
+            WHERE
+            e.emp_id = #{userId}
+            AND p.price_type = #{rankCode}
+        </if>
+    </select>
+
 </mapper>
