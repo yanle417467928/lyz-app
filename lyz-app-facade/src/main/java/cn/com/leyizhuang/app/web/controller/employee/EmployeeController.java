@@ -615,7 +615,6 @@ public class EmployeeController {
      */
     @PostMapping(value = "/store/rankClassification", produces = "application/json;charset=UTF-8")
     public ResultDTO getStoreRankClassification(Long userId, Integer identityType) {
-
         logger.info("getStoreRankClassification CALLED,获取导购门店所有专供类型，入参 userId {},identityType{}", userId, identityType);
 
         ResultDTO<Object> resultDTO;
