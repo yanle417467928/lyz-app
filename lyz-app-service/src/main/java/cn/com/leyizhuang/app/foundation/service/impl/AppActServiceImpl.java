@@ -409,6 +409,16 @@ public class AppActServiceImpl implements AppActService {
                     // 结束本次促销循环
                     continue;
                 }
+                //***************** 普通-满数量-送券 ************
+            }else if (actType.equals("COMMON_FQTY_PRO")){
+                // 判断本品是否满足数量要求 得出参与此促销次数
+                int enjoyTimes = checkActGoodsNum(goodsPool, act);
+
+                if (enjoyTimes > 0) {
+                    proGiftList.add(this.getGiftResultByActId(act, userId, userType, enjoyTimes));
+                    // 结束本次促销循环
+                    continue;
+                }
             }
 
         }
@@ -1230,7 +1240,17 @@ public class AppActServiceImpl implements AppActService {
                     actGiftDetailsDAO.save(item);
                 }
             }
-        } else if (act_type.contains("ADD")) {
+        }else if (act_type.contains("PRO")) {
+            // 创建赠品对象与促销的映射
+            if (giftList != null && giftList.size() > 0) {
+                for (ActGiftDetailsDO item : giftList) {
+                    item.setActId(baseDO.getId());
+                    item.setActCode(baseDO.getActCode());
+
+                    actGiftDetailsDAO.save(item);
+                }
+            }
+        }  else if (act_type.contains("ADD")) {
             // 加价购
             if (giftList != null && giftList.size() > 0) {
                 for (ActGiftDetailsDO item : giftList) {
@@ -1327,6 +1347,17 @@ public class AppActServiceImpl implements AppActService {
 
             actSubAmountDAO.save(actSubAmountDO);
         } else if (act_type.contains("GOO")) {
+            // 修改赠品 先删除旧记录
+            actGiftDetailsDAO.deleteByActBaseId(baseDO.getId());
+            if (giftList != null && giftList.size() > 0) {
+                for (ActGiftDetailsDO item : giftList) {
+                    item.setActId(baseDO.getId());
+                    item.setActCode(baseDO.getActCode());
+
+                    actGiftDetailsDAO.save(item);
+                }
+            }
+        } else if (act_type.contains("PRO")) {
             // 修改赠品 先删除旧记录
             actGiftDetailsDAO.deleteByActBaseId(baseDO.getId());
             if (giftList != null && giftList.size() > 0) {

@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.foundation.service.StatisticsSellDetailsService;
+import cn.com.leyizhuang.app.foundation.service.impl.AppActDutchServiceImpl;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.slf4j.Logger;
@@ -28,6 +29,9 @@ public class MaSelldetailsRestController {
 
     @Resource
     private StatisticsSellDetailsService statisticsSellDetailsService;
+
+    @Resource
+    private AppActDutchServiceImpl dutchService;
 
     /**
      * 计算所有导购业绩
@@ -94,9 +98,22 @@ public class MaSelldetailsRestController {
         return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "重新生成退单销量数据", null);
     }
 
+    @GetMapping("/repair/all")
+    public ResultDTO<Object> repairAllOrderDetails(){
+        statisticsSellDetailsService.repairAllOrderDetails();
+        return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "修复销量数据完成", null);
+    }
+
     @GetMapping("/reCreate/errorLog")
     public String reCreateErrorLogDetail(){
 
         return null;
     }
+
+    @GetMapping("/re/goodsLine/{flag}")
+    public ResultDTO<Object> repairGoodsLine(@PathVariable("flag") String flag){
+        dutchService.repairGoodsLine(flag);
+        return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "修复商品数据完成", null);
+    }
+
 }

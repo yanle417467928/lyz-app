@@ -27,11 +27,13 @@ import cn.com.leyizhuang.common.util.AssertUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -1089,7 +1091,11 @@ public class AppOrderServiceImpl implements AppOrderService {
 
     @Override
     public List<String> getNotSellDetailsOrderNOs(Boolean flag){
-        return orderDAO.getNotSellDetailsOrderNOs(flag);
+        // 当前时间
+        LocalDateTime now = LocalDateTime.now();
+        // 当月1号 0 点 0 分 0 秒
+        LocalDateTime firstDay = LocalDateTime.of(now.getYear(),now.getMonth(),1,0,0,0);
+        return orderDAO.getNotSellDetailsOrderNOs(flag,firstDay);
     }
 
     @Override
@@ -1109,4 +1115,9 @@ public class AppOrderServiceImpl implements AppOrderService {
     public void updateOrderBaseInfoStatus(OrderBaseInfo baseInfo) {
         this.orderDAO.updateOrderBaseInfoStatus(baseInfo);
     }
+
+    @Override
+    public Double getOrderProductCouponPurchasePrice(String ordNo,String sku){
+        return orderDAO.getOrderProductCouponPurchasePrice(ordNo,sku);
+    };
 }

@@ -43,6 +43,23 @@ public interface SellDetailsDAO {
     List<SellDetailsDO> queryOneMonthSellDetails(@Param("year") Integer year, @Param("month") Integer month);
 
     /**
+     * 查询未结清的销量数据 id
+     */
+    List<Long> getNotPayUpSellDetails();
+
+    /**
+     * 查询产品券 销量金额为0数据
+     */
+    List<SellDetailsDO> getProductSellDetails();
+
+    /**
+     * 删除销量数据
+     * @param ids
+     */
+    void deleteSellDetailsByIdList(@Param("ids") List<Long> ids);
+
+    void deleteSellDetailsById(Long id);
+    /**
      * 根据单号和明细行判断，是否已经记录此销售明细
      *
      * @param number
@@ -116,4 +133,9 @@ public interface SellDetailsDAO {
      * 插入专供销量
      */
     void insertZgSellDetails(SellZgDetailsDO detailsDO);
+
+    /**
+     * 将未结清订单 销量记录标志
+     */
+    void updateOrderRecordFlagFalse();
 }

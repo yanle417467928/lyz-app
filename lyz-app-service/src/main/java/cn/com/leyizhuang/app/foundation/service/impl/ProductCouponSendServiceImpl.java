@@ -8,11 +8,14 @@ import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.ProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.app.foundation.service.ProductCouponSendService;
+import cn.com.leyizhuang.app.foundation.service.ProductCouponService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -33,6 +36,11 @@ public class ProductCouponSendServiceImpl implements ProductCouponSendService {
     @Resource
     private MaEmployeeDAO maEmployeeDAO;
 
+    @Resource
+    private GoodsService goodsService;
+
+    @Resource
+    private ProductCouponService productCouponService;
 
     @Override
     @Transactional
@@ -102,4 +110,41 @@ public class ProductCouponSendServiceImpl implements ProductCouponSendService {
         return result;
     }
 
+    /**
+     * 促销赠送产品券
+     * @param userId
+     * @param gid
+     * @param qty
+     */
+    public void sendForPromotion(Long userId,Long gid,Integer qty,String ordNo){
+        AppCustomer customer = cusertomerDAO.findById(userId);
+
+        if (customer != null){
+            for (int i = 0 ; i < qty ; i++){
+                //创建产品券信息
+                CustomerProductCoupon customerProductCoupon = new CustomerProductCoupon();
+                customerProductCoupon.setCustomerId(userId);
+                customerProductCoupon.setGoodsId(gid);
+                customerProductCoupon.setQuantity(1);
+                customerProductCoupon.setGetType(CouponGetType.PRESENT);
+                customerProductCoupon.setGetTime(new Date());
+                customerProductCoupon.setEffectiveStartTime(new Date());
+                customerProductCoupon.setEffectiveEndTime(null);
+                customerProductCoupon.setIsUsed(Boolean.FALSE);
+                customerProductCoupon.setUseTime(null);
+                customerProductCoupon.setUseOrderNumber(null);
+                customerProductCoupon.setGetOrderNumber(ordNo);
+                customerProductCoupon.setBuyPrice(null);
+                customerProductCoupon.setStoreId(customer.getStoreId());
+                customerProductCoupon.setSellerId(customer.getSalesConsultId());
+                customerProductCoupon.setStatus(Boolean.TRUE);
+                customerProductCoupon.setDisableTime(null);
+                customerProductCoupon.setGoodsLineId(null);
+
+                //保存产品券信息
+                productCouponService.addCustomerProductCoupon(customerProductCoupon);
+            }
+        }
+
+    }
 }

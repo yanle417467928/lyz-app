@@ -48,6 +48,11 @@ public class SellDetailsDO {
     private Date createTime;
 
     /**
+     * 真实出货/反配上架时间
+     */
+    private Date realTime;
+
+    /**
      * 城市id
      */
     private Long cityId;

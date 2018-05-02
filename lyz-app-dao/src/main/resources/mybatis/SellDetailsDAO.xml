@@ -8,13 +8,13 @@
       customer_phone, customer_name, number,
       goods_grade, sku, quantity,
       amount, single_rewards ,city_id,goods_line_id,create_time,customer_id,order_subject_type,creator_identity_type,
-      creator_id,creator_name,company_flag,goods_line_type,sell_detals_flag)
+      creator_id,creator_name,company_flag,goods_line_type,sell_detals_flag,real_time)
     values ( #{companyId,jdbcType=BIGINT}, #{year,jdbcType=VARCHAR},
       #{month,jdbcType=VARCHAR}, #{storeId,jdbcType=BIGINT}, #{sellerId,jdbcType=BIGINT},#{sellerName},
       #{customerPhone,jdbcType=VARCHAR}, #{customerName,jdbcType=VARCHAR}, #{number,jdbcType=VARCHAR},
       #{goodsGrade,jdbcType=VARCHAR}, #{sku,jdbcType=VARCHAR}, #{quantity,jdbcType=INTEGER},
       #{amount,jdbcType=DECIMAL}, #{singleRewards,jdbcType=DECIMAL},#{cityId},#{goodsLineId},#{createTime},#{customerId},
-      #{orderSubjectType},#{creatorIdentityType},#{creatorId},#{creatorName},#{companyFlag},#{goodsLineType},#{sellDetalsFlag})
+      #{orderSubjectType},#{creatorIdentityType},#{creatorId},#{creatorName},#{companyFlag},#{goodsLineType},#{sellDetalsFlag},#{realTime})
     </insert>
 
     <insert id="addSellDetailsSingle" parameterType="cn.com.leyizhuang.app.foundation.pojo.SellDetailsSingleDO" useGeneratedKeys="true" keyProperty="id">
@@ -62,6 +62,9 @@
             </if>
             <if test="createTime != null" >
                 create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="realTime != null">
+                real_time = #{realTime},
             </if>
             <if test="cityId != null" >
                 city_id = #{cityId,jdbcType=BIGINT},
@@ -169,6 +172,26 @@
       `year` = #{year} and `month` = #{month} and company_flag = 'HR'
     </select>
 
+    <select id="getNotPayUpSellDetails" resultType="java.lang.Long">
+        SELECT  sd.id from sell_details sd LEFT JOIN ord_billing_details obd on sd.number = obd.ord_no
+        where obd.is_pay_up = 0 and sd.sell_detals_flag = 0
+    </select>
+
+    <select id="getProductSellDetails" resultType="cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO">
+        SELECT * from sell_details where goods_line_type = 'PRODUCT_COUPON' and amount = 0
+    </select>
+
+    <delete id="deleteSellDetailsByIdList" parameterType="java.lang.Long">
+        DELETE FROM  sell_details where id IN
+        <foreach collection="ids" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteSellDetailsById" parameterType="java.lang.Long">
+        DELETE FROM sell_details WHERE id = #{id}
+    </delete>
+    
     <select id="isExitByNumberAndGoodsLineId" resultType="java.lang.Boolean">
         SELECT EXISTS (
                 select 1 from sell_details where `number` = #{number} and goods_line_id = #{lineId}
@@ -284,7 +307,7 @@
         flag flag
         from sell_details_single
         where `year` = #{year} and `month` = #{month} and flag = #{flag} and structure_code = #{structureCode}
-        ORDER BY finishQty
+        ORDER BY finishQty DESC
         limit 3
     </select>
 
@@ -298,7 +321,23 @@
         flag flag
         from sell_details_single
         where `year` = #{year} and `month` = #{month} and flag = #{flag}
-        ORDER BY finishQty
+        ORDER BY finishQty DESC
         limit 3
     </select>
+
+    <update id="updateOrderRecordFlagFalse">
+        UPDATE ord_base_info ob LEFT JOIN
+        (
+            SELECT
+            sd.number
+            FROM
+                sell_details sd
+            LEFT JOIN ord_billing_details obd ON sd.number = obd.ord_no
+            WHERE
+                obd.is_pay_up = 0
+            AND sd.sell_detals_flag = 0
+            GROUP BY sd.number
+        ) a on a.number = ob.ord_no
+        SET ob.is_record_sales = 0 where a.number is not NULL
+    </update>
 </mapper>

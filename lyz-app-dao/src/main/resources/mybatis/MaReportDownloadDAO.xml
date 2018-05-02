@@ -1050,6 +1050,7 @@
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
         where
         1=1
+        and ob.`status` IN ('FINISHED')
         <if test="null !=startTime and ''!=startTime">
             AND
             wro.create_time >= #{startTime}
@@ -1065,6 +1066,61 @@
             #{item}
         </foreach>
         )
+
+        UNION ALL
+
+        (SELECT
+        s.city as 'cityName',
+        s.store_name as 'storeName',
+        e.`name` as 'name',
+        ob.customer_name as 'customerName',
+        ob.ord_no as 'ordNo',
+        '' as 'orderType',
+        CASE ob.`status` WHEN 'PENDING_RECEIVE' THEN '待收货' WHEN 'FINISHED' THEN '已完成' end as 'orderStatus',
+        '' as 'selfTakeOrderTime',
+        ob.create_time as 'createTime',
+        '' as 'shippingDate',
+        CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
+        CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
+        org.sku as 'sku',
+        CASE org.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END as
+        'goodsType',
+        org.company_flag as 'companyFlag',
+        -ABS(org.return_price * org.return_qty) as 'financialSales',
+        -ABS(org.wholesale_price * org.return_qty) as 'distributionSales',
+        -ABS(org.wholesale_price) as 'wholesalePrice',
+        0 as 'retailPrice',
+        0 as 'settlementPrice',
+        0 as 'memberDiscount',
+        0 as 'promotionSharePrice',
+        0 as 'cashCouponSharePrice',
+        -ABS(org.return_qty) as 'orderQty'
+        FROM
+        ord_return_base_info orb
+        LEFT JOIN ord_base_info ob on orb.oid = ob.oid
+        LEFT JOIN ord_return_goods_info org on orb.roid = org.roid
+        LEFT JOIN st_store s on ob.store_id = s.store_id
+        LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
+        LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
+        where
+        1=1
+        AND ob.delivery_type = 'SELF_TAKE' and orb.return_type = 'NORMAL_RETURN' and orb.return_status = 'FINISHED'
+        <if test="null !=startTime and ''!=startTime">
+            AND
+            orb.return_time >= #{startTime}
+        </if>
+        <!--   <if test="null!=companyCode and ''!=companyCode">
+               and s.store_structure_code like concat('%',#{companyCode},'%')
+           </if>-->
+        <if test="null !=storeType and ''!=storeType">
+            and s.store_type = #{storeType}
+        </if>
+        AND orb.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        )
+
     </select>
 
 
@@ -1382,14 +1438,16 @@
         LEFT JOIN ord_return_goods_info org on orb.roid = org.roid
         LEFT JOIN st_store s on ob.store_id = s.store_id
         LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
-        LEFT JOIN inter_wta_return_order_back_header wro ON wro.po_no = orb.return_no
+
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
         LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and org.sku = oci.sku and org.goods_line_type = 'PRODUCT_COUPON'
         where
         1=1
+        AND ob.delivery_type = 'SELF_TAKE' and orb.return_type = 'NORMAL_RETURN'
+        and orb.return_status = 'FINISHED'
         <if test="null!=startTime and ''!=startTime">
             AND
-            wro.create_time >= #{startTime}
+            orb.return_time > '2018-04-01 00:00:00'
         </if>
      <!--   <if test="null!=companyCode and ''!=companyCode">
             and s.store_structure_code like concat('%',#{companyCode},'%')

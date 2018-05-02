@@ -643,7 +643,10 @@
 
     <select id="getNotReturnDetailsReturnNos" resultType="java.lang.String">
         SELECT return_no from ord_return_base_info ore
-        LEFT JOIN ord_base_info ob on ore.ord_no = ob.ord_no  where ob.`status` in ('FINISHED') and ore.is_record_sales = #{flag}
+        LEFT JOIN ord_base_info ob on ore.ord_no = ob.ord_no
+        LEFT JOIN inter_wta_return_order_back_header wro ON wro.po_no = ore.return_no
+        where ore.is_record_sales = #{flag}
+        and wro.create_time &gt; '2018-04-01 00:00:00'
     </select>
 </mapper>
 

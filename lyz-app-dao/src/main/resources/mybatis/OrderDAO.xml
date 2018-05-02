@@ -324,6 +324,89 @@
         ord_no = #{orderNumber}
     </select>
 
+    <select id="findErrorOrderData" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
+        SELECT
+            ob.oid    id,
+            ob.ord_no order_number,
+            ob.order_type,
+            ob.create_time,
+            ob.effective_end_time,
+            ob.status,
+            ob.delivery_status,
+            ob.pick_up_code,
+            ob.delivery_type,
+            ob.order_subject_type,
+            ob.creator_identity_type,
+            ob.creator_id,
+            ob.creator_name,
+            ob.creator_phone,
+            ob.store_id,
+            ob.store_code,
+            ob.store_structure_code,
+            ob.sales_consult_id,
+            ob.sales_consult_name,
+            ob.sales_consult_phone,
+            ob.customer_id,
+           ob.customer_name,
+            ob.customer_phone,
+            ob.customer_type,
+            ob.total_goods_price,
+            ob.is_evaluated,
+            ob.audit_no,
+            ob.remark,
+            ob.city_id,
+            ob.city_name,
+            ob.sob_id,
+            ob.store_org_id,
+            ob.sales_number
+         from
+        ord_goods_info og LEFT JOIN ord_base_info ob on og.oid = ob.oid where
+        settlement_price > retail_price and settlement_price > VIP_price
+        GROUP BY og.ord_no
+    </select>
+
+    <select id="findOrderPromotionId" resultType="java.lang.Long">
+        SELECT DISTINCT promotion_id from ord_goods_info where ord_no = #{ordNo};
+    </select>
+
+    <select id="findOrderGoodsInfByLineId" resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf">
+        SELECT  * from inter_ate_order_goods_inf where main_order_line_id = #{lineId}
+    </select>
+
+    <select id="findOrderGoodsAndPresentLine" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
+        SELECT
+            id                      id,
+            oid                     oid,
+            ord_no                  orderNumber,
+            gid                     gid,
+            sku                     sku,
+            sku_name                skuName,
+            retail_price            retailPrice,
+            VIP_price               VIPPrice,
+            wholesale_price         wholesalePrice,
+            settlement_price        settlementPrice,
+            promotion_id            promotionId,
+            is_price_share          isPriceShare,
+            promotion_share_price   promotionSharePrice,
+            lb_share_price          lbSharePrice,
+            cash_coupon_share_price cashCouponSharePrice,
+            cash_return_share_price cashReturnSharePrice,
+            return_price            returnPrice,
+            is_returnable           isReturnable,
+            return_priority         returnPriority,
+            order_qty               orderQuantity,
+            shipping_qty            shippingQuantity,
+            return_qty              returnQuantity,
+            returnable_qty          returnableQuantity,
+            goods_line_type         goods_line_type,
+            price_item_id           priceItemId,
+            company_flag            companyFlag,
+            cover_image_uri         coverImageUri
+        from
+        ord_goods_info
+        where ord_no = #{ordNo} and promotion_id = #{actId}
+    </select>
+
     <select id="getOrderDetail" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
         SELECT
@@ -1336,7 +1419,41 @@
     </select>
 
     <select id="getNotSellDetailsOrderNOs" resultType="java.lang.String">
-        SELECT  o.ord_no from ord_base_info o where o.status in ('PENDING_SHIPMENT','PENDING_RECEIVE','FINISHED') and o.is_record_sales = #{flag};
+        SELECT  o.ord_no from ord_base_info o
+        LEFT JOIN ord_billing_details obd on o.oid = obd.oid
+        and  o.delivery_type = 'HOUSE_DELIVERY'
+        where o.status in ('PENDING_RECEIVE','FINISHED')
+        and o.is_record_sales = #{flag}
+        and obd.pay_up_time &gt; #{fristDay}
+        and obd.is_pay_up = 1
+        UNION
+        SELECT  o.ord_no from ord_base_info o
+        LEFT JOIN ord_billing_details obd on o.oid = obd.oid
+        and  o.delivery_type = 'HOUSE_DELIVERY'
+        where o.status in ('FINISHED')
+        and o.is_record_sales = #{flag}
+        and obd.pay_up_time &gt; #{fristDay}
+        and obd.is_pay_up = 1
+        UNION
+        SELECT  o.ord_no from ord_base_info o
+        LEFT JOIN ord_billing_details obd on o.oid = obd.oid
+        LEFT JOIN inter_wta_order_shipping_header wa ON o.ord_no = wa.order_no
+        and  o.delivery_type = 'HOUSE_DELIVERY'
+        where o.status in ('PENDING_RECEIVE','FINISHED')
+        and o.is_record_sales = #{flag}
+        and wa.end_dt &gt; #{fristDay}
+        and obd.pay_up_time &lt; #{fristDay}
+        and obd.is_pay_up = 1
+        UNION
+        SELECT  o.ord_no from ord_base_info o
+        LEFT JOIN ord_billing_details obd on o.oid = obd.oid
+        LEFT JOIN ord_shipping os on o.oid = os.oid
+        and  o.delivery_type = 'HOUSE_DELIVERY'
+        where o.status in ('FINISHED')
+        and o.is_record_sales = #{flag}
+        and os.shipping_time &gt; #{fristDay}
+        and obd.pay_up_time &lt; #{fristDay}
+        and obd.is_pay_up = 1
 
     </select>
 
@@ -1356,6 +1473,48 @@
         WHERE
         ord_no = #{orderNumber}
     </select>
+
+    <update id="updateOrderGoodsPrice" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
+        UPDATE  ord_goods_info
+        <set>
+            <if test="settlementPrice != null">
+                settlement_price = #{settlementPrice},
+            </if>
+            <if test="promotionSharePrice != null">
+                promotion_share_price = #{promotionSharePrice},
+            </if>
+            <if test="returnPrice != null">
+                return_price = #{returnPrice},
+            </if>
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+
+    <update id="updateOrderGoodsInfPrice" parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf">
+        UPDATE  inter_ate_order_goods_inf
+        <set>
+            <if test="settlementPrice != null">
+                settlement_price = #{settlementPrice},
+            </if>
+            <if test="promotionDiscount != null">
+                promotion_discount = #{promotionDiscount},
+            </if>
+            <if test="returnPrice != null">
+                return_price = #{returnPrice},
+            </if>
+            <if test="discountTotalPrice != null">
+                discount_total_price = #{discountTotalPrice},
+            </if>
+        </set>
+        where order_line_id = #{orderLineId}
+    </update>
+
+    <update id="updateOrdCouponPrice">
+        UPDATE ord_coupon_info
+        purchase_price = #{price}
+        where ord_no = #{ordNo} and sku = #{sku}
+    </update>
 
     <update id="updateOrderGoodsShippingQuantityByid" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
         UPDATE ord_goods_info
@@ -1380,6 +1539,9 @@
         AND delivery_status != 'REJECT'
     </update>
 
+    <select id="getOrderProductCouponPurchasePrice" resultType="java.lang.Double">
+        SELECT SUM(purchase_price) from ord_coupon_info where ord_no = #{ordNo} and sku = #{sku}
+    </select>
     <insert id="saveOrderShipping" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderShipping">
         INSERT
         ord_shipping(oid,ord_no,shipping_no,shipping_time)

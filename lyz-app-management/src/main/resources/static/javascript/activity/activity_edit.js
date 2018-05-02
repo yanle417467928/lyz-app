@@ -347,6 +347,12 @@ function changeResultType(val) {
         changeConditionType("FAMO");
         $("#conditionType").val("FAMO");
         $("#conditionType").selectpicker('refresh');
+    }else if(val == "PRO"){
+        $("#subAmount_div").fadeOut(1);
+        $("#Gift_div").fadeIn(1000);
+        $("#giftChooseNumber_div").fadeIn(1000);
+        $("#addAmount_div").fadeOut(1);
+        $("#discount_div").fadeOut(1);
     }
 }
 

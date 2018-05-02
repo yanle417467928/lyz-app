@@ -91,4 +91,6 @@ public interface ProductCouponDAO {
      * @param customerProductCouponChangeLog
      */
     void addCustomerProductCouponChangeLog(CustomerProductCouponChangeLog customerProductCouponChangeLog);
+
+
 }
