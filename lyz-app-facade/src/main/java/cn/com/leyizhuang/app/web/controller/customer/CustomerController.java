@@ -1102,19 +1102,19 @@ public class CustomerController {
             if (null != registryParam.getGuidePhone() && !"".equalsIgnoreCase(registryParam.getGuidePhone())) {
                 AppEmployee seller = employeeService.findByMobile(registryParam.getGuidePhone());
                 if (seller == null) {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "注册成功！绑定导购失败，导购不存在！",
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "注册成功！绑定导购失败，导购不存在！",
                             new CustomerRegistResponse(Boolean.FALSE, null));
                     logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
                 if (!Objects.equals(seller.getCityId(), customer.getCityId())) {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "注册成功！绑定导购失败，不能绑定其他城市的导购！", null);
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "注册成功！绑定导购失败，不能绑定其他城市的导购！", null);
                     logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
                 AppStore appStore = storeService.findById(seller.getStoreId());
                 if (appStore == null) {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "注册成功！绑定导购失败，该导购没有绑定有效的门店信息！",
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "注册成功！绑定导购失败，该导购没有绑定有效的门店信息！",
                             null);
                     logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;

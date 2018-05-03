@@ -405,7 +405,7 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
     </select>
 
     <select id="getStoreRankClassification" resultType="cn.com.leyizhuang.app.foundation.pojo.response.StoreRankClassification">
-        SELECT r.rank_name, r.rank_code
+        SELECT r.rank_name, r.rank_code, r.rank_url
         FROM emp_employee e
         LEFT JOIN gds_goods_price p ON e.store_id = p.store_id
             AND p.price_type != 'COMMON'

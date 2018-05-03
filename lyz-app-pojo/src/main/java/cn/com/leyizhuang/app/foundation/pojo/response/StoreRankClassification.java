@@ -16,4 +16,6 @@ public class StoreRankClassification {
     private String rankName;
     //等级编码
     private String rankCode;
+    //等级图片
+    private String rankUrl;
 }
