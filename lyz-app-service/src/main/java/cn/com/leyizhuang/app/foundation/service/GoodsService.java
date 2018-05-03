@@ -155,4 +155,6 @@ public interface GoodsService {
     List<GoodsDO> findGoodsListBySkuList(List<String> internalCodeList);
 
     GoodsDO findBySku(String sku);
+
+    PageInfo<UserGoodsResponse> findGoodsListBySellerIdAndIdentityTypeAndRankCode(Long userId, AppIdentityType identityType, String rankCode, Integer page, Integer size);
 }

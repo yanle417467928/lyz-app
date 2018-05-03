@@ -23,5 +23,6 @@ public class CustomerRegistryParam {
     private Long cityId;
     private String profession;
     private String name;
+    private String guidePhone;
 
 }

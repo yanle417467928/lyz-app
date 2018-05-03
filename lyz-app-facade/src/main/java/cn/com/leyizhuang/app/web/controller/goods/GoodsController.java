@@ -463,48 +463,104 @@ public class GoodsController {
      * @date 2018/3/6
      */
     @RequestMapping(value = "/rank/list", method = RequestMethod.POST)
-    public ResultDTO<Object> getRankGoodsListByUserIdAndIdentityType(Long userId, Integer identityType,Integer page, Integer size) {
+    public ResultDTO<Object> getCustomerRankGoodsListByUserIdAndIdentityType(Long userId, Integer identityType,Integer page, Integer size) {
         ResultDTO<Object> resultDTO;
-        logger.info("getRankGoodsListByUserIdAndIdentityType CALLED,获取会员专供商品列表，入参userId:{},identityType:{},page:{},size:{}", userId, identityType,page,size);
+        logger.info("getCustomerRankGoodsListByUserIdAndIdentityType CALLED,获取会员专供商品列表，入参userId:{},identityType:{},page:{},size:{}", userId, identityType,page,size);
 
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
-            logger.info("getRankGoodsListByUserIdAndIdentityType OUT,获取会员专供商品列表失败，出参 resultDTO:{}", resultDTO);
+            logger.info("getCustomerRankGoodsListByUserIdAndIdentityType OUT,获取会员专供商品列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         //只有顾客身份才能购买专供商品
-        if (null == identityType && identityType != 6) {
+        if (null == identityType || identityType != 6) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此用户身份不支持此功能！", null);
-            logger.info("getRankGoodsListByUserIdAndIdentityType OUT,获取会员专供商品列表失败，出参 resultDTO:{}", resultDTO);
+            logger.info("getCustomerRankGoodsListByUserIdAndIdentityType OUT,获取会员专供商品列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == page) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
                     null);
-            logger.info("getRankGoodsListByUserIdAndIdentityType OUT,获取会员专供商品列表失败，出参 resultDTO:{}", resultDTO);
+            logger.info("getCustomerRankGoodsListByUserIdAndIdentityType OUT,获取会员专供商品列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == size) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
                     null);
-            logger.info("getRankGoodsListByUserIdAndIdentityType OUT,获取会员专供商品列表失败，出参 resultDTO:{}", resultDTO);
+            logger.info("getCustomerRankGoodsListByUserIdAndIdentityType OUT,获取会员专供商品列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         try {
             CustomerRankInfoResponse rankInfo = this.appCustomerService.findCusRankinfoByCusId(userId);
             if (null == rankInfo){
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此用户身份不支持此功能！", null);
-                logger.info("getRankGoodsListByUserIdAndIdentityType OUT,获取会员专供商品列表失败，出参 resultDTO:{}", resultDTO);
+                logger.info("getCustomerRankGoodsListByUserIdAndIdentityType OUT,获取会员专供商品列表失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
             PageInfo<UserGoodsResponse> goodsVOList = goodsService.findGoodsListByCustomerIdAndIdentityTypeAndUserRank(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), page, size);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,new GridDataVO<UserGoodsResponse>().transform(goodsVOList));
-            logger.info("getRankGoodsListByUserIdAndIdentityType OUT,获取会员专供商品列表成功，出参 resultDTO:{}", resultDTO);
+            logger.info("getCustomerRankGoodsListByUserIdAndIdentityType OUT,获取会员专供商品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取会员专供商品列表失败", null);
-            logger.warn("getRankGoodsListByUserIdAndIdentityType EXCEPTION,获取会员专供商品列表失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("getCustomerRankGoodsListByUserIdAndIdentityType EXCEPTION,获取会员专供商品列表失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * @title   导购查看专供商品列表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/5/2
+     */
+    @RequestMapping(value = "/seller/rank/list", method = RequestMethod.POST)
+    public ResultDTO<Object> getSellerRankGoodsListByUserIdAndIdentityType(Long userId, Integer identityType, String rankCode, Integer page, Integer size) {
+        ResultDTO<Object> resultDTO;
+        logger.info("getSellerRankGoodsListByUserIdAndIdentityType CALLED,获取专供商品列表，入参userId:{},identityType:{},rankCode{},page:{},size:{}", userId, identityType,rankCode,page,size);
+
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getSellerRankGoodsListByUserIdAndIdentityType OUT,获取专供商品列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        //只有导购才能查看专供商品
+        if (null == identityType || identityType != 0) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此用户身份不支持此功能！", null);
+            logger.info("getSellerRankGoodsListByUserIdAndIdentityType OUT,获取专供商品列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == rankCode || "".equals(rankCode)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "专供类型不能为空！", null);
+            logger.info("getSellerRankGoodsListByUserIdAndIdentityType OUT,获取专供商品列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getSellerRankGoodsListByUserIdAndIdentityType OUT,获取专供商品列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getSellerRankGoodsListByUserIdAndIdentityType OUT,获取专供商品列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            PageInfo<UserGoodsResponse> goodsVOList = goodsService.findGoodsListBySellerIdAndIdentityTypeAndRankCode(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), rankCode, page, size);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,new GridDataVO<UserGoodsResponse>().transform(goodsVOList));
+            logger.info("getSellerRankGoodsListByUserIdAndIdentityType OUT,获取专供商品列表成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取专供商品列表失败", null);
+            logger.warn("getSellerRankGoodsListByUserIdAndIdentityType EXCEPTION,获取专供商品列表失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

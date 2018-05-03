@@ -403,4 +403,17 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
         WHERE store_id = #{storeId}
               AND identity_type IN ('SELLER', 'DECORATE_MANAGER', 'DECORATE_EMPLOYEE')
     </select>
+
+    <select id="getStoreRankClassification" resultType="cn.com.leyizhuang.app.foundation.pojo.response.StoreRankClassification">
+        SELECT r.rank_name, r.rank_code, r.rank_url
+        FROM emp_employee e
+        LEFT JOIN gds_goods_price p ON e.store_id = p.store_id
+            AND p.price_type != 'COMMON'
+            AND p.start_time &lt; NOW()
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+        LEFT JOIN rank_classification r ON r.rank_code = p.price_type
+        WHERE e.emp_id = #{userId} AND e.identity_type = #{type}
+        GROUP BY r.rank_code
+    </select>
+
 </mapper>

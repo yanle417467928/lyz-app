@@ -126,7 +126,7 @@
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
-        UNION
+        UNION ALL
         SELECT
         city.name cityName,
         st.store_name storeName,
@@ -141,9 +141,9 @@
         e.name sellerName,
         g.sku sku,
         g.sku_name skuName,
-        ccpc.quantity quantity,
-        ccpc.buy_price buyPrice,
-        (ccpc.quantity * ccpc.buy_price) totalBuyPrice,
+        IFNULL(ccpc.quantity,0) quantity,
+        IFNULL(ccpc.buy_price,0) buyPrice,
+        (IFNULL(ccpc.quantity,0) * IFNULL(ccpc.buy_price,0)) totalBuyPrice,
         ccpc.use_ord_no referenceNumber
         FROM cus_customer_product_coupon ccpc
         INNER JOIN cus_customer c ON ccpc.cus_id = c.cus_id

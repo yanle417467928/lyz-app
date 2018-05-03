@@ -996,6 +996,7 @@ public class ReturnOrderController {
             }
             detailResponse.setReturnQty(count);
             detailResponse.setTotalReturnPrice(totalReturnPrice);
+            detailResponse.setOrderNo(returnBaseInfo.getOrderNo());
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, detailResponse);
             logger.info("getReturnOrderDetail OUT,查看退货单详情成功，出参 resultDTO:{}", resultDTO);

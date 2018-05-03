@@ -519,8 +519,6 @@ public class MaOrderServiceImpl implements MaOrderService {
                 }
             }
         }
-
-
         return receiptNumberList;
     }
 
