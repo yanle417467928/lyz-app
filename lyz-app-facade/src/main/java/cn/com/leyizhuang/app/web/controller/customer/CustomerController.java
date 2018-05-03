@@ -1034,6 +1034,7 @@ public class CustomerController {
                 return resultDTO;
             }
             AppCustomer phoneUser = customerService.findByMobile(registryParam.getPhone());
+            Long cusCityId = 0L;
             //如果电话号码已经存在
             if (phoneUser != null) {
                 //open_id为空
@@ -1045,7 +1046,10 @@ public class CustomerController {
                         phoneUser.setName(registryParam.getName());
                     }
                     //customerService.update(phoneUser);
+                    cusCityId = null == phoneUser.getCityId() ? 0L : phoneUser.getCityId();
                     commonService.originalCustomerRegistry(phoneUser);
+                    customer = new AppCustomer();
+                    customer.setCusId(phoneUser.getCusId());
                     String accessToken = JwtUtils.createJWT(String.valueOf(phoneUser.getCusId()), String.valueOf(phoneUser.getMobile()),
                             JwtConstant.EXPPIRES_SECOND * 1000);
                     System.out.println(accessToken);
@@ -1086,7 +1090,10 @@ public class CustomerController {
                 List<CustomerProfession> professions = customerService.getCustomerProfessionListByStatus(AppWhetherFlag.Y.toString());
                 newUser.setCustomerProfessionDesc(null != professions ? professions.stream().filter(p -> p.getTitle().equals(registryParam.getProfession())).collect(Collectors.toList()).get(0).getDescription() : "");
                 newUser.setName(registryParam.getName());
+                cusCityId = newUser.getCityId();
                 AppCustomer returnUser = commonService.saveCustomerInfo(newUser, new CustomerLeBi(), new CustomerPreDeposit());
+                customer = new AppCustomer();
+                customer.setCusId(returnUser.getCusId());
                 //拼装accessToken
                 String accessToken = JwtUtils.createJWT(String.valueOf(returnUser.getCusId()), String.valueOf(returnUser.getMobile()),
                         JwtConstant.EXPPIRES_SECOND * 1000);
@@ -1107,7 +1114,7 @@ public class CustomerController {
                     logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
-                if (!Objects.equals(seller.getCityId(), customer.getCityId())) {
+                if (!Objects.equals(seller.getCityId(), cusCityId)) {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "注册成功！绑定导购失败，不能绑定其他城市的导购！", null);
                     logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
@@ -1125,7 +1132,7 @@ public class CustomerController {
                 customer.setBindingTime(new Date());
                 customerService.update(customer);
             } else {//未添加推荐导购电话
-                AppStore appStore = storeService.findDefaultStoreByCityId(customer.getCityId());
+                AppStore appStore = storeService.findDefaultStoreByCityId(cusCityId);
                 if (null == appStore) {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该城市下没有默认门店!", null);
                     logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
