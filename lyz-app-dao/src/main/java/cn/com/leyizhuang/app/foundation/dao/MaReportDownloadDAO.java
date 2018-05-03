@@ -58,8 +58,8 @@ public interface MaReportDownloadDAO {
                                                            @Param("keywords") String keywords, @Param("list") List<Long> storeIds);
 
 
-    List<SalesReportDO> findProductArrearsList(@Param("companyCode") String companyCode, @Param("storeType") String storeType, @Param("list") List<Long> storeIds);
+    List<SalesReportDO> findProductArrearsList(@Param("companyCode") String companyCode, @Param("storeType") String storeType, @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("list") List<Long> storeIds);
 
-    List<SalesReportDO> findNoProductArrearsList(@Param("companyCode") String companyCode, @Param("storeType") String storeType, @Param("list") List<Long> storeIds);
+    List<SalesReportDO> findNoProductArrearsList(@Param("companyCode") String companyCode, @Param("storeType") String storeType, @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("list") List<Long> storeIds);
 
 }

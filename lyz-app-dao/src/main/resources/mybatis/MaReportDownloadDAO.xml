@@ -1546,6 +1546,12 @@
         <!--<if test="null!=companyCode and ''!=companyCode">
                 and s.store_structure_code like concat('%',#{companyCode},'%')
             </if>-->
+        <if test="null != startTime and startTime != ''">
+            AND ob.create_time &gt;= #{startTime}
+        </if>
+        <if test="null != endTime and endTime != ''">
+            AND ob.create_time &lt;= #{endTime}
+        </if>
         <if test="null != storeType and ''!=storeType">
             and s.store_type = #{storeType}
         </if>
@@ -1603,7 +1609,12 @@
                   and s.store_structure_code like concat('%',#{companyCode},'%')
               </if>-->
         AND obd.is_pay_up = 0
-
+        <if test="null != startTime and startTime != ''">
+            AND ob.create_time &gt;= #{startTime}
+        </if>
+        <if test="null != endTime and endTime != ''">
+            AND ob.create_time &lt;= #{endTime}
+        </if>
         <if test="null!=storeType and ''!=storeType">
             and s.store_type = #{storeType}
         </if>
@@ -1663,6 +1674,12 @@
         <!--       <if test="null!=companyCode and ''!=companyCode">
                    and s.store_structure_code like concat('%',#{companyCode},'%')
                </if>-->
+        <if test="null != startTime and startTime != ''">
+            AND ob.create_time &gt;= #{startTime}
+        </if>
+        <if test="null != endTime and endTime != ''">
+            AND ob.create_time &lt;= #{endTime}
+        </if>
         <if test="null!=storeType and ''!=storeType">
             and s.store_type =#{storeType}
         </if>
@@ -1724,6 +1741,12 @@
                     and s.store_structure_code like concat('%',#{companyCode},'%')
                 </if>-->
         AND obd.is_pay_up = 0
+        <if test="null != startTime and startTime != ''">
+            AND ob.create_time &gt;= #{startTime}
+        </if>
+        <if test="null != endTime and endTime != ''">
+            AND ob.create_time &lt;= #{endTime}
+        </if>
         <if test="null!=storeType and ''!=storeType">
             and s.store_type = #{storeType}
         </if>

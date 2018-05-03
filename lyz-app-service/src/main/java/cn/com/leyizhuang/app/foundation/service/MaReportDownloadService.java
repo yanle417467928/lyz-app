@@ -56,9 +56,9 @@ public interface MaReportDownloadService {
     PageInfo<SalesReportDO> findSalesList(String companyCode, String storeType,
                                       String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds, Integer page, Integer size);
 
-    PageInfo<SalesReportDO> findArrearsList(String companyCode, String storeType, Boolean isProductCoupon, List<Long> storeIds, Integer page, Integer size);
+    PageInfo<SalesReportDO> findArrearsList(String companyCode, String storeType,String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds, Integer page, Integer size);
 
-    List<SalesReportDO> downArrearsList(String companyCode, String storeType, Boolean isProductCoupon, List<Long> storeIds);
+    List<SalesReportDO> downArrearsList(String companyCode, String storeType,String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds);
 
     List<SalesReportDO> downSalesReport(String companyCode, String storeType,
                                             String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds);

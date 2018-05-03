@@ -236,7 +236,7 @@ public class MaReportDownloadRestController extends BaseRestController{
      * @date 2018/4/3
      */
     @GetMapping(value = "/arrearsReport/page/grid")
-    public GridDataVO<SalesReportDO> restArrearsReportPageGird(Integer offset, Integer size, String companyCode, String storeType, Boolean isProductCoupon) {
+    public GridDataVO<SalesReportDO> restArrearsReportPageGird(Integer offset, Integer size, String companyCode, String storeType, String startTime, String endTime, Boolean isProductCoupon) {
         size = getSize(size);
         Integer page = getPage(offset, size);
         //查询登录用户门店权限的门店ID
@@ -244,7 +244,7 @@ public class MaReportDownloadRestController extends BaseRestController{
         List<Long> storeIdInCompany= maStoreService.findStoresIdByStructureCode(companyCode);
         storeIds.retainAll(storeIdInCompany);
         PageInfo<SalesReportDO> salesList = this.maReportDownloadService.findArrearsList(companyCode, storeType
-                , isProductCoupon, storeIds, page, size);
+                ,startTime, endTime, isProductCoupon, storeIds, page, size);
         return new GridDataVO<SalesReportDO>().transform(salesList.getList(), salesList.getTotal());
     }
 
@@ -1430,13 +1430,13 @@ public class MaReportDownloadRestController extends BaseRestController{
      * @date 2018/4/3
      */
     @GetMapping(value = "/arrearsReport/download")
-    public void downArrearsReportDown(HttpServletRequest request, HttpServletResponse response,String companyCode, String storeType, Boolean isProductCoupon) {
+    public void downArrearsReportDown(HttpServletRequest request, HttpServletResponse response,String companyCode, String storeType, Boolean isProductCoupon ,String startTime, String endTime) {
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
         List<Long> storeIdInCompany= maStoreService.findStoresIdByStructureCode(companyCode);
         storeIds.retainAll(storeIdInCompany);
-        List<SalesReportDO> salesList = this.maReportDownloadService.downArrearsList(companyCode, storeType
-                , isProductCoupon, storeIds);
+        List<SalesReportDO> salesList = this.maReportDownloadService.downArrearsList(companyCode, storeType,
+                startTime ,endTime, isProductCoupon, storeIds);
         ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
         String shiroName = "";
         if (null != shiroUser) {
