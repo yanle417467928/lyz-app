@@ -186,40 +186,28 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
 
 
     @Override
-    public PageInfo<SalesReportDO> findArrearsList(String companyCode, String storeType,String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds, Integer page, Integer size) {
+    public PageInfo<SalesReportDO> findArrearsList(String companyCode, String storeType, Boolean isProductCoupon, List<Long> storeIds, Integer page, Integer size) {
         PageHelper.startPage(page, size);
-        if (null != startTime && !("".equals(startTime))) {
-            startTime += " 00:00:00";
-        }
-        if (null != endTime && !("".equals(endTime))) {
-            endTime += " 23:59:59";
-        }
         List<SalesReportDO> shipmentAndReturnGoodsList = new ArrayList<>();
         if (isProductCoupon) {
             //平铺产品劵
-            shipmentAndReturnGoodsList = maReportDownloadDAO.findProductArrearsList(companyCode, storeType, startTime, endTime, storeIds);
+            shipmentAndReturnGoodsList = maReportDownloadDAO.findProductArrearsList(companyCode, storeType, storeIds);
         } else {
             //不平铺产品劵
-            shipmentAndReturnGoodsList = maReportDownloadDAO.findNoProductArrearsList(companyCode, storeType, startTime, endTime, storeIds);
+            shipmentAndReturnGoodsList = maReportDownloadDAO.findNoProductArrearsList(companyCode, storeType, storeIds);
         }
         return new PageInfo<>(shipmentAndReturnGoodsList);
     }
 
     @Override
-    public List<SalesReportDO> downArrearsList(String companyCode, String storeType,String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds) {
-        if (null != startTime && !("".equals(startTime))) {
-            startTime += " 00:00:00";
-        }
-        if (null != endTime && !("".equals(endTime))) {
-            endTime += " 23:59:59";
-        }
+    public List<SalesReportDO> downArrearsList(String companyCode, String storeType, Boolean isProductCoupon, List<Long> storeIds) {
         List<SalesReportDO> shipmentAndReturnGoodsList = new ArrayList<>();
         if (isProductCoupon) {
             //平铺产品劵
-            shipmentAndReturnGoodsList = maReportDownloadDAO.findProductArrearsList(companyCode, storeType,startTime, endTime, storeIds);
+            shipmentAndReturnGoodsList = maReportDownloadDAO.findProductArrearsList(companyCode, storeType, storeIds);
         } else {
             //不平铺产品劵
-            shipmentAndReturnGoodsList = maReportDownloadDAO.findNoProductArrearsList(companyCode, storeType,startTime, endTime, storeIds);
+            shipmentAndReturnGoodsList = maReportDownloadDAO.findNoProductArrearsList(companyCode, storeType, storeIds);
         }
         return shipmentAndReturnGoodsList;
     }

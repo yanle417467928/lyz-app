@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.EmployeeHomePageResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoneyResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.StoreRankClassification;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeVO;
 import org.apache.ibatis.annotations.Param;
@@ -97,4 +98,7 @@ public interface AppEmployeeDAO {
     List<EmployeeVO> findEmployeeListByStoreId(Long storeId);
 
     List<EmployeeVO> findSellerListByStoreId(Long storeId);
+
+    List<StoreRankClassification> getStoreRankClassification(@Param("userId") Long userId, @Param("type") AppIdentityType identityType);
+
 }

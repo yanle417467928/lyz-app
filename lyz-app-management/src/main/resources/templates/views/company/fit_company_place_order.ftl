@@ -302,10 +302,11 @@
                         clearTimeout($global.timer);
                         $loading.close();
                         $notify.info("加入下料清单成功!");
-                        setTimeout(function () {
-                            //window.location.href = document.referrer
-                            location.reload();
-                        }, 2000);
+                        $("#selectedGoodsTable").html("");
+//                        setTimeout(function () {
+//                            //window.location.href = document.referrer
+//                            //location.reload();
+//                        }, 2000);
 
                     } else {
                         clearTimeout($global.timer);

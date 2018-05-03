@@ -563,5 +563,12 @@ public class GoodsServiceImpl implements GoodsService {
         return null;
     }
 
+    @Override
+    public PageInfo<UserGoodsResponse> findGoodsListBySellerIdAndIdentityTypeAndRankCode(Long userId, AppIdentityType identityType, String rankCode, Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        List<UserGoodsResponse> list = goodsDAO.findGoodsListBySellerIdAndIdentityTypeAndRankCode(userId, identityType, rankCode);
+        return new PageInfo<>(list);
+    }
+
 
 }

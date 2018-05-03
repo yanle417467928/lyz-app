@@ -14,6 +14,7 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import com.github.pagehelper.PageInfo;
 
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -170,13 +171,21 @@ public interface AppOrderService {
 
     List<OrderBaseInfo> getSendToWMSFailedOrder();
 
-    List<String> getNotSellDetailsOrderNOs(Boolean flag);
+    List<String> getNotSellDetailsOrderNOs( Boolean flag);
 
     List<OrderGoodsInfo> getOrderGoodsQtyInfoByOrderNumber(String orderNumber);
 
     void updateOrderGoodsShippingQuantityByid(OrderGoodsInfo orderGoodsInfo);
 
     void updateOrderBaseInfoStatus(OrderBaseInfo baseInfo);
+
+    /**
+     * 查询订单下 产品券购买价之和
+     * @param ordNo
+     * @param sku
+     * @return
+     */
+    Double getOrderProductCouponPurchasePrice(String ordNo,String sku);
 
     void addAllOrderLifecycle(OrderLifecycleType lifecycleType, AppOrderStatus orderStatus, String orderNumber);
 

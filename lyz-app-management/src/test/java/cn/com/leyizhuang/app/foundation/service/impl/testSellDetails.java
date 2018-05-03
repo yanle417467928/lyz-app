@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.DataTransferExceptionType;
 import cn.com.leyizhuang.app.core.exception.DataTransferException;
+import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
 import cn.com.leyizhuang.app.foundation.dao.SellDetailsDAO;
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
 import cn.com.leyizhuang.app.foundation.pojo.SellDetailsStatisticErrorLog;
@@ -9,6 +10,7 @@ import cn.com.leyizhuang.app.foundation.pojo.datatransfer.DataTransferErrorLog;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
 import cn.com.leyizhuang.app.foundation.service.StatisticsSellDetailsService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferSupportService;
@@ -52,6 +54,10 @@ public class testSellDetails {
 
     @Resource
     private SellDetailsDAO sellDetailsDAO;
+
+    @Resource
+    private OrderDAO orderDAO;
+
     @Test
     public void testInsert(){
         //statisticsSellDetailsService.addOrderSellDetails("CD_XN20180319095037659959");
@@ -103,12 +109,7 @@ public class testSellDetails {
 
     @Test
     public void test(){
-        SellDetailsStatisticErrorLog log = new SellDetailsStatisticErrorLog();
-
-        log.setCreateTime(new Date());
-        log.setErrorMsg("123");
-        log.setSellerId(1L);
-
-        sellDetailsDAO.addEmpPerformanceStatisticErrorLog(log);
+        OrderGoodsInf inf = orderDAO.findOrderGoodsInfByLineId(174831L);
+        orderDAO.updateOrderGoodsInfPrice(inf);
     }
 }

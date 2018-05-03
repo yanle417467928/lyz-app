@@ -1,18 +1,15 @@
 package cn.com.leyizhuang.app.web.controller.views.order;
 
 import cn.com.leyizhuang.app.core.utils.StringUtils;
-import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderArrearsAudit;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.response.ArrearsAuditResponse;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.foundation.vo.management.goodscategory.MaOrderGoodsDetailResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaCompanyOrderDetailResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingDetailResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingPaymentDetailResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDetailResponse;
-import cn.com.leyizhuang.app.foundation.vo.management.goodscategory.MaOrderGoodsDetailResponse;
-import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO;
 import cn.com.leyizhuang.common.util.CountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,11 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -124,15 +117,23 @@ public class MaOrderViewController {
                 maOrderDetailResponse.setMaOrderGoodsDetailResponseList(maOrderGoodsDetailResponseList);
                 //获取订单账目明细
                 MaOrderBillingDetailResponse maOrderBillingDetailResponse = maOrderService.getMaOrderBillingDetailByOrderNumber(orderaNumber);
-                //计算总价
-                Double totailPrice = CountUtil.add(maOrderBillingDetailResponse.getTotalGoodsPrice(),maOrderBillingDetailResponse.getFreight());
-                //计算所有折扣
-                Double totailDiscountPrice = CountUtil.add(maOrderBillingDetailResponse.getCashCouponDiscount(),maOrderBillingDetailResponse.getProductCouponDiscount(),maOrderBillingDetailResponse.getPromotionDiscount(),
-                        maOrderBillingDetailResponse.getMemberDiscount(),maOrderBillingDetailResponse.getLebiCashDiscount());
+                Double totalGoodsPrice = maOrderBillingDetailResponse.getTotalGoodsPrice() == null ? 0 : maOrderBillingDetailResponse.getTotalGoodsPrice();
+                Double freight = maOrderBillingDetailResponse.getFreight() == null ? 0 : maOrderBillingDetailResponse.getFreight();
 
+                //计算总价
+                Double totailPrice = CountUtil.add(totalGoodsPrice, freight);
+
+                Double cashCouponDiscount = maOrderBillingDetailResponse.getCashCouponDiscount() == null ? 0 : maOrderBillingDetailResponse.getCashCouponDiscount();
+                Double productCouponDiscount = maOrderBillingDetailResponse.getProductCouponDiscount() == null ? 0 : maOrderBillingDetailResponse.getProductCouponDiscount();
+                Double memberDiscount = maOrderBillingDetailResponse.getMemberDiscount() == null ? 0 : maOrderBillingDetailResponse.getMemberDiscount();
+                Double lebiCashDiscount = maOrderBillingDetailResponse.getLebiCashDiscount() == null ? 0 : maOrderBillingDetailResponse.getLebiCashDiscount();
+                Double promotionDiscount = maOrderBillingDetailResponse.getPromotionDiscount() == null ? 0 : maOrderBillingDetailResponse.getPromotionDiscount();
+
+                //计算所有折扣
+                Double totailDiscountPrice = CountUtil.add(cashCouponDiscount, productCouponDiscount, promotionDiscount,
+                        memberDiscount, lebiCashDiscount);
 
                 maOrderBillingDetailResponse.setAmountPayable(CountUtil.sub(totailPrice,totailDiscountPrice));
-
 
                 //获取订单支付明细列表
                 List<MaOrderBillingPaymentDetailResponse> maOrderBillingPaymentDetailResponseList = maOrderService.getMaOrderBillingPaymentDetailByOrderNumber(orderaNumber);
@@ -218,15 +219,21 @@ public class MaOrderViewController {
                 //获取订单账目明细
                 MaOrderBillingDetailResponse maOrderBillingDetailResponse = maOrderService.getMaOrderBillingDetailByOrderNumber(orderaNumber);
 
+                Double totalGoodsPrice = maOrderBillingDetailResponse.getTotalGoodsPrice() == null ? 0 : maOrderBillingDetailResponse.getTotalGoodsPrice();
+                Double freight = maOrderBillingDetailResponse.getFreight() == null ? 0 : maOrderBillingDetailResponse.getFreight();
                 //计算总价
-                Double totailPrice = CountUtil.add(maOrderBillingDetailResponse.getTotalGoodsPrice(),maOrderBillingDetailResponse.getFreight());
-                //计算所有折扣
-                Double totailDiscountPrice = CountUtil.add(maOrderBillingDetailResponse.getCashCouponDiscount(),maOrderBillingDetailResponse.getPromotionDiscount(),
-                        maOrderBillingDetailResponse.getMemberDiscount(),maOrderBillingDetailResponse.getSubvention());
+                Double totailPrice = CountUtil.add(totalGoodsPrice, freight);
 
+                Double cashCounponDiscount = maOrderBillingDetailResponse.getCashCouponDiscount() == null ? 0 : maOrderBillingDetailResponse.getCashCouponDiscount();
+                Double promotionDiscount = maOrderBillingDetailResponse.getPromotionDiscount() == null ? 0 : maOrderBillingDetailResponse.getPromotionDiscount();
+                Double memberDiscount = maOrderBillingDetailResponse.getMemberDiscount() == null ? 0 : maOrderBillingDetailResponse.getMemberDiscount();
+                Double subvention = maOrderBillingDetailResponse.getSubvention() == null ? 0 : maOrderBillingDetailResponse.getSubvention();
+
+
+                //计算所有折扣
+                Double totailDiscountPrice = CountUtil.add(cashCounponDiscount, promotionDiscount, memberDiscount, subvention);
 
                 maOrderBillingDetailResponse.setAmountPayable(CountUtil.sub(totailPrice,totailDiscountPrice));
-
 
                 //获取订单支付明细列表
                 List<MaOrderBillingPaymentDetailResponse> maOrderBillingPaymentDetailResponseList = maOrderService.getMaOrderBillingPaymentDetailByOrderNumber(orderaNumber);

@@ -366,22 +366,10 @@
                         notEmpty: {
                             message: '电商名称不能为空'
                         },
-                        remote: {
-                            type: 'POST',
-                            url: '/rest/goods/isExistSkuName',
-                            message: '该电商名称已被使用',
-                            delay: 500,
-                            data: function () {
-                                return {
-                                    skuName: $('#skuName').val(),
-                                    id: $('#id').val().replace(/,/g, ''),
-                                }
-                            }
-                        },
                         stringLength: {
                             min: 2,
-                            max: 20,
-                            message: '电商名称的长度必须在2~20位之间'
+                            max: 50,
+                            message: '电商名称的长度必须在2~50位之间'
                         },
                     }
                 }, categoryName: {

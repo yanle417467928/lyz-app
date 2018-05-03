@@ -143,4 +143,31 @@
         FROM admin_user
         WHERE login_name = #{loginName};
     </select>
+
+    <select id="queryUserVOListWithKeywords"
+            resultType="cn.com.leyizhuang.app.foundation.vo.UserVO">
+        SELECT
+        u.uid ID,
+        u.LOGIN_NAME LOGIN_NAME,
+        u.NAME NAME,
+        u.PASSWORD PASSWORD,
+        u.SEX SEX,
+        u.AGE AGE,
+        u.USER_TYPE USER_TYPE,
+        u.STATUS STATUS,
+        u.CREATE_TIME CREATE_TIME,
+        u.mobile PHONE,
+        r.rid AS ROLE_ID,
+        r.NAME AS ROLE_NAME
+        FROM
+        admin_user u
+        LEFT JOIN admin_user_role ur ON u.uid = ur.uid
+        LEFT JOIN admin_role r ON ur.rid = r.rid
+        <where>
+            <if test="keywords != null and keywords.toString() !=''">
+                u.login_name LIKE concat ('%',#{keywords},'%')
+                OR u.name LIKE concat ('%',#{keywords},'%')
+            </if>
+        </where>
+    </select>
 </mapper>

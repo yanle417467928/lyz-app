@@ -1,11 +1,13 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.utils.ArrayListUtils;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.SellDetailsDAO;
 import cn.com.leyizhuang.app.foundation.dao.SellZgDetailsDAO;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderHeader;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
@@ -434,10 +436,12 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
 
 
             List<OrderGoodsInfo> orderGoodsInfos = orderService.getOrderGoodsInfoByOrderNumber(orderNumber);
+            /** 判断是否结清 结清才记录销量 **/
+            OrderBillingDetails billingDetails = orderService.getOrderBillingDetail(orderNumber);
 
             if (orderBaseInfo != null && orderBaseInfo != null && orderGoodsInfos.size() > 0) {
-                Date createDate = new Date();
-
+                if (billingDetails.getIsPayUp()){
+                    Date createDate = new Date();
 //                AppDeliveryType deliveryType = orderBaseInfo.getDeliveryType();
 ////                if (deliveryType.equals(AppDeliveryType.HOUSE_DELIVERY) || deliveryType.equals(AppDeliveryType.HOUSE_DELIVERY.getValue())){
 ////                    // 配送单 取发货时间
@@ -447,58 +451,66 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
 ////                    }
 ////                }
 
-                //date 转 localDateTime
-                Instant instant = createDate.toInstant();
-                ZoneId zoneId = ZoneId.systemDefault();
-                LocalDateTime localDateTime = instant.atZone(zoneId).toLocalDateTime();
+                    //date 转 localDateTime
+                    Instant instant = createDate.toInstant();
+                    ZoneId zoneId = ZoneId.systemDefault();
+                    LocalDateTime localDateTime = instant.atZone(zoneId).toLocalDateTime();
 
-                Integer year = localDateTime.getYear();
-                Integer month = localDateTime.getMonthValue();
+                    Integer year = localDateTime.getYear();
+                    Integer month = localDateTime.getMonthValue();
 
-                List<Long> goodsIds = new ArrayList<>();
-                for (OrderGoodsInfo goodsInfo : orderGoodsInfos) {
-                    // 检查明细是否已经记录
-                    Boolean isExit = sellDetailsDAO.isExitByNumberAndGoodsLineId(orderNumber, goodsInfo.getId());
+                    List<Long> goodsIds = new ArrayList<>();
+                    for (OrderGoodsInfo goodsInfo : orderGoodsInfos) {
+                        // 检查明细是否已经记录
+                        Boolean isExit = sellDetailsDAO.isExitByNumberAndGoodsLineId(orderNumber, goodsInfo.getId());
 
-                    if (!isExit) {
-                        SellDetailsDO detailsDO = new SellDetailsDO();
+                        if (!isExit) {
+                            SellDetailsDO detailsDO = new SellDetailsDO();
 
-                        detailsDO.setCompanyId(orderBaseInfo.getSobId());
-                        detailsDO.setYear(year);
-                        detailsDO.setMonth(month);
-                        detailsDO.setCreateTime(createDate);
-                        detailsDO.setCityId(orderBaseInfo.getCityId());
-                        detailsDO.setStoreId(orderBaseInfo.getStoreOrgId());
-                        detailsDO.setSellerId(orderBaseInfo.getSalesConsultId());
-                        detailsDO.setSellerName(orderBaseInfo.getSalesConsultName());
-                        detailsDO.setCustomerId(orderBaseInfo.getCustomerId());
-                        detailsDO.setCustomerPhone(orderBaseInfo.getCustomerPhone());
-                        detailsDO.setCustomerName(orderBaseInfo.getCustomerName());
-                        detailsDO.setNumber(orderBaseInfo.getOrderNumber());
-                        detailsDO.setSku(goodsInfo.getSku());
-                        detailsDO.setQuantity(goodsInfo.getOrderQuantity());
-                        detailsDO.setAmount(goodsInfo.getReturnPrice());
-                        detailsDO.setGoodsLineId(goodsInfo.getId());
-                        detailsDO.setOrderSubjectType(orderBaseInfo.getOrderSubjectType());
-                        detailsDO.setCreatorIdentityType(orderBaseInfo.getCreatorIdentityType());
-                        detailsDO.setCreatorId(orderBaseInfo.getCreatorId());
-                        detailsDO.setCreatorName(orderBaseInfo.getCreatorName());
-                        detailsDO.setSellDetalsFlag(0);
-                        detailsDO.setCompanyFlag(goodsInfo.getCompanyFlag());
-                        detailsDO.setGoodsLineType(goodsInfo.getGoodsLineType());
+                            detailsDO.setCompanyId(orderBaseInfo.getSobId());
+                            detailsDO.setYear(year);
+                            detailsDO.setMonth(month);
+                            detailsDO.setCreateTime(createDate);
+                            detailsDO.setCityId(orderBaseInfo.getCityId());
+                            detailsDO.setStoreId(orderBaseInfo.getStoreOrgId());
+                            detailsDO.setSellerId(orderBaseInfo.getSalesConsultId());
+                            detailsDO.setSellerName(orderBaseInfo.getSalesConsultName());
+                            detailsDO.setCustomerId(orderBaseInfo.getCustomerId());
+                            detailsDO.setCustomerPhone(orderBaseInfo.getCustomerPhone());
+                            detailsDO.setCustomerName(orderBaseInfo.getCustomerName());
+                            detailsDO.setNumber(orderBaseInfo.getOrderNumber());
+                            detailsDO.setSku(goodsInfo.getSku());
+                            detailsDO.setQuantity(goodsInfo.getOrderQuantity());
+                            if (goodsInfo.getGoodsLineType().equals(AppGoodsLineType.PRODUCT_COUPON)){
+                                Double amount = orderService.getOrderProductCouponPurchasePrice(orderNumber,goodsInfo.getSku());
+                                detailsDO.setAmount(amount);
+                            }else{
+                                detailsDO.setAmount(goodsInfo.getReturnPrice());
+                            }
+                            detailsDO.setGoodsLineId(goodsInfo.getId());
+                            detailsDO.setOrderSubjectType(orderBaseInfo.getOrderSubjectType());
+                            detailsDO.setCreatorIdentityType(orderBaseInfo.getCreatorIdentityType());
+                            detailsDO.setCreatorId(orderBaseInfo.getCreatorId());
+                            detailsDO.setCreatorName(orderBaseInfo.getCreatorName());
+                            detailsDO.setSellDetalsFlag(0);
+                            detailsDO.setCompanyFlag(goodsInfo.getCompanyFlag());
+                            detailsDO.setGoodsLineType(goodsInfo.getGoodsLineType());
 
-                        sellDetailsDAO.addOneDetail(detailsDO);
+                            sellDetailsDAO.addOneDetail(detailsDO);
 
+                        }
+                        goodsIds.add(goodsInfo.getGid());
                     }
-                    goodsIds.add(goodsInfo.getGid());
+
+                    /*** 记录专供销量 ****/
+                    this.recordZgSales(orderBaseInfo, goodsIds, orderGoodsInfos);
+
+                    /**打上标记 标识已经记录销量**/
+                    orderBaseInfo.setIsRecordSales(true);
+                    orderService.updateOrderBaseInfo(orderBaseInfo);
+                }else {
+                    logger.info(orderNumber+"未结清");
                 }
-
-                /*** 记录专供销量 ****/
-                this.recordZgSales(orderBaseInfo, goodsIds, orderGoodsInfos);
-
-                /**打上标记 标识已经记录销量**/
-                orderBaseInfo.setIsRecordSales(true);
-                orderService.updateOrderBaseInfo(orderBaseInfo);
             } else {
                 logger.info("订单：" + orderNumber + "数据异常，生成销量明细失败！");
                 //  记录错误日志
@@ -554,7 +566,12 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
                         detailsDO.setNumber(returnOrderNumber);
                         detailsDO.setSku(goodsInfo.getSku());
                         detailsDO.setQuantity(goodsInfo.getReturnQty());
-                        detailsDO.setAmount(-goodsInfo.getReturnPrice());
+                        if (goodsInfo.getGoodsLineType().equals(AppGoodsLineType.PRODUCT_COUPON)){
+                            Double amount = orderService.getOrderProductCouponPurchasePrice(orderBaseInfo.getOrderNumber(),goodsInfo.getSku());
+                            detailsDO.setAmount(-amount);
+                        }else{
+                            detailsDO.setAmount(-goodsInfo.getReturnPrice());
+                        }
                         detailsDO.setGoodsLineId(goodsInfo.getId());
                         detailsDO.setOrderSubjectType(orderBaseInfo.getOrderSubjectType());
                         detailsDO.setCreatorIdentityType(orderBaseInfo.getCreatorIdentityType());
@@ -617,7 +634,7 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
 
     @Override
     public void createAllOrderDetails() {
-        // 取所有已出货 没有记录销量的订单
+        // 取所有已出货 结清 没有记录销量的订单
         List<String> orderNos = orderService.getNotSellDetailsOrderNOs(false);
         LocalDateTime startTime = LocalDateTime.now();
         logger.info("***********生成订单销量，一共有："+orderNos.size()+"条*****************");
@@ -642,7 +659,7 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
 
         List<String> orderNos = returnOrderService.getNotReturnDetailsReturnNos(false);
         LocalDateTime startTime = LocalDateTime.now();
-        logger.info("***********生成订单销量，一共有："+orderNos.size()+"条*****************");
+        logger.info("***********生成退单销量，一共有："+orderNos.size()+"条*****************");
         for (String orderNo : orderNos){
             try {
                 this.addReturnOrderSellDetails(orderNo);
@@ -656,6 +673,48 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
         LocalDateTime endTime = LocalDateTime.now();
         Duration duration = Duration.between(startTime,endTime);
         logger.info("生成完毕，用时:"+duration.toMinutes() + "分钟");
+    }
+
+    /**
+     * 修复销量 未结清的 产品券退货价未0的
+     */
+    @Override
+    public void repairAllOrderDetails() {
+        // 先将未结清销量对应的订单标志设置为 false
+        sellDetailsDAO.updateOrderRecordFlagFalse();
+
+        // 找到未结清销量数据 并删除
+        List<Long> ids = sellDetailsDAO.getNotPayUpSellDetails();
+        logger.info("***********一共有："+ids.size()+"条未结清*****************");
+        //将list按100长度拆分
+        List<List<Long>> lists = ArrayListUtils.splitList(ids,100);
+
+        for (List<Long> subIds : lists) {
+            // 删除
+            if (subIds.size() > 0){
+                sellDetailsDAO.deleteSellDetailsByIdList(subIds);
+            }
+        }
+
+        // 找到产品券 销量金额为0的数据
+        List<SellDetailsDO> sellDetailsDOS = sellDetailsDAO.getProductSellDetails();
+        logger.info("***********一共有："+sellDetailsDOS.size()+"条产品券价格为0*****************");
+        for (SellDetailsDO sellDetailsDO : sellDetailsDOS){
+            if (sellDetailsDO.getAmount().equals(0D)){
+                String orderNo = "";
+                if (sellDetailsDO.getSellDetalsFlag().equals(0)){
+                    orderNo = sellDetailsDO.getNumber();
+                    Double amount = orderService.getOrderProductCouponPurchasePrice(orderNo,sellDetailsDO.getSku());
+                    sellDetailsDO.setAmount(amount);
+                }else if (sellDetailsDO.getSellDetalsFlag().equals(1)){
+                    ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(sellDetailsDO.getNumber());
+                    orderNo = returnOrderBaseInfo.getOrderNo();
+                    Double amount = orderService.getOrderProductCouponPurchasePrice(orderNo,sellDetailsDO.getSku());
+                    sellDetailsDO.setAmount(-amount);
+                }
+                sellDetailsDAO.update(sellDetailsDO);
+            }
+        }
     }
 
     /******************************** 专供销量 *********************************************/
@@ -733,7 +792,12 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
                     detailsDO.setGoodsId(goodsInfo.getGid());
                     detailsDO.setSku(goodsInfo.getSku());
                     detailsDO.setQuantity(goodsInfo.getOrderQuantity());
-                    detailsDO.setAmount(goodsInfo.getReturnPrice());
+                    if (goodsInfo.getGoodsLineType().equals(AppGoodsLineType.PRODUCT_COUPON)){
+                        Double amount = orderService.getOrderProductCouponPurchasePrice(orderBaseInfo.getOrderNumber(),goodsInfo.getSku());
+                        detailsDO.setAmount(amount);
+                    }else{
+                        detailsDO.setAmount(goodsInfo.getReturnPrice());
+                    }
                     detailsDO.setGoodsLineId(goodsInfo.getId());
 
                     // 检查是否已经记录
@@ -915,6 +979,7 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
     /**
      * 分公司排名
      */
+    @Override
     public List<SellDetailsResponse> getFgsRank(Long empId,String flag){
         String structureCode = "";
         LocalDateTime now = LocalDateTime.now();
@@ -930,7 +995,7 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
         AppStore store = appStoreService.findById(employee.getStoreId());
         String storeStructureCode = store.getStoreStructureCode();
 
-        String[] structureArr = storeStructureCode.split("|");
+        String[] structureArr = storeStructureCode.split("\\|");
 
         structureCode = structureArr[1];
 

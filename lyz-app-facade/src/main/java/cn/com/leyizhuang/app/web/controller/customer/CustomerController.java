@@ -986,5 +986,167 @@ public class CustomerController {
             return resultDTO;
         }
     }
+
+    /**
+     * @title   注册新接口，注册+绑定导购
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/5/2
+     */
+    @PostMapping(value = "/registryOfTwo", produces = "application/json;charset=UTF-8")
+    public ResultDTO<CustomerRegistResponse> customerRegistryOfTwo(CustomerRegistryParam registryParam, HttpServletResponse response) {
+        // logger.info("customerRegistry CALLED,顾客注册，入参 loginParam:{}", registryParam);
+        ResultDTO<CustomerRegistResponse> resultDTO;
+        try {
+            if (null == registryParam.getOpenId() || "".equalsIgnoreCase(registryParam.getOpenId())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "openId不能为空！", new CustomerRegistResponse(Boolean.FALSE, null));
+                logger.info("customerRegistry OUT,顾客注册失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == registryParam.getPhone() || "".equalsIgnoreCase(registryParam.getPhone())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "手机号码不能为空！", new CustomerRegistResponse(Boolean.FALSE, null));
+                logger.info("customerRegistry OUT,顾客注册失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == registryParam.getCityId()) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市id不能为空！", new CustomerRegistResponse(Boolean.FALSE, null));
+                logger.info("customerRegistry OUT,顾客注册失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == registryParam.getProfession()) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "工种不能为空！", new CustomerRegistResponse(Boolean.FALSE, null));
+                logger.info("customerRegistry OUT,顾客注册失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == registryParam.getName()) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "顾客姓名不能为空！", new CustomerRegistResponse(Boolean.FALSE, null));
+                logger.info("customerRegistry OUT,顾客注册失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            AppCustomer customer = customerService.findByOpenId(registryParam.getOpenId());
+            if (customer != null) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "openId已存在！",
+                        new CustomerRegistResponse(Boolean.TRUE, customer.getCusId()));
+                logger.info("customerRegistry OUT,顾客注册失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            AppCustomer phoneUser = customerService.findByMobile(registryParam.getPhone());
+            //如果电话号码已经存在
+            if (phoneUser != null) {
+                //open_id为空
+                if (StringUtils.isBlank(phoneUser.getOpenId())) {
+                    phoneUser.setOpenId(registryParam.getOpenId());
+                    phoneUser.setNickName(registryParam.getNickName());
+                    phoneUser.setPicUrl(registryParam.getPicUrl());
+                    if (null != phoneUser.getName() && !"".equals(phoneUser.getName())) {
+                        phoneUser.setName(registryParam.getName());
+                    }
+                    //customerService.update(phoneUser);
+                    commonService.originalCustomerRegistry(phoneUser);
+                    String accessToken = JwtUtils.createJWT(String.valueOf(phoneUser.getCusId()), String.valueOf(phoneUser.getMobile()),
+                            JwtConstant.EXPPIRES_SECOND * 1000);
+                    System.out.println(accessToken);
+                    response.setHeader("token", accessToken);
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                            new CustomerRegistResponse(Boolean.FALSE, phoneUser.getCusId()));
+                    logger.info("customerRegistry OUT,顾客注册成功，出参 resultDTO:{}", resultDTO);
+                } else {
+                    //open_id不为空
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该用户当前已绑定微信，请解绑当前微信后再绑定新微信！",
+                            new CustomerRegistResponse(Boolean.TRUE, phoneUser.getCusId()));
+                    logger.info("customerRegistry OUT,顾客注册失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+
+            } else {//如果电话号码不存在
+                AppCustomer newUser = new AppCustomer();
+                newUser.setCreateTime(LocalDateTime.now());
+                newUser.setCreateType(AppCustomerCreateType.APP_REGISTRY);
+                newUser.setOpenId(registryParam.getOpenId());
+                newUser.setStatus(Boolean.TRUE);
+                newUser.setSex((null != registryParam.getSex() && !registryParam.getSex()) ? SexType.FEMALE : SexType.MALE);
+                newUser.setNickName(registryParam.getNickName());
+                if (null == registryParam.getSex()) {
+                    newUser.setSex(SexType.SECRET);
+                } else {
+                    newUser.setSex(registryParam.getSex() ? SexType.MALE : SexType.FEMALE);
+                }
+                newUser.setPicUrl(registryParam.getPicUrl());
+                Long cityId = registryParam.getCityId();
+                AppStore store = storeService.findDefaultStoreByCityId(cityId);
+                newUser.setStoreId(store.getStoreId());
+                newUser.setCityId(cityId);
+                newUser.setMobile(registryParam.getPhone());
+                newUser.setLight(AppCustomerLightStatus.NOT);
+                newUser.setIsCashOnDelivery(Boolean.FALSE);
+                newUser.setCustomerProfession(registryParam.getProfession());
+                List<CustomerProfession> professions = customerService.getCustomerProfessionListByStatus(AppWhetherFlag.Y.toString());
+                newUser.setCustomerProfessionDesc(null != professions ? professions.stream().filter(p -> p.getTitle().equals(registryParam.getProfession())).collect(Collectors.toList()).get(0).getDescription() : "");
+                newUser.setName(registryParam.getName());
+                AppCustomer returnUser = commonService.saveCustomerInfo(newUser, new CustomerLeBi(), new CustomerPreDeposit());
+                //拼装accessToken
+                String accessToken = JwtUtils.createJWT(String.valueOf(returnUser.getCusId()), String.valueOf(returnUser.getMobile()),
+                        JwtConstant.EXPPIRES_SECOND * 1000);
+                System.out.println(accessToken);
+                response.setHeader("token", accessToken);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                        new CustomerRegistResponse(Boolean.FALSE, returnUser.getCusId()));
+                //logger.info("customerRegistry OUT,顾客注册成功，出参 resultDTO:{}", resultDTO);
+
+            }
+
+            //如果填写了推荐导购电话
+            if (null != registryParam.getGuidePhone() && !"".equalsIgnoreCase(registryParam.getGuidePhone())) {
+                AppEmployee seller = employeeService.findByMobile(registryParam.getGuidePhone());
+                if (seller == null) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "注册成功！绑定导购失败，导购不存在！",
+                            new CustomerRegistResponse(Boolean.FALSE, null));
+                    logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+                if (!Objects.equals(seller.getCityId(), customer.getCityId())) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "注册成功！绑定导购失败，不能绑定其他城市的导购！", null);
+                    logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+                AppStore appStore = storeService.findById(seller.getStoreId());
+                if (appStore == null) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "注册成功！绑定导购失败，该导购没有绑定有效的门店信息！",
+                            null);
+                    logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+                customer.setSalesConsultId(seller.getEmpId());
+                customer.setStoreId(appStore.getStoreId());
+                customer.setCustomerType(AppCustomerType.MEMBER);
+                customer.setBindingTime(new Date());
+                customerService.update(customer);
+            } else {//未添加推荐导购电话
+                AppStore appStore = storeService.findDefaultStoreByCityId(customer.getCityId());
+                if (null == appStore) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该城市下没有默认门店!", null);
+                    logger.info("customerBindingSeller OUT,服务导购绑定失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+                customer.setStoreId(appStore.getStoreId());
+                //customer.setSalesConsultId(0L);
+                customer.setCustomerType(AppCustomerType.RETAIL);
+                customer.setBindingTime(new Date());
+                customerService.update(customer);
+            }
+
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,注册失败", new CustomerRegistResponse(Boolean.FALSE, null));
+            logger.warn("customerRegistry EXCEPTION,顾客注册失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
 }
 

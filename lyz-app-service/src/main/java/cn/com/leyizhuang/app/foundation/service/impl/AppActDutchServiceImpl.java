@@ -7,9 +7,12 @@ import cn.com.leyizhuang.app.foundation.dao.ActGoodsMappingDAO;
 import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActGoodsMappingDO;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import cn.com.leyizhuang.common.util.CountUtil;
@@ -50,6 +53,9 @@ public class AppActDutchServiceImpl implements AppActDutchService {
 
     @Autowired
     private StatisticsSellDetailsService statisticsSellDetailsService;
+
+    @Autowired
+    private ProductCouponSendService productCouponSendService;
 
     /**
      * 新增明细 分摊金额
@@ -158,7 +164,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                         }
 
                         // 首先生成一条赠品明细行
-                        OrderGoodsInfo giftDetailLine = this.createOneLine(orderGoodsInfoList.get(0), goods, act, AppGoodsLineType.PRESENT);
+                        OrderGoodsInfo giftDetailLine = this.createOneLine(orderGoodsInfoList.get(0), goods, act, AppGoodsLineType.PRESENT, identityType, customerType);
                         newOrderGoodsInfoList.add(giftDetailLine);
                         //orderService.saveOrderGoodsInfo(giftDetailLine);
 
@@ -239,7 +245,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                         }
 
                         // 首先生成一条赠品明细行
-                        OrderGoodsInfo giftDetailLine = this.createOneLine(orderGoodsInfoList.get(0), goods, act, AppGoodsLineType.PRESENT);
+                        OrderGoodsInfo giftDetailLine = this.createOneLine(orderGoodsInfoList.get(0), goods, act, AppGoodsLineType.PRESENT, identityType, customerType);
                         newOrderGoodsInfoList.add(giftDetailLine);
                         //orderService.saveOrderGoodsInfo(giftDetailLine);
 
@@ -345,11 +351,19 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                         }
 
                         // 首先生成一条赠品明细行
-                        OrderGoodsInfo giftDetailLine = this.createOneLine(orderGoodsInfoList.get(0), goods, act, AppGoodsLineType.PRESENT);
-                        newOrderGoodsInfoList.add(giftDetailLine);
-                        //orderService.saveOrderGoodsInfo(giftDetailLine);
+                        OrderGoodsInfo giftDetailLine = this.createOneLine(orderGoodsInfoList.get(0), goods, act, AppGoodsLineType.PRESENT, identityType, customerType);
 
-                        giftTotalPrice = CountUtil.add(this.returnCountPrice(giftDetailLine, identityType, customerType), giftTotalPrice);
+                        /**  判断促销类型 **/
+                        if (act.getActType().contains("GOO") || act.getActType().contains("ADD")){
+                            // 产生赠品明细行
+                            newOrderGoodsInfoList.add(giftDetailLine);
+                            giftTotalPrice = CountUtil.add(this.returnCountPrice(giftDetailLine, identityType, customerType), giftTotalPrice);
+                        }else if (act.getActType().contains("PRO")){
+                            // 送产品券
+                            productCouponSendService.sendForPromotion(cusId,goods.getGid(),giftDetailLine.getOrderQuantity(),giftDetailLine.getOrderNumber());
+                        }
+
+                        //orderService.saveOrderGoodsInfo(giftDetailLine);
                     }
 
                     if (act.getIsGoodsOptionalQty()){
@@ -627,7 +641,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                         }
 
                         // 首先生成一条赠品明细行
-                        OrderGoodsInfo giftDetailLine = this.createOneLine(orderGoodsInfoList.get(0), goods, act, AppGoodsLineType.PRESENT);
+                        OrderGoodsInfo giftDetailLine = this.createOneLine(orderGoodsInfoList.get(0), goods, act, AppGoodsLineType.PRESENT, identityType, customerType);
                         newOrderGoodsInfoList.add(giftDetailLine);
                         //orderService.saveOrderGoodsInfo(giftDetailLine);
 
@@ -727,7 +741,8 @@ public class AppActDutchServiceImpl implements AppActDutchService {
         return CountUtil.mul(price, info.getOrderQuantity());
     }
 
-    private OrderGoodsInfo createOneLine(OrderGoodsInfo info, OrderGoodsVO goods, ActBaseDO act, AppGoodsLineType lineType) {
+    private OrderGoodsInfo createOneLine(OrderGoodsInfo info, OrderGoodsVO goods, ActBaseDO act, AppGoodsLineType lineType
+            , AppIdentityType type, AppCustomerType customerType) {
         OrderGoodsInfo result = new OrderGoodsInfo();
 
         result.setOid(info.getOid());
@@ -744,7 +759,6 @@ public class AppActDutchServiceImpl implements AppActDutchService {
         result.setGoodsLineType(lineType);
         result.setPriceItemId(goods.getPriceItemId());
         result.setCompanyFlag(goods.getCompanyFlag());
-        result.setSettlementPrice(info.getSettlementPrice());
         result.setLbSharePrice(0D);
         result.setCashCouponSharePrice(0D);
         result.setCashReturnSharePrice(0D);
@@ -756,6 +770,20 @@ public class AppActDutchServiceImpl implements AppActDutchService {
         result.setShippingQuantity(0);
         result.setReturnQuantity(0);
         result.setReturnableQuantity(goods.getQty());
+
+        Double price = 0.00;
+        if (type.equals(AppIdentityType.SELLER) || type.equals(AppIdentityType.DECORATE_MANAGER)) {
+            // 导购或是装饰公司都是会员价
+            price = goods.getVipPrice();
+        } else if (type.equals(AppIdentityType.CUSTOMER)) {
+            if (customerType.equals(AppCustomerType.MEMBER)) {
+                price = goods.getVipPrice();
+            } else {
+                price = goods.getRetailPrice();
+            }
+        }
+        result.setSettlementPrice(price);
+
         return result;
     }
 
@@ -887,5 +915,83 @@ public class AppActDutchServiceImpl implements AppActDutchService {
         logger.debug("分摊总额："+ totalDutchPrice);
 
         return goodsInfoList;
+    }
+
+    public void repairGoodsLine(String flag){
+        List<OrderBaseInfo> orderBaseList = new ArrayList<>();
+        List<OrderGoodsInfo> allOrderGoodsList = new ArrayList<>();
+        List<OrderGoodsInf> allOrderGoodsInfList = new ArrayList<>();
+
+        orderBaseList = orderDAO.findErrorOrderData();
+        logger.info("一共订单："+orderBaseList.size()+"条");
+        for (OrderBaseInfo order : orderBaseList){
+            AppCustomer customer = null;
+            try {
+                customer = appCustomerService.findById(order.getCustomerId());
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+            // 找到促销
+            List<Long> actIds = orderDAO.findOrderPromotionId(order.getOrderNumber());
+
+            if (actIds != null && actIds.size() > 0){
+                for (Long actId : actIds){
+                    // 找到goods and present
+                    List<OrderGoodsInfo> goodsInfos = orderDAO.findOrderGoodsAndPresentLine(order.getOrderNumber(),actId);
+
+                    Double subPrice = 0.00;
+                    Double totalGoodsPrice = 0.00;
+                    logger.info("订单："+order.getOrderNumber()+ "促销："+ actId);
+                    for (OrderGoodsInfo goodsInfo:goodsInfos){
+                        if (goodsInfo.getGoodsLineType().equals(AppGoodsLineType.GOODS)){
+                            logger.info("商品："+goodsInfo.getSku()+" 结算价：" + goodsInfo.getSettlementPrice()+" 本品");
+                        }else if (goodsInfo.getGoodsLineType().equals(AppGoodsLineType.PRESENT)){
+                            if (customer.getCustomerType().equals(AppCustomerType.MEMBER)) {
+
+                                goodsInfo.setSettlementPrice(goodsInfo.getVIPPrice());
+                                logger.info("商品："+goodsInfo.getSku()+" 结算价：" + goodsInfo.getSettlementPrice() +" 会员价" + goodsInfo.getVIPPrice());
+                            } else {
+
+                                goodsInfo.setSettlementPrice(goodsInfo.getRetailPrice());
+                                logger.info("商品："+goodsInfo.getSku()+" 结算价：" + goodsInfo.getSettlementPrice() +" 零售价" + goodsInfo.getRetailPrice());
+                            }
+
+                            subPrice = CountUtil.add(subPrice,CountUtil.mul(goodsInfo.getSettlementPrice(),goodsInfo.getOrderQuantity()));
+                        }
+                        totalGoodsPrice = CountUtil.add(totalGoodsPrice,CountUtil.mul(goodsInfo.getSettlementPrice(),goodsInfo.getOrderQuantity()));
+                    }
+
+                    // 分摊
+                   List<OrderGoodsInfo> newOrderGoodsList = this.countDutchPrice(goodsInfos,totalGoodsPrice,subPrice,null,null);
+                    //计算退货单价
+                    newOrderGoodsList = this.countReturnPrice(newOrderGoodsList);
+                    allOrderGoodsList.addAll(newOrderGoodsList);
+
+                }
+
+            }
+        }
+
+        if (flag.equals("go")){
+            for (OrderGoodsInfo goodsInfo : allOrderGoodsList){
+                orderDAO.updateOrderGoodsPrice(goodsInfo);
+
+                // 找到接口表
+                OrderGoodsInf inf = orderDAO.findOrderGoodsInfByLineId(goodsInfo.getId());
+
+                if (inf != null){
+                    Double promotonDiscount = goodsInfo.getPromotionSharePrice();
+                    Double totalDiscount = CountUtil.add(promotonDiscount,inf.getCashCouponDiscount(),inf.getLebiDiscount(),inf.getSubventionDiscount());
+                    inf.setSettlementPrice(goodsInfo.getSettlementPrice());
+                    inf.setReturnPrice(goodsInfo.getReturnPrice());
+                    inf.setPromotionDiscount(promotonDiscount);
+                    inf.setDiscountTotalPrice(totalDiscount);
+
+                    //跟新
+                    orderDAO.updateOrderGoodsInfPrice(inf);
+                }
+            }
+        }
     }
 }

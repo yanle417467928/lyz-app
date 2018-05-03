@@ -251,6 +251,7 @@
                                         <option value="GOO">送商品</option>
                                         <option value="ADD">加价购买</option>
                                         <option value="DIS">打折</option>
+                                        <option value="PRO">送产品券</option>
                                     </select>
                                 </div>
                             </div>
@@ -483,7 +484,7 @@
                         <div class="col-xs-12 col-md-6">
                             <div class="form-group">
                                 <label for="title">
-                                    排序号
+                                    排序号 (原则上满金额促销排序号要大与满数量促销，否则满数量促销无效)
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>

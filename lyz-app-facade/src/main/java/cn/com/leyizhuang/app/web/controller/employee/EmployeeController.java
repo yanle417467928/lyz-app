@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.employee;
 
 import cn.com.leyizhuang.app.core.bean.GridDataVO;
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.AppSystemType;
 import cn.com.leyizhuang.app.core.constant.JwtConstant;
 import cn.com.leyizhuang.app.core.constant.StorePreDepositChangeType;
@@ -597,6 +598,46 @@ public class EmployeeController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常， 获取导购二维码失败", null);
             logger.warn("getQrCodeByUserID EXCEPTION, 获取导购二维码失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+
+    /**
+     * @title   获取导购门店所有专供类型
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/5/2
+     */
+    @PostMapping(value = "/store/rankClassification", produces = "application/json;charset=UTF-8")
+    public ResultDTO getStoreRankClassification(Long userId, Integer identityType) {
+        logger.info("getStoreRankClassification CALLED,获取导购门店所有专供类型，入参 userId {},identityType{}", userId, identityType);
+
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getStoreRankClassification OUT,获取导购门店所有专供类型失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType || identityType != 0) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此用户身份不支持此功能！",
+                    null);
+            logger.info("getStoreRankClassification OUT,获取导购门店所有专供类型失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            List<StoreRankClassification> rankClassifications = this.appEmployeeService.getStoreRankClassification(userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, rankClassifications);
+            logger.info("getStoreRankClassification OUT,获取导购门店所有专供类型成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取导购门店所有专供类型失败", null);
+            logger.warn("getStoreRankClassification EXCEPTION,获取导购门店所有专供类型失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

@@ -103,11 +103,13 @@ public interface StatisticsSellDetailsService {
 
     SellDetailsResponse currentXKF(Long empId);
 
+    List<SellDetailsResponse> getFgsRank(Long empId,String flag);
+
+    List<SellDetailsResponse> getJtRank(String flag);
+
     void createAllOrderDetails() ;
 
     void createAllreturnOrderDetails() ;
 
-    List<SellDetailsResponse> getFgsRank(Long empId,String flag);
-
-    List<SellDetailsResponse> getJtRank(String flag);
+    void repairAllOrderDetails();
 }

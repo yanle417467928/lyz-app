@@ -5,11 +5,14 @@ import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -49,6 +52,18 @@ public interface OrderDAO {
                                       @Param("storeId") Long storeId);
 
     OrderBaseInfo findByOrderNumber(@Param("orderNumber") String orderNumber);
+
+    List<OrderBaseInfo> findErrorOrderData();
+
+    List<Long> findOrderPromotionId(@Param("ordNo") String ordNo);
+
+    OrderGoodsInf findOrderGoodsInfByLineId(@Param("lineId") Long lineId);
+
+    void updateOrderGoodsPrice(OrderGoodsInfo orderGoodsInfo);
+
+    void updateOrderGoodsInfPrice(OrderGoodsInf orderGoodsInf);
+
+    List<OrderGoodsInfo> findOrderGoodsAndPresentLine(@Param("ordNo") String ordNo,@Param("actId") Long actId);
 
     //获取订单头详情
     OrderBaseInfo getOrderDetail(@Param("orderNumber") String orderNumber);
@@ -163,7 +178,7 @@ public interface OrderDAO {
 
     List<OrderBaseInfo> getSendToWMSFailedOrder();
 
-    List<String> getNotSellDetailsOrderNOs(@Param("flag") Boolean flag);
+    List<String> getNotSellDetailsOrderNOs(@Param("flag") Boolean flag, @Param("fristDay") LocalDateTime fristDay);
 
     List<OrderGoodsInfo> getOrderGoodsQtyInfoByOrderNumber(String orderNumber);
 
@@ -171,6 +186,14 @@ public interface OrderDAO {
 
     void updateOrderBaseInfoStatus(OrderBaseInfo baseInfo);
 
+    /**
+     * 查询订单下 产品券购买价之和
+     * @param ordNo
+     * @return
+     */
+    Double getOrderProductCouponPurchasePrice(@Param("ordNo") String ordNo,@Param("sku") String sku);
+
     void saveOrderShipping(OrderShipping orderShipping);
+
 
 }
