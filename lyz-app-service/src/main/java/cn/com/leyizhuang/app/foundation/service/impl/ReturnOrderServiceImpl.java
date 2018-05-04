@@ -168,8 +168,14 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         goodsInfo.setRoid(roid);
                         returnOrderDAO.saveReturnOrderGoodsInfo(goodsInfo);
                         //保存发送wms退货商品明细
-                        AtwRequisitionOrderGoods orderGoods = AtwRequisitionOrderGoods.transform(returnOrderBaseInfo.getReturnNo(), goodsInfo.getSku(),
-                                goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getReturnQty(), goodsInfo.getCompanyFlag());
+                        AtwRequisitionOrderGoods orderGoods = null;
+                        if ("ZS-002".equals(returnOrderBaseInfo.getStoreCode()) || "MR004".equals(returnOrderBaseInfo.getStoreCode())){
+                            orderGoods = AtwRequisitionOrderGoods.transform(returnOrderBaseInfo.getReturnNo(), goodsInfo.getSku(),
+                                    goodsInfo.getSkuName(), goodsInfo.getSettlementPrice(), goodsInfo.getReturnQty(), goodsInfo.getCompanyFlag());
+                        } else {
+                            orderGoods = AtwRequisitionOrderGoods.transform(returnOrderBaseInfo.getReturnNo(), goodsInfo.getSku(),
+                                    goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getReturnQty(), goodsInfo.getCompanyFlag());
+                        }
                         appToWmsOrderService.saveAtwRequisitionOrderGoods(orderGoods);
                     }
                 }
