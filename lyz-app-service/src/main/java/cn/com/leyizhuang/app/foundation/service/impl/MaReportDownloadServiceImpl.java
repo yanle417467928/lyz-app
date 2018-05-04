@@ -162,6 +162,7 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
     }
 
 
+
     @Override
     public PageInfo<SalesReportDO> findSalesList(String companyCode, String storeType,
                                                  String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds, Integer page, Integer size) {
@@ -185,6 +186,7 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
 
 
 
+
     @Override
     public PageInfo<SalesReportDO> findArrearsList(String companyCode, String storeType, Boolean isProductCoupon, List<Long> storeIds, Integer page, Integer size) {
         PageHelper.startPage(page, size);
@@ -199,6 +201,7 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
         return new PageInfo<>(shipmentAndReturnGoodsList);
     }
 
+
     @Override
     public List<SalesReportDO> downArrearsList(String companyCode, String storeType, Boolean isProductCoupon, List<Long> storeIds) {
         List<SalesReportDO> shipmentAndReturnGoodsList = new ArrayList<>();
@@ -211,6 +214,7 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
         }
         return shipmentAndReturnGoodsList;
     }
+
 
 
 

@@ -215,6 +215,7 @@ public class MaReportDownloadRestController extends BaseRestController {
     public GridDataVO<SalesReportDO> restSalesReportPageGird(Integer offset, Integer size, String companyCode, String storeType,
                                                              String startTime, String endTime, Boolean isProductCoupon) {
         size = getSize(size);
+
         Integer page = getPage(offset, size);
 
         //查询登录用户门店权限的门店ID
@@ -240,6 +241,7 @@ public class MaReportDownloadRestController extends BaseRestController {
     public GridDataVO<SalesReportDO> restArrearsReportPageGird(Integer offset, Integer size, String companyCode, String storeType, Boolean isProductCoupon) {
         size = getSize(size);
         Integer page = getPage(offset, size);
+
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
         List<Long> storeIdInCompany = maStoreService.findStoresIdByStructureCode(companyCode);
@@ -1299,6 +1301,7 @@ public class MaReportDownloadRestController extends BaseRestController {
             shiroName = shiroUser.getName();
         }
 
+
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
         String fileurl = "商品要货退货明细报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls"; //如  D:/xx/xx/xxx.xls
@@ -1447,6 +1450,7 @@ public class MaReportDownloadRestController extends BaseRestController {
         //创建名称
         String fileurl = "欠款报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls"; //如  D:/xx/xx/xxx.xls
 
+
         WritableWorkbook wwb = null;
         try {
             //创建文件
@@ -1583,6 +1587,7 @@ public class MaReportDownloadRestController extends BaseRestController {
     public void downloadSalesReport(HttpServletRequest request, HttpServletResponse response, String companyCode, String storeType,
                                     String startTime, String endTime, Boolean isProductCoupon) {
         //查询登录用户门店权限的门店ID
+        
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
         List<Long> storeIdInCompany = maStoreService.findStoresIdByStructureCode(companyCode);
         storeIds.retainAll(storeIdInCompany);
