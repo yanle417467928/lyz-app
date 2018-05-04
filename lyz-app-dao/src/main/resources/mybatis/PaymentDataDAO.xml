@@ -31,7 +31,7 @@
             online_pay_type,
             trade_no
         FROM payment_data
-        WHERE out_trade_no = #{outTradeNo}
+        WHERE ord_no = #{outTradeNo}
               AND trade_status = #{tradeStatus}
         ORDER BY id DESC
     </select>
