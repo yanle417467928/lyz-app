@@ -869,9 +869,9 @@
             <![CDATA[ obd.pay_up_time<= #{endTime}]]>
         </if>
         AND ob.delivery_type = 'SELF_TAKE'
-        <!--      <if test="null !=companyCode and ''!=companyCode">
-                  and s.store_structure_code like concat('%',#{companyCode},'%')
-              </if>-->
+  <!--      <if test="null !=companyCode and ''!=companyCode">
+            and s.store_structure_code like concat('%',#{companyCode},'%')
+        </if>-->
 
 
         <choose>
@@ -1032,9 +1032,9 @@
         </if>
         AND ob.delivery_type = 'SELF_TAKE'
         and obd.is_pay_up = 1
-        <!--    <if test="null !=companyCode and ''!=companyCode">
-                and s.store_structure_code like concat('%',#{companyCode},'%')
-            </if>-->
+    <!--    <if test="null !=companyCode and ''!=companyCode">
+            and s.store_structure_code like concat('%',#{companyCode},'%')
+        </if>-->
 
         <choose>
             <when test="'ZS'==storeType">
@@ -1169,6 +1169,10 @@
         <choose>
             <when test="'ZS'==storeType">
                 and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
+                <if test="null!=endTime and ''!=endTime">
+                    and
+                    <![CDATA[ orb.return_time <= #{endTime} ]]>
+                </if>
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in ('FX')
@@ -1225,7 +1229,7 @@
         -- LEFT JOIN gds_goods_grade gp on og.sku = gp.sku
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
         LEFT JOIN inter_wta_order_shipping_header wa ON ob.ord_no = wa.order_no
-        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku and og.goods_line_type = 'PRODUCT_COUPON'
+        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku  and og.goods_line_type = 'PRODUCT_COUPON'
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
@@ -1302,7 +1306,7 @@
         LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
         LEFT JOIN ord_shipping os on ob.oid = os.oid
-        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku and og.goods_line_type = 'PRODUCT_COUPON'
+        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku  and og.goods_line_type = 'PRODUCT_COUPON'
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
@@ -1315,9 +1319,9 @@
             and   <![CDATA[ obd.pay_up_time <= #{endTime}]]>
         </if>
         AND ob.delivery_type = 'SELF_TAKE'
-        <!--        <if test="null!=companyCode and ''!=companyCode">
-                    and s.store_structure_code like concat('%',#{companyCode},'%')
-                </if>-->
+<!--        <if test="null!=companyCode and ''!=companyCode">
+            and s.store_structure_code like concat('%',#{companyCode},'%')
+        </if>-->
 
         <choose>
             <when test="'ZS'==storeType">
@@ -1380,7 +1384,7 @@
         LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
         LEFT JOIN inter_wta_order_shipping_header wa ON ob.ord_no = wa.order_no
-        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku and og.goods_line_type = 'PRODUCT_COUPON'
+        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku  and og.goods_line_type = 'PRODUCT_COUPON'
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
@@ -1468,7 +1472,7 @@
         LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
         LEFT JOIN ord_shipping os on ob.oid = os.oid
-        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku =oci.sku and og.goods_line_type = 'PRODUCT_COUPON'
+        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku =oci.sku  and og.goods_line_type = 'PRODUCT_COUPON'
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
@@ -1546,8 +1550,7 @@
         LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
 
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
-        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and org.sku = oci.sku and org.goods_line_type =
-        'PRODUCT_COUPON'
+        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and org.sku = oci.sku and org.goods_line_type = 'PRODUCT_COUPON'
         where
         1=1
         AND ob.delivery_type = 'SELF_TAKE' and orb.return_type = 'NORMAL_RETURN'
@@ -1562,6 +1565,10 @@
         <choose>
             <when test="'ZS'==storeType">
                 and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
+                <if test="null!=endTime and ''!=endTime">
+                    and
+                    <![CDATA[ orb.return_time <= #{endTime} ]]>
+                </if>
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in ('FX')
@@ -1642,7 +1649,7 @@
         promotionShareTotlePrice, obi.customer_phone customerPhone, st.company_name companyName
         FROM ord_return_base_info orbi
         LEFT JOIN ord_return_goods_info org ON org.return_no = orbi.return_no
-        INNER JOIN rank_goods rg ON rg.gid = org.gid
+        INNER JOIN rank_goods rg ON rg.sku = org.sku
         INNER JOIN rank_store st ON st.store_id = orbi.store_id
         LEFT JOIN ord_return_lifecycle rl ON orbi.return_no = rl.return_no
         LEFT JOIN ord_base_info obi ON obi.ord_no = orbi.ord_no
