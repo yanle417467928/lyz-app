@@ -554,7 +554,8 @@ public class GoodsController {
         }
         try {
             PageInfo<UserGoodsResponse> goodsVOList = goodsService.findGoodsListBySellerIdAndIdentityTypeAndRankCode(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), rankCode, page, size);
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,new GridDataVO<UserGoodsResponse>().transform(goodsVOList));
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+            (null!=goodsVOList&&null!=goodsVOList.getList()&&goodsVOList.getList().size() > 0) ? new GridDataVO<UserGoodsResponse>().transform(goodsVOList) : null);
             logger.info("getSellerRankGoodsListByUserIdAndIdentityType OUT,获取专供商品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
