@@ -1485,6 +1485,7 @@
         LEFT JOIN ord_goods_info og ON og.ord_no = obi.ord_no
         INNER JOIN rank_store st ON st.store_id = obi.store_id
         INNER JOIN rank_goods rg ON rg.gid = og.gid
+        INNER JOIN cus_rank cr ON cr.cus_id = obi.customer_id
         LEFT JOIN ord_lifecycle ol ON obi.ord_no = ol.ord_no
         LEFT JOIN ord_logistics_info oli ON oli.ord_no = obi.ord_no
         WHERE obi.`status` != 'UNPAID'
@@ -1527,6 +1528,7 @@
         LEFT JOIN ord_return_goods_info org ON org.return_no = orbi.return_no
         INNER JOIN rank_goods rg ON rg.sku = org.sku
         INNER JOIN rank_store st ON st.store_id = orbi.store_id
+        INNER JOIN cus_rank cr ON cr.cus_id = orbi.cus_id
         LEFT JOIN ord_return_lifecycle rl ON orbi.return_no = rl.return_no
         LEFT JOIN ord_base_info obi ON obi.ord_no = orbi.ord_no
         LEFT JOIN ord_return_logistic_info orli ON orli.return_no = orbi.return_no
