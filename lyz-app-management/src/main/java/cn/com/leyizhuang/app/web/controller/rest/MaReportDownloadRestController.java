@@ -1516,7 +1516,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                         "2： 订单还清日期 <   挑选日期   并且本月出货\n" +
                         "3:  出货定义：已完成（按出货确认键）";
                 String str2 = "非产品券 \n" +
-                        "1.财务销量    =[结算价－（会员折扣－折扣或者赠品分摊－现金券）] * 下单数量  \n" +
+                        "1.财务销量    =[结算价－（折扣或者赠品分摊+现金券））] * 下单数量  \n" +
                         "2.经销财务销量=[经销价 * 下单数量]  \n" +
                         "\n" +
                         "产品券  \n" +
@@ -1712,7 +1712,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                         "2： 订单还清日期 <   挑选日期   并且本月出货\n" +
                         "3:  出货定义：已完成（按出货确认键）";
                 String str2 = "非产品券 \n" +
-                        "1.财务销量    =[结算价－（会员折扣－折扣或者赠品分摊－现金券）] * 下单数量  \n" +
+                        "1.财务销量    =[结算价－（折扣或者赠品分摊+现金券）] * 下单数量  \n" +
                         "2.经销财务销量=[经销价 * 下单数量]  \n" +
                         "\n" +
                         "产品券  \n" +
