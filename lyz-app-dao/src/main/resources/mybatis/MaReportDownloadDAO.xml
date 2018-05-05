@@ -747,6 +747,7 @@
     <select id="findNoProductSalesList" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.SalesReportDO">
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -823,6 +824,7 @@
 
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -898,6 +900,7 @@
 
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -978,6 +981,7 @@
         UNION ALL
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -1058,6 +1062,7 @@
         UNION ALL
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -1122,6 +1127,7 @@
         UNION ALL
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -1193,6 +1199,7 @@
     <select id="findProductSalesList" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.SalesReportDO">
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -1268,6 +1275,7 @@
         UNION ALL
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -1346,6 +1354,7 @@
 
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -1430,6 +1439,7 @@
 
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -1517,6 +1527,7 @@
 
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -1682,6 +1693,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.SalesReportDO">
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -1750,6 +1762,7 @@
         UNION ALL
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -1820,6 +1833,7 @@
     <select id="findProductArrearsList" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.SalesReportDO">
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -1888,6 +1902,7 @@
         UNION ALL
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
