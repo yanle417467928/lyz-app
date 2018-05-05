@@ -1499,11 +1499,45 @@ public class MaReportDownloadRestController extends BaseRestController {
 
                 String[] titles = {"城市", "门店", "名称", "会员名称", "订单号", "配送/自提", "订单状态", "自提提货日期", "订单日期", "出货时间", "是否结清", "订单还清日期", "编号","商品名称" ,"品牌","下单数量","本赠品","财务销量", "经销财务销量", "经销单价", "原单价", "结算单价", "会员折扣", "折扣或者赠品分摊", "现金券"
                 };
+
                 //计算标题开始行号
                 int row = 1;
                 if (null != map && map.size() > 0) {
                     row = (map.size() + 1) / 2 + 4;
                 }
+                String str1 = "配送单：　\n" +
+                        "1： 订单还清日期 >＝ 挑选日期   并且为已出货\n" +
+                        "2： 订单还清日期 <   挑选日期   并且本月出货\n" +
+                        "3:  出货定义：已完成／待收货\n" +
+                        "\n" +
+                        "自提单：　\n" +
+                        "1： 订单还清日期 >＝ 挑选日期   \n" +
+                        "并且为已出货\n" +
+                        "2： 订单还清日期 <   挑选日期   并且本月出货\n" +
+                        "3:  出货定义：已完成（按出货确认键）";
+                String str2 = "非产品券 \n" +
+                        "1.财务销量    =[结算价－（会员折扣－折扣或者赠品分摊－现金券）] * 下单数量  \n" +
+                        "2.经销财务销量=[经销价 * 下单数量]  \n" +
+                        "\n" +
+                        "产品券  \n" +
+                        "1. 一笔数据＝一张产品券  \n" +
+                        "2. 财务销量=当时购买产品券的价格，原价及结算价＝当下此产品的单价  \n" +
+                        "若退货则下单数量＝负数";
+                ws.mergeCells(0, (map.size() + 1), 5, (map.size() + 1));
+                WritableCellFormat textFormat1 = this.setTextStyle();
+                textFormat1.setWrap(true);
+                ws.addCell(new Label(0, (map.size() + 1), str1, textFormat1));
+                ws.setRowView(row - 2, 3200);
+
+                ws.mergeCells(6, (map.size() + 1), 11, (map.size() + 1));
+                WritableCellFormat textFormat2 = this.setTextStyle();
+                textFormat2.setWrap(true);
+                ws.addCell(new Label(6, (map.size() + 1), str2, textFormat2));
+                ws.setRowView(row - 2, 3200);
+                row += 2;
+
+                //计算标题开始行号
+
                 //设置标题
                 ws = this.setHeader(ws, titleFormat, columnView, titles, row);
                 row += 1;
@@ -1667,25 +1701,35 @@ public class MaReportDownloadRestController extends BaseRestController {
                 if (null != map && map.size() > 0) {
                     row = (map.size() + 1) / 2 + 4;
                 }
-                String str = "配送单：　\n" +
+                String str1 = "配送单：　\n" +
                         "1： 订单还清日期 >＝ 挑选日期   并且为已出货\n" +
                         "2： 订单还清日期 <   挑选日期   并且本月出货\n" +
                         "3:  出货定义：已完成／待收货\n" +
                         "\n" +
                         "自提单：　\n" +
                         "1： 订单还清日期 >＝ 挑选日期   \n" +
-                        "并且为已出货\n" +
+                            "并且为已出货\n" +
                         "2： 订单还清日期 <   挑选日期   并且本月出货\n" +
-                        "3:  出货定义：已完成（按出货确认键）\n" +
+                        "3:  出货定义：已完成（按出货确认键）";
+                String str2 = "非产品券 \n" +
+                        "1.财务销量    =[结算价－（会员折扣－折扣或者赠品分摊－现金券）] * 下单数量  \n" +
+                        "2.经销财务销量=[经销价 * 下单数量]  \n" +
                         "\n" +
-                        "1.财务销量    =[结算价－（会员折扣－折扣或者赠品分摊－现金券）] * 下单数量\n" +
-                        "2.经销财务销量=[经销价 * 下单数量]\n" +
-                        "若退货则下单数量＝负数";
-                ws.mergeCells(0, (map.size() + 1), 22, (map.size() + 1));
+                        "产品券  \n" +
+                        "1. 一笔数据＝一张产品券  \n" +
+                        "2. 财务销量=当时购买产品券的价格，原价及结算价＝当下此产品的单价  \n" +
+                           "若退货则下单数量＝负数";
+                ws.mergeCells(0, (map.size() + 1), 5, (map.size() + 1));
                 WritableCellFormat textFormat1 = this.setTextStyle();
                 textFormat1.setWrap(true);
-                ws.addCell(new Label(0, (map.size() + 1), str, textFormat1));
-                ws.setRowView(row - 1, 4000);
+                ws.addCell(new Label(0, (map.size() + 1), str1, textFormat1));
+                ws.setRowView(row - 1, 3200);
+
+                ws.mergeCells(6, (map.size() + 1), 11, (map.size() + 1));
+                WritableCellFormat textFormat2 = this.setTextStyle();
+                textFormat2.setWrap(true);
+                ws.addCell(new Label(6, (map.size() + 1), str2, textFormat2));
+                ws.setRowView(row - 1, 3200);
                 row += 2;
                 //设置标题
                 ws = this.setHeader(ws, titleFormat, columnView, titles, row);
