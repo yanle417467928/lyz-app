@@ -46,4 +46,6 @@ public interface PaymentDataDAO {
      */
     PaymentDataDO findPaymentDataDOByOrderNumber(@Param("orderNumber")String orderNumber);
 
+    List<PaymentDataDO> findByOrderNoAndTradeStatus(@Param("ordNo") String ordNo, @Param("tradeStatus") PaymentDataStatus tradeStatus);
+
 }
