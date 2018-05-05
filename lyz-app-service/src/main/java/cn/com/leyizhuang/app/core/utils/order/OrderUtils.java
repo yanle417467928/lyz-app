@@ -341,7 +341,7 @@ public class OrderUtils {
         if (StringUtils.isNotBlank(orderNumber)) {
             if (orderNumber.contains("_XN")) {
                 int length = orderNumber.trim().length();
-                return (length == 25);
+                return (length == 25 || length == 27);
             }
         }
         return false;
@@ -358,7 +358,7 @@ public class OrderUtils {
         if (StringUtils.isNotBlank(returnNumber)) {
             if (returnNumber.contains("T")) {
                 int length = returnNumber.trim().length();
-                return (length == 18 || length == 16);
+                return (length == 18 || length == 16 || length == 21);
             }
         }
         return false;
