@@ -369,8 +369,14 @@ public class ReturnOrderController {
                 //保存发送WMS退货商品详情
                 if (null != returnOrderGoodsInfos && returnOrderGoodsInfos.size() > 0) {
                     for (ReturnOrderGoodsInfo goodsInfo : returnOrderGoodsInfos) {
-                        AtwRequisitionOrderGoods orderGoods = AtwRequisitionOrderGoods.transform(returnOrderBaseInfo.getReturnNo(), goodsInfo.getSku(),
-                                goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getReturnQty(), goodsInfo.getCompanyFlag());
+                        AtwRequisitionOrderGoods orderGoods = null;
+                        if ("ZS-002".equals(orderBaseInfo.getStoreCode()) || "MR004".equals(orderBaseInfo.getStoreCode())){
+                            orderGoods = AtwRequisitionOrderGoods.transform(returnOrderBaseInfo.getReturnNo(), goodsInfo.getSku(),
+                                    goodsInfo.getSkuName(), goodsInfo.getSettlementPrice(), goodsInfo.getReturnQty(), goodsInfo.getCompanyFlag());
+                        } else {
+                            orderGoods = AtwRequisitionOrderGoods.transform(returnOrderBaseInfo.getReturnNo(), goodsInfo.getSku(),
+                                    goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getReturnQty(), goodsInfo.getCompanyFlag());
+                        }
                         appToWmsOrderService.saveAtwRequisitionOrderGoods(orderGoods);
                     }
                 }

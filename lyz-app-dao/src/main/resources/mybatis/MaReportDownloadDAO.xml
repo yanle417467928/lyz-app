@@ -730,18 +730,18 @@
     <select id="getJxPriceByOrderNoAndSku"
             resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.AccountGoodsItemsDO">
         SELECT
-          IFNULL(unit_price, 0) wholesalePrice, IFNULL(unit_price, 0) * IFNULL(quantity, 0) wholesaleTotlePrice
+        IFNULL(unit_price, 0) wholesalePrice, IFNULL(unit_price, 0) * IFNULL(quantity, 0) wholesaleTotlePrice
         FROM
-          ord_jx_price_difference_return_details
+        ord_jx_price_difference_return_details
         WHERE ord_no = #{orderNumber} AND sku = #{sku}
-          GROUP BY sku
+        GROUP BY sku
         UNION
         SELECT
-          IFNULL(unit_price, 0) wholesalePrice, IFNULL(unit_price, 0) * IFNULL(return_qty, 0) wholesaleTotlePrice
+        IFNULL(unit_price, 0) wholesalePrice, IFNULL(unit_price, 0) * IFNULL(return_qty, 0) wholesaleTotlePrice
         FROM
-          ord_return_jx_price_difference_return_details
+        ord_return_jx_price_difference_return_details
         WHERE return_no = #{orderNumber} AND sku = #{sku}
-          GROUP BY sku
+        GROUP BY sku
     </select>
 
     <select id="findNoProductSalesList" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.SalesReportDO">
@@ -795,16 +795,27 @@
             <![CDATA[ obd.pay_up_time<= #{endTime}]]>
         </if>
         and ob.delivery_type = 'HOUSE_DELIVERY'
-    <!--<if test="null!=companyCode and ''!=companyCode">
-            and s.store_structure_code like concat('%',#{companyCode},'%')
-        </if>-->
-        <if test="null != storeType and ''!=storeType">
-            and s.store_type = #{storeType}
-        </if>
-       AND ob.store_id IN
-        <foreach collection="list" item="item" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
+        and obd.is_pay_up = 1
+        <!--<if test="null!=companyCode and ''!=companyCode">
+                and s.store_structure_code like concat('%',#{companyCode},'%')
+            </if>-->
+        <choose>
+            <when test="'ZS'==storeType">
+                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
+            </when>
+            <when test="'FX'==storeType">
+                and s.store_type in ('FX')
+            </when>
+            <otherwise>
+                <if test="null!=storeType and ''!=storeType">
+                    and s.store_type =#{storeType}
+                </if>
+                AND ob.store_id IN
+                <foreach collection="list" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </otherwise>
+        </choose>
         order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
         UNION ALL
@@ -858,17 +869,27 @@
             <![CDATA[ obd.pay_up_time<= #{endTime}]]>
         </if>
         AND ob.delivery_type = 'SELF_TAKE'
-  <!--      <if test="null !=companyCode and ''!=companyCode">
-            and s.store_structure_code like concat('%',#{companyCode},'%')
-        </if>-->
-
-        <if test="null!=storeType and ''!=storeType">
-            and s.store_type = #{storeType}
-        </if>
-        AND ob.store_id IN
-        <foreach collection="list" item="item" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
+        and obd.is_pay_up = 1
+        <!--      <if test="null !=companyCode and ''!=companyCode">
+                  and s.store_structure_code like concat('%',#{companyCode},'%')
+              </if>-->
+        <choose>
+            <when test="'ZS'==storeType">
+                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
+            </when>
+            <when test="'FX'==storeType">
+                and s.store_type in ('FX')
+            </when>
+            <otherwise>
+                <if test="null!=storeType and ''!=storeType">
+                    and s.store_type =#{storeType}
+                </if>
+                AND ob.store_id IN
+                <foreach collection="list" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </otherwise>
+        </choose>
         order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
         UNION ALL
@@ -917,7 +938,6 @@
         <if test="null !=startTime and ''!=startTime">
             AND wa.end_dt >= #{startTime}
         </if>
-
         <if test="null !=endTime and ''!=endTime">
             and
             <![CDATA[  wa.end_dt<= #{endTime} ]]>
@@ -929,20 +949,30 @@
         </if>
         and ob.delivery_type = 'HOUSE_DELIVERY'
         and obd.is_pay_up = 1
-       <!-- <if test="null !=companyCode and ''!=companyCode">
-            and s.store_structure_code like concat('%',#{companyCode},'%')
-        </if>-->
-        <if test="null !=storeType and ''!=storeType">
-            and s.store_type =#{storeType}
-        </if>
-       AND ob.store_id IN
-        <foreach collection="list" item="item" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
+        <!-- <if test="null !=companyCode and ''!=companyCode">
+             and s.store_structure_code like concat('%',#{companyCode},'%')
+         </if>-->
+
+        <choose>
+            <when test="'ZS'==storeType">
+                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
+            </when>
+            <when test="'FX'==storeType">
+                and s.store_type in ('FX')
+            </when>
+            <otherwise>
+                <if test="null!=storeType and ''!=storeType">
+                    and s.store_type =#{storeType}
+                </if>
+                AND ob.store_id IN
+                <foreach collection="list" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </otherwise>
+        </choose>
         order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
         UNION ALL
-
         (SELECT
         s.city as 'cityName',
         s.store_name as 'storeName',
@@ -999,21 +1029,29 @@
         </if>
         AND ob.delivery_type = 'SELF_TAKE'
         and obd.is_pay_up = 1
-    <!--    <if test="null !=companyCode and ''!=companyCode">
-            and s.store_structure_code like concat('%',#{companyCode},'%')
-        </if>-->
-
-        <if test="null !=storeType and ''!=storeType">
-            and s.store_type = #{storeType}
-        </if>
-       AND ob.store_id IN
-        <foreach collection="list" item="item" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
+        <!--    <if test="null !=companyCode and ''!=companyCode">
+                and s.store_structure_code like concat('%',#{companyCode},'%')
+            </if>-->
+        <choose>
+            <when test="'ZS'==storeType">
+                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
+            </when>
+            <when test="'FX'==storeType">
+                and s.store_type in ('FX')
+            </when>
+            <otherwise>
+                <if test="null!=storeType and ''!=storeType">
+                    and s.store_type =#{storeType}
+                </if>
+                AND ob.store_id IN
+                <foreach collection="list" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </otherwise>
+        </choose>
         order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
         UNION ALL
-
         (SELECT
         s.city as 'cityName',
         s.store_name as 'storeName',
@@ -1055,20 +1093,28 @@
             AND
             wro.create_time >= #{startTime}
         </if>
-     <!--   <if test="null!=companyCode and ''!=companyCode">
-            and s.store_structure_code like concat('%',#{companyCode},'%')
-        </if>-->
-        <if test="null !=storeType and ''!=storeType">
-            and s.store_type = #{storeType}
-        </if>
-        AND orb.store_id IN
-        <foreach collection="list" item="item" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
+        <!--   <if test="null!=companyCode and ''!=companyCode">
+               and s.store_structure_code like concat('%',#{companyCode},'%')
+           </if>-->
+        <choose>
+            <when test="'ZS'==storeType">
+                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
+            </when>
+            <when test="'FX'==storeType">
+                and s.store_type in ('FX')
+            </when>
+            <otherwise>
+                <if test="null!=storeType and ''!=storeType">
+                    and s.store_type =#{storeType}
+                </if>
+                AND ob.store_id IN
+                <foreach collection="list" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </otherwise>
+        </choose>
         )
-
         UNION ALL
-
         (SELECT
         s.city as 'cityName',
         s.store_name as 'storeName',
@@ -1112,16 +1158,30 @@
         <!--   <if test="null!=companyCode and ''!=companyCode">
                and s.store_structure_code like concat('%',#{companyCode},'%')
            </if>-->
-        <if test="null !=storeType and ''!=storeType">
-            and s.store_type = #{storeType}
-        </if>
-        AND orb.store_id IN
-        <foreach collection="list" item="item" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
+        <choose>
+            <when test="'ZS'==storeType">
+                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
+                <if test="null!=endTime and ''!=endTime">
+                    and
+                    <![CDATA[ orb.return_time <= #{endTime} ]]>
+                </if>
+            </when>
+            <when test="'FX'==storeType">
+                and s.store_type in ('FX')
+            </when>
+            <otherwise>
+                <if test="null!=storeType and ''!=storeType">
+                    and s.store_type =#{storeType}
+                </if>
+                AND ob.store_id IN
+                <foreach collection="list" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </otherwise>
+        </choose>
         )
-
     </select>
+
 
 
     <select id="findProductSalesList" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.SalesReportDO">
@@ -1174,21 +1234,31 @@
             and
             <![CDATA[obd.pay_up_time<= #{endTime}]]>
         </if>
+        and obd.is_pay_up = 1
         and ob.delivery_type = 'HOUSE_DELIVERY'
- <!--       <if test="null!=companyCode and ''!=companyCode">
-            and s.store_structure_code like concat('%',#{companyCode},'%')
-        </if>-->
-        <if test="null!=storeType and ''!=storeType">
-            and s.store_type =#{storeType}
-        </if>
-        AND ob.store_id IN
-        <foreach collection="list" item="item" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
+        <!--       <if test="null!=companyCode and ''!=companyCode">
+                   and s.store_structure_code like concat('%',#{companyCode},'%')
+               </if>-->
+        <choose>
+            <when test="'ZS'==storeType">
+                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
+            </when>
+            <when test="'FX'==storeType">
+                and s.store_type in ('FX')
+            </when>
+            <otherwise>
+                <if test="null!=storeType and ''!=storeType">
+                    and s.store_type =#{storeType}
+                </if>
+                AND ob.store_id IN
+                <foreach collection="list" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </otherwise>
+        </choose>
         order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
         UNION ALL
-
         (SELECT
         s.city as 'cityName',
         s.store_name as 'storeName',
@@ -1241,19 +1311,28 @@
             and   <![CDATA[ obd.pay_up_time <= #{endTime}]]>
         </if>
         AND ob.delivery_type = 'SELF_TAKE'
-<!--        <if test="null!=companyCode and ''!=companyCode">
-            and s.store_structure_code like concat('%',#{companyCode},'%')
-        </if>-->
-
-        <if test="null!=storeType and ''!=storeType">
-            and s.store_type = #{storeType}
-        </if>
-        AND ob.store_id IN
-        <foreach collection="list" item="item" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
+        and obd.is_pay_up = 1
+        <!--        <if test="null!=companyCode and ''!=companyCode">
+                    and s.store_structure_code like concat('%',#{companyCode},'%')
+                </if>-->
+        <choose>
+            <when test="'ZS'==storeType">
+                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
+            </when>
+            <when test="'FX'==storeType">
+                and s.store_type in ('FX')
+            </when>
+            <otherwise>
+                <if test="null!=storeType and ''!=storeType">
+                    and s.store_type =#{storeType}
+                </if>
+                AND ob.store_id IN
+                <foreach collection="list" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </otherwise>
+        </choose>
         order by ob.store_id,ob.sales_consult_id,ob.create_time)
-
 
         UNION ALL
 
@@ -1316,16 +1395,26 @@
         </if>
         and ob.delivery_type = 'HOUSE_DELIVERY'
         and obd.is_pay_up = 1
-<!--        <if test="null!=companyCode and ''!=companyCode">
-            and s.store_structure_code like concat('%',#{companyCode},'%')
-        </if>-->
-        <if test="null!=storeType and ''!=storeType">
-            and s.store_type =#{storeType}
-        </if>
-        AND ob.store_id IN
-        <foreach collection="list" item="item" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
+        <!--        <if test="null!=companyCode and ''!=companyCode">
+                    and s.store_structure_code like concat('%',#{companyCode},'%')
+                </if>-->
+        <choose>
+            <when test="'ZS'==storeType">
+                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
+            </when>
+            <when test="'FX'==storeType">
+                and s.store_type in ('FX')
+            </when>
+            <otherwise>
+                <if test="null!=storeType and ''!=storeType">
+                    and s.store_type =#{storeType}
+                </if>
+                AND ob.store_id IN
+                <foreach collection="list" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </otherwise>
+        </choose>
         order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
         UNION ALL
@@ -1391,18 +1480,28 @@
         </if>
         AND ob.delivery_type = 'SELF_TAKE'
         and obd.is_pay_up = 1
-      <!--  <if test="null!=companyCode and ''!=companyCode">
-            and s.store_structure_code like concat('%',#{companyCode},'%')
-        </if>-->
-        <if test="null!=storeType and ''!=storeType">
-            and s.store_type =#{storeType}
-        </if>
-        AND ob.store_id IN
-        <foreach collection="list" item="item" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
-        order by ob.store_id,ob.sales_consult_id,ob.create_time)
+        <!--  <if test="null!=companyCode and ''!=companyCode">
+              and s.store_structure_code like concat('%',#{companyCode},'%')
+          </if>-->
 
+        <choose>
+            <when test="'ZS'==storeType">
+                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
+            </when>
+            <when test="'FX'==storeType">
+                and s.store_type in ('FX')
+            </when>
+            <otherwise>
+                <if test="null!=storeType and ''!=storeType">
+                    and s.store_type =#{storeType}
+                </if>
+                AND ob.store_id IN
+                <foreach collection="list" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </otherwise>
+        </choose>
+        order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
         UNION ALL
 
@@ -1447,20 +1546,35 @@
         and orb.return_status = 'FINISHED'
         <if test="null!=startTime and ''!=startTime">
             AND
-            orb.return_time > '2018-04-01 00:00:00'
+            orb.return_time > #{startTime}
         </if>
-     <!--   <if test="null!=companyCode and ''!=companyCode">
-            and s.store_structure_code like concat('%',#{companyCode},'%')
-        </if>-->
-        <if test="null!=storeType and ''!=storeType">
-            and s.store_type = #{storeType}
-        </if>
-        AND orb.store_id IN
-        <foreach collection="list" item="item" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
+        <!--   <if test="null!=companyCode and ''!=companyCode">
+               and s.store_structure_code like concat('%',#{companyCode},'%')
+           </if>-->
+        <choose>
+            <when test="'ZS'==storeType">
+                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
+                <if test="null!=endTime and ''!=endTime">
+                    and
+                    <![CDATA[ orb.return_time <= #{endTime} ]]>
+                </if>
+            </when>
+            <when test="'FX'==storeType">
+                and s.store_type in ('FX')
+            </when>
+            <otherwise>
+                <if test="null!=storeType and ''!=storeType">
+                    and s.store_type =#{storeType}
+                </if>
+                AND ob.store_id IN
+                <foreach collection="list" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </otherwise>
+        </choose>
         )
     </select>
+
 
     <select id="findAccountZGGoodsItemsDOAll"
             resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.AccountGoodsItemsDO">
@@ -1485,7 +1599,6 @@
         LEFT JOIN ord_goods_info og ON og.ord_no = obi.ord_no
         INNER JOIN rank_store st ON st.store_id = obi.store_id
         INNER JOIN rank_goods rg ON rg.gid = og.gid
-        INNER JOIN cus_rank cr ON cr.cus_id = obi.customer_id
         LEFT JOIN ord_lifecycle ol ON obi.ord_no = ol.ord_no
         LEFT JOIN ord_logistics_info oli ON oli.ord_no = obi.ord_no
         WHERE obi.`status` != 'UNPAID'
@@ -1528,7 +1641,6 @@
         LEFT JOIN ord_return_goods_info org ON org.return_no = orbi.return_no
         INNER JOIN rank_goods rg ON rg.sku = org.sku
         INNER JOIN rank_store st ON st.store_id = orbi.store_id
-        INNER JOIN cus_rank cr ON cr.cus_id = orbi.cus_id
         LEFT JOIN ord_return_lifecycle rl ON orbi.return_no = rl.return_no
         LEFT JOIN ord_base_info obi ON obi.ord_no = orbi.ord_no
         LEFT JOIN ord_return_logistic_info orli ON orli.return_no = orbi.return_no
@@ -1554,5 +1666,281 @@
         </foreach>
         ORDER BY orderTime DESC
     </select>
+
+    <select id="findNoProductArrearsList"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.SalesReportDO">
+        (SELECT
+        s.city as 'cityName',
+        s.store_name as 'storeName',
+        e.`name` as 'name',
+        ob.customer_name as 'customerName',
+        ob.ord_no as 'ordNo',
+        '配送' as 'orderType',
+        CASE ob.`status` WHEN 'PENDING_RECEIVE' THEN '待收货' WHEN 'FINISHED' THEN '已完成' end as 'orderStatus',
+        '' as 'selfTakeOrderTime',
+        ob.create_time as 'createTime',
+        CASE wa.end_dt WHEN null THEN '一代数据' ELSE wa.end_dt END as 'shippingDate',
+        CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
+        CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
+        og.sku as 'sku',
+        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END
+        as'goodsType',
+        og.company_flag as 'companyFlag',
+        if(og.goods_line_type = "PRODUCT_COUPON" ,(SELECT SUM(purchase_price) from ord_coupon_info where ord_no =
+        ob.ord_no and og.sku = sku) , (og.order_qty ) * og.return_price ) as 'financialSales',
+        if(og.goods_line_type = "PRODUCT_COUPON" ,(SELECT SUM(purchase_price - (sog.settlement_price -
+        sog.wholesale_price)) from ord_coupon_info soc LEFT JOIN ord_goods_info sog ON soc.oid = sog.oid where
+        soc.ord_no = ob.ord_no and og.sku = soc.sku and soc.purchase_price != 0) , (og.order_qty ) * (og.return_price -
+        (og.settlement_price - og.wholesale_price)) ) as 'distributionSales',
+        og.wholesale_price as 'wholesalePrice',
+        og.retail_price as 'retailPrice',
+        og.settlement_price as 'settlementPrice',
+        (og.retail_price - og.settlement_price) as 'memberDiscount',
+        og.promotion_share_price as 'promotionSharePrice',
+        og.cash_coupon_share_price as 'cashCouponSharePrice',
+        og.order_qty as 'orderQty'
+        FROM
+        ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
+        LEFT JOIN st_store s on ob.store_id = s.store_id
+        LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
+        LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
+        LEFT JOIN inter_wta_order_shipping_header wa ON ob.ord_no = wa.order_no
+
+        WHERE
+        ob.`status` IN (
+        'PENDING_RECEIVE',
+        'FINISHED'
+        )
+        and ob.delivery_type = 'HOUSE_DELIVERY'
+        AND obd.is_pay_up = 0
+        <!--<if test="null!=companyCode and ''!=companyCode">
+                and s.store_structure_code like concat('%',#{companyCode},'%')
+            </if>-->
+        <choose>
+            <when test="'ZS'==storeType">
+                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
+            </when>
+            <when test="'FX'==storeType">
+                and s.store_type in ('FX')
+            </when>
+            <otherwise>
+                <if test="null!=storeType and ''!=storeType">
+                    and s.store_type =#{storeType}
+                </if>
+                AND ob.store_id IN
+                <foreach collection="list" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </otherwise>
+        </choose>
+        order by ob.store_id,ob.sales_consult_id,ob.create_time)
+
+        UNION ALL
+        (SELECT
+        s.city as 'cityName',
+        s.store_name as 'storeName',
+        e.`name` as 'name',
+        ob.customer_name as 'customerName',
+        ob.ord_no as 'ordNo',
+        '自提' as 'orderType',
+        CASE ob.`status` WHEN 'PENDING_RECEIVE' THEN '待收货' WHEN 'FINISHED' THEN '已完成' end as 'orderStatus',
+        os.shipping_time as 'selfTakeOrderTime',
+        ob.create_time as 'createTime',
+        CASE os.shipping_time WHEN null THEN '一代数据' ELSE os.shipping_time END as 'shippingDate',
+        CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
+        CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
+        og.sku as 'sku',
+        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END
+        as'goodsType',
+        og.company_flag as 'companyFlag',
+        if(og.goods_line_type = "PRODUCT_COUPON" ,(SELECT SUM(purchase_price) from ord_coupon_info where ord_no =
+        ob.ord_no and og.sku = sku) , (og.order_qty ) * og.return_price ) as 'financialSales',
+        if(og.goods_line_type = "PRODUCT_COUPON" ,(SELECT SUM(purchase_price - (sog.settlement_price -
+        sog.wholesale_price)) from ord_coupon_info soc LEFT JOIN ord_goods_info sog ON soc.oid = sog.oid where
+        soc.ord_no = ob.ord_no and og.sku = soc.sku and soc.purchase_price != 0) , (og.order_qty ) * (og.return_price -
+        (og.settlement_price - og.wholesale_price)) ) as 'distributionSales',
+        og.wholesale_price as 'wholesalePrice',
+        og.retail_price as 'retailPrice',
+        og.settlement_price as 'settlementPrice',
+        (og.retail_price - og.settlement_price) as 'memberDiscount',
+        og.promotion_share_price as 'promotionSharePrice',
+        og.cash_coupon_share_price as 'cashCouponSharePrice',
+        og.order_qty as 'orderQty'
+        FROM
+        ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
+        LEFT JOIN st_store s on ob.store_id = s.store_id
+        LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
+        LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
+        LEFT JOIN ord_shipping os on ob.oid = os.oid
+        WHERE
+        ob.`status` IN (
+        'PENDING_RECEIVE',
+        'FINISHED'
+        )
+        AND ob.delivery_type = 'SELF_TAKE'
+        <!--      <if test="null !=companyCode and ''!=companyCode">
+                  and s.store_structure_code like concat('%',#{companyCode},'%')
+              </if>-->
+        AND obd.is_pay_up = 0
+        <choose>
+            <when test="'ZS'==storeType">
+                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
+            </when>
+            <when test="'FX'==storeType">
+                and s.store_type in ('FX')
+            </when>
+            <otherwise>
+                <if test="null!=storeType and ''!=storeType">
+                    and s.store_type =#{storeType}
+                </if>
+                AND ob.store_id IN
+                <foreach collection="list" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </otherwise>
+        </choose>
+        order by ob.store_id,ob.sales_consult_id,ob.create_time)
+    </select>
+
+
+
+    <select id="findProductArrearsList" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.SalesReportDO">
+        (SELECT
+        s.city as 'cityName',
+        s.store_name as 'storeName',
+        e.`name` as 'name',
+        ob.customer_name as 'customerName',
+        ob.ord_no as 'ordNo',
+        '配送' as 'orderType',
+        CASE ob.`status` WHEN 'PENDING_RECEIVE' THEN '待收货' WHEN 'FINISHED' THEN '已完成' end as 'orderStatus',
+        '' as 'selfTakeOrderTime',
+        ob.create_time as 'createTime',
+        CASE wa.end_dt WHEN null THEN '一代数据' ELSE wa.end_dt END as 'shippingDate',
+        CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
+        CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
+        og.sku as 'sku',
+        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END as
+        'goodsType',
+        og.company_flag as 'companyFlag',
+        if(og.goods_line_type = "PRODUCT_COUPON" ,oci.purchase_price , (og.order_qty ) * og.return_price ) as
+        'financialSales',
+        if(og.goods_line_type = "PRODUCT_COUPON" ,(oci.purchase_price - (og.settlement_price - og.wholesale_price)) ,
+        (og.order_qty ) * (og.return_price - (og.settlement_price - og.wholesale_price)) ) as 'distributionSales',
+        og.wholesale_price as 'wholesalePrice',
+        og.retail_price as 'retailPrice',
+        og.settlement_price as 'settlementPrice',
+        (og.retail_price - og.settlement_price) as 'memberDiscount',
+        og.promotion_share_price as 'promotionSharePrice',
+        og.cash_coupon_share_price as 'cashCouponSharePrice',
+        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty'
+
+        FROM
+        ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
+        LEFT JOIN st_store s on ob.store_id = s.store_id
+        LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
+        -- LEFT JOIN gds_goods_grade gp on og.sku = gp.sku
+        LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
+        LEFT JOIN inter_wta_order_shipping_header wa ON ob.ord_no = wa.order_no
+        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku and og.goods_line_type = 'PRODUCT_COUPON'
+        WHERE
+        ob.`status` IN (
+        'PENDING_RECEIVE',
+        'FINISHED'
+        )
+        and ob.delivery_type = 'HOUSE_DELIVERY'
+        AND obd.is_pay_up = 0
+        <!--       <if test="null!=companyCode and ''!=companyCode">
+                   and s.store_structure_code like concat('%',#{companyCode},'%')
+               </if>-->
+        <choose>
+            <when test="'ZS'==storeType">
+                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
+            </when>
+            <when test="'FX'==storeType">
+                and s.store_type in ('FX')
+            </when>
+            <otherwise>
+                <if test="null!=storeType and ''!=storeType">
+                    and s.store_type =#{storeType}
+                </if>
+                AND ob.store_id IN
+                <foreach collection="list" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </otherwise>
+        </choose>
+        order by ob.store_id,ob.sales_consult_id,ob.create_time)
+
+        UNION ALL
+        (SELECT
+        s.city as 'cityName',
+        s.store_name as 'storeName',
+        e.`name` as 'name',
+        ob.customer_name as 'customerName',
+        ob.ord_no as 'ordNo',
+        '自提' as 'orderType',
+        CASE ob.`status` WHEN 'PENDING_RECEIVE' THEN '待收货' WHEN 'FINISHED' THEN '已完成' end as
+        'orderStatus',
+        os.shipping_time as 'selfTakeOrderTime',
+        ob.create_time as 'createTime',
+        CASE os.shipping_time WHEN null THEN '一代数据' ELSE os.shipping_time END as 'shippingDate',
+        CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
+        CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
+        og.sku as 'sku',
+        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT'
+        THEN '赠品' END as
+        'goodsType',
+        og.company_flag as 'companyFlag',
+
+        if(og.goods_line_type = "PRODUCT_COUPON" ,purchase_price , (og.order_qty ) * og.return_price )
+        as 'financialSales',
+        if(og.goods_line_type = "PRODUCT_COUPON" ,(oci.purchase_price - (og.settlement_price -
+        og.wholesale_price)) ,
+        (og.order_qty ) * (og.return_price - (og.settlement_price - og.wholesale_price)) ) as
+        'distributionSales',
+        og.wholesale_price as 'wholesalePrice',
+        og.retail_price as 'retailPrice',
+        og.settlement_price as 'settlementPrice',
+        (og.retail_price - og.settlement_price) as 'memberDiscount',
+        og.promotion_share_price as 'promotionSharePrice',
+        og.cash_coupon_share_price as 'cashCouponSharePrice',
+        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty'
+        FROM
+        ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
+        LEFT JOIN st_store s on ob.store_id = s.store_id
+        LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
+        LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
+        LEFT JOIN ord_shipping os on ob.oid = os.oid
+        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku and og.goods_line_type = 'PRODUCT_COUPON'
+        WHERE
+        ob.`status` IN (
+        'PENDING_RECEIVE',
+        'FINISHED'
+        )
+        AND ob.delivery_type = 'SELF_TAKE'
+        <!--        <if test="null!=companyCode and ''!=companyCode">
+                    and s.store_structure_code like concat('%',#{companyCode},'%')
+                </if>-->
+        AND obd.is_pay_up = 0
+        <choose>
+            <when test="'ZS'==storeType">
+                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
+            </when>
+            <when test="'FX'==storeType">
+                and s.store_type in ('FX')
+            </when>
+            <otherwise>
+                <if test="null!=storeType and ''!=storeType">
+                    and s.store_type =#{storeType}
+                </if>
+                AND ob.store_id IN
+                <foreach collection="list" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </otherwise>
+        </choose>
+        order by ob.store_id,ob.sales_consult_id,ob.create_time)
+    </select>
+
 
 </mapper>

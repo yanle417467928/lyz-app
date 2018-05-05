@@ -265,6 +265,11 @@ public class MaEmpCreditMoneyServiceImpl implements MaEmpCreditMoneyService {
                         guideCreditChangeDetail.setAvailableCreditChangId(guideAvailableCreditChange.getId());
                         guideCreditChangeDetail.setTempCreditChangeId(guideTempCreditChange.getId());
                         this.saveCreditChange(guideCreditChangeDetail);
+                        break;
+                    } else {
+                        if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                            throw new SystemBusyException("系统繁忙，请稍后再试!");
+                        }
                     }
                 }
             }
