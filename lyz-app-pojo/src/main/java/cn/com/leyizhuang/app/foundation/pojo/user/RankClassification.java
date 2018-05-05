@@ -22,6 +22,8 @@ public class RankClassification {
     private String rankCode;
     //城市id
     private Long cityId;
+    //专供图片
+    private String rankUrl;
     //创建时间
     private Date createTime;
 }

@@ -1,9 +1,13 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.foundation.pojo.RankStore;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.MaCustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.response.ManageUpdateCustomerTypeResponse;
+import cn.com.leyizhuang.app.foundation.pojo.user.CusRankDO;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.user.RankClassification;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerLebiVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
 import org.apache.ibatis.annotations.Param;
@@ -70,7 +74,7 @@ public interface MaCustomerDAO {
      * @return
      */
     List<CustomerDO> findCustomerByCityIdAndStoreIdAndCustomerNameAndCustomerPhone(@Param(value = "customerQueryConditions") String customerQueryConditions,
-                                                                               @Param(value = "list") List<Long> storeIds);
+                                                                                   @Param(value = "list") List<Long> storeIds);
 
     /**
      *  后台购买产品券电话号码查询顾客
@@ -99,4 +103,37 @@ public interface MaCustomerDAO {
 
     Long findCityIdByCusId(Long cusId);
 
+    ManageUpdateCustomerTypeResponse findCustomerById(@Param("id")Long id);
+
+    /**
+     * 查看所有专供类型
+     */
+    List<RankClassification> findRankAll();
+
+    /**
+     * 查询专供门店
+     */
+    RankStore findStoreByCusId(@Param("cusId")Long cusId);
+
+    /**
+     * 修改会员专供类型
+     */
+    void updateMemberTypeByRankIdAndCusId(@Param("rankId")Long rankId,@Param("cusId")Long cusId);
+
+    /**
+     * 新增专供门店信息
+     */
+    void saveRankStore(RankStore rankStore);
+
+    /**
+     * 新增专供会员
+     */
+    void saveCusRank(CusRankDO cusRankDO);
+
+    /**
+     * 查找专供会员
+     */
+    CusRankDO findCusRankByCusId(@Param("cusId")Long cusId);
+
+    RankClassification findRankClassificationByRankCode(@Param("rankCode")String rankCode);
 }

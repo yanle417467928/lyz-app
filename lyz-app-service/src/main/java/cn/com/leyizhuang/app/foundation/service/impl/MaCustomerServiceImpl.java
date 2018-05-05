@@ -6,10 +6,16 @@ import cn.com.leyizhuang.app.core.constant.AppCustomerLightStatus;
 import cn.com.leyizhuang.app.foundation.dao.MaCustomerDAO;
 import cn.com.leyizhuang.app.foundation.dto.CusLebiDTO;
 import cn.com.leyizhuang.app.foundation.dto.CusPreDepositDTO;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.RankStore;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.MaCustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.response.ManageUpdateCustomerTypeResponse;
+import cn.com.leyizhuang.app.foundation.pojo.user.CusRankDO;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.user.RankClassification;
+import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.MaCusLebiLogService;
 import cn.com.leyizhuang.app.foundation.service.MaCusPreDepositLogService;
 import cn.com.leyizhuang.app.foundation.service.MaCustomerService;
@@ -21,6 +27,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.sql.Timestamp;
@@ -38,6 +45,9 @@ public class MaCustomerServiceImpl implements MaCustomerService {
 
     @Autowired
     private MaCusLebiLogService maCusLebiLogService;
+
+    @Resource
+    private AppStoreService appStoreService;
 
     @Override
     public PageInfo<CustomerDO> queryPageVO(Integer page, Integer size, List<Long> storeIds) {
@@ -221,5 +231,68 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     public Long findCityIdByCusId(Long cusId) {
         return this.maCustomerDAO.findCityIdByCusId(cusId);
     }
+
+    @Override
+    public ManageUpdateCustomerTypeResponse queryCustomerById(Long id) {
+        if (null != id) {
+            return this.maCustomerDAO.findCustomerById(id);
+        }else{
+            return null;
+        }
+
+    }
+
+    @Override
+    public List<RankClassification> findRankAll() {
+        List<RankClassification> rankClassificationList =this.maCustomerDAO.findRankAll();
+        RankClassification rankClassification = new RankClassification();
+        rankClassification.setRankCode("COMMON");
+        rankClassification.setRankName("一般会员");
+        rankClassificationList.add(rankClassification);
+        return rankClassificationList;
+
+    }
+
+    @Override
+    public Boolean findStoreByCusId(Long cusId) {
+        RankStore rankStore = this.maCustomerDAO.findStoreByCusId(cusId);
+        if (null == rankStore){
+            return false;
+        }else{
+            return true;
+        }
+    }
+
+    @Override
+    @Transactional
+    public void updateMemberType(ManageUpdateCustomerTypeResponse manageUpdateCustomerTypeResponse) {
+        RankStore rankStore = this.maCustomerDAO.findStoreByCusId(manageUpdateCustomerTypeResponse.getCusId());
+        CusRankDO cusRankDO = this.maCustomerDAO.findCusRankByCusId(manageUpdateCustomerTypeResponse.getCusId());
+        RankClassification rankClassification = this.maCustomerDAO.findRankClassificationByRankCode(manageUpdateCustomerTypeResponse.getMemberType());
+        if (null == rankStore){
+            AppStore store = appStoreService.findByStoreCode(rankStore.getStoreCode());
+            RankStore newRankStore = new RankStore();
+            newRankStore.setStoreId(store.getStoreId());
+            newRankStore.setStoreCode(store.getStoreCode());
+            newRankStore.setStoreName(store.getStoreName());
+            newRankStore.setCityId(store.getCityId());
+            newRankStore.setCityName(store.getCity());
+            newRankStore.setCompanyCode(store.getStoreStructureCode());
+            newRankStore.setCompanyName(null);
+            newRankStore.setCreateTime(new Date());
+            maCustomerDAO.saveRankStore(newRankStore);
+        }
+        if (null == cusRankDO){
+            CusRankDO newCusRank = new CusRankDO();
+            newCusRank.setCusId(manageUpdateCustomerTypeResponse.getCusId());
+            newCusRank.setRankId(rankClassification.getRankId());
+            newCusRank.setNumber(null);
+            newCusRank.setCreateTime(new Date());
+            maCustomerDAO.saveCusRank(newCusRank);
+        }else{
+            maCustomerDAO.updateMemberTypeByRankIdAndCusId(rankClassification.getRankId(),manageUpdateCustomerTypeResponse.getCusId());
+        }
+    }
+
 }
 

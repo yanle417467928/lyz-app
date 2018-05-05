@@ -4,6 +4,7 @@ package cn.com.leyizhuang.app.web.controller.rest;
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.ManageUpdateCustomerTypeResponse;
 import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.MaCustomerService;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerDetailVO;
@@ -398,7 +399,6 @@ public class MaCustomerRestController extends BaseRestController {
      *
      * @param offset
      * @param size
-     * @param keywords
      * @param customerQueryConditions
      * @return
      */
@@ -424,6 +424,33 @@ public class MaCustomerRestController extends BaseRestController {
         }
     }
 
-
+    /**
+     * 修改顾客会员类型
+     *
+     * @param manageUpdateCustomerTypeResponse
+     * @param result
+     * @return
+     */
+    @PostMapping(value = "/update/memberType")
+    public ResultDTO<Object> restUpdateCustomerMemberTypeVO(@Valid ManageUpdateCustomerTypeResponse manageUpdateCustomerTypeResponse, BindingResult result) {
+        logger.info("restUpdateCustomerMemberTypeVO 修改顾客会员类型 ,入参 manageUpdateCustomerTypeResponse:{}", manageUpdateCustomerTypeResponse);
+        try {
+            if (!result.hasErrors()) {
+                this.maCustomerService.updateMemberType(manageUpdateCustomerTypeResponse);
+                logger.info("restUpdateCustomerMemberTypeVO ,修改顾客会员类型");
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            } else {
+                List<ObjectError> allErrors = result.getAllErrors();
+                logger.warn("restUpdateCustomerMemberTypeVO 修改顾客会员类型失败，页面提交数据错误：errors = {}", errorMsgToHtml(allErrors));
+                return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,
+                        errorMsgToHtml(allErrors), null);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("restUpdateCustomerMemberTypeVO EXCEPTION,发生未知错误，修改顾客会员类型");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
 
 }
