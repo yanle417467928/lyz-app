@@ -567,4 +567,39 @@ public class GoodsController {
         }
     }
 
+    /**
+     * @title   导购获取专供商品详情
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/5/5
+     */
+    @PostMapping(value = "/seller/zg/goodsDetail", produces = "application/json;charset=UTF-8")
+    public ResultDTO<GoodsDetailResponse> getSellerZGGoodsDetail(Long userId, Integer identityType, Long goodsId, String rankCode) {
+        logger.info("getSellerZGGoodsDetail CALLED,导购获取专供商品详情，入参 userId{}, goodsId {},identityType{}, rankCode{}", userId, goodsId, identityType, rankCode);
+
+        ResultDTO<GoodsDetailResponse> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getSellerZGGoodsDetail OUT,导购获取专供商品详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份不能为空", null);
+            logger.info("getSellerZGGoodsDetail OUT,导购获取专供商品详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == goodsId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "goodsId不能为null！", null);
+            logger.info("getSellerZGGoodsDetail OUT,导购获取专供商品详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        GoodsDetailResponse goodsDetailResponse = this.goodsService.findSellerZGGoodsDetailByGoodsId(userId, goodsId, identityType, rankCode);
+        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, goodsDetailResponse);
+        logger.info("getSellerZGGoodsDetail OUT,导购获取专供商品详情成功，出参 resultDTO:{}", resultDTO);
+        return resultDTO;
+    }
+
 }
