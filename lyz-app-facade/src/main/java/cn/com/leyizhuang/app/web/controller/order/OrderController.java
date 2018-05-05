@@ -365,6 +365,7 @@ public class OrderController {
             } else {
                 //判断是否可选择货到付款
                 Boolean isCashDelivery = this.commonService.checkCashDelivery(orderGoodsInfoList, userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
+                isCashDelivery = Boolean.FALSE;
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                         new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), false, isCashDelivery));
                 logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
