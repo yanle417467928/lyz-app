@@ -1498,4 +1498,21 @@
         </if>
     </select>
 
+    <select id="findSellerZGGoodsDetailByGoodsId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsDetailResponse">
+
+        <if test="null != type and type.toString() == 'SELLER'">
+            SELECT DISTINCT g.*, p.retail_price price FROM
+            (SELECT emp_id, identity_type, store_id FROM emp_employee WHERE emp_id = #{userId}) e
+            LEFT JOIN gds_goods_price p on p.store_id = e.store_id AND p.gid = #{goodsId} AND p.start_time &lt; NOW()
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+            AND p.price_type != 'COMMON',
+            (SELECT gid id, sku_name skuName, goods_specification goodsSpecification, goods_unit goodsUnit,work_area workArea,work_cost workCost FROM
+            gds_goods WHERE gid = #{goodsId}) g
+            WHERE
+            g.id = p.gid AND e.emp_id = #{userId}
+            AND p.price_type = #{rankCode}
+        </if>
+    </select>
+
 </mapper>

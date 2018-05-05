@@ -205,4 +205,7 @@ public interface GoodsDAO {
                                                                               @Param("identityType") AppIdentityType identityType,
                                                                               @Param("rankCode") String rankCode);
 
+    GoodsDetailResponse findSellerZGGoodsDetailByGoodsId(@Param("userId") Long userId, @Param("goodsId") Long goodsId,
+                                     @Param("type") AppIdentityType appIdentityType, @Param("rankCode") String rankCode);
+
 }
