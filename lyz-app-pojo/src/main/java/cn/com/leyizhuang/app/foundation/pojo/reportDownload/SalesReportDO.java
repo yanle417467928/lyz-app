@@ -46,6 +46,8 @@ public class SalesReportDO {
     private String payUpTime;
     //编号
     private String sku;
+    //商品名称
+    private String skuName;
    //产品类型
     private String goodsType;
     //品牌
