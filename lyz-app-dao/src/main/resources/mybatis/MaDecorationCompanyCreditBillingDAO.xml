@@ -151,7 +151,7 @@
         </foreach>
         GROUP BY oi.ord_no
         UNION
-        SELECT ord.create_time createTime, ori.return_no orderNumber, orb.st_credit_money creditMoney,
+        SELECT ord.create_time createTime, ori.return_no orderNumber, -1 * IFNULL(orb.st_credit_money,0) creditMoney,
         ori.store_id storeId, ori.creator_name creatorName, ori.creator_id creatorId,
         IF(orl.delivery_type = 'HOUSE_PICK', orl.return_full_address, orl.return_store_address) deliveryAddress, orl.rejecter,ori.reason_info as remark,
         -1 * SUM(IFNULL(orgi.return_qty, 0)) goodsQty
