@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.MaterialListType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet;
 import cn.com.leyizhuang.app.foundation.pojo.request.MaterialAuditSheetRequest;
@@ -14,6 +15,7 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import cn.com.leyizhuang.common.util.AssertUtil;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +28,7 @@ import javax.annotation.Resource;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 物料审核单
@@ -50,6 +53,9 @@ public class MaterialAuditSheetController {
 
     @Autowired
     private CommonService commonService;
+
+    @Resource
+    private GoodsService goodsService;
 
     /**
      * 新增物料审核单
@@ -253,7 +259,7 @@ public class MaterialAuditSheetController {
                 materialAuditDetailsResponse.setTotalGoodsQty(totalGoodsQty);
                 //把物料审核单中所有的商品list放入返回值对象中
                 materialAuditDetailsResponse.setGoodsList(materialAuditGoodsInfoList);
-                if (null != materialAuditDetailsResponse){
+                if (null != materialAuditDetailsResponse) {
                     if ("undefined".equals(materialAuditDetailsResponse.getDeliveryCity())) {
                         materialAuditDetailsResponse.setDeliveryCity("");
                     }
@@ -297,9 +303,9 @@ public class MaterialAuditSheetController {
      * @return 返回物料审核单列表
      */
     @RequestMapping(value = "/list", method = RequestMethod.POST)
-    public ResultDTO<Object> queryListByEmployeeIDAndStatus(Long userID, Integer status,Integer page, Integer size) {
+    public ResultDTO<Object> queryListByEmployeeIDAndStatus(Long userID, Integer status, Integer page, Integer size) {
         ResultDTO<Object> resultDTO;
-        logger.info("queryListByEmployeeIDAndStatus CALLED,根据用户id与状态获取物料审核列表，入参 userID:{},status:{},page:{},size:{}", userID, status,page,size);
+        logger.info("queryListByEmployeeIDAndStatus CALLED,根据用户id与状态获取物料审核列表，入参 userID:{},status:{},page:{},size:{}", userID, status, page, size);
         if (null == userID) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
             logger.info("queryListByEmployeeIDAndStatus OUT,获取物料审核单列表失败，出参 resultDTO:{}", resultDTO);
@@ -319,7 +325,7 @@ public class MaterialAuditSheetController {
         }
         try {
             //查询用户对应状态的所有物料审核单
-            PageInfo<MaterialAuditSheetResponse> materialAuditSheetResponsePageInfo = materialAuditSheetService.queryListByEmployeeIDAndStatus(userID, status,page,size);
+            PageInfo<MaterialAuditSheetResponse> materialAuditSheetResponsePageInfo = materialAuditSheetService.queryListByEmployeeIDAndStatus(userID, status, page, size);
             List<MaterialAuditSheetResponse> materialAuditSheetResponseList = materialAuditSheetResponsePageInfo.getList();
             List<MaterialAuditSheetResponse> newMaterialAuditSheetResponseList = new ArrayList<>();
             for (MaterialAuditSheetResponse materialAuditSheetResponse : materialAuditSheetResponseList) {
@@ -339,7 +345,7 @@ public class MaterialAuditSheetController {
                 materialAuditSheetResponse.setTotalPrice(totalPrice);
                 materialAuditSheetResponse.setTotalQty(totalQty);
                 materialAuditSheetResponse.setPictureList(pictureList);
-                if (null != materialAuditSheetResponse){
+                if (null != materialAuditSheetResponse) {
                     if ("undefined".equals(materialAuditSheetResponse.getDeliveryCity())) {
                         materialAuditSheetResponse.setDeliveryCity("");
                     }
@@ -382,7 +388,7 @@ public class MaterialAuditSheetController {
     @RequestMapping(value = "/manager/list", method = RequestMethod.POST)
     public ResultDTO<Object> managerGetMaterialAuditSheet(Long userID, Integer status, Integer page, Integer size) {
         ResultDTO<Object> resultDTO;
-        logger.info("managerGetMaterialAuditSheet CALLED,根据用户id获取装饰公司审核列表，入参 userID:{},page:{}, size:{}", userID,page,size);
+        logger.info("managerGetMaterialAuditSheet CALLED,根据用户id获取装饰公司审核列表，入参 userID:{},page:{}, size:{}", userID, page, size);
         if (null == userID) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
             logger.info("managerGetMaterialAuditSheet OUT,根据用户id获取装饰公司审核列表失败，出参 resultDTO:{}", resultDTO);
@@ -472,7 +478,7 @@ public class MaterialAuditSheetController {
      * @return 返回成功或失败
      */
     @RequestMapping(value = "/manager/check", method = RequestMethod.POST)
-    public ResultDTO<Object> managerAudit(Integer identityType,Long userID, String auditNo, Boolean isAudited) {
+    public ResultDTO<Object> managerAudit(Integer identityType, Long userID, String auditNo, Boolean isAudited) {
         ResultDTO<Object> resultDTO;
         logger.info("managerAudit CALLED,项目经理审核物料审核单，入参 userID:{}, auditNo:{}, isAudited:{}", userID, auditNo, isAudited);
         if (null == userID) {
@@ -485,12 +491,12 @@ public class MaterialAuditSheetController {
             logger.info("managerAudit OUT,项目经理审核物料审核单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == identityType){
+        if (null == identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空", null);
             logger.info("managerAudit OUT,项目经理审核物料审核单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (identityType != 2){
+        if (identityType != 2) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份类型错误，不能进行审核！", null);
             logger.info("managerAudit OUT,项目经理审核物料审核单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -630,6 +636,126 @@ public class MaterialAuditSheetController {
             return resultDTO;
         }
     }
+
+
+    @RequestMapping(value = "/copy", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> copyMaterialAuditSheet(Long userId, Integer identityType, String auditNo, Long auditHeaderId) {
+        ResultDTO<Object> resultDTO;
+        logger.info("copyMaterialAuditSheet CALLED,物料审核单再来一单，入参 userId:{},identityType:{},auditNo:{}",
+                userId, identityType, auditNo);
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("copyMaterialAuditSheet OUT,物料审核单再来一单失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空", null);
+            logger.info("copyMaterialAuditSheet OUT,物料审核单再来一单失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(auditNo)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "物料审核单号不能为空", null);
+            logger.info("copyMaterialAuditSheet OUT,物料审核单再来一单失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == auditHeaderId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "物料审核单单头id不能为空", null);
+            logger.info("copyMaterialAuditSheet OUT,物料审核单再来一单失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            //获取用户信息
+            AppEmployee appEmployee = appEmployeeService.findById(userId);
+            if (null == appEmployee) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查到下单工人", null);
+                logger.info("copyMaterialAuditSheet OUT,物料审核单再来一单失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+
+            List<MaterialAuditGoodsInfo> auditGoodsInfos = materialAuditGoodsInfoService.queryListByAuditHeaderID(auditHeaderId);
+            if (!AssertUtil.isNotEmpty(auditGoodsInfos)) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该审核单未找到商品", null);
+                logger.info("copyMaterialAuditSheet OUT,物料审核单再来一单失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            //新增记录
+            List<MaterialListDO> materialListSave = new ArrayList<>();
+            //更新记录
+            List<MaterialListDO> materialListUpdate = new ArrayList<>();
+            for (int i = 0; i < auditGoodsInfos.size(); i++) {//查询商品信息
+                GoodsDO goodsDO = goodsService.findBySku(auditGoodsInfos.get(i).getSku());
+                if (null != goodsDO) {
+                    //查询下料清单商品
+                    MaterialListDO materialListDO = materialListService.findByUserIdAndIdentityTypeAndGoodsId(userId,
+                            appEmployee.getIdentityType(), goodsDO.getGid());
+                    if (null == materialListDO) {
+                        if (AssertUtil.isNotEmpty(materialListSave)) {
+                            List<String> skuList = materialListSave.stream().map(MaterialListDO::getSku).collect(Collectors.toList());
+                            if (skuList.contains(auditGoodsInfos.get(i).getSku())) {
+                                int finalI = i;
+                                MaterialListDO materialListDOTemp = materialListSave.stream().filter(p -> p.getSku().
+                                        equals(auditGoodsInfos.get(finalI).getSku())).collect(Collectors.toList()).get(0);
+                                materialListDOTemp.setQty(materialListDOTemp.getQty() + auditGoodsInfos.get(i).getQty());
+                                materialListSave.remove(materialListDOTemp);
+                                materialListSave.add(materialListDOTemp);
+                            } else {
+                                MaterialListDO materialListDOTemp = new MaterialListDO();
+                                materialListDOTemp.setGid(goodsDO.getGid());
+                                materialListDOTemp.setSku(goodsDO.getSku());
+                                materialListDOTemp.setSkuName(goodsDO.getSkuName());
+                                materialListDOTemp.setGoodsSpecification(goodsDO.getGoodsSpecification());
+                                materialListDOTemp.setGoodsUnit(goodsDO.getGoodsUnit());
+                                if (null != goodsDO.getCoverImageUri()) {
+                                    String uri[] = goodsDO.getCoverImageUri().split(",");
+                                    materialListDOTemp.setCoverImageUri(uri[0]);
+                                }
+                                materialListDOTemp.setUserId(userId);
+                                materialListDOTemp.setIdentityType(appEmployee.getIdentityType());
+                                materialListDOTemp.setQty(auditGoodsInfos.get(i).getQty());
+                                materialListDOTemp.setMaterialListType(MaterialListType.NORMAL);
+                                materialListSave.add(materialListDOTemp);
+                            }
+                        } else {
+                            MaterialListDO materialListDOTemp = new MaterialListDO();
+                            materialListDOTemp.setGid(goodsDO.getGid());
+                            materialListDOTemp.setSku(goodsDO.getSku());
+                            materialListDOTemp.setSkuName(goodsDO.getSkuName());
+                            materialListDOTemp.setGoodsSpecification(goodsDO.getGoodsSpecification());
+                            materialListDOTemp.setGoodsUnit(goodsDO.getGoodsUnit());
+                            if (null != goodsDO.getCoverImageUri()) {
+                                String uri[] = goodsDO.getCoverImageUri().split(",");
+                                materialListDOTemp.setCoverImageUri(uri[0]);
+                            }
+                            materialListDOTemp.setUserId(userId);
+                            materialListDOTemp.setIdentityType(appEmployee.getIdentityType());
+                            materialListDOTemp.setQty(auditGoodsInfos.get(i).getQty());
+                            materialListDOTemp.setMaterialListType(MaterialListType.NORMAL);
+                            materialListSave.add(materialListDOTemp);
+                        }
+                    } else {
+                        materialListDO.setQty(materialListDO.getQty() + auditGoodsInfos.get(i).getQty());
+                        materialListUpdate.add(materialListDO);
+                    }
+                } else {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
+                            "商品: '" + goodsDO.getSkuName() + "' 不存在!", null);
+                    logger.info("copyMaterialAuditSheet OUT,\"商品: '\" + goodsDO.getSkuName() + \"' 不存在,物料审核单再来一单失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+            }
+            commonService.saveAndUpdateMaterialList(materialListSave, materialListUpdate);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            logger.info("copyMaterialAuditSheet OUT,物料审核单再来一单成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，新增物料审核单失败", null);
+            logger.warn("copyMaterialAuditSheet Exception,物料审核单再来一单失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
 
     private MaterialListDO transform(MaterialAuditGoodsInfo materialAuditGoodsInfo, Long userID, String auditNo) {
 

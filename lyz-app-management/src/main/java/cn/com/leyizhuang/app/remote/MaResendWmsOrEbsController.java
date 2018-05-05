@@ -206,8 +206,14 @@ public class MaResendWmsOrEbsController {
                 //保存传wms配送单商品信息
                 if (orderGoodsSize > 0) {
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
-                        AtwRequisitionOrderGoods requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
-                                goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
+                        AtwRequisitionOrderGoods requisitionOrderGoods = null;
+                        if ("ZS-002".equals(baseInfo.getStoreCode()) || "MR004".equals(baseInfo.getStoreCode())){
+                            requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
+                                    goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getSettlementPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
+                        } else {
+                            requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
+                                    goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
+                        }
                         appToWmsOrderService.saveAtwRequisitionOrderGoods(requisitionOrderGoods);
                     }
                 }
@@ -236,8 +242,14 @@ public class MaResendWmsOrEbsController {
                 //保存传wms退货单商品信息
                 if (size > 0) {
                     for (ReturnOrderGoodsInfo returnOrderGoodsInfo : returnOrderGoodsInfoList) {
-                        AtwRequisitionOrderGoods requisitionOrderGoods = AtwRequisitionOrderGoods.transform(returnOrderGoodsInfo.getReturnNo(),
-                                returnOrderGoodsInfo.getSku(), returnOrderGoodsInfo.getSkuName(), returnOrderGoodsInfo.getRetailPrice(), returnOrderGoodsInfo.getReturnQty(), returnOrderGoodsInfo.getCompanyFlag());
+                        AtwRequisitionOrderGoods requisitionOrderGoods = null;
+                        if ("ZS-002".equals(orderBaseInfo.getStoreCode()) || "MR004".equals(orderBaseInfo.getStoreCode())){
+                            requisitionOrderGoods = AtwRequisitionOrderGoods.transform(returnOrderGoodsInfo.getReturnNo(),
+                                    returnOrderGoodsInfo.getSku(), returnOrderGoodsInfo.getSkuName(), returnOrderGoodsInfo.getSettlementPrice(), returnOrderGoodsInfo.getReturnQty(), returnOrderGoodsInfo.getCompanyFlag());
+                        } else {
+                            requisitionOrderGoods = AtwRequisitionOrderGoods.transform(returnOrderGoodsInfo.getReturnNo(),
+                                    returnOrderGoodsInfo.getSku(), returnOrderGoodsInfo.getSkuName(), returnOrderGoodsInfo.getRetailPrice(), returnOrderGoodsInfo.getReturnQty(), returnOrderGoodsInfo.getCompanyFlag());
+                        }
                         appToWmsOrderService.saveAtwRequisitionOrderGoods(requisitionOrderGoods);
                     }
                 }

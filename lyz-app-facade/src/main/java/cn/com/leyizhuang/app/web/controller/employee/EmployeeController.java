@@ -631,7 +631,7 @@ public class EmployeeController {
         }
         try {
             List<StoreRankClassification> rankClassifications = this.appEmployeeService.getStoreRankClassification(userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, rankClassifications);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, (null != rankClassifications && rankClassifications.size() > 0) ? rankClassifications : null);
             logger.info("getStoreRankClassification OUT,获取导购门店所有专供类型成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {

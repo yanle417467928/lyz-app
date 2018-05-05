@@ -253,7 +253,7 @@
 
     function initDateGird(keywords,startTime,endTime) {
         var storeId = $("#storeCode").val();
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/decorationCompany/creditBilling/page/grid', 'get', false, function (params) {
+        $grid.initZS($('#dataGrid'), $('#toolbar'), '/rest/decorationCompany/creditBilling/page/grid', 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,

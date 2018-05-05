@@ -14,7 +14,6 @@ import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderReceiptInf;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.BillingSimpleInfo;
@@ -832,26 +831,26 @@ public class AppOrderServiceImpl implements AppOrderService {
         }
 
 
-        //传EBS接口（订单收款）
-        OrderReceiptInf receiptInf = new OrderReceiptInf();
-        receiptInf.setMainOrderNumber(orderNumber);
-        receiptInf.setDescription(orderBillingPaymentDetails.getPayTypeDesc());
-        receiptInf.setAmount(orderBillingPaymentDetails.getAmount());
-        receiptInf.setCreateTime(new Date());
-        receiptInf.setReceiptDate(orderBillingPaymentDetails.getPayTime());
-        receiptInf.setReceiptType(orderBillingPaymentDetails.getPayType());
-        receiptInf.setStoreOrgId(orderBaseInfo.getStoreOrgId());
-        receiptInf.setDiySiteCode(orderBaseInfo.getStoreCode());
-        receiptInf.setReceiptNumber(orderBillingPaymentDetails.getReceiptNumber());
-        receiptInf.setSobId(orderBaseInfo.getSobId());
-        receiptInf.setUserId(null == orderBaseInfo.getCustomerId() ? orderBaseInfo.getCreatorId() : orderBaseInfo.getCustomerId());
-        receiptInf.setUserPhone(null == orderBaseInfo.getCustomerPhone() ? orderBaseInfo.getCreatorPhone() : orderBaseInfo.getCustomerPhone());
-        receiptInf.setUsername(null == orderBaseInfo.getCustomerName() ? orderBaseInfo.getCreatorName() : orderBaseInfo.getCustomerName());
-        receiptInf.setGuideId(orderBaseInfo.getSalesConsultId());
-        separateOrderService.saveOrderReceiptInf(receiptInf);
+        //传EBS接口（订单收款）2018-05-03 13:28:24 Jerry.Ren 修改这里收款拆单到Controller最后发送消息队列
+//        OrderReceiptInf receiptInf = new OrderReceiptInf();
+//        receiptInf.setMainOrderNumber(orderNumber);
+//        receiptInf.setDescription(orderBillingPaymentDetails.getPayTypeDesc());
+//        receiptInf.setAmount(orderBillingPaymentDetails.getAmount());
+//        receiptInf.setCreateTime(new Date());
+//        receiptInf.setReceiptDate(orderBillingPaymentDetails.getPayTime());
+//        receiptInf.setReceiptType(orderBillingPaymentDetails.getPayType());
+//        receiptInf.setStoreOrgId(orderBaseInfo.getStoreOrgId());
+//        receiptInf.setDiySiteCode(orderBaseInfo.getStoreCode());
+//        receiptInf.setReceiptNumber(orderBillingPaymentDetails.getReceiptNumber());
+//        receiptInf.setSobId(orderBaseInfo.getSobId());
+//        receiptInf.setUserId(null == orderBaseInfo.getCustomerId() ? orderBaseInfo.getCreatorId() : orderBaseInfo.getCustomerId());
+//        receiptInf.setUserPhone(null == orderBaseInfo.getCustomerPhone() ? orderBaseInfo.getCreatorPhone() : orderBaseInfo.getCustomerPhone());
+//        receiptInf.setUsername(null == orderBaseInfo.getCustomerName() ? orderBaseInfo.getCreatorName() : orderBaseInfo.getCustomerName());
+//        receiptInf.setGuideId(orderBaseInfo.getSalesConsultId());
+//        separateOrderService.saveOrderReceiptInf(receiptInf);
 
         //发送订单收款信息到EBS
-        separateOrderService.sendOrderReceiptInfByReceiptNumber(receiptNumber);
+//        separateOrderService.sendOrderReceiptInfByReceiptNumber(receiptNumber);
     }
 
     @Override
@@ -920,26 +919,26 @@ public class AppOrderServiceImpl implements AppOrderService {
             }
         }
 
-        //传EBS接口（订单收款）
-        OrderReceiptInf receiptInf = new OrderReceiptInf();
-        receiptInf.setMainOrderNumber(orderNumber);
-        receiptInf.setDescription(orderBillingPaymentDetails.getPayTypeDesc());
-        receiptInf.setAmount(orderBillingPaymentDetails.getAmount());
-        receiptInf.setCreateTime(new Date());
-        receiptInf.setReceiptDate(orderBillingPaymentDetails.getPayTime());
-        receiptInf.setReceiptType(orderBillingPaymentDetails.getPayType());
-        receiptInf.setStoreOrgId(orderBaseInfo.getStoreOrgId());
-        receiptInf.setDiySiteCode(orderBaseInfo.getStoreCode());
-        receiptInf.setReceiptNumber(orderBillingPaymentDetails.getReceiptNumber());
-        receiptInf.setSobId(orderBaseInfo.getSobId());
-        receiptInf.setUserId(null == orderBaseInfo.getCustomerId() ? orderBaseInfo.getCreatorId() : orderBaseInfo.getCustomerId());
-        receiptInf.setUserPhone(null == orderBaseInfo.getCustomerPhone() ? orderBaseInfo.getCreatorPhone() : orderBaseInfo.getCustomerPhone());
-        receiptInf.setUsername(null == orderBaseInfo.getCustomerName() ? orderBaseInfo.getCreatorName() : orderBaseInfo.getCustomerName());
-        receiptInf.setGuideId(orderBaseInfo.getSalesConsultId());
-        separateOrderService.saveOrderReceiptInf(receiptInf);
+        //传EBS接口（订单收款）2018-05-03 13:28:24 Jerry.Ren 修改这里收款拆单到Controller最后发送消息队列
+//        OrderReceiptInf receiptInf = new OrderReceiptInf();
+//        receiptInf.setMainOrderNumber(orderNumber);
+//        receiptInf.setDescription(orderBillingPaymentDetails.getPayTypeDesc());
+//        receiptInf.setAmount(orderBillingPaymentDetails.getAmount());
+//        receiptInf.setCreateTime(new Date());
+//        receiptInf.setReceiptDate(orderBillingPaymentDetails.getPayTime());
+//        receiptInf.setReceiptType(orderBillingPaymentDetails.getPayType());
+//        receiptInf.setStoreOrgId(orderBaseInfo.getStoreOrgId());
+//        receiptInf.setDiySiteCode(orderBaseInfo.getStoreCode());
+//        receiptInf.setReceiptNumber(orderBillingPaymentDetails.getReceiptNumber());
+//        receiptInf.setSobId(orderBaseInfo.getSobId());
+//        receiptInf.setUserId(null == orderBaseInfo.getCustomerId() ? orderBaseInfo.getCreatorId() : orderBaseInfo.getCustomerId());
+//        receiptInf.setUserPhone(null == orderBaseInfo.getCustomerPhone() ? orderBaseInfo.getCreatorPhone() : orderBaseInfo.getCustomerPhone());
+//        receiptInf.setUsername(null == orderBaseInfo.getCustomerName() ? orderBaseInfo.getCreatorName() : orderBaseInfo.getCustomerName());
+//        receiptInf.setGuideId(orderBaseInfo.getSalesConsultId());
+//        separateOrderService.saveOrderReceiptInf(receiptInf);
 
         //发送订单收款信息到EBS
-        separateOrderService.sendOrderReceiptInfByReceiptNumber(receiptNumber);
+//        separateOrderService.sendOrderReceiptInfByReceiptNumber(receiptNumber);
     }
 
     @Override
