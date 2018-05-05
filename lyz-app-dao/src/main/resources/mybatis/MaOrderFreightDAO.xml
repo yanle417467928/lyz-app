@@ -222,8 +222,6 @@
         RIGHT JOIN ord_freight_change_log ofcl ON obi.oid = ofcl.oid
         WHERE
         obi.delivery_type="HOUSE_DELIVERY"
-        AND
-        obi.status="UNPAID"
         ORDER BY ofcl.modify_time
         DESC
     </select>

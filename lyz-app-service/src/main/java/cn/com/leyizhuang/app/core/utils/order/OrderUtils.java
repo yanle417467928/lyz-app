@@ -196,10 +196,22 @@ public class OrderUtils {
         orderReturnNumber.append("T");
         Calendar calendar = Calendar.getInstance();
         Date date = calendar.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
         String timeStamp = sdf.format(date);
         orderReturnNumber.append(timeStamp);
+        Random random = new Random();
+        String randomNumber = random.nextInt(90000) + 10000 + "";
+        orderReturnNumber.append(randomNumber);
         return orderReturnNumber.toString();
+
+//        StringBuilder orderReturnNumber = new StringBuilder();
+//        orderReturnNumber.append("T");
+//        Calendar calendar = Calendar.getInstance();
+//        Date date = calendar.getTime();
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+//        String timeStamp = sdf.format(date);
+//        orderReturnNumber.append(timeStamp);
+//        return orderReturnNumber.toString();
     }
 
     public static Double replaceNullWithZero(Double d) {
@@ -341,7 +353,7 @@ public class OrderUtils {
         if (StringUtils.isNotBlank(orderNumber)) {
             if (orderNumber.contains("_XN")) {
                 int length = orderNumber.trim().length();
-                return (length == 25);
+                return (length == 25 || length == 27);
             }
         }
         return false;
@@ -358,7 +370,7 @@ public class OrderUtils {
         if (StringUtils.isNotBlank(returnNumber)) {
             if (returnNumber.contains("T")) {
                 int length = returnNumber.trim().length();
-                return (length == 18 || length == 16);
+                return (length == 18 || length == 16 || length == 21);
             }
         }
         return false;
