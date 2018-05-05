@@ -1801,9 +1801,9 @@ public class MaReportDownloadRestController extends BaseRestController {
                 WritableSheet ws = wwb.createSheet("账单明细（第" + (i + 1) + "页）", i);
 
                 //列宽
-                int[] columnView = {30, 15, 15, 50, 20, 15, 15, 20};
+                int[] columnView = {30, 15, 15,15, 15, 50, 20, 15, 15, 20};
                 //列标题
-                String[] titles = {"订单号", "出&退货日期", "收货人姓名", "收货人地址", "商品名称", "数量", "结算单价", "结算总价"};
+                String[] titles = {"订单号", "订单日期","出货日期","退货日期", "收货人姓名", "收货人地址", "商品名称", "数量", "结算单价", "结算总价"};
                 //计算标题开始行号
                 int row = 0;
 
@@ -1820,12 +1820,14 @@ public class MaReportDownloadRestController extends BaseRestController {
                     AccountGoodsItemsDO goodsItemsDO = goodsItemsDOS.get(j + i * maxRowNum);
                     ws.addCell(new Label(0, j + row, goodsItemsDO.getOrderNumber(), textFormat));
                     ws.addCell(new Label(1, j + row, goodsItemsDO.getOrderTime(), textFormat));
-                    ws.addCell(new Label(2, j + row, goodsItemsDO.getCustomerName(), textFormat));
-                    ws.addCell(new Label(3, j + row, goodsItemsDO.getShippingAddress(), textFormat));
-                    ws.addCell(new Label(4, j + row, goodsItemsDO.getSkuName(), textFormat));
-                    ws.addCell(new Number(5, j + row, goodsItemsDO.getQuantity(), textFormat));
-                    ws.addCell(new Number(6, j + row, goodsItemsDO.getSettlementPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                    ws.addCell(new Number(7, j + row, goodsItemsDO.getSettlementTotlePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Label(2, j + row, goodsItemsDO.getShippingTime(), textFormat));
+                    ws.addCell(new Label(3, j + row, goodsItemsDO.getReturnTime(), textFormat));
+                    ws.addCell(new Label(4, j + row, goodsItemsDO.getCustomerName(), textFormat));
+                    ws.addCell(new Label(5, j + row, goodsItemsDO.getShippingAddress(), textFormat));
+                    ws.addCell(new Label(6, j + row, goodsItemsDO.getSkuName(), textFormat));
+                    ws.addCell(new Number(7, j + row, goodsItemsDO.getQuantity(), textFormat));
+                    ws.addCell(new Number(8, j + row, goodsItemsDO.getSettlementPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Number(9, j + row, goodsItemsDO.getSettlementTotlePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                 }
             }
 
@@ -1853,9 +1855,9 @@ public class MaReportDownloadRestController extends BaseRestController {
                 ws.addCell(new Label(7, 1, user.getName(), textFormat));
 
                 //列宽
-                int[] columnView = {10, 30, 15, 15, 50, 10, 15};
+                int[] columnView = {10, 30, 15, 15, 50,40, 10, 15};
                 //列标题
-                String[] titles = {"序号", "订单号", "出&退货日期", "收货人姓名", "收货人地址", "商品总数", "总金额"};
+                String[] titles = {"序号", "订单号", "出&退货日期", "收货人姓名", "收货人地址","备注", "商品总数", "总金额"};
                 //计算标题开始行号
                 int row = 3;
 
@@ -1878,8 +1880,9 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Label(2, j + row, creditBillingDetailsVO.getCreateTime(), textFormat));
                     ws.addCell(new Label(3, j + row, creditBillingDetailsVO.getReceiver(), textFormat));
                     ws.addCell(new Label(4, j + row, creditBillingDetailsVO.getDeliveryAddress(), textFormat));
-                    ws.addCell(new Number(5, j + row, creditBillingDetailsVO.getGoodsQty()));
-                    ws.addCell(new Number(6, j + row, creditBillingDetailsVO.getCreditMoney(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Label(5, j + row, creditBillingDetailsVO.getRemark(), textFormat));
+                    ws.addCell(new Number(6, j + row, creditBillingDetailsVO.getGoodsQty()));
+                    ws.addCell(new Number(7, j + row, creditBillingDetailsVO.getCreditMoney(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     credit = CountUtil.add(credit, null == creditBillingDetailsVO.getCreditMoney() ? 0D : creditBillingDetailsVO.getCreditMoney());
                     goodsQty += null == creditBillingDetailsVO.getGoodsQty() ? 0 : creditBillingDetailsVO.getGoodsQty();
                     rows += 1;

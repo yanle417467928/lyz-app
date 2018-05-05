@@ -114,11 +114,11 @@
 
     <insert id="batchSaveCreditBillingDetailsDO" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsDO">
         INSERT INTO decoration_company_credit_billing_details
-        (store_id, credit_billing_no, order_number, creator_id, creator_name, order_time, delivery_address, credit_money, receiver, goods_qty)
+        (store_id, credit_billing_no, order_number, creator_id, creator_name, order_time, delivery_address, credit_money, receiver, goods_qty,remark)
         VALUES
         <foreach collection="list" item="item" separator=",">
             (#{item.storeId}, #{item.creditBillingNo}, #{item.orderNumber}, #{item.creatorId}, #{item.creatorName}, #{item.orderTime},
-            #{item.deliveryAddress}, #{item.creditMoney}, #{item.receiver}, #{item.goodsQty})
+            #{item.deliveryAddress}, #{item.creditMoney}, #{item.receiver}, #{item.goodsQty}, #{item.remark})
         </foreach>
 
     </insert>
@@ -128,7 +128,7 @@
         SELECT * FROM (
         SELECT ol.create_time orderTime, oi.ord_no orderNumber, od.st_credit_money creditMoney,
         oi.store_id storeId, oi.creator_name creatorName, oi.creator_id creatorId,
-        IF(og.delivery_type = 'HOUSE_DELIVERY', og.shipping_address, og.booking_store_address) deliveryAddress, og.receiver,
+        IF(og.delivery_type = 'HOUSE_DELIVERY', og.shipping_address, og.booking_store_address) deliveryAddress, og.receiver,oi.remark as remark,
         SUM(IFNULL(ogi.order_qty, 0)) goodsQty
         FROM ord_base_info oi
         INNER JOIN ord_billing_details od ON oi.ord_no = od.ord_no
@@ -153,7 +153,7 @@
         UNION
         SELECT ord.create_time createTime, ori.return_no orderNumber, orb.st_credit_money creditMoney,
         ori.store_id storeId, ori.creator_name creatorName, ori.creator_id creatorId,
-        IF(orl.delivery_type = 'HOUSE_PICK', orl.return_full_address, orl.return_store_address) deliveryAddress, orl.rejecter,
+        IF(orl.delivery_type = 'HOUSE_PICK', orl.return_full_address, orl.return_store_address) deliveryAddress, orl.rejecter,ori.reason_info as remark,
         -1 * SUM(IFNULL(orgi.return_qty, 0)) goodsQty
         FROM ord_return_base_info ori
         INNER JOIN ord_return_billing orb ON ori.return_no = orb.return_no
@@ -206,7 +206,7 @@
     </select>
 
     <select id="getDecorationCompanyCreditBillingDetailsByCreditBillingNo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsVO">
-        SELECT creator_name, order_time createTime, delivery_address, IFNULL(credit_money, 0) credit_money, order_number, receiver, IFNULL(goods_qty, 0) goods_qty
+        SELECT creator_name, order_time createTime, delivery_address, IFNULL(credit_money, 0) credit_money, order_number, receiver, IFNULL(goods_qty, 0) goods_qty,remark
         FROM decoration_company_credit_billing_details
         WHERE credit_billing_no = #{creditBillingNo}
     </select>
@@ -233,7 +233,7 @@
     </select>
 
     <select id="findGoodsItemsDOAll" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.AccountGoodsItemsDO">
-        SELECT ol.create_time orderTime, ogi.ord_no orderNumber, ogi.sku_name skuName,
+        SELECT ol.create_time shippingTime,obi.create_time orderTime, ogi.ord_no orderNumber, ogi.sku_name skuName,
         IF(og.delivery_type = 'HOUSE_DELIVERY', og.shipping_address, og.booking_store_address) shippingAddress, og.receiver customerName,
         IFNULL(ogi.order_qty, 0) quantity, IFNULL(ogi.settlement_price, 0) settlementPrice,
         (IFNULL(ogi.order_qty, 0) * IFNULL(ogi.settlement_price, 0)) settlementTotlePrice
@@ -241,9 +241,10 @@
         INNER JOIN ord_delivery_info_details ol ON ogi.ord_no = ol.order_no AND ol.logistic_status = 'SEALED_CAR'
         INNER JOIN ord_logistics_info og ON og.ord_no = ogi.ord_no
         INNER JOIN decoration_company_credit_billing_details dcd ON dcd.order_number = ogi.ord_no
+        LEFT  JOIN ord_base_info obi ON ogi.ord_no =obi.ord_no
         WHERE dcd.credit_billing_no = #{creditBillingNo}
         UNION
-        SELECT ord.create_time orderTime, orgi.return_no orderNumber, orgi.sku_name skuName,
+        SELECT ord.create_time returnTime,obi.create_time orderTime,orgi.return_no orderNumber, orgi.sku_name skuName,
         IF(orl.delivery_type = 'HOUSE_PICK', orl.return_full_address, orl.return_store_address) shippingAddress, orl.rejecter customerName,
         (-1 * IFNULL(orgi.return_qty,0)) quantity, IFNULL(orgi.settlement_price, 0) settlementPrice,
         (-1 * IFNULL(orgi.return_qty, 0) * IFNULL(orgi.settlement_price, 0)) settlementTotlePrice
@@ -251,6 +252,8 @@
         INNER JOIN ord_return_delivery_detail ord ON orgi.return_no = ord.return_no AND ord.return_logistic_status = 'AGAIN_ON_SALE'
         INNER JOIN ord_return_logistic_info orl ON orgi.return_no = orl.return_no
         LEFT JOIN decoration_company_credit_billing_details dcd ON dcd.order_number = orgi.return_no
+        LEFT  JOIN ord_return_base_info orbi ON orgi.return_no = orbi.return_no
+        LEFT  JOIN ord_base_info obi ON obi.ord_no =orbi.ord_no
         WHERE  dcd.credit_billing_no = #{creditBillingNo}
     </select>
 
