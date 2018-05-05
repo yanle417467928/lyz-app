@@ -32,4 +32,6 @@ public class DecorationCompanyCreditBillingDetailsVO {
     private String receiver;
     //商品数量
     private Integer goodsQty;
+    //备注
+    private String remark;
 }

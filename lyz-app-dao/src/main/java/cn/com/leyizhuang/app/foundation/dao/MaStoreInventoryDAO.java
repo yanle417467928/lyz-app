@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventoryChange;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreRealInventoryChange;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -15,6 +16,8 @@ import java.util.Date;
 @Repository
 public interface MaStoreInventoryDAO {
     void addInventoryChangeLog(MaStoreInventoryChange storeInventoryChange);
+
+    void addRealInventoryChangeLog(MaStoreRealInventoryChange storeRealInventoryChange);
 
     MaStoreInventory findStoreInventoryByStoreIdAndGoodsId(@Param(value = "storeId") Long storeId,@Param(value = "goodsId")  Long goodsId);
 
