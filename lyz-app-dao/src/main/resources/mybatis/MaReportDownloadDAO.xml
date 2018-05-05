@@ -795,6 +795,7 @@
             <![CDATA[ obd.pay_up_time<= #{endTime}]]>
         </if>
         and ob.delivery_type = 'HOUSE_DELIVERY'
+        and obd.is_pay_up = 1
         <!--<if test="null!=companyCode and ''!=companyCode">
                 and s.store_structure_code like concat('%',#{companyCode},'%')
             </if>-->
@@ -868,6 +869,7 @@
             <![CDATA[ obd.pay_up_time<= #{endTime}]]>
         </if>
         AND ob.delivery_type = 'SELF_TAKE'
+        and obd.is_pay_up = 1
         <!--      <if test="null !=companyCode and ''!=companyCode">
                   and s.store_structure_code like concat('%',#{companyCode},'%')
               </if>-->
@@ -1232,6 +1234,7 @@
             and
             <![CDATA[obd.pay_up_time<= #{endTime}]]>
         </if>
+        and obd.is_pay_up = 1
         and ob.delivery_type = 'HOUSE_DELIVERY'
         <!--       <if test="null!=companyCode and ''!=companyCode">
                    and s.store_structure_code like concat('%',#{companyCode},'%')
@@ -1308,6 +1311,7 @@
             and   <![CDATA[ obd.pay_up_time <= #{endTime}]]>
         </if>
         AND ob.delivery_type = 'SELF_TAKE'
+        and obd.is_pay_up = 1
         <!--        <if test="null!=companyCode and ''!=companyCode">
                     and s.store_structure_code like concat('%',#{companyCode},'%')
                 </if>-->
