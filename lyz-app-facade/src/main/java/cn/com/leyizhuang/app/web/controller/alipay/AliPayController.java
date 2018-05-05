@@ -332,7 +332,7 @@ public class AliPayController {
                             appOrderService.saveAliPayOrderBillingPaymentDetails(orderNumber, money, tradeNo, outTradeNo);
 
                             //2018-05-03 13:28:24 Jerry.Ren 修改这里收款拆单到Controller最后发送消息队列
-                            sinkSender.sendRechargeReceipt(outTradeNo);
+                            sinkSender.sendOrderReceipt(outTradeNo);
                             logger.warn("alipayReturnAsync OUT,支付宝支付回调接口处理成功，出参 result:{}", "success");
                             return "success";
                         }

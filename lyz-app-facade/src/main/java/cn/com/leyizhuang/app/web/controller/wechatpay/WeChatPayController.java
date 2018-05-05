@@ -459,7 +459,7 @@ public class WeChatPayController {
                                     String orderNumber = outTradeNo.replaceAll("_HK", "_XN");
                                     appOrderService.saveWeChatOrderBillingPaymentDetails(orderNumber, totalFeeParse, tradeNo, outTradeNo);
                                     //2018-05-03 13:28:24 Jerry.Ren 修改这里收款拆单到Controller最后发送消息队列
-                                    sinkSender.sendRechargeReceipt(outTradeNo);
+                                    sinkSender.sendOrderReceipt(outTradeNo);
                                 }
                             } else if (outTradeNo.contains("_XN")) {
                                 logger.info("weChatReturnSync,微信支付异步回调接口,回调单据类型:{}", "订单");

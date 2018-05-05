@@ -358,7 +358,7 @@ public class OrderUtils {
         if (StringUtils.isNotBlank(returnNumber)) {
             if (returnNumber.contains("T")) {
                 int length = returnNumber.trim().length();
-                return (length == 18 || length == 16 || length == 21);
+                return (length == 18 || length == 16);
             }
         }
         return false;
