@@ -57,10 +57,9 @@ public class ICallWms {
     }
 
     /**
-     * 发送取消订单或者取消退单到WMS
+     * 发送取消订单到WMS
      *
      * @param orderNumber 取消订单生成的退单信息
-     *
      */
     @Async
     public void sendToWmsCancelOrder(String orderNumber) {
@@ -82,7 +81,13 @@ public class ICallWms {
         Object[] objects = new Object[0];
         String errorMsg = "";
         try {
+            //应wms要求，线程睡眠2分钟，保证取消订单请求到达wms的时候，订单信息已经到达wms并处理完毕
+            logger.info("取消订单发送wms线程开始睡眠,估计要睡2分钟");
+            Thread.sleep(120 * 1000);
+            logger.info("取消订单发送wms线程睡醒了");
+
             objects = wmsClient.invoke(wmsName, "inter_atw_order_cancel_request", "1", xml);
+
             //修改发送状态
             errorMsg = AppXmlUtil.checkReturnXml(objects);
             logger.info("*****WMS返回发送取消订单信息***** 出参 OUT, XML:{}", objects);
@@ -131,6 +136,10 @@ public class ICallWms {
         Object[] objects = new Object[0];
         String errorMsg = "";
         try {
+            //应wms要求，线程睡眠2分钟，保证取消退单请求到达wms的时候，退单已经到达wms并处理完毕
+            logger.info("取消退单发送wms线程开始睡眠,估计要睡2分钟");
+            Thread.sleep(120 * 1000);
+            logger.info("取消退单发送wms线程睡醒了");
             objects = wmsClient.invoke(wmsName, "td_tbw_back_m_cancel", "1", xml);
             //修改发送状态
             errorMsg = AppXmlUtil.checkReturnXml(objects);
@@ -210,7 +219,6 @@ public class ICallWms {
      * 发送要货单及商品信息
      *
      * @param orderNumber 订单号
-     *
      */
     @Async
     public void sendToWmsRequisitionOrderAndGoods(String orderNumber) {
