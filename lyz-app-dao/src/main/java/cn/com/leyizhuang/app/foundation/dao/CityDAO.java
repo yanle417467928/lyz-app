@@ -78,4 +78,6 @@ public interface CityDAO {
                                                             @Param(value = "version") Timestamp version);
 
     void saveCityInventory(CityInventory cityInventory);
+
+    City findCityByWarehouseNo(String warehouseNo);
 }

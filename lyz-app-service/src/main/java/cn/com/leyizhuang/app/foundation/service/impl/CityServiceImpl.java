@@ -198,4 +198,12 @@ public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service
             cityDAO.saveCityInventory(cityInventory);
         }
     }
+
+    @Override
+    public City findCityByWarehouseNo(String warehouseNo) {
+        if (StringUtils.isNotBlank(warehouseNo)){
+            return cityDAO.findCityByWarehouseNo(warehouseNo);
+        }
+        return null;
+    }
 }

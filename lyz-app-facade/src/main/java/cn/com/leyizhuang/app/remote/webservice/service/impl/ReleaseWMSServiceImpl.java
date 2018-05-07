@@ -808,11 +808,14 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
             logger.warn("GetWMSInfo EXCEPTION,解密后xml参数错误");
             logger.warn("{}", e);
             return AppXmlUtil.resultStrXml(1, "解密后xml参数错误");
-
         } catch (IOException | SAXException e) {
             logger.warn("GetWMSInfo EXCEPTION,解密后xml格式不对");
             logger.warn("{}", e);
             return AppXmlUtil.resultStrXml(1, "解密后xml格式不对");
+        }catch (Exception e){
+            logger.warn("GetWMSInfo EXCEPTION,出现未知异常!");
+            logger.warn("{}", e);
+            return AppXmlUtil.resultStrXml(1, "出现未知异常!");
         }
         return AppXmlUtil.resultStrXml(1, "不支持该表数据传输：" + strTable);
     }

@@ -463,7 +463,8 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
         try {
             if (null != warehouseAllocationHeader) {
                 List<WtaWarehouseAllocationGoods> allocationGoodsList = this.wmsToAppOrderDAO.findWtaWarehouseAllocationGoodsListByAllocationNo(warehouseAllocationHeader.getAllocationNo());
-                City city = cityService.findByCityNumber(warehouseAllocationHeader.getCompanyId());
+                //City city = cityService.findByCityNumber(warehouseAllocationHeader.getCompanyId());
+                City city = cityService.findCityByWarehouseNo(warehouseAllocationHeader.getWarehouseNo());
                 if (null == city) {
                     warehouseAllocationHeader.setErrMessage("城市信息中没有查询到城市code为" + warehouseAllocationHeader.getCompanyId() + "的数据!");
                     warehouseAllocationHeader.setHandleFlag("0");
