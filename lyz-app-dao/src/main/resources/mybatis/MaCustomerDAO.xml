@@ -415,22 +415,32 @@
                 cc.mobile phone,
                 cc.birthday birthday,
                 CASE
-                WHEN cc.sex = 'MALE' THEN '男'
-                WHEN cc.sex = 'FEMALE' THEN '女'
-                ELSE '保密'
-                END
-                    sex,
-                CASE
-                WHEN r.rank_code = 'A' THEN 'A'
-                WHEN r.rank_code = 'B' THEN 'B'
-                WHEN r.rank_code = 'C' THEN 'A'
-                WHEN r.rank_code = 'D' THEN 'B'
-                ELSE 'COMMON' END
-                    memberType
+            WHEN cc.sex = 'MALE' THEN
+                '男'
+            WHEN cc.sex = 'FEMALE' THEN
+                '女'
+            ELSE
+                '保密'
+            END sex,
+             CASE
+            WHEN r.rank_code = 'A' THEN
+                'A'
+            WHEN r.rank_code = 'B' THEN
+                'B'
+            WHEN r.rank_code = 'C' THEN
+                'A'
+            WHEN r.rank_code = 'D' THEN
+                'B'
+            ELSE
+                'COMMON'
+            END memberType,
+            ee.emp_id sellerId,
+            ee.`name` sellerName
             FROM
                 cus_customer cc
             LEFT JOIN cus_rank cr ON cr.cus_id = cc.cus_id
             LEFT JOIN rank_classification r ON cr.rank_id = r.rank_id
+            LEFT JOIN emp_employee ee ON ee.emp_id = cc.sales_consult_id
             WHERE
                 cc.cus_id = #{id}
     </select>
@@ -512,4 +522,9 @@
         WHERE
         rank_code = #{rankCode}
     </select>
+
+    <delete id="deleteCusRankByCusId">
+        DELETE FROM cus_rank
+        WHERE cus_id = #{cusId}
+    </delete>
 </mapper>

@@ -167,4 +167,6 @@ public interface AppCustomerService {
     void createCustomerPreDepositAccount(Long cusId);
 
     void createCustomerLeBiAccount(Long cusId);
+
+    void updateCustomerSellerIdStoreIdByCusId(Long cusId,Long storeId,Long salesConsultId);
 }

@@ -22,6 +22,11 @@
     <script src="https://cdn.bootcss.com/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>
     <script src="https://cdn.bootcss.com/select2/4.0.2/js/select2.full.min.js"></script>
 
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
+
+
+
     <script>
         $(function () {
 
@@ -105,13 +110,21 @@
                 var sex = $('#sex').val();
                 var name = $('#name').val();
                 var memberType = $('#memberType').val();
+                var sellerId = $('#sellerId').val();
+                var sellerName = $('#sellerName').val();
+                if (null == sellerId || '' == sellerId){
+                    $notify.danger("导购id不能为空！");
+                    return false;
+                }
                 var data = {
                     "mobile": mobile,
                     "cusId": cusId,
                     "birthday": birthday,
                     "sex": sex,
                     "name": name,
-                    "memberType":memberType
+                    "memberType":memberType,
+                    "sellerId":sellerId,
+                    "sellerName":sellerName
                 };
                 var url = '/rest/customers/update/memberType';
                 if (null === $global.timer) {
@@ -235,28 +248,90 @@
 
                                 <#if rankClassificationList?? && rankClassificationList?size gt 0>
                                     <#list rankClassificationList as item>
-
                                             <option value="${item.rankCode!''}"
                                                     <#if customer??&&(customer.memberType!'') == (item.rankCode!'')>selected<#else ></#if>>
                                             ${item.rankCode!'COMMON'}
                                             </option>
-
                                     </#list>
                                 </#if>
 
-
-
-                                    <#--<option value="A" <#if customer?? && customer.sellerType == '专供A'>selected</#if>>专供A</option>-->
-                                    <#--<option value="B"  <#if customer?? && customer.sellerType == '专供B'>selected</#if>>专供B</option>-->
-                                    <#--<option value="COMMON" <#if customer?? && customer.sellerType == '一般会员'>selected</#if>>一般会员</option>-->
                                 </select>
                             </div>
                         </div>
                         <div class="col-xs-12 col-md-6">
+                            <div class="form-group">
+                                <label>
+                                    <li style="list-style: none">
+                                        <button type="button" class="btn btn-primary btn-xs"
+                                                onclick="openSellerModal()">
+                                            选择导购
+                                        </button>
+                                    </li>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+                                    <input name="sellerName" type="text" class="form-control" id="sellerName"
+                                           value="${customer.sellerName!''}" placeholder="归属导购">
+                                    <input name="sellerId" type="hidden" class="form-control" id="sellerId"
+                                           value="<#if customer.sellerId??>${customer.sellerId?c}</#if>">
+                                </div>
+                                <#--<select class="form-control select" name="memberType" id="memberType">-->
 
+                                <#--<#if rankClassificationList?? && rankClassificationList?size gt 0>-->
+                                    <#--<#list rankClassificationList as item>-->
+                                        <#--<option value="${item.rankCode!''}"-->
+                                                <#--<#if customer??&&(customer.memberType!'') == (item.rankCode!'')>selected<#else ></#if>>-->
+                                        <#--${item.rankCode!'COMMON'}-->
+                                        <#--</option>-->
+                                    <#--</#list>-->
+                                <#--</#if>-->
+                                <#--</select>-->
+                            </div>
                         </div>
                     </div>
+                    <!-- 导购选择框 -->
+                    <div id="selectSeller" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document" style="width: 60%">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4>选择导购</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <!--  设置这个div的大小，超出部分显示滚动条 -->
+                                    <div id="selectTree" class="ztree" style="height: 60%;overflow:auto; ">
+                                        <section class="content">
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <div class="box box-primary">
+                                                        <div id="sellerToolbar" class="form-inline">
 
+                                                            <div class="input-group col-md-3"
+                                                                 style="margin-top:0px positon:relative">
+                                                                <input type="text" name="sellerQueryConditions"
+                                                                       id="sellerQueryConditions"
+                                                                       class="form-control" style="width:auto;"
+                                                                       placeholder="请输入导购姓名或电话">
+                                                                <span class="input-group-btn">
+                            <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
+                                    onclick="return findSellerByNameOrMobil()">查找</button>
+                        </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="box-body table-reponsive">
+                                                            <table id="sellerDataGrid"
+                                                                   class="table table-bordered table-hover">
+
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </section>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="row">
                         <div class="col-xs-12 col-md-8"></div>
@@ -289,5 +364,87 @@
         });
     });
 
+    function initSeller(url) {
+
+        var cityId = $('#cityId').val();
+        var storeId = $('#storeId').val();
+
+        $("#sellerDataGrid").bootstrapTable('destroy');
+        $grid.init($('#sellerDataGrid'), $('#sellerToolbar'), url, 'get', false, function (params) {
+            return {
+                offset: params.offset,
+                size: params.limit,
+                keywords: params.search
+            }
+        }, [{
+            checkbox: true,
+            title: '选择'
+        }, {
+            field: 'empId',
+            title: 'ID',
+            align: 'center'
+        }, {
+            field: 'storeName',
+            title: '门店名称',
+            align: 'center'
+        }, {
+            field: 'name',
+            title: '导购姓名',
+            align: 'center',
+
+            events: {
+                'click .scan': function (e, value, row) {
+                    showSeller(row.empId, value);
+                }
+            },
+            formatter: function (value) {
+                if (null == value) {
+                    return '<a class="scan" href="#">' + '未知' + '</a>';
+                } else {
+                    return '<a class="scan" href="#' + value + '">' + value + '</a>';
+                }
+            }
+        }, {
+            field: 'mobile',
+            title: '导购电话',
+            align: 'center'
+        },{
+            field: 'storeType',
+            title: '门店类型',
+            align: 'center',
+            visible: false
+        }
+        ]);
+    }
+
+    //选择导购
+    function openSellerModal() {
+
+        //查询导购列表
+        initSeller('/rest/employees/select/seller');
+        $("#sellerModalConfirm").unbind('click').click(function () {
+        });
+        $('#selectSeller').modal('show');
+    }
+
+//选中导购
+    function showSeller(id, name) {
+        document.getElementById("sellerId").value = id;
+        document.getElementById("sellerName").value = name;
+        $('#sellerId').text(id);
+        $('#sellerName').text(name);
+        $('#selectSeller').modal('hide');
+    }
+
+    //条件查询导购
+    function findSellerByNameOrMobil() {
+        var sellerQueryConditions = $("#sellerQueryConditions").val();
+        $("#sellerDataGrid").bootstrapTable('destroy');
+        if (null == sellerQueryConditions || "" == sellerQueryConditions) {
+            initSeller('/rest/employees/select/seller');
+        } else {
+            initSeller('/rest/employees/select/seller/' + sellerQueryConditions);
+        }
+    }
 </script>
 </body>

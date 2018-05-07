@@ -14,6 +14,7 @@ import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDeposi
 import com.github.pagehelper.PageInfo;
 import org.apache.ibatis.annotations.Param;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
 
@@ -101,7 +102,7 @@ public interface MaCustomerService {
     /**
      * 修改会员类型
      */
-    void updateMemberType(ManageUpdateCustomerTypeResponse manageUpdateCustomerTypeResponse);
+    void updateMemberType(ManageUpdateCustomerTypeResponse manageUpdateCustomerTypeResponse) throws UnsupportedEncodingException;
 
 
 }

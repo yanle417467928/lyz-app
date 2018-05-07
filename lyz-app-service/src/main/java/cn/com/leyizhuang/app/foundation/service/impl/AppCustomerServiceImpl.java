@@ -660,4 +660,9 @@ public class AppCustomerServiceImpl implements AppCustomerService {
             customerDAO.saveLeBi(customerLeBi);
         }
     }
+
+    @Override
+    public void updateCustomerSellerIdStoreIdByCusId(Long cusId, Long storeId, Long salesConsultId) {
+        customerDAO.updateCustomerSellerIdStoreIdByCusId(cusId, storeId, salesConsultId);
+    }
 }
