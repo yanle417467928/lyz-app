@@ -247,14 +247,39 @@
             c.city_id,
             c.name,
             c.spell,
-            c.code,
+            c.code number,
             c.structure_id,
             c.structure_title,
             c.enable,
             c.enable_false_time,
-            c.briefSpell,
-            c.is_open_delivery
+            c.briefSpell
         FROM warehouse w LEFT JOIN city c ON w.city_id = c.city_id
         WHERE w.wh_no = #{warehouseNo}
     </select>
+
+    <select id="findCityInventoryByCityIdAndSku"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory">
+        SELECT
+            id,
+            city_id,
+            city_code,
+            city_name,
+            gid,
+            sku,
+            sku_name,
+            available_ity,
+            create_time,
+            last_update_time
+        FROM city_inventory
+        WHERE city_id = #{cityId} AND sku = #{sku};
+    </select>
+
+    <update id="updateCityInventoryByCityIdAndSkuAndInventory">
+        UPDATE city_inventory
+        SET available_ity = available_ity + #{changeInventory}
+        WHERE
+            sku = #{sku}
+            AND city_id = #{cityId}
+            AND last_update_time = #{lastUpdateTime}
+    </update>
 </mapper>
