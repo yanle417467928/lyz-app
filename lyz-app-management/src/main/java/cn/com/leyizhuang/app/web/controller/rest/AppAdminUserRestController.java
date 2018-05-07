@@ -71,7 +71,7 @@ public class AppAdminUserRestController extends BaseRestController {
         // 根据偏移量计算当前页数
         size = getSize(size);
         Integer page = (offset / size) + 1;
-        PageInfo<UserVO> userPage = userService.queryPageVO(page, size);
+        PageInfo<UserVO> userPage = userService.queryPageVOWithKeywords(page, size, keywords);
         List<UserVO> userList = userPage.getList();
         return new GridDataVO<UserVO>().transform(userList, userPage.getTotal());
     }

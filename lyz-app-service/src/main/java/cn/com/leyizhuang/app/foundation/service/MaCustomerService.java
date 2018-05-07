@@ -2,8 +2,12 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.dto.CusLebiDTO;
 import cn.com.leyizhuang.app.foundation.dto.CusPreDepositDTO;
+import cn.com.leyizhuang.app.foundation.pojo.RankStore;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.MaCustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.response.ManageUpdateCustomerTypeResponse;
+import cn.com.leyizhuang.app.foundation.pojo.user.CusRankDO;
+import cn.com.leyizhuang.app.foundation.pojo.user.RankClassification;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerLebiVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
@@ -80,5 +84,24 @@ public interface MaCustomerService {
     void saveCusPreDepositLog( MaCustomerPreDeposit customerPreDeposit);
 
     Long findCityIdByCusId(Long cusId);
+
+    ManageUpdateCustomerTypeResponse queryCustomerById(Long id);
+
+    /**
+     * 查看所有专供
+     */
+    List<RankClassification> findRankAll();
+
+
+    /**
+     * 查询专供门店
+     */
+    Boolean findStoreByCusId(Long cusId);
+
+    /**
+     * 修改会员类型
+     */
+    void updateMemberType(ManageUpdateCustomerTypeResponse manageUpdateCustomerTypeResponse);
+
 
 }

@@ -22,6 +22,8 @@ public class SalesReportDO {
     private String cityName;
     //storeId
     private Long storeId;
+    //门店编码
+    private String storeCode;
     //门店名称
     private String storeName;
     //顾客名称
@@ -46,6 +48,8 @@ public class SalesReportDO {
     private String payUpTime;
     //编号
     private String sku;
+    //商品名称
+    private String skuName;
    //产品类型
     private String goodsType;
     //品牌

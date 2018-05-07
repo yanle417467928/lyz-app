@@ -200,14 +200,32 @@
 
     <select id="getCustomerSellDetailsOrderByCreateTimeDescLimit4" resultType="java.lang.String">
         select DISTINCT `NUMBER` from sell_details
-        where customer_id = #{cusId} and seller_id = #{sellerId} and `number` like CONCAT('_XN','%' ) and create_time > #{dateTime}
+        where customer_id = #{cusId} and seller_id = #{sellerId} and `number` like CONCAT('%', '_XN', '%') and
+              create_time > #{dateTime}
         ORDER BY create_time DESC
-        limit 4
+    </select>
+
+    <select id="getCustomerIsDefaultStoreAndNoSellDetailsOrder" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer">
+
+        SELECT *
+        FROM cus_customer
+        WHERE
+            store_id IN (SELECT store_id
+                         FROM st_store
+                         WHERE is_default = 1 AND city_id = (SELECT city_id
+                                                             FROM emp_employee
+                                                             WHERE emp_id = #{sellerId}))
+
+            AND cus_id IN (SELECT DISTINCT customer_id
+                           FROM sell_details
+                           WHERE seller_id = #{sellerId} and `number` like CONCAT('%', '_XN', '%'))
     </select>
 
     <select id="getSellDetailsFrequencyBycusIdAndSellerIdAndCreateTime" resultType="java.lang.String">
         select DISTINCT `month` from sell_details
-        where customer_id = #{cusId} and seller_id = #{sellerId} and `number` like CONCAT('_XN','%' ) and create_time > #{dateTime}
+        where customer_id = #{cusId} and seller_id = #{sellerId} and `number` like CONCAT('%', '_XN', '%') and
+              create_time > #{dateTime}
         GROUP BY NUMBER
         ORDER BY create_time DESC
     </select>

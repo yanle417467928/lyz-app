@@ -93,5 +93,9 @@ public class ReturnOrderDetailResponse {
      * 退货总金额
      */
     private Double totalReturnPrice;
+    /**
+     * 订单号
+     */
+    private String orderNo;
 
 }

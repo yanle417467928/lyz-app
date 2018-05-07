@@ -55,19 +55,6 @@
                                         <option value="CQC001">重庆分公司</option>
                                     </select>
                                 </div>
-                                <label class="control-label col-md-1 col-xs-3" for="startTime">日期:</label>
-                                <div class="col-md-2 col-xs-3" style="text-align:left;">
-                                    <input name="startTime" type="text" class="form-control datepicker" id="startTime"
-                                           placeholder="开始时间"
-                                           readonly>
-                                </div>
-                                <label class="control-label col-md-1 col-xs-3" for="endTime"
-                                       style="text-align: center">至</label>
-                                <div class="col-md-2 col-xs-3" style="text-align:left;">
-                                    <input name="endTime" type="text" class="form-control datepicker" id="endTime"
-                                           placeholder="结束时间"
-                                           readonly>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -87,11 +74,11 @@
                                 </label>
                                 <label class="control-label margin-6" style="margin-left: 5%">
                                     <input type="radio" name="storeType" value="FX" class="iradio_square-blue ">
-                                    分销
+                                    分销(不分公司)
                                 </label>
                                 <label class="control-label margin-6" style="margin-left: 5%">
                                     <input type="radio" name="storeType" value="ZS" class="iradio_square-blue ">
-                                    装饰公司
+                                    装饰公司(不分公司)
                                 </label>
                             </div>
                         </div>
@@ -167,15 +154,13 @@
     });
 
 
-    function initDateGird(keywords, companyCode, storeType, product, startTime, endTime) {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/reportDownload/salesReport/page/grid', 'get', false, function (params) {
+    function initDateGird(keywords, companyCode, storeType, product) {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/reportDownload/arrearsReport/page/grid', 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
                 keywords: keywords,
                 companyCode: companyCode,
-                startTime: startTime,
-                endTime: endTime,
                 storeType: storeType,
                 isProductCoupon: product
             }
@@ -230,25 +215,21 @@
         $("#queryCusInfo").val('');
         $("#dataGrid").bootstrapTable('destroy');
         var keywords = $('#queryCusInfo').val();
-        var startTime = $('#startTime').val();
-        var endTime = $('#endTime').val();
         var storeType = $('input[name="storeType"]:checked ').val()
         var isProductCoupon = $('input[name="product"]:checked ').val()
         var companyCode = $('#companyCode').val();
-        initDateGird(keywords, companyCode, storeType, isProductCoupon, startTime, endTime);
+        initDateGird(keywords, companyCode, storeType, isProductCoupon);
     }
 
 
     function openBillModal() {
         var keywords = $("#queryCusInfo").val();
-        var startTime = $('#startTime').val();
-        var endTime = $('#endTime').val();
         var companyCode = $('#companyCode').val();
         var isProductCoupon = $('input[name="product"]:checked ').val()
         var storeType = $('input[name="storeType"]:checked ').val()
 
-        var url = "/rest/reportDownload/salesReport/download?companyCode=" + companyCode + "&startTime=" + startTime
-                + "&endTime=" + endTime + "&storeType=" + storeType + "&isProductCoupon=" + isProductCoupon;
+        var url = "/rest/reportDownload/arrearsReport/download?companyCode=" + companyCode
+             + "&storeType=" + storeType + "&isProductCoupon=" + isProductCoupon;
         var escapeUrl = url.replace(/\#/g, "%23");
         window.open(escapeUrl);
 

@@ -685,11 +685,20 @@ public class CommonServiceImpl implements CommonService {
                     AtwRequisitionOrder requisitionOrder = AtwRequisitionOrder.transform(orderBaseInfo, orderLogisticsInfo,
                             store, orderBillingDetails, orderGoodsInfoList.size());
                     appToWmsOrderService.saveAtwRequisitionOrder(requisitionOrder);
+
+
+
                     //保存传wms配送单商品信息
                     if (orderGoodsInfoList.size() > 0) {
                         for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
-                            AtwRequisitionOrderGoods requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
-                                    goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
+                            AtwRequisitionOrderGoods requisitionOrderGoods = null;
+                            if ("ZS-002".equals(orderBaseInfo.getStoreCode()) || "MR004".equals(orderBaseInfo.getStoreCode())){
+                                requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
+                                        goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getSettlementPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
+                            } else {
+                                requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
+                                        goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
+                            }
                             appToWmsOrderService.saveAtwRequisitionOrderGoods(requisitionOrderGoods);
                         }
                     }
@@ -859,8 +868,14 @@ public class CommonServiceImpl implements CommonService {
                 //保存传wms配送单商品信息
                 if (orderGoodsSize > 0) {
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
-                        AtwRequisitionOrderGoods requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
-                                goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
+                        AtwRequisitionOrderGoods requisitionOrderGoods = null;
+                        if ("ZS-002".equals(baseInfo.getStoreCode()) || "MR004".equals(baseInfo.getStoreCode())){
+                            requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
+                                    goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getSettlementPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
+                        } else {
+                            requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
+                                    goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
+                        }
                         appToWmsOrderService.saveAtwRequisitionOrderGoods(requisitionOrderGoods);
                     }
                 }
@@ -1698,8 +1713,14 @@ public class CommonServiceImpl implements CommonService {
 //                //保存传wms配送单商品信息
                 if (orderGoodsSize > 0) {
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
-                        AtwRequisitionOrderGoods requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
-                                goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
+                        AtwRequisitionOrderGoods requisitionOrderGoods = null;
+                        if ("ZS-002".equals(baseInfo.getStoreCode()) || "MR004".equals(baseInfo.getStoreCode())){
+                            requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
+                                    goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getSettlementPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
+                        } else {
+                            requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
+                                    goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
+                        }
                         appToWmsOrderService.saveAtwRequisitionOrderGoods(requisitionOrderGoods);
                     }
                 }
@@ -1732,9 +1753,10 @@ public class CommonServiceImpl implements CommonService {
             if (baseInfo != null) {
                 //更新订单账单信息
                 OrderBillingDetails billingDetails = orderService.getOrderBillingDetail(orderNumber);
-                billingDetails.setIsPayUp(true);
-                billingDetails.setPayUpTime(new Date());
-
+                if (null != billingDetails && billingDetails.getArrearage() <= 0D) {
+                    billingDetails.setIsPayUp(true);
+                    billingDetails.setPayUpTime(new Date());
+                }
                 //发送提货码给顾客,及提示导购顾客下单信息
                 String pickUpCode = this.sendPickUpCodeAndRemindMessageAfterPayUp(baseInfo);
                 baseInfo.setPickUpCode(pickUpCode);
@@ -1783,8 +1805,14 @@ public class CommonServiceImpl implements CommonService {
                     //保存传wms配送单商品信息
                     if (orderGoodsSize > 0) {
                         for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
-                            AtwRequisitionOrderGoods requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
-                                    goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
+                            AtwRequisitionOrderGoods requisitionOrderGoods = null;
+                            if ("ZS-002".equals(baseInfo.getStoreCode()) || "MR004".equals(baseInfo.getStoreCode())){
+                                requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
+                                        goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getSettlementPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
+                            } else {
+                                requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
+                                        goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
+                            }
                             appToWmsOrderService.saveAtwRequisitionOrderGoods(requisitionOrderGoods);
                         }
                     }

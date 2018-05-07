@@ -43,7 +43,7 @@ public class AppActServiceImpl implements AppActService {
     /**
      * 不参与专供促销的等级
      */
-    private final String ZG_EXCLUDE_LEVEL = "D,B";
+    private final String ZG_EXCLUDE_LEVEL = "B";
 
     @Autowired
     private ActBaseDAO actBaseDAO;

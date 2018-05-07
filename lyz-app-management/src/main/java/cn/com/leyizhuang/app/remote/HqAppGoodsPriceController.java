@@ -1,8 +1,12 @@
 package cn.com.leyizhuang.app.remote;
 
 import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
+import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
+import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.GoodsPriceService;
+import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.GoodsPriceDTO;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -14,6 +18,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
 
 /**
  * @author GenerationRoad
@@ -28,6 +34,11 @@ public class HqAppGoodsPriceController {
     @Autowired
     private GoodsPriceService GoodsPriceServiceImpl;
 
+    @Resource
+    private GoodsService goodsService;
+
+    @Resource
+    private AppStoreService storeService;
     /**
      * @param
      * @return
@@ -47,8 +58,8 @@ public class HqAppGoodsPriceController {
                 logger.info("addGoodsPrice OUT,同步新增商品价目表行失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (null == goodsPriceDTO.getStoreId()) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店id不能为空！", null);
+            if (StringUtils.isBlank(goodsPriceDTO.getStoreCode())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店编码不能为空！", null);
                 logger.info("addGoodsPrice OUT,同步新增商品价目表行失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
@@ -84,10 +95,19 @@ public class HqAppGoodsPriceController {
             }
             try {
                 GoodsPrice goodsPrice = this.GoodsPriceServiceImpl.findGoodsPrice(goodsPriceDTO.getPriceLineId());
+                GoodsDO goodsDO = goodsService.queryBySku(goodsPriceDTO.getSku());
+                AppStore store = storeService.findByStoreCode(goodsPriceDTO.getStoreCode());
+                if (null == store){
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未找到该门店信息！", null);
+                    logger.info("addGoodsPrice OUT,同步新增商品价目表行失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
                 if (null == goodsPrice) {
                     goodsPrice = new GoodsPrice();
-                    goodsPrice.setGid(goodsPriceDTO.getGid());
-                    goodsPrice.setStoreId(goodsPriceDTO.getStoreId());
+                    if (null != goodsDO){
+                        goodsPrice.setGid(goodsDO.getGid());
+                    }
+                    goodsPrice.setStoreId(store.getStoreId());
                     goodsPrice.setSku(goodsPriceDTO.getSku());
                     goodsPrice.setPriceLineId(goodsPriceDTO.getPriceLineId());
                     goodsPrice.setRetailPrice(goodsPriceDTO.getRetailPrice());

@@ -1,27 +1,13 @@
 package cn.com.leyizhuang.app.remote.webservice;
 
-import cn.com.leyizhuang.app.core.constant.ReturnOrderType;
 import cn.com.leyizhuang.app.core.pay.wechat.refund.OnlinePayRefundService;
-import cn.com.leyizhuang.app.foundation.pojo.AppStore;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelReturnOrderRequest;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder;
-import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderDeliveryDetail;
 import cn.com.leyizhuang.app.foundation.service.*;
-import cn.com.leyizhuang.common.core.utils.Base64Utils;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author Created on 2017-12-19 13:18
@@ -73,41 +59,6 @@ public class TestClient {
 
     @RequestMapping("/test/webservice")
     public void testWebservice() {
-        AtwRequisitionOrder order = new AtwRequisitionOrder();
-        order.setDiySiteId("FZM007");
-        order.setDiySiteTel("028-83551646");
-        order.setDiySiteTitle("富森富之美");
-        order.setCustomerName("测试");
-        order.setReserveTimeQuantum("2017-12-20 14:30");
-        order.setOrderNumber("CD_XN20180109112029019999");
-        order.setReceiveAddress("成都市新都区大丰街道订单");
-        order.setReceiveName("测试");
-        order.setReceivePhone("13408698552");
-        order.setCity("成都市");
-        order.setDetailAddress("订单");
-        order.setDisctrict("新都区");
-        order.setSubdistrict("大丰街道");
-        order.setSellerTel("18280285992");
-        order.setGoodsQuantity(1);
-        order.setUpstairsAll(0D);
-        order.setSellerName("樊云霞");
-        order.setDeliveryFee(30.0);
-        order.setColorFee(0D);
-        order.setDiscount(0D);
-        order.setOtherPayed(0D);
-        order.setBalanceUsed(60.0);
-        order.setMemberReceiver(false);
-        order.setUnpayed(0D);
-        order.setTotalGoodsPrice(30.0);
-        order.setAgencyFund(0.00);
-
-        AtwRequisitionOrderGoods goods = new AtwRequisitionOrderGoods();
-        goods.setCreateTime(new Date());
-        goods.setGoodsCode("SJWT4503-20");
-        goods.setGoodsTitle("金牛白色PPR45度弯头20");
-        goods.setOrderNumber("CD_XN20180109112029018888");
-        goods.setPrice(10D);
-        goods.setQuantity(1);
 
         //备注：目前发送订单通了，取消订单wms还在重新做。
         //第一步：将订单信息转化成要货单实体AtwRequisitionOrder然后调用下面service保存
@@ -116,129 +67,12 @@ public class TestClient {
 //        appToWmsOrderService.saveAtwRequisitionOrderGoods(goods);
         //第三步：调用下面service将订单号发送给wms
 //        iCallWms.sendToWmsRequisitionOrderAndGoods("CD_XN20180109112029019999");
-        AtwRequisitionOrderGoods goods1 = new AtwRequisitionOrderGoods();
-        goods1.setGoodsCode("SJWT4503-25");
-        goods1.setOrderNumber("T201801311631638");
-        goods1.setCompanyFlag("LYZ");
-        goods1.setCreateTime(new Date());
-        goods1.setPrice(10D);
-        goods1.setQuantity(1);
-        goods1.setGoodsTitle("金牛白色PPR45度弯头25");
-        goods1.setId(259L);
-//        appToWmsOrderService.modifyAtwRequisitionOrderGoods(goods1);
 
-        AtwReturnOrder returnOrder = new AtwReturnOrder();
-        returnOrder.setCreateTime(new Date());
-        returnOrder.setCreator("测试导购");
-        returnOrder.setCreatorPhone("18108654255");
-        returnOrder.setDeliverTypeTitle("送货上门");
-        returnOrder.setDiySiteAddress("富森美家居城");
-        returnOrder.setDiySiteId("FZM007");
-        returnOrder.setDiySiteTel("123456678");
-        returnOrder.setDiySiteTitle("富之美");
-        returnOrder.setOrderNumber("CD_XN20180131161050468455");
-        returnOrder.setRemarkInfo("下单下多了");
-        returnOrder.setReturnNumber("T201801311631638");
-        returnOrder.setReturnPrice(10D);
-        returnOrder.setReturnTime(new Date());
-        returnOrder.setSellerRealName("测试导购");
-        returnOrder.setShoppingAddress("成都市新都区大丰街道订单");
-        returnOrder.setStatusId(3);
-        returnOrder.setRejecter("游先生");
-        returnOrder.setRejecterPhone("18108654255");
-        returnOrder.setRejecterAddress("成都市锦江区督院街街道我的小区详细地址");
-        returnOrder.setGoodsLineQuantity(1);
-//        appToWmsOrderService.saveAtwReturnOrder(returnOrder);
-//        appToWmsOrderService.saveAtwRequisitionOrderGoods(goods1);
-//        iCallWms.sendToWmsReturnOrderAndGoods("T201801311631638");
-
-//        AtwCancelReturnOrderRequest atwReturnOrderCheckEnter = new AtwCancelReturnOrderRequest();
-//        atwReturnOrderCheckEnter.setStoreCode("FZM007");
-//        atwReturnOrderCheckEnter.setReturnTime(new Date());
-//        atwReturnOrderCheckEnter.setReturnType(ReturnOrderType.NORMAL_RETURN);
-//        atwReturnOrderCheckEnter.setCreateTime(new Date());
-//        atwReturnOrderCheckEnter.setReturnNo("T201801121041875");
-//        appToWmsOrderService.saveAtwCancelReturnOrderRequest(atwReturnOrderCheckEnter);
-//
-//
-//        iCallWms.sendToWmsCancelReturnOrder("T201801121041875");
-//        iCallWms.sendToWmsReturnOrderCheck("T201801121041875");
-
-//        WtaCancelOrderResultEnter orderResultEnter = new WtaCancelOrderResultEnter();
-//        orderResultEnter.setCreateTime(new Date());
-//        orderResultEnter.setOrderNo("CD_XN20180109112029014872");
-//        orderResultEnter.setIsCancel(true);
-//        WtaCancelReturnOrderResultEnter returnOrderResultEnter = new WtaCancelReturnOrderResultEnter();
-//        returnOrderResultEnter.setReturnNumber("T201801121041875");
-//        returnOrderResultEnter.setCreateTime(new Date());
-//        returnOrderResultEnter.setIsCancel(true);
-//
-//        WmsToAppOrderService.saveWtaCancelOrderResultEnter(orderResultEnter);
-//        WmsToAppOrderService.saveWtaCancelReturnOrderResultEnter(returnOrderResultEnter);
-
-        AtwCancelReturnOrderRequest orderRequest = new AtwCancelReturnOrderRequest();
-        orderRequest.setReturnNo("T20180222113753087");
-        orderRequest.setCreateTime(new Date());
-        orderRequest.setReturnType(ReturnOrderType.NORMAL_RETURN);
-        orderRequest.setReturnTime(new Date());
-        orderRequest.setStoreCode("FZM007");
-
-//        appToWmsOrderService.saveAtwCancelReturnOrderRequest(orderRequest);
-//
-//        iCallWms.sendToWmsCancelReturnOrder("T20180222113753087");
-//
-//        AtwReturnOrderCheckEnter checkEnter = new AtwReturnOrderCheckEnter();
-
-//        checkEnter.setCreateTime(new Date());
-//        checkEnter.setReturnStatus(AppReturnOrderStatus.PENDING_REFUND);
-//        checkEnter.setCheckGoodsTime(new Date());
-//        checkEnter.setReturnNo("T20180206175111713");
-
-//        appToWmsOrderService.saveAtwReturnOrderCheckEnter(checkEnter);
-//        iCallWms.sendToWmsReturnOrderCheck("T20180206175111713");
-
-
-//        AppCustomer newUser = new AppCustomer();
-//        List<CustomerProfession> professions = appCustomerService.getCustomerProfessionListByStatus(AppWhetherFlag.Y.toString());
-//        newUser.setCustomerProfessionDesc(null != professions ? professions.stream().filter(p -> p.getTitle().equals("DG")).collect(Collectors.toList()).get(0).getDescription() : "");
-//
-//        System.out.println(newUser);
+        /**************微信手动退款******************/
 //        onlinePayRefundService.wechatReturnMoney(128L, 6, 70D, "CD_XN20180315145706348560", "T20180315150003738", 1333L);
+        /****************支付宝手动退款************************/
+//        onlinePayRefundService.alipayRefundRequest(33453L,6,"2018042621001004360583739855","T20180426143804058",470,3571L);
 //
-//
-//        separateOrderService.separateOrderRefund("TK_20180311115824685");
-        ReturnOrderDeliveryDetail returnOrderDeliveryDetail = new ReturnOrderDeliveryDetail();
-        returnOrderDeliveryDetail.setReturnNo("123123");
-        returnOrderDeliveryDetail.setPickersId(2L);
-        returnOrderDeliveryDetail.setCreateTime(new Date());
-        returnOrderDeliveryDetail.setWarehouseNo("123");
-        returnOrderDeliveryDetail.setPickersNumber("11111");
-//        returnOrderDeliveryDetailsService.addReturnOrderDeliveryInfoDetails(returnOrderDeliveryDetail);
 
-//        separateOrderService.separateOrderRefund("T20180315135003341");
-
-
-        List<OrderBaseInfo> orderBaseInfoList = appOrderService.getSendToWMSFailedOrder();
-
-        for (OrderBaseInfo baseInfo : orderBaseInfoList) {
-
-            OrderBillingDetails billingDetails = appOrderService.getOrderBillingDetail(baseInfo.getOrderNumber());
-            AppStore store = storeService.findStoreByUserIdAndIdentityType(baseInfo.getCreatorId(),
-                    baseInfo.getCreatorIdentityType().getValue());
-            List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(baseInfo.getOrderNumber());
-            int orderGoodsSize = orderGoodsInfoList.size();
-            OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(baseInfo.getOrderNumber());
-            AtwRequisitionOrder requisitionOrder = AtwRequisitionOrder.transform(baseInfo, orderLogisticsInfo,
-                    store, billingDetails, orderGoodsSize);
-            appToWmsOrderService.saveAtwRequisitionOrder(requisitionOrder);
-            //保存传wms配送单商品信息
-            if (orderGoodsSize > 0) {
-                for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
-                    AtwRequisitionOrderGoods requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
-                            goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
-                    appToWmsOrderService.saveAtwRequisitionOrderGoods(requisitionOrderGoods);
-                }
-            }
-        }
     }
 }

@@ -200,4 +200,12 @@ public interface GoodsDAO {
     List<GoodsDO> findGoodsListBySkuList(@Param(value = "internalCodeList") List<String> internalCodeList);
 
     GoodsDO findBySku(String sku);
+
+    List<UserGoodsResponse> findGoodsListBySellerIdAndIdentityTypeAndRankCode(@Param(value = "userId") Long userId,
+                                                                              @Param("identityType") AppIdentityType identityType,
+                                                                              @Param("rankCode") String rankCode);
+
+    GoodsDetailResponse findSellerZGGoodsDetailByGoodsId(@Param("userId") Long userId, @Param("goodsId") Long goodsId,
+                                     @Param("type") AppIdentityType appIdentityType, @Param("rankCode") String rankCode);
+
 }

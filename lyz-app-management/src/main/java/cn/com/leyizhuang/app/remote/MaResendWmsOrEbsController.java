@@ -61,6 +61,8 @@ public class MaResendWmsOrEbsController {
     private ItyAllocationService ityAllocationService;
     @Resource
     private MaOrderService maOrderService;
+    @Resource
+    private MaReturnOrderService maReturnOrderService;
 
     /**
      * 重传订单到wms,// TODO 此方法后面需要移至后台
@@ -206,8 +208,14 @@ public class MaResendWmsOrEbsController {
                 //保存传wms配送单商品信息
                 if (orderGoodsSize > 0) {
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
-                        AtwRequisitionOrderGoods requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
-                                goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
+                        AtwRequisitionOrderGoods requisitionOrderGoods = null;
+                        if ("ZS-002".equals(baseInfo.getStoreCode()) || "MR004".equals(baseInfo.getStoreCode())){
+                            requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
+                                    goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getSettlementPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
+                        } else {
+                            requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
+                                    goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
+                        }
                         appToWmsOrderService.saveAtwRequisitionOrderGoods(requisitionOrderGoods);
                     }
                 }
@@ -236,8 +244,14 @@ public class MaResendWmsOrEbsController {
                 //保存传wms退货单商品信息
                 if (size > 0) {
                     for (ReturnOrderGoodsInfo returnOrderGoodsInfo : returnOrderGoodsInfoList) {
-                        AtwRequisitionOrderGoods requisitionOrderGoods = AtwRequisitionOrderGoods.transform(returnOrderGoodsInfo.getReturnNo(),
-                                returnOrderGoodsInfo.getSku(), returnOrderGoodsInfo.getSkuName(), returnOrderGoodsInfo.getRetailPrice(), returnOrderGoodsInfo.getReturnQty(), returnOrderGoodsInfo.getCompanyFlag());
+                        AtwRequisitionOrderGoods requisitionOrderGoods = null;
+                        if ("ZS-002".equals(orderBaseInfo.getStoreCode()) || "MR004".equals(orderBaseInfo.getStoreCode())){
+                            requisitionOrderGoods = AtwRequisitionOrderGoods.transform(returnOrderGoodsInfo.getReturnNo(),
+                                    returnOrderGoodsInfo.getSku(), returnOrderGoodsInfo.getSkuName(), returnOrderGoodsInfo.getSettlementPrice(), returnOrderGoodsInfo.getReturnQty(), returnOrderGoodsInfo.getCompanyFlag());
+                        } else {
+                            requisitionOrderGoods = AtwRequisitionOrderGoods.transform(returnOrderGoodsInfo.getReturnNo(),
+                                    returnOrderGoodsInfo.getSku(), returnOrderGoodsInfo.getSkuName(), returnOrderGoodsInfo.getRetailPrice(), returnOrderGoodsInfo.getReturnQty(), returnOrderGoodsInfo.getCompanyFlag());
+                        }
                         appToWmsOrderService.saveAtwRequisitionOrderGoods(requisitionOrderGoods);
                     }
                 }
@@ -867,6 +881,35 @@ public class MaResendWmsOrEbsController {
         } catch (Exception e) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "传输失败!发生未知异常!", null);
             logger.info("retransmissionReturnOrderJxPriceToEBS OUT,EBS重传退单经销差价信息失败，出参 resultDTO:{}", resultDTO);
+            logger.debug("Exception:{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * EBS重传退单retmd信息
+     *
+     * @param returnNumber
+     * @return
+     */
+    @RequestMapping(value = "/EBS/return/retmd/{returnNumber}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public ResultDTO retransmissionReturnOrderRetmdToEBS(@PathVariable String returnNumber) {
+        ResultDTO<Object> resultDTO;
+        logger.info("retransmissionReturnOrderRetmdToEBS CALLED,EBS重传退单retmd信息，入参 returnNumber:{}", returnNumber);
+        if (null == returnNumber) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单号不能为空!", null);
+            logger.info("retransmissionReturnOrderRetmdToEBS OUT,EBS重传退单retmd信息失败！出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+
+        try {
+            maReturnOrderService.sendReturnOrderReceiptInfAndRecord(returnNumber);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "重传成功!", null);
+            logger.info("retransmissionReturnOrderRetmdToEBS OUT,EBS重传退单retmd信息失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "传输失败!发生未知异常!", null);
+            logger.info("retransmissionReturnOrderRetmdToEBS OUT,EBS重传退单retmd信息失败，出参 resultDTO:{}", resultDTO);
             logger.debug("Exception:{}", e);
             return resultDTO;
         }

@@ -44,6 +44,11 @@
                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
                     </button>
                 </@shiro.hasPermission>
+                <@shiro.hasPermission name="/customer/update">
+                    <button id="btn_update" type="button" class="btn btn-default">
+                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 修改会员类型
+                    </button>
+                </@shiro.hasPermission>
                     <select name="city" id="cityCode" class="form-control select" style="width:auto;"
                             onchange="findCusByCity(this.value)">
                         <option value="-1">选择城市</option>
@@ -293,6 +298,9 @@
         });
         $('#btn_edit').on('click', function () {
             modify($('#dataGrid'), '/views/admin/customers/edit/{id}?parentMenuId=${parentMenuId!'0'}')
+        });
+        $('#btn_update').on('click', function () {
+            modify($('#dataGrid'), '/views/admin/customers/update/{id}?parentMenuId=${parentMenuId!'0'}')
         });
     }
 

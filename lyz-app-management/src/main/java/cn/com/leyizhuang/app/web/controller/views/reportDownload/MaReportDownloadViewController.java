@@ -125,6 +125,7 @@ public class MaReportDownloadViewController extends BaseController {
      */
     @GetMapping(value = "/goods/shipmentAndReturn/list")
     public String getGoodsShipmentAndReturnList(ModelMap map) {
+        
         map.addAttribute("storeTypes", StoreType.getNotZsType());
         return "/views/reportDownload/goods_shipmentAndReturn_page";
     }
@@ -141,6 +142,7 @@ public class MaReportDownloadViewController extends BaseController {
      */
     @GetMapping(value = "/salesVolume/list")
     public String getSalesVolumeList(ModelMap map) {
+
         map.addAttribute("storeTypes", StoreType.getNotZsType());
         return "/views/reportDownload/sales_volume_page";
     }
@@ -171,6 +173,7 @@ public class MaReportDownloadViewController extends BaseController {
      */
     @GetMapping(value = "/arrears/list")
     public String getArrearsList(ModelMap map) {
+
         map.addAttribute("storeTypes", StoreType.getNotZsType());
         return "/views/reportDownload/arrears_page";
     }

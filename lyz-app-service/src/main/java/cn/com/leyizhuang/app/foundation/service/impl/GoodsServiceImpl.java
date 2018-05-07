@@ -592,5 +592,23 @@ public class GoodsServiceImpl implements GoodsService {
 
         return flag;
     }
+    @Override
+    public PageInfo<UserGoodsResponse> findGoodsListBySellerIdAndIdentityTypeAndRankCode(Long userId, AppIdentityType identityType, String rankCode, Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        List<UserGoodsResponse> list = goodsDAO.findGoodsListBySellerIdAndIdentityTypeAndRankCode(userId, identityType, rankCode);
+        return new PageInfo<>(list);
+    }
+
+    @Override
+    public GoodsDetailResponse findSellerZGGoodsDetailByGoodsId(Long userId, Long goodsId, Integer identityType, String rankCode) {
+        AppIdentityType appIdentityType = AppIdentityType.getAppIdentityTypeByValue(identityType);
+        GoodsDetailResponse goodsDetailResponse = this.goodsDAO.findSellerZGGoodsDetailByGoodsId(userId, goodsId, appIdentityType, rankCode);
+        if (null != goodsDetailResponse) {
+            GoodsDO goodsDO = this.goodsDAO.findGoodsImageUriByGoodsId(goodsId);
+            goodsDetailResponse = GoodsDetailResponse.transform(goodsDetailResponse, goodsDO);
+        }
+        return goodsDetailResponse;
+    }
+
 
 }

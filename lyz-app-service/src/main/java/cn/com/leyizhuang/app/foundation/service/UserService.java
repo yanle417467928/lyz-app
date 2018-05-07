@@ -19,6 +19,8 @@ public interface UserService {
 
     PageInfo<UserVO> queryPageVO(Integer page, Integer size);
 
+    PageInfo<UserVO> queryPageVOWithKeywords(Integer page, Integer size, String keywords);
+
     User queryById(Long id);
 
     void save(User user);

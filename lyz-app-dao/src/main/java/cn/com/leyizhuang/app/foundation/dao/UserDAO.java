@@ -36,4 +36,6 @@ public interface UserDAO {
     User queryByLoginName(UserVO userVO);
 
     User findByLoginName(@Param(value = "loginName") String loginName);
+
+    List<UserVO> queryUserVOListWithKeywords(@Param(value = "keywords") String keywords);
 }

@@ -32,4 +32,6 @@ public interface PaymentDataService {
      * @return 还款记录详情
      */
     PaymentDataDO findPaymentDataDOByOrderNumber(String orderNumber);
+
+    List<PaymentDataDO> findByOrderNoAndTradeStatus(String ordNo, PaymentDataStatus tradeStatus);
 }

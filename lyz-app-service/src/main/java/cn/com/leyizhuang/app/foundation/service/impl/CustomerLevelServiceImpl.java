@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.dao.MaCustomerDAO;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.service.CustomerLevelService;
 import cn.com.leyizhuang.app.foundation.service.StatisticsSellDetailsService;
+import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -63,7 +64,7 @@ public class CustomerLevelServiceImpl implements CustomerLevelService{
 //
 //    public void refreshRedLight(){
 //        // 30天前日期
-//        LocalDateTime thirtyDaysAgoDate = LocalDateTime.now().minusDays(30);
+//        LocalDateTime halfYearAgoDate = LocalDateTime.now().minusDays(30);
 //        // 90天前日期
 //        LocalDateTime ninetyDaysAgoDate = LocalDateTime.now().minusDays(90);
 //        //获取红灯用户
@@ -78,22 +79,22 @@ public class CustomerLevelServiceImpl implements CustomerLevelService{
 //
 //        for (CustomerDO customerDO : customerDOList){
 //            // 根据用户信息90天内销量
-//            List<String> numberList1 = statisticsSellDetailsService.getCustomerSellDetailsOrderByCreateTimeDescLimit4(customerDO.getCusId(),ninetyDaysAgoDate);
+//            List<String> numberList90 = statisticsSellDetailsService.getCustomerSellDetailsOrderByCreateTimeDescLimit4(customerDO.getCusId(),ninetyDaysAgoDate);
 //
-//            if(numberList1 == null || numberList1.size() == 0){
+//            if(numberList90 == null || numberList90.size() == 0){
 //                // 90天内 没有产生销量 熄灯
 //                closeIds.add(customerDO.getCusId());
 //            }else{
 //                // 90天内有产生销量
 //
 //                // 根据用户信息30天内销量
-//                List<String> numberList2 = statisticsSellDetailsService.getCustomerSellDetailsOrderByCreateTimeDescLimit4(customerDO.getCusId(),thirtyDaysAgoDate);
-//                if (numberList2 == null || numberList1.size() == 0){
+//                List<String> numberList180 = statisticsSellDetailsService.getCustomerSellDetailsOrderByCreateTimeDescLimit4(customerDO.getCusId(),halfYearAgoDate);
+//                if (numberList180 == null || numberList90.size() == 0){
 //                    // 30天内吴销量 变黄灯
 //                    yellowIds.add(customerDO.getCusId());
 //                }else{
 //                    // 90天内达成 4单销量 变绿灯
-//                    if (numberList1.size() == 4){
+//                    if (numberList90.size() == 4){
 //                        greenIds.add(customerDO.getCusId());
 //                    }
 //                }
@@ -125,9 +126,9 @@ public class CustomerLevelServiceImpl implements CustomerLevelService{
 //
 //        for (CustomerDO customerDO : customerDOList){
 //            // 根据用户信息90天内销量
-//            List<String> numberList1 = statisticsSellDetailsService.getCustomerSellDetailsOrderByCreateTimeDescLimit4(customerDO.getCusId(),ninetyDaysAgoDate);
+//            List<String> numberList90 = statisticsSellDetailsService.getCustomerSellDetailsOrderByCreateTimeDescLimit4(customerDO.getCusId(),ninetyDaysAgoDate);
 //
-//            if(numberList1 == null || numberList1.size() == 0){
+//            if(numberList90 == null || numberList90.size() == 0){
 //                // 90天内 没有产生销量 熄灯
 //                closeIds.add(customerDO.getCusId());
 //            }else{
@@ -168,11 +169,10 @@ public class CustomerLevelServiceImpl implements CustomerLevelService{
     /********** 华丽的分割线 以上代码暂时不用*************/
 
     @Override
-    public List<AppCustomer> countCustomerListLightlevel(List<AppCustomer> customers, Long sellerId){
+    public List<AppCustomer> countCustomerListLightlevel(List<AppCustomer> customers, Long sellerId) {
         if (customers == null || customers.size() == 0){
             return  null;
         }
-
         for (AppCustomer customer : customers){
             customer = this.countCustomerLightLevel(customer,sellerId);
         }
@@ -181,11 +181,19 @@ public class CustomerLevelServiceImpl implements CustomerLevelService{
     }
 
     @Override
+    public PageInfo<AppCustomer> getCustomerIsDefaultStoreAndNoSellDetailsOrder(Long userId, Integer page, Integer size) {
+        if (null != userId) {
+            return statisticsSellDetailsService.getCustomerIsDefaultStoreAndNoSellDetailsOrder(userId, page, size);
+        }
+        return null;
+    }
+
+    @Override
     public AppCustomer countCustomerLightLevel(AppCustomer customer, Long sellerId){
 
         LocalDateTime now = LocalDateTime.now();
-        // 30天前日期
-        LocalDateTime thirtyDaysAgoDate = now.minusDays(30);
+        // 180天前日期
+        LocalDateTime halfYearAgoDate = now.minusDays(180);
         // 90天前的日期
         LocalDateTime ninetyDaysAgoDate = now.minusDays(90);
 
@@ -196,53 +204,69 @@ public class CustomerLevelServiceImpl implements CustomerLevelService{
             return  customer;
         }
 
-        // 取90天内销量
-        List<String> numberList1 = statisticsSellDetailsService.getCustomerSellDetailsOrderByCreateTimeDescLimit4(customer.getCusId(),ninetyDaysAgoDate,sellerId);
-        // 30天内的销量
-        List<String> numberList2 = statisticsSellDetailsService.getCustomerSellDetailsOrderByCreateTimeDescLimit4(customer.getCusId(),thirtyDaysAgoDate,sellerId);
+        // 取90天内销量 該查詢解除了查詢4条限制
+        List<String> numberList90 = statisticsSellDetailsService.getCustomerSellDetailsOrderByCreateTimeDescLimit4(customer.getCusId(), ninetyDaysAgoDate, sellerId);
+        // 180天内的销量 該查詢解除了查詢4条限制
+        List<String> numberList180 = statisticsSellDetailsService.getCustomerSellDetailsOrderByCreateTimeDescLimit4(customer.getCusId(), halfYearAgoDate, sellerId);
 
-        if (numberList1 == null || numberList1.size() == 0){
+        if (numberList90 == null || numberList90.size() == 0) {
             // 90天内无销量 非新用户 熄灯
 
             customer.setLight(AppCustomerLightStatus.CLOSE);
             return customer;
-        }else if (numberList1.size() <= 3){
+        } else {
+            if (numberList180 == null || numberList180.size() == 0) {
+                customer.setLight(AppCustomerLightStatus.CLOSE);
+                return customer;
+            } else if (numberList180.size() <= 5) {
 
-            if (numberList2 == null || numberList2.size() == 0){
-                // 30天内无销量 黄灯
+                /*****************2018年5月4日 Jerry.Ren ：如果半年内销量小于6单为会员（即黄灯）****************************/
                 customer.setLight(AppCustomerLightStatus.YELLOW);
                 return customer;
-            }
+//            if (numberList180 == null || numberList180.size() == 0){
+//                // 30天内无销量 黄灯
+//                customer.setLight(AppCustomerLightStatus.YELLOW);
+//                return customer;
+//            }
+//
+//            if (numberList180.size() > 0){
+//                // 30天内有销量 红灯
+//                customer.setLight(AppCustomerLightStatus.RED);
+//                return customer;
+//            }
 
-            if (numberList2.size() > 0){
-                // 30天内有销量 红灯
-                customer.setLight(AppCustomerLightStatus.RED);
-                return customer;
-            }
-        }else if (numberList1.size() == 4){
-            // 90天内达到4单销量，再根据下单频率判断
-            List<String> monthList = statisticsSellDetailsService.getSellDetailsFrequencyBycusIdAndSellerIdAndCreateTime(customer.getCusId(),ninetyDaysAgoDate,sellerId);
-
-            if (numberList2.size() == 0){
-                // 30天内 无销量 红灯
-                customer.setLight(AppCustomerLightStatus.RED);
-                return customer;
-            }
-
-            if (monthList.size() < 3){
-                // 非连续3月 产生订单 红灯
-                customer.setLight(AppCustomerLightStatus.RED);
-
-            }else if (monthList.size() >= 3){
+            } else if (numberList180.size() <= 11) {
+                /*********************2018年5月4日 Jerry.Ren ：如果半年内销量小于12单为粉丝（即绿灯）**************************/
 
                 // 绿灯
                 customer.setLight(AppCustomerLightStatus.GREEN);
 
+//            // 90天内达到4单销量，再根据下单频率判断
+//            List<String> monthList = statisticsSellDetailsService.getSellDetailsFrequencyBycusIdAndSellerIdAndCreateTime(customer.getCusId(),ninetyDaysAgoDate,sellerId);
+//
+//            if (numberList180.size() == 0){
+//                // 30天内 无销量 红灯
+//                customer.setLight(AppCustomerLightStatus.RED);
+//                return customer;
+//            }
+//
+//            if (monthList.size() < 3){
+//                // 非连续3月 产生订单 红灯
+//                customer.setLight(AppCustomerLightStatus.RED);
+//
+//            }else if (monthList.size() >= 3){
+//
+//                // 绿灯
+//                customer.setLight(AppCustomerLightStatus.GREEN);
+//
+//            }
+                return customer;
+            } else {
+                numberList180.size();
+                /*****************2018年5月4日 Jerry.Ren ：如果半年内销量大于12单为铁粉（即红灯）****************************/
+                customer.setLight(AppCustomerLightStatus.RED);
+                return customer;
             }
-            return customer;
         }
-
-
-        return customer;
     }
 }

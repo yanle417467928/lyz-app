@@ -67,11 +67,19 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
         logger.info("GetEBSInfo CALLED,获取ebs信息，入参 strTable:{},strType:{},xml:{}", strTable, strType, xml);
 
         if (StringUtils.isBlank(strTable) || "?".equals(strTable)) {
+            EtaReturnAndRequireGoodsInfLog etaReturnAndRequireGoodsInfLog = new EtaReturnAndRequireGoodsInfLog();
+            etaReturnAndRequireGoodsInfLog.setMsg("STRTABLE参数错误");
+            etaReturnAndRequireGoodsInfLog.setCreatDate(new Date());
+            diySiteInventoryEbsService.saveReturnAndRequireGoodsInfLog(etaReturnAndRequireGoodsInfLog);
             logger.info("GetEBSInfo OUT,获取ebs信息失败 出参 strTable:{}", strTable);
             return AppXmlUtil.generateResultXmlToEbs(1, "STRTABLE参数错误");
         }
 
         if (StringUtils.isBlank(xml) || "?".equals(xml)) {
+            EtaReturnAndRequireGoodsInfLog etaReturnAndRequireGoodsInfLog = new EtaReturnAndRequireGoodsInfLog();
+            etaReturnAndRequireGoodsInfLog.setMsg("XML参数错误");
+            etaReturnAndRequireGoodsInfLog.setCreatDate(new Date());
+            diySiteInventoryEbsService.saveReturnAndRequireGoodsInfLog(etaReturnAndRequireGoodsInfLog);
             logger.info("GetEBSInfo OUT,获取ebs信息失败 出参 strTable:{}", xml);
             return AppXmlUtil.generateResultXmlToEbs(1, "XML参数错误");
         }
@@ -80,6 +88,10 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
             Document document = AppXmlUtil.parseStrXml(xml);
 
             if (null == document) {
+                EtaReturnAndRequireGoodsInfLog etaReturnAndRequireGoodsInfLog = new EtaReturnAndRequireGoodsInfLog();
+                etaReturnAndRequireGoodsInfLog.setMsg("解密后XML数据为空");
+                etaReturnAndRequireGoodsInfLog.setCreatDate(new Date());
+                diySiteInventoryEbsService.saveReturnAndRequireGoodsInfLog(etaReturnAndRequireGoodsInfLog);
                 logger.info("GetEBSInfo OUT,获取ebs信息失败");
                 return AppXmlUtil.generateResultXmlToEbs(1, "解密后XML数据为空");
             }
@@ -325,15 +337,34 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
             }
         } catch (ParserConfigurationException e) {
+            EtaReturnAndRequireGoodsInfLog etaReturnAndRequireGoodsInfLog = new EtaReturnAndRequireGoodsInfLog();
+            etaReturnAndRequireGoodsInfLog.setMsg("解密后xml参数错误");
+            etaReturnAndRequireGoodsInfLog.setCreatDate(new Date());
+            diySiteInventoryEbsService.saveReturnAndRequireGoodsInfLog(etaReturnAndRequireGoodsInfLog);
             logger.warn("GetEBSInfo EXCEPTION,解密后xml参数错误");
             logger.warn("{}", e);
             return AppXmlUtil.resultStrXml(1, "解密后xml参数错误");
 
         } catch (IOException | SAXException e) {
+            EtaReturnAndRequireGoodsInfLog etaReturnAndRequireGoodsInfLog = new EtaReturnAndRequireGoodsInfLog();
+            etaReturnAndRequireGoodsInfLog.setMsg("解密后xml格式不对");
+            etaReturnAndRequireGoodsInfLog.setCreatDate(new Date());
+            diySiteInventoryEbsService.saveReturnAndRequireGoodsInfLog(etaReturnAndRequireGoodsInfLog);
             logger.warn("GetEBSInfo EXCEPTION,解密后xml格式不对");
             logger.warn("{}", e);
             return AppXmlUtil.resultStrXml(1, "解密后xml格式不对");
+        } catch (Exception e){
+            EtaReturnAndRequireGoodsInfLog etaReturnAndRequireGoodsInfLog = new EtaReturnAndRequireGoodsInfLog();
+            etaReturnAndRequireGoodsInfLog.setMsg(e.getMessage());
+            etaReturnAndRequireGoodsInfLog.setCreatDate(new Date());
+            diySiteInventoryEbsService.saveReturnAndRequireGoodsInfLog(etaReturnAndRequireGoodsInfLog);
+            logger.warn("{}", e);
+            return AppXmlUtil.resultStrXml(1, e.getMessage());
         }
+        EtaReturnAndRequireGoodsInfLog etaReturnAndRequireGoodsInfLog = new EtaReturnAndRequireGoodsInfLog();
+        etaReturnAndRequireGoodsInfLog.setMsg("不支持该表数据传输");
+        etaReturnAndRequireGoodsInfLog.setCreatDate(new Date());
+        diySiteInventoryEbsService.saveReturnAndRequireGoodsInfLog(etaReturnAndRequireGoodsInfLog);
         return AppXmlUtil.resultStrXml(1, "不支持该表数据传输：" + strTable);
     }
 

@@ -21,7 +21,11 @@ public class AccountGoodsItemsDO {
     private String storeName;
     //门店类型
     private String storeType;
-    //下单/退单时间
+    //出货时间
+    private String shippingTime;
+    //退货时间
+    private String returnTime;
+    //订单创建时间
     private String orderTime;
     //订单号
     private String orderNumber;

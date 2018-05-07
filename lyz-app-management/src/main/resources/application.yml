@@ -110,6 +110,17 @@ spring:
       port: 5672
       username: guest
       password: guest
+  redis:
+    database: 0
+    host: localhost
+    port: 6379
+    password: 123456
+    pool:
+      max-active: 8
+      max-wait: -1
+      max-idle: 8
+      min-idle: 0
+    timeout: 0
 eureka:
   client:
     service-url:
@@ -159,6 +170,17 @@ spring:
        port: 5672
        username: guest
        password: guest
+  redis:
+      database: 0
+      host: localhost
+      port: 6379
+      password: 123456
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0
+      timeout: 0
 eureka:
   client:
     service-url:
@@ -214,6 +236,17 @@ spring:
        port: 5672
        username: guest
        password: guest
+  redis:
+        database: 0
+        host: 120.77.57.124
+        port: 6379
+        password: 123456
+        pool:
+          max-active: 300
+          max-wait: -1
+          max-idle: 8
+          min-idle: 0
+        timeout: 5000
 eureka:
   client:
     service-url:

@@ -58,7 +58,7 @@ public class OnlinePayRefundService {
      */
     public Map<String, String> wechatReturnMoney(Long userId, Integer identityType, Double money, String orderNo, String refundNo,Long roid) {
         Map<String, String> map = new HashMap<>();
-        List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOutTradeNoAndTradeStatus(orderNo, PaymentDataStatus.TRADE_SUCCESS);
+        List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOrderNoAndTradeStatus(orderNo, PaymentDataStatus.TRADE_SUCCESS);
         if (AssertUtil.isEmpty(paymentDataDOList)) {
             map.put("code", "FAILURE");
             map.put("msg", "未查询到支付信息");
@@ -82,7 +82,7 @@ public class OnlinePayRefundService {
 
         try {
             Map<String, Object> resultMap = WechatPrePay.wechatRefundSign(
-                    orderNo, refundNo, new BigDecimal(totlefeeParse), new BigDecimal(money));
+                    dataDO.getOutTradeNo(), refundNo, new BigDecimal(totlefeeParse), new BigDecimal(money));
             logger.debug("******微信退款签名***** OUT, 出参 resultMap:{}", resultMap);
             if (resultMap != null) {
                 //状态是否成功
@@ -161,7 +161,7 @@ public class OnlinePayRefundService {
     public Map<String, String> alipayRefundRequest(Long userId, Integer identityType, String orderNo, String refundNo, double refundAmount,Long roid) {
         //取得支付宝交易流水号
         Map<String, String> map = new HashMap<>();
-        List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOutTradeNoAndTradeStatus(orderNo, PaymentDataStatus.TRADE_SUCCESS);
+        List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOrderNoAndTradeStatus(orderNo, PaymentDataStatus.TRADE_SUCCESS);
         if (AssertUtil.isEmpty(paymentDataDOList)) {
             map.put("code", "FAILURE");
             map.put("msg", "未查询到支付信息");
