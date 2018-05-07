@@ -63,6 +63,16 @@
         (#{cityId},#{cityName},#{storeId},#{storeName},#{storeCode},#{gid},#{sku},#{skuName},#{changeTime},#{changeQty},#{afterChangeQty},#{referenceNumber},#{changeType},#{changeTypeDesc})
     </insert>
 
+
+    <insert id="addRealInventoryChangeLog"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreRealInventoryChange">
+        INSERT st_inventory_real_qty_change_log
+        (city_id,city_name,store_id,store_name,store_code,gid,sku,sku_name,change_time,change_qty,after_change_qty,reference_number,change_type,change_type_desc)
+        VALUES
+        (#{cityId},#{cityName},#{storeId},#{storeName},#{storeCode},#{gid},#{sku},#{skuName},#{changeTime},#{changeQty},#{afterChangeQty},#{referenceNumber},#{changeType},#{changeTypeDesc})
+    </insert>
+
+
     <insert id="saveStoreInventory"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventory">
         INSERT st_inventory

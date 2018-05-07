@@ -408,5 +408,108 @@
         SELECT city_id FROM cus_customer WHERE cus_id = #{cusId}
     </select>
 
+    <select id="findCustomerById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ManageUpdateCustomerTypeResponse">
+           SELECT
+                cc.cus_id cusId,
+                cc. NAME `name`,
+                cc.mobile phone,
+                cc.birthday birthday,
+                CASE
+                WHEN cc.sex = 'MALE' THEN '男'
+                WHEN cc.sex = 'FEMALE' THEN '女'
+                ELSE '保密'
+                END
+                    sex,
+                CASE
+                WHEN r.rank_code = 'A' THEN 'A'
+                WHEN r.rank_code = 'B' THEN 'B'
+                WHEN r.rank_code = 'C' THEN 'A'
+                WHEN r.rank_code = 'D' THEN 'B'
+                ELSE 'COMMON' END
+                    memberType
+            FROM
+                cus_customer cc
+            LEFT JOIN cus_rank cr ON cr.cus_id = cc.cus_id
+            LEFT JOIN rank_classification r ON cr.rank_id = r.rank_id
+            WHERE
+                cc.cus_id = #{id}
+    </select>
 
+    <select id="findRankAll" resultType="cn.com.leyizhuang.app.foundation.pojo.user.RankClassification">
+            SELECT
+                rank_id rankId,
+                rank_name rankName,
+                rank_code rankCode,
+                rank_url rankUrl,
+                create_time createTime,
+                city_id cityId
+            FROM
+                rank_classification
+    </select>
+
+    <select id="findStoreByCusId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.RankStore">
+        SELECT
+        s.id id,
+        s.store_id storeId,
+        s.store_name storeCode,
+        s.store_code storeName,
+        s.company_code companyCode,
+        s.city_id cityId,
+        s.city_name cityName,
+        s.company_name companyName,
+        s.create_time createTime
+        FROM
+        cus_customer cc
+        LEFT JOIN cus_rank c ON c.cus_id = cc.cus_id
+        LEFT JOIN rank_store s ON s.store_id = cc.store_id
+        WHERE
+        cc.cus_id = #{cusId}
+    </select>
+
+    <update id="updateMemberTypeByRankIdAndCusId">
+        UPDATE cus_rank
+        SET rank_id = #{rankId}
+        WHERE
+            cus_id = #{cusId}
+    </update>
+
+    <insert id="saveRankStore" parameterType="cn.com.leyizhuang.app.foundation.pojo.RankStore">
+        INSERT INTO rank_store (
+            store_id, store_code, store_name, city_id, city_name, company_code, company_name, create_time
+        )
+        VALUES
+            (storeId, storeCode, storeName, cityId, cityName, companyCode, companyName, createTime)
+    </insert>
+
+    <insert id="saveCusRank" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.CusRankDO">
+           INSERT INTO cus_rank
+                (rank_id,cus_id,number,create_time)
+           VALUES
+                (#{rankId},#{cusId},#{number},#{createTime})
+    </insert>
+
+    <select id="findCusRankByCusId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.user.CusRankDO">
+        SELECT
+            *
+        FROM
+            cus_rank
+        WHERE
+            cus_id = #{cusId}
+        GROUP BY
+            cus_id
+    </select>
+
+    <select id="findRankClassificationByRankCode" resultType="cn.com.leyizhuang.app.foundation.pojo.user.RankClassification">
+        SELECT
+        rank_id rankId,
+        rank_name rankName,
+        rank_code rankCode,
+        rank_url rankUrl,
+        create_time createTime,
+        city_id cityId
+        FROM
+        rank_classification
+        WHERE
+        rank_code = #{rankCode}
+    </select>
 </mapper>

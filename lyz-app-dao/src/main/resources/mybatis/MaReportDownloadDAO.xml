@@ -747,6 +747,7 @@
     <select id="findNoProductSalesList" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.SalesReportDO">
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -759,6 +760,7 @@
         CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
         CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
         og.sku as 'sku',
+        og.sku_name as 'skuName',
         CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END
         as'goodsType',
         og.company_flag as 'companyFlag',
@@ -804,7 +806,7 @@
                 and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
             </when>
             <when test="'FX'==storeType">
-                and s.store_type in ('FX')
+                and s.store_type  in ('FX','FXCK')
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
@@ -822,6 +824,7 @@
 
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -834,6 +837,7 @@
         CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
         CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
         og.sku as 'sku',
+        og.sku_name as 'skuName',
         CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END
         as'goodsType',
         og.company_flag as 'companyFlag',
@@ -878,7 +882,7 @@
                 and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
             </when>
             <when test="'FX'==storeType">
-                and s.store_type in ('FX')
+                and s.store_type in ('FX','FXCK')
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
@@ -896,6 +900,7 @@
 
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -908,6 +913,7 @@
         CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
         CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
         og.sku as 'sku',
+        og.sku_name as 'skuName',
         CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END as
         'goodsType',
         og.company_flag as 'companyFlag',
@@ -958,7 +964,7 @@
                 and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
             </when>
             <when test="'FX'==storeType">
-                and s.store_type in ('FX')
+                and s.store_type  in ('FX','FXCK')
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
@@ -975,6 +981,7 @@
         UNION ALL
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -987,6 +994,7 @@
         CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
         CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
         og.sku as 'sku',
+        og.sku_name as 'skuName',
         CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END as
         'goodsType',
         og.company_flag as 'companyFlag',
@@ -1037,7 +1045,7 @@
                 and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
             </when>
             <when test="'FX'==storeType">
-                and s.store_type in ('FX')
+                and s.store_type  in ('FX','FXCK')
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
@@ -1054,6 +1062,7 @@
         UNION ALL
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -1066,6 +1075,7 @@
         CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
         CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
         org.sku as 'sku',
+        org.sku_name as 'skuName',
         CASE org.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END as
         'goodsType',
         org.company_flag as 'companyFlag',
@@ -1101,7 +1111,7 @@
                 and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
             </when>
             <when test="'FX'==storeType">
-                and s.store_type in ('FX')
+                and s.store_type in  ('FX','FXCK')
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
@@ -1117,6 +1127,7 @@
         UNION ALL
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -1129,6 +1140,7 @@
         CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
         CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
         org.sku as 'sku',
+        org.sku_name as 'skuName',
         CASE org.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END as
         'goodsType',
         org.company_flag as 'companyFlag',
@@ -1155,19 +1167,19 @@
             AND
             orb.return_time >= #{startTime}
         </if>
+        <if test="null!=endTime and ''!=endTime">
+            and
+            <![CDATA[ orb.return_time <= #{endTime} ]]>
+        </if>
         <!--   <if test="null!=companyCode and ''!=companyCode">
                and s.store_structure_code like concat('%',#{companyCode},'%')
            </if>-->
         <choose>
             <when test="'ZS'==storeType">
                 and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
-                <if test="null!=endTime and ''!=endTime">
-                    and
-                    <![CDATA[ orb.return_time <= #{endTime} ]]>
-                </if>
             </when>
             <when test="'FX'==storeType">
-                and s.store_type in ('FX')
+                and s.store_type  in ('FX','FXCK')
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
@@ -1187,6 +1199,7 @@
     <select id="findProductSalesList" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.SalesReportDO">
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -1199,6 +1212,7 @@
         CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
         CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
         og.sku as 'sku',
+        og.sku_name as 'skuName',
         CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END as
         'goodsType',
         og.company_flag as 'companyFlag',
@@ -1244,7 +1258,7 @@
                 and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
             </when>
             <when test="'FX'==storeType">
-                and s.store_type in ('FX')
+                and s.store_type in ('FX','FXCK')
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
@@ -1261,6 +1275,7 @@
         UNION ALL
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -1274,6 +1289,7 @@
         CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
         CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
         og.sku as 'sku',
+        og.sku_name as 'skuName',
         CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT'
         THEN '赠品' END as
         'goodsType',
@@ -1320,7 +1336,7 @@
                 and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
             </when>
             <when test="'FX'==storeType">
-                and s.store_type in ('FX')
+                and s.store_type in ('FX','FXCK')
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
@@ -1338,6 +1354,7 @@
 
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -1352,6 +1369,7 @@
         CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as
         'payUpTime',
         og.sku as 'sku',
+        og.sku_name as 'skuName',
         CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品'
         WHEN 'PRESENT' THEN '赠品' END as
         'goodsType',
@@ -1403,7 +1421,7 @@
                 and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
             </when>
             <when test="'FX'==storeType">
-                and s.store_type in ('FX')
+                and s.store_type in  ('FX','FXCK')
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
@@ -1421,6 +1439,7 @@
 
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -1437,6 +1456,7 @@
         CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time
         end as 'payUpTime',
         og.sku as 'sku',
+        og.sku_name as 'skuName',
         CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN
         'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END as
         'goodsType',
@@ -1489,7 +1509,7 @@
                 and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
             </when>
             <when test="'FX'==storeType">
-                and s.store_type in ('FX')
+                and s.store_type in  ('FX','FXCK')
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
@@ -1507,6 +1527,7 @@
 
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -1519,6 +1540,7 @@
         CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
         CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
         org.sku as 'sku',
+        org.sku_name as 'skuName',
         CASE org.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END as
         'goodsType',
         org.company_flag as 'companyFlag',
@@ -1548,19 +1570,19 @@
             AND
             orb.return_time > #{startTime}
         </if>
+        <if test="null!=endTime and ''!=endTime">
+            and
+            <![CDATA[ orb.return_time <= #{endTime} ]]>
+        </if>
         <!--   <if test="null!=companyCode and ''!=companyCode">
                and s.store_structure_code like concat('%',#{companyCode},'%')
            </if>-->
         <choose>
             <when test="'ZS'==storeType">
                 and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
-                <if test="null!=endTime and ''!=endTime">
-                    and
-                    <![CDATA[ orb.return_time <= #{endTime} ]]>
-                </if>
             </when>
             <when test="'FX'==storeType">
-                and s.store_type in ('FX')
+                and s.store_type in ('FX','FXCK')
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
@@ -1671,6 +1693,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.SalesReportDO">
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -1683,6 +1706,7 @@
         CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
         CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
         og.sku as 'sku',
+        og.sku_name as 'skuName',
         CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END
         as'goodsType',
         og.company_flag as 'companyFlag',
@@ -1721,7 +1745,7 @@
                 and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
             </when>
             <when test="'FX'==storeType">
-                and s.store_type in ('FX')
+                and s.store_type in ('FX','FXCK')
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
@@ -1738,6 +1762,7 @@
         UNION ALL
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -1750,6 +1775,7 @@
         CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
         CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
         og.sku as 'sku',
+        og.sku_name as 'skuName',
         CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END
         as'goodsType',
         og.company_flag as 'companyFlag',
@@ -1787,7 +1813,7 @@
                 and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
             </when>
             <when test="'FX'==storeType">
-                and s.store_type in ('FX')
+                and s.store_type in ('FX','FXCK')
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
@@ -1807,6 +1833,7 @@
     <select id="findProductArrearsList" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.SalesReportDO">
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -1819,6 +1846,7 @@
         CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
         CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
         og.sku as 'sku',
+        og.sku_name as 'skuName',
         CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END as
         'goodsType',
         og.company_flag as 'companyFlag',
@@ -1857,7 +1885,7 @@
                 and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
             </when>
             <when test="'FX'==storeType">
-                and s.store_type in ('FX')
+                and s.store_type in ('FX','FXCK')
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
@@ -1874,6 +1902,7 @@
         UNION ALL
         (SELECT
         s.city as 'cityName',
+        s.store_code as 'storeCode',
         s.store_name as 'storeName',
         e.`name` as 'name',
         ob.customer_name as 'customerName',
@@ -1887,6 +1916,7 @@
         CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
         CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
         og.sku as 'sku',
+        og.sku_name as 'skuName',
         CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT'
         THEN '赠品' END as
         'goodsType',
@@ -1927,7 +1957,7 @@
                 and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
             </when>
             <when test="'FX'==storeType">
-                and s.store_type in ('FX')
+                and s.store_type in ('FX','FXCK')
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">

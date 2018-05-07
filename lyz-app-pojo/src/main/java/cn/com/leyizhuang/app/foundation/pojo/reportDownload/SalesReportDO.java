@@ -22,6 +22,8 @@ public class SalesReportDO {
     private String cityName;
     //storeId
     private Long storeId;
+    //门店编码
+    private String storeCode;
     //门店名称
     private String storeName;
     //顾客名称

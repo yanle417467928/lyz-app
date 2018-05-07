@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
+import cn.com.leyizhuang.app.core.constant.OnlinePayType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.wechat.refund.MaOnlinePayRefundService;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
@@ -176,7 +177,14 @@ public class MaRetrunOrderRestController extends BaseRestController {
             if ((Boolean) maps.get("hasReturnOnlinePay")) {
                 if (null != maOrdReturnBillingList.getOnlinePay() && maOrdReturnBillingList.getOnlinePay() > 0) {
                     List<MaPaymentData> paymentDataList = maOrderService.findPaymentDataByOrderNo(maReturnOrderDetailInfo.getOrderNo());
-                    for (MaPaymentData maPaymentData : paymentDataList) {
+                        if (OnlinePayType.ALIPAY == paymentDataList.get(0).getOnlinePayType()){
+                            maOnlinePayRefundService.alipayRefundRequest(maReturnOrderDetailInfo.getCreatorId(), maReturnOrderDetailInfo.getCreatorIdentityType().getValue(), maReturnOrderDetailInfo.getOrderNo(), returnNumber, maOrdReturnBillingList.getOnlinePay());
+                        } else if (OnlinePayType.WE_CHAT == paymentDataList.get(0).getOnlinePayType()){
+                            maOnlinePayRefundService.wechatReturnMoney(maReturnOrderDetailInfo.getCreatorId(), maReturnOrderDetailInfo.getCreatorIdentityType().getValue(), maOrdReturnBillingList.getOnlinePay(), maReturnOrderDetailInfo.getOrderNo(), returnNumber);
+                        } else if (OnlinePayType.UNION_PAY == paymentDataList.get(0).getOnlinePayType()) {
+                            //TODO
+                        }
+                    /*for (MaPaymentData maPaymentData : paymentDataList) {
                         if ("ALIPAY".equals(maPaymentData.getOnlinePayType().toString())) {
                             maOnlinePayRefundService.alipayRefundRequest(maReturnOrderDetailInfo.getCreatorId(), maReturnOrderDetailInfo.getCreatorIdentityType().getValue(), maReturnOrderDetailInfo.getOrderNo(), returnNumber, maPaymentData.getTotalFee());
                         } else if ("WE_CHAT".equals(maPaymentData.getOnlinePayType().toString())) {
@@ -184,7 +192,7 @@ public class MaRetrunOrderRestController extends BaseRestController {
                         } else if ("银联".equals(maPaymentData.getOnlinePayType().toString())) {
                             //TODO
                         }
-                    }
+                    }*/
                 }
             }
             //发送门店自提单收货消息队列

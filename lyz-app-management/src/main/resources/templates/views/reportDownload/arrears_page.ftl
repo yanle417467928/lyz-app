@@ -74,11 +74,11 @@
                                 </label>
                                 <label class="control-label margin-6" style="margin-left: 5%">
                                     <input type="radio" name="storeType" value="FX" class="iradio_square-blue ">
-                                    分销
+                                    分销(不分公司)
                                 </label>
                                 <label class="control-label margin-6" style="margin-left: 5%">
                                     <input type="radio" name="storeType" value="ZS" class="iradio_square-blue ">
-                                    装饰公司
+                                    装饰公司(不分公司)
                                 </label>
                             </div>
                         </div>
