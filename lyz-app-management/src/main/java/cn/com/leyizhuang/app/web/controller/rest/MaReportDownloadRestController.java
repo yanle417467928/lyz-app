@@ -1853,9 +1853,9 @@ public class MaReportDownloadRestController extends BaseRestController {
                 WritableSheet ws = wwb.createSheet("账单明细（第" + (i + 1) + "页）", i);
 
                 //列宽
-                int[] columnView = {30, 15, 15,15, 15, 50, 20, 15, 15, 20};
+                int[] columnView = {30, 15, 15, 15, 15, 50, 15, 20, 15, 15, 20};
                 //列标题
-                String[] titles = {"订单号", "订单日期","出货日期","退货日期", "收货人姓名", "收货人地址", "商品名称", "数量", "结算单价", "结算总价"};
+                String[] titles = {"订单号", "订单日期", "出货日期", "退货日期", "收货人姓名", "收货人地址", "SKU", "商品名称", "数量", "结算单价", "结算总价"};
                 //计算标题开始行号
                 int row = 0;
 
@@ -1876,16 +1876,23 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Label(3, j + row, goodsItemsDO.getReturnTime(), textFormat));
                     ws.addCell(new Label(4, j + row, goodsItemsDO.getCustomerName(), textFormat));
                     ws.addCell(new Label(5, j + row, goodsItemsDO.getShippingAddress(), textFormat));
-                    ws.addCell(new Label(6, j + row, goodsItemsDO.getSkuName(), textFormat));
-                    ws.addCell(new Number(7, j + row, goodsItemsDO.getQuantity(), textFormat));
-                    ws.addCell(new Number(8, j + row, goodsItemsDO.getSettlementPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                    ws.addCell(new Number(9, j + row, goodsItemsDO.getSettlementTotlePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Label(6, j + row, goodsItemsDO.getSku(), textFormat));
+                    ws.addCell(new Label(7, j + row, goodsItemsDO.getSkuName(), textFormat));
+                    ws.addCell(new Number(8, j + row, goodsItemsDO.getQuantity(), textFormat));
+                    ws.addCell(new Number(9, j + row, goodsItemsDO.getSettlementPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Number(10, j + row, goodsItemsDO.getSettlementTotlePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                 }
             }
 
             //excel单表最大行数是65535
             maxSize = 0;
             if (null != creditBillingDetailsVOS) {
+                creditBillingDetailsVOS.forEach(p -> {
+                    if (p.getOrderNumber().contains("T")) {
+                        p.setCreditMoney(p.getCreditMoney() < 0 ? p.getCreditMoney() : (p.getCreditMoney() * -1));
+                        p.setGoodsQty(p.getGoodsQty() < 0 ? p.getGoodsQty() : (p.getGoodsQty() * -1));
+                    }
+                });
                 maxSize = creditBillingDetailsVOS.size();
             }
             int sheets = maxSize / maxRowNum + 1;
@@ -1907,9 +1914,9 @@ public class MaReportDownloadRestController extends BaseRestController {
                 ws.addCell(new Label(7, 1, user.getName(), textFormat));
 
                 //列宽
-                int[] columnView = {10, 30, 15, 15, 50,40, 10, 15};
+                int[] columnView = {10, 30, 15, 15, 50, 40, 10, 15, 10};
                 //列标题
-                String[] titles = {"序号", "订单号", "出&退货日期", "收货人姓名", "收货人地址","备注", "商品总数", "总金额"};
+                String[] titles = {"序号", "订单号", "出&退货日期", "收货人姓名", "收货人地址", "备注", "商品总数", "总金额", "装饰经理"};
                 //计算标题开始行号
                 int row = 3;
 
@@ -1935,13 +1942,14 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Label(5, j + row, creditBillingDetailsVO.getRemark(), textFormat));
                     ws.addCell(new Number(6, j + row, creditBillingDetailsVO.getGoodsQty()));
                     ws.addCell(new Number(7, j + row, creditBillingDetailsVO.getCreditMoney(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Label(8, j + row, creditBillingDetailsVO.getSalesManagerName(), textFormat));
                     credit = CountUtil.add(credit, null == creditBillingDetailsVO.getCreditMoney() ? 0D : creditBillingDetailsVO.getCreditMoney());
                     goodsQty += null == creditBillingDetailsVO.getGoodsQty() ? 0 : creditBillingDetailsVO.getGoodsQty();
                     rows += 1;
                 }
-                ws.addCell(new Label(4, rows, "总计", titleFormat));
-                ws.addCell(new Number(5, rows, goodsQty, textFormat));
-                ws.addCell(new Number(6, rows, credit, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                ws.addCell(new Label(5, rows, "总计", titleFormat));
+                ws.addCell(new Number(6, rows, goodsQty, textFormat));
+                ws.addCell(new Number(7, rows, credit, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
             }
 
         } catch (Exception e) {

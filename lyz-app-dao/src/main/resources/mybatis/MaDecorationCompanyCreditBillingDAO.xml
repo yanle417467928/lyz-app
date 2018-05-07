@@ -206,9 +206,19 @@
     </select>
 
     <select id="getDecorationCompanyCreditBillingDetailsByCreditBillingNo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsVO">
-        SELECT creator_name, order_time createTime, delivery_address, IFNULL(credit_money, 0) credit_money, order_number, receiver, IFNULL(goods_qty, 0) goods_qty,remark
-        FROM decoration_company_credit_billing_details
-        WHERE credit_billing_no = #{creditBillingNo}
+        SELECT
+            dccbd.creator_name,
+            dccbd.order_time              createTime,
+            dccbd.delivery_address,
+            IFNULL(dccbd.credit_money, 0) credit_money,
+            dccbd.order_number,
+            dccbd.receiver,
+            IFNULL(dccbd.goods_qty, 0)    goods_qty,
+            dccbd.remark,
+            s.sales_manager_name
+        FROM decoration_company_credit_billing_details dccbd
+            left join st_store s on s.store_id = dccbd.store_id
+        WHERE dccbd.credit_billing_no = #{creditBillingNo}
     </select>
 
     <update id="updateCreditBillingDetails" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorationCompanyCreditBillingDO">
@@ -233,10 +243,15 @@
     </select>
 
     <select id="findGoodsItemsDOAll" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.AccountGoodsItemsDO">
-        SELECT ol.create_time shippingTime,obi.create_time orderTime, ogi.ord_no orderNumber, ogi.sku_name skuName,
-        IF(og.delivery_type = 'HOUSE_DELIVERY', og.shipping_address, og.booking_store_address) shippingAddress, og.receiver customerName,
-        IFNULL(ogi.order_qty, 0) quantity, IFNULL(ogi.settlement_price, 0) settlementPrice,
-        (IFNULL(ogi.order_qty, 0) * IFNULL(ogi.settlement_price, 0)) settlementTotlePrice
+        SELECT
+            ol.create_time                                                                         shippingTime,
+            obi.create_time                                                                        orderTime,
+            ogi.ord_no                                                                             orderNumber,
+            ogi.sku                                                                                sku,
+            ogi.sku_name                                                                           skuName,
+            IF(og.delivery_type = 'HOUSE_DELIVERY', og.shipping_address, og.booking_store_address) shippingAddress, og.receiver customerName,
+            IFNULL(ogi.order_qty, 0)                                                               quantity, IFNULL(ogi.settlement_price, 0) settlementPrice,
+            (IFNULL(ogi.order_qty, 0) * IFNULL(ogi.settlement_price, 0))                           settlementTotlePrice
         FROM ord_goods_info ogi
         INNER JOIN ord_delivery_info_details ol ON ogi.ord_no = ol.order_no AND ol.logistic_status = 'SEALED_CAR'
         INNER JOIN ord_logistics_info og ON og.ord_no = ogi.ord_no
@@ -244,10 +259,15 @@
         LEFT  JOIN ord_base_info obi ON ogi.ord_no =obi.ord_no
         WHERE dcd.credit_billing_no = #{creditBillingNo}
         UNION
-        SELECT ord.create_time returnTime,obi.create_time orderTime,orgi.return_no orderNumber, orgi.sku_name skuName,
-        IF(orl.delivery_type = 'HOUSE_PICK', orl.return_full_address, orl.return_store_address) shippingAddress, orl.rejecter customerName,
-        (-1 * IFNULL(orgi.return_qty,0)) quantity, IFNULL(orgi.settlement_price, 0) settlementPrice,
-        (-1 * IFNULL(orgi.return_qty, 0) * IFNULL(orgi.settlement_price, 0)) settlementTotlePrice
+        SELECT
+            ord.create_time                                                                         returnTime,
+            obi.create_time                                                                         orderTime,
+            orgi.return_no                                                                          orderNumber,
+            orgi.sku                                                                                sku,
+            orgi.sku_name                                                                           skuName,
+            IF(orl.delivery_type = 'HOUSE_PICK', orl.return_full_address, orl.return_store_address) shippingAddress, orl.rejecter customerName,
+            (-1 * IFNULL(orgi.return_qty,0))                                                        quantity, IFNULL(orgi.settlement_price, 0) settlementPrice,
+            (-1 * IFNULL(orgi.return_qty, 0) * IFNULL(orgi.settlement_price, 0))                    settlementTotlePrice
         FROM ord_return_goods_info orgi
         INNER JOIN ord_return_delivery_detail ord ON orgi.return_no = ord.return_no AND ord.return_logistic_status = 'AGAIN_ON_SALE'
         INNER JOIN ord_return_logistic_info orl ON orgi.return_no = orl.return_no
