@@ -16,6 +16,7 @@ import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.remote.queue.SinkSender;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import cn.com.leyizhuang.common.util.AssertUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang.time.DateUtils;
@@ -183,15 +184,21 @@ public class UserHomePageController {
             return resultDTO;
         }
         try {
-            PageInfo<AppCustomer> appCustomerList = customerService.findListByUserIdAndIdentityType(userId, identityType, page, size);
+            PageInfo<AppCustomer> appCustomerList = customerService.findListByUserIdAndIdentityType(userId, identityType, page, size / 2);
+            //查询可能未产生销量而归属到默认门店的顾客
+            PageInfo<AppCustomer> appCustomerListDefault = customerLevelService.getCustomerIsDefaultStoreAndNoSellDetailsOrder(userId, page, size / 2);
 
-            // 计算灯号
             List<AppCustomer> customers = appCustomerList.getList();
+            List<AppCustomer> defaultCustomers = appCustomerListDefault.getList();
+            if (AssertUtil.isNotEmpty(customers)) {
+                customers.addAll(defaultCustomers);
+            }
+            // 计算灯号
             customers = customerLevelService.countCustomerListLightlevel(customers, userId);
 
-            List<CustomerListResponse> customerlistresponselist = CustomerListResponse.transform(customers);
+            List<CustomerListResponse> customerListResponses = CustomerListResponse.transform(customers);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                    null != appCustomerList.getList() && appCustomerList.getList().size() > 0 ? new GridDataVO<CustomerListResponse>().transform(customerlistresponselist, appCustomerList) : null);
+                    null != appCustomerList.getList() && appCustomerList.getList().size() > 0 ? new GridDataVO<CustomerListResponse>().transform(customerListResponses, appCustomerList) : null);
             logger.info("getCustomersList OUT,获取我的顾客列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {

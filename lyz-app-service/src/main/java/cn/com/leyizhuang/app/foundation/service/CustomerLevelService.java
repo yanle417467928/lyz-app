@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
@@ -17,6 +18,16 @@ public interface CustomerLevelService {
      * @return
      */
     List<AppCustomer> countCustomerListLightlevel(List<AppCustomer> customers, Long sellerId);
+
+    /**
+     * 获取没有销量归属导默认门店的顾客
+     *
+     * @param userId
+     * @param page
+     * @param size
+     * @return
+     */
+    PageInfo<AppCustomer> getCustomerIsDefaultStoreAndNoSellDetailsOrder(Long userId, Integer page, Integer size);
 
     /**
      * 计算灯号 单个顾客

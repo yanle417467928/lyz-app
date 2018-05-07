@@ -3,8 +3,8 @@ package cn.com.leyizhuang.app.foundation.dao;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsWeekFinishResponse;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import org.apache.ibatis.annotations.Param;
-import org.apache.tomcat.jni.Local;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -78,6 +78,14 @@ public interface SellDetailsDAO {
      */
     List<String> getCustomerSellDetailsOrderByCreateTimeDescLimit4(@Param("cusId") Long cusId, @Param("dateTime") LocalDateTime dateTime, @Param("sellerId") Long sellerId);
 
+    /**
+     * 查询某导购三个月未下单自动分配到默认门店的会员
+     *
+     * @param sellerId
+     * @param sellerId
+     * @return
+     */
+    List<AppCustomer> getCustomerIsDefaultStoreAndNoSellDetailsOrder(Long sellerId);
     /**
      * 查询一段时间内 一个顾客在一个导购下产生销量的月份频次
      * @param cusId

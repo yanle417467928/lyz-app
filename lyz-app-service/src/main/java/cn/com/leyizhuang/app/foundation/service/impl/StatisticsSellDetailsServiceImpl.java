@@ -1,6 +1,8 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
-import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.constant.ActBaseType;
+import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.ArrayListUtils;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.SellDetailsDAO;
@@ -9,16 +11,16 @@ import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderHeader;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
-import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.CountUtil;
 import cn.com.leyizhuang.common.util.WeekDateUtil;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -608,6 +610,16 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
         }
 
         return sellDetailsDAO.getCustomerSellDetailsOrderByCreateTimeDescLimit4(cusId, dateTime, sellerId);
+    }
+
+    @Override
+    public PageInfo<AppCustomer> getCustomerIsDefaultStoreAndNoSellDetailsOrder(Long sellerId, Integer page, Integer size) {
+        if (sellerId != null) {
+            PageHelper.startPage(page, size);
+            List<AppCustomer> appCustomerList = sellDetailsDAO.getCustomerIsDefaultStoreAndNoSellDetailsOrder(sellerId);
+            return new PageInfo<>(appCustomerList);
+        }
+        return null;
     }
 
     @Override
