@@ -1743,6 +1743,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                         break;
                     }
                     SalesReportDO salesReportDO = salesList.get(j + i * maxRowNum);
+
                     ws.addCell(new Label(0, j + row, salesReportDO.getCityName(), textFormat));
                     ws.addCell(new Label(1, j + row, salesReportDO.getStoreName(), textFormat));
                     ws.addCell(new Label(2, j + row, salesReportDO.getStoreCode(), textFormat));
