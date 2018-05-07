@@ -240,4 +240,8 @@
         WHERE city_code = #{cityCode} AND sku = #{sku}
         );
     </insert>
+
+    <select id="findCityByWarehouseNo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.city.City">
+        SELECT FROM lyz_app.warehouse
+    </select>
 </mapper>

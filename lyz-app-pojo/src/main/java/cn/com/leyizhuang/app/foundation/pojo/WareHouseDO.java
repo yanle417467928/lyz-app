@@ -36,4 +36,9 @@ public class WareHouseDO {
      * 仓库类型
      */
     private String type;
+    /**
+     * 分公司id
+     */
+    private String sobId;
+
 }
