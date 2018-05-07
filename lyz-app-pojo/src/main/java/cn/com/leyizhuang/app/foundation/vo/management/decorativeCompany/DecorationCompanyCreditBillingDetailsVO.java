@@ -4,8 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Date;
-
 /**
  * 装饰公司用信用金支付的订单
  * @author GenerationRoad
@@ -34,4 +32,6 @@ public class DecorationCompanyCreditBillingDetailsVO {
     private Integer goodsQty;
     //备注
     private String remark;
+    //装饰公司经理名称
+    private String salesManagerName;
 }
