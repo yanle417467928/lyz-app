@@ -1,12 +1,18 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
 import cn.com.leyizhuang.app.core.constant.OrderCouponType;
+import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
 import cn.com.leyizhuang.app.foundation.dao.ProductCouponDAO;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCouponChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.ProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderUsableProductCouponResponse;
+import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.app.foundation.service.ProductCouponService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -14,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -26,6 +33,11 @@ public class ProductCouponServiceImpl implements ProductCouponService {
 
     @Autowired
     private ProductCouponDAO productCouponDAO;
+
+    @Autowired
+    private OrderDAO orderDAO;
+
+    private GoodsService goodsService;
 
     @Override
     public List<OrderUsableProductCouponResponse> findProductCouponByCustomerIdAndGoodsId(Long userId, List<Long> goodsIds) {
@@ -147,5 +159,28 @@ public class ProductCouponServiceImpl implements ProductCouponService {
         productCouponDAO.addCustomerProductCouponChangeLog(customerProductCouponChangeLog);
     }
 
+    @Override
+    public void activateCusProductCoupon(String ordNo){
+        if (StringUtils.isNotBlank(ordNo)){
+            // 取半年后时间为失效时间
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime effectiveEndTime = now.plusMonths(6);
 
+            productCouponDAO.activateCusProductCoupon(ordNo,effectiveEndTime);
+        }
+
+        // 找到这一单中的FW产品券 并扣减产品券原订单高端产品可退货数量
+//        List<OrderGoodsInfo> productCouponList = orderDAO.getOrderGoodsByOrderNumberAndSkuAndGoodsLineType(ordNo,null,AppGoodsLineType.PRODUCT_COUPON.getValue());
+//        for (OrderGoodsInfo productCoupon : productCouponList){
+//            Long gid = productCoupon.getGid();
+//
+//            if (goodsService.isFWGoods(gid)){
+//                // 服务产品券提货 如果是券类型为 present 则扣除bindsku 对应商品可退数量
+//            }
+//
+//            String bindSku = "";
+//            orderDAO.getOrderGoodsByOrderNumberAndSkuAndGoodsLineType(ordNo,bindSku, AppGoodsLineType.GOODS.getValue());
+//        }
+
+    }
 }

@@ -245,6 +245,18 @@
         where pcid = #{id}
     </update>
 
+    <update id="activateCusProductCoupon" >
+        UPDATE cus_customer_product_coupon
+        <set >
+            <if test="effectiveEndTime != null" >
+                effective_end_time = #{effectiveEndTime},
+            </if>
+            status = 1,
+            disable_time = NULL,
+        </set>
+        where get_ord_no = #{ordNo}
+    </update>
+
     <insert id="addCustomerProductCouponChangeLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerProductCouponChangeLog">
         INSERT INTO cus_product_coupon_change_log
         (cus_id, use_time, coupon_id, reference_number, change_type, change_type_desc, operator_id, operator_type, operator_ip, remark)

@@ -271,6 +271,14 @@ public class ICallWms {
         if (null != requisitionOrder.getSendFlag() && requisitionOrder.getSendFlag()) {
             return;
         }
+
+        /** 新增服务单判断逻辑 **/
+        if (requisitionOrder.getOrderNumber().contains("FW")){
+            // 交付中心服务单 地址作特殊处理
+            requisitionOrder.setDisctrict("交付中心");
+            requisitionOrder.setSubdistrict("交付中心");
+        }
+
         logger.info("============================要货单XML开始拼装===============================");
         String xml = AppXmlUtil.getRequisitionOrderXml(requisitionOrder);
         logger.info("XML拼装完毕 OUT, xml:{}", AppXmlUtil.format(xml));
@@ -377,6 +385,14 @@ public class ICallWms {
         if (null != returnOrder.getSendFlag() && returnOrder.getSendFlag()) {
             return;
         }
+
+        /** 新增服务单判断逻辑 **/
+        if (returnOrder.getOrderNumber().contains("FW")){
+            // 交付中心服务单 地址作特殊处理
+            returnOrder.setDisctrict("交付中心");
+            returnOrder.setSubdistrict("交付中心");
+        }
+
         logger.info("============================退货单XML开始拼装===============================");
         String xml = AppXmlUtil.getReturnOrderXml(returnOrder);
         logger.info("XML拼装完毕 OUT, xml:{}", AppXmlUtil.format(xml));

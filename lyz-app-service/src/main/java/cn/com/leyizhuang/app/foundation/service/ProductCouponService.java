@@ -8,6 +8,7 @@ import cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderUsableProductCouponResponse;
 import com.github.pagehelper.PageInfo;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -84,4 +85,9 @@ public interface ProductCouponService {
      */
     void addCustomerProductCouponChangeLog(CustomerProductCouponChangeLog customerProductCouponChangeLog);
 
+    /**
+     * 根据订单号激活产品券
+     * @param ordNo
+     */
+    void activateCusProductCoupon(String ordNo);
 }

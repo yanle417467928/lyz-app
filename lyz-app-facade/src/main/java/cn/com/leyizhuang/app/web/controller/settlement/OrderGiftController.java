@@ -93,6 +93,15 @@ public class OrderGiftController {
                 }
             }
 
+            /** 检查商品companyflag 服务商品不能与普通商品一起下，并且服务商品也只能单独下**/
+            List<Long> allGoodsIdList = new ArrayList<>();
+            allGoodsIdList.addAll(goodsIdList);
+            allGoodsIdList.addAll(coupunGoodsIdList);
+            ResultDTO<GiftListResponse> cfResultDTO = appOrderService.checkGoodsCompanyFlag(allGoodsIdList, userId, identityType);
+            if (!cfResultDTO.getCode().equals(0)){
+                return cfResultDTO;
+            }
+
             /******计算促销******/
             List<OrderGoodsSimpleResponse> goodsInfo = new ArrayList<>();
             List<PromotionsGiftListResponse> promotionsGiftList = new ArrayList<>();
@@ -150,10 +159,10 @@ public class OrderGiftController {
 
                             StringBuffer msg = new StringBuffer();
 
-                            for (int i =0 ;i< goodsNames.size(); i++){
-                                msg.append("“"+goodsNames.get(i)+"”");
+                            for (int i = 0; i < goodsNames.size(); i++) {
+                                msg.append("“" + goodsNames.get(i) + "”");
 
-                                if (i == 2){
+                                if (i == 2) {
                                     msg.append("等");
                                     break;
                                 }
@@ -169,7 +178,7 @@ public class OrderGiftController {
 
                     /**************/
                     //2018-04-03 generation 加盟门店自提不用判断库存
-                    if (StoreType.JM.equals(appStore.getStoreType())){
+                    if (StoreType.JM.equals(appStore.getStoreType())) {
                         deliveryType = AppDeliveryType.SELF_TAKE;
                     }
                     /**************/
@@ -211,7 +220,7 @@ public class OrderGiftController {
                 /**************/
                 //2018-04-03 generation 加盟门店自提不用判断库存
                 if (!(StoreType.JM.equals(appStore.getStoreType()))) {
-                /**************/
+                    /**************/
 
                     for (Map.Entry<Long, Integer> entry : goodsQuantity.entrySet()) {
                         GoodsDO goodsDO = goodsService.findGoodsById(entry.getKey());

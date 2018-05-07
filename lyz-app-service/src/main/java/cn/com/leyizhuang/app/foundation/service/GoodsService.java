@@ -155,4 +155,6 @@ public interface GoodsService {
     List<GoodsDO> findGoodsListBySkuList(List<String> internalCodeList);
 
     GoodsDO findBySku(String sku);
+
+    Boolean isFWGoods(Long goodsId);
 }

@@ -105,6 +105,9 @@ public class ActBaseDO{
     // 排序号
     private Integer sortId;
 
+    // 互斥性 true: 与其他促销互斥
+    private Boolean mutex = true;
+
     /**
      * 获取最终促销类型
      */

@@ -262,10 +262,18 @@ public class OrderController {
             }
 
             //**********************************开始创建订单 **************************
+            //******************* 根据商品确定订单表单号为 XN 或者 XNFW ********************
+            List<Long> allGoodsList = new ArrayList<>();
+            goodsList.forEach(g -> allGoodsList.add(g.getId()));
+            productCouponList.forEach(p -> allGoodsList.add(p.getId()));
+            String orderNumberType = appOrderService.returnType(allGoodsList,orderParam.getUserId(),identityType);
 
             //******************* 创建订单基础信息 *****************
             OrderBaseInfo orderBaseInfo = appOrderService.createOrderBaseInfo(orderParam.getCityId(), orderParam.getUserId(),
                     orderParam.getIdentityType(), orderParam.getCustomerId(), deliverySimpleInfo.getDeliveryType(), orderParam.getRemark(), orderParam.getSalesNumber());
+            String oldOrderNumber = orderBaseInfo.getOrderNumber();
+            oldOrderNumber = oldOrderNumber.replace("XN",orderNumberType);
+            orderBaseInfo.setOrderNumber(oldOrderNumber);
 
             //****************** 创建订单物流信息 ******************
             OrderLogisticsInfo orderLogisticsInfo = appOrderService.createOrderLogisticInfo(deliverySimpleInfo);
@@ -357,6 +365,9 @@ public class OrderController {
                 sinkSender.sendOrder(orderBaseInfo.getOrderNumber());
                 //添加订单生命周期
                 appOrderService.addOrderLifecycle(OrderLifecycleType.PAYED, orderBaseInfo.getOrderNumber());
+
+                // 激活订单赠送的产品券
+                productCouponService.activateCusProductCoupon(orderBaseInfo.getOrderNumber());
 
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                         new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), true, false));
@@ -1608,6 +1619,10 @@ public class OrderController {
             if (baseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
                 iCallWms.sendToWmsRequisitionOrderAndGoods(orderNumber);
             }
+
+            // 激活订单赠送的产品券
+            productCouponService.activateCusProductCoupon(orderNumber);
+
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("handleOrderRelevantBusinessAfterOnlinePayCashDelivery OUT,处理货到付款的订单业务成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -1740,6 +1755,10 @@ public class OrderController {
             if (baseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
                 iCallWms.sendToWmsRequisitionOrderAndGoods(orderNumber);
             }
+
+            // 激活订单赠送的产品券
+            productCouponService.activateCusProductCoupon(orderBaseInfo.getOrderNumber());
+
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("支付0元订单成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -1854,7 +1873,6 @@ public class OrderController {
 
 
             //**********************************开始创建订单 **************************
-
             //******************* 创建订单基础信息 *****************
             OrderBaseInfo orderBaseInfo = appOrderService.createOrderBaseInfo(orderParam.getCityId(), orderParam.getUserId(),
                     orderParam.getIdentityType(), orderParam.getCustomerId(), deliverySimpleInfo.getDeliveryType(), orderParam.getRemark(), orderParam.getSalesNumber());

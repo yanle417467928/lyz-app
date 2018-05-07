@@ -19,15 +19,19 @@ import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.BillingSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.common.core.constant.CommonGlobal;
+import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.AssertUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Result;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,6 +88,9 @@ public class AppOrderServiceImpl implements AppOrderService {
 
     @Resource
     private AppSeparateOrderService separateOrderService;
+
+    @Resource
+    private GoodsService goodsService;
 
     @Override
     public int lockUserExpendOfOrder(OrderLockExpendRequest lockExpendRequest) {
@@ -1119,5 +1126,88 @@ public class AppOrderServiceImpl implements AppOrderService {
     @Override
     public Double getOrderProductCouponPurchasePrice(String ordNo,String sku){
         return orderDAO.getOrderProductCouponPurchasePrice(ordNo,sku);
-    };
+    }
+
+    /**
+     * 判断订单商品 如果包含 HR、LYZ、RY、XQ 以外的服务类品牌商品则不允许下单，服务类品牌也只能单独下单；
+     */
+    public ResultDTO<GiftListResponse> checkGoodsCompanyFlag(List<Long> goodsIds,Long userId,Integer identityType){
+        HashSet<String> companyFlagSet = new HashSet();
+        HashSet<String> commonFlagSet = new HashSet<>();
+        // 获取服务类品牌
+        String[] fwCompanyFlag = AppConstant.FW_COMPANY_FLAG.split("\\|");
+        List<String> fwCfList = Arrays.asList(fwCompanyFlag);
+        // 查询出所有商品
+        List<OrderGoodsSimpleResponse> goodsInfo = new ArrayList<>();
+        if (identityType == 6) {
+            //获取商品信息
+            goodsInfo = goodsService.findGoodsListByCustomerIdAndGoodsIdList(userId, goodsIds);
+        } else if (identityType == 0) {
+            goodsInfo = goodsService.findGoodsListByEmployeeIdAndGoodsIdList(userId, goodsIds);
+        }
+
+        if (goodsInfo != null && goodsInfo.size() > 0){
+            for (OrderGoodsSimpleResponse goods : goodsInfo){
+                String companyFlag = goods.getCompanyFlag();
+
+                if (fwCfList.contains(companyFlag)){
+                    companyFlagSet.add(companyFlag);
+                }else{
+                    commonFlagSet.add(companyFlag);
+                }
+            }
+        }
+
+        ResultDTO<GiftListResponse> resultDTO;
+        if (companyFlagSet != null && companyFlagSet.size() > 0) {
+            if ((commonFlagSet != null && commonFlagSet.size() > 0) || (commonFlagSet.size() == 0 && companyFlagSet.size() > 1)
+                    || (commonFlagSet == null && companyFlagSet.size() > 1)){
+                String msg = "";
+                for (String cf : companyFlagSet) {
+                    if (cf.equals("SRV")){
+                        msg += "喷涂 ";
+                    }else if (cf.equals("CVR")){
+                        msg += "遮蔽 ";
+                    }else if (cf.equals("ART")){
+                        msg += "艺术漆 ";
+                    }
+                }
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, msg + "服务类商品请单独下单，一单一类", null);
+                return resultDTO;
+            }
+        }
+
+        return resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+    }
+
+    public String returnType(List<Long> goodsIds,Long userId,Integer identityType){
+
+        // 获取服务类品牌
+        String[] fwCompanyFlag = AppConstant.FW_COMPANY_FLAG.split("\\|");
+        List<String> fwCfList = Arrays.asList(fwCompanyFlag);
+        // 查询出所有商品
+        List<OrderGoodsSimpleResponse> goodsInfo = new ArrayList<>();
+        if (identityType == 6) {
+            //获取商品信息
+            goodsInfo = goodsService.findGoodsListByCustomerIdAndGoodsIdList(userId, goodsIds);
+        } else if (identityType == 0) {
+            goodsInfo = goodsService.findGoodsListByEmployeeIdAndGoodsIdList(userId, goodsIds);
+        }
+
+        if (goodsInfo != null && goodsInfo.size() > 0){
+            for (OrderGoodsSimpleResponse goods : goodsInfo){
+                String companyFlag = goods.getCompanyFlag();
+
+                if (fwCfList.contains(companyFlag)){
+                 return "XNFW";
+                }else{
+                 return "XN";
+                }
+            }
+        }
+
+        return "XN";
+    }
+
+
 }
