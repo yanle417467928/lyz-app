@@ -87,4 +87,8 @@ public class AppConstant {
      */
     public static final String PUB_DATE = "2018-03-28 00:00:00";
 
+    /**
+     * app 服务类商品companyFlag
+     */
+    public static final String FW_COMPANY_FLAG = "SRV|CVR|ART";
 }

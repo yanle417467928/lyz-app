@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
@@ -66,6 +67,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
      * @param orderGoodsInfoList
      * @return
      */
+    @Transactional
     public List<OrderGoodsInfo> addGoodsDetailsAndDutch(Long userId, AppIdentityType identityType, List<PromotionSimpleInfo> promotionSimpleInfoList, List<OrderGoodsInfo> orderGoodsInfoList,Long cusId) throws UnsupportedEncodingException {
         if(identityType.getValue() == 6){
             cusId = userId;
@@ -360,7 +362,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                             giftTotalPrice = CountUtil.add(this.returnCountPrice(giftDetailLine, identityType, customerType), giftTotalPrice);
                         }else if (act.getActType().contains("PRO")){
                             // 送产品券
-                            productCouponSendService.sendForPromotion(cusId,goods.getGid(),giftDetailLine.getOrderQuantity(),giftDetailLine.getOrderNumber());
+                            productCouponSendService.sendForPromotion(cusId,goods.getGid(),giftDetailLine.getOrderQuantity(),giftDetailLine.getOrderNumber(),giftDetailLine.getSku());
                         }
 
                         //orderService.saveOrderGoodsInfo(giftDetailLine);

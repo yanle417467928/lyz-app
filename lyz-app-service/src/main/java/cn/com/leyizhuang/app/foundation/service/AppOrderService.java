@@ -11,12 +11,15 @@ import cn.com.leyizhuang.app.foundation.pojo.request.settlement.BillingSimpleInf
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;
 
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -192,4 +195,8 @@ public interface AppOrderService {
     void addAllOrderShipping(String shippingNo, String orderNumber);
 
     void saveOrderShipping(OrderShipping orderShipping);
+
+    ResultDTO<GiftListResponse> checkGoodsCompanyFlag(List<Long> goodsIds, Long userId, Integer identityType);
+
+    String returnType(List<Long> goodsIds,Long userId,Integer identityType);
 }

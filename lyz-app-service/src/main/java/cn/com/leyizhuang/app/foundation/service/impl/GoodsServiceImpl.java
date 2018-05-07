@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.constant.AppConstant;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.GoodsDAO;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -315,9 +317,9 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public List<String> findGoodsByCompanyFlagAndIds(List<Long> goodsIds,List<String> companyFlagList){
-        if (goodsIds != null && goodsIds.size() > 0 && companyFlagList != null && companyFlagList.size() > 0){
-            return goodsDAO.findGoodsByCompanyFlagAndIds(goodsIds,companyFlagList);
+    public List<String> findGoodsByCompanyFlagAndIds(List<Long> goodsIds, List<String> companyFlagList) {
+        if (goodsIds != null && goodsIds.size() > 0 && companyFlagList != null && companyFlagList.size() > 0) {
+            return goodsDAO.findGoodsByCompanyFlagAndIds(goodsIds, companyFlagList);
         }
         return null;
     }
@@ -437,7 +439,7 @@ public class GoodsServiceImpl implements GoodsService {
     @Override
     public PageInfo<MaBuyProductCouponGoodsResponse> screenGoodsGrid(Integer page, Integer size, Long brandCode,
                                                                      String categoryCode, String companyCode,
-                                                                     String productType,Long storeId) {
+                                                                     String productType, Long storeId) {
         PageHelper.startPage(page, size);
         if ("-1".equals(categoryCode)) {
             categoryCode = null;
@@ -449,11 +451,11 @@ public class GoodsServiceImpl implements GoodsService {
             brandCode = null;
         }
 
-        if (productType.equals("-1")){
+        if (productType.equals("-1")) {
             productType = null;
         }
 
-        List<MaBuyProductCouponGoodsResponse> goodsDOList = goodsDAO.screenGoodsGridBuyCoupon(brandCode, categoryCode, companyCode,productType,storeId);
+        List<MaBuyProductCouponGoodsResponse> goodsDOList = goodsDAO.screenGoodsGridBuyCoupon(brandCode, categoryCode, companyCode, productType, storeId);
         return new PageInfo<>(goodsDOList);
     }
 
@@ -504,9 +506,9 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public List<MaBuyProductCouponGoodsResponse> findGoodsForBuyCoupon(Long storeId,Long cusId,Long sellerId,String queryGoodsInfo,String priceType){
+    public List<MaBuyProductCouponGoodsResponse> findGoodsForBuyCoupon(Long storeId, Long cusId, Long sellerId, String queryGoodsInfo, String priceType) {
 
-            return goodsDAO.findMaStoreGoodsByStoreIdAndPricceType(storeId,priceType,queryGoodsInfo);
+        return goodsDAO.findMaStoreGoodsByStoreIdAndPricceType(storeId, priceType, queryGoodsInfo);
     }
 
     @Override
@@ -549,7 +551,7 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Override
     public List<GoodsDO> findGoodsListBySkuList(List<String> internalCodeList) {
-        if (AssertUtil.isNotEmpty(internalCodeList)){
+        if (AssertUtil.isNotEmpty(internalCodeList)) {
             return goodsDAO.findGoodsListBySkuList(internalCodeList);
         }
         return null;
@@ -557,12 +559,39 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Override
     public GoodsDO findBySku(String sku) {
-        if (StringUtils.isNotBlank(sku)){
+        if (StringUtils.isNotBlank(sku)) {
             return goodsDAO.findBySku(sku);
         }
         return null;
     }
 
+    /**
+     * 判断商品是否为 FW类商品
+     *
+     * @param goodsId
+     * @return
+     */
+    public Boolean isFWGoods(Long goodsId) {
+        Boolean flag = true;
+
+        // 获取服务类品牌
+        String[] fwCompanyFlag = AppConstant.FW_COMPANY_FLAG.split("\\|");
+        List<String> fwCfList = Arrays.asList(fwCompanyFlag);
+
+        GoodsDO goodsDO = goodsDAO.findGoodsById(goodsId);
+        if (goodsDO != null) {
+            String companyFlag = goodsDO.getCompanyFlag();
+            if (fwCfList.contains(companyFlag)){
+                flag = true;
+            }else{
+                flag = false;
+            }
+        } else {
+            flag = false;
+        }
+
+        return flag;
+    }
     @Override
     public PageInfo<UserGoodsResponse> findGoodsListBySellerIdAndIdentityTypeAndRankCode(Long userId, AppIdentityType identityType, String rankCode, Integer page, Integer size) {
         PageHelper.startPage(page, size);

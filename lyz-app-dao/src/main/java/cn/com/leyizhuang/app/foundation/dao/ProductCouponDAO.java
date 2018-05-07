@@ -9,6 +9,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.OrderUsableProductCouponRe
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -92,5 +93,8 @@ public interface ProductCouponDAO {
      */
     void addCustomerProductCouponChangeLog(CustomerProductCouponChangeLog customerProductCouponChangeLog);
 
-
+    /**
+     * 根据订单号激活产品券
+     */
+    void activateCusProductCoupon(@Param("ordNo") String ordNo, @Param("effectiveEndTime")LocalDateTime effectiveEndTime);
 }
