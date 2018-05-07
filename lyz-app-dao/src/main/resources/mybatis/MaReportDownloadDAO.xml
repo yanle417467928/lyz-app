@@ -862,7 +862,6 @@
         LEFT JOIN ord_shipping os on ob.oid = os.oid
         WHERE
         ob.`status` IN (
-        'PENDING_RECEIVE',
         'FINISHED'
         )
         <if test="null != startTime and ''!=startTime">
@@ -1019,7 +1018,6 @@
         LEFT JOIN ord_shipping os on ob.oid = os.oid
         WHERE
         ob.`status` IN (
-        'PENDING_RECEIVE',
         'FINISHED'
         )
         <if test="null!=startTime and ''!=startTime">
@@ -1322,7 +1320,6 @@
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         WHERE
         ob.`status` IN (
-        'PENDING_RECEIVE',
         'FINISHED'
         )
         <if test="null!=startTime and ''!=startTime">
@@ -1496,7 +1493,6 @@
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         WHERE
         ob.`status` IN (
-        'PENDING_RECEIVE',
         'FINISHED'
         )
         <if test="null!=startTime and ''!=startTime">
@@ -1507,7 +1503,7 @@
             <![CDATA[ os.shipping_time <= #{endTime} ]]>
         </if>
         <if test="null!=startTime and ''!=startTime">
-            and  <![CDATA[ obd.pay_up_time<= #{startTime}]]>
+            and  <![CDATA[ obd.pay_up_time < #{startTime}]]>
         </if>
         AND ob.delivery_type = 'SELF_TAKE'
         and obd.is_pay_up = 1
