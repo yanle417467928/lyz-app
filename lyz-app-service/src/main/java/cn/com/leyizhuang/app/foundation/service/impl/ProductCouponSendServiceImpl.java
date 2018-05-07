@@ -111,12 +111,12 @@ public class ProductCouponSendServiceImpl implements ProductCouponSendService {
     }
 
     /**
-     * 促销赠送产品券
+     * 促销赠送产品券 此方法赠送的产品券为 失效的，待订单金额付清后激活；
      * @param userId
      * @param gid
      * @param qty
      */
-    public void sendForPromotion(Long userId,Long gid,Integer qty,String ordNo){
+    public void sendForPromotion(Long userId,Long gid,Integer qty,String ordNo,String sku){
         AppCustomer customer = cusertomerDAO.findById(userId);
 
         if (customer != null){
@@ -129,7 +129,11 @@ public class ProductCouponSendServiceImpl implements ProductCouponSendService {
                 customerProductCoupon.setGetType(CouponGetType.PRESENT);
                 customerProductCoupon.setGetTime(new Date());
                 customerProductCoupon.setEffectiveStartTime(new Date());
-                customerProductCoupon.setEffectiveEndTime(null);
+                // 结束时间为当前时间 代表失效
+                customerProductCoupon.setEffectiveEndTime(new Date());
+                // 失效
+                customerProductCoupon.setStatus(false);
+                customerProductCoupon.setDisableTime(new Date());
                 customerProductCoupon.setIsUsed(Boolean.FALSE);
                 customerProductCoupon.setUseTime(null);
                 customerProductCoupon.setUseOrderNumber(null);
@@ -137,9 +141,8 @@ public class ProductCouponSendServiceImpl implements ProductCouponSendService {
                 customerProductCoupon.setBuyPrice(null);
                 customerProductCoupon.setStoreId(customer.getStoreId());
                 customerProductCoupon.setSellerId(customer.getSalesConsultId());
-                customerProductCoupon.setStatus(Boolean.TRUE);
-                customerProductCoupon.setDisableTime(null);
                 customerProductCoupon.setGoodsLineId(null);
+                customerProductCoupon.setBindSku(sku);
 
                 //保存产品券信息
                 productCouponService.addCustomerProductCoupon(customerProductCoupon);

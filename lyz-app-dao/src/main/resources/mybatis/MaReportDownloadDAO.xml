@@ -862,7 +862,6 @@
         LEFT JOIN ord_shipping os on ob.oid = os.oid
         WHERE
         ob.`status` IN (
-        'PENDING_RECEIVE',
         'FINISHED'
         )
         <if test="null != startTime and ''!=startTime">
@@ -1019,7 +1018,6 @@
         LEFT JOIN ord_shipping os on ob.oid = os.oid
         WHERE
         ob.`status` IN (
-        'PENDING_RECEIVE',
         'FINISHED'
         )
         <if test="null!=startTime and ''!=startTime">
@@ -1226,8 +1224,8 @@
         (og.retail_price - og.settlement_price) as 'memberDiscount',
         og.promotion_share_price as 'promotionSharePrice',
         og.cash_coupon_share_price as 'cashCouponSharePrice',
-        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty'
-
+        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty',
+        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END  as 'couponType'
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -1236,6 +1234,8 @@
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
         LEFT JOIN inter_wta_order_shipping_header wa ON ob.ord_no = wa.order_no
         LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku  and og.goods_line_type = 'PRODUCT_COUPON'
+        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
+        LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
@@ -1307,7 +1307,8 @@
         (og.retail_price - og.settlement_price) as 'memberDiscount',
         og.promotion_share_price as 'promotionSharePrice',
         og.cash_coupon_share_price as 'cashCouponSharePrice',
-        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty'
+        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty',
+        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END  as 'couponType'
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -1315,9 +1316,10 @@
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
         LEFT JOIN ord_shipping os on ob.oid = os.oid
         LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku  and og.goods_line_type = 'PRODUCT_COUPON'
+        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
+        LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         WHERE
         ob.`status` IN (
-        'PENDING_RECEIVE',
         'FINISHED'
         )
         <if test="null!=startTime and ''!=startTime">
@@ -1386,7 +1388,8 @@
         (og.retail_price - og.settlement_price) as 'memberDiscount',
         og.promotion_share_price as 'promotionSharePrice',
         og.cash_coupon_share_price as 'cashCouponSharePrice',
-        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty'
+        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty',
+        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END  as 'couponType'
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -1394,6 +1397,8 @@
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
         LEFT JOIN inter_wta_order_shipping_header wa ON ob.ord_no = wa.order_no
         LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku  and og.goods_line_type = 'PRODUCT_COUPON'
+        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
+        LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
@@ -1409,7 +1414,7 @@
 
         <if test="null!=startTime and ''!=startTime">
             and
-            <![CDATA[ obd.pay_up_time<= #{startTime} ]]>
+            <![CDATA[ obd.pay_up_time < #{startTime} ]]>
         </if>
         and ob.delivery_type = 'HOUSE_DELIVERY'
         and obd.is_pay_up = 1
@@ -1475,7 +1480,8 @@
         og.promotion_share_price as 'promotionSharePrice',
         og.cash_coupon_share_price as 'cashCouponSharePrice',
         CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE
-        og.order_qty END as 'orderQty'
+        og.order_qty END as 'orderQty',
+        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END  as 'couponType'
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -1483,9 +1489,10 @@
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
         LEFT JOIN ord_shipping os on ob.oid = os.oid
         LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku =oci.sku  and og.goods_line_type = 'PRODUCT_COUPON'
+        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
+        LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         WHERE
         ob.`status` IN (
-        'PENDING_RECEIVE',
         'FINISHED'
         )
         <if test="null!=startTime and ''!=startTime">
@@ -1496,7 +1503,7 @@
             <![CDATA[ os.shipping_time <= #{endTime} ]]>
         </if>
         <if test="null!=startTime and ''!=startTime">
-            and  <![CDATA[ obd.pay_up_time<= #{startTime}]]>
+            and  <![CDATA[ obd.pay_up_time < #{startTime}]]>
         </if>
         AND ob.delivery_type = 'SELF_TAKE'
         and obd.is_pay_up = 1
@@ -1552,7 +1559,83 @@
         0 as 'memberDiscount',
         0 as 'promotionSharePrice',
         0 as 'cashCouponSharePrice',
-        CASE org.goods_line_type WHEN 'PRODUCT_COUPON' THEN -1 ELSE -ABS(org.return_qty) END as 'orderQty'
+        CASE org.goods_line_type WHEN 'PRODUCT_COUPON' THEN -1 ELSE -ABS(org.return_qty) END as 'orderQty',
+        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END  as 'couponType'
+        FROM
+        ord_return_base_info orb
+        LEFT JOIN ord_base_info ob on orb.oid = ob.oid
+        LEFT JOIN ord_return_goods_info org on orb.roid = org.roid
+        LEFT JOIN st_store s on ob.store_id = s.store_id
+        LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
+        LEFT JOIN inter_wta_return_order_back_header wro ON wro.po_no = orb.return_no
+        LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
+        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and org.sku = oci.sku and org.goods_line_type = 'PRODUCT_COUPON'
+        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
+        LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
+        where
+        1=1
+        and ob.`status` IN ('FINISHED')
+        <if test="null!=startTime and ''!=startTime">
+            AND
+            wro.create_time > #{startTime}
+        </if>
+        <if test="null!=endTime and ''!=endTime">
+            and
+            <![CDATA[ wro.create_time <= #{endTime} ]]>
+        </if>
+        <!--   <if test="null!=companyCode and ''!=companyCode">
+               and s.store_structure_code like concat('%',#{companyCode},'%')
+           </if>-->
+        <choose>
+            <when test="'ZS'==storeType">
+                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
+            </when>
+            <when test="'FX'==storeType">
+                and s.store_type in ('FX','FXCK')
+            </when>
+            <otherwise>
+                <if test="null!=storeType and ''!=storeType">
+                    and s.store_type =#{storeType}
+                </if>
+                AND ob.store_id IN
+                <foreach collection="list" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </otherwise>
+        </choose>
+        )
+
+        UNION  ALL
+
+        (SELECT
+        s.city as 'cityName',
+        s.store_code as 'storeCode',
+        s.store_name as 'storeName',
+        e.`name` as 'name',
+        ob.customer_name as 'customerName',
+        ob.ord_no as 'ordNo',
+        '' as 'orderType',
+        CASE ob.`status` WHEN 'PENDING_RECEIVE' THEN '待收货' WHEN 'FINISHED' THEN '已完成' end as 'orderStatus',
+        '' as 'selfTakeOrderTime',
+        ob.create_time as 'createTime',
+        '' as 'shippingDate',
+        CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
+        CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
+        org.sku as 'sku',
+        org.sku_name as 'skuName',
+        CASE org.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END as
+        'goodsType',
+        org.company_flag as 'companyFlag',
+        -ABS(org.return_price * org.return_qty) as 'financialSales',
+        -ABS(org.wholesale_price * org.return_qty) as 'distributionSales',
+        -ABS(org.wholesale_price) as 'wholesalePrice',
+        0 as 'retailPrice',
+        0 as 'settlementPrice',
+        0 as 'memberDiscount',
+        0 as 'promotionSharePrice',
+        0 as 'cashCouponSharePrice',
+        CASE org.goods_line_type WHEN 'PRODUCT_COUPON' THEN -1 ELSE -ABS(org.return_qty) END as 'orderQty',
+        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END  as 'couponType'
         FROM
         ord_return_base_info orb
         LEFT JOIN ord_base_info ob on orb.oid = ob.oid
@@ -1562,6 +1645,8 @@
 
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
         LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and org.sku = oci.sku and org.goods_line_type = 'PRODUCT_COUPON'
+        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
+        LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         where
         1=1
         AND ob.delivery_type = 'SELF_TAKE' and orb.return_type = 'NORMAL_RETURN'

@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
+import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
@@ -58,6 +59,10 @@ public interface OrderDAO {
     List<Long> findOrderPromotionId(@Param("ordNo") String ordNo);
 
     OrderGoodsInf findOrderGoodsInfByLineId(@Param("lineId") Long lineId);
+
+    List<OrderGoodsInfo> getOrderGoodsByOrderNumberAndSkuAndGoodsLineType(@Param("ordNo") String ordNo,@Param("sku") String sku,@Param("GoodsLineType") String GoodsLineType);
+
+    List<CustomerProductCoupon> getCusProductCouponByOrderNumber(@Param("ordNo") String ordNo);
 
     void updateOrderGoodsPrice(OrderGoodsInfo orderGoodsInfo);
 

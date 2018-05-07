@@ -131,6 +131,9 @@ public class OrderDeliveryInfoDetailsController {
                 logisticsInformationResponse1.setLogisticsDetail(logisticsDetailResponseList);
             }
 
+            // 转换物流状态描述
+            logisticsInformationResponse1 = LogisticsInformationResponse.transform(logisticsInformationResponse1);
+
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, logisticsInformationResponse1);
             logger.info("getOrderDelivery OUT,获取物流详情成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;

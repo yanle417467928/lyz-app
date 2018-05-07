@@ -80,7 +80,8 @@ public class WeChatPayController {
     @Resource
     private TransactionalSupportService supportService;
 
-
+    @Resource
+    private ProductCouponService productCouponService;
 
     /**
      * 微信支付订单
@@ -481,6 +482,9 @@ public class WeChatPayController {
                                     if (baseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
                                         iCallWms.sendToWmsRequisitionOrderAndGoods(outTradeNo);
                                     }
+
+                                    // 激活订单赠送的产品券
+                                    productCouponService.activateCusProductCoupon(outTradeNo);
                                 }
                             }
                             //返回响应成功的讯息

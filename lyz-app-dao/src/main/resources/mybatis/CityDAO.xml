@@ -9,16 +9,16 @@
 
     <select id="findByCityNumber" parameterType="java.lang.String" resultType="City">
         SELECT
-        city_id,
-        name,
-        spell,
-        code number,
-        structure_id,
-        structure_title,
-        enable,
-        enable_false_time,
-        briefSpell,
-        is_open_delivery
+            city_id,
+            name,
+            spell,
+            code number,
+            structure_id,
+            structure_title,
+            enable,
+            enable_false_time,
+            briefSpell,
+            is_open_delivery
         FROM city
         WHERE code = #{cityNumber}
     </select>
@@ -202,42 +202,84 @@
         UPDATE city_inventory
         SET available_ity = available_ity + #{qty}
         WHERE
-        gid = #{gid}
-        AND city_id = (SELECT cus_customer.city_id
-        FROM cus_customer
-        WHERE cus_id = #{userId})
-        AND last_update_time = #{version}
+            gid = #{gid}
+            AND city_id = (SELECT cus_customer.city_id
+                           FROM cus_customer
+                           WHERE cus_id = #{userId})
+            AND last_update_time = #{version}
     </update>
 
     <update id="updateCityInventoryByEmployeeIdAndGoodsIdAndInventoryAndVersion">
         UPDATE city_inventory
         SET available_ity = available_ity + #{qty}
         WHERE
-        gid = #{gid}
-        AND city_id = (SELECT emp_employee.city_id
-        FROM emp_employee
-        WHERE emp_id = #{userId})
-        AND last_update_time = #{version}
+            gid = #{gid}
+            AND city_id = (SELECT emp_employee.city_id
+                           FROM emp_employee
+                           WHERE emp_id = #{userId})
+            AND last_update_time = #{version}
     </update>
 
     <insert id="saveCityInventory"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory">
         INSERT INTO city_inventory (create_time, last_update_time, city_id, city_code, city_name, gid, sku, sku_name, available_ity)
-        SELECT
-        #{createTime},
-        #{lastUpdateTime},
-        #{cityId},
-        #{cityCode},
-        #{cityName},
-        #{gid},
-        #{sku},
-        #{skuName},
-        #{availableIty}
-        FROM DUAL
-        WHERE NOT EXISTS(
-        SELECT 'X'
-        FROM city_inventory
-        WHERE city_code = #{cityCode} AND sku = #{sku}
-        );
+            SELECT
+                #{createTime},
+                #{lastUpdateTime},
+                #{cityId},
+                #{cityCode},
+                #{cityName},
+                #{gid},
+                #{sku},
+                #{skuName},
+                #{availableIty}
+            FROM DUAL
+            WHERE NOT EXISTS(
+                    SELECT 'X'
+                    FROM city_inventory
+                    WHERE city_code = #{cityCode} AND sku = #{sku}
+            );
     </insert>
+
+    <select id="findCityByWarehouseNo" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.city.City">
+        SELECT
+            c.city_id,
+            c.name,
+            c.spell,
+            c.code number,
+            c.structure_id,
+            c.structure_title,
+            c.enable,
+            c.enable_false_time,
+            c.briefSpell
+        FROM warehouse w LEFT JOIN city c ON w.city_id = c.city_id
+        WHERE w.wh_no = #{warehouseNo}
+    </select>
+
+    <select id="findCityInventoryByCityIdAndSku"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory">
+        SELECT
+            id,
+            city_id,
+            city_code,
+            city_name,
+            gid,
+            sku,
+            sku_name,
+            available_ity,
+            create_time,
+            last_update_time
+        FROM city_inventory
+        WHERE city_id = #{cityId} AND sku = #{sku};
+    </select>
+
+    <update id="updateCityInventoryByCityIdAndSkuAndInventory">
+        UPDATE city_inventory
+        SET available_ity = available_ity + #{changeInventory}
+        WHERE
+            sku = #{sku}
+            AND city_id = #{cityId}
+            AND last_update_time = #{lastUpdateTime}
+    </update>
 </mapper>

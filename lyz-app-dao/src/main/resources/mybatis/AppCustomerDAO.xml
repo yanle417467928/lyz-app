@@ -1032,4 +1032,18 @@
         g.sku,
         ggp.price_type) uc
     </select>
+
+
+    <update id="updateCustomerSellerIdStoreIdByCusId" >
+        UPDATE cus_customer
+        <set>
+            <if test="null != storeId">
+                store_id = #{storeId},
+            </if>
+            <if test="null != salesConsultId">
+                sales_consult_id = #{salesConsultId},
+            </if>
+        </set>
+        WHERE cus_id = #{cusId}
+    </update>
 </mapper>

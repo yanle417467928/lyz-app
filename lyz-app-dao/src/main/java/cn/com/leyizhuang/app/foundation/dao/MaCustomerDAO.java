@@ -136,4 +136,6 @@ public interface MaCustomerDAO {
     CusRankDO findCusRankByCusId(@Param("cusId")Long cusId);
 
     RankClassification findRankClassificationByRankCode(@Param("rankCode")String rankCode);
+
+    void deleteCusRankByCusId(@Param("cusId")Long cusId);
 }

@@ -112,4 +112,9 @@ public class CustomerProductCoupon implements Serializable {
      * 修改时间
      */
     private Date lastUpdateTime;
+
+    /**
+     * 产生赠送此券的原商品 sku
+     */
+    private String bindSku;
 }

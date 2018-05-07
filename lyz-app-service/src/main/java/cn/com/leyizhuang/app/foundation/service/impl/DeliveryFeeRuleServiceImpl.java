@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.deliveryFeeRule.DeliveryFeeRule;
 import cn.com.leyizhuang.app.foundation.pojo.deliveryFeeRule.DeliveryFeeRuleSpecailGoods;
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse;
 import cn.com.leyizhuang.app.foundation.service.DeliveryFeeRuleService;
+import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,9 @@ public class DeliveryFeeRuleServiceImpl implements DeliveryFeeRuleService {
 
     @Resource
     private DeliveryFeeRuleDAO deliveryFeeRuleDAO;
+
+    @Resource
+    private GoodsService goodsService;
 
     public void initRule() {
         /**清除所有规则数据**/
@@ -113,6 +117,14 @@ public class DeliveryFeeRuleServiceImpl implements DeliveryFeeRuleService {
     }
 
     public Double countDeliveryFee(Integer identityType, Long cityId, Double totalPrice, List<OrderGoodsSimpleResponse> goodsInfoList) {
+        // 如果商品为服务类商品不收取运费
+        for (OrderGoodsSimpleResponse goodsSimpleResponse : goodsInfoList){
+            if (goodsService.isFWGoods(goodsSimpleResponse.getId())){
+                return 0.00;
+            }else {
+                break;
+            }
+        }
 
         DeliveryFeeRule deliveryFeeRule = deliveryFeeRuleDAO.findRuleByCityId(cityId).get(0);
         if (deliveryFeeRule == null) {

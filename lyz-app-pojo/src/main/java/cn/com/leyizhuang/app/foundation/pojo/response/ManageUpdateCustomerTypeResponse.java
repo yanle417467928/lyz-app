@@ -35,4 +35,12 @@ public class ManageUpdateCustomerTypeResponse {
      * 会员类型
      */
     private String memberType;
+    /**
+     * 导购id
+     */
+    private Long sellerId;
+    /**
+     * 导购姓名
+     */
+    private String sellerName;
 }

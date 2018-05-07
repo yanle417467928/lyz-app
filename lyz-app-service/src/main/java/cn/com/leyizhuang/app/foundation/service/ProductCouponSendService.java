@@ -13,5 +13,5 @@ public interface ProductCouponSendService {
 
     ResultDTO<String> sendBatch(List<Long> customerIdList, Long productCouponId, Long sellerId, Integer qty);
 
-    void sendForPromotion(Long userId,Long gid,Integer qty,String ordNo);
+    void sendForPromotion(Long userId,Long gid,Integer qty,String ordNo,String sku);
 }

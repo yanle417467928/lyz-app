@@ -11,14 +11,8 @@ import cn.com.leyizhuang.app.foundation.pojo.RankStore;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.MaCustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.response.ManageUpdateCustomerTypeResponse;
-import cn.com.leyizhuang.app.foundation.pojo.user.CusRankDO;
-import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
-import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
-import cn.com.leyizhuang.app.foundation.pojo.user.RankClassification;
-import cn.com.leyizhuang.app.foundation.service.AppStoreService;
-import cn.com.leyizhuang.app.foundation.service.MaCusLebiLogService;
-import cn.com.leyizhuang.app.foundation.service.MaCusPreDepositLogService;
-import cn.com.leyizhuang.app.foundation.service.MaCustomerService;
+import cn.com.leyizhuang.app.foundation.pojo.user.*;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerLebiVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
@@ -30,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -48,6 +43,12 @@ public class MaCustomerServiceImpl implements MaCustomerService {
 
     @Resource
     private AppStoreService appStoreService;
+
+    @Resource
+    private AppCustomerService appCustomerService;
+
+    @Resource
+    private AppEmployeeService appEmployeeService;
 
     @Override
     public PageInfo<CustomerDO> queryPageVO(Integer page, Integer size, List<Long> storeIds) {
@@ -264,11 +265,23 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     }
 
     @Override
-    @Transactional
-    public void updateMemberType(ManageUpdateCustomerTypeResponse manageUpdateCustomerTypeResponse) {
+    @Transactional(rollbackFor = Exception.class)
+    public void updateMemberType(ManageUpdateCustomerTypeResponse manageUpdateCustomerTypeResponse) throws UnsupportedEncodingException {
         RankStore rankStore = this.maCustomerDAO.findStoreByCusId(manageUpdateCustomerTypeResponse.getCusId());
         CusRankDO cusRankDO = this.maCustomerDAO.findCusRankByCusId(manageUpdateCustomerTypeResponse.getCusId());
         RankClassification rankClassification = this.maCustomerDAO.findRankClassificationByRankCode(manageUpdateCustomerTypeResponse.getMemberType());
+        AppCustomer customer = appCustomerService.findById(manageUpdateCustomerTypeResponse.getCusId());
+        if ("COMMON".equals(manageUpdateCustomerTypeResponse.getMemberType()) && null == cusRankDO){
+            return;
+        }
+        if ("COMMON".equals(manageUpdateCustomerTypeResponse.getMemberType()) && null != cusRankDO){
+            this.maCustomerDAO.deleteCusRankByCusId(manageUpdateCustomerTypeResponse.getCusId());
+            return;
+        }
+        if (!customer.getSalesConsultId().equals(manageUpdateCustomerTypeResponse.getSellerId())){
+            AppEmployee employee = appEmployeeService.findById(manageUpdateCustomerTypeResponse.getSellerId());
+            appCustomerService.updateCustomerSellerIdStoreIdByCusId(manageUpdateCustomerTypeResponse.getCusId(),employee.getStoreId(),employee.getEmpId());
+        }
         if (null == rankStore){
             AppStore store = appStoreService.findByStoreCode(rankStore.getStoreCode());
             RankStore newRankStore = new RankStore();

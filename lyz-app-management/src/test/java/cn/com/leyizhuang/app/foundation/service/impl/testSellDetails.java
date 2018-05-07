@@ -11,6 +11,7 @@ import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrder;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
+import cn.com.leyizhuang.app.foundation.service.ProductCouponService;
 import cn.com.leyizhuang.app.foundation.service.StatisticsSellDetailsService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferSupportService;
@@ -57,6 +58,9 @@ public class testSellDetails {
 
     @Resource
     private OrderDAO orderDAO;
+
+    @Resource
+    private ProductCouponService productCouponService;
 
     @Test
     public void testInsert(){
@@ -109,7 +113,6 @@ public class testSellDetails {
 
     @Test
     public void test(){
-        OrderGoodsInf inf = orderDAO.findOrderGoodsInfByLineId(174831L);
-        orderDAO.updateOrderGoodsInfPrice(inf);
+        productCouponService.activateCusProductCoupon("CD_XN20180502165632256553");
     }
 }
