@@ -1414,7 +1414,7 @@
 
         <if test="null!=startTime and ''!=startTime">
             and
-            <![CDATA[ obd.pay_up_time<= #{startTime} ]]>
+            <![CDATA[ obd.pay_up_time < #{startTime} ]]>
         </if>
         and ob.delivery_type = 'HOUSE_DELIVERY'
         and obd.is_pay_up = 1
