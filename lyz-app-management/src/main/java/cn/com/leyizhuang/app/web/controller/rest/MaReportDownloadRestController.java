@@ -1887,7 +1887,7 @@ public class MaReportDownloadRestController extends BaseRestController {
             maxSize = 0;
             if (null != creditBillingDetailsVOS) {
                 creditBillingDetailsVOS.forEach(p -> {
-                    if (p.getOrderNumber().contains("T")) {
+                    if (p.getOrderNumber().startsWith("T")) {
                         p.setCreditMoney(p.getCreditMoney() < 0 ? p.getCreditMoney() : (p.getCreditMoney() * -1));
                         p.setGoodsQty(p.getGoodsQty() < 0 ? p.getGoodsQty() : (p.getGoodsQty() * -1));
                     }
