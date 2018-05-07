@@ -72,5 +72,6 @@ public class SalesReportDO {
     private Double cashCouponSharePrice;
     //下单数量
     private Double orderQty;
-
+    //产品券类型
+    private String couponType;
 }

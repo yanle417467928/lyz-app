@@ -263,17 +263,17 @@ public class OrderController {
 
             //**********************************开始创建订单 **************************
             //******************* 根据商品确定订单表单号为 XN 或者 XNFW ********************
-            List<Long> allGoodsList = new ArrayList<>();
-            goodsList.forEach(g -> allGoodsList.add(g.getId()));
-            productCouponList.forEach(p -> allGoodsList.add(p.getId()));
-            String orderNumberType = appOrderService.returnType(allGoodsList,orderParam.getUserId(),identityType);
+//            List<Long> allGoodsList = new ArrayList<>();
+//            goodsList.forEach(g -> allGoodsList.add(g.getId()));
+//            productCouponList.forEach(p -> allGoodsList.add(p.getId()));
+//            String orderNumberType = appOrderService.returnType(allGoodsList,orderParam.getUserId(),identityType);
 
             //******************* 创建订单基础信息 *****************
             OrderBaseInfo orderBaseInfo = appOrderService.createOrderBaseInfo(orderParam.getCityId(), orderParam.getUserId(),
                     orderParam.getIdentityType(), orderParam.getCustomerId(), deliverySimpleInfo.getDeliveryType(), orderParam.getRemark(), orderParam.getSalesNumber());
-            String oldOrderNumber = orderBaseInfo.getOrderNumber();
-            oldOrderNumber = oldOrderNumber.replace("XN",orderNumberType);
-            orderBaseInfo.setOrderNumber(oldOrderNumber);
+//            String oldOrderNumber = orderBaseInfo.getOrderNumber();
+//            oldOrderNumber = oldOrderNumber.replace("XN",orderNumberType);
+//            orderBaseInfo.setOrderNumber(oldOrderNumber);
 
             //****************** 创建订单物流信息 ******************
             OrderLogisticsInfo orderLogisticsInfo = appOrderService.createOrderLogisticInfo(deliverySimpleInfo);
@@ -367,7 +367,7 @@ public class OrderController {
                 appOrderService.addOrderLifecycle(OrderLifecycleType.PAYED, orderBaseInfo.getOrderNumber());
 
                 // 激活订单赠送的产品券
-                productCouponService.activateCusProductCoupon(orderBaseInfo.getOrderNumber());
+                // productCouponService.activateCusProductCoupon(orderBaseInfo.getOrderNumber());
 
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                         new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), true, false));

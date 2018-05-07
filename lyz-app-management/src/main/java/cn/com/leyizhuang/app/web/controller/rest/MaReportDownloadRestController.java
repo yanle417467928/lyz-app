@@ -1695,7 +1695,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                 int[] columnView = {10, 20, 15,10, 10, 30, 10, 10, 15, 15, 15, 15, 15, 20, 15, 15, 15,15,15, 15, 15, 15,15, 15, 15};
                 //列标题城市
 
-                String[] titles = {"城市", "门店","门店编码", "名称", "会员名称", "订单号", "配送/自提", "订单状态", "自提提货日期", "订单日期", "出货时间", "是否结清", "订单还清日期", "编号","商品名称", "品牌","下单数量","本赠品" ,"财务销量", "经销财务销量", "经销单价", "原单价", "结算单价", "会员折扣", "折扣或者赠品分摊", "现金券"
+                String[] titles = {"城市", "门店","门店编码", "名称", "会员名称", "订单号", "配送/自提", "订单状态", "自提提货日期", "订单日期", "出货时间", "是否结清", "订单还清日期", "编号","商品名称", "品牌","下单数量","本赠品" ,"财务销量", "经销财务销量", "经销单价", "原单价", "结算单价", "会员折扣", "折扣或者赠品分摊", "现金券","产品券类型"
                 };
                 //计算标题开始行号
                 int row = 1;
@@ -1784,6 +1784,9 @@ public class MaReportDownloadRestController extends BaseRestController {
                     }
                     if (null != salesReportDO.getCashCouponSharePrice()) {
                         ws.addCell(new Label(25, j + row, salesReportDO.getCashCouponSharePrice().toString(), textFormat));
+                    }
+                    if (null != salesReportDO.getCouponType()){
+                        ws.addCell(new Label( 26 , j + row , salesReportDO.getCouponType().toString(),textFormat));
                     }
                 }
             }
