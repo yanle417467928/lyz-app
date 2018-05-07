@@ -206,4 +206,21 @@ public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service
         }
         return null;
     }
+
+    @Override
+    public CityInventory findCityInventoryByCityIdAndSku(Long cityId, String sku) {
+        if (null != cityId && StringUtils.isNotBlank(sku)){
+            return cityDAO.findCityInventoryByCityIdAndSku(cityId,sku);
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Integer lockCityInventoryByCityIdAndSkuAndInventory(Long cityId, String sku, Integer changeInventory, Timestamp lastUpdateTime) {
+        if (null != cityId && StringUtils.isNotBlank(sku) && null != changeInventory && null != lastUpdateTime){
+            cityDAO.updateCityInventoryByCityIdAndSkuAndInventory(cityId,sku,changeInventory,lastUpdateTime);
+        }
+        return null;
+    }
 }

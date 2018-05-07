@@ -495,7 +495,9 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
 
                         }
                         for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
-                            CityInventory cityInventory = cityService.findCityInventoryByCityCodeAndSku(warehouseAllocationHeader.getCompanyId(), allocationGoods.getSku());
+                            /*CityInventory cityInventory = cityService.findCityInventoryByCityCodeAndSku(
+                                    warehouseAllocationHeader.getCompanyId(), allocationGoods.getSku());*/
+                            CityInventory cityInventory = cityService.findCityInventoryByCityIdAndSku(city.getCityId(), allocationGoods.getSku());
                             if (null == cityInventory) {
                                 cityInventory = CityInventory.transform(goodsDO, city);
                                 cityService.saveCityInventory(cityInventory);
@@ -508,9 +510,11 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                                 smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "获取wms信息失败,获取仓库调拨失败,该城市下sku为" + allocationGoods.getSku() + "的商品库存不足!");
                                 throw new RuntimeException();
                             }
-                            Integer affectLine = cityService.lockCityInventoryByCityCodeAndSkuAndInventory(
-                                    warehouseAllocationHeader.getCompanyId(), allocationGoods.getSku(), changeInventory, cityInventory.getLastUpdateTime());
-                            if (affectLine > 0) {
+                           /* Integer affectLine = cityService.lockCityInventoryByCityCodeAndSkuAndInventory(
+                                    warehouseAllocationHeader.getCompanyId(), allocationGoods.getSku(), changeInventory, cityInventory.getLastUpdateTime());*/
+                            Integer affectLine = cityService.lockCityInventoryByCityIdAndSkuAndInventory(
+                                    city.getCityId(), allocationGoods.getSku(), changeInventory, cityInventory.getLastUpdateTime());
+                           if (affectLine > 0) {
                                 CityInventoryAvailableQtyChangeLog log = new CityInventoryAvailableQtyChangeLog();
                                 log.setCityId(cityInventory.getCityId());
                                 log.setCityName(cityInventory.getCityName());

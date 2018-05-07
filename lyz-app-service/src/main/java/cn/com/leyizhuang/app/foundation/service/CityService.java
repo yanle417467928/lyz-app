@@ -60,4 +60,8 @@ public interface CityService {
     void saveCityInventory(CityInventory cityInventory);
 
     City findCityByWarehouseNo(String warehouseNo);
+
+    CityInventory findCityInventoryByCityIdAndSku(Long cityId, String sku);
+
+    Integer lockCityInventoryByCityIdAndSkuAndInventory(Long cityId, String sku, Integer changeInventory, Timestamp lastUpdateTime);
 }

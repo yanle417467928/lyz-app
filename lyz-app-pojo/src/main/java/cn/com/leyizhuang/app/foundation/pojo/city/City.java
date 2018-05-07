@@ -58,4 +58,6 @@ public class City {
      * 失效时间
      */
     private Date enableFalseTime;
+
+
 }

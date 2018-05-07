@@ -80,4 +80,12 @@ public interface CityDAO {
     void saveCityInventory(CityInventory cityInventory);
 
     City findCityByWarehouseNo(String warehouseNo);
+
+    CityInventory findCityInventoryByCityIdAndSku(@Param(value = "cityId") Long cityId,
+                                                  @Param(value = "sku") String sku);
+
+    void updateCityInventoryByCityIdAndSkuAndInventory(@Param(value = "cityId") Long cityId,
+                                                       @Param(value = "sku") String sku,
+                                                       @Param(value = "changeInventory") Integer changeInventory,
+                                                       @Param(value = "lastUpdateTime") Timestamp lastUpdateTime);
 }
