@@ -198,4 +198,6 @@ public interface WmsToAppOrderDAO {
 
     List<WtaShippingOrderHeader> getAllWtaShippingOrderHeader();
 
+    List<WtaShippingOrderGoods> getWtaShippingOrderGoodsByOrderNo(@Param("orderNo") String orderNo);
+
 }
