@@ -529,4 +529,20 @@
         WHERE send_flag = 0 OR send_flag IS NULL
     </select>
 
+    <select id="getWtaShippingOrderGoodsByOrderNo" resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderGoods">
+        SELECT  id,
+        modified_userno,
+        op_user,
+        order_no,
+        task_type,
+        task_no,
+        g_code,
+        d_ack_qty,
+        op_status,
+        source_no,
+        owner_no
+        FROM inter_wta_order_shipping_goods
+        WHERE order_no = #{orderNo}
+    </select>
+
 </mapper>

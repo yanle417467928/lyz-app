@@ -289,8 +289,12 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
         WtaShippingOrderHeader wtaShippingOrderHeader = this.wmsToAppOrderDAO.getWtaShippingOrderHeaderByOrderNoAndTaskNo(orderNo, taskNo);
         try {
             if (null != wtaShippingOrderHeader) {
-                List<WtaShippingOrderGoods> wtaShippingOrderGoodsList = this.wmsToAppOrderDAO.getWtaShippingOrderGoods(orderNo, taskNo);
-
+                List<WtaShippingOrderGoods> wtaShippingOrderGoodsList = null;
+                if (OrderUtils.validationOrderNumber(orderNo)) {
+                    wtaShippingOrderGoodsList = this.wmsToAppOrderDAO.getWtaShippingOrderGoodsByOrderNo(orderNo);
+                }else {
+                    wtaShippingOrderGoodsList = this.wmsToAppOrderDAO.getWtaShippingOrderGoods(orderNo, taskNo);
+                }
                 if (null != wtaShippingOrderGoodsList && wtaShippingOrderGoodsList.size() > 0){
                     List<OrderGoodsInfo> orderGoodsInfoList = null;
                     City city = null;
@@ -338,11 +342,12 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                             if (null == city) {
                                 city = new City();
                                 WareHouseDO wareHouse = wareHouseService.findByWareHouseNo(wtaShippingOrderHeader.getWhNo());
-                                city = cityService.findByCityNumber(wareHouse.getCityId());
+//                                city = cityService.findByCityNumber(wareHouse.getCityId());
+                                city = cityService.findById(Long.parseLong(wareHouse.getCityId()));
                             }
                             //wms扣减城市库存
                             for (int w = 1; w <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; w++) {
-                                CityInventory cityInventory = cityService.findCityInventoryByCityCodeAndSku(city.getNumber(), wtaShippingOrderGoods.getGCode());
+                                CityInventory cityInventory = cityService.findCityInventoryByCityIdAndSku(city.getCityId(), wtaShippingOrderGoods.getGCode());
                                 if (null == cityInventory) {
                                     cityInventory = CityInventory.transform(goodsDO, city);
                                     cityService.saveCityInventory(cityInventory);
@@ -356,8 +361,8 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                                     this.updateWtaShippingOrderHeader(wtaShippingOrderHeader);
                                     throw new RuntimeException();
                                 }
-                                Integer affectLine = cityService.lockCityInventoryByCityCodeAndSkuAndInventory(
-                                        city.getNumber(), wtaShippingOrderGoods.getGCode(), -wtaShippingOrderGoods.getDAckQty(), cityInventory.getLastUpdateTime());
+                                Integer affectLine = cityService.lockCityInventoryByCityIdAndSkuAndInventory(
+                                        city.getCityId(), wtaShippingOrderGoods.getGCode(), -wtaShippingOrderGoods.getDAckQty(), cityInventory.getLastUpdateTime());
                                 if (affectLine > 0) {
                                     CityInventoryAvailableQtyChangeLog log = new CityInventoryAvailableQtyChangeLog();
                                     log.setCityId(cityInventory.getCityId());
@@ -466,7 +471,7 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                 //City city = cityService.findByCityNumber(warehouseAllocationHeader.getCompanyId());
                 City city = cityService.findCityByWarehouseNo(warehouseAllocationHeader.getWarehouseNo());
                 if (null == city) {
-                    warehouseAllocationHeader.setErrMessage("城市信息中没有查询到城市code为" + warehouseAllocationHeader.getCompanyId() + "的数据!");
+                    warehouseAllocationHeader.setErrMessage("仓库编码:" + warehouseAllocationHeader.getWarehouseNo() + "没有找到对应的城市信息!");
                     warehouseAllocationHeader.setHandleFlag("0");
                     warehouseAllocationHeader.setHandleTime(new Date());
                     this.wmsToAppOrderDAO.updateWtaWarehouseAllocation(warehouseAllocationHeader);
