@@ -364,7 +364,7 @@ public class MaOrderViewController {
             //获取订单支付明细列表
             List<MaOrderBillingPaymentDetailResponse> maOrderBillingPaymentDetailResponseList = maOrderService.getMaOrderBillingPaymentDetailByOrderNumber(orderNumber);
             //获取应还款金额
-            Double repaymentAmount = maOrderArrearsAudit.getOrderMoney() - maOrderArrearsAudit.getRealMoney();
+            Double repaymentAmount = maOrderBillingDetailResponse.getArrearage();
             if (null != maOrderBillingDetailResponse) {
                 map.addAttribute("orderBillingDetail", maOrderBillingDetailResponse);
             }
