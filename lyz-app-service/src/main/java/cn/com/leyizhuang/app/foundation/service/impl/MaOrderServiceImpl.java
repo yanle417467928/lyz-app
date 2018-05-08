@@ -1294,8 +1294,8 @@ public class MaOrderServiceImpl implements MaOrderService {
                             storeInventoryAvailableQtyChangeLog.setChangeTime(date);
                             storeInventoryAvailableQtyChangeLog.setChangeQty(orderGoodsInfo.getOrderQuantity());
                             storeInventoryAvailableQtyChangeLog.setAfterChangeQty((storeInventory.getAvailableIty() + orderGoodsInfo.getOrderQuantity()));
-                            storeInventoryAvailableQtyChangeLog.setChangeType(null);
-                            storeInventoryAvailableQtyChangeLog.setChangeTypeDesc("超过待付款时间");
+                            storeInventoryAvailableQtyChangeLog.setChangeType(StoreInventoryAvailableQtyChangeType.SELF_TAKE_ORDER_CANCEL_AUTO);
+                            storeInventoryAvailableQtyChangeLog.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.SELF_TAKE_ORDER_CANCEL_AUTO.getDescription());
                             storeInventoryAvailableQtyChangeLog.setReferenceNumber(orderBaseInfo.getOrderNumber());
                             //保存记录
                             appStoreService.addStoreInventoryAvailableQtyChangeLog(storeInventoryAvailableQtyChangeLog);
