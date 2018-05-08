@@ -242,7 +242,7 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
                 iLog.setCityId(to.getCityId());
                 iLog.setCityName(to.getCity());
                 iLog.setAfterChangeQty(storeInventory.getAvailableIty()+detail.getRealQty());
-                iLog.setChangeQty(detail.getRealQty());
+                iLog.setChangeQty(-detail.getRealQty());
                 iLog.setChangeTime(new Date());
                 iLog.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_ALLOCATE_INBOUND);
                 iLog.setStoreId(to.getStoreId());
