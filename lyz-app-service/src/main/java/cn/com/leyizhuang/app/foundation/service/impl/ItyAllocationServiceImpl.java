@@ -167,7 +167,7 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
                 iLog.setGid(goods.getGoodsId());
                 iLog.setSku(goods.getSku());
                 iLog.setSkuName(goods.getSkuName());
-                iLog.setChangeTypeDesc("调拨出库");
+                iLog.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.STORE_ALLOCATE_OUTBOUND.getDescription());
                 iLog.setReferenceNumber(allocation.getNumber());
                 appStoreService.addStoreInventoryAvailableQtyChangeLog(iLog);
 
@@ -184,7 +184,7 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
                 maStoreInventoryChange.setSku(goods.getSku());
                 maStoreInventoryChange.setSkuName(goods.getSkuName());
                 maStoreInventoryChange.setChangeTime(new Date());
-                maStoreInventoryChange.setAfterChangeQty(storeInventory.getRealIty()+goods.getRealQty());
+                maStoreInventoryChange.setAfterChangeQty(storeInventory.getRealIty() + goods.getRealQty());
                 maStoreInventoryChange.setChangeQty(goods.getRealQty());
                 maStoreInventoryChange.setChangeType(StoreInventoryRealQtyChangeType.STORE_ALLOCATE_OUTBOUND);
                 maStoreInventoryChange.setChangeTypeDesc(StoreInventoryRealQtyChangeType.STORE_ALLOCATE_OUTBOUND.getDescription());
@@ -268,7 +268,7 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
                 maStoreInventoryChange.setSku(detail.getSku());
                 maStoreInventoryChange.setSkuName(detail.getSkuName());
                 maStoreInventoryChange.setChangeTime(new Date());
-                maStoreInventoryChange.setAfterChangeQty(storeInventory.getRealIty()+detail.getRealQty());
+                maStoreInventoryChange.setAfterChangeQty(storeInventory.getRealIty() + detail.getRealQty());
                 maStoreInventoryChange.setChangeQty(detail.getRealQty());
                 maStoreInventoryChange.setChangeType(StoreInventoryRealQtyChangeType.STORE_ALLOCATE_INBOUND);
                 maStoreInventoryChange.setChangeTypeDesc(StoreInventoryRealQtyChangeType.STORE_ALLOCATE_INBOUND.getDescription());
