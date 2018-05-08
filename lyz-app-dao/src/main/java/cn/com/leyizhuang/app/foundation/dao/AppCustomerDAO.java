@@ -187,5 +187,5 @@ public interface AppCustomerDAO {
     List<ProductCouponResponse> findProductCouponBySellerIdAndCustomerIdNew(@Param(value = "sellerId") Long sellerId,
                                                                          @Param(value = "cusId") Long cusId);
 
-    void updateCustomerSellerIdStoreIdByCusId(@Param("cusId") Long cusId,@Param("storeId")Long storeId,@Param("salesConsultId")Long salesConsultId);
+    void updateCustomerSellerIdStoreIdByCusId(@Param("cusId") Long cusId,@Param("storeId")Long storeId,@Param("salesConsultId")Long salesConsultId,@Param("date")Date date);
 }

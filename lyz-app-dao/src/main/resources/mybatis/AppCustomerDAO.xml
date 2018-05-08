@@ -1043,6 +1043,9 @@
             <if test="null != salesConsultId">
                 sales_consult_id = #{salesConsultId},
             </if>
+            <if test="null != date">
+                binding_time = #{date},
+            </if>
         </set>
         WHERE cus_id = #{cusId}
     </update>

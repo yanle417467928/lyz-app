@@ -113,6 +113,7 @@
                 OR oaa.`status` IS NULL
             )
             AND odid.operator_no = #{operatorNo}
+            GROUP BY obi.ord_no
             ORDER BY
                 odid.create_time DESC
     </select>

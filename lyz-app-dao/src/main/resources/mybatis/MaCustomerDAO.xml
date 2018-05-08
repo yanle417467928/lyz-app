@@ -457,7 +457,7 @@
                 rank_classification
     </select>
 
-    <select id="findStoreByCusId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.RankStore">
+    <select id="findRankStoreByStoreId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.RankStore">
         SELECT
         s.id id,
         s.store_id storeId,
@@ -469,11 +469,9 @@
         s.company_name companyName,
         s.create_time createTime
         FROM
-        cus_customer cc
-        LEFT JOIN cus_rank c ON c.cus_id = cc.cus_id
-        LEFT JOIN rank_store s ON s.store_id = cc.store_id
+        rank_store s
         WHERE
-        cc.cus_id = #{cusId}
+        s.store_id = #{storeId}
     </select>
 
     <update id="updateMemberTypeByRankIdAndCusId">

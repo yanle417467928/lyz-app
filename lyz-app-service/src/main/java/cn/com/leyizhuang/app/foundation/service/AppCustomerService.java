@@ -168,5 +168,5 @@ public interface AppCustomerService {
 
     void createCustomerLeBiAccount(Long cusId);
 
-    void updateCustomerSellerIdStoreIdByCusId(Long cusId,Long storeId,Long salesConsultId);
+    void updateCustomerSellerIdStoreIdByCusId(Long cusId,Long storeId,Long salesConsultId,Date date);
 }
