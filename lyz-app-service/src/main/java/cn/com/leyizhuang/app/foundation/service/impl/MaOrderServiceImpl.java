@@ -24,6 +24,7 @@ import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoneyDetail;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventory;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreRealInventoryChange;
 import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
@@ -358,6 +359,21 @@ public class MaOrderServiceImpl implements MaOrderService {
             for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                 int affectLine = maStoreInventoryService.updateStoreInventory(maOrderTempInfo.getStoreId(), maOrderGoodsInfo.getGid(), goodsQtyAfterChange, storeInventory.getLastUpdateTime());
                 if (affectLine > 0) {
+                    MaStoreRealInventoryChange storeInventoryChange = new MaStoreRealInventoryChange();
+                    storeInventoryChange.setCityId(storeInventory.getCityId());
+                    storeInventoryChange.setCityName(storeInventory.getCityName());
+                    storeInventoryChange.setStoreId(storeInventory.getStoreId());
+                    storeInventoryChange.setStoreCode(storeInventory.getStoreCode());
+                    storeInventoryChange.setReferenceNumber(orderNumber);
+                    storeInventoryChange.setGid(maOrderGoodsInfo.getGid());
+                    storeInventoryChange.setSku(maOrderGoodsInfo.getSku());
+                    storeInventoryChange.setSkuName(maOrderGoodsInfo.getSkuName());
+                    storeInventoryChange.setChangeTime(date);
+                    storeInventoryChange.setAfterChangeQty(goodsQtyAfterChange);
+                    storeInventoryChange.setChangeQty(maOrderGoodsInfo.getOrderQty());
+                    storeInventoryChange.setChangeType(StoreInventoryRealQtyChangeType.ORDER_DELIVERY);
+                    storeInventoryChange.setChangeTypeDesc(StoreInventoryRealQtyChangeType.ORDER_DELIVERY.getDescription());
+                    maStoreInventoryService.addRealInventoryChangeLog(storeInventoryChange);
                     break;
                 } else {
                     if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
@@ -1294,8 +1310,8 @@ public class MaOrderServiceImpl implements MaOrderService {
                             storeInventoryAvailableQtyChangeLog.setChangeTime(date);
                             storeInventoryAvailableQtyChangeLog.setChangeQty(orderGoodsInfo.getOrderQuantity());
                             storeInventoryAvailableQtyChangeLog.setAfterChangeQty((storeInventory.getAvailableIty() + orderGoodsInfo.getOrderQuantity()));
-                            storeInventoryAvailableQtyChangeLog.setChangeType(null);
-                            storeInventoryAvailableQtyChangeLog.setChangeTypeDesc("超过待付款时间");
+                            storeInventoryAvailableQtyChangeLog.setChangeType(StoreInventoryAvailableQtyChangeType.SELF_TAKE_ORDER_CANCEL_AUTO);
+                            storeInventoryAvailableQtyChangeLog.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.SELF_TAKE_ORDER_CANCEL_AUTO.getDescription());
                             storeInventoryAvailableQtyChangeLog.setReferenceNumber(orderBaseInfo.getOrderNumber());
                             //保存记录
                             appStoreService.addStoreInventoryAvailableQtyChangeLog(storeInventoryAvailableQtyChangeLog);
