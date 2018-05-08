@@ -308,8 +308,8 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                         maStoreInventoryChange.setChangeTime(date);
                         maStoreInventoryChange.setAfterChangeQty(goodsQtyAfterChange);
                         maStoreInventoryChange.setChangeQty(returnOrderGoodsInfo.getReturnQty());
-                        maStoreInventoryChange.setChangeType(StoreInventoryRealQtyChangeType.ORDER_RETURN);
-                        maStoreInventoryChange.setChangeTypeDesc(StoreInventoryRealQtyChangeType.ORDER_RETURN.getDescription());
+                        maStoreInventoryChange.setChangeType(StoreInventoryRealQtyChangeType.SELF_TAKE_ORDER_RETURN);
+                        maStoreInventoryChange.setChangeTypeDesc(StoreInventoryRealQtyChangeType.SELF_TAKE_ORDER_RETURN.getDescription());
                         maStoreInventoryService.addRealInventoryChangeLog(maStoreInventoryChange);
                         break;
                     } else {

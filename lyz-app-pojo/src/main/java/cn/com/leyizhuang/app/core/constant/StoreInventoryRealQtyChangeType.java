@@ -8,6 +8,7 @@ package cn.com.leyizhuang.app.core.constant;
  */
 public enum StoreInventoryRealQtyChangeType {
 
+    SELF_TAKE_ORDER_RETURN("SELF_TAKE_ORDER_RETURN","自提单退单"),
     ORDER_DELIVERY("ORDER_DELIVERY", "订单发货"),
     ORDER_RETURN("ORDER_RETURN", "订单退货"),
     STORE_IMPORT_GOODS("STORE_IMPORT_GOODS","门店要货"),

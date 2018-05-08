@@ -184,8 +184,8 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
                 maStoreInventoryChange.setSku(goods.getSku());
                 maStoreInventoryChange.setSkuName(goods.getSkuName());
                 maStoreInventoryChange.setChangeTime(new Date());
-                maStoreInventoryChange.setAfterChangeQty(storeInventory.getRealIty() + goods.getRealQty());
-                maStoreInventoryChange.setChangeQty(goods.getRealQty());
+                maStoreInventoryChange.setAfterChangeQty(storeInventory.getRealIty() - goods.getRealQty());
+                maStoreInventoryChange.setChangeQty(-goods.getRealQty());
                 maStoreInventoryChange.setChangeType(StoreInventoryRealQtyChangeType.STORE_ALLOCATE_OUTBOUND);
                 maStoreInventoryChange.setChangeTypeDesc(StoreInventoryRealQtyChangeType.STORE_ALLOCATE_OUTBOUND.getDescription());
                 maStoreInventoryService.addRealInventoryChangeLog(maStoreInventoryChange);

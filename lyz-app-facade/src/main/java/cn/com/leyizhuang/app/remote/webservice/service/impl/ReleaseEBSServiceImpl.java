@@ -295,7 +295,7 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                         iLog.setSkuName(goodsDO.getSkuName());
                         iLog.setReferenceNumber(transNumber);
 
-                        //设置门店真是库存日志数据
+                        //设置门店真实库存日志数据
                         MaStoreRealInventoryChange maStoreRealInventoryChange = new MaStoreRealInventoryChange();
                         maStoreRealInventoryChange.setAfterChangeQty(goodsQtyAfterChange);
                         maStoreRealInventoryChange.setChangeQty(quantity.intValue());

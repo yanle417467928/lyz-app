@@ -370,7 +370,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                     storeInventoryChange.setSkuName(maOrderGoodsInfo.getSkuName());
                     storeInventoryChange.setChangeTime(date);
                     storeInventoryChange.setAfterChangeQty(goodsQtyAfterChange);
-                    storeInventoryChange.setChangeQty(maOrderGoodsInfo.getOrderQty());
+                    storeInventoryChange.setChangeQty(-maOrderGoodsInfo.getOrderQty());
                     storeInventoryChange.setChangeType(StoreInventoryRealQtyChangeType.ORDER_DELIVERY);
                     storeInventoryChange.setChangeTypeDesc(StoreInventoryRealQtyChangeType.ORDER_DELIVERY.getDescription());
                     maStoreInventoryService.addRealInventoryChangeLog(storeInventoryChange);
