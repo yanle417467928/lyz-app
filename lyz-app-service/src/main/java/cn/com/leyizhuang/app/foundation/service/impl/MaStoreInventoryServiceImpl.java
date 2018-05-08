@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.foundation.dao.MaStoreInventoryDAO;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventoryChange;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreRealInventoryChange;
 import cn.com.leyizhuang.app.foundation.service.MaStoreInventoryService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,11 @@ public class MaStoreInventoryServiceImpl implements MaStoreInventoryService {
     @Override
     public void addInventoryChangeLog(MaStoreInventoryChange storeInventoryChange) {
         maStoreInventoryDAO.addInventoryChangeLog(storeInventoryChange);
+    }
+
+    @Override
+    public void addRealInventoryChangeLog(MaStoreRealInventoryChange storeRealInventoryChange) {
+        maStoreInventoryDAO.addRealInventoryChangeLog(storeRealInventoryChange);
     }
 
     @Override

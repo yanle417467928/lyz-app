@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.core.constant.AllocationTypeEnum;
 import cn.com.leyizhuang.app.core.constant.AppWhetherFlag;
 import cn.com.leyizhuang.app.core.constant.StoreInventoryAvailableQtyChangeType;
+import cn.com.leyizhuang.app.core.constant.StoreInventoryRealQtyChangeType;
 import cn.com.leyizhuang.app.core.remote.ebs.EbsSenderService;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.RandomUtil;
@@ -13,6 +14,7 @@ import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.*;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreRealInventoryChange;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.ItyAllocationService;
 import cn.com.leyizhuang.app.foundation.service.MaStoreInventoryService;
@@ -168,6 +170,25 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
                 iLog.setChangeTypeDesc("调拨出库");
                 iLog.setReferenceNumber(allocation.getNumber());
                 appStoreService.addStoreInventoryAvailableQtyChangeLog(iLog);
+
+
+                //创建门店真实库存变化日志
+                MaStoreRealInventoryChange maStoreInventoryChange = new MaStoreRealInventoryChange();
+                maStoreInventoryChange.setCityId(from.getCityId());
+                maStoreInventoryChange.setCityName(from.getCity());
+                maStoreInventoryChange.setStoreId(from.getStoreId());
+                maStoreInventoryChange.setStoreCode(from.getStoreCode());
+                maStoreInventoryChange.setStoreCode(from.getStoreName());
+                maStoreInventoryChange.setReferenceNumber(allocation.getNumber());
+                maStoreInventoryChange.setGid(goods.getGoodsId());
+                maStoreInventoryChange.setSku(goods.getSku());
+                maStoreInventoryChange.setSkuName(goods.getSkuName());
+                maStoreInventoryChange.setChangeTime(new Date());
+                maStoreInventoryChange.setAfterChangeQty(storeInventory.getRealIty()+goods.getRealQty());
+                maStoreInventoryChange.setChangeQty(goods.getRealQty());
+                maStoreInventoryChange.setChangeType(StoreInventoryRealQtyChangeType.STORE_ALLOCATE_OUTBOUND);
+                maStoreInventoryChange.setChangeTypeDesc(StoreInventoryRealQtyChangeType.STORE_ALLOCATE_OUTBOUND.getDescription());
+                maStoreInventoryService.addRealInventoryChangeLog(maStoreInventoryChange);
             }
 
             ityAllocationDAO.setDetailDRealQty(allocation.getId(), goods.getGoodsId(), goods.getRealQty());
@@ -232,7 +253,26 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
                 iLog.setSkuName(detail.getSkuName());
                 iLog.setChangeTypeDesc("调拨入库");
                 iLog.setReferenceNumber(allocation.getNumber());
+
                 appStoreService.addStoreInventoryAvailableQtyChangeLog(iLog);
+
+                //创建门店真实库存变化日志
+                MaStoreRealInventoryChange maStoreInventoryChange = new MaStoreRealInventoryChange();
+                maStoreInventoryChange.setCityId(to.getCityId());
+                maStoreInventoryChange.setCityName(to.getCity());
+                maStoreInventoryChange.setStoreId(to.getStoreId());
+                maStoreInventoryChange.setStoreCode(to.getStoreCode());
+                maStoreInventoryChange.setStoreCode(to.getStoreName());
+                maStoreInventoryChange.setReferenceNumber(allocation.getNumber());
+                maStoreInventoryChange.setGid(detail.getGoodsId());
+                maStoreInventoryChange.setSku(detail.getSku());
+                maStoreInventoryChange.setSkuName(detail.getSkuName());
+                maStoreInventoryChange.setChangeTime(new Date());
+                maStoreInventoryChange.setAfterChangeQty(storeInventory.getRealIty()+detail.getRealQty());
+                maStoreInventoryChange.setChangeQty(detail.getRealQty());
+                maStoreInventoryChange.setChangeType(StoreInventoryRealQtyChangeType.STORE_ALLOCATE_INBOUND);
+                maStoreInventoryChange.setChangeTypeDesc(StoreInventoryRealQtyChangeType.STORE_ALLOCATE_INBOUND.getDescription());
+                maStoreInventoryService.addRealInventoryChangeLog(maStoreInventoryChange);
             }
 
         }
