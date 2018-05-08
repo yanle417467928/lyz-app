@@ -20,6 +20,7 @@ import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderTempInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.returnOrder.*;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventoryChange;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreRealInventoryChange;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderLifecycle;
@@ -289,11 +290,27 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                         storeInventoryChange.setSku(returnOrderGoodsInfo.getSku());
                         storeInventoryChange.setSkuName(returnOrderGoodsInfo.getSkuName());
                         storeInventoryChange.setChangeTime(date);
-                        storeInventoryChange.setAfterChangeQty(goodsQtyAfterChange);
+                        storeInventoryChange.setAfterChangeQty(goodsAvailableItyAfterChange);
                         storeInventoryChange.setChangeQty(returnOrderGoodsInfo.getReturnQty());
                         storeInventoryChange.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS);
                         storeInventoryChange.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS.getDescription());
                         maStoreInventoryService.addInventoryChangeLog(storeInventoryChange);
+                        //增加门店真实库存日志
+                        MaStoreRealInventoryChange maStoreInventoryChange = new MaStoreRealInventoryChange();
+                        maStoreInventoryChange.setCityId(storeInventory.getCityId());
+                        maStoreInventoryChange.setCityName(storeInventory.getCityName());
+                        maStoreInventoryChange.setStoreId(storeInventory.getStoreId());
+                        maStoreInventoryChange.setStoreCode(storeInventory.getStoreCode());
+                        maStoreInventoryChange.setReferenceNumber(returnNumber);
+                        maStoreInventoryChange.setGid(returnOrderGoodsInfo.getGid());
+                        maStoreInventoryChange.setSku(returnOrderGoodsInfo.getSku());
+                        maStoreInventoryChange.setSkuName(returnOrderGoodsInfo.getSkuName());
+                        maStoreInventoryChange.setChangeTime(date);
+                        maStoreInventoryChange.setAfterChangeQty(goodsQtyAfterChange);
+                        maStoreInventoryChange.setChangeQty(returnOrderGoodsInfo.getReturnQty());
+                        maStoreInventoryChange.setChangeType(StoreInventoryRealQtyChangeType.ORDER_RETURN);
+                        maStoreInventoryChange.setChangeTypeDesc(StoreInventoryRealQtyChangeType.ORDER_RETURN.getDescription());
+                        maStoreInventoryService.addRealInventoryChangeLog(maStoreInventoryChange);
                         break;
                     } else {
                         if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
