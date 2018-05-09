@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.pojo.reportDownload;
 
 import cn.com.leyizhuang.app.core.constant.AppCustomerType;
 import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
+import cn.com.leyizhuang.app.core.constant.CouponGetType;
 import cn.com.leyizhuang.app.core.constant.StoreType;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +20,7 @@ import lombok.ToString;
 public class NotPickGoodsReportDO {
 
     //城市
-    private String city;
+    private String cityName;
     //门店名称
     private String storeName;
     //门店类型
@@ -44,18 +45,27 @@ public class NotPickGoodsReportDO {
     private String sku;
     //商品名
     private String skuName;
+    //品牌
+    private String brandName;
     //数量
     private Integer quantity;
     //购买时价格
     private Double buyPrice;
+    //经销价
+    private Double wholesalePrice;
     //购买总价
     private Double totalBuyPrice;
     //关联单号
     private String referenceNumber;
 
-    public void setPickType(AppDeliveryType deliveryType) {
-
-        this.pickType = deliveryType.getDescription();
+    public void setPickType(String deliveryType) {
+        AppDeliveryType type1 = AppDeliveryType.getAppDeliveryTypeByValue(deliveryType);
+        if (null != type1) {
+            this.pickType = type1.getDescription();
+        } else {
+            this.pickType = CouponGetType.valueOf(deliveryType).getDescription();
+            ;
+        }
     }
 
     public void setStoreType(StoreType storeType) {

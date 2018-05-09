@@ -526,7 +526,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                 //筛选条件
                 Map<String, String> map = new HashMap<>();
                 if (null != cityId && !(cityId.equals(-1L)) && null != notPickGoodsReportDOS && notPickGoodsReportDOS.size() > 0) {
-                    map.put("城市", notPickGoodsReportDOS.get(0).getCity());
+                    map.put("城市", notPickGoodsReportDOS.get(0).getCityName());
                 } else {
                     map.put("城市", "无");
                 }
@@ -558,10 +558,10 @@ public class MaReportDownloadRestController extends BaseRestController {
                 //设置筛选条件
                 ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
                 //列宽
-                int[] columnView = {10, 13, 10, 20, 20, 10, 10, 15, 20, 10, 10, 20, 30, 10, 10, 10, 30};
+                int[] columnView = {10, 13, 10, 20, 20, 10, 10, 15, 20, 10, 10, 20, 30, 10, 10, 10, 10, 10, 30};
                 //列标题
                 String[] titles = {"城市", "门店名称", "门店类型", "未提货类型", "购买日期", "过期时间", "顾客编号", "顾客姓名	",
-                        "顾客电话", "顾客类型", "销顾姓名", "商品编码", "商品名称", "数量", "购买单价", "购买总价", "相关单号"};
+                        "顾客电话", "顾客类型", "销顾姓名", "商品编码", "商品名称", "品牌", "数量", "购买单价", "经销价", "购买总价", "相关单号"};
                 //计算标题开始行号
                 int row = 1;
                 if (null != map && map.size() > 0) {
@@ -583,7 +583,8 @@ public class MaReportDownloadRestController extends BaseRestController {
                         break;
                     }
                     NotPickGoodsReportDO notPickGoodsReportDO = notPickGoodsReportDOS.get(j + i * maxRowNum);
-                    ws.addCell(new Label(0, j + row, notPickGoodsReportDO.getCity(), textFormat));
+//                    notPickGoodsReportDO.setPickType(notPickGoodsReportDO.getPickType());
+                    ws.addCell(new Label(0, j + row, notPickGoodsReportDO.getCityName(), textFormat));
                     ws.addCell(new Label(1, j + row, notPickGoodsReportDO.getStoreName(), textFormat));
                     ws.addCell(new Label(2, j + row, notPickGoodsReportDO.getStoreType(), textFormat));
                     ws.addCell(new Label(3, j + row, notPickGoodsReportDO.getPickType(), textFormat));
@@ -596,10 +597,12 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Label(10, j + row, notPickGoodsReportDO.getSellerName(), textFormat));
                     ws.addCell(new Label(11, j + row, notPickGoodsReportDO.getSku(), textFormat));
                     ws.addCell(new Label(12, j + row, notPickGoodsReportDO.getSkuName(), textFormat));
-                    ws.addCell(new Number(13, j + row, notPickGoodsReportDO.getQuantity(), textFormat));
-                    ws.addCell(new Number(14, j + row, notPickGoodsReportDO.getBuyPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                    ws.addCell(new Number(15, j + row, notPickGoodsReportDO.getTotalBuyPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                    ws.addCell(new Label(16, j + row, notPickGoodsReportDO.getReferenceNumber(), textFormat));
+                    ws.addCell(new Label(13, j + row, notPickGoodsReportDO.getBrandName(), textFormat));
+                    ws.addCell(new Number(14, j + row, notPickGoodsReportDO.getQuantity(), textFormat));
+                    ws.addCell(new Number(15, j + row, notPickGoodsReportDO.getBuyPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Number(16, j + row, notPickGoodsReportDO.getWholesalePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Number(17, j + row, notPickGoodsReportDO.getTotalBuyPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Label(18, j + row, notPickGoodsReportDO.getReferenceNumber(), textFormat));
                 }
             }
         } catch (Exception e) {

@@ -1,17 +1,16 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.MaReportDownloadDAO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.reportDownload.*;
 import cn.com.leyizhuang.app.foundation.service.MaReportDownloadService;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
-import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDetailResponse;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,9 +38,15 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
     }
 
     @Override
-    public PageInfo<NotPickGoodsReportDO> findNotPickGoodsReportDOAll(Long cityId, Long storeId, String storeType, String startTime, String endTime, String pickType, List<Long> storeIds, Integer page, Integer size) {
+    public PageInfo<NotPickGoodsReportDO> findNotPickGoodsReportDOAll(Long cityId, Long storeId, String storeType, String buyTime, String endTime, String pickType, List<Long> storeIds, Integer page, Integer size) {
         PageHelper.startPage(page, size);
-        List<NotPickGoodsReportDO> notPickGoodsReportDOS = maReportDownloadDAO.findNotPickGoodsReportDOAll(cityId, storeId, storeType, startTime, endTime, pickType, storeIds);
+        if (StringUtils.isNotBlank(buyTime)) {
+            buyTime += " 23:59:59";
+        }
+        if (StringUtils.isNotBlank(endTime)) {
+            endTime += " 23:59:59";
+        }
+        List<NotPickGoodsReportDO> notPickGoodsReportDOS = maReportDownloadDAO.findNotPickGoodsReportDOAll(cityId, storeId, storeType, buyTime, endTime, pickType, storeIds);
         return new PageInfo<>(notPickGoodsReportDOS);
     }
 
@@ -61,8 +66,14 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
     }
 
     @Override
-    public List<NotPickGoodsReportDO> notPickGoodsDownload(Long cityId, Long storeId, String storeType, String startTime, String endTime, String pickType, List<Long> storeIds) {
-        return maReportDownloadDAO.findNotPickGoodsReportDOAll(cityId, storeId, storeType, startTime, endTime, pickType, storeIds);
+    public List<NotPickGoodsReportDO> notPickGoodsDownload(Long cityId, Long storeId, String storeType, String buyTime, String effTime, String pickType, List<Long> storeIds) {
+        if (StringUtils.isNotBlank(buyTime)) {
+            buyTime += " 23:59:59";
+        }
+        if (StringUtils.isNotBlank(effTime)) {
+            effTime += " 23:59:59";
+        }
+        return maReportDownloadDAO.findNotPickGoodsReportDOAll(cityId, storeId, storeType, buyTime, effTime, pickType, storeIds);
     }
 
     @Override
