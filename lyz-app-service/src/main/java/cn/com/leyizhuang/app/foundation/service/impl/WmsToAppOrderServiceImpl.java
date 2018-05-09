@@ -574,6 +574,7 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                         CityInventory cityInventoryInbound = cityService.findCityInventoryByCityIdAndSku(inboundCity.getCityId(), allocationGoods.getSku());
                         if (null == cityInventoryInbound) {
                             cityInventoryInbound = CityInventory.transform(goodsDO, inboundCity);
+                            cityInventoryInbound.setAvailableIty(allocationGoods.getCheckQty());
                             cityService.saveCityInventory(cityInventoryInbound);
                         } else {
                             for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
