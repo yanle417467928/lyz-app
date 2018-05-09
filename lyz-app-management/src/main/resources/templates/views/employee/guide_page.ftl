@@ -49,7 +49,7 @@
                     </select>
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
                         <input type="text" name="queryGuideVOInfo" id="queryGuideVOInfo" class="form-control" style="width:auto;"
-                               placeholder="请输入姓名或登录名...">
+                               placeholder="请输入姓名或登录名..." onkeypress="findBykey()">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
                                     onclick="findGuideCreditMoneyByInfo()">查找</button>
@@ -384,6 +384,13 @@
         var cityId = $("#cityCode").val();
             initDateGird('/rest/employees/guidePage/conditionGrid?storeId='+storeId+
             '&cityId='+cityId);
+    }
+
+
+    function findBykey(){
+        if(event.keyCode==13){
+            findGuideCreditMoneyByInfo();
+        }
     }
 
 

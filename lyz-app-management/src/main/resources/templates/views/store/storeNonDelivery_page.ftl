@@ -43,7 +43,7 @@
                     </select>
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
                         <input type="text" name="queryStoreInfo" id="queryStoreInfo" class="form-control "
-                               style="width:auto;" placeholder="请输入要查找的店名或编码..">
+                               style="width:auto;" placeholder="请输入要查找的店名或编码.." onkeypress="findBykey()">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
                                     onclick="return findStoreByNameOrCode()">查找</button>
@@ -182,6 +182,13 @@
             initDateGird('/rest/stores/findStoresListByCondition?enabled=' + enabled + '&cityId=' + cityId);
         }
         }
+
+
+    function findBykey(){
+        if(event.keyCode==13){
+            findStoreByNameOrCode();
+        }
+    }
 
     function findStoreByNameOrCode() {
         var queryStoreInfo = $("#queryStoreInfo").val();

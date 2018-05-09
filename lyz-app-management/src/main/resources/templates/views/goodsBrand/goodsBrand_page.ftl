@@ -39,7 +39,7 @@
                         <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除
                     </button>
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
-                        <input type="text" name="queryStoreInfo" id="queryStoreInfo" class="form-control " style="width:auto;"  placeholder="请输入品牌名称..">
+                        <input type="text" name="queryStoreInfo" id="queryStoreInfo" class="form-control " style="width:auto;"  placeholder="请输入品牌名称.." onkeypress="findBykey()">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
                                     onclick="return findBrandByName()">查找</button>
@@ -176,6 +176,11 @@
         }
     }
 
+    function findBykey(){
+        if(event.keyCode==13){
+            findBrandByName();
+        }
+    }
 
     function findBrandByName() {
         $("#dataGrid").bootstrapTable('destroy');

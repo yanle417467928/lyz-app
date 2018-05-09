@@ -42,7 +42,7 @@
                         <option value="-1">选择父类分级</option>
                     </select>
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
-                        <input type="text" name="queryCategoryInfo" id="queryCategoryInfo" class="form-control " style="width:auto;"  placeholder="请输入分类名称..">
+                        <input type="text" name="queryCategoryInfo" id="queryCategoryInfo" class="form-control " style="width:auto;"  placeholder="请输入分类名称.." onkeypress="findBykey()">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
                                     onclick="return findGoodsCategoryByPcode()">查找</button>
@@ -158,6 +158,12 @@
             initDateGird('/rest/goodsCategorys/page/grid');
         }else{
             initDateGird('/rest/goodsCategorys/findGoodsCategoryByPid/'+pid);
+        }
+    }
+
+    function findBykey(){
+        if(event.keyCode==13){
+            findGoodsCategoryByPcode();
         }
     }
 

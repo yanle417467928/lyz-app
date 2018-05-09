@@ -59,7 +59,7 @@
 
                     <div class="input-group col-md-3" style="margin-top:0px; positon:relative">
                         <input type="text" name="queryCusInfo" id="queryCusInfo" class="form-control" style="width:auto;"
-                               placeholder="请输入要查找的单号">
+                               placeholder="请输入要查找的单号" onkeypress="findBykey()">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
                                     onclick="return findByOrderNumber()">查找</button>
@@ -191,6 +191,12 @@
         var isPayOff = $('#isPayOff').val();
         var storeId = $("#storeCode").val();
         initDateGird(keywords,startTime,endTime,storeId,isPayOff);
+    }
+
+    function findBykey(){
+        if(event.keyCode==13){
+            findByOrderNumber();
+        }
     }
 
     function findByOrderNumber() {

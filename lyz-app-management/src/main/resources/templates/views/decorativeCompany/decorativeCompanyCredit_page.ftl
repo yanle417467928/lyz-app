@@ -45,7 +45,7 @@
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
                         <input type="text" name="queryDecorativeCreditInfo" id="queryDecorativeCreditInfo"
                                class="form-control "
-                               style="width:auto;" placeholder="请输入公司名称或公司编码..">
+                               style="width:auto;" placeholder="请输入公司名称或公司编码.." onkeypress="findBykey()">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
                                     onclick="return findDecorativeByNameOrCode()">查找</button>
@@ -296,6 +296,13 @@
         var enabled = $("#enabled").val();
         initDateGird('/rest/decorativeCredit/findDecorativeCreditByCondition?enabled=' + enabled + '&cityId=' + cityId);
     }
+
+    function findBykey(){
+        if(event.keyCode==13){
+            findDecorativeByNameOrCode();
+        }
+    }
+
 
     function findDecorativeByNameOrCode() {
         var queryDecorativeCreditInfo = $("#queryDecorativeCreditInfo").val();

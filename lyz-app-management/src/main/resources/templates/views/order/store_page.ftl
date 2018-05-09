@@ -148,7 +148,7 @@
                             <div class="col-xs-12">
                                 <input type="text" name="orderNumber" id="orderNumber" class="form-control"
                                        style="width:auto;"
-                                       placeholder="请输订单号">
+                                       placeholder="请输订单号" onkeypress="findBykey()">
                                 <span class="">
                                 <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
                                         onclick="return findOrderByOrderNumber()">查找</button>
