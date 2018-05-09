@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.core.constant.AllocationTypeEnum;
 import cn.com.leyizhuang.app.core.constant.AppWhetherFlag;
 import cn.com.leyizhuang.app.core.constant.StoreInventoryAvailableQtyChangeType;
+import cn.com.leyizhuang.app.core.constant.StoreInventoryRealQtyChangeType;
 import cn.com.leyizhuang.app.core.remote.ebs.EbsSenderService;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.RandomUtil;
@@ -13,6 +14,7 @@ import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.*;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreRealInventoryChange;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.ItyAllocationService;
 import cn.com.leyizhuang.app.foundation.service.MaStoreInventoryService;
@@ -67,12 +69,12 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
     private MaStoreInventoryService maStoreInventoryService;
 
     @Override
-    public PageInfo<AllocationVO> queryPage(Integer offset, Integer size, String keywords, AllocationQuery query,Long storeId) {
+    public PageInfo<AllocationVO> queryPage(Integer offset, Integer size, String keywords, AllocationQuery query, Long storeId) {
         PageHelper.startPage(offset, size);
 
         List<AllocationVO> allocationVOList;
         if (StringUtils.isNotBlank(keywords)) {
-            allocationVOList = ityAllocationDAO.queryListVO(keywords,storeId);
+            allocationVOList = ityAllocationDAO.queryListVO(keywords, storeId);
             return new PageInfo<>(allocationVOList);
         }
         query.setStoreId(storeId);
@@ -138,14 +140,14 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
                 Integer inventory = storeInventory.getRealIty() - goods.getRealQty();
                 Integer availableIty = storeInventory.getAvailableIty() - goods.getRealQty();
 
-                if(availableIty < 0 || inventory < 0 ){
+                if (availableIty < 0 || inventory < 0) {
                     throw new RuntimeException("产品：" + goods.getSku() + " 库存不足，不允许调拨");
                 }
 
                 try {
 
                     // 扣减门店真实库存 和 可用量
-                    maStoreInventoryService.updateStoreInventoryAndAvailableIty(from.getStoreId(),goods.getGoodsId(),inventory,availableIty,storeInventory.getLastUpdateTime());
+                    maStoreInventoryService.updateStoreInventoryAndAvailableIty(from.getStoreId(), goods.getGoodsId(), inventory, availableIty, storeInventory.getLastUpdateTime());
 
                 } catch (RuntimeException e) {
                     throw new RuntimeException("产品：" + goods.getSku() + " 库存不足，不允许调拨");
@@ -156,7 +158,7 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
                 iLog.setCityId(from.getCityId());
                 iLog.setCityName(from.getCity());
                 iLog.setAfterChangeQty(availableIty);
-                iLog.setChangeQty(goods.getRealQty());
+                iLog.setChangeQty(-goods.getRealQty());
                 iLog.setChangeTime(new Date());
                 iLog.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_ALLOCATE_OUTBOUND);
                 iLog.setStoreId(from.getStoreId());
@@ -165,9 +167,28 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
                 iLog.setGid(goods.getGoodsId());
                 iLog.setSku(goods.getSku());
                 iLog.setSkuName(goods.getSkuName());
-                iLog.setChangeTypeDesc("调拨出库");
+                iLog.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.STORE_ALLOCATE_OUTBOUND.getDescription());
                 iLog.setReferenceNumber(allocation.getNumber());
                 appStoreService.addStoreInventoryAvailableQtyChangeLog(iLog);
+
+
+                //创建门店真实库存变化日志
+                MaStoreRealInventoryChange maStoreInventoryChange = new MaStoreRealInventoryChange();
+                maStoreInventoryChange.setCityId(from.getCityId());
+                maStoreInventoryChange.setCityName(from.getCity());
+                maStoreInventoryChange.setStoreId(from.getStoreId());
+                maStoreInventoryChange.setStoreCode(from.getStoreCode());
+                maStoreInventoryChange.setStoreCode(from.getStoreName());
+                maStoreInventoryChange.setReferenceNumber(allocation.getNumber());
+                maStoreInventoryChange.setGid(goods.getGoodsId());
+                maStoreInventoryChange.setSku(goods.getSku());
+                maStoreInventoryChange.setSkuName(goods.getSkuName());
+                maStoreInventoryChange.setChangeTime(new Date());
+                maStoreInventoryChange.setAfterChangeQty(storeInventory.getRealIty() - goods.getRealQty());
+                maStoreInventoryChange.setChangeQty(-goods.getRealQty());
+                maStoreInventoryChange.setChangeType(StoreInventoryRealQtyChangeType.STORE_ALLOCATE_OUTBOUND);
+                maStoreInventoryChange.setChangeTypeDesc(StoreInventoryRealQtyChangeType.STORE_ALLOCATE_OUTBOUND.getDescription());
+                maStoreInventoryService.addRealInventoryChangeLog(maStoreInventoryChange);
             }
 
             ityAllocationDAO.setDetailDRealQty(allocation.getId(), goods.getGoodsId(), goods.getRealQty());
@@ -190,18 +211,18 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
         AppStore to = appStoreService.findById(allocation.getAllocationTo());
 
         List<AllocationDetail> allocationDetails = ityAllocationDAO.queryDetailsByAllocationId(allocation.getId());
-        if (allocationDetails == null || allocationDetails.size() == 0){
+        if (allocationDetails == null || allocationDetails.size() == 0) {
             logger.info("调拨单商品详情不存在");
             throw new RuntimeException();
         }
 
-        for (AllocationDetail detail : allocationDetails){
+        for (AllocationDetail detail : allocationDetails) {
 
             StoreInventory storeInventory = appStoreService.findStoreInventoryByStoreCodeAndGoodsId(to.getStoreCode(), detail.getGoodsId());
-            if (storeInventory == null){
+            if (storeInventory == null) {
                 // 无此库存 TODO 新建门店库存
 
-            }else{
+            } else {
 
                 // 求和后 库存 及 可用量
                 Integer inventory = storeInventory.getRealIty() + detail.getRealQty();
@@ -210,7 +231,7 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
                 try {
 
                     // 更新门店真实库存 和 可用量
-                    maStoreInventoryService.updateStoreInventoryAndAvailableIty(to.getStoreId(),detail.getGoodsId(),inventory,availableIty,storeInventory.getLastUpdateTime());
+                    maStoreInventoryService.updateStoreInventoryAndAvailableIty(to.getStoreId(), detail.getGoodsId(), inventory, availableIty, storeInventory.getLastUpdateTime());
 
                 } catch (RuntimeException e) {
                     throw new RuntimeException("入库失败");
@@ -220,7 +241,7 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
                 StoreInventoryAvailableQtyChangeLog iLog = new StoreInventoryAvailableQtyChangeLog();
                 iLog.setCityId(to.getCityId());
                 iLog.setCityName(to.getCity());
-                iLog.setAfterChangeQty(storeInventory.getAvailableIty()+detail.getRealQty());
+                iLog.setAfterChangeQty(storeInventory.getAvailableIty() + detail.getRealQty());
                 iLog.setChangeQty(detail.getRealQty());
                 iLog.setChangeTime(new Date());
                 iLog.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_ALLOCATE_INBOUND);
@@ -232,7 +253,26 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
                 iLog.setSkuName(detail.getSkuName());
                 iLog.setChangeTypeDesc("调拨入库");
                 iLog.setReferenceNumber(allocation.getNumber());
+
                 appStoreService.addStoreInventoryAvailableQtyChangeLog(iLog);
+
+                //创建门店真实库存变化日志
+                MaStoreRealInventoryChange maStoreInventoryChange = new MaStoreRealInventoryChange();
+                maStoreInventoryChange.setCityId(to.getCityId());
+                maStoreInventoryChange.setCityName(to.getCity());
+                maStoreInventoryChange.setStoreId(to.getStoreId());
+                maStoreInventoryChange.setStoreCode(to.getStoreCode());
+                maStoreInventoryChange.setStoreCode(to.getStoreName());
+                maStoreInventoryChange.setReferenceNumber(allocation.getNumber());
+                maStoreInventoryChange.setGid(detail.getGoodsId());
+                maStoreInventoryChange.setSku(detail.getSku());
+                maStoreInventoryChange.setSkuName(detail.getSkuName());
+                maStoreInventoryChange.setChangeTime(new Date());
+                maStoreInventoryChange.setAfterChangeQty(storeInventory.getRealIty() + detail.getRealQty());
+                maStoreInventoryChange.setChangeQty(detail.getRealQty());
+                maStoreInventoryChange.setChangeType(StoreInventoryRealQtyChangeType.STORE_ALLOCATE_INBOUND);
+                maStoreInventoryChange.setChangeTypeDesc(StoreInventoryRealQtyChangeType.STORE_ALLOCATE_INBOUND.getDescription());
+                maStoreInventoryService.addRealInventoryChangeLog(maStoreInventoryChange);
             }
 
         }
@@ -259,7 +299,7 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
         for (AllocationInf record : headerRecords) {
             Map<String, Object> result = ebsSenderService.sendFaildAllocationToEBS(record);
             //if ((Boolean) result.get("success") || String.valueOf(result.get("msg")).contains("ORA-00001")) {
-            if ((Boolean) result.get("success") ) {
+            if ((Boolean) result.get("success")) {
                 ityAllocationDAO.deleteAllocationInf(record.getId());
             } else {
                 Date now = new Date();
@@ -278,7 +318,7 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
             if (!faildIds.contains(record.getAllocationId())) {
                 Map<String, Object> result = ebsSenderService.sendFaildAllocationToEBS(record);
                 //if ((Boolean) result.get("success") || String.valueOf(result.get("msg")).contains("ORA-00001")) {
-                if ((Boolean) result.get("success") ) {
+                if ((Boolean) result.get("success")) {
                     ityAllocationDAO.deleteAllocationInf(record.getId());
                 } else {
                     Date now = new Date();
@@ -295,7 +335,7 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
 
     @Override
     @Transactional
-    public void addAllocation(Allocation allocation, List<AllocationDetail> goodsDetails, ShiroUser shiroUser,Long toStoreId) {
+    public void addAllocation(Allocation allocation, List<AllocationDetail> goodsDetails, ShiroUser shiroUser, Long toStoreId) {
 
         // 调出门店id
         Long storeId = allocation.getAllocationFrom();
@@ -406,11 +446,11 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
         return JSON.toJSONString(receive);
     }
 
-    public void sendAllocationToEBSAndRecord(String number){
+    public void sendAllocationToEBSAndRecord(String number) {
         Allocation allocation = ityAllocationDAO.queryAllocationByNumber(number);
-        if (allocation == null){
-            logger.info("单号："+number+" 调拨单不存在！");
-        }else{
+        if (allocation == null) {
+            logger.info("单号：" + number + " 调拨单不存在！");
+        } else {
             List<AllocationDetail> allocationDetails = ityAllocationDAO.queryDetailsByAllocationId(allocation.getId());
             allocation.setDetails(allocationDetails);
             // 发送接口
@@ -418,11 +458,11 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
         }
     }
 
-    public void sendAllocationReceivedToEBSAndRecord(String number){
+    public void sendAllocationReceivedToEBSAndRecord(String number) {
         Allocation allocation = ityAllocationDAO.queryAllocationByNumber(number);
-        if (allocation == null){
-            logger.info("单号："+number+" 调拨单不存在！");
-        }else{
+        if (allocation == null) {
+            logger.info("单号：" + number + " 调拨单不存在！");
+        } else {
             // 发送接口
             ebsSenderService.sendAllocationReceivedToEBSAndRecord(allocation);
         }

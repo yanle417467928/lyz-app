@@ -8,12 +8,15 @@ package cn.com.leyizhuang.app.core.constant;
  */
 public enum StoreInventoryRealQtyChangeType {
 
+    SELF_TAKE_ORDER_RETURN("SELF_TAKE_ORDER_RETURN","自提单退单"),
     ORDER_DELIVERY("ORDER_DELIVERY", "订单发货"),
     ORDER_RETURN("ORDER_RETURN", "订单退货"),
     STORE_IMPORT_GOODS("STORE_IMPORT_GOODS","门店要货"),
     STORE_EXPORT_GOODS("STORE_EXPORT_GOODS","门店退货"),
     STORE_ALLOCATE_INBOUND("STORE_ALLOCATE_INBOUND","门店调拨入库"),
-    STORE_ALLOCATE_OUTBOUND("STORE_ALLOCATE_OUTBOUND","门店调拨出库");
+    STORE_ALLOCATE_OUTBOUND("STORE_ALLOCATE_OUTBOUND","门店调拨出库"),
+    STORE_INVENTORY_INBOUND("STORE_INVENTORY_INBOUND","盘点入库"),
+    STORE_INVENTORY_OUTBOUND("STORE_INVENTORY_OUTBOUND","盘点出库");
     private final String value;
     private final String description;
 

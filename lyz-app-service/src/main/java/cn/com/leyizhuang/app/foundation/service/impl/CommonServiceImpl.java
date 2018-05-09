@@ -284,7 +284,7 @@ public class CommonServiceImpl implements CommonService {
                                 log.setGid(storeInventory.getGid());
                                 log.setSku(storeInventory.getSku());
                                 log.setSkuName(storeInventory.getSkuName());
-                                log.setChangeQty(entry.getValue());
+                                log.setChangeQty(-entry.getValue());
                                 log.setAfterChangeQty(storeInventory.getAvailableIty() - entry.getValue());
                                 log.setChangeTime(Calendar.getInstance().getTime());
                                 log.setChangeType(StoreInventoryAvailableQtyChangeType.SELF_TAKE_ORDER);
@@ -687,12 +687,11 @@ public class CommonServiceImpl implements CommonService {
                     appToWmsOrderService.saveAtwRequisitionOrder(requisitionOrder);
 
 
-
                     //保存传wms配送单商品信息
                     if (orderGoodsInfoList.size() > 0) {
                         for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                             AtwRequisitionOrderGoods requisitionOrderGoods = null;
-                            if ("ZS-002".equals(orderBaseInfo.getStoreCode()) || "MR004".equals(orderBaseInfo.getStoreCode())){
+                            if ("ZS-002".equals(orderBaseInfo.getStoreCode()) || "MR004".equals(orderBaseInfo.getStoreCode())) {
                                 requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
                                         goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getSettlementPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
                             } else {
@@ -869,7 +868,7 @@ public class CommonServiceImpl implements CommonService {
                 if (orderGoodsSize > 0) {
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                         AtwRequisitionOrderGoods requisitionOrderGoods = null;
-                        if ("ZS-002".equals(baseInfo.getStoreCode()) || "MR004".equals(baseInfo.getStoreCode())){
+                        if ("ZS-002".equals(baseInfo.getStoreCode()) || "MR004".equals(baseInfo.getStoreCode())) {
                             requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
                                     goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getSettlementPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
                         } else {
@@ -1045,7 +1044,7 @@ public class CommonServiceImpl implements CommonService {
                 for (GoodsSimpleInfo info : goodsList) {
                     if (info.getId().equals(goodsVO.getGid())) {
                         if (null == info.getQty() || info.getQty().equals(0)) {
-                            throw new GoodsQtyErrorException("商品 '"+goodsVO.getSkuName() + "'数量出现异常(0或不存在)!");
+                            throw new GoodsQtyErrorException("商品 '" + goodsVO.getSkuName() + "'数量出现异常(0或不存在)!");
                         }
                         goodsVO.setQty(info.getQty());
                     }
@@ -1148,7 +1147,7 @@ public class CommonServiceImpl implements CommonService {
                 }
                 for (ProductCouponSimpleInfo info : productCouponList) {
                     if (null == info.getQty() || info.getQty().equals(0)) {
-                        throw new GoodsQtyErrorException("产品券商品 '"+couponGoods.getSkuName() + "'数量出现异常(0或不存在)!");
+                        throw new GoodsQtyErrorException("产品券商品 '" + couponGoods.getSkuName() + "'数量出现异常(0或不存在)!");
                     }
                     if (info.getId().equals(couponGoods.getGid())) {
                         couponGoods.setQty(info.getQty());
@@ -1714,7 +1713,7 @@ public class CommonServiceImpl implements CommonService {
                 if (orderGoodsSize > 0) {
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                         AtwRequisitionOrderGoods requisitionOrderGoods = null;
-                        if ("ZS-002".equals(baseInfo.getStoreCode()) || "MR004".equals(baseInfo.getStoreCode())){
+                        if ("ZS-002".equals(baseInfo.getStoreCode()) || "MR004".equals(baseInfo.getStoreCode())) {
                             requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
                                     goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getSettlementPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
                         } else {
@@ -1806,7 +1805,7 @@ public class CommonServiceImpl implements CommonService {
                     if (orderGoodsSize > 0) {
                         for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                             AtwRequisitionOrderGoods requisitionOrderGoods = null;
-                            if ("ZS-002".equals(baseInfo.getStoreCode()) || "MR004".equals(baseInfo.getStoreCode())){
+                            if ("ZS-002".equals(baseInfo.getStoreCode()) || "MR004".equals(baseInfo.getStoreCode())) {
                                 requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
                                         goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getSettlementPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
                             } else {

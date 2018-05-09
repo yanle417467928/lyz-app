@@ -624,12 +624,12 @@ public class EbsSenderServiceImpl implements EbsSenderService {
         JSONObject jsonParams = JSON.parseObject(record.getContent());
         if (record.getType() == 3) {
             parameters.add(new BasicNameValuePair("allocationReceiveJson", jsonParams.getString("allocationReceiveJson")));
-            result = this.postToEbs(AppConstant.EBS_NEW_URL + "callAllocationReceive", parameters);
+            result = this.postToEbs(AppConstant.EBS_NEW_URL + "callAllocationReceiveSecond", parameters);
 
         } else {
             parameters.add(new BasicNameValuePair("allcationHeaderJson", jsonParams.getString("allcationHeaderJson")));
             parameters.add(new BasicNameValuePair("allocationDetailsJson", jsonParams.getString("allocationDetailsJson")));
-            result = this.postToEbs(AppConstant.EBS_NEW_URL + "callAllocation", parameters);
+            result = this.postToEbs(AppConstant.EBS_NEW_URL + "callAllocationSecond", parameters);
         }
         log.info("sendFaildAllocationToEBS, result=" + result);
         return result;

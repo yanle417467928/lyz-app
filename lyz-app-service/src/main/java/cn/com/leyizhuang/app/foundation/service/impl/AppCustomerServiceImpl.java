@@ -662,7 +662,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     }
 
     @Override
-    public void updateCustomerSellerIdStoreIdByCusId(Long cusId, Long storeId, Long salesConsultId) {
-        customerDAO.updateCustomerSellerIdStoreIdByCusId(cusId, storeId, salesConsultId);
+    public void updateCustomerSellerIdStoreIdByCusId(Long cusId, Long storeId, Long salesConsultId,Date date) {
+        customerDAO.updateCustomerSellerIdStoreIdByCusId(cusId, storeId, salesConsultId,date);
     }
 }

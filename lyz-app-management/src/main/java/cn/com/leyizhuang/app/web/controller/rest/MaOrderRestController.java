@@ -815,8 +815,8 @@ public class MaOrderRestController extends BaseRestController {
         if (null == maOrderAmount.getPosAmount()) {
             maOrderAmount.setPosAmount(BigDecimal.ZERO);
         }
-        Double repaymentAmount = maOrderService.queryRepaymentAmount(maOrderAmount.getOrderNumber());
-        maOrderAmount.setAllAmount(BigDecimal.valueOf(repaymentAmount));
+        MaOrderBillingDetailResponse maOrderBillingDetailResponse = maOrderService.getMaOrderBillingDetailByOrderNumber(maOrderAmount.getOrderNumber());
+        maOrderAmount.setAllAmount(BigDecimal.valueOf(maOrderBillingDetailResponse.getArrearage()));
         BigDecimal acount = maOrderAmount.getCashAmount().add(maOrderAmount.getOtherAmount()).add(maOrderAmount.getPosAmount());
         if (StringUtils.isBlank(maOrderAmount.getOrderNumber())) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单号为空", null);
@@ -833,7 +833,7 @@ public class MaOrderRestController extends BaseRestController {
             logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (0 != acount.compareTo(BigDecimal.valueOf(repaymentAmount))) {
+        if (0 != acount.compareTo(BigDecimal.valueOf(maOrderBillingDetailResponse.getArrearage()))) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE, "所有金额不等于总金额", null);
             logger.warn("arrearsOrderRepayment OUT,后台欠款订单还款失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -849,7 +849,7 @@ public class MaOrderRestController extends BaseRestController {
             return resultDTO;
         }
         try {
-            MaOrderBillingDetailResponse maOrderBillingDetailResponse = maOrderService.getMaOrderBillingDetailByOrderNumber(maOrderAmount.getOrderNumber());
+            //MaOrderBillingDetailResponse maOrderBillingDetailResponse = maOrderService.getMaOrderBillingDetailByOrderNumber(maOrderAmount.getOrderNumber());
             ShiroUser shiroUser = this.getShiroUser();
             GuideCreditChangeDetail guideCreditChangeDetail = new GuideCreditChangeDetail();
             guideCreditChangeDetail.setOperatorId(shiroUser.getId());

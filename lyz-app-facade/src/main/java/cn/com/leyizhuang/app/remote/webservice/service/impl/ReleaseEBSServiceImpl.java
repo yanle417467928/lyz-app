@@ -2,12 +2,14 @@ package cn.com.leyizhuang.app.remote.webservice.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppConstant;
 import cn.com.leyizhuang.app.core.constant.StoreInventoryAvailableQtyChangeType;
+import cn.com.leyizhuang.app.core.constant.StoreInventoryRealQtyChangeType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventory;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreRealInventoryChange;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.EtaReturnAndRequireGoodsInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.EtaReturnAndRequireGoodsInfLog;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
@@ -50,6 +52,7 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
     private GoodsService goodsService;
     @Resource
     private MaStoreInventoryService maStoreInventoryService;
+
 
     /**
      * 获取EBS信息
@@ -218,11 +221,11 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                         StoreInventory storeInventory = appStoreService.findStoreInventoryByStoreCodeAndGoodsSku(diySiteCode, itemCode);
 
                         Date date = new Date();
-                        Integer goodsQtyAfterChange = 0;
-                        Integer goodsAvailableItyAfterChange = 0;
+                        Integer goodsQtyAfterChange ;
+                        Integer goodsAvailableItyAfterChange ;
                         if (null == storeInventory) {
-                            goodsQtyAfterChange = 0 + quantity.intValue();
-                            goodsAvailableItyAfterChange = 0 + quantity.intValue();
+                            goodsQtyAfterChange =quantity.intValue();
+                            goodsAvailableItyAfterChange = quantity.intValue();
                         } else {
                             goodsQtyAfterChange = storeInventory.getRealIty() + quantity.intValue();
                             goodsAvailableItyAfterChange = storeInventory.getAvailableIty() + quantity.intValue();
@@ -269,16 +272,16 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                         iLog.setAfterChangeQty(goodsAvailableItyAfterChange);
                         iLog.setChangeQty(quantity.intValue());
                         iLog.setChangeTime(new Date());
-                        if("门店要货".equals(transType)){
+                        if ("门店要货".equals(transType)) {
                             iLog.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_IMPORT_GOODS);
                             iLog.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.STORE_IMPORT_GOODS.getDescription());
-                        }else if("门店退货".equals(transType)){
+                        } else if ("门店退货".equals(transType)) {
                             iLog.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS);
                             iLog.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.STORE_EXPORT_GOODS.getDescription());
-                        }else if("盘点入库".equals(transType)){
+                        } else if ("盘点入库".equals(transType)) {
                             iLog.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_INVENTORY_INBOUND);
                             iLog.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.STORE_INVENTORY_INBOUND.getDescription());
-                        }else if("盘点出库".equals(transType)){
+                        } else if ("盘点出库".equals(transType)) {
                             iLog.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_INVENTORY_OUTBOUND);
                             iLog.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.STORE_INVENTORY_OUTBOUND.getDescription());
                         }
@@ -291,6 +294,34 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                         iLog.setSku(itemCode);
                         iLog.setSkuName(goodsDO.getSkuName());
                         iLog.setReferenceNumber(transNumber);
+
+                        //设置门店真实库存日志数据
+                        MaStoreRealInventoryChange maStoreRealInventoryChange = new MaStoreRealInventoryChange();
+                        maStoreRealInventoryChange.setAfterChangeQty(goodsQtyAfterChange);
+                        maStoreRealInventoryChange.setChangeQty(quantity.intValue());
+                        maStoreRealInventoryChange.setChangeTime(new Date());
+                        if ("门店要货".equals(transType)) {
+                            maStoreRealInventoryChange.setChangeType(StoreInventoryRealQtyChangeType.STORE_IMPORT_GOODS);
+                            maStoreRealInventoryChange.setChangeTypeDesc(StoreInventoryRealQtyChangeType.STORE_IMPORT_GOODS.getDescription());
+                        } else if ("门店退货".equals(transType)) {
+                            maStoreRealInventoryChange.setChangeType(StoreInventoryRealQtyChangeType.STORE_EXPORT_GOODS);
+                            maStoreRealInventoryChange.setChangeTypeDesc(StoreInventoryRealQtyChangeType.STORE_EXPORT_GOODS.getDescription());
+                        } else if ("盘点入库".equals(transType)) {
+                            maStoreRealInventoryChange.setChangeType(StoreInventoryRealQtyChangeType.STORE_INVENTORY_INBOUND);
+                            maStoreRealInventoryChange.setChangeTypeDesc(StoreInventoryRealQtyChangeType.STORE_INVENTORY_INBOUND.getDescription());
+                        } else if ("盘点出库".equals(transType)) {
+                            maStoreRealInventoryChange.setChangeType(StoreInventoryRealQtyChangeType.STORE_INVENTORY_OUTBOUND);
+                            maStoreRealInventoryChange.setChangeTypeDesc(StoreInventoryRealQtyChangeType.STORE_INVENTORY_OUTBOUND.getDescription());
+                        }
+                        maStoreRealInventoryChange.setCityId(appStore.getCityId());
+                        maStoreRealInventoryChange.setCityName(appStore.getCity());
+                        maStoreRealInventoryChange.setStoreId(appStore.getStoreId());
+                        maStoreRealInventoryChange.setStoreCode(appStore.getStoreCode());
+                        maStoreRealInventoryChange.setStoreName(appStore.getStoreName());
+                        maStoreRealInventoryChange.setGid(goodsDO.getGid());
+                        maStoreRealInventoryChange.setSku(itemCode);
+                        maStoreRealInventoryChange.setSkuName(goodsDO.getSkuName());
+                        maStoreRealInventoryChange.setReferenceNumber(transNumber);
                         //更改门店库存和可用量
                         if (null == storeInventory) {
                             MaStoreInventory maStoreInventory = new MaStoreInventory();
@@ -308,12 +339,15 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                             maStoreInventory.setAvailableIty(goodsAvailableItyAfterChange);
                             maStoreInventoryService.saveStoreInventory(maStoreInventory);
                             appStoreService.addStoreInventoryAvailableQtyChangeLog(iLog);
+                            maStoreInventoryService.addRealInventoryChangeLog(maStoreRealInventoryChange);
+
                         } else {
                             for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
                                 Integer affectLine = maStoreInventoryService.updateStoreInventoryAndAvailableIty(storeInventory.getStoreId(), goodsDO.getGid(), goodsQtyAfterChange, goodsAvailableItyAfterChange, storeInventory.getLastUpdateTime());
                                 if (affectLine > 0) {
                                     //新增门店库存变更日志
                                     appStoreService.addStoreInventoryAvailableQtyChangeLog(iLog);
+                                    maStoreInventoryService.addRealInventoryChangeLog(maStoreRealInventoryChange);
                                     break;
                                 } else {
                                     if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
@@ -329,7 +363,7 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                         etaReturnAndRequireGoodsInfLog.setMsg("直营要货退货发生未知异常");
                         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                         return AppXmlUtil.resultStrXml(1, "直营要货退货失败!");
-                    }finally {
+                    } finally {
                         diySiteInventoryEbsService.saveReturnAndRequireGoodsInfLog(etaReturnAndRequireGoodsInfLog);
                     }
                 }
@@ -353,7 +387,7 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
             logger.warn("GetEBSInfo EXCEPTION,解密后xml格式不对");
             logger.warn("{}", e);
             return AppXmlUtil.resultStrXml(1, "解密后xml格式不对");
-        } catch (Exception e){
+        } catch (Exception e) {
             EtaReturnAndRequireGoodsInfLog etaReturnAndRequireGoodsInfLog = new EtaReturnAndRequireGoodsInfLog();
             etaReturnAndRequireGoodsInfLog.setMsg(e.getMessage());
             etaReturnAndRequireGoodsInfLog.setCreatDate(new Date());

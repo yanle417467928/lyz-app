@@ -97,7 +97,7 @@ public interface MaCustomerService {
     /**
      * 查询专供门店
      */
-    Boolean findStoreByCusId(Long cusId);
+    Boolean findRankStoreByStoreId(Long storeId);
 
     /**
      * 修改会员类型

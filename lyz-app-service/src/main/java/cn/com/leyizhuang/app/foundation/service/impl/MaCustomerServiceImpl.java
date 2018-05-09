@@ -255,8 +255,8 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     }
 
     @Override
-    public Boolean findStoreByCusId(Long cusId) {
-        RankStore rankStore = this.maCustomerDAO.findStoreByCusId(cusId);
+    public Boolean findRankStoreByStoreId(Long storeId) {
+        RankStore rankStore = this.maCustomerDAO.findRankStoreByStoreId(storeId);
         if (null == rankStore){
             return false;
         }else{
@@ -267,10 +267,10 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateMemberType(ManageUpdateCustomerTypeResponse manageUpdateCustomerTypeResponse) throws UnsupportedEncodingException {
-        RankStore rankStore = this.maCustomerDAO.findStoreByCusId(manageUpdateCustomerTypeResponse.getCusId());
         CusRankDO cusRankDO = this.maCustomerDAO.findCusRankByCusId(manageUpdateCustomerTypeResponse.getCusId());
         RankClassification rankClassification = this.maCustomerDAO.findRankClassificationByRankCode(manageUpdateCustomerTypeResponse.getMemberType());
         AppCustomer customer = appCustomerService.findById(manageUpdateCustomerTypeResponse.getCusId());
+        RankStore rankStore = this.maCustomerDAO.findRankStoreByStoreId(customer.getStoreId());
         if ("COMMON".equals(manageUpdateCustomerTypeResponse.getMemberType()) && null == cusRankDO){
             return;
         }
@@ -278,22 +278,37 @@ public class MaCustomerServiceImpl implements MaCustomerService {
             this.maCustomerDAO.deleteCusRankByCusId(manageUpdateCustomerTypeResponse.getCusId());
             return;
         }
-        if (!customer.getSalesConsultId().equals(manageUpdateCustomerTypeResponse.getSellerId())){
+        if (null == customer.getSalesConsultId() || !manageUpdateCustomerTypeResponse.getSellerId().equals(customer.getSalesConsultId())){
             AppEmployee employee = appEmployeeService.findById(manageUpdateCustomerTypeResponse.getSellerId());
-            appCustomerService.updateCustomerSellerIdStoreIdByCusId(manageUpdateCustomerTypeResponse.getCusId(),employee.getStoreId(),employee.getEmpId());
-        }
-        if (null == rankStore){
-            AppStore store = appStoreService.findByStoreCode(rankStore.getStoreCode());
-            RankStore newRankStore = new RankStore();
-            newRankStore.setStoreId(store.getStoreId());
-            newRankStore.setStoreCode(store.getStoreCode());
-            newRankStore.setStoreName(store.getStoreName());
-            newRankStore.setCityId(store.getCityId());
-            newRankStore.setCityName(store.getCity());
-            newRankStore.setCompanyCode(store.getStoreStructureCode());
-            newRankStore.setCompanyName(null);
-            newRankStore.setCreateTime(new Date());
-            maCustomerDAO.saveRankStore(newRankStore);
+            appCustomerService.updateCustomerSellerIdStoreIdByCusId(manageUpdateCustomerTypeResponse.getCusId(),employee.getStoreId(),employee.getEmpId(),new Date());
+            RankStore rankStore2 = this.maCustomerDAO.findRankStoreByStoreId(employee.getStoreId());
+            if (null == rankStore2){
+                AppStore store1 = appStoreService.findById(employee.getStoreId());
+                RankStore newRankStore1 = new RankStore();
+                newRankStore1.setStoreId(store1.getStoreId());
+                newRankStore1.setStoreCode(store1.getStoreCode());
+                newRankStore1.setStoreName(store1.getStoreName());
+                newRankStore1.setCityId(store1.getCityId());
+                newRankStore1.setCityName(store1.getCity());
+                newRankStore1.setCompanyCode(store1.getStoreStructureCode());
+                newRankStore1.setCompanyName(null);
+                newRankStore1.setCreateTime(new Date());
+                maCustomerDAO.saveRankStore(newRankStore1);
+            }
+        }else{
+            if (null == rankStore){
+                AppStore store = appStoreService.findByStoreCode(rankStore.getStoreCode());
+                RankStore newRankStore = new RankStore();
+                newRankStore.setStoreId(store.getStoreId());
+                newRankStore.setStoreCode(store.getStoreCode());
+                newRankStore.setStoreName(store.getStoreName());
+                newRankStore.setCityId(store.getCityId());
+                newRankStore.setCityName(store.getCity());
+                newRankStore.setCompanyCode(store.getStoreStructureCode());
+                newRankStore.setCompanyName(null);
+                newRankStore.setCreateTime(new Date());
+                maCustomerDAO.saveRankStore(newRankStore);
+            }
         }
         if (null == cusRankDO){
             CusRankDO newCusRank = new CusRankDO();

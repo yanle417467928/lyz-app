@@ -113,7 +113,7 @@ public interface MaCustomerDAO {
     /**
      * 查询专供门店
      */
-    RankStore findStoreByCusId(@Param("cusId")Long cusId);
+    RankStore findRankStoreByStoreId(@Param("storeId")Long cusId);
 
     /**
      * 修改会员专供类型
