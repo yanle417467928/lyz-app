@@ -173,18 +173,18 @@ public class AppOrderServiceImpl implements AppOrderService {
     @Override
     public List<OrderBaseInfo> getFuzzyQuery(Long userID, Integer identityType, String condition) {
         List<OrderBaseInfo> orderPageInfoVOList = new ArrayList<>();
-        if (identityType == AppIdentityType.DECORATE_MANAGER.getValue()){
+        if (identityType == AppIdentityType.DECORATE_MANAGER.getValue()) {
             // 装饰公司经理
             AppEmployee employee = employeeService.findById(userID);
             String sellerType = null;
-            if (employee != null){
-                if (employee.getSellerType() != null){
+            if (employee != null) {
+                if (employee.getSellerType() != null) {
                     sellerType = employee.getSellerType().getValue();
                 }
-                orderPageInfoVOList = orderDAO.getFuzzyQuery(userID, AppIdentityType.getAppIdentityTypeByValue(identityType), condition,sellerType,employee.getStoreId());
+                orderPageInfoVOList = orderDAO.getFuzzyQuery(userID, AppIdentityType.getAppIdentityTypeByValue(identityType), condition, sellerType, employee.getStoreId());
             }
-        }else {
-            orderPageInfoVOList = orderDAO.getFuzzyQuery(userID, AppIdentityType.getAppIdentityTypeByValue(identityType), condition,null,null);
+        } else {
+            orderPageInfoVOList = orderDAO.getFuzzyQuery(userID, AppIdentityType.getAppIdentityTypeByValue(identityType), condition, null, null);
         }
 
         return orderPageInfoVOList;
@@ -1046,21 +1046,15 @@ public class AppOrderServiceImpl implements AppOrderService {
 
     @Override
     public PageInfo<OrderPageInfoVO> getOrderListPageInfoByUserIdAndIdentityType(Long userID, Integer identityType, Integer showStatus, Integer page, Integer size) {
-        PageHelper.startPage(page, size);
         List<OrderPageInfoVO> orderPageInfoVOList = new ArrayList<>();
-        if (identityType == AppIdentityType.DECORATE_MANAGER.getValue()){
-            // 装饰公司经理
-            AppEmployee employee = employeeService.findById(userID);
-            String sellerType = null;
-            if (employee != null){
-                if (employee.getSellerType() != null){
-                    sellerType = employee.getSellerType().getValue();
-                }
-                orderPageInfoVOList = orderDAO.getOrderListPageInfoByUserIdAndIdentityType(userID, AppIdentityType.getAppIdentityTypeByValue(identityType), showStatus,sellerType,employee.getStoreId());
-            }
-        }else {
-            orderPageInfoVOList = orderDAO.getOrderListPageInfoByUserIdAndIdentityType(userID, AppIdentityType.getAppIdentityTypeByValue(identityType), showStatus,null,null);
+        AppEmployee employee = employeeService.findById(userID);
+        if (null == employee) {
+            throw new RuntimeException("员工所属门店未找到!");
         }
+        String sellerType = (null != employee.getSellerType() ? employee.getSellerType().getValue() : "");
+
+        PageHelper.startPage(page, size);
+        orderPageInfoVOList = orderDAO.getOrderListPageInfoByUserIdAndIdentityType(userID, AppIdentityType.getAppIdentityTypeByValue(identityType), showStatus, sellerType, employee.getStoreId());
 
         orderPageInfoVOList.forEach(p -> {
             List<String> goodsImgList = p.getOrderGoodsInfoList().stream().map(OrderGoodsInfo::getCoverImageUri).collect(Collectors.toList());
@@ -1077,10 +1071,10 @@ public class AppOrderServiceImpl implements AppOrderService {
                 }
             }
             p.setStatusDesc(AppOrderStatus.getAppDeliveryOrderStatusByValue(p.getStatus()).getDescription());
+            p.getOrderGoodsInfoList().clear();
         });
         return new PageInfo<>(orderPageInfoVOList);
     }
-
 
 
     @Override
@@ -1096,12 +1090,12 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
-    public List<String> getNotSellDetailsOrderNOs(Boolean flag){
+    public List<String> getNotSellDetailsOrderNOs(Boolean flag) {
         // 当前时间
         LocalDateTime now = LocalDateTime.now();
         // 当月1号 0 点 0 分 0 秒
-        LocalDateTime firstDay = LocalDateTime.of(now.getYear(),now.getMonth(),1,0,0,0);
-        return orderDAO.getNotSellDetailsOrderNOs(flag,firstDay);
+        LocalDateTime firstDay = LocalDateTime.of(now.getYear(), now.getMonth(), 1, 0, 0, 0);
+        return orderDAO.getNotSellDetailsOrderNOs(flag, firstDay);
     }
 
     @Override
@@ -1123,14 +1117,14 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
-    public Double getOrderProductCouponPurchasePrice(String ordNo,String sku){
-        return orderDAO.getOrderProductCouponPurchasePrice(ordNo,sku);
+    public Double getOrderProductCouponPurchasePrice(String ordNo, String sku) {
+        return orderDAO.getOrderProductCouponPurchasePrice(ordNo, sku);
     }
 
     /**
      * 判断订单商品 如果包含 HR、LYZ、RY、XQ 以外的服务类品牌商品则不允许下单，服务类品牌也只能单独下单；
      */
-    public ResultDTO<GiftListResponse> checkGoodsCompanyFlag(List<Long> goodsIds,Long userId,Integer identityType){
+    public ResultDTO<GiftListResponse> checkGoodsCompanyFlag(List<Long> goodsIds, Long userId, Integer identityType) {
         HashSet<String> companyFlagSet = new HashSet();
         HashSet<String> commonFlagSet = new HashSet<>();
         // 获取服务类品牌
@@ -1145,13 +1139,13 @@ public class AppOrderServiceImpl implements AppOrderService {
             goodsInfo = goodsService.findGoodsListByEmployeeIdAndGoodsIdList(userId, goodsIds);
         }
 
-        if (goodsInfo != null && goodsInfo.size() > 0){
-            for (OrderGoodsSimpleResponse goods : goodsInfo){
+        if (goodsInfo != null && goodsInfo.size() > 0) {
+            for (OrderGoodsSimpleResponse goods : goodsInfo) {
                 String companyFlag = goods.getCompanyFlag();
 
-                if (fwCfList.contains(companyFlag)){
+                if (fwCfList.contains(companyFlag)) {
                     companyFlagSet.add(companyFlag);
-                }else{
+                } else {
                     commonFlagSet.add(companyFlag);
                 }
             }
@@ -1160,14 +1154,14 @@ public class AppOrderServiceImpl implements AppOrderService {
         ResultDTO<GiftListResponse> resultDTO;
         if (companyFlagSet != null && companyFlagSet.size() > 0) {
             if ((commonFlagSet != null && commonFlagSet.size() > 0) || (commonFlagSet.size() == 0 && companyFlagSet.size() > 1)
-                    || (commonFlagSet == null && companyFlagSet.size() > 1)){
+                    || (commonFlagSet == null && companyFlagSet.size() > 1)) {
                 String msg = "";
                 for (String cf : companyFlagSet) {
-                    if (cf.equals("SRV")){
+                    if (cf.equals("SRV")) {
                         msg += "喷涂 ";
-                    }else if (cf.equals("CVR")){
+                    } else if (cf.equals("CVR")) {
                         msg += "遮蔽 ";
-                    }else if (cf.equals("ART")){
+                    } else if (cf.equals("ART")) {
                         msg += "艺术漆 ";
                     }
                 }
@@ -1179,7 +1173,7 @@ public class AppOrderServiceImpl implements AppOrderService {
         return resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
     }
 
-    public String returnType(List<Long> goodsIds,Long userId,Integer identityType){
+    public String returnType(List<Long> goodsIds, Long userId, Integer identityType) {
 
         // 获取服务类品牌
         String[] fwCompanyFlag = AppConstant.FW_COMPANY_FLAG.split("\\|");
@@ -1193,14 +1187,14 @@ public class AppOrderServiceImpl implements AppOrderService {
             goodsInfo = goodsService.findGoodsListByEmployeeIdAndGoodsIdList(userId, goodsIds);
         }
 
-        if (goodsInfo != null && goodsInfo.size() > 0){
-            for (OrderGoodsSimpleResponse goods : goodsInfo){
+        if (goodsInfo != null && goodsInfo.size() > 0) {
+            for (OrderGoodsSimpleResponse goods : goodsInfo) {
                 String companyFlag = goods.getCompanyFlag();
 
-                if (fwCfList.contains(companyFlag)){
-                 return "XNFW";
-                }else{
-                 return "XN";
+                if (fwCfList.contains(companyFlag)) {
+                    return "XNFW";
+                } else {
+                    return "XN";
                 }
             }
         }

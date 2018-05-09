@@ -1295,7 +1295,7 @@
             LEFT JOIN ord_logistics_info oli ON obi.oid = oli.oid
             WHERE
             <choose>
-                <when test="sellerType !=null and sellerType == 'SUPERVISOR'">
+                <when test="sellerType !=null and sellerType.toString() == 'SUPERVISOR'">
                     obi.store_id = #{storeId}
                 </when>
                 <otherwise>
@@ -1557,7 +1557,7 @@
 
     <update id="updateOrdCouponPrice">
         UPDATE ord_coupon_info
-        purchase_price = #{price}
+        set purchase_price = #{price}
         where ord_no = #{ordNo} and sku = #{sku}
     </update>
 
