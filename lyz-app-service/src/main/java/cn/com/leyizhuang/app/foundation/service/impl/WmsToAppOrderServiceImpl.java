@@ -477,7 +477,7 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
             if (null != warehouseAllocationHeader) {
                 List<WtaWarehouseAllocationGoods> allocationGoodsList = this.wmsToAppOrderDAO.findWtaWarehouseAllocationGoodsListByAllocationNo(warehouseAllocationHeader.getAllocationNo());
                 //调出城市
-                City outboundCity = cityService.findByCityNumber(warehouseAllocationHeader.getWarehouseNo());
+                City outboundCity = cityService.findCityByWarehouseNo(warehouseAllocationHeader.getWarehouseNo());
                 //调入城市
                 City inboundCity = cityService.findCityByWarehouseNo(warehouseAllocationHeader.getShippingWarehouseNo());
                 //调入仓库没有找到对应的城市信息
