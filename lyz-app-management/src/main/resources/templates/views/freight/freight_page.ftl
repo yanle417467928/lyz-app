@@ -49,7 +49,7 @@
                     </select>
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
                         <input type="text" name="queryOrderInfo" id="queryOrderInfo" class="form-control "
-                               style="width:auto;" placeholder="请输入单号、下单人或下单人电话..">
+                               style="width:auto;" placeholder="请输入单号、下单人或下单人电话.." onkeypress="findBykey()">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
                                     onclick="findOrderByInfo()">查找</button>
@@ -399,6 +399,13 @@
                 $('#storeCode').selectpicker('render');
             }
         });
+    }
+
+
+    function findBykey(){
+        if(event.keyCode==13){
+            findOrderByInfo();
+        }
     }
 
     function findOrderByInfo() {

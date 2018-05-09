@@ -52,7 +52,7 @@
                     </select>
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
                         <input type="text" name="inventoryInfo" id="inventoryInfo" class="form-control" style="width:auto;"
-                               placeholder="请输入要查找的商品或sku">
+                               placeholder="请输入要查找的商品或sku" onkeypress="findBykey()">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
                                     onclick="return findInventoryByInfo()">查找</button>
@@ -334,6 +334,14 @@
             initDateGird('/rest/store/inventory/storeGrid/' + storeId);
         }
     }
+
+
+    function findBykey(){
+        if(event.keyCode==13){
+            findInventoryByInfo();
+        }
+    }
+
 
     function  findInventoryByInfo() {
         var inventoryInfo =$("#inventoryInfo").val();

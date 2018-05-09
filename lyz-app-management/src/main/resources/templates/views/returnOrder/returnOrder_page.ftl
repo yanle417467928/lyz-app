@@ -50,7 +50,7 @@
                     </select>
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
                         <input type="text" name="queryOrderInfo" id="queryOrderInfo" class="form-control "
-                               style="width:auto;" placeholder="请输入退单号或原单号">
+                               style="width:auto;" placeholder="请输入退单号或原单号" onkeypress="findBykey()">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
                                     onclick="findOrderByInfo()">查找</button>
@@ -223,7 +223,11 @@
             initDateGird('/rest/returnOrder/page/infoGrid?info=' + queryOrderInfo);
         }
     }
-
+    function findBykey(){
+        if(event.keyCode==13){
+            findOrderByInfo();
+        }
+    }
 
     function initSelect(select, optionName) {
         $(select).empty();

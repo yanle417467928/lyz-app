@@ -51,7 +51,8 @@
 
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
                         <input type="text" name="queryCusInfo" id="queryCusInfo" class="form-control" style="width:auto;"
-                               placeholder="请输入要查找的店名或编码..">
+                               placeholder="请输入要查找的店名或编码.."
+                               onkeypress="findBykey()">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
                                     onclick="return findStorePreByNameOrCode()">查找</button>
@@ -379,6 +380,12 @@
         $("#dataGrid").bootstrapTable('destroy');
         var storeType = $("#storeType").val();
         findStorePreByCityIdOrKeywords(keywords,cityId,storeType);
+    }
+
+    function findBykey(){
+        if(event.keyCode==13){
+            findStorePreByNameOrCode();
+        }
     }
 
     function findStorePreByNameOrCode() {

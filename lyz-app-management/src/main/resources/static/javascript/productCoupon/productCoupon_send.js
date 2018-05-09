@@ -212,6 +212,13 @@ function findCusByStoreId() {
     }
 }
 
+function findBykey(){
+    if(event.keyCode==13){
+        findCusByNameOrPhone();
+    }
+}
+
+
 function findCusByNameOrPhone() {
     var queryCusInfo = $("#queryCusInfo").val();
     $('#cityCode').val("-1");
