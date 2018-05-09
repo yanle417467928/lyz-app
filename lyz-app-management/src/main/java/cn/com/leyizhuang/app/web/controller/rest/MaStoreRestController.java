@@ -481,8 +481,12 @@ public class MaStoreRestController extends BaseRestController {
             AppStore appStore = this.maStoreService.findAppStoreByStoreId(storeIds.get(0));
             if (StoreType.ZY.equals(appStore.getStoreType())) {
                 List<SimpleStoreParam> storesList = this.maStoreService.findStoresListByCityIdAndStoreType(appStore.getCityId(), StoreType.ZY.getValue());
-                logger.info("findZYStoresListByStoreId ,查询其他直营门店列表(下拉框)成功", storesList.size());
-                return storesList;
+                List<SimpleStoreParam> storesList2 = this.maStoreService.findStoresListByStoreId(storeIds);
+                if (null != storesList && null != storesList2) {
+                    storesList2.addAll(storesList);
+                }
+                logger.info("findZYStoresListByStoreId ,查询其他直营门店列表(下拉框)成功", storesList2.size());
+                return storesList2;
             } else {
 
                 List<SimpleStoreParam> storesList = this.maStoreService.findStoresListByStoreId(storeIds);
