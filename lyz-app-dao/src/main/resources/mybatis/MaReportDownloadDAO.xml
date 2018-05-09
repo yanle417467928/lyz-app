@@ -171,7 +171,7 @@
         IFNULL(ccpc.buy_price,0) buyPrice,
         IFNULL(p.wholesale_price, 0 ) wholesalePrice,
         (IFNULL(ccpc.quantity,0) * IFNULL(ccpc.buy_price,0)) totalBuyPrice,
-        ccpc.use_ord_no referenceNumber
+        ccpc.get_ord_no referenceNumber
         FROM cus_customer_product_coupon ccpc
         INNER JOIN cus_customer c ON ccpc.cus_id = c.cus_id
         LEFT JOIN emp_employee e ON ccpc.seller_id = e.emp_id
