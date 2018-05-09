@@ -471,17 +471,18 @@ public class MaStoreRestController extends BaseRestController {
      * @author Jerry.Ren
      * @date 2018/3/16
      */
-    @GetMapping(value = "/findZYStoresListByStoreId")
-    public List<SimpleStoreParam> findZYStoresListByStoreId() {
+    @GetMapping(value = "/findZYStoresListByCityId")
+    public List<SimpleStoreParam> findZYStoresListByStoreId(Long cityId) {
         logger.info("findZYStoresListByStoreId 查询其他直营门店列表(下拉框)门店库存查看专用");
         try {
 
             //查询登录用户门店权限的门店ID
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
             AppStore appStore = this.maStoreService.findAppStoreByStoreId(storeIds.get(0));
-            if (StoreType.ZY.equals(appStore.getStoreType())) {
+            if (StoreType.ZY.equals(appStore.getStoreType()) && appStore.getCityId().equals(cityId)) {
+
                 List<SimpleStoreParam> storesList = this.maStoreService.findStoresListByCityIdAndStoreType(appStore.getCityId(), StoreType.ZY.getValue());
-                List<SimpleStoreParam> storesList2 = this.maStoreService.findStoresListByStoreId(storeIds);
+                List<SimpleStoreParam> storesList2 = this.maStoreService.findStoresListByCityId(cityId, storeIds);
                 if (null != storesList && null != storesList2) {
                     storesList2.addAll(storesList);
                 }
@@ -489,7 +490,7 @@ public class MaStoreRestController extends BaseRestController {
                 return storesList2;
             } else {
 
-                List<SimpleStoreParam> storesList = this.maStoreService.findStoresListByStoreId(storeIds);
+                List<SimpleStoreParam> storesList = this.maStoreService.findStoresListByCityId(cityId, storeIds);
                 logger.info("findZYStoresListByStoreId ,查询其他直营门店列表(下拉框)成功", storesList.size());
                 return storesList;
             }
