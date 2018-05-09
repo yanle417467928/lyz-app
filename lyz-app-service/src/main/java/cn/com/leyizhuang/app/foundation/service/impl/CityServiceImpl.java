@@ -20,7 +20,7 @@ import java.util.Map;
  * 城市API实现
  *
  * @author Richard
- *         Created on 2017-09-21 14:25
+ * Created on 2017-09-21 14:25
  **/
 @Service
 public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service.CityService {
@@ -201,7 +201,7 @@ public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service
 
     @Override
     public City findCityByWarehouseNo(String warehouseNo) {
-        if (StringUtils.isNotBlank(warehouseNo)){
+        if (StringUtils.isNotBlank(warehouseNo)) {
             return cityDAO.findCityByWarehouseNo(warehouseNo);
         }
         return null;
@@ -209,8 +209,8 @@ public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service
 
     @Override
     public CityInventory findCityInventoryByCityIdAndSku(Long cityId, String sku) {
-        if (null != cityId && StringUtils.isNotBlank(sku)){
-            return cityDAO.findCityInventoryByCityIdAndSku(cityId,sku);
+        if (null != cityId && StringUtils.isNotBlank(sku)) {
+            return cityDAO.findCityInventoryByCityIdAndSku(cityId, sku);
         }
         return null;
     }
@@ -218,8 +218,8 @@ public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Integer lockCityInventoryByCityIdAndSkuAndInventory(Long cityId, String sku, Integer changeInventory, Timestamp lastUpdateTime) {
-        if (null != cityId && StringUtils.isNotBlank(sku) && null != changeInventory && null != lastUpdateTime){
-            cityDAO.updateCityInventoryByCityIdAndSkuAndInventory(cityId,sku,changeInventory,lastUpdateTime);
+        if (null != cityId && StringUtils.isNotBlank(sku) && null != changeInventory && null != lastUpdateTime) {
+            return cityDAO.updateCityInventoryByCityIdAndSkuAndInventory(cityId, sku, changeInventory, lastUpdateTime);
         }
         return null;
     }
