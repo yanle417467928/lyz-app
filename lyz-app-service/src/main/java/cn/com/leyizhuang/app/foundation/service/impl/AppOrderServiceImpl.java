@@ -1047,14 +1047,22 @@ public class AppOrderServiceImpl implements AppOrderService {
     @Override
     public PageInfo<OrderPageInfoVO> getOrderListPageInfoByUserIdAndIdentityType(Long userID, Integer identityType, Integer showStatus, Integer page, Integer size) {
         List<OrderPageInfoVO> orderPageInfoVOList = new ArrayList<>();
-        AppEmployee employee = employeeService.findById(userID);
-        if (null == employee) {
-            throw new RuntimeException("员工所属门店未找到!");
+        AppEmployee employee = null;
+        if (null != identityType && identityType != 6) {
+            employee = employeeService.findById(userID);
+            if (null == employee) {
+                throw new RuntimeException("员工所属门店未找到!");
+            }
         }
-        String sellerType = (null != employee.getSellerType() ? employee.getSellerType().getValue() : "");
+        String sellerType = null;
+        Long empStoreId = null;
+        if (null != employee) {
+            sellerType = (null != employee.getSellerType() ? employee.getSellerType().getValue() : "");
+            empStoreId = employee.getStoreId();
+        }
 
         PageHelper.startPage(page, size);
-        orderPageInfoVOList = orderDAO.getOrderListPageInfoByUserIdAndIdentityType(userID, AppIdentityType.getAppIdentityTypeByValue(identityType), showStatus, sellerType, employee.getStoreId());
+        orderPageInfoVOList = orderDAO.getOrderListPageInfoByUserIdAndIdentityType(userID, AppIdentityType.getAppIdentityTypeByValue(identityType), showStatus, sellerType, empStoreId);
 
         orderPageInfoVOList.forEach(p -> {
             List<String> goodsImgList = p.getOrderGoodsInfoList().stream().map(OrderGoodsInfo::getCoverImageUri).collect(Collectors.toList());

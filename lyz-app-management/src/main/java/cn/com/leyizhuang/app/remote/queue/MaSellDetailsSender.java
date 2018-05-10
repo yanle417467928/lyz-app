@@ -35,4 +35,15 @@ public class MaSellDetailsSender {
         }
     }
 
+    public void sendReturnOrderSellDetailsTOManagement(String ReturnOrderNumber){
+
+        log.info("发送退单销量明细数据，单号："+ReturnOrderNumber);
+        if (StringUtils.isNotBlank(ReturnOrderNumber)){
+            MqMessage message = new MqMessage();
+            message.setType(MqMessageType.SELL_RETURN_ORDER_DETAILS);
+            message.setContent(JSON.toJSONString(ReturnOrderNumber));
+            mqSellDetailsChannel.sendDetails().send(MessageBuilder.withPayload(message).build());
+        }
+    }
+
 }

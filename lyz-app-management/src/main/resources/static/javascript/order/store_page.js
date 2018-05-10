@@ -221,6 +221,13 @@ var formatDateTime = function (date) {
     return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
 };
 
+
+function findBykey(){
+    if(event.keyCode==13){
+        findOrderByOrderNumber();
+    }
+}
+
 //根据订单号查询订单
 function findOrderByOrderNumber() {
     var orderNumber = $("#orderNumber").val();

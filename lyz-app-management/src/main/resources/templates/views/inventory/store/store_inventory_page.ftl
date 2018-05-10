@@ -45,6 +45,11 @@
                         <i class="fa fa-download"></i>
                         下载报表
                     </button>
+                    <select name="city" id="cityCode" class="form-control selectpicker" data-width="120px"
+                            style="width:auto;"
+                            onchange="findStoreSelection()" data-live-search="true">
+                        <option value="-1">选择城市</option>
+                    </select>
                     <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px"
                             style="width:auto;"
                             onchange="findInventoryByCondition()" data-live-search="true">
@@ -52,7 +57,7 @@
                     </select>
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
                         <input type="text" name="inventoryInfo" id="inventoryInfo" class="form-control" style="width:auto;"
-                               placeholder="请输入要查找的商品或sku">
+                               placeholder="请输入要查找的商品或sku" onkeypress="findBykey()">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
                                     onclick="return findInventoryByInfo()">查找</button>
@@ -131,7 +136,7 @@
 </div>
 <script>
     $(function () {
-        findStoreSelection();
+        findCitylist();
         $grid.init($('#dataGrid'), $('#toolbar'), '/rest/store/inventory/page/grid', 'get', false, function (params) {
             return {
                 offset: params.offset,
@@ -301,11 +306,70 @@
         }
     }
 
-    function findStoreSelection() {
-        var store = "";
+    function findCitylist() {
+        var city = "";
         $.ajax({
-            url: '/rest/stores/findZYStoresListByStoreId',
+            url: '/rest/citys/findCitylist',
             method: 'GET',
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    city += "<option value=" + item.cityId + ">" + item.name + "</option>";
+                });
+                $("#cityCode").append(city);
+                $("#cityCode").selectpicker('refresh');
+                $("#cityCode").selectpicker('render');
+            }
+        });
+    }
+
+    function findStorelist() {
+        initSelect("#storeCode", "选择门店");
+        var store = "";
+        var cityId = $('#cityCode').val();
+        var storeType = $('#storeType').val();
+        $.ajax({
+            url: '/rest/stores/findStoresListByCityIdAndStoreType',
+            method: 'GET',
+            data: {
+                storeType: storeType,
+                cityId: cityId
+            },
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
+                });
+                $("#storeCode").append(store);
+                $('#storeCode').selectpicker('refresh');
+                $('#storeCode').selectpicker('render');
+//                findByCondition();
+            }
+        });
+    }
+
+    function findStoreSelection() {
+        initSelect("#storeCode", "选择门店");
+        var store = "";
+        var cityId = $('#cityCode').val();
+        $.ajax({
+            url: '/rest/stores/findZYStoresListByCityId',
+            method: 'GET',
+            data: {
+                cityId: cityId
+            },
             error: function () {
                 clearTimeout($global.timer);
                 $loading.close();
@@ -335,6 +399,14 @@
         }
     }
 
+
+    function findBykey(){
+        if(event.keyCode==13){
+            findInventoryByInfo();
+        }
+    }
+
+
     function  findInventoryByInfo() {
         var inventoryInfo =$("#inventoryInfo").val();
         var storeId = $("#storeCode").val();
@@ -351,6 +423,12 @@
         var url = "/rest/reportDownload/storeInventory/download?storeId=" + storeId ;
         var escapeUrl = url.replace(/\#/g, "%23");
         window.open(escapeUrl);
+    }
+
+    function initSelect(select, optionName) {
+        $(select).empty();
+        var selectOption = "<option value=-1>" + optionName + "</option>";
+        $(select).append(selectOption);
     }
 
     function initDateGird(url) {

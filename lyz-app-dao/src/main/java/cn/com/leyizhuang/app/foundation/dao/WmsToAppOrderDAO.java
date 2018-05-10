@@ -157,6 +157,21 @@ public interface WmsToAppOrderDAO {
     void updateWtaShippingOrderHeader(WtaShippingOrderHeader header);
 
     /**
+     * 更新整转零的处理状态
+     *
+     * @param  wholeSplitToUnit
+     */
+    void updateWarehouseWholeSplitToUnit(WtaWarehouseWholeSplitToUnit wholeSplitToUnit);
+
+
+    /**
+     * 更新损溢的处理状态
+     *
+     * @param  wtaWarehouseReportDamageAndOverflow
+     */
+    void updateWarehouseWholeOverflow(WtaWarehouseReportDamageAndOverflow wtaWarehouseReportDamageAndOverflow);
+
+    /**
      * 查询未处理的出货单
      *
      * @param orderNo
@@ -186,9 +201,13 @@ public interface WmsToAppOrderDAO {
 
     WtaWarehouseAllocationHeader getWtaWarehouseAllocationHeader(String allocationNo);
 
+    WtaWarehouseWholeSplitToUnit findWtaWarehouseWholeSplitToUnit(@Param("directNo")String directNo,@Param("sku") String sku,@Param("dsku") String dsku);
+
+    WtaWarehouseReportDamageAndOverflow findWtaWarehouseReportDamageAndOverflow(@Param("wasteNo")String wasteNo,@Param("wasteId") Long wasteId);
+
     void updateWtaWarehouseAllocation(WtaWarehouseAllocationHeader wtaWarehouseAllocationHeader);
 
-    WtaWarehousePurchaseHeader getWtaWarehousePurchaseHeader(String purchaseNo);
+    WtaWarehousePurchaseHeader getWtaWarehousePurchaseHeader(String recNo);
 
     void updateWtaWarehousePurchaseHeader(WtaWarehousePurchaseHeader purchaseHeader);
 
@@ -200,4 +219,9 @@ public interface WmsToAppOrderDAO {
 
     List<WtaShippingOrderGoods> getWtaShippingOrderGoodsByOrderNo(@Param("orderNo") String orderNo);
 
+    WtaReturningOrderHeader getReturningOrderHeaderByReturnNo(@Param("returnNo") String returnNo, @Param("recNo") String recNo);
+
+    void updateReturningOrderHeaderByOrderNo(WtaReturningOrderHeader returningOrderHeader);
+
+    void updateReturnOrderResultReturn(WtaCancelReturnOrderResultEnter returnOrderResultEnter);
 }

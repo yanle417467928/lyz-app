@@ -58,7 +58,7 @@
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
                         <input type="text" name="queryEmpInfo" id="queryEmpInfo" class="form-control"
                                style="width:auto;"
-                               placeholder="请输入姓名、电话或登录名..">
+                               placeholder="请输入姓名、电话或登录名.." onkeypress="findBykey()">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
                                     onclick="return findEmpByNameOrPhone()">查找</button>
@@ -508,6 +508,12 @@
         var enabled = $("#enabled").val();
         initDateGird('/rest/employees/page/conditionGrid?identityType=' + identityType + '&storeId=' + storeId +
                 '&cityId=' + cityId + '&enabled=' + enabled);
+    }
+
+    function findBykey(){
+        if(event.keyCode==13){
+            findEmpByNameOrPhone();
+        }
     }
 
 

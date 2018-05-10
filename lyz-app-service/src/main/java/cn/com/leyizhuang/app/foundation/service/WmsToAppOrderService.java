@@ -1,8 +1,10 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
+import org.apache.commons.collections.map.HashedMap;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Jerry.Ren
@@ -77,6 +79,23 @@ public interface WmsToAppOrderService {
      * @return 返回所影响行数
      */
     int saveWtaWarehouseWholeSplitToUnit(WtaWarehouseWholeSplitToUnit wholeSplitToUnit);
+
+
+    /**
+     * 处理整转零信息
+     *
+     * @param
+     * @return 返回所影响行数
+     */
+    void handlingWtaWarehouseWholeSplitToUnitAsync(String directNo,String sku,String dsku);
+
+    /**
+     * 处理损溢信息
+     *
+     * @param
+     * @return 返回所影响行数
+     */
+    void handlingWtaWarehouseReportDamageAndOverflowAsync(String wasteNo,Long wasteId);
 
     /**
      * 保存仓库调拨头档
@@ -156,6 +175,22 @@ public interface WmsToAppOrderService {
      */
     void updateWtaShippingOrderHeader(WtaShippingOrderHeader header);
 
+
+    /**
+     * 更新整转零的处理状态
+     *
+     * @param wholeSplitToUnit
+     */
+    void updateWarehouseWholeSplitToUnit(WtaWarehouseWholeSplitToUnit wholeSplitToUnit);
+
+
+    /**
+     * 更新损溢的处理状态
+     *
+     * @param wtaWarehouseReportDamageAndOverflow
+     */
+    void updateWarehouseWholeOverflow(WtaWarehouseReportDamageAndOverflow wtaWarehouseReportDamageAndOverflow);
+
     /**
      * 查询未处理的出货单
      *
@@ -184,12 +219,18 @@ public interface WmsToAppOrderService {
 
     void handleWtaWarehouseAllocation(String allocationNo);
 
-    void handleWtaWarehousePurchase(String purchaseNo);
+    void handleWtaWarehousePurchase(String recNo);
 
     WtaCancelOrderResultEnter getWtaCancelOrderResult(String orderNo);
 
     void  updateWtaCancelOrderResult(WtaCancelOrderResultEnter cancelOrderResultEnter);
 
     List<WtaShippingOrderHeader> getAllWtaShippingOrderHeader();
+
+    HashedMap handleReturningOrderHeader(String returnNo, String recNo);
+
+    WtaReturningOrderHeader getReturningOrderHeaderByReturnNo(String returnNo, String recNo);
+
+    void updateReturningOrderHeaderByOrderNo(WtaReturningOrderHeader returningOrderHeader);
 
 }

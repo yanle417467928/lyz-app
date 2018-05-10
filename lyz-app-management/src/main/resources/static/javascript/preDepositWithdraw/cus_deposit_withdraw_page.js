@@ -228,6 +228,11 @@ function initDateGird(url) {
     }
 }
 
+function findBykey(){
+    if(event.keyCode==13){
+        findCusByNameOrPhoneOrderNumber();
+    }
+}
 
 /**
  * 根据关键字搜索

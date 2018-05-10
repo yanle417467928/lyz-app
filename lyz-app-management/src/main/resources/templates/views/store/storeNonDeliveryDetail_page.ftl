@@ -49,7 +49,8 @@
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
                         <input type="text" name="queryGoodsInfo" id="queryGoodsInfo" class="form-control"
                                style="width:auto;"
-                               placeholder="请输入要查找的物料编码或物料名称..">
+                               placeholder="请输入要查找的物料编码或物料名称.."
+                               onkeypress="findBykey()">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
                                     onclick="return findGoodsByNameOrCode()">查找</button>
@@ -369,6 +370,12 @@
             close: function () {
                 $('#information').modal('hide');
             }
+        }
+    }
+
+    function findBykey(){
+        if(event.keyCode==13){
+            findGoodsByNameOrCode();
         }
     }
 
