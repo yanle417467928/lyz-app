@@ -10,11 +10,15 @@ import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderLifecycle;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.util.AssertUtil;
+import org.apache.commons.collections.map.HashedMap;
 import org.springframework.scheduling.annotation.Async;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +28,7 @@ import javax.annotation.Resource;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Jerry.Ren
@@ -59,6 +64,9 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
 
     @Resource
     private WareHouseService wareHouseService;
+
+    @Resource
+    private ReturnOrderService returnOrderService;
 
     @Override
     public int saveWtaShippingOrderHeader(WtaShippingOrderHeader header) {
@@ -130,11 +138,11 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void handlingWtaWarehouseWholeSplitToUnitAsync(String directNo,String sku,String dsku) {
-        WtaWarehouseWholeSplitToUnit wholeSplitToUnit = this.wmsToAppOrderDAO.findWtaWarehouseWholeSplitToUnit(directNo,sku,dsku);
+    public void handlingWtaWarehouseWholeSplitToUnitAsync(String directNo, String sku, String dsku) {
+        WtaWarehouseWholeSplitToUnit wholeSplitToUnit = this.wmsToAppOrderDAO.findWtaWarehouseWholeSplitToUnit(directNo, sku, dsku);
         //扣整商品仓库数量
         try {
-            if(null !=wholeSplitToUnit) {
+            if (null != wholeSplitToUnit) {
                 City city = cityService.findCityByWarehouseNo(wholeSplitToUnit.getWarehouseNo());
                 //sCity city = cityService.findByCityNumber(wholeSplitToUnit.getCompanyId());
                 if (null == city) {
@@ -255,10 +263,10 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void handlingWtaWarehouseReportDamageAndOverflowAsync(String wasteNo,Long wasteId) {
-        WtaWarehouseReportDamageAndOverflow damageAndOverflow = this.wmsToAppOrderDAO.findWtaWarehouseReportDamageAndOverflow(wasteNo,wasteId);
+    public void handlingWtaWarehouseReportDamageAndOverflowAsync(String wasteNo, Long wasteId) {
+        WtaWarehouseReportDamageAndOverflow damageAndOverflow = this.wmsToAppOrderDAO.findWtaWarehouseReportDamageAndOverflow(wasteNo, wasteId);
         try {
-            if(null != damageAndOverflow) {
+            if (null != damageAndOverflow) {
                 City city = cityService.findCityByWarehouseNo(damageAndOverflow.getWarehouseNo());
                 if (null == city) {
                     damageAndOverflow.setErrMessage("城市信息中没有查询到仓库编号为" + damageAndOverflow.getWarehouseNo() + "的数据!");
@@ -607,7 +615,7 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                                     log.setGid(cityInventory.getGid());
                                     log.setSku(cityInventory.getSku());
                                     log.setSkuName(cityInventory.getSkuName());
-                                    log.setChangeQty(wtaShippingOrderGoods.getDAckQty());
+                                    log.setChangeQty(-1 * wtaShippingOrderGoods.getDAckQty());
                                     log.setAfterChangeQty(cityInventory.getAvailableIty() - wtaShippingOrderGoods.getDAckQty());
                                     log.setChangeTime(Calendar.getInstance().getTime());
                                     log.setChangeType(CityInventoryAvailableQtyChangeType.HOUSE_DELIVERY_ORDER);
@@ -839,6 +847,9 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                                         warehouseAllocationHeader.setHandleFlag("0");
                                         warehouseAllocationHeader.setHandleTime(new Date());
                                         this.wmsToAppOrderDAO.updateWtaWarehouseAllocation(warehouseAllocationHeader);
+                                        smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "调拨单:"
+                                                + warehouseAllocationHeader.getAllocationNo() + "处理失败，"
+                                                + "业务繁忙，请稍后处理");
                                         throw new RuntimeException();
                                     }
                                 }
@@ -853,7 +864,10 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                     warehouseAllocationHeader.setHandleFlag("0");
                     warehouseAllocationHeader.setHandleTime(new Date());
                     this.wmsToAppOrderDAO.updateWtaWarehouseAllocation(warehouseAllocationHeader);
-                    throw new RuntimeException();
+                    smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "调拨单:"
+                            + warehouseAllocationHeader.getAllocationNo() + "处理失败，"
+                            + "未查询到调拨明细!");
+                    throw new RuntimeException("未查询到调拨明细!");
                 }
             } else {
                 log.info("没有找到该调拨单号信息:{}", allocationNo);
@@ -867,16 +881,21 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
             warehouseAllocationHeader.setErrMessage(e.getMessage());
             warehouseAllocationHeader.setHandleTime(new Date());
             this.wmsToAppOrderDAO.updateWtaWarehouseAllocation(warehouseAllocationHeader);
+            smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "调拨单:"
+                    + warehouseAllocationHeader.getAllocationNo() + "处理失败，"
+                    + "出现未知异常");
+            throw new RuntimeException("调拨单:{} 处理出现未知异常，{}\n" + e);
         }
     }
 
     @Override
-    public void handleWtaWarehousePurchase(String purchaseNo) {
-        WtaWarehousePurchaseHeader purchaseHeader = this.wmsToAppOrderDAO.getWtaWarehousePurchaseHeader(purchaseNo);
+    @Transactional
+    public void handleWtaWarehousePurchase(String recNo) {
+        WtaWarehousePurchaseHeader purchaseHeader = this.wmsToAppOrderDAO.getWtaWarehousePurchaseHeader(recNo);
         try {
             if (null != purchaseHeader) {
                 List<WtaWarehousePurchaseGoods> purchaseHeaders = this.wmsToAppOrderDAO.findWtaWarehousePurchaseGoodsListByPurchaseNo(purchaseHeader.getRecNo());
-                City city = cityService.findByCityNumber(purchaseHeader.getCompanyId());
+                City city = cityService.findCityByWarehouseNo(purchaseHeader.getWarehouseNo());
                 if (null == city) {
                     purchaseHeader.setErrMessage("城市信息中没有查询到城市code为" + purchaseHeader.getCompanyId() + "的数据!");
                     purchaseHeader.setHandleFlag("0");
@@ -896,13 +915,13 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                             throw new RuntimeException();
                         }
                         for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
-                            CityInventory cityInventory = cityService.findCityInventoryByCityCodeAndSku(purchaseHeader.getCompanyId(), purchaseGoods.getSku());
+                            CityInventory cityInventory = cityService.findCityInventoryByCityIdAndSku(city.getCityId(), purchaseGoods.getSku());
                             if (null == cityInventory) {
                                 cityInventory = CityInventory.transform(goodsDO, city);
                                 cityService.saveCityInventory(cityInventory);
                             }
-                            Integer affectLine = cityService.lockCityInventoryByCityCodeAndSkuAndInventory(
-                                    purchaseHeader.getCompanyId(), purchaseGoods.getSku(), purchaseGoods.getRecQty(), cityInventory.getLastUpdateTime());
+                            Integer affectLine = cityService.lockCityInventoryByCityIdAndSkuAndInventory(
+                                    city.getCityId(), purchaseGoods.getSku(), purchaseGoods.getRecQty(), cityInventory.getLastUpdateTime());
                             if (affectLine > 0) {
                                 CityInventoryAvailableQtyChangeLog log = new CityInventoryAvailableQtyChangeLog();
                                 log.setCityId(cityInventory.getCityId());
@@ -956,6 +975,7 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
     }
 
     @Override
+    @Transactional
     public void updateWtaCancelOrderResult(WtaCancelOrderResultEnter cancelOrderResultEnter) {
         this.wmsToAppOrderDAO.updateWtaCancelOrderResult(cancelOrderResultEnter);
     }
@@ -964,4 +984,81 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
     public List<WtaShippingOrderHeader> getAllWtaShippingOrderHeader() {
         return this.wmsToAppOrderDAO.getAllWtaShippingOrderHeader();
     }
+
+    @Override
+    @Transactional
+    public HashedMap handleReturningOrderHeader(String returnNo, String recNo) {
+        HashedMap maps = new HashedMap();
+        WtaReturningOrderHeader returningOrderHeader = this.wmsToAppOrderDAO.getReturningOrderHeaderByReturnNo(returnNo, recNo);
+        try {
+            if (null != returningOrderHeader) {
+                List<WtaReturningOrderGoods> returningOrderGoodsList = wmsToAppOrderDAO.findWtaReturningOrderGoodsByReturnOrderNo(returningOrderHeader.getPoNo());
+                if (null != returningOrderGoodsList && returningOrderGoodsList.size() > 0) {
+                    List<ReturnOrderGoodsInfo> returnOrderGoodsInfoList = returnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnNo);
+                    //验证反配数量正确
+                    for (WtaReturningOrderGoods goods : returningOrderGoodsList) {
+                        Boolean flag = Boolean.FALSE;
+                        for (ReturnOrderGoodsInfo orderGoodsInfo : returnOrderGoodsInfoList) {
+                            if (goods.getGcode().equals(orderGoodsInfo.getSku()) && goods.getRecQty().equals(orderGoodsInfo.getReturnQty())) {
+                                flag = Boolean.TRUE;
+                            }
+                        }
+                        if (!flag) {
+                            returningOrderHeader.setErrMessage("商品sku为" + goods.getGcode() + "的商品反配数量错误!");
+                            returningOrderHeader.setHandleFlag("0");
+                            returningOrderHeader.setHandleTime(new Date());
+                            this.wmsToAppOrderDAO.updateReturningOrderHeaderByOrderNo(returningOrderHeader);
+                            throw new RuntimeException();
+                        }
+                    }
+                    //变更库存、退非第三方金额
+                    ReturnOrderBaseInfo returnOrder = returnOrderService.queryByReturnNo(returnNo);
+                    City city = cityService.findCityByWarehouseNo(returningOrderHeader.getWhNo());
+                    if (null == city) {
+                        returningOrderHeader.setErrMessage("城市信息中没有查询到仓库为" + returningOrderHeader.getWhNo() + "的数据!");
+                        returningOrderHeader.setHandleFlag("0");
+                        returningOrderHeader.setHandleTime(new Date());
+                        this.wmsToAppOrderDAO.updateReturningOrderHeaderByOrderNo(returningOrderHeader);
+                        throw new RuntimeException();
+                    }
+                    if (returnOrder.getReturnType().equals(ReturnOrderType.REFUSED_RETURN)) {
+                        OrderBaseInfo orderBaseInfo = appOrderService.getOrderDetail(returnOrder.getOrderNo());
+                        OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderBaseInfo.getOrderNumber());
+                        ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderService.queryByReturnNo(returnOrder.getReturnNo());
+
+                        maps = returnOrderService.refusedOrder(orderBaseInfo.getOrderNumber(), orderBaseInfo, orderBillingDetails, returnOrderBaseInfo, returnOrderGoodsInfoList, city);
+                    } else if (ReturnOrderType.NORMAL_RETURN.equals(returnOrder.getReturnType())) {
+                        maps = returnOrderService.normalReturnOrderProcessing(returnNo, city);
+                    }
+
+                    return maps;
+                } else {
+                    returningOrderHeader.setErrMessage("未查询到反配明细!");
+                    returningOrderHeader.setHandleFlag("0");
+                    returningOrderHeader.setHandleTime(new Date());
+                    this.wmsToAppOrderDAO.updateReturningOrderHeaderByOrderNo(returningOrderHeader);
+                    throw new RuntimeException();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            returningOrderHeader.setHandleFlag("0");
+            returningOrderHeader.setErrMessage(e.getMessage());
+            returningOrderHeader.setHandleTime(new Date());
+            this.wmsToAppOrderDAO.updateReturningOrderHeaderByOrderNo(returningOrderHeader);
+            throw new RuntimeException();
+        }
+        return null;
+    }
+
+    @Override
+    public WtaReturningOrderHeader getReturningOrderHeaderByReturnNo(String returnNo, String recNo) {
+        return this.wmsToAppOrderDAO.getReturningOrderHeaderByReturnNo(returnNo, recNo);
+    }
+
+    @Override
+    public void updateReturningOrderHeaderByOrderNo(WtaReturningOrderHeader returningOrderHeader) {
+        this.wmsToAppOrderDAO.updateReturningOrderHeaderByOrderNo(returningOrderHeader);
+    }
+
 }
