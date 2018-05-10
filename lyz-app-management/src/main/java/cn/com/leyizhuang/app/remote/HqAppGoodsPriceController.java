@@ -53,11 +53,11 @@ public class HqAppGoodsPriceController {
         logger.info("addGoodsPrice CALLED,同步新增商品价目表行，入参 goodsPriceDTO:{}", goodsPriceDTO);
         ResultDTO<Object> resultDTO;
         if (null != goodsPriceDTO) {
-            if (null == goodsPriceDTO.getGid()) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品id不能为空！", null);
-                logger.info("addGoodsPrice OUT,同步新增商品价目表行失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
+//            if (null == goodsPriceDTO.getGid()) {
+//                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品id不能为空！", null);
+//                logger.info("addGoodsPrice OUT,同步新增商品价目表行失败，出参 resultDTO:{}", resultDTO);
+//                return resultDTO;
+//            }
             if (StringUtils.isBlank(goodsPriceDTO.getStoreCode())) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店编码不能为空！", null);
                 logger.info("addGoodsPrice OUT,同步新增商品价目表行失败，出参 resultDTO:{}", resultDTO);
@@ -187,11 +187,11 @@ public class HqAppGoodsPriceController {
 //                logger.info("modifyGoodsPrice OUT,同步修改商品价目表行失败，出参 resultDTO:{}", resultDTO);
 //                return resultDTO;
 //            }
-            if (null == goodsPriceDTO.getEndTime()) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品价格生效结束时间不能为空！", null);
-                logger.info("modifyGoodsPrice OUT,同步修改商品价目表行失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
+//            if (null == goodsPriceDTO.getEndTime()) {
+//                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品价格生效结束时间不能为空！", null);
+//                logger.info("modifyGoodsPrice OUT,同步修改商品价目表行失败，出参 resultDTO:{}", resultDTO);
+//                return resultDTO;
+//            }
             try {
                 GoodsPrice goodsPrice = this.GoodsPriceServiceImpl.findGoodsPrice(goodsPriceDTO.getPriceLineId());
                 if (null != goodsPrice) {
@@ -201,6 +201,10 @@ public class HqAppGoodsPriceController {
 //                        goodsPrice.setWholesalePrice(goodsPriceDTO.getWholesalePrice());
 //                    }
 //                    goodsPrice.setVIPPrice(goodsPriceDTO.getVIPPrice());
+
+                    goodsPrice.setVIPPrice(null == goodsPriceDTO.getVIPPrice()?0:goodsPriceDTO.getVIPPrice());
+                    goodsPrice.setRetailPrice(null == goodsPriceDTO.getRetailPrice()?0:goodsPriceDTO.getRetailPrice());
+                    goodsPrice.setWholesalePrice(null == goodsPriceDTO.getWholesalePrice()?0:goodsPriceDTO.getWholesalePrice());
                     if (null != goodsPriceDTO.getEndTime() && !"".equals(goodsPriceDTO.getEndTime())) {
                         goodsPrice.setEndTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getEndTime()));
                     }

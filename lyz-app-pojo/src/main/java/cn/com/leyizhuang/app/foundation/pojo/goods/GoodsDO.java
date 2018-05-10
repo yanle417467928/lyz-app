@@ -108,6 +108,9 @@ public class GoodsDO {
     // 施工成不
     private String workCost;
 
+    //vip价格
+    private Double vipPrice;
+
     public static final GoodsDO transform(MaGoodsVO goodsVO) {
         if (null != goodsVO) {
             GoodsDO goodsDO = new GoodsDO();

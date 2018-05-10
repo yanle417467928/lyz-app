@@ -52,4 +52,10 @@ public class CouponMaterialListResponse {
      */
     private Double retailPrice;
 
+    /**
+     *  商品vip价
+     */
+    private Double vipPrice;
+
+
 }

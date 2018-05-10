@@ -63,9 +63,11 @@ public class HqAppEmployeeController {
                 logger.warn("employeeSync OUT,同步新增员工信息失败，出参 password:{}", employeeDTO.getPassword());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "密码{password} 不允许为空！", null);
             }
-            if (StringUtils.isBlank(employeeDTO.getPositionType())) {
-                logger.warn("employeeSync OUT,同步新增员工信息失败，出参 positionType:{}", employeeDTO.getPositionType());
-                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "职位{positionType} 不允许为空！", null);
+            if ("导购".equals(employeeDTO.getPosition())) {
+                if (StringUtils.isBlank(employeeDTO.getPositionType())) {
+                    logger.warn("employeeSync OUT,同步新增员工信息失败，身份类型positionType 不允许为空！出参 positionType:{}", employeeDTO.getPositionType());
+                    return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "身份类型positionType 不允许为空！", null);
+                }
             }
             if (!employeeDTO.getPosition().equalsIgnoreCase("导购") &&
                     !employeeDTO.getPosition().equalsIgnoreCase("装饰公司经理") &&
@@ -93,28 +95,21 @@ public class HqAppEmployeeController {
             employee.setPicUrl(employeeDTO.getPicUrl());
             employee.setManagerId(employeeDTO.getManagerId());
             employee.setCreateTime(TimeTransformUtils.UDateToLocalDateTime(employeeDTO.getCreateTime()));
-            switch (employeeDTO.getPositionType()) {
-                case "DG":
-                    employee.setIdentityType(AppIdentityType.SELLER);
+            if("导购".equals(employeeDTO.getPosition())){
+                employee.setIdentityType(AppIdentityType.SELLER);
+                if ("普通导购".equals(employeeDTO.getPositionType())){
                     employee.setSellerType(AppSellerType.SELLER);
-                    break;
-                case "DZ":
-                    employee.setIdentityType(AppIdentityType.SELLER);
+                }else  if ("店长".equals(employeeDTO.getPositionType())){
                     employee.setSellerType(AppSellerType.SUPERVISOR);
-                    break;
-                case "DJL":
-                    employee.setIdentityType(AppIdentityType.SELLER);
+                }else if("店经理".equals(employeeDTO.getPositionType())){
                     employee.setSellerType(AppSellerType.MANAGER);
-                    break;
-                case "PSY":
-                    employee.setIdentityType(AppIdentityType.DELIVERY_CLERK);
-                    break;
-                case "ZSJL":
-                    employee.setIdentityType(AppIdentityType.DECORATE_MANAGER);
-                    break;
-                case "ZSGR":
-                    employee.setIdentityType(AppIdentityType.DECORATE_EMPLOYEE);
-                    break;
+                }
+            }else if ("装饰公司经理".equals(employeeDTO.getPosition())){
+                employee.setIdentityType(AppIdentityType.DECORATE_MANAGER);
+            }else if ("装饰公司员工".equals(employeeDTO.getPosition())){
+                employee.setIdentityType(AppIdentityType.DECORATE_EMPLOYEE);
+            }else if ("配送员".equals(employeeDTO.getPosition())){
+                employee.setIdentityType(AppIdentityType.DELIVERY_CLERK);
             }
             City city = cityService.findByCityNumber(employeeDTO.getCityNumber());
             if (null == city) {
