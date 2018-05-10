@@ -30,6 +30,8 @@ public class GoodsDetailResponse {
     private String goodsUnit;
     //商品单价
     private Double price;
+    //商品会员价
+    private Double vipPrice;
     //是否收藏商品
     private Boolean isCollect;
     //商品详情

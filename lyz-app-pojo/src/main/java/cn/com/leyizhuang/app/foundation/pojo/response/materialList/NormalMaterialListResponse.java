@@ -48,6 +48,11 @@ public class NormalMaterialListResponse {
     private Double retailPrice;
 
     /**
+     *  商品vip价
+     */
+    private Double vipPrice;
+
+    /**
      * 备注信息
      */
     private String remark;

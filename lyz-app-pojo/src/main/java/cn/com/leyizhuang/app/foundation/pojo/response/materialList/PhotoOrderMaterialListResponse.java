@@ -48,5 +48,9 @@ public class PhotoOrderMaterialListResponse {
      *  拍照订单单号
      */
     private String photoOrderNo;
+    /**
+     *  商品vip价
+     */
+    private Double vipPrice;
 
 }

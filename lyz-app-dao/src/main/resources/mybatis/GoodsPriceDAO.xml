@@ -81,6 +81,7 @@
         WHERE
             gid = #{goodsID}
             AND store_id = #{storeID}
+            AND price_type = 'COMMON'
             AND start_time &lt; NOW()
             AND (end_time IS NULL OR end_time &gt; NOW())
     </select>
@@ -94,7 +95,8 @@
         g.cover_image_uri,
         g.goods_unit,
         g.sku,
-        gp.retail_price
+        gp.retail_price,
+        min(gp.vip_price)AS vip_price
         FROM
         cus_customer c
         LEFT JOIN cus_rank cr ON cr.cus_id = c.cus_id
@@ -110,6 +112,7 @@
             #{goodsId}
         </foreach>
         AND c.cus_id = #{userId}
+        GROUP BY gp.sku
     </select>
 
     <select id="findEmployeeGoodsPriceListByGoodsIdsAndUserIdAndIdentityType" resultType=
@@ -120,7 +123,8 @@
         g.goods_specification,
         g.cover_image_uri,
         g.goods_unit,
-        gp.retail_price
+        gp.retail_price,
+        min(gp.vip_price)AS vip_price
         FROM
         emp_employee e INNER JOIN
         gds_goods_price gp ON e.store_id = gp.store_id
@@ -134,6 +138,7 @@
             #{goodsId}
         </foreach>
         AND e.emp_id = #{userId}
+        GROUP BY gp.sku
     </select>
 
     <select id="findGoodsPriceByGoodsIDAndStoreID" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
