@@ -140,7 +140,7 @@
         SELECT ggp.*
         FROM
             gds_goods_price ggp
-            LEFT JOIN  cus_customer c on c.store_id = ggp.store_id
+            LEFT JOIN  cus_customer c on #{storeID} = ggp.store_id
 			LEFT JOIN cus_rank cr on cr.cus_id = c.cus_id
 			LEFT JOIN rank_classification rc on rc.rank_id = cr.rank_id
         WHERE
