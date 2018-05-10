@@ -172,7 +172,7 @@
     <insert id="saveWtaWarehouseWholeSplitToUnit"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaWarehouseWholeSplitToUnit">
         INSERT INTO inter_wta_warehouse_whole_split_to_unit
-        (warehouse_no, owner_no, direct_no, sku, d_sku, qty, d_qty, status, creator_no, create_time, company_id)
+        (warehouse_no, owner_no, direct_no, sku, d_sku, qty, d_qty, status, creator_no, create_time, company_id,receive_time,handle_flag)
             SELECT
                 #{warehouseNo},
                 #{ownerNo},
@@ -184,7 +184,9 @@
                 #{status},
                 #{creatorNo},
                 #{createTime},
-                #{companyId}
+                #{companyId},
+                #{receiveTime},
+                #{handleFlag}
             FROM DUAL
             WHERE NOT EXISTS(
                     SELECT 'X'
@@ -192,6 +194,20 @@
                     WHERE direct_no = #{directNo} AND sku = #{sku} AND d_sku = #{dSku}
             );
     </insert>
+
+
+    <select id="findWtaWarehouseWholeSplitToUnit" resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaWarehouseWholeSplitToUnit">
+        SELECT  *
+        FROM inter_wta_warehouse_whole_split_to_unit
+        WHERE direct_no = #{directNo} AND sku = #{sku} AND d_sku = #{dSku} AND (handle_flag = 0 OR handle_flag IS NULL)
+    </select>
+
+
+    <select id="findWtaWarehouseReportDamageAndOverflow" resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaWarehouseReportDamageAndOverflow">
+        SELECT  *
+        FROM inter_wta_warehouse_report_damage_overflow
+        WHERE  waste_no = #{wasteNo} AND waste_id = #{wasteId} AND (handle_flag = 0 OR handle_flag IS NULL)
+    </select>
 
     <insert id="saveWtaWarehouseAllocationHeader"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaWarehouseAllocationHeader">
@@ -285,7 +301,7 @@
     <insert id="saveWtaWarehouseReportDamageAndOverflow"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaWarehouseReportDamageAndOverflow">
         INSERT INTO inter_wta_warehouse_report_damage_overflow
-        (warehouse_no, owner_no, waste_no, waste_id, waste_type, sku, qty, waste_status, company_id, create_time)
+        (warehouse_no, owner_no, waste_no, waste_id, waste_type, sku, qty, waste_status, company_id, create_time,receive_time,handle_flag)
             SELECT
                 #{warehouseNo},
                 #{ownerNo},
@@ -296,7 +312,9 @@
                 #{qty},
                 #{wasteStatus},
                 #{companyId},
-                #{createTime}
+                #{createTime},
+                #{receiveTime},
+                #{handleFlag}
             FROM DUAL
             WHERE NOT EXISTS(
                     SELECT 'X'
@@ -427,6 +445,24 @@
         SET handle_flag = #{handleFlag},
           err_message = #{errMessage},
           handle_time = #{handleTime}
+        WHERE id = #{id}
+    </update>
+
+
+    <update id="updateWarehouseWholeSplitToUnit" parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaWarehouseWholeSplitToUnit">
+        UPDATE inter_wta_warehouse_whole_split_to_unit
+        SET handle_flag = #{handleFlag},
+        err_message = #{errMessage},
+        handle_time = #{handleTime}
+        WHERE id = #{id}
+    </update>
+
+
+    <update id="updateWarehouseWholeOverflow" parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaWarehouseReportDamageAndOverflow">
+        UPDATE inter_wta_warehouse_report_damage_overflow
+        SET handle_flag = #{handleFlag},
+        err_message = #{errMessage},
+        handle_time = #{handleTime}
         WHERE id = #{id}
     </update>
 

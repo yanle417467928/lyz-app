@@ -15,6 +15,7 @@ import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.util.AssertUtil;
+import org.springframework.scheduling.annotation.Async;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -123,6 +124,222 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
         return -1;
     }
 
+
+    /**
+     * 异步处理整转零逻辑
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void handlingWtaWarehouseWholeSplitToUnitAsync(String directNo,String sku,String dsku) {
+        WtaWarehouseWholeSplitToUnit wholeSplitToUnit = this.wmsToAppOrderDAO.findWtaWarehouseWholeSplitToUnit(directNo,sku,dsku);
+        //扣整商品仓库数量
+        try {
+            if(null !=wholeSplitToUnit) {
+                City city = cityService.findCityByWarehouseNo(wholeSplitToUnit.getWarehouseNo());
+                //sCity city = cityService.findByCityNumber(wholeSplitToUnit.getCompanyId());
+                if (null == city) {
+                    wholeSplitToUnit.setErrMessage("城市信息中没有查询到仓库编号为" + wholeSplitToUnit.getWarehouseNo() + "的数据!");
+                    wholeSplitToUnit.setHandleFlag("0");
+                    wholeSplitToUnit.setHandleTime(new Date());
+                    this.updateWarehouseWholeSplitToUnit(wholeSplitToUnit);
+                    return;
+                }
+                GoodsDO goodsDO = goodsService.queryBySku(wholeSplitToUnit.getSku());
+                if (null == goodsDO) {
+                    wholeSplitToUnit.setErrMessage("商品资料中没有查询到sku为" + wholeSplitToUnit.getSku() + "的商品信息!");
+                    wholeSplitToUnit.setHandleFlag("0");
+                    wholeSplitToUnit.setHandleTime(new Date());
+                    this.updateWarehouseWholeSplitToUnit(wholeSplitToUnit);
+                    return;
+                }
+                GoodsDO dGoodsDO = goodsService.queryBySku(wholeSplitToUnit.getDSku());
+                if (null == dGoodsDO) {
+                    wholeSplitToUnit.setErrMessage("商品资料中没有查询到sku为" + wholeSplitToUnit.getDSku() + "的商品信息!");
+                    wholeSplitToUnit.setHandleFlag("0");
+                    wholeSplitToUnit.setHandleTime(new Date());
+                    this.updateWarehouseWholeSplitToUnit(wholeSplitToUnit);
+                    return;
+                }
+                for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                    CityInventory cityInventory = cityService.findCityInventoryByCityIdAndSku(city.getCityId(), wholeSplitToUnit.getSku());
+                    if (null == cityInventory) {
+                        cityInventory = CityInventory.transform(goodsDO, city);
+                        cityService.saveCityInventory(cityInventory);
+                    }
+                    if (cityInventory.getAvailableIty() < wholeSplitToUnit.getQty()) {
+                        wholeSplitToUnit.setErrMessage("该城市下sku为" + wholeSplitToUnit.getSku() + "的商品库存不足!");
+                        wholeSplitToUnit.setHandleFlag("0");
+                        wholeSplitToUnit.setHandleTime(new Date());
+                        smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "获取wms信息整转零失败!" + wholeSplitToUnit.getDirectNo() +
+                                "该城市下sku为" + wholeSplitToUnit.getSku() + "的商品库存不足!");
+                        this.updateWarehouseWholeSplitToUnit(wholeSplitToUnit);
+                        return;
+                    }
+                    Integer affectLine = cityService.lockCityInventoryByCityIdAndSkuAndInventory(
+                            city.getCityId(), wholeSplitToUnit.getSku(), -wholeSplitToUnit.getQty(), cityInventory.getLastUpdateTime());
+                    if (affectLine > 0) {
+                        CityInventoryAvailableQtyChangeLog log = new CityInventoryAvailableQtyChangeLog();
+                        log.setCityId(cityInventory.getCityId());
+                        log.setCityName(cityInventory.getCityName());
+                        log.setGid(cityInventory.getGid());
+                        log.setSku(cityInventory.getSku());
+                        log.setSkuName(cityInventory.getSkuName());
+                        log.setChangeQty(-wholeSplitToUnit.getQty());
+                        log.setAfterChangeQty(cityInventory.getAvailableIty() - wholeSplitToUnit.getQty());
+                        log.setChangeTime(Calendar.getInstance().getTime());
+                        log.setChangeType(CityInventoryAvailableQtyChangeType.WHOLE_TO_SCRAPPY);
+                        log.setChangeTypeDesc(CityInventoryAvailableQtyChangeType.WHOLE_TO_SCRAPPY.getDescription());
+                        log.setReferenceNumber(wholeSplitToUnit.getDirectNo());
+                        cityService.addCityInventoryAvailableQtyChangeLog(log);
+                        wholeSplitToUnit.setHandleFlag("1");
+                        wholeSplitToUnit.setHandleTime(new Date());
+                        this.updateWarehouseWholeSplitToUnit(wholeSplitToUnit);
+                        break;
+                    } else {
+                        if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                            smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "获取wms整转零信息失败,扣整商品仓库数量失败!任务编号" + wholeSplitToUnit.getDirectNo());
+                            wholeSplitToUnit.setErrMessage("整转零失败!");
+                            wholeSplitToUnit.setHandleFlag("0");
+                            wholeSplitToUnit.setHandleTime(new Date());
+                            this.updateWarehouseWholeSplitToUnit(wholeSplitToUnit);
+                            return;
+                        }
+                    }
+                }
+                //增加零商品仓库数量
+                for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
+                    CityInventory cityInventory = cityService.findCityInventoryByCityIdAndSku(city.getCityId(), wholeSplitToUnit.getDSku());
+                    if (null == cityInventory) {
+                        cityInventory = CityInventory.transform(dGoodsDO, city);
+                        cityService.saveCityInventory(cityInventory);
+                    }
+                    Integer affectLine = cityService.lockCityInventoryByCityIdAndSkuAndInventory(
+                            city.getCityId(), wholeSplitToUnit.getDSku(), wholeSplitToUnit.getDQty(), cityInventory.getLastUpdateTime());
+                    if (affectLine > 0) {
+                        CityInventoryAvailableQtyChangeLog log = new CityInventoryAvailableQtyChangeLog();
+                        log.setCityId(cityInventory.getCityId());
+                        log.setCityName(cityInventory.getCityName());
+                        log.setGid(cityInventory.getGid());
+                        log.setSku(cityInventory.getSku());
+                        log.setSkuName(cityInventory.getSkuName());
+                        log.setChangeQty(wholeSplitToUnit.getDQty());
+                        log.setAfterChangeQty(cityInventory.getAvailableIty() + wholeSplitToUnit.getDQty());
+                        log.setChangeTime(Calendar.getInstance().getTime());
+                        log.setChangeType(CityInventoryAvailableQtyChangeType.WHOLE_TO_SCRAPPY);
+                        log.setChangeTypeDesc(CityInventoryAvailableQtyChangeType.WHOLE_TO_SCRAPPY.getDescription());
+                        log.setReferenceNumber(wholeSplitToUnit.getDirectNo());
+                        cityService.addCityInventoryAvailableQtyChangeLog(log);
+                        wholeSplitToUnit.setHandleFlag("1");
+                        wholeSplitToUnit.setHandleTime(new Date());
+                        this.updateWarehouseWholeSplitToUnit(wholeSplitToUnit);
+                        break;
+                    } else {
+                        if (j == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                            smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "获取wms整转零信息失败,增加零商品仓库数量失败!任务编号" + wholeSplitToUnit.getDirectNo());
+                            wholeSplitToUnit.setErrMessage("整转零失败!");
+                            wholeSplitToUnit.setHandleFlag("0");
+                            wholeSplitToUnit.setHandleTime(new Date());
+                            this.updateWarehouseWholeSplitToUnit(wholeSplitToUnit);
+                            return;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            wholeSplitToUnit.setHandleFlag("0");
+            wholeSplitToUnit.setHandleTime(new Date());
+            wholeSplitToUnit.setErrMessage(e.getMessage());
+            this.updateWarehouseWholeSplitToUnit(wholeSplitToUnit);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void handlingWtaWarehouseReportDamageAndOverflowAsync(String wasteNo,Long wasteId) {
+        WtaWarehouseReportDamageAndOverflow damageAndOverflow = this.wmsToAppOrderDAO.findWtaWarehouseReportDamageAndOverflow(wasteNo,wasteId);
+        try {
+            if(null != damageAndOverflow) {
+                City city = cityService.findCityByWarehouseNo(damageAndOverflow.getWarehouseNo());
+                if (null == city) {
+                    damageAndOverflow.setErrMessage("城市信息中没有查询到仓库编号为" + damageAndOverflow.getWarehouseNo() + "的数据!");
+                    damageAndOverflow.setHandleFlag("0");
+                    damageAndOverflow.setHandleTime(new Date());
+                    this.updateWarehouseWholeOverflow(damageAndOverflow);
+                    return;
+                }
+                GoodsDO goodsDO = goodsService.queryBySku(damageAndOverflow.getSku());
+                if (null == goodsDO) {
+                    damageAndOverflow.setErrMessage("商品资料中没有查询到sku为" + damageAndOverflow.getSku() + "的商品信息!");
+                    damageAndOverflow.setHandleFlag("0");
+                    damageAndOverflow.setHandleTime(new Date());
+                    this.updateWarehouseWholeOverflow(damageAndOverflow);
+                    return;
+                }
+                Integer changeInventory = 0;
+                CityInventoryAvailableQtyChangeType changeType = null;
+                String cityCode = damageAndOverflow.getCompanyId();
+                String sku = damageAndOverflow.getSku();
+                Integer qty = damageAndOverflow.getQty();
+                if (damageAndOverflow.getWasteType().contains("一般报溢")) {
+                    changeType = CityInventoryAvailableQtyChangeType.CITY_OVERFLOW;
+                    changeInventory = qty;
+                } else {
+                    changeInventory = -qty;
+                    changeType = CityInventoryAvailableQtyChangeType.CITY_WASTAGE;
+                }
+                for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
+                    CityInventory cityInventory = cityService.findCityInventoryByCityIdAndSku(city.getCityId(), sku);
+                    if (null == cityInventory) {
+                        cityInventory = CityInventory.transform(goodsDO, city);
+                        cityService.saveCityInventory(cityInventory);
+                    }
+                    if (cityInventory.getAvailableIty() < qty && changeInventory < 0) {
+                        damageAndOverflow.setErrMessage("该城市下sku为" + damageAndOverflow.getSku() + "的商品库存不足!");
+                        damageAndOverflow.setHandleFlag("0");
+                        damageAndOverflow.setHandleTime(new Date());
+                        this.updateWarehouseWholeOverflow(damageAndOverflow);
+                        smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "获取wms信息失败,获取报损报溢失败,该城市下sku为" + damageAndOverflow.getSku() + "的商品库存不足!");
+                        return;
+                    }
+                    Integer affectLine = cityService.lockCityInventoryByCityIdAndSkuAndInventory(city.getCityId(), sku, changeInventory, cityInventory.getLastUpdateTime());
+                    if (affectLine > 0) {
+                        CityInventoryAvailableQtyChangeLog log = new CityInventoryAvailableQtyChangeLog();
+                        log.setCityId(cityInventory.getCityId());
+                        log.setCityName(cityInventory.getCityName());
+                        log.setGid(cityInventory.getGid());
+                        log.setSku(cityInventory.getSku());
+                        log.setSkuName(cityInventory.getSkuName());
+                        log.setChangeQty(changeInventory);
+                        log.setAfterChangeQty(cityInventory.getAvailableIty() + changeInventory);
+                        log.setChangeTime(Calendar.getInstance().getTime());
+                        log.setChangeType(changeType);
+                        log.setChangeTypeDesc(changeType.getDescription());
+                        log.setReferenceNumber(damageAndOverflow.getWasteNo());
+                        cityService.addCityInventoryAvailableQtyChangeLog(log);
+                        damageAndOverflow.setHandleFlag("1");
+                        damageAndOverflow.setHandleTime(new Date());
+                        this.updateWarehouseWholeOverflow(damageAndOverflow);
+                        break;
+                    } else {
+                        if (j == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                            damageAndOverflow.setErrMessage("获取wms报损报溢失败!任务编号" + damageAndOverflow.getWasteNo());
+                            damageAndOverflow.setHandleFlag("0");
+                            damageAndOverflow.setHandleTime(new Date());
+                            this.updateWarehouseWholeOverflow(damageAndOverflow);
+                            smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "获取wms报损报溢失败!任务编号" + damageAndOverflow.getWasteNo());
+                            return;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            damageAndOverflow.setErrMessage(e.getMessage());
+            damageAndOverflow.setHandleFlag("0");
+            damageAndOverflow.setHandleTime(new Date());
+            this.updateWarehouseWholeOverflow(damageAndOverflow);
+        }
+    }
+
     @Override
     public int saveWtaWarehouseAllocationHeader(WtaWarehouseAllocationHeader header) {
         if (AssertUtil.isNotEmpty(header)) {
@@ -201,6 +418,24 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
             wmsToAppOrderDAO.updateWtaShippingOrderHeader(header);
         }
     }
+
+
+    @Override
+    @Transactional
+    public void updateWarehouseWholeSplitToUnit(WtaWarehouseWholeSplitToUnit wholeSplitToUnit) {
+        if (AssertUtil.isNotEmpty(wholeSplitToUnit)) {
+            wmsToAppOrderDAO.updateWarehouseWholeSplitToUnit(wholeSplitToUnit);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void updateWarehouseWholeOverflow(WtaWarehouseReportDamageAndOverflow wtaWarehouseReportDamageAndOverflow) {
+        if (AssertUtil.isNotEmpty(wtaWarehouseReportDamageAndOverflow)) {
+            wmsToAppOrderDAO.updateWarehouseWholeOverflow(wtaWarehouseReportDamageAndOverflow);
+        }
+    }
+
 
     @Override
     public WtaShippingOrderHeader getWtaShippingOrderHeaderNotHandling(String orderNo, String taskNo) {

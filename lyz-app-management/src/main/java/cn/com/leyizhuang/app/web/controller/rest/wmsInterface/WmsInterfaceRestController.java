@@ -92,6 +92,18 @@ public class WmsInterfaceRestController extends BaseRestController {
         return "sueesess";
     }
 
+    @GetMapping(value = "/handle/wtaWarehouseWholeSplitToUnit/{directNo}/{sku}/{dsku}")
+    public String handleWtaWarehouseWholeSplitToUnit(ModelMap map, @PathVariable(value = "directNo") String directNo, @PathVariable(value = "sku") String sku, @PathVariable(value = "dsku") String dsku) {
+        this.wmsToAppOrderService.handlingWtaWarehouseWholeSplitToUnitAsync(directNo,sku,dsku);
+        return "sueesess";
+    }
+
+    @GetMapping(value = "/handle/wtaWarehouseReportDamageAndOverflow/{wasteNo}/{wasteId}")
+    public String handleWtaWarehouseReportDamageAndOverflow(ModelMap map, @PathVariable(value = "wasteNo") String wasteNo,@PathVariable(value = "wasteId") Long wasteId) {
+        this.wmsToAppOrderService.handlingWtaWarehouseReportDamageAndOverflowAsync(wasteNo,wasteId);
+        return "sueesess";
+    }
+
     @GetMapping(value = "/handle/cancelOrder/{orderNo}")
     public String updateWtaCancelOrderResult(ModelMap map, @PathVariable(value = "orderNo") String orderNo) {
         WtaCancelOrderResultEnter orderResultEnter = this.wmsToAppOrderService.getWtaCancelOrderResult(orderNo);

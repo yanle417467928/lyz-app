@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.ReturnOrderDAO;
+import cn.com.leyizhuang.app.foundation.dao.WmsToAppOrderDAO;
 import cn.com.leyizhuang.app.foundation.pojo.CancelOrderParametersDO;
 import cn.com.leyizhuang.app.foundation.pojo.OrderDeliveryInfoDetails;
 import cn.com.leyizhuang.app.foundation.pojo.WareHouseDO;
@@ -91,6 +92,8 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
 
     @Resource
     private ReturnOrderDAO returnOrderDAO;
+    @Resource
+    private WmsToAppOrderDAO wmsToAppOrderDAO;
 
     /**
      * 获取wms信息
@@ -604,7 +607,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         wholeSplitToUnit = mapping(wholeSplitToUnit, childNode);
                     }
 
-                    if (null == wholeSplitToUnit.getDQty()) {
+                   /* if (null == wholeSplitToUnit.getDQty()) {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,获取整转零失败,任务编号 出参 DirectNo:{}", wholeSplitToUnit.getDirectNo());
                         return AppXmlUtil.resultStrXml(1, "cInQty不能为空!");
                     }
@@ -634,14 +637,15 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     if (null == dGoodsDO) {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,获取整转零失败,任务编号 商品资料中没有查询到sku为" + wholeSplitToUnit.getDSku() + "的商品信息!");
                         return AppXmlUtil.resultStrXml(1, "商品资料中没有查询到sku为" + wholeSplitToUnit.getDSku() + "的商品信息!");
-                    }
-
+                    }*/
+                    wholeSplitToUnit.setHandleFlag("0");
+                    wholeSplitToUnit.setReceiveTime(new Date());
                     int result = wmsToAppOrderService.saveWtaWarehouseWholeSplitToUnit(wholeSplitToUnit);
-                    if (result == 0) {
+                  /*  if (result == 0) {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,该单已存在 出参 order_no:{}", wholeSplitToUnit.getDirectNo());
                         return AppXmlUtil.resultStrXml(1, "重复传输,该单" + wholeSplitToUnit.getDirectNo() + "已存在!");
-                    }
-                    this.handlingWtaWarehouseWholeSplitToUnitAsync(wholeSplitToUnit, goodsDO, dGoodsDO, city);
+                    }*/
+                    this.handWtaWarehouseWholeSplitToUnitAsync(wholeSplitToUnit.getDirectNo() ,wholeSplitToUnit.getSku(),wholeSplitToUnit.getDSku());
                 }
                 logger.info("GetWMSInfo OUT,获取仓库整转零wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
@@ -775,7 +779,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         Node childNode = childNodeList.item(idx);
                         damageAndOverflow = mapping(damageAndOverflow, childNode);
                     }
-                    if (damageAndOverflow.getWasteNo() == null) {
+          /*          if (damageAndOverflow.getWasteNo() == null) {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,获取报损报溢失败,任务编号 损溢单号不能为空!");
                         return AppXmlUtil.resultStrXml(1, "损溢单号不能为空");
                     }
@@ -792,14 +796,16 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     if (null == goodsDO) {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,获取报损报溢失败,任务编号 商品资料中没有查询到sku为" + damageAndOverflow.getSku() + "的商品信息!");
                         return AppXmlUtil.resultStrXml(1, "商品资料中没有查询到sku为" + damageAndOverflow.getSku() + "的商品信息!");
-                    }
+                    }*/
                     damageAndOverflow.setCreateTime(Calendar.getInstance().getTime());
+                    damageAndOverflow.setHandleFlag("0");
+                    damageAndOverflow.setReceiveTime(new Date());
                     int result = wmsToAppOrderService.saveWtaWarehouseReportDamageAndOverflow(damageAndOverflow);
-                    if (result == 0) {
+                   /* if (result == 0) {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,该单已存在 出参 order_no:{}", damageAndOverflow.getWasteNo());
                         return AppXmlUtil.resultStrXml(1, "重复传输,该单" + damageAndOverflow.getWasteNo() + "已存在!");
-                    }
-                    this.handlingWtaWarehouseReportDamageAndOverflowAsync(damageAndOverflow, city, goodsDO);
+                    }*/
+                    this.handleWtaWarehouseReportDamageAndOverflowAsync(damageAndOverflow.getWasteNo(),damageAndOverflow.getWasteId());
                 }
                 logger.info("GetWMSInfo OUT,获取仓库报损报溢wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
@@ -808,14 +814,11 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
             logger.warn("GetWMSInfo EXCEPTION,解密后xml参数错误");
             logger.warn("{}", e);
             return AppXmlUtil.resultStrXml(1, "解密后xml参数错误");
+
         } catch (IOException | SAXException e) {
             logger.warn("GetWMSInfo EXCEPTION,解密后xml格式不对");
             logger.warn("{}", e);
             return AppXmlUtil.resultStrXml(1, "解密后xml格式不对");
-        }catch (Exception e){
-            logger.warn("GetWMSInfo EXCEPTION,出现未知异常!");
-            logger.warn("{}", e);
-            return AppXmlUtil.resultStrXml(1, "出现未知异常!");
         }
         return AppXmlUtil.resultStrXml(1, "不支持该表数据传输：" + strTable);
     }
@@ -2012,13 +2015,28 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
     @SuppressWarnings("WeakerAccess")
     public void handleWtaShippingOrderAsync(String orderNo, String taskNo) {
         Boolean flag = this.wmsToAppOrderService.handleWtaShippingOrder(orderNo, taskNo);
-        if (flag){
+        if (flag) {
             //推送物流信息
             NoticePushUtils.pushOrderLogisticInfo(orderNo);
             // rabbit 记录下单销量
             sellDetailsSender.sendOrderSellDetailsTOManagement(orderNo);
         }
     }
+
+
+    @Async
+    @SuppressWarnings("WeakerAccess")
+    protected void handleWtaWarehouseReportDamageAndOverflowAsync(String wasteNo,Long wasteId ) {
+        this.wmsToAppOrderService.handlingWtaWarehouseReportDamageAndOverflowAsync(wasteNo,wasteId);
+    }
+
+
+    @Async
+    @SuppressWarnings("WeakerAccess")
+    public void handWtaWarehouseWholeSplitToUnitAsync(String directNo,String sku,String dsku) {
+        this.wmsToAppOrderService.handlingWtaWarehouseWholeSplitToUnitAsync(directNo,sku,dsku);
+    }
+
 
     @Async
     @SuppressWarnings("WeakerAccess")

@@ -78,6 +78,23 @@ public interface WmsToAppOrderService {
      */
     int saveWtaWarehouseWholeSplitToUnit(WtaWarehouseWholeSplitToUnit wholeSplitToUnit);
 
+
+    /**
+     * 处理整转零信息
+     *
+     * @param
+     * @return 返回所影响行数
+     */
+    void handlingWtaWarehouseWholeSplitToUnitAsync(String directNo,String sku,String dsku);
+
+    /**
+     * 处理损溢信息
+     *
+     * @param
+     * @return 返回所影响行数
+     */
+    void handlingWtaWarehouseReportDamageAndOverflowAsync(String wasteNo,Long wasteId);
+
     /**
      * 保存仓库调拨头档
      *
@@ -155,6 +172,22 @@ public interface WmsToAppOrderService {
      * @param header
      */
     void updateWtaShippingOrderHeader(WtaShippingOrderHeader header);
+
+
+    /**
+     * 更新整转零的处理状态
+     *
+     * @param wholeSplitToUnit
+     */
+    void updateWarehouseWholeSplitToUnit(WtaWarehouseWholeSplitToUnit wholeSplitToUnit);
+
+
+    /**
+     * 更新损溢的处理状态
+     *
+     * @param wtaWarehouseReportDamageAndOverflow
+     */
+    void updateWarehouseWholeOverflow(WtaWarehouseReportDamageAndOverflow wtaWarehouseReportDamageAndOverflow);
 
     /**
      * 查询未处理的出货单
