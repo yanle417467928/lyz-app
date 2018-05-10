@@ -138,11 +138,11 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void handlingWtaWarehouseWholeSplitToUnitAsync(String directNo,String sku,String dsku) {
-        WtaWarehouseWholeSplitToUnit wholeSplitToUnit = this.wmsToAppOrderDAO.findWtaWarehouseWholeSplitToUnit(directNo,sku,dsku);
+    public void handlingWtaWarehouseWholeSplitToUnitAsync(String directNo, String sku, String dsku) {
+        WtaWarehouseWholeSplitToUnit wholeSplitToUnit = this.wmsToAppOrderDAO.findWtaWarehouseWholeSplitToUnit(directNo, sku, dsku);
         //扣整商品仓库数量
         try {
-            if(null !=wholeSplitToUnit) {
+            if (null != wholeSplitToUnit) {
                 City city = cityService.findCityByWarehouseNo(wholeSplitToUnit.getWarehouseNo());
                 //sCity city = cityService.findByCityNumber(wholeSplitToUnit.getCompanyId());
                 if (null == city) {
@@ -263,10 +263,10 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void handlingWtaWarehouseReportDamageAndOverflowAsync(String wasteNo,Long wasteId) {
-        WtaWarehouseReportDamageAndOverflow damageAndOverflow = this.wmsToAppOrderDAO.findWtaWarehouseReportDamageAndOverflow(wasteNo,wasteId);
+    public void handlingWtaWarehouseReportDamageAndOverflowAsync(String wasteNo, Long wasteId) {
+        WtaWarehouseReportDamageAndOverflow damageAndOverflow = this.wmsToAppOrderDAO.findWtaWarehouseReportDamageAndOverflow(wasteNo, wasteId);
         try {
-            if(null != damageAndOverflow) {
+            if (null != damageAndOverflow) {
                 City city = cityService.findCityByWarehouseNo(damageAndOverflow.getWarehouseNo());
                 if (null == city) {
                     damageAndOverflow.setErrMessage("城市信息中没有查询到仓库编号为" + damageAndOverflow.getWarehouseNo() + "的数据!");
@@ -615,7 +615,7 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                                     log.setGid(cityInventory.getGid());
                                     log.setSku(cityInventory.getSku());
                                     log.setSkuName(cityInventory.getSkuName());
-                                    log.setChangeQty(-1*wtaShippingOrderGoods.getDAckQty());
+                                    log.setChangeQty(-1 * wtaShippingOrderGoods.getDAckQty());
                                     log.setAfterChangeQty(cityInventory.getAvailableIty() - wtaShippingOrderGoods.getDAckQty());
                                     log.setChangeTime(Calendar.getInstance().getTime());
                                     log.setChangeType(CityInventoryAvailableQtyChangeType.HOUSE_DELIVERY_ORDER);
@@ -847,6 +847,9 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                                         warehouseAllocationHeader.setHandleFlag("0");
                                         warehouseAllocationHeader.setHandleTime(new Date());
                                         this.wmsToAppOrderDAO.updateWtaWarehouseAllocation(warehouseAllocationHeader);
+                                        smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "调拨单:"
+                                                + warehouseAllocationHeader.getAllocationNo() + "处理失败，"
+                                                + "业务繁忙，请稍后处理");
                                         throw new RuntimeException();
                                     }
                                 }
@@ -861,7 +864,10 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                     warehouseAllocationHeader.setHandleFlag("0");
                     warehouseAllocationHeader.setHandleTime(new Date());
                     this.wmsToAppOrderDAO.updateWtaWarehouseAllocation(warehouseAllocationHeader);
-                    throw new RuntimeException();
+                    smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "调拨单:"
+                            + warehouseAllocationHeader.getAllocationNo() + "处理失败，"
+                            + "未查询到调拨明细!");
+                    throw new RuntimeException("未查询到调拨明细!");
                 }
             } else {
                 log.info("没有找到该调拨单号信息:{}", allocationNo);
@@ -875,6 +881,10 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
             warehouseAllocationHeader.setErrMessage(e.getMessage());
             warehouseAllocationHeader.setHandleTime(new Date());
             this.wmsToAppOrderDAO.updateWtaWarehouseAllocation(warehouseAllocationHeader);
+            smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "调拨单:"
+                    + warehouseAllocationHeader.getAllocationNo() + "处理失败，"
+                    + "出现未知异常");
+            throw new RuntimeException("调拨单:{} 处理出现未知异常，{}\n" + e);
         }
     }
 
@@ -983,17 +993,17 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
         try {
             if (null != returningOrderHeader) {
                 List<WtaReturningOrderGoods> returningOrderGoodsList = wmsToAppOrderDAO.findWtaReturningOrderGoodsByReturnOrderNo(returningOrderHeader.getPoNo());
-                if (null != returningOrderGoodsList && returningOrderGoodsList.size() > 0){
+                if (null != returningOrderGoodsList && returningOrderGoodsList.size() > 0) {
                     List<ReturnOrderGoodsInfo> returnOrderGoodsInfoList = returnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnNo);
                     //验证反配数量正确
-                    for (WtaReturningOrderGoods goods: returningOrderGoodsList) {
+                    for (WtaReturningOrderGoods goods : returningOrderGoodsList) {
                         Boolean flag = Boolean.FALSE;
-                        for (ReturnOrderGoodsInfo orderGoodsInfo: returnOrderGoodsInfoList) {
-                            if (goods.getGcode().equals(orderGoodsInfo.getSku()) && goods.getRecQty().equals(orderGoodsInfo.getReturnQty())){
+                        for (ReturnOrderGoodsInfo orderGoodsInfo : returnOrderGoodsInfoList) {
+                            if (goods.getGcode().equals(orderGoodsInfo.getSku()) && goods.getRecQty().equals(orderGoodsInfo.getReturnQty())) {
                                 flag = Boolean.TRUE;
                             }
                         }
-                        if (!flag){
+                        if (!flag) {
                             returningOrderHeader.setErrMessage("商品sku为" + goods.getGcode() + "的商品反配数量错误!");
                             returningOrderHeader.setHandleFlag("0");
                             returningOrderHeader.setHandleTime(new Date());
@@ -1050,6 +1060,5 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
     public void updateReturningOrderHeaderByOrderNo(WtaReturningOrderHeader returningOrderHeader) {
         this.wmsToAppOrderDAO.updateReturningOrderHeaderByOrderNo(returningOrderHeader);
     }
-
 
 }
