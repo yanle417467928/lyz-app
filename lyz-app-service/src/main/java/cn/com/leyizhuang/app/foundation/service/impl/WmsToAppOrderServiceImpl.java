@@ -723,14 +723,14 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                 City outboundCity = cityService.findCityByWarehouseNo(warehouseAllocationHeader.getWarehouseNo());
                 //调入城市
                 City inboundCity = cityService.findCityByWarehouseNo(warehouseAllocationHeader.getShippingWarehouseNo());
-                //调入仓库没有找到对应的城市信息
+               /* //调入仓库没有找到对应的城市信息
                 if (null == inboundCity) {
                     warehouseAllocationHeader.setErrMessage("仓库编码:" + warehouseAllocationHeader.getShippingWarehouseNo() + "没有找到对应的城市信息!");
                     warehouseAllocationHeader.setHandleFlag("0");
                     warehouseAllocationHeader.setHandleTime(new Date());
                     this.wmsToAppOrderDAO.updateWtaWarehouseAllocation(warehouseAllocationHeader);
                     throw new RuntimeException();
-                }
+                }*/
                 if (null != allocationGoodsList && allocationGoodsList.size() > 0) {
                     for (WtaWarehouseAllocationGoods allocationGoods : allocationGoodsList) {
                         GoodsDO goodsDO = goodsService.queryBySku(allocationGoods.getSku());
@@ -814,43 +814,45 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                         //************************************ 调出仓库可用量扣减处理完毕 **************************************
 
                         //************************************ 开始处理调入仓库可用量增加 **************************************
-                        CityInventory cityInventoryInbound = cityService.findCityInventoryByCityIdAndSku(inboundCity.getCityId(), allocationGoods.getSku());
-                        if (null == cityInventoryInbound) {
-                            cityInventoryInbound = CityInventory.transform(goodsDO, inboundCity);
-                            cityInventoryInbound.setAvailableIty(allocationGoods.getCheckQty());
-                            cityService.saveCityInventory(cityInventoryInbound);
-                        } else {
-                            for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
-                                Integer affectLine = cityService.lockCityInventoryByCityIdAndSkuAndInventory(
-                                        inboundCity.getCityId(), allocationGoods.getSku(), changeInventoryInbound, cityInventoryInbound.getLastUpdateTime());
-                                if (affectLine > 0) {
-                                    CityInventoryAvailableQtyChangeLog log = new CityInventoryAvailableQtyChangeLog();
-                                    log.setCityId(cityInventoryInbound.getCityId());
-                                    log.setCityName(cityInventoryInbound.getCityName());
-                                    log.setGid(cityInventoryInbound.getGid());
-                                    log.setSku(cityInventoryInbound.getSku());
-                                    log.setSkuName(cityInventoryInbound.getSkuName());
-                                    log.setChangeQty(allocationGoods.getCheckQty());
-                                    log.setAfterChangeQty(cityInventoryInbound.getAvailableIty() + changeInventoryInbound);
-                                    log.setChangeTime(Calendar.getInstance().getTime());
-                                    log.setChangeType(CityInventoryAvailableQtyChangeType.ALLOCATE_INBOUND);
-                                    log.setChangeTypeDesc(CityInventoryAvailableQtyChangeType.ALLOCATE_INBOUND.getDescription());
-                                    log.setReferenceNumber(warehouseAllocationHeader.getAllocationNo());
-                                    cityService.addCityInventoryAvailableQtyChangeLog(log);
-                                    break;
-                                } else {
-                                    if (j == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                        smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE,
-                                                "调拨单:" + warehouseAllocationHeader.getAllocationNo() + "处理失败，" +
-                                                        "业务繁忙，请稍后处理");
-                                        warehouseAllocationHeader.setErrMessage("业务高并发，调拨失败!");
-                                        warehouseAllocationHeader.setHandleFlag("0");
-                                        warehouseAllocationHeader.setHandleTime(new Date());
-                                        this.wmsToAppOrderDAO.updateWtaWarehouseAllocation(warehouseAllocationHeader);
-                                        smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "调拨单:"
-                                                + warehouseAllocationHeader.getAllocationNo() + "处理失败，"
-                                                + "业务繁忙，请稍后处理");
-                                        throw new RuntimeException();
+                        if (null != inboundCity) {
+                            CityInventory cityInventoryInbound = cityService.findCityInventoryByCityIdAndSku(inboundCity.getCityId(), allocationGoods.getSku());
+                            if (null == cityInventoryInbound) {
+                                cityInventoryInbound = CityInventory.transform(goodsDO, inboundCity);
+                                cityInventoryInbound.setAvailableIty(allocationGoods.getCheckQty());
+                                cityService.saveCityInventory(cityInventoryInbound);
+                            } else {
+                                for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
+                                    Integer affectLine = cityService.lockCityInventoryByCityIdAndSkuAndInventory(
+                                            inboundCity.getCityId(), allocationGoods.getSku(), changeInventoryInbound, cityInventoryInbound.getLastUpdateTime());
+                                    if (affectLine > 0) {
+                                        CityInventoryAvailableQtyChangeLog log = new CityInventoryAvailableQtyChangeLog();
+                                        log.setCityId(cityInventoryInbound.getCityId());
+                                        log.setCityName(cityInventoryInbound.getCityName());
+                                        log.setGid(cityInventoryInbound.getGid());
+                                        log.setSku(cityInventoryInbound.getSku());
+                                        log.setSkuName(cityInventoryInbound.getSkuName());
+                                        log.setChangeQty(allocationGoods.getCheckQty());
+                                        log.setAfterChangeQty(cityInventoryInbound.getAvailableIty() + changeInventoryInbound);
+                                        log.setChangeTime(Calendar.getInstance().getTime());
+                                        log.setChangeType(CityInventoryAvailableQtyChangeType.ALLOCATE_INBOUND);
+                                        log.setChangeTypeDesc(CityInventoryAvailableQtyChangeType.ALLOCATE_INBOUND.getDescription());
+                                        log.setReferenceNumber(warehouseAllocationHeader.getAllocationNo());
+                                        cityService.addCityInventoryAvailableQtyChangeLog(log);
+                                        break;
+                                    } else {
+                                        if (j == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                            smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE,
+                                                    "调拨单:" + warehouseAllocationHeader.getAllocationNo() + "处理失败，" +
+                                                            "业务繁忙，请稍后处理");
+                                            warehouseAllocationHeader.setErrMessage("业务高并发，调拨失败!");
+                                            warehouseAllocationHeader.setHandleFlag("0");
+                                            warehouseAllocationHeader.setHandleTime(new Date());
+                                            this.wmsToAppOrderDAO.updateWtaWarehouseAllocation(warehouseAllocationHeader);
+                                            smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "调拨单:"
+                                                    + warehouseAllocationHeader.getAllocationNo() + "处理失败，"
+                                                    + "业务繁忙，请稍后处理");
+                                            throw new RuntimeException();
+                                        }
                                     }
                                 }
                             }
