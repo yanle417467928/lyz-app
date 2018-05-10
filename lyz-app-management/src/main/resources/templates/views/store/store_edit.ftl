@@ -117,6 +117,9 @@
                                     <option value="3" <#if store?? && store.storeType?? && store.storeType=="JM" >
                                             selected</#if>>加盟店
                                     </option>
+                                    <option value="4" <#if store?? && store.storeType?? && store.storeType=="FXCK" >
+                                            selected</#if>>分销仓库
+                                    </option>
                                 </select>
                             </div>
                         </div>
