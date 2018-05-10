@@ -1188,7 +1188,7 @@ public class MaReportDownloadRestController extends BaseRestController {
      * @param
      * @return
      * @throws
-     * @title 对账商品明细报表下载
+     * @title 门店库存
      * @descripe
      * @author GenerationRoad
      * @date 2018/4/2
