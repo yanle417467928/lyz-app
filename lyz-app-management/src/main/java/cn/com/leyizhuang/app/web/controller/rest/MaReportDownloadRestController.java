@@ -1594,6 +1594,9 @@ public class MaReportDownloadRestController extends BaseRestController {
                     if (null != salesReportDO.getCashCouponSharePrice()) {
                         ws.addCell(new Label(25, j + row, salesReportDO.getCashCouponSharePrice().toString(), textFormat));
                     }
+                    if (null != salesReportDO.getCouponType()){
+                        ws.addCell(new Label(26,j + row, salesReportDO.getCouponType().toString(),textFormat));
+                    }
                 }
             }
         } catch (Exception e) {

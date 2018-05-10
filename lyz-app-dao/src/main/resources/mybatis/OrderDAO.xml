@@ -1593,11 +1593,17 @@
     <select id="getOrderProductCouponPurchasePrice" resultType="java.lang.Double">
         SELECT SUM(purchase_price) from ord_coupon_info where ord_no = #{ordNo} and sku = #{sku}
     </select>
+
+    <select id="getOrderValidCouponQty" resultType="java.lang.Integer">
+        SELECT * from ord_coupon_info oci LEFT JOIN cus_customer_product_coupon ccpc on oci.coupon_id = ccpc.id
+    </select>
+
     <insert id="saveOrderShipping" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderShipping">
         INSERT
         ord_shipping(oid,ord_no,shipping_no,shipping_time)
         VALUES
         (#{oid},#{ordNo},#{shippingNo},#{shippingTime})
     </insert>
+
 
 </mapper>
