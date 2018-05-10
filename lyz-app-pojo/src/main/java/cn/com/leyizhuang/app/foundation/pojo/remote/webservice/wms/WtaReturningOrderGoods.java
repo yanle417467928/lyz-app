@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Date;
+
 /**
  * @author Jerry.Ren
  * Notes:WMS~APP退单返配上架商品明细
@@ -36,4 +38,6 @@ public class WtaReturningOrderGoods {
      * 验收数量
      */
     private Integer recQty;
+    //接收时间
+    private Date receiveTime;
 }

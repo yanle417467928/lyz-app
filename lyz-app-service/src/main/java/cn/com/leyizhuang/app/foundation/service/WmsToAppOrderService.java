@@ -1,8 +1,10 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
+import org.apache.commons.collections.map.HashedMap;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Jerry.Ren
@@ -217,12 +219,18 @@ public interface WmsToAppOrderService {
 
     void handleWtaWarehouseAllocation(String allocationNo);
 
-    void handleWtaWarehousePurchase(String purchaseNo);
+    void handleWtaWarehousePurchase(String recNo);
 
     WtaCancelOrderResultEnter getWtaCancelOrderResult(String orderNo);
 
     void  updateWtaCancelOrderResult(WtaCancelOrderResultEnter cancelOrderResultEnter);
 
     List<WtaShippingOrderHeader> getAllWtaShippingOrderHeader();
+
+    HashedMap handleReturningOrderHeader(String returnNo, String recNo);
+
+    WtaReturningOrderHeader getReturningOrderHeaderByReturnNo(String returnNo, String recNo);
+
+    void updateReturningOrderHeaderByOrderNo(WtaReturningOrderHeader returningOrderHeader);
 
 }

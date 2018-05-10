@@ -3,10 +3,8 @@ package cn.com.leyizhuang.app.foundation.service;
 import cn.com.leyizhuang.app.core.constant.AppOrderType;
 import cn.com.leyizhuang.app.core.constant.AppReturnOrderStatus;
 import cn.com.leyizhuang.app.core.exception.OrderSaveException;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
-import cn.com.leyizhuang.app.foundation.pojo.order.ReturnOrderJxPriceDifferenceRefundDetails;
+import cn.com.leyizhuang.app.foundation.pojo.city.City;
+import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder;
 import cn.com.leyizhuang.app.foundation.pojo.request.ReturnDeliverySimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
@@ -244,4 +242,27 @@ public interface ReturnOrderService {
     void updateReturnLogisticInfoOfBackTime(String returnNo);
 
     List<String> getNotReturnDetailsReturnNos(Boolean flag);
+
+    /**
+     * 拒签退货退钱
+     * @param orderNumber
+     * @return
+     */
+    HashedMap refusedOrder(String orderNumber, OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails,
+                           ReturnOrderBaseInfo returnOrderBaseInfo ,List<ReturnOrderGoodsInfo> returnOrderGoodsInfos, City city);
+
+    HashedMap normalReturnOrderProcessing(String returnOrderNumber, City city);
+
+    /**
+     * 保存订单生命周期记录
+     * @param orderLifecycle
+     */
+    void saveOrderLifecycle(OrderLifecycle orderLifecycle);
+
+    /**
+     * 保存退单生命周期记录
+     * @param returnOrderLifecycle
+     */
+    void saveReturnOrderLifecycle(ReturnOrderLifecycle returnOrderLifecycle);
+
 }

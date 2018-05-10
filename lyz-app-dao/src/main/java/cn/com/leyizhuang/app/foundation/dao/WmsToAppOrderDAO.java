@@ -207,7 +207,7 @@ public interface WmsToAppOrderDAO {
 
     void updateWtaWarehouseAllocation(WtaWarehouseAllocationHeader wtaWarehouseAllocationHeader);
 
-    WtaWarehousePurchaseHeader getWtaWarehousePurchaseHeader(String purchaseNo);
+    WtaWarehousePurchaseHeader getWtaWarehousePurchaseHeader(String recNo);
 
     void updateWtaWarehousePurchaseHeader(WtaWarehousePurchaseHeader purchaseHeader);
 
@@ -218,5 +218,9 @@ public interface WmsToAppOrderDAO {
     List<WtaShippingOrderHeader> getAllWtaShippingOrderHeader();
 
     List<WtaShippingOrderGoods> getWtaShippingOrderGoodsByOrderNo(@Param("orderNo") String orderNo);
+
+    WtaReturningOrderHeader getReturningOrderHeaderByReturnNo(@Param("returnNo") String returnNo, @Param("recNo") String recNo);
+
+    void updateReturningOrderHeaderByOrderNo(WtaReturningOrderHeader returningOrderHeader);
 
 }

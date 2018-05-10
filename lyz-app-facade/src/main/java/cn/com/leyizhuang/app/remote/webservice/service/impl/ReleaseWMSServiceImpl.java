@@ -316,15 +316,17 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
 //                        logger.info("GetWMSInfo OUT,获取wms信息失败,配送员不能为空,任务编号 出参 c_rec_no{}", header.getRecNo());
 //                        return AppXmlUtil.resultStrXml(1, "配送员编号不能为空,验收单号" + header.getRecNo() + "");
 //                    }
-                    City city = cityService.findByCityNumber(header.getCompanyId());
+                    header.setHandleFlag("0");
+                    /*City city = cityService.findByCityNumber(header.getCompanyId());
                     if (null == city) {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,获取退货单返配上架头失败,任务编号 城市信息中没有查询到城市code为" + header.getCompanyId() + "的数据!");
                         return AppXmlUtil.resultStrXml(1, "城市信息中没有查询到城市code为" + header.getCompanyId() + "的数据!");
-                    }
+                    }*/
 
                     header.setCreateTime(Calendar.getInstance().getTime());
                     int result = wmsToAppOrderService.saveWtaReturningOrderHeader(header);
-                    if (result == 0) {
+                    handleReturningOrderHeaderAsync(header.getPoNo(),header.getRecNo());
+                    /*if (result == 0) {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,该单已存在 出参 order_no:{}", header.getBackNo());
                         return AppXmlUtil.resultStrXml(1, "重复传输,该单" + header.getBackNo() + "已存在!");
                     }
@@ -371,7 +373,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                                 }
                             }
                         }
-                    }
+                    }*/
                 }
                 logger.info("GetWMSInfo OUT,获取返配单wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
@@ -389,6 +391,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         Node childNode = childNodeList.item(j);
                         goods = mapping(goods, childNode);
                     }
+                    goods.setReceiveTime(new Date());
                     int result = wmsToAppOrderService.saveWtaReturningOrderGoods(goods);
                     if (result == 0) {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,商品已存在 出参 c_gcode:{}", goods.getGcode());
@@ -740,7 +743,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         return AppXmlUtil.resultStrXml(1, "重复传输,该单" + purchaseHeader.getPurchaseNo() + "已存在!");
                     }
                     this.handlingWtaWarehousePurchaseHeaderAsync(purchaseHeader, city);*/
-                    this.handleWtaWarehousePurchaseAsync(purchaseHeader.getPurchaseNo());
+                    this.handleWtaWarehousePurchaseAsync(purchaseHeader.getRecNo());
                 }
                 logger.info("GetWMSInfo OUT,获取仓库采购主档wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
@@ -2046,7 +2049,172 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
 
     @Async
     @SuppressWarnings("WeakerAccess")
-    public void handleWtaWarehousePurchaseAsync(String purchaseNo) {
-        this.wmsToAppOrderService.handleWtaWarehousePurchase(purchaseNo);
+    public void handleWtaWarehousePurchaseAsync(String recNo) {
+        this.wmsToAppOrderService.handleWtaWarehousePurchase(recNo);
+    }
+    @Async
+    @Transactional
+    public void handleReturningOrderHeaderAsync(String returnNo, String recNo){
+        WtaReturningOrderHeader returningOrderHeader = this.wmsToAppOrderService.getReturningOrderHeaderByReturnNo(returnNo, recNo);
+        try {
+            if (null != returningOrderHeader) {
+                if (OrderUtils.validationReturnOrderNumber(returningOrderHeader.getPoNo())) {
+
+                    HashedMap maps = new HashedMap();
+                    maps = this.wmsToAppOrderService.handleReturningOrderHeader(returnNo, recNo);
+                    if (null != maps || maps.size() == 0) {
+
+                        ReturnOrderBilling returnOrderBilling = (ReturnOrderBilling) maps.get("returnOrderBilling");
+
+                        ReturnOrderBaseInfo returnOrderBaseInfo = (ReturnOrderBaseInfo) maps.get("returnOrderBaseInfo");
+
+                        OrderBaseInfo orderBaseInfo = (OrderBaseInfo) maps.get("orderBaseInfo");
+
+                        if ("SUCCESS".equals(maps.get("code"))) {
+                            if ((Boolean) maps.get("hasReturnOnlinePay")) {
+                                //返回第三方支付金额
+                                if (null != returnOrderBilling.getOnlinePay() && returnOrderBilling.getOnlinePay() > AppConstant.PAY_UP_LIMIT) {
+                                    if (OnlinePayType.ALIPAY.equals(returnOrderBilling.getOnlinePayType())) {
+                                        //支付宝退款
+                                        Map<String, String> map = onlinePayRefundService.alipayRefundRequest(
+                                                returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(), returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo(), returnOrderBilling.getOnlinePay(), returnOrderBaseInfo.getRoid());
+                                    } else if (OnlinePayType.WE_CHAT.equals(returnOrderBilling.getOnlinePayType())) {
+                                        //微信退款方法类
+                                        Map<String, String> map = onlinePayRefundService.wechatReturnMoney(
+                                                returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(), returnOrderBilling.getOnlinePay(), returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo(), returnOrderBaseInfo.getRoid());
+                                    } else if (OnlinePayType.UNION_PAY.equals(returnOrderBilling.getOnlinePayType())) {
+                                        //创建退单退款详情实体
+                                        ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                                        returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
+                                        returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                                        returnOrderBillingDetail.setReturnNo(returnOrderBaseInfo.getReturnNo());
+                                        returnOrderBillingDetail.setRefundNumber(returnOrderBaseInfo.getReturnNo());
+                                        //TODO 时间待定
+                                        returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
+                                        //TODO 第三方回复码
+                                        returnOrderBillingDetail.setReplyCode("");
+                                        returnOrderBillingDetail.setReturnMoney(returnOrderBilling.getOnlinePay());
+                                        returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.UNION_PAY);
+                                    }
+                                }
+                            }
+                            //修改订单处理状态
+                            returnOrderService.updateReturnOrderStatus(returnOrderBaseInfo.getReturnNo(), AppReturnOrderStatus.FINISHED);
+                            //*****************************保存订单生命周期信息***************************
+                            OrderLifecycle orderLifecycle = new OrderLifecycle();
+                            orderLifecycle.setOid(orderBaseInfo.getId());
+                            orderLifecycle.setOrderNumber(orderBaseInfo.getOrderNumber());
+                            if (returnOrderBaseInfo.getReturnType().equals(ReturnOrderType.REFUSED_RETURN)) {
+                                orderLifecycle.setOperation(OrderLifecycleType.REJECTED);
+                                orderLifecycle.setPostStatus(AppOrderStatus.REJECTED);
+                            } else if (returnOrderBaseInfo.getReturnType().equals(ReturnOrderType.NORMAL_RETURN)) {
+                                orderLifecycle.setOperation(OrderLifecycleType.NORMAL_RETURN);
+                                orderLifecycle.setPostStatus(AppOrderStatus.FINISHED);
+                            }
+                            orderLifecycle.setOperationTime(new Date());
+                            returnOrderDAO.saveOrderLifecycle(orderLifecycle);
+                            //********************************保存退单生命周期信息***********************
+                            ReturnOrderLifecycle returnOrderLifecycle = new ReturnOrderLifecycle();
+                            returnOrderLifecycle.setRoid(returnOrderBaseInfo.getRoid());
+                            returnOrderLifecycle.setReturnNo(returnOrderBaseInfo.getReturnNo());
+                            returnOrderLifecycle.setOperation(OrderLifecycleType.REJECTED);
+                            returnOrderLifecycle.setPostStatus(AppReturnOrderStatus.FINISHED);
+                            returnOrderLifecycle.setOperationTime(new Date());
+                            returnOrderDAO.saveReturnOrderLifecycle(returnOrderLifecycle);
+
+                            //****************************更新物流表的返配上架时间*******************************
+                            returnOrderService.updateReturnLogisticInfoOfBackTime(returnOrderBaseInfo.getReturnNo());
+
+                            //保存物流信息
+                            ReturnOrderDeliveryDetail returnOrderDeliveryDetail = ReturnOrderDeliveryDetail.transform(returningOrderHeader);
+                            returnOrderDeliveryDetailsService.addReturnOrderDeliveryInfoDetails(returnOrderDeliveryDetail);
+
+                            // rabbitMq 记录退单销量
+                            sellDetailsSender.sendReturnOrderSellDetailsTOManagement(returningOrderHeader.getPoNo());
+                            //发送退单拆单消息到拆单消息队列
+                            sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
+                            logger.info("cancelOrderToWms OUT,正常退货成功");
+                            returningOrderHeader.setHandleFlag("1");
+                            returningOrderHeader.setHandleTime(new Date());
+                            this.wmsToAppOrderService.updateReturningOrderHeaderByOrderNo(returningOrderHeader);
+                        } else {
+                            logger.info("getReturnOrderList OUT,正常退货失败,业务处理出现异常!");
+                            smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "正常退货业务逻辑处理失败!order:" + returnNo);
+                            returningOrderHeader.setHandleFlag("0");
+                            returningOrderHeader.setErrMessage("正常退货失败,业务处理出现异常");
+                            returningOrderHeader.setHandleTime(new Date());
+                            this.wmsToAppOrderService.updateReturningOrderHeaderByOrderNo(returningOrderHeader);
+                            throw new RuntimeException();
+                        }
+                    } else {
+                        logger.info("getReturnOrderList OUT,正常退货失败,业务处理出现异常!");
+                        smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "正常退货业务逻辑处理失败!order:" + returnNo);
+                        returningOrderHeader.setHandleFlag("0");
+                        returningOrderHeader.setErrMessage("正常退货失败,业务处理出现异常");
+                        returningOrderHeader.setHandleTime(new Date());
+                        this.wmsToAppOrderService.updateReturningOrderHeaderByOrderNo(returningOrderHeader);
+                        throw new RuntimeException();
+                    }
+                } else {
+                    City city = cityService.findCityByWarehouseNo(returningOrderHeader.getWhNo());
+                    if (null == city) {
+                        returningOrderHeader.setErrMessage("城市信息中没有查询到仓库为" + returningOrderHeader.getWhNo() + "的数据!");
+                        returningOrderHeader.setHandleFlag("0");
+                        returningOrderHeader.setHandleTime(new Date());
+                        this.wmsToAppOrderService.updateReturningOrderHeaderByOrderNo(returningOrderHeader);
+                        throw new RuntimeException();
+                    }
+                    List<WtaReturningOrderGoods> wtaReturningOrderGoods = wmsToAppOrderService.findWtaReturningOrderGoodsByReturnOrderNo(returnNo);
+                    for (WtaReturningOrderGoods returningOrderGoods : wtaReturningOrderGoods) {
+                        GoodsDO goodsDO = goodsService.queryBySku(returningOrderGoods.getGcode());
+                        if (null == goodsDO) {
+                            logger.info("GetWMSInfo OUT,获取wms信息失败,获取退货返配增加城市库存失败,任务编号 商品资料中没有查询到sku为" + returningOrderGoods.getGcode() + "的商品信息!");
+                            returningOrderHeader.setErrMessage("编码为" + returningOrderGoods.getGcode() + "的商品不存在");
+                            returningOrderHeader.setHandleFlag("0");
+                            returningOrderHeader.setHandleTime(new Date());
+                            this.wmsToAppOrderService.updateReturningOrderHeaderByOrderNo(returningOrderHeader);
+                            throw new RuntimeException();
+                        }
+                        for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
+                            //获取现有库存量
+                            CityInventory cityInventory = cityService.findCityInventoryByCityIdAndSku(city.getCityId(), returningOrderGoods.getGcode());
+                            if (null == cityInventory) {
+                                cityInventory = CityInventory.transform(goodsDO, city);
+                                cityService.saveCityInventory(cityInventory);
+                            }
+                            Integer affectLine = cityService.lockCityInventoryByCityIdAndSkuAndInventory(
+                                    city.getCityId(), returningOrderGoods.getGcode(), returningOrderGoods.getRecQty(), cityInventory.getLastUpdateTime());
+                            if (affectLine > 0) {
+                                CityInventoryAvailableQtyChangeLog log = new CityInventoryAvailableQtyChangeLog();
+                                log.setCityId(cityInventory.getCityId());
+                                log.setCityName(cityInventory.getCityName());
+                                log.setGid(cityInventory.getGid());
+                                log.setSku(cityInventory.getSku());
+                                log.setSkuName(cityInventory.getSkuName());
+                                log.setChangeQty(returningOrderGoods.getRecQty());
+                                log.setAfterChangeQty(cityInventory.getAvailableIty() + returningOrderGoods.getRecQty());
+                                log.setChangeTime(Calendar.getInstance().getTime());
+                                log.setChangeType(CityInventoryAvailableQtyChangeType.HOUSE_DELIVERY_ORDER_RETURN);
+                                log.setChangeTypeDesc(CityInventoryAvailableQtyChangeType.HOUSE_DELIVERY_ORDER_RETURN.getDescription());
+                                log.setReferenceNumber(returningOrderHeader.getBackNo());
+                                cityService.addCityInventoryAvailableQtyChangeLog(log);
+                                break;
+                            } else {
+                                if (j == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                    logger.info("GetWMSInfo OUT,获取wms信息失败,获取返配退货增加城市库存失败,任务编号 出参 backNo:{}", returningOrderHeader.getBackNo());
+                                    smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "获取wms仓库退货信息失败,增加城市库存失败!任务编号" + returningOrderHeader.getBackNo());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            returningOrderHeader.setHandleFlag("0");
+            returningOrderHeader.setErrMessage(e.getMessage());
+            returningOrderHeader.setHandleTime(new Date());
+            this.wmsToAppOrderService.updateReturningOrderHeaderByOrderNo(returningOrderHeader);
+        }
     }
 }

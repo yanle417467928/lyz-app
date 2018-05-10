@@ -61,7 +61,7 @@
     <insert id="saveWtaReturningOrderHeader"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturningOrderHeader">
         INSERT INTO inter_wta_return_order_back_header (create_time, back_no, c_end_dt, company_id, note, owner_no, po_no, rec_no,
-                                                        wh_no)
+                                                        wh_no, handle_flag)
             SELECT
                 #{createTime},
                 #{backNo},
@@ -71,7 +71,8 @@
                 #{ownerNo},
                 #{poNo},
                 #{recNo},
-                #{whNo}
+                #{whNo},
+                #{handleFlag}
             FROM DUAL
             WHERE NOT EXISTS(
                     SELECT 'X'
@@ -82,12 +83,13 @@
 
     <insert id="saveWtaReturningOrderGoods"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturningOrderGoods">
-        INSERT INTO inter_wta_return_order_back_goods (gcode, rec_id, rec_no, rec_qty)
+        INSERT INTO inter_wta_return_order_back_goods (gcode, rec_id, rec_no, rec_qty, receive_time)
             SELECT
                 #{gcode},
                 #{recId},
                 #{recNo},
-                #{recQty}
+                #{recQty},
+                #{receiveTime}
             FROM DUAL
             WHERE NOT EXISTS(
                     SELECT 'X'
@@ -277,7 +279,7 @@
             WHERE NOT EXISTS(
                     SELECT 'X'
                     FROM inter_wta_warehouse_purchase_header
-                    WHERE purchase_no = #{purchaseNo}
+                    WHERE rec_no = #{recNo}
             );
     </insert>
 
@@ -521,7 +523,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaWarehousePurchaseHeader">
         SELECT id,warehouse_no, rec_no, gather_rec_no, gather_no, in_no, note, purchase_no, company_id, receive_time, handle_flag, err_message, handle_time
         FROM inter_wta_warehouse_purchase_header
-        WHERE purchase_no = #{purchaseNo} AND (handle_flag = 0 OR handle_flag IS NULL)
+        WHERE rec_no = #{recNo} AND (handle_flag = 0 OR handle_flag IS NULL)
     </select>
 
     <update id="updateWtaWarehousePurchaseHeader" parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaWarehousePurchaseHeader">
@@ -580,5 +582,20 @@
         FROM inter_wta_order_shipping_goods
         WHERE order_no = #{orderNo}
     </select>
+
+    <select id="getReturningOrderHeaderByReturnNo" resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturningOrderHeader">
+        SELECT id, create_time, back_no, c_end_dt, company_id, note, owner_no, po_no, rec_no,
+          wh_no, handle_flag, err_message, handle_time
+        FROM inter_wta_return_order_back_header
+        WHERE po_no = #{returnNo} AND rec_no = #{recNo} AND handle_flag = 0
+    </select>
+
+    <update id="updateReturningOrderHeaderByOrderNo" parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturningOrderHeader">
+        UPDATE inter_wta_return_order_back_header
+        SET handle_flag = #{handleFlag},
+        error_message = #{errorMessage},
+        handle_time = #{handleTime}
+        WHERE po_no = #{poNo}
+    </update>
 
 </mapper>
