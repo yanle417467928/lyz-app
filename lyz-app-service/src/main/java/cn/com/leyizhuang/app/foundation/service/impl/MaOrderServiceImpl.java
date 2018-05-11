@@ -123,6 +123,9 @@ public class MaOrderServiceImpl implements MaOrderService {
     private MaDecorativeCompanyCreditService maDecorativeCompanyCreditService;
 
     @Resource
+    private CommonService commonService;
+
+    @Resource
     private AppSeparateOrderService separateOrderService;
 
     @Override
@@ -1768,6 +1771,13 @@ public class MaOrderServiceImpl implements MaOrderService {
 
                 }
             }
+            //********************************退经销差价退还*************************
+            AppStore appStore = appStoreService.findStoreByUserIdAndIdentityType(orderBaseInfo.getCreatorId(), orderBaseInfo.getCreatorIdentityType().getValue());
+
+            if (AssertUtil.isNotEmpty(appStore) && appStore.getStoreType().equals(StoreType.FX) || appStore.getStoreType().equals(StoreType.JM)) {
+                commonService.deductionOrderJxPriceDifferenceRefund(returnOrderBaseInfo, orderBaseInfo, returnOrderGoodsInfos);
+            }
+
             if (!orderBaseInfo.getStatus().equals(AppOrderStatus.UNPAID)) {
                 //*******************************记录订单生命周期**************************
                 OrderLifecycle orderLifecycle = new OrderLifecycle();
