@@ -24,6 +24,7 @@ import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreRealInvento
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderLifecycle;
+import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderLifecycle;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
@@ -32,6 +33,7 @@ import cn.com.leyizhuang.app.foundation.vo.management.city.CityDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO;
+import cn.com.leyizhuang.common.util.AssertUtil;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -85,7 +87,10 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
     private MaCityService maCityService;
     @Resource
     private ReturnOrderDAO returnOrderDAO;
-
+    @Resource
+    private AppStoreService appStoreService;
+    @Resource
+    private CommonService commonService;
 
 
     @Override
@@ -634,7 +639,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
         }
 
         //获取订单使用现金券
-        List<MaCashCouponInfo> orderCashCouponList = maCouponService.findCashCouponTypeByReturnOrderId(maReturnOrderDetailInfo.getRoid());
+    /*    List<MaCashCouponInfo> orderCashCouponList = maCouponService.findCashCouponTypeByReturnOrderId(maReturnOrderDetailInfo.getRoid());
         if (orderCashCouponList != null && orderCashCouponList.size() > 0) {
             for (MaCashCouponInfo maCashCouponInfo : orderCashCouponList) {
                 //查询现金券原信息
@@ -662,8 +667,22 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                 appCustomerService.addCustomerCashCouponChangeLog(customerCashCouponChangeLog);
 
             }
+        }*/
+        //查询主退单
+        ReturnOrderBaseInfo returnOrderBaseInfo = returnOrderDAO.queryByReturnNo(returnNumber);
+
+        //查原订单
+        OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(returnOrderBaseInfo.getOrderNo());
+
+        //查退货商品信息
+        List<ReturnOrderGoodsInfo> returnOrderGoodsInfos = returnOrderDAO.findReturnOrderGoodsInfoByOrderNumber(returnNumber);
+
+        //********************************退经销差价退还*************************
+        AppStore appStore = appStoreService.findStoreByUserIdAndIdentityType(returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue());
+
+        if (AssertUtil.isNotEmpty(appStore) && appStore.getStoreType().equals(StoreType.FX) || appStore.getStoreType().equals(StoreType.JM)) {
+            commonService.deductionOrderJxPriceDifferenceRefund(returnOrderBaseInfo, orderBaseInfo, returnOrderGoodsInfos);
         }
-        OrderBaseInfo orderBaseInfo =  appOrderService.getOrderByOrderNumber(maReturnOrderDetailInfo.getOrderNo());
 
         //更新订单状态
         this.updateReturnOrderStatus(returnNumber, AppReturnOrderStatus.FINISHED.toString());
