@@ -142,6 +142,7 @@ public class ReturnOrderController {
             return resultDTO;
         }
         try {
+            if (redisLock.lock(AppLock.CANCEL_ORDER, orderNumber, 30)) {
             //获取订单头信息
             OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
             String orderStatus = orderBaseInfo.getStatus().getValue();
@@ -252,12 +253,19 @@ public class ReturnOrderController {
                 logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
+        }else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "取消订单正在处理中，请稍候!", null);
+                logger.warn("cancelOrder OUT,取消订单重复提交，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，取消订单失败", null);
             logger.warn("cancelOrder EXCEPTION,取消订单失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
+        }finally {
+            redisLock.unlock(AppLock.CANCEL_ORDER, orderNumber);
         }
     }
 
@@ -463,7 +471,7 @@ public class ReturnOrderController {
             return resultDTO;
         }
         try {
-
+            if (redisLock.lock(AppLock.NORMAL_RETURN, param.getOrderNo(), 30)) {
             Long userId = param.getUserId();
             Integer identityType = param.getIdentityType();
             String orderNo = param.getOrderNo();
@@ -836,12 +844,19 @@ public class ReturnOrderController {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("createOrder OUT,退货单创建成功,出参 resultDTO:{}", resultDTO);
             return resultDTO;
+        }else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "退货单创建正在处理中，请稍候!", null);
+                logger.warn("createOrder OUT,退货单创建重复提交，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，用户申请退货创建退货单失败", null);
             logger.warn("createReturnOrder EXCEPTION,用户申请退货创建退货单失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
+        }finally {
+            redisLock.unlock(AppLock.NORMAL_RETURN, param.getOrderNo());
         }
     }
 

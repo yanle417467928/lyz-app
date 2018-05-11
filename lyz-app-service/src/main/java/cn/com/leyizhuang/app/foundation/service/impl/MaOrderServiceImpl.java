@@ -1220,10 +1220,11 @@ public class MaOrderServiceImpl implements MaOrderService {
             //获取退单头id
             Long returnOrderId = returnOrderBaseInfo.getRoid();
 
-            //创建退货商品实体类
-            ReturnOrderGoodsInfo returnGoodsInfo = new ReturnOrderGoodsInfo();
+
             List<ReturnOrderGoodsInfo> returnOrderGoodsInfos = new ArrayList<>(orderGoodsInfoList.size());
             for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
+                //创建退货商品实体类
+                ReturnOrderGoodsInfo returnGoodsInfo = new ReturnOrderGoodsInfo();
                 //记录退单商品
                 returnGoodsInfo.setRoid(returnOrderId);
                 returnGoodsInfo.setOrderGoodsId(orderGoodsInfo.getId());

@@ -12,4 +12,8 @@ public class AppLock {
 
     public static final String REFUSE_ORDER = "REDIS_LOCK_REFUSE_ORDER";
 
+    public static final String CANCEL_ORDER = "REDIS_LOCK_CANCEL_ORDER";
+
+    public static final String NORMAL_RETURN = "REDIS_LOCK_NORMAL_RETURN";
+
 }

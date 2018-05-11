@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.remote.webservice.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.getui.NoticePushUtils;
+import cn.com.leyizhuang.app.core.lock.RedisLock;
 import cn.com.leyizhuang.app.core.pay.wechat.refund.OnlinePayRefundService;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
@@ -28,6 +29,7 @@ import cn.com.leyizhuang.app.remote.queue.SinkSender;
 import cn.com.leyizhuang.app.remote.webservice.TestUser;
 import cn.com.leyizhuang.app.remote.webservice.service.ReleaseWMSService;
 import cn.com.leyizhuang.app.remote.webservice.utils.AppXmlUtil;
+import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.util.AssertUtil;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
@@ -96,6 +98,9 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
     private ReturnOrderDAO returnOrderDAO;
     @Resource
     private WmsToAppOrderDAO wmsToAppOrderDAO;
+
+    @Resource
+    private RedisLock redisLock;
 
     /**
      * 获取wms信息
@@ -476,18 +481,27 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,订单号不可为空,退单号 出参 order_no{}");
                         return AppXmlUtil.resultStrXml(1, "订单号(order_no)不可为空");
                     }*/
-                    if (null != orderResultEnter.getIsCancel() && orderResultEnter.getIsCancel()) {
-                        orderResultEnter.setHandleFlag("0");
-                    } else {
-                        orderResultEnter.setHandleFlag("1");
+                    if (redisLock.lock(AppLock.CANCEL_ORDER, orderNo, 30)) {
+                        if (null != orderResultEnter.getIsCancel() && orderResultEnter.getIsCancel()) {
+                            orderResultEnter.setHandleFlag("0");
+                        } else {
+                            orderResultEnter.setHandleFlag("1");
+                        }
+                        int result = wmsToAppOrderService.saveWtaCancelOrderResultEnter(orderResultEnter);
+                        if (result == 0) {
+                            logger.info("GetWMSInfo OUT,获取wms信息失败,该单已存在 出参 order_no:{}", orderResultEnter.getOrderNo());
+                            return AppXmlUtil.resultStrXml(1, "重复传输,该单" + orderResultEnter.getOrderNo() + "已存在!");
+                        }
+                        OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderResultEnter.getOrderNo());
+                        if (AppOrderStatus.CANCELED.equals(orderBaseInfo.getStatus())){
+                            logger.warn("cancelOrder OUT,该订单已取消不能重复取消，出参 orderNo:{}", orderNo);
+                            return AppXmlUtil.resultStrXml(1, "该订单"+orderNo+"已取消不能重复取消");
+                        }
+                        this.handlingWtaCancelOrderResultEnterAsync(orderResultEnter);
+                    }else{
+                        logger.warn("cancelOrder OUT,取消订单重复提交，出参 orderNo:{}", orderNo);
+                        return AppXmlUtil.resultStrXml(1, "正在处理该"+orderNo+"订单!");
                     }
-                    int result = wmsToAppOrderService.saveWtaCancelOrderResultEnter(orderResultEnter);
-
-                    if (result == 0) {
-                        logger.info("GetWMSInfo OUT,获取wms信息失败,该单已存在 出参 order_no:{}", orderResultEnter.getOrderNo());
-                        return AppXmlUtil.resultStrXml(1, "重复传输,该单" + orderResultEnter.getOrderNo() + "已存在!");
-                    }
-                    this.handlingWtaCancelOrderResultEnterAsync(orderResultEnter);
                 }
                 logger.info("GetWMSInfo OUT,获取取消订单结果确认wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
