@@ -39,6 +39,9 @@ public class DeployConfiguration {
     @Value("${deploy.oss.bucket}")
     private String ossBucket;
 
+    @Value("${deploy.wms.url}")
+    private String wmsUrl;
+
     @Value("${deploy.fit.order.template.url}")
     private String fitOrderTemplateUrl;
 
@@ -52,6 +55,7 @@ public class DeployConfiguration {
         LOG.info("cdnHosts : {}", Arrays.toString(cdnHosts));
         LOG.info("ossFolder : {}", ossFolder);
         LOG.info("ossBucket : {}", ossBucket);
+        LOG.info("wmsUrl : {}", wmsUrl);
         LOG.info("fitOrderTemplateUrl : {}", fitOrderTemplateUrl);
 
         ApplicationConstant constant = new ApplicationConstant();
@@ -63,6 +67,7 @@ public class DeployConfiguration {
         constant.setCdnHosts(cdnHosts);
         constant.setOssFolder(ossFolder);
         constant.setOssBucket(ossBucket);
+        constant.setWmsUrl(wmsUrl);
         constant.setFitOrderTemplateUrl(fitOrderTemplateUrl);
         return constant;
     }
@@ -129,5 +134,13 @@ public class DeployConfiguration {
 
     public void setOssBucket(String ossBucket) {
         this.ossBucket = ossBucket;
+    }
+
+    public String getWmsUrl() {
+        return wmsUrl;
+    }
+
+    public void setWmsUrl(String wmsUrl) {
+        this.wmsUrl = wmsUrl;
     }
 }

@@ -32,7 +32,7 @@ public interface ItyInvoicingDAO {
      * @param keywords
      * @return
      */
-    List<InvoicingVO> queryStoreInventoryChangeLogList(@Param("keywords") String keywords, List<Long> storeIds);
+    List<InvoicingVO> queryStoreInventoryChangeLogList(@Param("keywords") String keywords, @Param("list") List<Long> storeIds);
 
     /**
      * 根据城市名称查询库存变动
@@ -48,5 +48,5 @@ public interface ItyInvoicingDAO {
      * @param selectParam
      * @return
      */
-    List<InvoicingVO> queryInvoicingStoreBySelectParam(InvoicingQuery selectParam, List<Long> storeIds);
+    List<InvoicingVO> queryInvoicingStoreBySelectParam(@Param("selectParam") InvoicingQuery selectParam, @Param("list") List<Long> storeIds);
 }

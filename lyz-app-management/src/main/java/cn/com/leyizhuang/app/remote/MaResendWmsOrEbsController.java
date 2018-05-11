@@ -13,6 +13,7 @@ import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderLogisticInfo;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.remote.wms.MaICallWms;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.AssertUtil;
@@ -43,8 +44,9 @@ public class MaResendWmsOrEbsController {
 
     private static final Logger logger = LoggerFactory.getLogger(MaResendWmsOrEbsController.class);
 
-    //    @Resource
-//    private ICallWms iCallWms;
+    @Resource
+    private MaICallWms iCallWms;
+
     @Resource
     private AppToWmsOrderService appToWmsOrderService;
     @Resource
@@ -93,7 +95,7 @@ public class MaResendWmsOrEbsController {
                     logger.info("retransmissionToWms OUT,重传订单到wms，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
-//                iCallWms.sendToWmsRequisitionOrderAndGoods(orderNumber);
+                iCallWms.sendToWmsRequisitionOrderAndGoods(orderNumber);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "重传成功!", null);
                 logger.info("retransmissionToWms OUT,重传订单到wms，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -104,7 +106,7 @@ public class MaResendWmsOrEbsController {
                     logger.info("retransmissionToWms OUT,重传订单到wms，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
-//                iCallWms.sendToWmsReturnOrderAndGoods(orderNumber);
+                iCallWms.sendToWmsReturnOrderAndGoods(orderNumber);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "重传成功!", null);
                 logger.info("retransmissionToWms OUT,重传订单到wms，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -117,7 +119,7 @@ public class MaResendWmsOrEbsController {
                         return resultDTO;
                     }
                 }
-//                iCallWms.sendToWmsCancelOrder(orderNumber);
+                iCallWms.sendToWmsCancelOrder(orderNumber);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "重传成功!", null);
                 logger.info("retransmissionToWms OUT,重传订单到wms，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -130,7 +132,7 @@ public class MaResendWmsOrEbsController {
                         return resultDTO;
                     }
                 }
-//                iCallWms.sendToWmsCancelReturnOrder(orderNumber);
+                iCallWms.sendToWmsCancelReturnOrder(orderNumber);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "重传成功!", null);
                 logger.info("retransmissionToWms OUT,重传订单到wms，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -143,7 +145,7 @@ public class MaResendWmsOrEbsController {
                         return resultDTO;
                     }
                 }
-//                iCallWms.sendToWmsReturnOrderCheck(orderNumber);
+                iCallWms.sendToWmsReturnOrderCheck(orderNumber);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "重传成功!", null);
                 logger.info("retransmissionToWms OUT,重传订单到wms，出参 resultDTO:{}", resultDTO);
                 return resultDTO;

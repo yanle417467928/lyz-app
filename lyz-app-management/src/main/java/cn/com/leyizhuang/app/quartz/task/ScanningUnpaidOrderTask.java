@@ -1,21 +1,16 @@
-package cn.com.leyizhuang.app.quartz;
+package cn.com.leyizhuang.app.quartz.task;
 
 import cn.com.leyizhuang.app.core.utils.ApplicationContextUtil;
-import cn.com.leyizhuang.app.foundation.dao.MaOrderDAO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.service.MaOrderService;
-import cn.com.leyizhuang.app.foundation.service.ReturnOrderService;
-import cn.com.leyizhuang.app.remote.queue.MaSinkSender;
-import org.quartz.*;
-import org.quartz.Calendar;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 扫描待付款订单是否过期

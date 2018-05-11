@@ -1,11 +1,10 @@
-package cn.com.leyizhuang.app.quartz;
+package cn.com.leyizhuang.app.quartz.task;
 
 import cn.com.leyizhuang.app.core.utils.ApplicationContextUtil;
 import cn.com.leyizhuang.app.core.utils.ArrayListUtils;
 import cn.com.leyizhuang.app.foundation.pojo.SellDetailsDO;
 import cn.com.leyizhuang.app.foundation.service.StatisticsSellDetailsService;
 import cn.com.leyizhuang.app.remote.queue.MaSellDetailsSender;
-import cn.com.leyizhuang.common.util.CountUtil;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
@@ -13,9 +12,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 /**

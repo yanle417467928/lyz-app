@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -132,4 +133,8 @@ public interface AppToWmsOrderDAO {
     AtwReturnOrderCheckEnter findAtwReturnOrderCheckEnterByReturnNo(String returnNumber);
 
     void updateAtwReturnOrderCheckEnterRequest(AtwReturnOrderCheckEnter atwReturnOrderCheckEnter);
+
+    List<AtwRequisitionOrder> findFailResendWmsOrder(LocalDateTime yesterday);
+
+    List<AtwReturnOrder> findFailResendWmsReturnOrder(LocalDateTime yesterday);
 }

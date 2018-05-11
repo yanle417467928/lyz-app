@@ -346,4 +346,20 @@
         FROM inter_atw_return_order_check_enter
         WHERE return_no = #{returnNumber};
     </select>
+
+    <select id="findFailResendWmsOrder" parameterType="java.time.LocalDateTime"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder">
+        select *
+        from inter_atw_order_requsition
+        where (send_flag = 0 or send_flag is null)
+              and create_time &gt; #{yesterday} and create_time &lt; now()
+    </select>
+
+    <select id="findFailResendWmsReturnOrder" parameterType="java.time.LocalDateTime"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder">
+        select *
+        from inter_atw_return_order_header
+        where (send_flag = 0 or send_flag is null)
+              and create_time &gt; #{yesterday} and create_time &lt; now()
+    </select>
 </mapper>

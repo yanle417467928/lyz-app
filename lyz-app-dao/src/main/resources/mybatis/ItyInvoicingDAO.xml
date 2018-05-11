@@ -84,7 +84,7 @@
         </if>
     </select>
 
-    <select id="queryStoreInventoryChangeLogList" parameterType="java.lang.String"
+    <select id="queryStoreInventoryChangeLogList"
             resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.invoicing.InvoicingVO">
         select
         id,
@@ -111,7 +111,6 @@
     </select>
 
     <select id="queryInvoicingStoreBySelectParam"
-            parameterType="cn.com.leyizhuang.app.foundation.pojo.inventory.invoicing.InvoicingQuery"
             resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.invoicing.InvoicingVO">
         select
         id,
@@ -124,14 +123,14 @@
         reference_number referenceOrder
         from st_inventory_available_qty_change_log
         WHERE TRUE
-        <if test="store != null and store != -1">
-            AND store_id = #{store}
+        <if test="selectParam.store != null and selectParam.store != -1">
+            AND store_id = #{selectParam.store}
         </if>
-        <if test="startDateTime != null">
-            AND change_time &gt;= #{startDateTime}
+        <if test="selectParam.startDateTime != null">
+            AND change_time &gt;= #{selectParam.startDateTime}
         </if>
-        <if test="endDateTime != null">
-            AND change_time &lt;= #{endDateTime}
+        <if test="selectParam.endDateTime != null">
+            AND change_time &lt;= #{selectParam.endDateTime}
         </if>
         AND st_inventory_available_qty_change_log.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">

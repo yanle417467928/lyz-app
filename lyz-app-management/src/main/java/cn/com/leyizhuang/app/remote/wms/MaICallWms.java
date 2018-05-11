@@ -1,7 +1,7 @@
-package cn.com.leyizhuang.app.remote.webservice;
+package cn.com.leyizhuang.app.remote.wms;
 
-import cn.com.leyizhuang.app.core.constant.AppApplicationConstant;
 import cn.com.leyizhuang.app.core.constant.AppConstant;
+import cn.com.leyizhuang.app.core.constant.ApplicationConstant;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.core.constant.ReturnLogisticStatus;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
@@ -12,7 +12,7 @@ import cn.com.leyizhuang.app.foundation.service.AppToWmsOrderService;
 import cn.com.leyizhuang.app.foundation.service.OrderDeliveryInfoDetailsService;
 import cn.com.leyizhuang.app.foundation.service.ReturnOrderDeliveryDetailsService;
 import cn.com.leyizhuang.app.foundation.service.SmsAccountService;
-import cn.com.leyizhuang.app.remote.webservice.utils.AppXmlUtil;
+import cn.com.leyizhuang.app.remote.wms.utils.AppXmlUtil;
 import cn.com.leyizhuang.common.util.AssertUtil;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
@@ -30,7 +30,7 @@ import java.util.List;
  * @author Created on 2017-12-19 13:18
  **/
 @Service
-public class ICallWms {
+public class MaICallWms {
 
     @Resource
     private AppToWmsOrderService appToWmsOrderService;
@@ -44,7 +44,7 @@ public class ICallWms {
     @Resource
     private ReturnOrderDeliveryDetailsService returnOrderDeliveryDetailsService;
 
-    private static final Logger logger = LoggerFactory.getLogger(ICallWms.class);
+    private static final Logger logger = LoggerFactory.getLogger(MaICallWms.class);
 
     private static QName wmsName = new QName("http://tempuri.org/", "GetErpInfo");
 
@@ -53,7 +53,7 @@ public class ICallWms {
 
     private static Client getWmsClient() {
         JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
-        return dcf.createClient(AppApplicationConstant.wmsUrl);
+        return dcf.createClient(ApplicationConstant.wmsUrl);
     }
 
     /**
@@ -285,7 +285,7 @@ public class ICallWms {
         }
 
         /** 新增服务单判断逻辑 **/
-        if (requisitionOrder.getOrderNumber().contains("FW")){
+        if (requisitionOrder.getOrderNumber().contains("FW")) {
             // 交付中心服务单 地址作特殊处理
             requisitionOrder.setDisctrict("交付中心");
             requisitionOrder.setSubdistrict("交付中心");
@@ -403,7 +403,7 @@ public class ICallWms {
         }
 
         /** 新增服务单判断逻辑 **/
-        if (returnOrder.getOrderNumber().contains("FW")){
+        if (returnOrder.getOrderNumber().contains("FW")) {
             // 交付中心服务单 地址作特殊处理
             returnOrder.setDisctrict("交付中心");
             returnOrder.setSubdistrict("交付中心");

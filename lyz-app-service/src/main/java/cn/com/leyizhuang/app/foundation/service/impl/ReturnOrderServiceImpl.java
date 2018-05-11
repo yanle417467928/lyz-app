@@ -167,16 +167,18 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                     for (ReturnOrderGoodsInfo goodsInfo : returnOrderGoodsInfos) {
                         goodsInfo.setRoid(roid);
                         returnOrderDAO.saveReturnOrderGoodsInfo(goodsInfo);
-                        //保存发送wms退货商品明细
-                        AtwRequisitionOrderGoods orderGoods = null;
-                        if ("ZS-002".equals(returnOrderBaseInfo.getStoreCode()) || "MR004".equals(returnOrderBaseInfo.getStoreCode())){
-                            orderGoods = AtwRequisitionOrderGoods.transform(returnOrderBaseInfo.getReturnNo(), goodsInfo.getSku(),
-                                    goodsInfo.getSkuName(), goodsInfo.getSettlementPrice(), goodsInfo.getReturnQty(), goodsInfo.getCompanyFlag());
-                        } else {
-                            orderGoods = AtwRequisitionOrderGoods.transform(returnOrderBaseInfo.getReturnNo(), goodsInfo.getSku(),
-                                    goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getReturnQty(), goodsInfo.getCompanyFlag());
+                        //保存发送wms退货商品明细 加判断如果是自提单就没有退货头档，就没有必要生成明细
+                        if (null != atwReturnOrder) {
+                            AtwRequisitionOrderGoods orderGoods = null;
+                            if ("ZS-002".equals(returnOrderBaseInfo.getStoreCode()) || "MR004".equals(returnOrderBaseInfo.getStoreCode())) {
+                                orderGoods = AtwRequisitionOrderGoods.transform(returnOrderBaseInfo.getReturnNo(), goodsInfo.getSku(),
+                                        goodsInfo.getSkuName(), goodsInfo.getSettlementPrice(), goodsInfo.getReturnQty(), goodsInfo.getCompanyFlag());
+                            } else {
+                                orderGoods = AtwRequisitionOrderGoods.transform(returnOrderBaseInfo.getReturnNo(), goodsInfo.getSku(),
+                                        goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getReturnQty(), goodsInfo.getCompanyFlag());
+                            }
+                            appToWmsOrderService.saveAtwRequisitionOrderGoods(orderGoods);
                         }
-                        appToWmsOrderService.saveAtwRequisitionOrderGoods(orderGoods);
                     }
                 }
                 if (null != returnOrderBilling) {

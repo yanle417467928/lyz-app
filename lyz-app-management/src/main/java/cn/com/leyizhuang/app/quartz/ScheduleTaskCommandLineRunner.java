@@ -1,6 +1,10 @@
 package cn.com.leyizhuang.app.quartz;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.service.MaClearTempCreditService;
+import cn.com.leyizhuang.app.quartz.task.AutoResendWMSScheduleTask;
+import cn.com.leyizhuang.app.quartz.task.ClearTempCreditScheduleTask;
+import cn.com.leyizhuang.app.quartz.task.ScanningUnpaidOrderTask;
+import cn.com.leyizhuang.app.quartz.task.SendSellDetailsToHQTask;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -41,6 +45,14 @@ public class ScheduleTaskCommandLineRunner implements CommandLineRunner {
 
         }else{
             throw new RuntimeException("scanningUnpaidOrderCron为空");
+        }
+
+        String autoResendWMSCron = maClearTempCreditService.getCron(4L);
+        if (StringUtils.isNotBlank(autoResendWMSCron)) {
+
+            QuartzManager.addJob("autoResendWMS", "jobGroup4", "trigger4", "triggerGroup4", AutoResendWMSScheduleTask.class, autoResendWMSCron);
+        } else {
+            throw new RuntimeException("autoResendWMS为空");
         }
     }
 }

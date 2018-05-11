@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.service.AppToWmsOrderService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -16,7 +17,7 @@ import java.util.List;
  * Date: 2017/12/21.
  * Time: 11:50.
  */
-@Service
+@Service("appToWmsOrderService")
 public class AppToWmsOrderServiceImpl implements AppToWmsOrderService {
 
     @Resource
@@ -138,5 +139,21 @@ public class AppToWmsOrderServiceImpl implements AppToWmsOrderService {
     @Override
     public void modifyAtwReturnOrderCheckEnterRequest(AtwReturnOrderCheckEnter atwReturnOrderCheckEnter) {
         appToWmsOrderDAO.updateAtwReturnOrderCheckEnterRequest(atwReturnOrderCheckEnter);
+    }
+
+    @Override
+    public List<AtwRequisitionOrder> findFailResendWmsOrder(LocalDateTime yesterday) {
+        if (yesterday != null) {
+            return appToWmsOrderDAO.findFailResendWmsOrder(yesterday);
+        }
+        return null;
+    }
+
+    @Override
+    public List<AtwReturnOrder> findFailResendWmsReturnOrder(LocalDateTime yesterday) {
+        if (yesterday != null) {
+            return appToWmsOrderDAO.findFailResendWmsReturnOrder(yesterday);
+        }
+        return null;
     }
 }

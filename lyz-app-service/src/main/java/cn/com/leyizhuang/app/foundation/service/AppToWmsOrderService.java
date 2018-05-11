@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -160,4 +161,8 @@ public interface AppToWmsOrderService {
      * @param atwReturnOrderCheckEnter
      */
     void modifyAtwReturnOrderCheckEnterRequest(AtwReturnOrderCheckEnter atwReturnOrderCheckEnter);
+
+    List<AtwRequisitionOrder> findFailResendWmsOrder(LocalDateTime yesterday);
+
+    List<AtwReturnOrder> findFailResendWmsReturnOrder(LocalDateTime yesterday);
 }

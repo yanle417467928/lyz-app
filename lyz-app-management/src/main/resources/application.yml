@@ -140,6 +140,8 @@ deploy:
     cdnHosts: img-dev.leyizhuang.com.cn
     folder: lyz-app/images/
     bucket: leyizhuang-dev
+  wms:
+      url: http://120.76.214.99:8199/WmsInterServer.asmx?wsdl
   lyz:
     qrcodeRegister: http://eqtest.leyizhuang.com.cn:8089
     baseUrl: \lyz-app-management\src\main\resources\static\images\
@@ -268,7 +270,7 @@ deploy:
     folder: lyz-app/images/
     bucket: leyizhuang
   wms:
-    url: http://120.76.23.226:8199/WmsInterServer.asmx?wsdl
+    url: http://120.76.23.226:8999/WmsInterServer.asmx?wsdl
   ebs:
     url: http://erptest.zghuarun.com:8030/webservices/SOAProvider/plsql/cux_app_webservice_pkg/?wsdl
     newUrl: http://ebs.leyizhuang.com.cn:10001/ebs/
