@@ -787,7 +787,7 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                                         log.setGid(outboundCityInventory.getGid());
                                         log.setSku(outboundCityInventory.getSku());
                                         log.setSkuName(outboundCityInventory.getSkuName());
-                                        log.setChangeQty(allocationGoods.getCheckQty());
+                                        log.setChangeQty(changeInventoryOutbound);
                                         log.setAfterChangeQty(outboundCityInventory.getAvailableIty() + changeInventoryOutbound);
                                         log.setChangeTime(Calendar.getInstance().getTime());
                                         log.setChangeType(CityInventoryAvailableQtyChangeType.ALLOCATE_OUTBOUND);
