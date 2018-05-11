@@ -674,9 +674,9 @@
     <update id="updateReturningOrderHeaderByOrderNo"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturningOrderHeader">
         UPDATE inter_wta_return_order_back_header
-        SET handle_flag   = #{handleFlag},
-            error_message = #{errorMessage},
-            handle_time   = #{handleTime}
+        SET handle_flag = #{handleFlag},
+        err_message = #{errMessage},
+        handle_time = #{handleTime}
         WHERE po_no = #{poNo}
     </update>
 
