@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.web.controller.returnorder;
 
 import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.lock.RedisLock;
 import cn.com.leyizhuang.app.core.pay.wechat.refund.OnlinePayRefundService;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.oss.FileUploadOSSUtils;
@@ -101,6 +102,9 @@ public class ReturnOrderController {
     @Resource
     private CityService cityService;
 
+    @Resource
+    private RedisLock redisLock;
+
     /**
      * 取消订单
      *
@@ -138,6 +142,7 @@ public class ReturnOrderController {
             return resultDTO;
         }
         try {
+            if (redisLock.lock(AppLock.CANCEL_ORDER, orderNumber, 30)) {
             //获取订单头信息
             OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
             String orderStatus = orderBaseInfo.getStatus().getValue();
@@ -153,11 +158,11 @@ public class ReturnOrderController {
                 logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            Double storePos = orderBillingDetails.getStorePosMoney() == null?0:orderBillingDetails.getStorePosMoney();
-            Double storeOther = orderBillingDetails.getStoreOtherMoney() == null?0:orderBillingDetails.getStoreOtherMoney();
-            Double storeCash = orderBillingDetails.getStoreCash() == null?0:orderBillingDetails.getStoreCash();
-            Double storeTotalMoney = CountUtil.add(storeCash,storeOther,storePos);
-            if (orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE) && storeTotalMoney > 0 ){
+            Double storePos = orderBillingDetails.getStorePosMoney() == null ? 0 : orderBillingDetails.getStorePosMoney();
+            Double storeOther = orderBillingDetails.getStoreOtherMoney() == null ? 0 : orderBillingDetails.getStoreOtherMoney();
+            Double storeCash = orderBillingDetails.getStoreCash() == null ? 0 : orderBillingDetails.getStoreCash();
+            Double storeTotalMoney = CountUtil.add(storeCash, storeOther, storePos);
+            if (orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE) && storeTotalMoney > 0) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此订单已收款，无法取消！", null);
                 logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -232,7 +237,7 @@ public class ReturnOrderController {
                     //如果是待发货的门店自提单发送退单拆单消息到拆单消息队列
                     /*2018-04-08 generation 改为待收货的自提单*/
 //                    if (orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_SHIPMENT) && orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE)){
-                    if (orderStatus.equals(AppOrderStatus.PENDING_RECEIVE.getValue()) && orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE)){
+                    if (orderStatus.equals(AppOrderStatus.PENDING_RECEIVE.getValue()) && orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE)) {
                         sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
                     }
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
@@ -248,12 +253,19 @@ public class ReturnOrderController {
                 logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
+        }else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "取消订单正在处理中，请稍候!", null);
+                logger.warn("cancelOrder OUT,取消订单重复提交，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，取消订单失败", null);
             logger.warn("cancelOrder EXCEPTION,取消订单失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
+        }finally {
+            redisLock.unlock(AppLock.CANCEL_ORDER, orderNumber);
         }
     }
 
@@ -301,93 +313,99 @@ public class ReturnOrderController {
             return resultDTO;
         }
         try {
-            //获取订单头信息
-            OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
-            //获取订单账目明细
-            OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderNumber);
-            if (null == orderBaseInfo) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此订单！", null);
-                logger.info("refusedOrder OUT,拒签退货失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
-
-            if (null == orderBillingDetails) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此订单费用明细，请联系管理员！", null);
-                logger.info("refusedOrder OUT,拒签退货失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
-            //*******************处理上传图片***********************
-            List<String> pictureUrls = new ArrayList<>();
-            String returnPic = null;
-            if (pictures != null) {
-                for (MultipartFile picture : pictures) {
-                    String url = FileUploadOSSUtils.uploadProfilePhoto(picture, "returnOrder/reason/");
-                    pictureUrls.add(url);
+            if (redisLock.lock(AppLock.REFUSE_ORDER, orderNumber, 30)) {
+                //获取订单头信息
+                OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
+                //获取订单账目明细
+                OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderNumber);
+                if (null == orderBaseInfo) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此订单！", null);
+                    logger.info("refusedOrder OUT,拒签退货失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
                 }
-                returnPic = org.apache.commons.lang.StringUtils.strip(pictureUrls.toString(), "[]");
-            }
-            //拒签退货记录
-            Map<Object, Object> maps = returnOrderService.saveRefusedOrder(userId, identityType, orderNumber, reasonInfo, remarksInfo, orderBaseInfo, orderBillingDetails, returnPic);
-            String code = (String) maps.get("code");
-            ReturnOrderBaseInfo returnOrderBaseInfo = null;
-            if ("SUCCESS".equals(code)) {
-                returnOrderBaseInfo = (ReturnOrderBaseInfo) maps.get("returnOrderBaseInfo");
-                List<ReturnOrderGoodsInfo> returnOrderGoodsInfos = (List<ReturnOrderGoodsInfo>) maps.get("returnOrderGoodsInfos");
 
-                //发送拆单消息到消息队列
+                if (null == orderBillingDetails) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此订单费用明细，请联系管理员！", null);
+                    logger.info("refusedOrder OUT,拒签退货失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+                //*******************处理上传图片***********************
+                List<String> pictureUrls = new ArrayList<>();
+                String returnPic = null;
+                if (pictures != null) {
+                    for (MultipartFile picture : pictures) {
+                        String url = FileUploadOSSUtils.uploadProfilePhoto(picture, "returnOrder/reason/");
+                        pictureUrls.add(url);
+                    }
+                    returnPic = org.apache.commons.lang.StringUtils.strip(pictureUrls.toString(), "[]");
+                }
+                //拒签退货记录
+                Map<Object, Object> maps = returnOrderService.saveRefusedOrder(userId, identityType, orderNumber, reasonInfo, remarksInfo, orderBaseInfo, orderBillingDetails, returnPic);
+                String code = (String) maps.get("code");
+                ReturnOrderBaseInfo returnOrderBaseInfo = null;
+                if ("SUCCESS".equals(code)) {
+                    returnOrderBaseInfo = (ReturnOrderBaseInfo) maps.get("returnOrderBaseInfo");
+                    List<ReturnOrderGoodsInfo> returnOrderGoodsInfos = (List<ReturnOrderGoodsInfo>) maps.get("returnOrderGoodsInfos");
+
+                    //发送拆单消息到消息队列
 //                sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
 
-                AppEmployee employee = appEmployeeService.findById(userId);
-                Date date = new Date();
-                //保存发送wms退货单头
-                OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderNumber);
-                AtwReturnOrder atwReturnOrder = new AtwReturnOrder();
-                atwReturnOrder.setCreateTime(date);
-                atwReturnOrder.setDiySiteAddress(null);
-                atwReturnOrder.setDiySiteId(null);
-                atwReturnOrder.setDiySiteTitle(null);
-                atwReturnOrder.setDiySiteTel(null);
-                atwReturnOrder.setRemarkInfo("拒签退货: " + returnOrderBaseInfo.getReasonInfo());
-                atwReturnOrder.setOrderNumber(orderNumber);
-                atwReturnOrder.setReturnNumber(returnOrderBaseInfo.getReturnNo());
-                atwReturnOrder.setReturnTime(date);
-                atwReturnOrder.setStatusId(returnOrderBaseInfo.getReturnStatus().getValue());
-                atwReturnOrder.setDeliverTypeTitle(AppDeliveryType.HOUSE_DELIVERY.getDescription());
-                atwReturnOrder.setReturnPrice(returnOrderBaseInfo.getReturnPrice());
-                atwReturnOrder.setShoppingAddress(orderLogisticsInfo.getShippingAddress());
-                atwReturnOrder.setSellerRealName(orderBaseInfo.getSalesConsultName());
-                atwReturnOrder.setGoodsLineQuantity(returnOrderGoodsInfos.size());
-                atwReturnOrder.setCreator(returnOrderBaseInfo.getCreatorName());
-                atwReturnOrder.setCreatorPhone(returnOrderBaseInfo.getCreatorPhone());
-                atwReturnOrder.setRejecter(orderLogisticsInfo.getReceiver());
-                atwReturnOrder.setRejecterPhone(orderLogisticsInfo.getReceiverPhone());
-                atwReturnOrder.setRejecterAddress(orderLogisticsInfo.getDetailedAddress());
-                atwReturnOrder.setDeliveryClerkNo(employee.getDeliveryClerkNo());
-                atwReturnOrder.setSendFlag(null);
-                atwReturnOrder.setSendTime(null);
-                appToWmsOrderService.saveAtwReturnOrder(atwReturnOrder);
-                //保存发送WMS退货商品详情
-                if (null != returnOrderGoodsInfos && returnOrderGoodsInfos.size() > 0) {
-                    for (ReturnOrderGoodsInfo goodsInfo : returnOrderGoodsInfos) {
-                        AtwRequisitionOrderGoods orderGoods = null;
-                        if ("ZS-002".equals(orderBaseInfo.getStoreCode()) || "MR004".equals(orderBaseInfo.getStoreCode())){
-                            orderGoods = AtwRequisitionOrderGoods.transform(returnOrderBaseInfo.getReturnNo(), goodsInfo.getSku(),
-                                    goodsInfo.getSkuName(), goodsInfo.getSettlementPrice(), goodsInfo.getReturnQty(), goodsInfo.getCompanyFlag());
-                        } else {
-                            orderGoods = AtwRequisitionOrderGoods.transform(returnOrderBaseInfo.getReturnNo(), goodsInfo.getSku(),
-                                    goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getReturnQty(), goodsInfo.getCompanyFlag());
+                    AppEmployee employee = appEmployeeService.findById(userId);
+                    Date date = new Date();
+                    //保存发送wms退货单头
+                    OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderNumber);
+                    AtwReturnOrder atwReturnOrder = new AtwReturnOrder();
+                    atwReturnOrder.setCreateTime(date);
+                    atwReturnOrder.setDiySiteAddress(null);
+                    atwReturnOrder.setDiySiteId(null);
+                    atwReturnOrder.setDiySiteTitle(null);
+                    atwReturnOrder.setDiySiteTel(null);
+                    atwReturnOrder.setRemarkInfo("拒签退货: " + returnOrderBaseInfo.getReasonInfo());
+                    atwReturnOrder.setOrderNumber(orderNumber);
+                    atwReturnOrder.setReturnNumber(returnOrderBaseInfo.getReturnNo());
+                    atwReturnOrder.setReturnTime(date);
+                    atwReturnOrder.setStatusId(returnOrderBaseInfo.getReturnStatus().getValue());
+                    atwReturnOrder.setDeliverTypeTitle(AppDeliveryType.HOUSE_DELIVERY.getDescription());
+                    atwReturnOrder.setReturnPrice(returnOrderBaseInfo.getReturnPrice());
+                    atwReturnOrder.setShoppingAddress(orderLogisticsInfo.getShippingAddress());
+                    atwReturnOrder.setSellerRealName(orderBaseInfo.getSalesConsultName());
+                    atwReturnOrder.setGoodsLineQuantity(returnOrderGoodsInfos.size());
+                    atwReturnOrder.setCreator(returnOrderBaseInfo.getCreatorName());
+                    atwReturnOrder.setCreatorPhone(returnOrderBaseInfo.getCreatorPhone());
+                    atwReturnOrder.setRejecter(orderLogisticsInfo.getReceiver());
+                    atwReturnOrder.setRejecterPhone(orderLogisticsInfo.getReceiverPhone());
+                    atwReturnOrder.setRejecterAddress(orderLogisticsInfo.getDetailedAddress());
+                    atwReturnOrder.setDeliveryClerkNo(employee.getDeliveryClerkNo());
+                    atwReturnOrder.setSendFlag(null);
+                    atwReturnOrder.setSendTime(null);
+                    appToWmsOrderService.saveAtwReturnOrder(atwReturnOrder);
+                    //保存发送WMS退货商品详情
+                    if (null != returnOrderGoodsInfos && returnOrderGoodsInfos.size() > 0) {
+                        for (ReturnOrderGoodsInfo goodsInfo : returnOrderGoodsInfos) {
+                            AtwRequisitionOrderGoods orderGoods = null;
+                            if ("ZS-002".equals(orderBaseInfo.getStoreCode()) || "MR004".equals(orderBaseInfo.getStoreCode())) {
+                                orderGoods = AtwRequisitionOrderGoods.transform(returnOrderBaseInfo.getReturnNo(), goodsInfo.getSku(),
+                                        goodsInfo.getSkuName(), goodsInfo.getSettlementPrice(), goodsInfo.getReturnQty(), goodsInfo.getCompanyFlag());
+                            } else {
+                                orderGoods = AtwRequisitionOrderGoods.transform(returnOrderBaseInfo.getReturnNo(), goodsInfo.getSku(),
+                                        goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getReturnQty(), goodsInfo.getCompanyFlag());
+                            }
+                            appToWmsOrderService.saveAtwRequisitionOrderGoods(orderGoods);
                         }
-                        appToWmsOrderService.saveAtwRequisitionOrderGoods(orderGoods);
                     }
+                    //发送退货单到wms
+                    callWms.sendToWmsReturnOrderAndGoods(returnOrderBaseInfo.getReturnNo());
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+                    logger.info("refusedOrder OUT,拒签退货成功，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                } else {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常，拒签退货失败，请联系管理员！", null);
+                    logger.info("refusedOrder OUT,拒签退货失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
                 }
-                //发送退货单到wms
-                callWms.sendToWmsReturnOrderAndGoods(returnOrderBaseInfo.getReturnNo());
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-                logger.info("refusedOrder OUT,拒签退货成功，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
             } else {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常，拒签退货失败，请联系管理员！", null);
-                logger.info("refusedOrder OUT,拒签退货失败，出参 resultDTO:{}", resultDTO);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "拒签退货正在处理中，请稍候!", null);
+                logger.warn("refusedOrder OUT,拒签退货重复提交，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
         } catch (Exception e) {
@@ -396,6 +414,8 @@ public class ReturnOrderController {
             logger.warn("refusedOrder EXCEPTION,拒签退货失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
+        } finally {
+            redisLock.unlock(AppLock.REFUSE_ORDER, orderNumber);
         }
     }
 
@@ -451,7 +471,7 @@ public class ReturnOrderController {
             return resultDTO;
         }
         try {
-
+            if (redisLock.lock(AppLock.NORMAL_RETURN, param.getOrderNo(), 30)) {
             Long userId = param.getUserId();
             Integer identityType = param.getIdentityType();
             String orderNo = param.getOrderNo();
@@ -646,7 +666,7 @@ public class ReturnOrderController {
             //2018-04-03 generation 加盟门店自提单退货不用判断账单支付信息
             Boolean jmSelfTakeOrder = false;
             AppStore store = this.appStoreService.findById(returnOrderBaseInfo.getStoreId());
-            if (null != store && store.getStoreType() == StoreType.JM && AppDeliveryType.SELF_TAKE.equals(order.getDeliveryType())){
+            if (null != store && store.getStoreType() == StoreType.JM && AppDeliveryType.SELF_TAKE.equals(order.getDeliveryType())) {
                 jmSelfTakeOrder = true;
                 returnOrderBaseInfo.setReturnStatus(AppReturnOrderStatus.FINISHED);
             }
@@ -800,7 +820,7 @@ public class ReturnOrderController {
                 atwReturnOrder = AtwReturnOrder.transform(returnOrderBaseInfo, returnOrderLogisticInfo, appStore, order, goodsInfos.size(), salesConsult);
             }
             returnOrderService.saveReturnOrderRelevantInfo(returnOrderBaseInfo, returnOrderLogisticInfo, goodsInfos, returnOrderBilling,
-                    productCouponList, orderGoodsInfoList,atwReturnOrder);
+                    productCouponList, orderGoodsInfoList, atwReturnOrder);
             //如果是买券订单直接处理退款退货
             if (AppOrderType.COUPON.equals(order.getOrderType())) {
                 City city = cityService.findById(order.getCityId());
@@ -824,12 +844,19 @@ public class ReturnOrderController {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("createOrder OUT,退货单创建成功,出参 resultDTO:{}", resultDTO);
             return resultDTO;
+        }else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "退货单创建正在处理中，请稍候!", null);
+                logger.warn("createOrder OUT,退货单创建重复提交，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，用户申请退货创建退货单失败", null);
             logger.warn("createReturnOrder EXCEPTION,用户申请退货创建退货单失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
+        }finally {
+            redisLock.unlock(AppLock.NORMAL_RETURN, param.getOrderNo());
         }
     }
 

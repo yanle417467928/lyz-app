@@ -29,6 +29,8 @@ public class GiftListResponseGoods{
     private Integer qty;
     //商品单价
     private Double retailPrice;
+    //商品会员价
+    private Double vipPrice;
     //是否赠品
     private Boolean isGift;
     //公司类型

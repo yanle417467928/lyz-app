@@ -463,7 +463,7 @@ public class MaOrderRestController extends BaseRestController {
     @Transactional
     @GetMapping(value = "/orderShipping")
     public ResultDTO<Object> orderShipping(@RequestParam(value = "orderNumber") String orderNumber, @RequestParam(value = "code") String code) {
-        logger.warn("orderShipping 后台自提单单发货 ,入参orderNumbe:{} code:{}", orderNumber, code);
+        logger.warn("orderShipping 后台自提单单发货 ,入参orderNumber:{} code:{}", orderNumber, code);
         ResultDTO<Object> resultDTO;
         if (null == orderNumber && "".equals(orderNumber)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单编号不允许为空", null);

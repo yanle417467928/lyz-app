@@ -254,32 +254,32 @@
                         <table class="table">
                             <tr>
                                 <th style="width:50%" class="th1">商品总额:</th>
-                                <td class="td1">¥${orderBillingDetail.totalGoodsPrice!'0.00'}</td>
+                                <td class="td1">¥<#if orderBillingDetail??>${orderBillingDetail.totalGoodsPrice!'0.00'}<#else>0.00</#if></td>
                             </tr>
                             <tr>
                                 <th class="th1">运费</th>
-                                <td class="td1">¥${orderBillingDetail.freight!'0.00'}</td>
+                                <td class="td1">¥<#if orderBillingDetail??>${orderBillingDetail.freight!'0.00'}<#else>0.00</#if></td>
                             </tr>
                             <tr>
                                 <th class="th1">优惠券折扣:</th>
-                                <td class="td1">- ¥${orderBillingDetail.cashCouponDiscount!'0.00'}</td>
+                                <td class="td1">- ¥<#if orderBillingDetail??>${orderBillingDetail.cashCouponDiscount!'0.00'}<#else>0.00</#if></td>
                             </tr>
                             <tr>
                                 <th class="th1">促销折扣:</th>
-                                <td class="td1">- ¥${orderBillingDetail.promotionDiscount!'0.00'}</td>
+                                <td class="td1">- ¥<#if orderBillingDetail??>${orderBillingDetail.promotionDiscount!'0.00'}<#else>0.00</#if></td>
                             </tr>
                             <tr>
                                 <th class="th1">会员折扣:</th>
-                                <td class="td1">- ¥${orderBillingDetail.memberDiscount!'0.00'}</td>
+                                <td class="td1">- ¥<#if orderBillingDetail??>${orderBillingDetail.memberDiscount!'0.00'}<#else>0.00</#if></td>
                             </tr>
                             <tr>
                                 <th class="th1">现金返利折扣:</th>
-                                <td class="td1">- ¥${orderBillingDetail.subvention!'0.00'}</td>
+                                <td class="td1">- ¥<#if orderBillingDetail??>${orderBillingDetail.subvention!'0.00'}<#else>0.00</#if></td>
                             </tr>
                             <tr>
                                 <th class="th1">应付金额:</th>
                                 <td style="color: red;font-weight:bold" class="td1">
-                                    ¥${orderBillingDetail.amountPayable!'0.00'}</td>
+                                <#if orderBillingDetail??>¥${orderBillingDetail.amountPayable!'0.00'}<#else>0.00</#if></td>
                             </tr>
                         </table>
                     </div>

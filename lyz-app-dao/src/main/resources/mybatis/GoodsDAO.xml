@@ -526,7 +526,7 @@
             g.gid      id,
             g.goods_specification,
             g.goods_unit,
-            p.vip_price,
+            min(p.vip_price)AS vip_price,
             p.retail_price,
             g.cid      category_id,
             g.brd_id   brand_id,
@@ -546,6 +546,7 @@
         WHERE
             c.cus_id = #{userId}
             AND g.is_hot = 1
+            GROUP BY p.sku
     </select>
 
     <select id="findGoodsListByIsHotAndEmployeeIdAndIdentityType" parameterType="java.lang.Long"
@@ -585,7 +586,7 @@
             g.gid id,
             g.goods_specification,
             g.goods_unit,
-            p.vip_price,
+            min(p.vip_price)AS vip_price,
             p.retail_price,
             g.cid category_id,
             g.brd_id brand_id,
@@ -604,6 +605,7 @@
             AND acc.identity_type = #{type,
             javaType=cn.com.leyizhuang.app.core.constant.AppIdentityType,
             typeHandler=org.apache.ibatis.type.EnumTypeHandler}
+            GROUP BY p.sku
         </if>
 
         <if test="null != type and type.toString() != 'CUSTOMER'">
@@ -613,7 +615,7 @@
             g.gid id,
             g.goods_specification,
             g.goods_unit,
-            p.vip_price,
+            min(p.vip_price)AS vip_price,
             p.retail_price,
             g.cid category_id,
             g.brd_id brand_id,
@@ -633,6 +635,7 @@
             AND acc.identity_type = #{type,
             javaType=cn.com.leyizhuang.app.core.constant.AppIdentityType,
             typeHandler=org.apache.ibatis.type.EnumTypeHandler}
+            GROUP BY p.sku
         </if>
 
     </select>
@@ -647,7 +650,7 @@
             g.sku_name goods_name,
             g.goods_specification,
             g.goods_unit,
-            p.vip_price,
+            min(p.vip_price)AS vip_price,
             p.retail_price,
             g.cid      category_id,
             g.brd_id   brand_id,
@@ -670,6 +673,7 @@
             AND acg.identity_type = #{type,
             javaType=cn.com.leyizhuang.app.core.constant.AppIdentityType,
             typeHandler=org.apache.ibatis.type.EnumTypeHandler}
+            GROUP BY p.sku
     </select>
 
     <select id="findGoodsImageUriByGoodsId" resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
@@ -692,7 +696,7 @@
             g.cover_image_uri,
             g.goods_specification,
             g.goods_unit,
-            p.vip_price,
+            min(p.vip_price)AS vip_price,
             p.retail_price,
             g.cid      category_id,
             g.brd_id   brand_id,
@@ -715,6 +719,7 @@
                 g.sku_name LIKE concat('%', #{keywords}, '%')
                 OR g.sku LIKE concat('%', #{keywords}, '%')
             )
+            GROUP BY p.sku
     </select>
 
     <select id="searchByEmployeeIdAndKeywords" resultType="UserGoodsResponse">
@@ -779,7 +784,7 @@
     <select id="findGoodsDetailByGoodsId"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsDetailResponse">
         <if test="null != type and type.toString() == 'CUSTOMER'">
-            SELECT DISTINCT g.*, IF(gc.id IS NULL,FALSE,TRUE) isCollect, p.retail_price price FROM
+            SELECT DISTINCT g.*, IF(gc.id IS NULL,FALSE,TRUE) isCollect, p.retail_price price, min(p.vip_price)AS vip_price FROM
             (SELECT cus_id, #{type} as identity_type, store_id FROM cus_customer WHERE cus_id = #{userId}) c
             LEFT JOIN (SELECT * FROM gds_goods_collect WHERE gid = #{goodsId} and user_id = #{userId} and identity_type
             = #{type}) gc on gc.user_id = c.cus_id and gc.identity_type = c.identity_type
@@ -791,7 +796,8 @@
             (SELECT gid id, sku_name skuName, goods_specification goodsSpecification, goods_unit goodsUnit,work_area workArea,work_cost workCost FROM
             gds_goods WHERE gid = #{goodsId}) g
             WHERE
-            g.id = p.gid;
+            g.id = p.gid
+            GROUP BY p.sku
         </if>
         <if test="null != type and type.toString() != 'CUSTOMER'">
             SELECT DISTINCT g.*, IF(gc.id IS NULL,FALSE,TRUE) isCollect, p.retail_price price FROM
@@ -827,33 +833,41 @@
         SELECT
             p.gid,
             p.retail_price,
-            p.vip_price,
+            min(p.vip_price)AS vip_price,
             p.wholesale_price
         FROM cus_customer c
+            LEFT JOIN cus_rank cr ON cr.cus_id = c.cus_id
+            LEFT JOIN rank_classification rc ON cr.rank_id = rc.rank_id
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id
             INNER JOIN cus_customer_product_coupon pcp ON pcp.cus_id = c.cus_id
         WHERE c.cus_id = #{cusId}
               AND pcp.id = #{pcId}
               AND p.start_time &lt; NOW()
               AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+              AND (rc.rank_code = p.price_type OR p.price_type = 'COMMON')
               AND pcp.effective_start_time &lt; NOW()
               AND (pcp.effective_end_time IS NULL OR pcp.effective_end_time &gt; NOW())
               AND pcp.is_used = FALSE
-              AND PCP.gid = P.gid
-              AND pcp.quantity >= #{qty};
+              AND pcp.gid = p.gid
+              AND pcp.quantity >= #{qty}
+              GROUP BY p.sku
     </select>
 
     <select id="getGoodsPriceByCustomerAndGoodsId" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
-        SELECT p.gid, p.retail_price, p.vip_price, p.wholesale_price
+        SELECT p.gid, p.retail_price, min(p.vip_price)AS vip_price, p.wholesale_price
         FROM cus_customer c
+        LEFT JOIN cus_rank cr ON cr.cus_id = c.cus_id
+        LEFT JOIN rank_classification rc ON cr.rank_id = rc.rank_id
         LEFT JOIN gds_goods_price p ON c.store_id = p.store_id
         WHERE c.cus_id = #{userId}
         AND p.start_time &lt; NOW()
         AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+        AND (rc.rank_code = p.price_type OR p.price_type = 'COMMON')
         AND p.gid IN
         <foreach collection="list" item="gid" open="(" close=")" separator=",">
             #{gid}
         </foreach>
+        GROUP BY p.sku
     </select>
 
     <select id="getGoodsPriceByEmployeeAndGoodsId" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
@@ -863,6 +877,7 @@
         WHERE e.emp_id = #{userId}
         AND p.start_time &lt; NOW()
         AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+        AND  p.price_type = 'COMMON'
         AND p.gid IN
         <foreach collection="list" item="gid" index="index" open="(" close=")" separator=",">
             #{gid}
@@ -908,7 +923,7 @@
         g.cover_image_uri,
         g.goods_specification,
         g.goods_unit,
-        MIN(p.vip_price) vip_price,
+        min(p.vip_price)AS vip_price,
         p.retail_price,
         g.cid category_id,
         g.brd_id brand_id,
@@ -1049,7 +1064,7 @@
         g.sku_name,
         g.cover_image_uri,
         gp.retail_price,
-        MIN(gp.vip_price) vip_price,
+        min(gp.vip_price)AS vip_price,
         gp.wholesale_price,
         g.company_flag,
         gp.price_line_id price_item_id
@@ -1408,7 +1423,8 @@
                 g.goods_specification,
                 g.goods_unit,
                 g.brd_id,
-                g.company_flag
+                g.company_flag,
+                min(p.vip_price)AS vip_price
             FROM gds_goods g
             INNER JOIN gds_goods_price p ON g.gid = p.gid
             LEFT JOIN cus_customer c ON c.store_id = p.store_id
@@ -1420,6 +1436,7 @@
             OR p.price_type = 'COMMON')
             WHERE c.cus_id = #{userId}
             AND g.gid = #{gid}
+            GROUP BY p.sku
         </if>
         <if test="null != identityType and identityType.toString() != 'CUSTOMER'">
             SELECT DISTINCT g.gid,

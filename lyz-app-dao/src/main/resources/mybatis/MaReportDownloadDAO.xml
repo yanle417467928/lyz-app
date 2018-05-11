@@ -226,7 +226,7 @@
         INNER JOIN city c ON c.city_id = s.city_id
         WHERE TRUE
         <if test="null != cityId and cityId != -1">
-            AND city.city_id = #{cityId}
+            AND c.city_id = #{cityId}
         </if>
         <if test="null != storeId and storeId != -1">
             AND pl.store_id = #{storeId}
@@ -271,7 +271,7 @@
         LEFT JOIN ord_lifecycle ol ON obi.ord_no = ol.ord_no
         LEFT JOIN ord_logistics_info oli ON oli.ord_no = obi.ord_no
         LEFT JOIN ord_goods_info og ON og.ord_no = oli.ord_no
-        WHERE obi.`status` != 'UNPAID'
+        WHERE obi.`status` != 'UNPAID' AND  obi.`status` != 'CANCELED'
         AND (ol.post_status = 'PENDING_SHIPMENT' OR (ol.post_status = 'PENDING_RECEIVE' AND obi.delivery_type =
         'SELF_TAKE'))
         <if test="null != cityId and cityId != -1">
@@ -316,7 +316,7 @@
         LEFT JOIN ord_base_info obi ON obi.ord_no = orbi.ord_no
         LEFT JOIN ord_return_logistic_info orli ON orli.return_no = orbi.return_no
         LEFT JOIN ord_return_goods_info org ON org.return_no = orbi.return_no
-        WHERE orbi.return_status = 'FINISHED' AND rl.post_status = 'FINISHED'
+        WHERE orbi.return_status = 'FINISHED' AND rl.post_status = 'FINISHED' AND orbi.return_type != 'CANCEL_RETURN'
         <if test="null != cityId and cityId != -1">
             AND obi.city_id = #{cityId}
         </if>
@@ -1917,7 +1917,6 @@
         LEFT JOIN ord_shipping os on ob.oid = os.oid
         WHERE
         ob.`status` IN (
-        'PENDING_RECEIVE',
         'FINISHED'
         )
         AND ob.delivery_type = 'SELF_TAKE'
@@ -1977,8 +1976,8 @@
         (og.retail_price - og.settlement_price) as 'memberDiscount',
         og.promotion_share_price as 'promotionSharePrice',
         og.cash_coupon_share_price as 'cashCouponSharePrice',
-        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty'
-
+        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty',
+        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END  as 'couponType'
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -1987,6 +1986,8 @@
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
         LEFT JOIN inter_wta_order_shipping_header wa ON ob.ord_no = wa.order_no
         LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku and og.goods_line_type = 'PRODUCT_COUPON'
+        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
+        LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
@@ -2051,7 +2052,8 @@
         (og.retail_price - og.settlement_price) as 'memberDiscount',
         og.promotion_share_price as 'promotionSharePrice',
         og.cash_coupon_share_price as 'cashCouponSharePrice',
-        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty'
+        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty',
+        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END  as 'couponType'
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -2059,9 +2061,10 @@
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
         LEFT JOIN ord_shipping os on ob.oid = os.oid
         LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku and og.goods_line_type = 'PRODUCT_COUPON'
+        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
+        LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         WHERE
         ob.`status` IN (
-        'PENDING_RECEIVE',
         'FINISHED'
         )
         AND ob.delivery_type = 'SELF_TAKE'

@@ -123,6 +123,9 @@ public class MaOrderServiceImpl implements MaOrderService {
     private MaDecorativeCompanyCreditService maDecorativeCompanyCreditService;
 
     @Resource
+    private CommonService commonService;
+
+    @Resource
     private AppSeparateOrderService separateOrderService;
 
     @Override
@@ -1217,10 +1220,11 @@ public class MaOrderServiceImpl implements MaOrderService {
             //获取退单头id
             Long returnOrderId = returnOrderBaseInfo.getRoid();
 
-            //创建退货商品实体类
-            ReturnOrderGoodsInfo returnGoodsInfo = new ReturnOrderGoodsInfo();
+
             List<ReturnOrderGoodsInfo> returnOrderGoodsInfos = new ArrayList<>(orderGoodsInfoList.size());
             for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
+                //创建退货商品实体类
+                ReturnOrderGoodsInfo returnGoodsInfo = new ReturnOrderGoodsInfo();
                 //记录退单商品
                 returnGoodsInfo.setRoid(returnOrderId);
                 returnGoodsInfo.setOrderGoodsId(orderGoodsInfo.getId());
@@ -1768,6 +1772,13 @@ public class MaOrderServiceImpl implements MaOrderService {
 
                 }
             }
+            //********************************退经销差价退还*************************
+            AppStore appStore = appStoreService.findStoreByUserIdAndIdentityType(orderBaseInfo.getCreatorId(), orderBaseInfo.getCreatorIdentityType().getValue());
+
+            if (AssertUtil.isNotEmpty(appStore) && appStore.getStoreType().equals(StoreType.FX) || appStore.getStoreType().equals(StoreType.JM)) {
+                commonService.deductionOrderJxPriceDifferenceRefund(returnOrderBaseInfo, orderBaseInfo, returnOrderGoodsInfos);
+            }
+
             if (!orderBaseInfo.getStatus().equals(AppOrderStatus.UNPAID)) {
                 //*******************************记录订单生命周期**************************
                 OrderLifecycle orderLifecycle = new OrderLifecycle();

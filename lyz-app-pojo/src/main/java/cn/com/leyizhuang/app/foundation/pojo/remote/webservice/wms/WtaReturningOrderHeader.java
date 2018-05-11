@@ -61,4 +61,10 @@ public class WtaReturningOrderHeader {
      * 分公司ID
      */
     private String companyId;
+    //处理标记
+    private String handleFlag;
+    //错误信息
+    private String errMessage;
+    //处理时间
+    private Date handleTime;
 }

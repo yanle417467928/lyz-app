@@ -5,20 +5,26 @@
     <select id="findByNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
         <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
-            SELECT g.gid, g.sku, g.sku_name, g.cover_image_uri, g.goods_specification, g.goods_unit
+            SELECT g.gid, g.sku, g.sku_name, g.cover_image_uri, g.goods_specification, g.goods_unit,min(p.vip_price)AS vip_price
             FROM cus_customer c
+            LEFT JOIN cus_rank cr ON cr.cus_id = c.cus_id
+            LEFT JOIN rank_classification rc ON cr.rank_id = rc.rank_id
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id
                 AND p.start_time &lt; NOW()
                 AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
             LEFT JOIN quick_order_relation q ON q.goods_sku = g.sku
             WHERE c.cus_id = #{userId} AND q.number = #{number}
+            AND (rc.rank_code = p.price_type
+            OR p.price_type = 'COMMON')
+            GROUP BY p.sku
         </if>
         <if test="null != identityType and identityType.toString() != 'CUSTOMER'">
             SELECT g.gid, g.sku, g.sku_name, g.cover_image_uri, g.goods_specification, g.goods_unit
             FROM emp_employee e
             INNER JOIN gds_goods_price p ON e.store_id = p.store_id
             AND p.start_time &lt; NOW()
+            AND p.price_type = 'COMMON'
             AND (p.end_time IS NULL OR p.end_time &gt; NOW())
             INNER JOIN gds_goods g ON p.gid = g.gid
             LEFT JOIN quick_order_relation q ON q.goods_sku = g.sku

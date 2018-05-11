@@ -152,4 +152,9 @@ public class SellDetailsDO {
      * 商品行类型
      */
     private AppGoodsLineType goodsLineType;
+
+    /**
+     * 有效的产品券数量，排除后台发放，赠送的券数量
+     */
+    private String validCouponQty;
 }
