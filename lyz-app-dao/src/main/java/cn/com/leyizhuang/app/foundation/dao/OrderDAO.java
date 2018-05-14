@@ -200,5 +200,8 @@ public interface OrderDAO {
 
     void saveOrderShipping(OrderShipping orderShipping);
 
+    List<OrderPageInfoVO> getFitOrderListPageInfoByUserIdAndIdentityType(@Param(value = "userId") Long userId,
+                                                                         @Param(value = "identityType") AppIdentityType identityType,
+                                                                         @Param(value = "keywords") String keywords);
 
 }

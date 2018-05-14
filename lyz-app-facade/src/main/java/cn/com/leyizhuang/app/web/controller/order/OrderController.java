@@ -1959,4 +1959,59 @@ public class OrderController {
         }
     }
 
+
+    /**
+     * @title   导购获取需代付的待付款订单列表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/5/11
+     */
+    @PostMapping(value = "/payForAnother/list", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getPayForAnotherOrderList(Long userId, Integer identityType, String keywords, Integer page, Integer size) {
+        ResultDTO<Object> resultDTO;
+        logger.info("getPayForAnotherOrderList CALLED,导购获取需代付的待付款订单列表，入参 userId:{}, identityType:{}, keywords{}, page{}, size{}",
+                userId, identityType, keywords, page, size);
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
+            logger.info("getPayForAnotherOrderList OUT,导购获取需代付的待付款订单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType || 0 != identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！", null);
+            logger.info("getPayForAnotherOrderList OUT,导购获取需代付的待付款订单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == page) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
+                    null);
+            logger.info("getPayForAnotherOrderList OUT,导购获取需代付的待付款订单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getPayForAnotherOrderList OUT,导购获取需代付的待付款订单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            //获取用户所有订单列表
+            PageInfo<OrderPageInfoVO> orderListResponsePageInfo = appOrderService.getFitOrderListPageInfoByUserIdAndIdentityType(userId, identityType, keywords, page, size);
+
+            //创建一个返回对象list
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                    new GridDataVO<OrderPageInfoVO>().transform(orderListResponsePageInfo));
+            logger.info("getPayForAnotherOrderList OUT,导购获取需代付的待付款订单列表成功，出参 resultDTO:{}", orderListResponsePageInfo);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，导购获取需代付的待付款订单列表失败", null);
+            logger.warn("getPayForAnotherOrderList EXCEPTION,导购获取需代付的待付款订单列表失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
 }

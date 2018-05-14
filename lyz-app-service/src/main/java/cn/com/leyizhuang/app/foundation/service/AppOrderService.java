@@ -199,4 +199,6 @@ public interface AppOrderService {
     ResultDTO<GiftListResponse> checkGoodsCompanyFlag(List<Long> goodsIds, Long userId, Integer identityType);
 
     String returnType(List<Long> goodsIds,Long userId,Integer identityType);
+
+    PageInfo<OrderPageInfoVO> getFitOrderListPageInfoByUserIdAndIdentityType(Long userId, Integer identityType, String keywords, Integer page, Integer size);
 }

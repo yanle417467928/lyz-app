@@ -1605,6 +1605,42 @@
         (#{oid},#{ordNo},#{shippingNo},#{shippingTime})
     </insert>
 
+    <select id="getFitOrderListPageInfoByUserIdAndIdentityType" resultMap="orderPageInfoListMap">
+
+        <if test="null != identityType and identityType.toString() == 'SELLER'">
+            SELECT
+            obi.oid,
+            obi.`status`,
+            obi.is_evaluated,
+            obi.ord_no,
+            obi.effective_end_time,
+            obi.delivery_type,
+            obd.total_goods_price price ,
+            obd.amount_payable,
+            CASE WHEN obi.delivery_type='HOUSE_DELIVERY'
+            THEN oli.shipping_address
+            ELSE oli.booking_store_name
+            END AS shipping_address,
+
+            FROM
+            ord_base_info obi LEFT JOIN ord_billing_details obd ON obi.oid = obd.oid
+            LEFT JOIN ord_logistics_info oli ON obi.oid = oli.oid
+            WHERE
+            AND order_subject_type = 'FIT'
+            AND  = #{userId}
+            AND obi.`status` = 'UNPAID'
+            AND obi.effective_end_time > NOW()
+            <if test="null != keywords and keywords != ''">
+                AND obi.`status` = 'FINISHED'
+                (obi.ord_no LIKE concat(concat('%',#{keywords}),'%') OR oli.shipping_address LIKE concat(concat('%',#{keywords}),'%')
+                OR oli.receiver LIKE concat(concat('%',#{keywords}),'%') OR obi.customer_name LIKE concat(concat('%',#{keywords}),'%')
+                OR oli.receiver_phone LIKE concat(concat('%',#{keywords}),'%'))
+            </if>
+            ORDER BY obi.create_time DESC
+        </if>
+
+    </select>
+
 
 
 </mapper>
