@@ -1032,7 +1032,6 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                     } else if (ReturnOrderType.NORMAL_RETURN.equals(returnOrder.getReturnType())) {
                         maps = returnOrderService.normalReturnOrderProcessing(returnNo, city);
                     }
-
                     return maps;
                 } else {
                     returningOrderHeader.setErrMessage("未查询到反配明细!");
