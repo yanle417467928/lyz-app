@@ -1,8 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo.order;
 
-import cn.com.leyizhuang.app.core.constant.OrderCouponType;
 import cn.com.leyizhuang.app.core.constant.CouponGetType;
-import cn.com.leyizhuang.app.core.constant.ProductType;
+import cn.com.leyizhuang.app.core.constant.OrderCouponType;
 import lombok.*;
 
 /**
@@ -64,4 +63,12 @@ public class OrderCouponInfo {
      */
     private Long goodsId;
 
+    /**
+     * 买券商品行ID（仅当券类型是产品券时这个属性才有值）
+     */
+    private Long goodsLineId;
+    /**
+     * 买券单号（仅当券类型是产品券时这个属性才有值）
+     */
+    private String getOrderNumber;
 }

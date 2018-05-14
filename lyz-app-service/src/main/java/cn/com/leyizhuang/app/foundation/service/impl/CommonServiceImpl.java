@@ -370,8 +370,18 @@ public class CommonServiceImpl implements CommonService {
                     }
                 }
             }
-            //todo 扣减产品券时更新买券订单可退商品数量
-
+            // 扣减产品券时更新买券订单可退商品数量
+            if (null != productCouponList && productCouponList.size() > 0) {
+                for (OrderCouponInfo orderCouponInfo : productCouponList) {
+                    // 修改回原订单的可退和已退！(SQL: 已退-renturnQty,可退+returnQty) 所以这里设置为-1
+                    List<OrderGoodsInfo> orderGoodsInfoList = orderService.getOrderGoodsInfoByOrderNumber(orderCouponInfo.getGetOrderNumber());
+                    orderGoodsInfoList.forEach(orderGoodsInfo -> {
+                        if (orderGoodsInfo.getId().equals(orderCouponInfo.getGoodsLineId())) {
+                            orderService.updateReturnableQuantityAndReturnQuantityById(-1, orderCouponInfo.getGoodsLineId());
+                        }
+                    });
+                }
+            }
             //扣减优惠券
             if (null != cashCouponIds && cashCouponIds.size() > 0) {
                 for (Long id : cashCouponIds) {
@@ -995,6 +1005,8 @@ public class CommonServiceImpl implements CommonService {
                         couponInfo.setGetType(productCoupon.getGetType());
                         couponInfo.setSku(couponGoodsInfo.getSku());
                         couponInfo.setGoodsId(productCoupon.getGoodsId());
+                        couponInfo.setGoodsLineId(productCoupon.getGoodsLineId());
+                        couponInfo.setGetOrderNumber(productCoupon.getGetOrderNumber());
                         orderCouponInfoList.add(couponInfo);
                     }
                 }
