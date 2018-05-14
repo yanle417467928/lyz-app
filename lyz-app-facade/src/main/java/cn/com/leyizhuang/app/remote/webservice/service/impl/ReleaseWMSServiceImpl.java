@@ -20,6 +20,7 @@ import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderLifecycle;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderBaseInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
@@ -332,7 +333,15 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
 
                     header.setCreateTime(Calendar.getInstance().getTime());
                     int result = wmsToAppOrderService.saveWtaReturningOrderHeader(header);
-                    handleReturningOrderHeaderAsync(header.getPoNo(), header.getRecNo());
+                    //handleReturningOrderHeaderAsync(header.getPoNo(), header.getRecNo());
+                    WtaReturningOrderHeader finalHeader = header;
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            handleReturningOrderHeaderAsync(finalHeader.getPoNo(), finalHeader.getRecNo());
+                        }
+                    }).start();
+
                     /*if (result == 0) {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,该单已存在 出参 order_no:{}", header.getBackNo());
                         return AppXmlUtil.resultStrXml(1, "重复传输,该单" + header.getBackNo() + "已存在!");
@@ -493,14 +502,14 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                             return AppXmlUtil.resultStrXml(1, "重复传输,该单" + orderResultEnter.getOrderNo() + "已存在!");
                         }
                         OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderResultEnter.getOrderNo());
-                        if (AppOrderStatus.CANCELED.equals(orderBaseInfo.getStatus())){
+                        if (AppOrderStatus.CANCELED.equals(orderBaseInfo.getStatus())) {
                             logger.warn("cancelOrder OUT,该订单已取消不能重复取消，出参 orderNo:{}", orderNo);
-                            return AppXmlUtil.resultStrXml(1, "该订单"+orderNo+"已取消不能重复取消");
+                            return AppXmlUtil.resultStrXml(1, "该订单" + orderNo + "已取消不能重复取消");
                         }
                         this.handlingWtaCancelOrderResultEnterAsync(orderResultEnter);
-                    }else{
+                    } else {
                         logger.warn("cancelOrder OUT,取消订单重复提交，出参 orderNo:{}", orderNo);
-                        return AppXmlUtil.resultStrXml(1, "正在处理该"+orderNo+"订单!");
+                        return AppXmlUtil.resultStrXml(1, "正在处理该" + orderNo + "订单!");
                     }
                 }
                 logger.info("GetWMSInfo OUT,获取取消订单结果确认wms信息成功 出参 code=0");
@@ -1641,7 +1650,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         returnOrderLifecycle.setPostStatus(AppReturnOrderStatus.FINISHED);
                         returnOrderLifecycle.setOperationTime(new Date());
                         returnOrderDAO.saveReturnOrderLifecycle(returnOrderLifecycle);
-                    }else if (returnOrderBaseInfo.getReturnType().equals(ReturnOrderType.NORMAL_RETURN)){
+                    } else if (returnOrderBaseInfo.getReturnType().equals(ReturnOrderType.NORMAL_RETURN)) {
                         //********************************保存退单生命周期信息***********************
                         ReturnOrderLifecycle returnOrderLifecycle = new ReturnOrderLifecycle();
                         returnOrderLifecycle.setRoid(returnOrderBaseInfo.getRoid());
@@ -2060,14 +2069,22 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
     @Async
     @Transactional
     public void handleReturningOrderHeaderAsync(String returnNo, String recNo) {
+        try {
+            log.info("\n//***************** 异步处理返配上架相关业务********************");
+            //线程睡5s，等待返配明细传输完成
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         WtaReturningOrderHeader returningOrderHeader = this.wmsToAppOrderService.getReturningOrderHeaderByReturnNo(returnNo, recNo);
         try {
             if (null != returningOrderHeader) {
-                if (OrderUtils.validationReturnOrderNumber(returningOrderHeader.getPoNo())) {
-
+                ReturnOrderBaseInfo returnOrderBaseInfoTemp = returnOrderService.queryByReturnNo(returningOrderHeader.getPoNo());
+                //*************** 如果退单存在，则按App正常退单返配上架逻辑处理 ********************
+                if (null != returnOrderBaseInfoTemp) {
                     HashedMap maps = new HashedMap();
                     maps = this.wmsToAppOrderService.handleReturningOrderHeader(returnNo, recNo);
-                    if (null != maps || maps.size() == 0) {
+                    if (null != maps && maps.size() > 0) {
 
                         ReturnOrderBilling returnOrderBilling = (ReturnOrderBilling) maps.get("returnOrderBilling");
 
@@ -2141,14 +2158,14 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                             logger.info("cancelOrderToWms OUT,正常退货成功");
                             returningOrderHeader.setHandleFlag("1");
                             returningOrderHeader.setHandleTime(new Date());
-                            this.wmsToAppOrderService.updateReturningOrderHeaderByOrderNo(returningOrderHeader);
+                            this.wmsToAppOrderDAO.updateReturningOrderHeaderByOrderNo(returningOrderHeader);
                         } else {
                             logger.info("getReturnOrderList OUT,正常退货失败,业务处理出现异常!");
                             smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "正常退货业务逻辑处理失败!order:" + returnNo);
                             returningOrderHeader.setHandleFlag("0");
                             returningOrderHeader.setErrMessage("正常退货失败,业务处理出现异常");
                             returningOrderHeader.setHandleTime(new Date());
-                            this.wmsToAppOrderService.updateReturningOrderHeaderByOrderNo(returningOrderHeader);
+                            this.wmsToAppOrderDAO.updateReturningOrderHeaderByOrderNo(returningOrderHeader);
                             throw new RuntimeException();
                         }
                     } else {
@@ -2157,16 +2174,18 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         returningOrderHeader.setHandleFlag("0");
                         returningOrderHeader.setErrMessage("正常退货失败,业务处理出现异常");
                         returningOrderHeader.setHandleTime(new Date());
-                        this.wmsToAppOrderService.updateReturningOrderHeaderByOrderNo(returningOrderHeader);
+                        this.wmsToAppOrderDAO.updateReturningOrderHeaderByOrderNo(returningOrderHeader);
                         throw new RuntimeException();
                     }
-                } else {
+                }
+                //*************** 如果退单不存在，则按WMS自建退单返配上架逻辑处理 ********************
+                else {
                     City city = cityService.findCityByWarehouseNo(returningOrderHeader.getWhNo());
                     if (null == city) {
                         returningOrderHeader.setErrMessage("城市信息中没有查询到仓库为" + returningOrderHeader.getWhNo() + "的数据!");
                         returningOrderHeader.setHandleFlag("0");
                         returningOrderHeader.setHandleTime(new Date());
-                        this.wmsToAppOrderService.updateReturningOrderHeaderByOrderNo(returningOrderHeader);
+                        this.wmsToAppOrderDAO.updateReturningOrderHeaderByOrderNo(returningOrderHeader);
                         throw new RuntimeException();
                     }
                     List<WtaReturningOrderGoods> wtaReturningOrderGoods = wmsToAppOrderService.findWtaReturningOrderGoodsByReturnOrderNo(returnNo);
@@ -2214,12 +2233,14 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     }
                 }
             }
+            log.info("\n********************* 返配上架相关业务已处理完毕 *********************");
         } catch (Exception e) {
             e.printStackTrace();
             returningOrderHeader.setHandleFlag("0");
             returningOrderHeader.setErrMessage(e.getMessage());
             returningOrderHeader.setHandleTime(new Date());
-            this.wmsToAppOrderService.updateReturningOrderHeaderByOrderNo(returningOrderHeader);
+            this.wmsToAppOrderDAO.updateReturningOrderHeaderByOrderNo(returningOrderHeader);
+            throw new RuntimeException("处理WMS返配上架单出现异常，处理失败");
         }
     }
 
