@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
+import cn.com.leyizhuang.app.core.constant.IdentityType;
 import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
-import cn.com.leyizhuang.app.core.constant.PayhelperType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -42,7 +42,7 @@ public class PayhelperOrder {
     /**
      * 代付人类型
      */
-    private PayhelperType payhelperType;
+    private IdentityType payhelperType;
     /**
      * 是否已支付
      */
