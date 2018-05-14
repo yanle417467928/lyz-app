@@ -334,6 +334,14 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     header.setCreateTime(Calendar.getInstance().getTime());
                     int result = wmsToAppOrderService.saveWtaReturningOrderHeader(header);
                     handleReturningOrderHeaderAsync(header.getPoNo(), header.getRecNo());
+                    /*WtaReturningOrderHeader finalHeader = header;
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            handleReturningOrderHeaderAsync(finalHeader.getPoNo(), finalHeader.getRecNo());
+                        }
+                    }).start();*/
+
                     /*if (result == 0) {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,该单已存在 出参 order_no:{}", header.getBackNo());
                         return AppXmlUtil.resultStrXml(1, "重复传输,该单" + header.getBackNo() + "已存在!");
@@ -2062,8 +2070,9 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
     @Transactional
     public void handleReturningOrderHeaderAsync(String returnNo, String recNo) {
         try {
+            log.info("\n//***************** 异步处理返配上架相关业务********************");
             //线程睡2s，等待返配明细传输完成
-            Thread.sleep(2000);
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -2224,6 +2233,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     }
                 }
             }
+            log.info("\n********************* 返配上架相关业务已处理完毕 *********************");
         } catch (Exception e) {
             e.printStackTrace();
             returningOrderHeader.setHandleFlag("0");
