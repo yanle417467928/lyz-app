@@ -1232,5 +1232,10 @@ public class AppOrderServiceImpl implements AppOrderService {
         return new PageInfo<>(orderPageInfoVOList);
     }
 
+    @Override
+    public PayhelperOrder findPayhelperOrderByOrdNo(String ordNo) {
+        return this.orderDAO.findPayhelperOrderByOrdNo(ordNo);
+    }
+
 
 }

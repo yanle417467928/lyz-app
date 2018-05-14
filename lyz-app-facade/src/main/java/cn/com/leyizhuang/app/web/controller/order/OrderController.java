@@ -5,10 +5,7 @@ import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.exception.*;
 import cn.com.leyizhuang.app.core.utils.IpUtils;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
-import cn.com.leyizhuang.app.foundation.pojo.AppStore;
-import cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon;
-import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
-import cn.com.leyizhuang.app.foundation.pojo.OrderEvaluation;
+import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
@@ -2009,6 +2006,124 @@ public class OrderController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，导购获取需代付的待付款订单列表失败", null);
             logger.warn("getPayForAnotherOrderList EXCEPTION,导购获取需代付的待付款订单列表失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**  
+     * @title   
+     * @descripe
+     * @param 
+     * @return 
+     * @throws 
+     * @author GenerationRoad
+     * @date 2018/5/14
+     */
+    @PostMapping(value = "/payForAnother/detail", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getPayForAnotherOrderDetail(Long userId, Integer identityType, String orderNumber) {
+        ResultDTO<Object> resultDTO;
+        logger.info("getPayForAnotherOrderDetail CALLED,用户获取订单详情，入参 userId:{}, identityType:{}, orderNumber:{}", userId, identityType, orderNumber);
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
+            logger.info("getPayForAnotherOrderDetail OUT,用户获取订单详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("getPayForAnotherOrderDetail OUT,用户获取订单详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(orderNumber)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单号不能为空！", null);
+            logger.info("getPayForAnotherOrderDetail OUT,用户获取订单详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            //获取订单详情
+            OrderBaseInfo orderBaseInfo = appOrderService.getOrderDetail(orderNumber);
+            OrderBillingDetails billingDetails = appOrderService.getOrderBillingDetail(orderNumber);
+            OrderEvaluation orderEvaluation = orderEvaluationService.queryOrderEvaluationListByOrderNumber(orderNumber);
+            if (null != orderBaseInfo) {
+                //获取订单收货/自提门店地址
+                OrderLogisticsInfo orderLogisticsInfo = appOrderService.getOrderLogistice(orderNumber);
+                //创建返回对象
+                OrderDetailsResponse orderDetailsResponse = new OrderDetailsResponse();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                //设值
+                orderDetailsResponse.setOrderNumber(orderNumber);
+                orderDetailsResponse.setRemark(StringUtils.isBlank(orderBaseInfo.getRemark()) ? "" : orderBaseInfo.getRemark());
+                orderDetailsResponse.setCreateTime(sdf.format(orderBaseInfo.getCreateTime()));
+                orderDetailsResponse.setStatus(orderBaseInfo.getStatus());
+                orderDetailsResponse.setStatusDesc(orderBaseInfo.getStatus().getDescription());
+                orderDetailsResponse.setPickUpCode(orderBaseInfo.getPickUpCode());
+
+                orderDetailsResponse.setCustomerName(orderBaseInfo.getCreatorName());
+                orderDetailsResponse.setCustomerPhone(orderBaseInfo.getCreatorPhone());
+
+                orderDetailsResponse.setPayType(null == billingDetails.getOnlinePayType() ?
+                        OnlinePayType.NO.getDescription() : billingDetails.getOnlinePayType().getDescription());
+                orderDetailsResponse.setDeliveryType(orderBaseInfo.getDeliveryType().getDescription());
+                if (orderEvaluation != null) {
+                    orderDetailsResponse.setLogisticsStar(orderEvaluation.getLogisticsStar());
+                    orderDetailsResponse.setProductStar(orderEvaluation.getProductStar());
+                    orderDetailsResponse.setServiceStars(orderEvaluation.getServiceStars());
+                }
+                orderDetailsResponse.setIsEvaluated(orderBaseInfo.getIsEvaluated());
+
+                //根据不同的配送方式进行设值
+                if ("门店自提".equals(orderBaseInfo.getDeliveryType().getValue())) {
+                    orderDetailsResponse.setBookingStoreName(orderLogisticsInfo.getBookingStoreName());
+                    AppStore appStore = appStoreService.findByStoreCode(orderLogisticsInfo.getBookingStoreCode());
+                    orderDetailsResponse.setBookingStorePhone(appStore.getPhone());
+                    orderDetailsResponse.setStoreDetailedAddress(appStore.getDetailedAddress());
+                } else {
+                    orderDetailsResponse.setDeliveryTime(orderLogisticsInfo.getDeliveryTime());
+                    orderDetailsResponse.setReceiver(orderLogisticsInfo.getReceiver());
+                    orderDetailsResponse.setReceiverPhone(orderLogisticsInfo.getReceiverPhone());
+                    orderDetailsResponse.setShippingAddress(orderLogisticsInfo.getShippingAddress());
+                }
+                AppStore store = appStoreService.findByStoreCode(orderBaseInfo.getStoreCode());
+                if (null != store) {
+                    orderDetailsResponse.setStoreName(store.getStoreName());
+                } else {
+                    orderDetailsResponse.setStoreName("未知");
+                }
+                //获取订单账目明细
+                OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderNumber);
+
+                ManagerBillingDetailResponse managerBillingDetailResponse = new ManagerBillingDetailResponse();
+                managerBillingDetailResponse.setAmountPayable(orderBillingDetails.getAmountPayable() == null ? 0 : orderBillingDetails.getAmountPayable());
+                managerBillingDetailResponse.setCouponDiscount(orderBillingDetails.getCashCouponDiscount() == null ? 0 : orderBillingDetails.getCashCouponDiscount());
+                managerBillingDetailResponse.setFreight(orderBillingDetails.getFreight() == null ? 0 : orderBillingDetails.getFreight());
+                managerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount() == null ? 0 : orderBillingDetails.getMemberDiscount());
+                managerBillingDetailResponse.setSubvention(orderBillingDetails.getStoreSubvention() == null ? 0 : orderBillingDetails.getStoreSubvention());
+                managerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount() == null ? 0 : orderBillingDetails.getProductCouponDiscount());
+                managerBillingDetailResponse.setPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0 : orderBillingDetails.getStPreDeposit());
+                managerBillingDetailResponse.setCreditMoney(orderBillingDetails.getStoreCreditMoney() == null ? 0 : orderBillingDetails.getStoreCreditMoney());
+                managerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount() == null ? 0 : orderBillingDetails.getPromotionDiscount());
+                managerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice() == null ? 0 : orderBaseInfo.getTotalGoodsPrice());
+                PayhelperOrder payhelperOrder = this.appOrderService.findPayhelperOrderByOrdNo(orderNumber);
+                if (null != payhelperOrder){
+                    managerBillingDetailResponse.setPayForAnotherMoney(null == payhelperOrder.getPayhelperAmount() ? 0 : payhelperOrder.getPayhelperAmount());
+                } else {
+                    managerBillingDetailResponse.setPayForAnotherMoney(0D);
+                }
+                orderDetailsResponse.setManagerBillingDetailResponse(managerBillingDetailResponse);
+                orderDetailsResponse.setGoodsList(appOrderService.getOrderGoodsList(orderNumber));
+
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, orderDetailsResponse);
+                logger.info("getPayForAnotherOrderDetail OUT,用户获取订单详情成功，出参 resultDTO:{}", resultDTO);
+
+                return resultDTO;
+            }
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此订单！", null);
+            logger.info("getPayForAnotherOrderDetail OUT,用户获取订单详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，用户获取订单详情失败", null);
+            logger.warn("getPayForAnotherOrderDetail EXCEPTION,用户获取订单详情失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

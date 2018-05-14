@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.core.constant.OrderLifecycleType;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.PayhelperOrder;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
@@ -201,4 +202,6 @@ public interface AppOrderService {
     String returnType(List<Long> goodsIds,Long userId,Integer identityType);
 
     PageInfo<OrderPageInfoVO> getFitOrderListPageInfoByUserIdAndIdentityType(Long userId, Integer identityType, String keywords, Integer page, Integer size);
+
+    PayhelperOrder findPayhelperOrderByOrdNo(String ordNo);
 }

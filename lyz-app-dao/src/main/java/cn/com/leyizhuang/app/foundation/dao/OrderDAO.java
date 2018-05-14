@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.PayhelperOrder;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
@@ -203,5 +204,7 @@ public interface OrderDAO {
     List<OrderPageInfoVO> getFitOrderListPageInfoByUserIdAndIdentityType(@Param(value = "userId") Long userId,
                                                                          @Param(value = "identityType") AppIdentityType identityType,
                                                                          @Param(value = "keywords") String keywords);
+
+    PayhelperOrder findPayhelperOrderByOrdNo(String ordNo);
 
 }

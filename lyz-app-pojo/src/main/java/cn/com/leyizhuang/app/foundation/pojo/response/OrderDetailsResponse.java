@@ -132,4 +132,6 @@ public class OrderDetailsResponse {
      * 订单备注
      */
     private String remark;
+    //门店名称（装饰公司名称）
+    private String storeName;
 }
