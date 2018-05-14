@@ -2061,7 +2061,12 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
     @Async
     @Transactional
     public void handleReturningOrderHeaderAsync(String returnNo, String recNo) {
-        // Thread.sleep(2000);
+        try {
+            //线程睡2s，等待返配明细传输完成
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         WtaReturningOrderHeader returningOrderHeader = this.wmsToAppOrderService.getReturningOrderHeaderByReturnNo(returnNo, recNo);
         try {
             if (null != returningOrderHeader) {

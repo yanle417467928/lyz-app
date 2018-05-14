@@ -87,8 +87,8 @@ public class WmsInterfaceRestController extends BaseRestController {
     @GetMapping(value = "/handle/orderShipping/all")
     public String handleOrderShippingALL() {
         List<WtaShippingOrderHeader> shippingOrderHeaders = this.wmsToAppOrderService.getAllWtaShippingOrderHeader();
-        if (null != shippingOrderHeaders){
-            for (WtaShippingOrderHeader shippingOrderHeader: shippingOrderHeaders) {
+        if (null != shippingOrderHeaders) {
+            for (WtaShippingOrderHeader shippingOrderHeader : shippingOrderHeaders) {
                 this.wmsToAppOrderService.handleWtaShippingOrder(shippingOrderHeader.getOrderNo(), shippingOrderHeader.getTaskNo());
             }
         }
@@ -110,13 +110,13 @@ public class WmsInterfaceRestController extends BaseRestController {
 
     @GetMapping(value = "/handle/wtaWarehouseWholeSplitToUnit/{directNo}/{sku}/{dsku}")
     public String handleWtaWarehouseWholeSplitToUnit(ModelMap map, @PathVariable(value = "directNo") String directNo, @PathVariable(value = "sku") String sku, @PathVariable(value = "dsku") String dsku) {
-        this.wmsToAppOrderService.handlingWtaWarehouseWholeSplitToUnitAsync(directNo,sku,dsku);
+        this.wmsToAppOrderService.handlingWtaWarehouseWholeSplitToUnitAsync(directNo, sku, dsku);
         return "sueesess";
     }
 
     @GetMapping(value = "/handle/wtaWarehouseReportDamageAndOverflow/{wasteNo}/{wasteId}")
-    public String handleWtaWarehouseReportDamageAndOverflow(ModelMap map, @PathVariable(value = "wasteNo") String wasteNo,@PathVariable(value = "wasteId") Long wasteId) {
-        this.wmsToAppOrderService.handlingWtaWarehouseReportDamageAndOverflowAsync(wasteNo,wasteId);
+    public String handleWtaWarehouseReportDamageAndOverflow(ModelMap map, @PathVariable(value = "wasteNo") String wasteNo, @PathVariable(value = "wasteId") Long wasteId) {
+        this.wmsToAppOrderService.handlingWtaWarehouseReportDamageAndOverflowAsync(wasteNo, wasteId);
         return "sueesess";
     }
 
@@ -174,7 +174,7 @@ public class WmsInterfaceRestController extends BaseRestController {
                 orderResultEnter.setErrorMessage(e.getMessage());
                 this.wmsToAppOrderService.updateWtaCancelOrderResult(orderResultEnter);
             }
-        } else{
+        } else {
             String info = "您取消的订单" + orderResultEnter.getOrderNo() + "，取消失败，请联系管理人员！";
             logger.info("取消失败订单号:{}", orderResultEnter.getOrderNo());
             smsAccountService.commonSendSms(orderBaseInfo.getCreatorPhone(), info);
@@ -191,7 +191,7 @@ public class WmsInterfaceRestController extends BaseRestController {
 
                     HashedMap maps = new HashedMap();
                     maps = this.wmsToAppOrderService.handleReturningOrderHeader(returnNo, recNo);
-                    if (null != maps || maps.size() == 0) {
+                    if (null != maps && maps.size() > 0) {
 
                         ReturnOrderBilling returnOrderBilling = (ReturnOrderBilling) maps.get("returnOrderBilling");
 
