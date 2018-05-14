@@ -345,7 +345,7 @@
 
     <select id="findWtaReturningOrderGoodsByReturnOrderNo" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturningOrderGoods">
-        SELECT *
+        SELECT g.*
         FROM inter_wta_return_order_back_goods g
             INNER JOIN inter_wta_return_order_back_header h ON h.rec_no = g.rec_no
         WHERE h.po_no = #{returnOrderNumber}
@@ -675,8 +675,8 @@
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturningOrderHeader">
         UPDATE inter_wta_return_order_back_header
         SET handle_flag = #{handleFlag},
-        err_message = #{errMessage},
-        handle_time = #{handleTime}
+            err_message = #{errMessage},
+            handle_time = #{handleTime}
         WHERE po_no = #{poNo}
     </update>
 
