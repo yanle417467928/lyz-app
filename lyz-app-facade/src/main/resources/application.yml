@@ -219,7 +219,7 @@ spring:
     database: 1
     host: 120.77.57.124
     port: 6379
-    password: 123456
+    password: _lyz-pass-rd_999
     pool:
        max-active: 300
        max-wait: -1
