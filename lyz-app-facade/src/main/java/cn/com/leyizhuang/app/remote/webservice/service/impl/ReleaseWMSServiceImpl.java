@@ -694,32 +694,10 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         Node childNode = childNodeList.item(idx);
                         damageAndOverflow = mapping(damageAndOverflow, childNode);
                     }
-          /*          if (damageAndOverflow.getWasteNo() == null) {
-                        logger.info("GetWMSInfo OUT,获取wms信息失败,获取报损报溢失败,任务编号 损溢单号不能为空!");
-                        return AppXmlUtil.resultStrXml(1, "损溢单号不能为空");
-                    }
-                    if (damageAndOverflow.getWasteId() == null) {
-                        logger.info("GetWMSInfo OUT,获取wms信息失败,获取报损报溢失败,任务编号 损溢单号id不能为空!");
-                        return AppXmlUtil.resultStrXml(1, "损溢单号id不能为空");
-                    }
-                    City city = cityService.findByCityNumber(damageAndOverflow.getCompanyId());
-                    if (null == city) {
-                        logger.info("GetWMSInfo OUT,获取wms信息失败,获取报损报溢失败,任务编号 城市信息中没有查询到城市code为" + damageAndOverflow.getCompanyId() + "的数据!");
-                        return AppXmlUtil.resultStrXml(1, "城市信息中没有查询到城市code为" + damageAndOverflow.getCompanyId() + "的数据!");
-                    }
-                    GoodsDO goodsDO = goodsService.queryBySku(damageAndOverflow.getSku());
-                    if (null == goodsDO) {
-                        logger.info("GetWMSInfo OUT,获取wms信息失败,获取报损报溢失败,任务编号 商品资料中没有查询到sku为" + damageAndOverflow.getSku() + "的商品信息!");
-                        return AppXmlUtil.resultStrXml(1, "商品资料中没有查询到sku为" + damageAndOverflow.getSku() + "的商品信息!");
-                    }*/
                     damageAndOverflow.setCreateTime(Calendar.getInstance().getTime());
                     damageAndOverflow.setHandleFlag("0");
                     damageAndOverflow.setReceiveTime(new Date());
-                    int result = wmsToAppOrderService.saveWtaWarehouseReportDamageAndOverflow(damageAndOverflow);
-                   /* if (result == 0) {
-                        logger.info("GetWMSInfo OUT,获取wms信息失败,该单已存在 出参 order_no:{}", damageAndOverflow.getWasteNo());
-                        return AppXmlUtil.resultStrXml(1, "重复传输,该单" + damageAndOverflow.getWasteNo() + "已存在!");
-                    }*/
+                    wmsToAppOrderDAO.saveWtaWarehouseReportDamageAndOverflow(damageAndOverflow);
                     this.handleWtaWarehouseReportDamageAndOverflowAsync(damageAndOverflow.getWasteNo(), damageAndOverflow.getWasteId());
                 }
                 logger.info("GetWMSInfo OUT,获取仓库报损报溢wms信息成功 出参 code=0");
