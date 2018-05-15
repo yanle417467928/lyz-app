@@ -936,7 +936,7 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                                 log.setChangeTime(Calendar.getInstance().getTime());
                                 log.setChangeType(CityInventoryAvailableQtyChangeType.CITY_PURCHASE_INBOUND);
                                 log.setChangeTypeDesc(CityInventoryAvailableQtyChangeType.CITY_PURCHASE_INBOUND.getDescription());
-                                log.setReferenceNumber(purchaseHeader.getPurchaseNo());
+                                log.setReferenceNumber(purchaseHeader.getRecNo());
                                 cityService.addCityInventoryAvailableQtyChangeLog(log);
                                 break;
                             } else {
