@@ -13,6 +13,7 @@ import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBillingDetai
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.PaymentDataService;
 import cn.com.leyizhuang.app.foundation.service.ReturnOrderService;
+import cn.com.leyizhuang.common.util.AssertUtil;
 import cn.com.leyizhuang.common.util.CountUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
@@ -57,19 +58,33 @@ public class MaOnlinePayRefundService {
      * @return
      */
     public Map<String, String> wechatReturnMoney(Long userId, Integer identityType, Double money, String orderNumber, String returnNumber) {
+        Map<String, String> map = new HashMap<>();
+        List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOrderNoAndTradeStatus(orderNumber, PaymentDataStatus.TRADE_SUCCESS);
+        if (AssertUtil.isEmpty(paymentDataDOList)) {
+            map.put("code", "FAILURE");
+            map.put("msg", "未查询到支付信息");
+            return map;
+        }
+        PaymentDataDO dataDO = paymentDataDOList.get(0);
+        if (money > dataDO.getTotalFee()) {
+            map.put("code", "FAILURE");
+            map.put("msg", "退款金额不能超过订单金额");
+            return map;
+        }
+
         Double totlefee = appOrderService.getAmountPayableByOrderNumber(orderNumber);
         String totlefeeFormat = CountUtil.retainTwoDecimalPlaces(totlefee);
         Double totlefeeParse = Double.parseDouble(totlefeeFormat);
         String subject = "订单退款";
 
-        Map<String, String> map = new HashMap<>();
-              PaymentDataDO paymentDataDO = new PaymentDataDO(userId, orderNumber, returnNumber, identityType, null,
+
+        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, orderNumber, returnNumber, identityType, null,
                 money, PaymentDataStatus.WAIT_REFUND, OnlinePayType.WE_CHAT, subject);
         this.paymentDataService.save(paymentDataDO);
 
         try {
             Map<String, Object> resultMap = WechatPrePay.wechatRefundSign(
-                    orderNumber , returnNumber, new BigDecimal(totlefeeParse), new BigDecimal(money));
+                    dataDO.getOutTradeNo(), returnNumber, new BigDecimal(totlefeeParse), new BigDecimal(money));
             logger.debug("******微信退款签名***** OUT, 出参 sign:{}", resultMap);
             if (resultMap != null) {
                 //状态是否成功
@@ -146,7 +161,7 @@ public class MaOnlinePayRefundService {
      */
     public Map<String, String> alipayRefundRequest(Long userId, Integer identityType, String orderNo, String refundNo, double refundAmount) {
         //取得支付宝交易流水号
-        List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOutTradeNoAndTradeStatus(orderNo, PaymentDataStatus.TRADE_SUCCESS);
+        List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOrderNoAndTradeStatus(orderNo, PaymentDataStatus.TRADE_SUCCESS);
         PaymentDataDO dataDO = paymentDataDOList.get(0);
         Map<String, String> map = new HashMap<>();
         if (refundAmount > dataDO.getTotalFee()) {

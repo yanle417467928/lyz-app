@@ -154,7 +154,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
     @Transactional(rollbackFor = Exception.class)
     public void saveReturnOrderRelevantInfo(ReturnOrderBaseInfo returnOrderBaseInfo, ReturnOrderLogisticInfo returnOrderLogisticInfo,
                                             List<ReturnOrderGoodsInfo> returnOrderGoodsInfos, ReturnOrderBilling returnOrderBilling,
-                                            List<ReturnOrderProductCoupon> productCouponList, List<OrderGoodsInfo> orderGoodsInfoList,AtwReturnOrder atwReturnOrder) throws OrderSaveException {
+                                            List<ReturnOrderProductCoupon> productCouponList, List<OrderGoodsInfo> orderGoodsInfoList, AtwReturnOrder atwReturnOrder) throws OrderSaveException {
 
         if (null != returnOrderBaseInfo) {
             returnOrderDAO.saveReturnOrderBaseInfo(returnOrderBaseInfo);
@@ -199,9 +199,9 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                     }
                 }
                 if (null != atwReturnOrder) {
-                        appToWmsOrderService.saveAtwReturnOrder(atwReturnOrder);
+                    appToWmsOrderService.saveAtwReturnOrder(atwReturnOrder);
                 }
-                if (returnOrderBaseInfo.getReturnStatus() == AppReturnOrderStatus.FINISHED){
+                if (returnOrderBaseInfo.getReturnStatus() == AppReturnOrderStatus.FINISHED) {
                     //********************************保存退单生命周期信息***********************
                     ReturnOrderLifecycle returnOrderLifecycle = new ReturnOrderLifecycle();
                     returnOrderLifecycle.setRoid(roid);
@@ -561,7 +561,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //获取顾客预存款
                         CustomerPreDeposit customerPreDeposit = appCustomerService.findByCusId(userId);
                         //返还预存款后顾客预存款金额
-                        Double cusPreDeposit = CountUtil.add(customerPreDeposit.getBalance(),orderBillingDetails.getCusPreDeposit());
+                        Double cusPreDeposit = CountUtil.add(customerPreDeposit.getBalance(), orderBillingDetails.getCusPreDeposit());
                         //更改顾客预存款金额
                         Integer affectLine = appCustomerService.updateDepositByUserIdAndVersion(userId, orderBillingDetails.getCusPreDeposit(), customerPreDeposit.getLastUpdateTime());
                         if (affectLine > 0) {
@@ -608,7 +608,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //获取门店预存款
                         StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(userId);
                         //返还预存款后门店预存款金额
-                        Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(),orderBillingDetails.getStPreDeposit());
+                        Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(), orderBillingDetails.getStPreDeposit());
                         //修改门店预存款
                         Integer affectLine = storePreDepositLogService.updateStPreDepositByStoreIdAndVersion(stPreDeposit, storePreDeposit.getStoreId(), storePreDeposit.getLastUpdateTime());
                         if (affectLine > 0) {
@@ -652,7 +652,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //获取导购信用金
                         EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(userId);
                         //返还信用金后导购信用金额度
-                        Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable(),orderBillingDetails.getEmpCreditMoney());
+                        Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable(), orderBillingDetails.getEmpCreditMoney());
                         //修改导购信用额度
                         Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(userId, orderBillingDetails.getEmpCreditMoney(), empCreditMoney.getLastUpdateTime());
                         if (affectLine > 0) {
@@ -685,7 +685,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //获取门店预存款
                         StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(userId);
                         //返还预存款后门店预存款金额
-                        Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(),orderBillingDetails.getStPreDeposit());
+                        Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(), orderBillingDetails.getStPreDeposit());
                         //修改门店预存款
                         Integer affectLine = storePreDepositLogService.updateStPreDepositByStoreIdAndVersion(stPreDeposit, storePreDeposit.getStoreId(), storePreDeposit.getLastUpdateTime());
                         if (affectLine > 0) {
@@ -729,7 +729,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //查询门店信用金
                         StoreCreditMoney storeCreditMoney = storeCreditMoneyLogService.findStoreCreditMoneyByUserId(userId);
                         //返还后门店信用金额度
-                        Double creditMoney = CountUtil.add(storeCreditMoney.getCreditLimitAvailable(),orderBillingDetails.getStoreCreditMoney());
+                        Double creditMoney = CountUtil.add(storeCreditMoney.getCreditLimitAvailable(), orderBillingDetails.getStoreCreditMoney());
                         //修改门店可用信用金
                         Integer affectLine = appStoreService.updateStoreCreditByUserIdAndVersion(userId, orderBillingDetails.getStoreCreditMoney(), storeCreditMoney.getLastUpdateTime());
                         if (affectLine > 0) {
@@ -761,7 +761,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //获取门店现金返利
                         StoreSubvention storeSubvention = appStoreService.findStoreSubventionByEmpId(userId);
                         //返还后门店现金返利余额
-                        Double subvention = CountUtil.add(storeSubvention.getBalance(),orderBillingDetails.getStoreSubvention());
+                        Double subvention = CountUtil.add(storeSubvention.getBalance(), orderBillingDetails.getStoreSubvention());
                         //修改门店现金返利
                         Integer affectLine = appStoreService.updateStoreSubventionByUserIdAndVersion(orderBillingDetails.getStoreSubvention(), userId, storeSubvention.getLastUpdateTime());
                         if (affectLine > 0) {
@@ -997,7 +997,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //获取顾客预存款
                         CustomerPreDeposit customerPreDeposit = appCustomerService.findByCusId(orderBaseInfo.getCreatorId());
                         //返还预存款后顾客预存款金额
-                        Double cusPreDeposit = CountUtil.add(customerPreDeposit.getBalance(),orderBillingDetails.getCusPreDeposit());
+                        Double cusPreDeposit = CountUtil.add(customerPreDeposit.getBalance(), orderBillingDetails.getCusPreDeposit());
                         //更改顾客预存款金额
                         Integer affectLine = appCustomerService.updateDepositByUserIdAndVersion(orderBaseInfo.getCreatorId(), orderBillingDetails.getCusPreDeposit(), customerPreDeposit.getLastUpdateTime());
                         if (affectLine > 0) {
@@ -1045,7 +1045,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //获取门店预存款
                         StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(orderBaseInfo.getSalesConsultId());
                         //返还预存款后门店预存款金额
-                        Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(),orderBillingDetails.getStPreDeposit());
+                        Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(), orderBillingDetails.getStPreDeposit());
                         //修改门店预存款
                         Integer affectLine = storePreDepositLogService.updateStPreDepositByStoreIdAndVersion(stPreDeposit, storePreDeposit.getStoreId(), storePreDeposit.getLastUpdateTime());
                         if (affectLine > 0) {
@@ -1090,7 +1090,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //获取导购信用金
                         EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(orderBaseInfo.getSalesConsultId());
                         //返还信用金后导购信用金额度
-                        Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable(),orderBillingDetails.getEmpCreditMoney());
+                        Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable(), orderBillingDetails.getEmpCreditMoney());
                         //修改导购信用额度
                         Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(orderBaseInfo.getSalesConsultId(), orderBillingDetails.getEmpCreditMoney(), empCreditMoney.getLastUpdateTime());
 
@@ -1125,7 +1125,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //获取门店预存款
                         StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(orderBaseInfo.getCreatorId());
                         //返还预存款后门店预存款金额
-                        Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(),orderBillingDetails.getStPreDeposit());
+                        Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(), orderBillingDetails.getStPreDeposit());
                         //修改门店预存款
                         Integer affectLine = storePreDepositLogService.updateStPreDepositByStoreIdAndVersion(stPreDeposit, storePreDeposit.getStoreId(), storePreDeposit.getLastUpdateTime());
                         if (affectLine > 0) {
@@ -1170,7 +1170,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //查询门店信用金
                         StoreCreditMoney storeCreditMoney = storeCreditMoneyLogService.findStoreCreditMoneyByUserId(orderBaseInfo.getCreatorId());
                         //返还后门店信用金额度
-                        Double creditMoney = CountUtil.add(storeCreditMoney.getCreditLimitAvailable(),orderBillingDetails.getStoreCreditMoney());
+                        Double creditMoney = CountUtil.add(storeCreditMoney.getCreditLimitAvailable(), orderBillingDetails.getStoreCreditMoney());
                         //修改门店可用信用金
                         Integer affectLine = appStoreService.updateStoreCreditByUserIdAndVersion(orderBaseInfo.getCreatorId(), orderBillingDetails.getStoreCreditMoney(), storeCreditMoney.getLastUpdateTime());
                         if (affectLine > 0) {
@@ -1203,7 +1203,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //获取门店现金返利
                         StoreSubvention storeSubvention = appStoreService.findStoreSubventionByEmpId(orderBaseInfo.getCreatorId());
                         //返还后门店现金返利余额
-                        Double subvention = CountUtil.add(storeSubvention.getBalance(),orderBillingDetails.getStoreSubvention());
+                        Double subvention = CountUtil.add(storeSubvention.getBalance(), orderBillingDetails.getStoreSubvention());
                         //修改门店现金返利
                         Integer affectLine = appStoreService.updateStoreSubventionByUserIdAndVersion(orderBillingDetails.getStoreSubvention(), orderBaseInfo.getCreatorId(), storeSubvention.getLastUpdateTime());
                         if (affectLine > 0) {
@@ -1329,7 +1329,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             //获取顾客预存款
                             CustomerPreDeposit customerPreDeposit = appCustomerService.findByCusId(returnOrderBaseInfo.getCustomerId());
                             //返还预存款后顾客预存款金额
-                            Double cusPreDeposit = CountUtil.add(customerPreDeposit.getBalance(),returnOrderBilling.getOnlinePay());
+                            Double cusPreDeposit = CountUtil.add(customerPreDeposit.getBalance(), returnOrderBilling.getOnlinePay());
                             //更改顾客预存款金额
                             Integer affectLine = appCustomerService.updateDepositByUserIdAndVersion(returnOrderBaseInfo.getCustomerId(), returnOrderBilling.getOnlinePay(), customerPreDeposit.getLastUpdateTime());
                             if (affectLine > 0) {
@@ -1374,7 +1374,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             //获取门店预存款
                             StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(returnOrderBaseInfo.getCreatorId());
                             //返还预存款后门店预存款金额
-                            Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(),returnOrderBilling.getOnlinePay());
+                            Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(), returnOrderBilling.getOnlinePay());
                             //修改门店预存款
                             Integer affectLine = storePreDepositLogService.updateStPreDepositByStoreIdAndVersion(stPreDeposit, storePreDeposit.getStoreId(), storePreDeposit.getLastUpdateTime());
                             if (affectLine > 0) {
@@ -1426,10 +1426,9 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             }
 
 
-
-            maps.put("returnOrderBaseInfo",returnOrderBaseInfo);
-            maps.put("returnOrderBilling",returnOrderBilling);
-            maps.put("orderBaseInfo",orderBaseInfo);
+            maps.put("returnOrderBaseInfo", returnOrderBaseInfo);
+            maps.put("returnOrderBilling", returnOrderBilling);
+            maps.put("orderBaseInfo", orderBaseInfo);
             maps.put("code", "SUCCESS");
             return maps;
         } catch (Exception e) {
@@ -1593,7 +1592,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //获取门店预存款
                         StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(orderBaseInfo.getSalesConsultId());
                         //返还预存款后门店预存款金额
-                        Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(),returnOrderBilling.getStPreDeposit());
+                        Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(), returnOrderBilling.getStPreDeposit());
                         //修改门店预存款
                         Integer affectLine = storePreDepositLogService.updateStPreDepositByStoreIdAndVersion(stPreDeposit, storePreDeposit.getStoreId(), storePreDeposit.getLastUpdateTime());
                         if (affectLine > 0) {
@@ -1749,7 +1748,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             //获取顾客预存款
                             CustomerPreDeposit customerPreDeposit = appCustomerService.findByCusId(returnOrderBaseInfo.getCustomerId());
                             //返还预存款后顾客预存款金额
-                            Double cusPreDeposit = CountUtil.add(customerPreDeposit.getBalance(),returnOrderBilling.getPreDeposit());
+                            Double cusPreDeposit = CountUtil.add(customerPreDeposit.getBalance(), returnOrderBilling.getPreDeposit());
                             //更改顾客预存款金额
                             Integer affectLine = appCustomerService.updateDepositByUserIdAndVersion(returnOrderBaseInfo.getCustomerId(), returnOrderBilling.getPreDeposit(), customerPreDeposit.getLastUpdateTime());
                             if (affectLine > 0) {
@@ -1793,18 +1792,18 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
 
                 //如果是现金退款,直接记退款明细
                 else if (null != returnOrderBilling.getCash() && returnOrderBilling.getCash() > AppConstant.PAY_UP_LIMIT) {
-                        Double cash = returnOrderBilling.getCash();
-                        ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
-                        returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
-                        returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
-                        returnOrderBillingDetail.setReturnNo(returnOrderNumber);
-                        returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.CASH);
-                        returnOrderBillingDetail.setReturnMoney(cash);
-                        returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
-                        returnOrderBillingDetail.setReplyCode(null);
-                        returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
-                        returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
-                    }
+                    Double cash = returnOrderBilling.getCash();
+                    ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                    returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
+                    returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                    returnOrderBillingDetail.setReturnNo(returnOrderNumber);
+                    returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.CASH);
+                    returnOrderBillingDetail.setReturnMoney(cash);
+                    returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
+                    returnOrderBillingDetail.setReplyCode(null);
+                    returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
+                    returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
+                }
 
                 //返回门店预存款
                 else if (null != returnOrderBilling.getStPreDeposit() && returnOrderBilling.getStPreDeposit() > AppConstant.PAY_UP_LIMIT) {
@@ -1814,7 +1813,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             //获取门店预存款
                             StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(returnOrderBaseInfo.getCreatorId());
                             //返还预存款后门店预存款金额
-                            Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(),returnOrderBilling.getStPreDeposit());
+                            Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(), returnOrderBilling.getStPreDeposit());
                             //修改门店预存款
                             Integer affectLine = storePreDepositLogService.updateStPreDepositByStoreIdAndVersion(stPreDeposit, storePreDeposit.getStoreId(), storePreDeposit.getLastUpdateTime());
                             if (affectLine > 0) {
@@ -1860,7 +1859,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                                 //查询门店信用金
                                 StoreCreditMoney storeCreditMoney = storeCreditMoneyLogService.findStoreCreditMoneyByUserId(returnOrderBaseInfo.getCreatorId());
                                 //返还后门店信用金额度
-                                Double creditMoney = CountUtil.add(storeCreditMoney.getCreditLimitAvailable(),returnOrderBilling.getStCreditMoney());
+                                Double creditMoney = CountUtil.add(storeCreditMoney.getCreditLimitAvailable(), returnOrderBilling.getStCreditMoney());
                                 //修改门店可用信用金
                                 Integer affectLine = appStoreService.updateStoreCreditByUserIdAndVersion(
                                         returnOrderBaseInfo.getCreatorId(), returnOrderBilling.getStCreditMoney(), storeCreditMoney.getLastUpdateTime());
@@ -1951,7 +1950,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                                 //获取顾客预存款
                                 CustomerPreDeposit customerPreDeposit = appCustomerService.findByCusId(returnOrderBaseInfo.getCustomerId());
                                 //返还预存款后顾客预存款金额
-                                Double cusPreDeposit = CountUtil.add(customerPreDeposit.getBalance(),returnOrderBilling.getOnlinePay());
+                                Double cusPreDeposit = CountUtil.add(customerPreDeposit.getBalance(), returnOrderBilling.getOnlinePay());
                                 //更改顾客预存款金额
                                 Integer affectLine = appCustomerService.updateDepositByUserIdAndVersion(returnOrderBaseInfo.getCustomerId(), returnOrderBilling.getOnlinePay(), customerPreDeposit.getLastUpdateTime());
                                 if (affectLine > 0) {
@@ -1996,7 +1995,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                                 //获取门店预存款
                                 StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(returnOrderBaseInfo.getCreatorId());
                                 //返还预存款后门店预存款金额
-                                Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(),returnOrderBilling.getOnlinePay());
+                                Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(), returnOrderBilling.getOnlinePay());
                                 //修改门店预存款
                                 Integer affectLine = storePreDepositLogService.updateStPreDepositByStoreIdAndVersion(stPreDeposit, storePreDeposit.getStoreId(), storePreDeposit.getLastUpdateTime());
                                 if (affectLine > 0) {
@@ -2099,8 +2098,8 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
 
     @Override
     public void updateReturnOrderBaseInfoByReturnNo(String returnNo, AppReturnOrderStatus returnStatus) {
-        if (null != returnNo && null != returnStatus){
-            returnOrderDAO.updateReturnOrderBaseInfoByReturnNo(returnNo,returnStatus);
+        if (null != returnNo && null != returnStatus) {
+            returnOrderDAO.updateReturnOrderBaseInfoByReturnNo(returnNo, returnStatus);
         }
     }
 
@@ -2112,7 +2111,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
     }
 
     @Override
-    public List<String> getNotReturnDetailsReturnNos(Boolean flag){
+    public List<String> getNotReturnDetailsReturnNos(Boolean flag) {
         return returnOrderDAO.getNotReturnDetailsReturnNos(flag);
     }
 
@@ -2196,7 +2195,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //获取顾客预存款
                         CustomerPreDeposit customerPreDeposit = appCustomerService.findByCusId(orderBaseInfo.getCreatorId());
                         //返还预存款后顾客预存款金额
-                        Double cusPreDeposit = CountUtil.add(customerPreDeposit.getBalance(),orderBillingDetails.getCusPreDeposit());
+                        Double cusPreDeposit = CountUtil.add(customerPreDeposit.getBalance(), orderBillingDetails.getCusPreDeposit());
                         //更改顾客预存款金额
                         Integer affectLine = appCustomerService.updateDepositByUserIdAndVersion(orderBaseInfo.getCreatorId(), orderBillingDetails.getCusPreDeposit(), customerPreDeposit.getLastUpdateTime());
                         if (affectLine > 0) {
@@ -2244,7 +2243,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //获取门店预存款
                         StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(orderBaseInfo.getSalesConsultId());
                         //返还预存款后门店预存款金额
-                        Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(),orderBillingDetails.getStPreDeposit());
+                        Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(), orderBillingDetails.getStPreDeposit());
                         //修改门店预存款
                         Integer affectLine = storePreDepositLogService.updateStPreDepositByStoreIdAndVersion(stPreDeposit, storePreDeposit.getStoreId(), storePreDeposit.getLastUpdateTime());
                         if (affectLine > 0) {
@@ -2289,7 +2288,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //获取导购信用金
                         EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(orderBaseInfo.getSalesConsultId());
                         //返还信用金后导购信用金额度
-                        Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable(),orderBillingDetails.getEmpCreditMoney());
+                        Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable(), orderBillingDetails.getEmpCreditMoney());
                         //修改导购信用额度
                         Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(orderBaseInfo.getSalesConsultId(), orderBillingDetails.getEmpCreditMoney(), empCreditMoney.getLastUpdateTime());
 
@@ -2324,7 +2323,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //获取门店预存款
                         StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(orderBaseInfo.getCreatorId());
                         //返还预存款后门店预存款金额
-                        Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(),orderBillingDetails.getStPreDeposit());
+                        Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(), orderBillingDetails.getStPreDeposit());
                         //修改门店预存款
                         Integer affectLine = storePreDepositLogService.updateStPreDepositByStoreIdAndVersion(stPreDeposit, storePreDeposit.getStoreId(), storePreDeposit.getLastUpdateTime());
                         if (affectLine > 0) {
@@ -2369,7 +2368,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //查询门店信用金
                         StoreCreditMoney storeCreditMoney = storeCreditMoneyLogService.findStoreCreditMoneyByUserId(orderBaseInfo.getCreatorId());
                         //返还后门店信用金额度
-                        Double creditMoney = CountUtil.add(storeCreditMoney.getCreditLimitAvailable(),orderBillingDetails.getStoreCreditMoney());
+                        Double creditMoney = CountUtil.add(storeCreditMoney.getCreditLimitAvailable(), orderBillingDetails.getStoreCreditMoney());
                         //修改门店可用信用金
                         Integer affectLine = appStoreService.updateStoreCreditByUserIdAndVersion(orderBaseInfo.getCreatorId(), orderBillingDetails.getStoreCreditMoney(), storeCreditMoney.getLastUpdateTime());
                         if (affectLine > 0) {
@@ -2402,7 +2401,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         //获取门店现金返利
                         StoreSubvention storeSubvention = appStoreService.findStoreSubventionByEmpId(orderBaseInfo.getCreatorId());
                         //返还后门店现金返利余额
-                        Double subvention = CountUtil.add(storeSubvention.getBalance(),orderBillingDetails.getStoreSubvention());
+                        Double subvention = CountUtil.add(storeSubvention.getBalance(), orderBillingDetails.getStoreSubvention());
                         //修改门店现金返利
                         Integer affectLine = appStoreService.updateStoreSubventionByUserIdAndVersion(orderBillingDetails.getStoreSubvention(), orderBaseInfo.getCreatorId(), storeSubvention.getLastUpdateTime());
                         if (affectLine > 0) {
@@ -2528,7 +2527,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             //获取顾客预存款
                             CustomerPreDeposit customerPreDeposit = appCustomerService.findByCusId(returnOrderBaseInfo.getCustomerId());
                             //返还预存款后顾客预存款金额
-                            Double cusPreDeposit = CountUtil.add(customerPreDeposit.getBalance(),returnOrderBilling.getOnlinePay());
+                            Double cusPreDeposit = CountUtil.add(customerPreDeposit.getBalance(), returnOrderBilling.getOnlinePay());
                             //更改顾客预存款金额
                             Integer affectLine = appCustomerService.updateDepositByUserIdAndVersion(returnOrderBaseInfo.getCustomerId(), returnOrderBilling.getOnlinePay(), customerPreDeposit.getLastUpdateTime());
                             if (affectLine > 0) {
@@ -2573,7 +2572,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             //获取门店预存款
                             StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(returnOrderBaseInfo.getCreatorId());
                             //返还预存款后门店预存款金额
-                            Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(),returnOrderBilling.getOnlinePay());
+                            Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(), returnOrderBilling.getOnlinePay());
                             //修改门店预存款
                             Integer affectLine = storePreDepositLogService.updateStPreDepositByStoreIdAndVersion(stPreDeposit, storePreDeposit.getStoreId(), storePreDeposit.getLastUpdateTime());
                             if (affectLine > 0) {
@@ -2623,12 +2622,9 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             if (AssertUtil.isNotEmpty(appStore) && appStore.getStoreType().equals(StoreType.FX) || appStore.getStoreType().equals(StoreType.JM)) {
                 commonService.deductionOrderJxPriceDifferenceRefund(returnOrderBaseInfo, orderBaseInfo, returnOrderGoodsInfos);
             }
-
-
-
-            maps.put("returnOrderBaseInfo",returnOrderBaseInfo);
-            maps.put("returnOrderBilling",returnOrderBilling);
-            maps.put("orderBaseInfo",orderBaseInfo);
+            maps.put("returnOrderBaseInfo", returnOrderBaseInfo);
+            maps.put("returnOrderBilling", returnOrderBilling);
+            maps.put("orderBaseInfo", orderBaseInfo);
             maps.put("code", "SUCCESS");
             return maps;
         } catch (Exception e) {
@@ -2736,7 +2732,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             //获取顾客预存款
                             CustomerPreDeposit customerPreDeposit = appCustomerService.findByCusId(returnOrderBaseInfo.getCustomerId());
                             //返还预存款后顾客预存款金额
-                            Double cusPreDeposit = CountUtil.add(customerPreDeposit.getBalance(),returnOrderBilling.getPreDeposit());
+                            Double cusPreDeposit = CountUtil.add(customerPreDeposit.getBalance(), returnOrderBilling.getPreDeposit());
                             //更改顾客预存款金额
                             Integer affectLine = appCustomerService.updateDepositByUserIdAndVersion(returnOrderBaseInfo.getCustomerId(), returnOrderBilling.getPreDeposit(), customerPreDeposit.getLastUpdateTime());
                             if (affectLine > 0) {
@@ -2801,7 +2797,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             //获取门店预存款
                             StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(returnOrderBaseInfo.getCreatorId());
                             //返还预存款后门店预存款金额
-                            Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(),returnOrderBilling.getStPreDeposit());
+                            Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(), returnOrderBilling.getStPreDeposit());
                             //修改门店预存款
                             Integer affectLine = storePreDepositLogService.updateStPreDepositByStoreIdAndVersion(stPreDeposit, storePreDeposit.getStoreId(), storePreDeposit.getLastUpdateTime());
                             if (affectLine > 0) {
@@ -2847,7 +2843,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                                 //查询门店信用金
                                 StoreCreditMoney storeCreditMoney = storeCreditMoneyLogService.findStoreCreditMoneyByUserId(returnOrderBaseInfo.getCreatorId());
                                 //返还后门店信用金额度
-                                Double creditMoney = CountUtil.add(storeCreditMoney.getCreditLimitAvailable(),returnOrderBilling.getStCreditMoney());
+                                Double creditMoney = CountUtil.add(storeCreditMoney.getCreditLimitAvailable(), returnOrderBilling.getStCreditMoney());
                                 //修改门店可用信用金
                                 Integer affectLine = appStoreService.updateStoreCreditByUserIdAndVersion(
                                         returnOrderBaseInfo.getCreatorId(), returnOrderBilling.getStCreditMoney(), storeCreditMoney.getLastUpdateTime());
@@ -2938,7 +2934,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                                 //获取顾客预存款
                                 CustomerPreDeposit customerPreDeposit = appCustomerService.findByCusId(returnOrderBaseInfo.getCustomerId());
                                 //返还预存款后顾客预存款金额
-                                Double cusPreDeposit = CountUtil.add(customerPreDeposit.getBalance(),returnOrderBilling.getOnlinePay());
+                                Double cusPreDeposit = CountUtil.add(customerPreDeposit.getBalance(), returnOrderBilling.getOnlinePay());
                                 //更改顾客预存款金额
                                 Integer affectLine = appCustomerService.updateDepositByUserIdAndVersion(returnOrderBaseInfo.getCustomerId(), returnOrderBilling.getOnlinePay(), customerPreDeposit.getLastUpdateTime());
                                 if (affectLine > 0) {
@@ -2983,7 +2979,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                                 //获取门店预存款
                                 StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(returnOrderBaseInfo.getCreatorId());
                                 //返还预存款后门店预存款金额
-                                Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(),returnOrderBilling.getOnlinePay());
+                                Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(), returnOrderBilling.getOnlinePay());
                                 //修改门店预存款
                                 Integer affectLine = storePreDepositLogService.updateStPreDepositByStoreIdAndVersion(stPreDeposit, storePreDeposit.getStoreId(), storePreDeposit.getLastUpdateTime());
                                 if (affectLine > 0) {
