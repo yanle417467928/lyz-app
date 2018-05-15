@@ -1619,7 +1619,7 @@ public class OrderController {
             }
 
             // 激活订单赠送的产品券
-            productCouponService.activateCusProductCoupon(orderNumber);
+            // productCouponService.activateCusProductCoupon(orderNumber);
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("handleOrderRelevantBusinessAfterOnlinePayCashDelivery OUT,处理货到付款的订单业务成功，出参 resultDTO:{}", resultDTO);
@@ -1755,7 +1755,7 @@ public class OrderController {
             }
 
             // 激活订单赠送的产品券
-            productCouponService.activateCusProductCoupon(orderBaseInfo.getOrderNumber());
+            // productCouponService.activateCusProductCoupon(orderBaseInfo.getOrderNumber());
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             logger.info("支付0元订单成功，出参 resultDTO:{}", resultDTO);

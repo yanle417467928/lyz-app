@@ -61,10 +61,11 @@
 <body onload="window.print();">
 <#if photoOrderVO??&&photoOrderVO.photos??>
     <#list photoOrderVO.photos as item>
-        <div class="cover" id="big-img${item_index}">
+    <div class="cover" id="big-img${item_index}">
 
-            <img id="big${item_index}" class="big-img" style="margin-top: 20%; height: 40%;width: 80%;" onclick="outBig(${item_index})" src="${item!''}"/>
-        </div>
+        <img id="big${item_index}" class="big-img" style="margin-top: 20%; height: 40%;width: 80%;"
+             onclick="outBig(${item_index})" src="${item!''}"/>
+    </div>
     </#list>
 </#if>
 <div class="wrapper">
@@ -180,7 +181,7 @@
                             </tr>
                             </thead>
                             <tbody id="tbody">
-                                <#--<tr>-->
+                            <#--<tr>-->
                                     <#--<td><input type="hidden" id="number" name="combList[0].gid" class="td-input" value="1254" />sku</td>-->
                                     <#--<td>商品名称</td>-->
                                     <#--<td>商品类型</td>-->
@@ -223,30 +224,33 @@
 
                     <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
                         <ol class="carousel-indicators">
-                            <#if photoOrderVO??&&photoOrderVO.photos??>
-                                <#list photoOrderVO.photos as photo>
-                                    <li data-target="#carousel-example-generic" data-slide-to="${photo_index}" class="<#if photo_index == 0>active</#if>"></li>
-                                </#list>
-                            </#if>
+                        <#if photoOrderVO??&&photoOrderVO.photos??>
+                            <#list photoOrderVO.photos as photo>
+                                <li data-target="#carousel-example-generic" data-slide-to="${photo_index}"
+                                    class="<#if photo_index == 0>active</#if>"></li>
+                            </#list>
+                        </#if>
                         </ol>
                         <div class="carousel-inner">
-                            <#if photoOrderVO??&&photoOrderVO.photos??>
-                                <#list photoOrderVO.photos as photo>
-                                    <div class="item <#if photo_index == 0>active</#if>">
-                                        <img src="${photo!''}" style="height: 300px;width: 325px;" id="show${photo_index}" onclick="showBig(${photo_index})" alt="First slide">
+                        <#if photoOrderVO??&&photoOrderVO.photos??>
+                            <#list photoOrderVO.photos as photo>
+                                <div class="item <#if photo_index == 0>active</#if>">
+                                    <img src="${photo!''}" style="height: 300px;width: 325px;" id="show${photo_index}"
+                                         onclick="showBig(${photo_index})" alt="First slide">
 
-                                        <#--<div class="carousel-caption">
-                                            First Slide
-                                        </div>-->
-                                    </div>
-                                </#list>
-                            </#if>
+                                <#--<div class="carousel-caption">
+                                    First Slide
+                                </div>-->
+                                </div>
+                            </#list>
+                        </#if>
                         </div>
                         <a class="left carousel-control" href="#carousel-example-generic" data-slide="prev">
                             <span class="fa fa-angle-left"></span>
                         </a>
-                        <a class="right carousel-control" href="#carousel-example-generic" style="margin-right:30px; " data-slide="next">
-                            <span class="fa fa-angle-right" ></span>
+                        <a class="right carousel-control" href="#carousel-example-generic" style="margin-right:30px; "
+                           data-slide="next">
+                            <span class="fa fa-angle-right"></span>
                         </a>
                     </div>
                     <!-- /.box-body -->
@@ -254,34 +258,45 @@
             </div>
             <!-- /.col -->
             <div class="col-xs-8">
-                <div class="box">
+                <div class="box" id="target">
                     <div class="box-header">
                         <h3 class="box-title">选择商品</h3>
                     </div>
-                    <#--<div class="col-sm-1 invoice-col" style="border-bottom-style: solid; border-right-style: solid; border-width: 1px;">
-                        <b>&nbsp; </b>
-                    </div>-->
-                    <div class="col-sm-2 invoice-col" style="border-bottom-style: solid; border-right-style: solid; border-width: 1px; text-align: center;">
+                <#--<div class="col-sm-1 invoice-col" style="border-bottom-style: solid; border-right-style: solid; border-width: 1px;">
+                    <b>&nbsp; </b>
+                </div>-->
+                    <div class="col-sm-2 invoice-col"
+                         style="border-bottom-style: solid; border-right-style: solid; border-width: 1px; text-align: center;">
                         <b><a id="WATER" name="category1" onclick="findCategory('WATER')">水</a></b>
                     </div>
-                    <div class="col-sm-2 invoice-col" style="border-bottom-style: solid; border-right-style: solid; border-width: 1px; text-align: center;">
+                    <div class="col-sm-2 invoice-col"
+                         style="border-bottom-style: solid; border-right-style: solid; border-width: 1px; text-align: center;">
                         <b><a id="ELECTRIC" name="category1" onclick="findCategory('ELECTRIC')">电</a></b>
                     </div>
-                    <div class="col-sm-2 invoice-col" style="border-bottom-style: solid; border-right-style: solid; border-width: 1px; text-align: center;">
+                    <div class="col-sm-2 invoice-col"
+                         style="border-bottom-style: solid; border-right-style: solid; border-width: 1px; text-align: center;">
                         <b><a id="WOOD" name="category1" onclick="findCategory('WOOD')">木</a></b>
                     </div>
-                    <div class="col-sm-2 invoice-col" style="border-bottom-style: solid; border-right-style: solid; border-width: 1px; text-align: center;">
+                    <div class="col-sm-2 invoice-col"
+                         style="border-bottom-style: solid; border-right-style: solid; border-width: 1px; text-align: center;">
                         <b><a id="TILE" name="category1" onclick="findCategory('TILE')">瓦</a></b>
                     </div>
-                    <div class="col-sm-2 invoice-col" style="border-bottom-style: solid; border-right-style: solid; border-width: 1px; text-align: center;">
+                    <div class="col-sm-2 invoice-col"
+                         style="border-bottom-style: solid; border-right-style: solid; border-width: 1px; text-align: center;">
                         <b><a id="OIL" name="category1" onclick="findCategory('OIL')">油</a></b>
                     </div>
-                    <div class="col-sm-2 invoice-col" style="border-bottom-style: solid; border-width: 1px; text-align: center;">
+                    <div class="col-sm-2 invoice-col"
+                         style="border-bottom-style: solid; border-width: 1px; text-align: center;">
                         <b><a id="category0" name="category1" onclick="findGoodsByCategoryId(0)">专供</a></b>
                     </div>
-                    <#--<div class="col-sm-1 invoice-col" style="border-bottom-style: solid; border-width: 1px;">
-                        <b>&nbsp; </b>
-                    </div>-->
+                <#--<div class="col-sm-1 invoice-col" style="border-bottom-style: solid; border-width: 1px;">
+                    <b>&nbsp; </b>
+                </div>-->
+                    <input id="categoryType" name="categoryType" type="hidden" value="WATER"/>
+                    <input id="categoryString" name="categoryString" type="hidden" value=""/>
+                    <input id="brandString" name="brandString" type="hidden" value=""/>
+                    <input id="specificationString" name="specificationString" type="hidden" value=""/>
+                    <input id="goodsTypeString" name="goodsTypeString" type="hidden" value=""/>
                     <div class="col-sm-12 invoice-col" style="height: 10px"></div>
                     <div class="col-sm-12 invoice-col">
                         <div class="col-sm-2 invoice-col">
@@ -290,9 +305,33 @@
                         <div class="col-sm-10 invoice-col" id="category">
                         </div>
                     </div>
+
+                    <div class="col-sm-12 invoice-col">
+                        <div class="col-sm-2 invoice-col">
+                            <b>品牌：</b>
+                        </div>
+                        <div class="col-sm-10 invoice-col" id="brand">
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 invoice-col">
+                        <div class="col-sm-2 invoice-col">
+                            <b>规格：</b>
+                        </div>
+                        <div class="col-sm-10 invoice-col" id="specification">
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 invoice-col">
+                        <div class="col-sm-2 invoice-col">
+                            <b>类型：</b>
+                        </div>
+                        <div class="col-sm-10 invoice-col" id="goodsType">
+                        </div>
+                    </div>
                     <div class="col-sm-12 invoice-col" style="height: 10px"></div>
                     <div class="col-sm-12 invoice-col" id="goods">
-                        <#--<div class="col-sm-3 invoice-col">-->
+                    <#--<div class="col-sm-3 invoice-col">-->
                             <#--<img src="http://img1.leyizhuang.com.cn/app/images/goods/2506/20170303114455297.jpg" style="height: 80px;width: 80px;" alt="First slide">-->
                         <#--</div>-->
                         <#--<div class="col-sm-9 invoice-col">-->
@@ -320,12 +359,22 @@
                         <#--</div>-->
                     </div>
                 </div>
+
                 <div class="row">
                     <div class="col-xs-12 col-md-8"></div>
                     <div class="col-xs-12 col-md-3">
-                        <button type="button" onclick="addCart();" class="btn btn-primary footer-btn">
-                            <i class="fa fa-check"></i> 一键添加
-                        </button>
+                        <#--<button type="button" onclick="addCart();" class="btn btn-primary footer-btn">-->
+                            <#--<i class="fa fa-check"></i> 一键添加-->
+                        <#--</button>-->
+                            <button id="test" class="btn btn-primary footer-btn" onclick="addCart();"
+                                    style="position:fixed;right:100;bottom:0;width:100px;height:50px;">一键添加
+                            </button>
+
+                        <div class="col-xs-4 col-md-3">
+                            <button id="backTop" class="btn btn-primary footer-btn"
+                                    style="position:fixed;right:0;bottom:0;width:100px;height:50px;">回到顶部
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -336,16 +385,29 @@
                 $('#WATER').click();
             });
 
+            backTop.onclick = function () {
+                target.scrollIntoView();
+            }
+
             function findCategory(categoryCode) {
+                document.getElementById("categoryType").value=categoryCode;
+                document.getElementById("categoryString").value='';
+                document.getElementById("brandString").value='';
+                document.getElementById("specificationString").value='';
+                document.getElementById("goodsTypeString").value='';
+
                 var category = '';
                 var goods = '';
+                var brand = '';
+                var specification = '';
+                var goodsType = '';
                 var photoId = $('#photoId').val();
-                $("[name='category1']").css('color','#72afd2');
-                $('#'+ categoryCode).css('color','red');
+                $("[name='category1']").css('color', '#72afd2');
+                $('#' + categoryCode).css('color', 'red');
                 $.ajax({
                     url: '/rest/order/photo/findCategory',
                     method: 'GET',
-                    data:{
+                    data: {
                         categoryCode: categoryCode,
                         id: photoId
                     },
@@ -358,28 +420,51 @@
                     success: function (result) {
                         clearTimeout($global.timer);
                         $.each(result.content.goodsCategory, function (i, item) {
-                            category += '<div class="col-sm-3 invoice-col"><a id="category'+ item.cid +'" name="category2" onclick="findGoodsByCategoryId('+ item.cid +')">'+ item.categoryName +'</a> </div>';
+                            category += '<div class="col-sm-3 invoice-col"><a id="category' + item.cid + '" name="category2" onclick="findGoodsByCategoryId(' + item.cid + ')">' + item.categoryName + '</a> </div>';
+//                            category += '<input id="categoryString" name="categoryString" type="hidden" value="'+item[0].cid+'"/>';
                         });
+
                         $("#category").html(category);
+
+                        $.each(result.content.brandList, function (i, item) {
+                            brand += '<div class="col-sm-3 invoice-col"><a id="brand' + item.brandId + '" name="brand" onclick="findGoodsByBrandId(' + item.brandId + ')">' + item.brandName + '</a> </div>';
+                        });
+                        $("#brand").html(brand);
+
+                        $.each(result.content.specificationList, function (i, item) {
+                            specification += '<div class="col-sm-3 invoice-col"><a id="specification' + item.specificationName + '" name="specification" onclick="findGoodsBySpecification(';
+                            specification += "'" + item.specificationName;
+                            specification += "'";
+                            specification += ')">' + item.specificationName + '</a> </div>';
+                        });
+                        $("#specification").html(specification);
+
+                        $.each(result.content.goodsTypeList, function (i, item) {
+                            goodsType += '<div class="col-sm-3 invoice-col"><a id="goodsType' + item.typeId + '" name="goodsType" onclick="findGoodsBytypeId(' + item.typeId + ')">' + item.typeName + '</a> </div>';
+                        });
+                        $("#goodsType").html(goodsType);
+
+
+
                         $.each(result.content.goods, function (i, item) {
                             goods += '<div class="col-sm-12 invoice-col">';
-                            goods += '<div class="col-sm-3 invoice-col"><img src="'+ item.coverImageUri +'" style="height: 80px;width: 80px;" alt="First slide"></div>';
-                            goods += '<div class="col-sm-9 invoice-col"><div class="col-sm-12 invoice-col"><b style="margin-left:-15%; ">'+ item.goodsName +'</b></div>';
-                            goods += '<div class="col-sm-12 invoice-col"><div class="col-sm-6 invoice-col"><span style="margin-left:-55%; ">规格：'+ item.goodsSpecification +'</span></div>';
-                            goods += '<div class="col-sm-6 invoice-col"><span span style="margin-left:-51%; ">单位：'+ item.goodsUnit +'</span></div></div>';
-                            goods += '<div class="col-sm-12 invoice-col"><div class="col-sm-4 invoice-col"><span style="margin-left:-70%; ">￥'+ item.retailPrice +'</span></div>';
-                            goods += '<div class="col-sm-8 invoice-col"><a onclick="changeQuantity('+ item.id +',';
+                            goods += '<div class="col-sm-3 invoice-col"><img src="' + item.coverImageUri + '" style="height: 80px;width: 80px;" alt="First slide"></div>';
+                            goods += '<div class="col-sm-9 invoice-col"><div class="col-sm-12 invoice-col"><b style="margin-left:-15%; ">' + item.goodsName + '</b></div>';
+                            goods += '<div class="col-sm-12 invoice-col"><div class="col-sm-6 invoice-col"><span style="margin-left:-55%; ">规格：' + item.goodsSpecification + '</span></div>';
+                            goods += '<div class="col-sm-6 invoice-col"><span span style="margin-left:-51%; ">单位：' + item.goodsUnit + '</span></div></div>';
+                            goods += '<div class="col-sm-12 invoice-col"><div class="col-sm-4 invoice-col"><span style="margin-left:-70%; ">￥' + item.retailPrice + '</span></div>';
+                            goods += '<div class="col-sm-8 invoice-col"><a onclick="changeQuantity(' + item.id + ',';
                             goods += "'delete'";
                             goods += ')"><i class="fa fa-minus"></i></a><span>&nbsp;&nbsp;&nbsp;</span>';
-                            goods += ' <input type="text" class="goodsSelectedQuantity" min="0" id="quantity'+ item.id +'" value="0" style="width: 15%; height: 18px; text-align: center;" onkeyup="keyup(this)" onafterpaste="afterpaste(this)" onfocus="clearQuantity(this)" onblur="setQuantity(this)"/>';
-                            goods += '<a onclick="changeQuantity('+ item.id +',';
+                            goods += ' <input type="text" class="goodsSelectedQuantity" min="0" id="quantity' + item.id + '" value="0" style="width: 15%; height: 18px; text-align: center;" onkeyup="keyup(this)" onafterpaste="afterpaste(this)" onfocus="clearQuantity(this)" onblur="setQuantity(this)"/>';
+                            goods += '<a onclick="changeQuantity(' + item.id + ',';
                             goods += "'add'";
                             goods += ')"><i class="fa fa-plus"></i></a></div></div></div></div>';
                             goods += '<div class="col-sm-12 invoice-col" style="height: 5px;"></div>';
-                            goods += '<input type="hidden" id="sku'+ item.id +'" value="'+ item.sku +'"/>';
-                            goods += '<input type="hidden" id="goodsName'+ item.id +'" value="'+ item.goodsName +'"/>';
-                            goods += '<input type="hidden" id="typeName'+ item.id +'" value="'+ item.typeName +'"/>';
-                            goods += '<input type="hidden" id="price'+ item.id +'" value="'+ item.retailPrice +'"/>';
+                            goods += '<input type="hidden" id="sku' + item.id + '" value="' + item.sku + '"/>';
+                            goods += '<input type="hidden" id="goodsName' + item.id + '" value="' + item.goodsName + '"/>';
+                            goods += '<input type="hidden" id="typeName' + item.id + '" value="' + item.typeName + '"/>';
+                            goods += '<input type="hidden" id="price' + item.id + '" value="' + item.retailPrice + '"/>';
                         });
                         $("#goods").html(goods);
                     }
@@ -387,20 +472,34 @@
             }
 
             function findGoodsByCategoryId(categoryId) {
+                document.getElementById("categoryString").value=categoryId;
+                var categoryType = $('#categoryType').val();
+//                var categoryString = $('#categoryString').val();
+                var brandString = $('#brandString').val();
+                var specificationString = $('#specificationString').val();
+                var goodsTypeString = $('#goodsTypeString').val();
+
                 var goods = '';
                 var photoId = $('#photoId').val();
-                if (categoryId == 0){
+                if (categoryId == 0) {
                     $("#category").html('');
-                    $("[name='category1']").css('color','#72afd2');
+                    $("#brand").html('');
+                    $("#specification").html('');
+                    $("#goodsType").html('');
+                    $("[name='category1']").css('color', '#72afd2');
                 }
-                $("[name='category2']").css('color','#72afd2');
-                $('#category'+ categoryId).css('color','red');
+                $("[name='category2']").css('color', '#72afd2');
+                $('#category' + categoryId).css('color', 'red');
                 $.ajax({
                     url: '/rest/order/photo/findGoods',
                     method: 'GET',
-                    data:{
+                    data: {
                         categoryId: categoryId,
-                        id: photoId
+                        id: photoId,
+                        categoryType:categoryType,
+                        brandString:brandString,
+                        specificationString:specificationString,
+                        goodsTypeString:goodsTypeString
                     },
                     error: function () {
                         clearTimeout($global.timer);
@@ -412,28 +511,229 @@
                         clearTimeout($global.timer);
                         $.each(result.content, function (i, item) {
                             goods += '<div class="col-sm-12 invoice-col">';
-                            goods += '<div class="col-sm-3 invoice-col"><img src="'+ item.coverImageUri +'" style="height: 80px;width: 80px;" alt="First slide"></div>';
-                            goods += '<div class="col-sm-9 invoice-col"><div class="col-sm-12 invoice-col"><b style="margin-left:-15%; ">'+ item.goodsName +'</b></div>';
-                            goods += '<div class="col-sm-12 invoice-col"><div class="col-sm-6 invoice-col"><span style="margin-left:-55%; ">规格：'+ item.goodsSpecification +'</span></div>';
-                            goods += '<div class="col-sm-6 invoice-col"><span span style="margin-left:-51%; ">单位：'+ item.goodsUnit +'</span></div></div>';
-                            goods += '<div class="col-sm-12 invoice-col"><div class="col-sm-4 invoice-col"><span style="margin-left:-70%; ">￥'+ item.retailPrice +'</span></div>';
-                            goods += '<div class="col-sm-8 invoice-col"><a onclick="changeQuantity('+ item.id +',';
+                            goods += '<div class="col-sm-3 invoice-col"><img src="' + item.coverImageUri + '" style="height: 80px;width: 80px;" alt="First slide"></div>';
+                            goods += '<div class="col-sm-9 invoice-col"><div class="col-sm-12 invoice-col"><b style="margin-left:-15%; ">' + item.goodsName + '</b></div>';
+                            goods += '<div class="col-sm-12 invoice-col"><div class="col-sm-6 invoice-col"><span style="margin-left:-55%; ">规格：' + item.goodsSpecification + '</span></div>';
+                            goods += '<div class="col-sm-6 invoice-col"><span span style="margin-left:-51%; ">单位：' + item.goodsUnit + '</span></div></div>';
+                            goods += '<div class="col-sm-12 invoice-col"><div class="col-sm-4 invoice-col"><span style="margin-left:-70%; ">￥' + item.retailPrice + '</span></div>';
+                            goods += '<div class="col-sm-8 invoice-col"><a onclick="changeQuantity(' + item.id + ',';
                             goods += "'delete'";
                             goods += ')"><i class="fa fa-minus"></i></a><span>&nbsp;&nbsp;&nbsp;</span>';
-                            goods += '<input type="text" class="goodsSelectedQuantity" min="0" id="quantity'+ item.id +'" value="0" style="width: 15%; height: 18px; text-align: center;" onkeyup="keyup(this)" onafterpaste="afterpaste(this)" onfocus="clearQuantity(this)" onblur="setQuantity(this)" />';
-                            goods += '<span>&nbsp;</span><a onclick="changeQuantity('+ item.id +',';
+                            goods += '<input type="text" class="goodsSelectedQuantity" min="0" id="quantity' + item.id + '" value="0" style="width: 15%; height: 18px; text-align: center;" onkeyup="keyup(this)" onafterpaste="afterpaste(this)" onfocus="clearQuantity(this)" onblur="setQuantity(this)" />';
+                            goods += '<span>&nbsp;</span><a onclick="changeQuantity(' + item.id + ',';
                             goods += "'add'";
                             goods += ')"><i class="fa fa-plus"></i></a></div></div></div></div>';
                             goods += '<div class="col-sm-12 invoice-col" style="height: 5px;"></div>'
-                            goods += '<input type="hidden" id="sku'+ item.id +'" value="'+ item.sku +'"/>';
-                            goods += '<input type="hidden" id="goodsName'+ item.id +'" value="'+ item.goodsName +'"/>';
-                            goods += '<input type="hidden" id="typeName'+ item.id +'" value="'+ item.typeName +'"/>';
-                            goods += '<input type="hidden" id="price'+ item.id +'" value="'+ item.retailPrice +'"/>';
+                            goods += '<input type="hidden" id="sku' + item.id + '" value="' + item.sku + '"/>';
+                            goods += '<input type="hidden" id="goodsName' + item.id + '" value="' + item.goodsName + '"/>';
+                            goods += '<input type="hidden" id="typeName' + item.id + '" value="' + item.typeName + '"/>';
+                            goods += '<input type="hidden" id="price' + item.id + '" value="' + item.retailPrice + '"/>';
                         });
                         $("#goods").html(goods);
                     }
                 });
             }
+
+
+            function findGoodsByBrandId(brandId) {
+                document.getElementById("brandString").value=brandId;
+                var categoryType = $('#categoryType').val();
+                var categoryId = $('#categoryString').val();
+//                var brandString = $('#brandString').val();
+                var specificationString = $('#specificationString').val();
+                var goodsTypeString = $('#goodsTypeString').val();
+
+                var goods = '';
+                var photoId = $('#photoId').val();
+                if (categoryId == 0) {
+                    $("[name='category1']").css('color', '#72afd2');
+                }
+                $("[name='brand']").css('color', '#72afd2');
+                $('#brand' + brandId).css('color', 'red');
+                $.ajax({
+                    url: '/rest/order/photo/findGoods',
+                    method: 'GET',
+                    data: {
+                        categoryId: categoryId,
+                        id: photoId,
+                        categoryType:categoryType,
+                        brandString:brandId,
+                        specificationString:specificationString,
+                        goodsTypeString:goodsTypeString
+                    },
+                    error: function () {
+                        clearTimeout($global.timer);
+                        $loading.close();
+                        $global.timer = null;
+                        $notify.danger('网络异常，请稍后重试或联系管理员');
+                    },
+                    success: function (result) {
+                        clearTimeout($global.timer);
+                        $.each(result.content, function (i, item) {
+                            goods += '<div class="col-sm-12 invoice-col">';
+                            goods += '<div class="col-sm-3 invoice-col"><img src="' + item.coverImageUri + '" style="height: 80px;width: 80px;" alt="First slide"></div>';
+                            goods += '<div class="col-sm-9 invoice-col"><div class="col-sm-12 invoice-col"><b style="margin-left:-15%; ">' + item.goodsName + '</b></div>';
+                            goods += '<div class="col-sm-12 invoice-col"><div class="col-sm-6 invoice-col"><span style="margin-left:-55%; ">规格：' + item.goodsSpecification + '</span></div>';
+                            goods += '<div class="col-sm-6 invoice-col"><span span style="margin-left:-51%; ">单位：' + item.goodsUnit + '</span></div></div>';
+                            goods += '<div class="col-sm-12 invoice-col"><div class="col-sm-4 invoice-col"><span style="margin-left:-70%; ">￥' + item.retailPrice + '</span></div>';
+                            goods += '<div class="col-sm-8 invoice-col"><a onclick="changeQuantity(' + item.id + ',';
+                            goods += "'delete'";
+                            goods += ')"><i class="fa fa-minus"></i></a><span>&nbsp;&nbsp;&nbsp;</span>';
+                            goods += '<input type="text" class="goodsSelectedQuantity" min="0" id="quantity' + item.id + '" value="0" style="width: 15%; height: 18px; text-align: center;" onkeyup="keyup(this)" onafterpaste="afterpaste(this)" onfocus="clearQuantity(this)" onblur="setQuantity(this)" />';
+                            goods += '<span>&nbsp;</span><a onclick="changeQuantity(' + item.id + ',';
+                            goods += "'add'";
+                            goods += ')"><i class="fa fa-plus"></i></a></div></div></div></div>';
+                            goods += '<div class="col-sm-12 invoice-col" style="height: 5px;"></div>'
+                            goods += '<input type="hidden" id="sku' + item.id + '" value="' + item.sku + '"/>';
+                            goods += '<input type="hidden" id="goodsName' + item.id + '" value="' + item.goodsName + '"/>';
+                            goods += '<input type="hidden" id="typeName' + item.id + '" value="' + item.typeName + '"/>';
+                            goods += '<input type="hidden" id="price' + item.id + '" value="' + item.retailPrice + '"/>';
+                        });
+                        $("#goods").html(goods);
+                    }
+                });
+            }
+
+
+            function findGoodsBySpecification(specificationString) {
+                document.getElementById("specificationString").value=specificationString;
+                var categoryType = $('#categoryType').val();
+                var categoryId = $('#categoryString').val();
+                var brandString = $('#brandString').val();
+//                var specificationString = $('#specificationString').val();
+                var goodsTypeString = $('#goodsTypeString').val();
+
+                var goods = '';
+                var photoId = $('#photoId').val();
+                if (categoryId == 0) {
+                    $("[name='category1']").css('color', '#72afd2');
+                }
+                $("[name='specification']").css('color', '#72afd2');
+                $('#specification' + specificationString).css('color', 'red');
+                $.ajax({
+                    url: '/rest/order/photo/findGoods',
+                    method: 'GET',
+                    data: {
+                        categoryId: categoryId,
+                        id: photoId,
+                        categoryType:categoryType,
+                        brandString:brandString,
+                        specificationString:specificationString,
+                        goodsTypeString:goodsTypeString
+                    },
+                    error: function () {
+                        clearTimeout($global.timer);
+                        $loading.close();
+                        $global.timer = null;
+                        $notify.danger('网络异常，请稍后重试或联系管理员');
+                    },
+                    success: function (result) {
+                        clearTimeout($global.timer);
+                        $.each(result.content, function (i, item) {
+                            goods += '<div class="col-sm-12 invoice-col">';
+                            goods += '<div class="col-sm-3 invoice-col"><img src="' + item.coverImageUri + '" style="height: 80px;width: 80px;" alt="First slide"></div>';
+                            goods += '<div class="col-sm-9 invoice-col"><div class="col-sm-12 invoice-col"><b style="margin-left:-15%; ">' + item.goodsName + '</b></div>';
+                            goods += '<div class="col-sm-12 invoice-col"><div class="col-sm-6 invoice-col"><span style="margin-left:-55%; ">规格：' + item.goodsSpecification + '</span></div>';
+                            goods += '<div class="col-sm-6 invoice-col"><span span style="margin-left:-51%; ">单位：' + item.goodsUnit + '</span></div></div>';
+                            goods += '<div class="col-sm-12 invoice-col"><div class="col-sm-4 invoice-col"><span style="margin-left:-70%; ">￥' + item.retailPrice + '</span></div>';
+                            goods += '<div class="col-sm-8 invoice-col"><a onclick="changeQuantity(' + item.id + ',';
+                            goods += "'delete'";
+                            goods += ')"><i class="fa fa-minus"></i></a><span>&nbsp;&nbsp;&nbsp;</span>';
+                            goods += '<input type="text" class="goodsSelectedQuantity" min="0" id="quantity' + item.id + '" value="0" style="width: 15%; height: 18px; text-align: center;" onkeyup="keyup(this)" onafterpaste="afterpaste(this)" onfocus="clearQuantity(this)" onblur="setQuantity(this)" />';
+                            goods += '<span>&nbsp;</span><a onclick="changeQuantity(' + item.id + ',';
+                            goods += "'add'";
+                            goods += ')"><i class="fa fa-plus"></i></a></div></div></div></div>';
+                            goods += '<div class="col-sm-12 invoice-col" style="height: 5px;"></div>'
+                            goods += '<input type="hidden" id="sku' + item.id + '" value="' + item.sku + '"/>';
+                            goods += '<input type="hidden" id="goodsName' + item.id + '" value="' + item.goodsName + '"/>';
+                            goods += '<input type="hidden" id="typeName' + item.id + '" value="' + item.typeName + '"/>';
+                            goods += '<input type="hidden" id="price' + item.id + '" value="' + item.retailPrice + '"/>';
+                        });
+                        $("#goods").html(goods);
+                    }
+                });
+            }
+
+
+
+
+
+
+
+
+
+            function findGoodsBytypeId(typeId) {
+                document.getElementById("goodsTypeString").value=typeId;
+                var categoryType = $('#categoryType').val();
+                var categoryId = $('#categoryString').val();
+                var brandString = $('#brandString').val();
+                var specificationString = $('#specificationString').val();
+//                var goodsTypeString = $('#goodsTypeString').val();
+
+                var goods = '';
+                var photoId = $('#photoId').val();
+                if (categoryId == 0) {
+                    $("[name='category1']").css('color', '#72afd2');
+                }
+                $("[name='goodsType']").css('color', '#72afd2');
+                $('#goodsType' + typeId).css('color', 'red');
+                $.ajax({
+                    url: '/rest/order/photo/findGoods',
+                    method: 'GET',
+                    data: {
+                        categoryId: categoryId,
+                        id: photoId,
+                        categoryType:categoryType,
+                        brandString:brandString,
+                        specificationString:specificationString,
+                        goodsTypeString:typeId
+                    },
+                    error: function () {
+                        clearTimeout($global.timer);
+                        $loading.close();
+                        $global.timer = null;
+                        $notify.danger('网络异常，请稍后重试或联系管理员');
+                    },
+                    success: function (result) {
+                        clearTimeout($global.timer);
+                        $.each(result.content, function (i, item) {
+                            goods += '<div class="col-sm-12 invoice-col">';
+                            goods += '<div class="col-sm-3 invoice-col"><img src="' + item.coverImageUri + '" style="height: 80px;width: 80px;" alt="First slide"></div>';
+                            goods += '<div class="col-sm-9 invoice-col"><div class="col-sm-12 invoice-col"><b style="margin-left:-15%; ">' + item.goodsName + '</b></div>';
+                            goods += '<div class="col-sm-12 invoice-col"><div class="col-sm-6 invoice-col"><span style="margin-left:-55%; ">规格：' + item.goodsSpecification + '</span></div>';
+                            goods += '<div class="col-sm-6 invoice-col"><span span style="margin-left:-51%; ">单位：' + item.goodsUnit + '</span></div></div>';
+                            goods += '<div class="col-sm-12 invoice-col"><div class="col-sm-4 invoice-col"><span style="margin-left:-70%; ">￥' + item.retailPrice + '</span></div>';
+                            goods += '<div class="col-sm-8 invoice-col"><a onclick="changeQuantity(' + item.id + ',';
+                            goods += "'delete'";
+                            goods += ')"><i class="fa fa-minus"></i></a><span>&nbsp;&nbsp;&nbsp;</span>';
+                            goods += '<input type="text" class="goodsSelectedQuantity" min="0" id="quantity' + item.id + '" value="0" style="width: 15%; height: 18px; text-align: center;" onkeyup="keyup(this)" onafterpaste="afterpaste(this)" onfocus="clearQuantity(this)" onblur="setQuantity(this)" />';
+                            goods += '<span>&nbsp;</span><a onclick="changeQuantity(' + item.id + ',';
+                            goods += "'add'";
+                            goods += ')"><i class="fa fa-plus"></i></a></div></div></div></div>';
+                            goods += '<div class="col-sm-12 invoice-col" style="height: 5px;"></div>'
+                            goods += '<input type="hidden" id="sku' + item.id + '" value="' + item.sku + '"/>';
+                            goods += '<input type="hidden" id="goodsName' + item.id + '" value="' + item.goodsName + '"/>';
+                            goods += '<input type="hidden" id="typeName' + item.id + '" value="' + item.typeName + '"/>';
+                            goods += '<input type="hidden" id="price' + item.id + '" value="' + item.retailPrice + '"/>';
+                        });
+                        $("#goods").html(goods);
+                    }
+                });
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             // 改变商品数量的方法
             function changeQuantity(goodsId, operation) {
                 // 获取指定商品显示数量的输入框的id
@@ -461,23 +761,33 @@
                 $(quantityElementId).val(quantity);
             }
             //限制输入 只能输入数字
-            function keyup(obj){
-                if(obj.value.length==1){obj.value=obj.value.replace(/[^1-9]/g,'')}else{obj.value=obj.value.replace(/\D/g,'')};
+            function keyup(obj) {
+                if (obj.value.length == 1) {
+                    obj.value = obj.value.replace(/[^1-9]/g, '')
+                } else {
+                    obj.value = obj.value.replace(/\D/g, '')
+                }
+                ;
             }
             //限制输入 只能输入数字
-            function afterpaste(obj){
-                if(obj.value.length==1){obj.value=obj.value.replace(/[^1-9]/g,'')}else{obj.value=obj.value.replace(/\D/g,'')};
+            function afterpaste(obj) {
+                if (obj.value.length == 1) {
+                    obj.value = obj.value.replace(/[^1-9]/g, '')
+                } else {
+                    obj.value = obj.value.replace(/\D/g, '')
+                }
+                ;
             }
 
             //商品数量输入框获取焦点时清空
-            function clearQuantity(obj){
-                obj.value="";
+            function clearQuantity(obj) {
+                obj.value = "";
             }
 
             //商品数量如果为空，则设为0
-            function setQuantity(obj){
-                if(obj.value.length==0){
-                    obj.value=obj.min;
+            function setQuantity(obj) {
+                if (obj.value.length == 0) {
+                    obj.value = obj.min;
                 }
             }
             function addCart(isGoHistory) {
@@ -487,7 +797,7 @@
                 // 获取所有value值大于0的input标签（即获得了所有数量要大于0的商品）
                 $('.goodsSelectedQuantity').each(
                         // 获取标签之后拼接参数变量
-                        function(i) {
+                        function (i) {
                             var qty = $('.goodsSelectedQuantity').eq(i).val();
                             if (!isNaN(qty) && qty > 0) {
                                 var goodsId = $('.goodsSelectedQuantity').eq(i).attr("id").replace("quantity", "");
@@ -497,7 +807,7 @@
                                 var price = $('#price' + goodsId).val();
 
                                 var oldGoodsId = $('#gid' + goodsId).val();
-                                if (undefined == oldGoodsId || oldGoodsId == ''){
+                                if (undefined == oldGoodsId || oldGoodsId == '') {
                                     params += '<tr><td><input type="hidden" id="gid' + goodsId + '" name="combList[' + total + '].gid" value="' + goodsId + '" />' + sku + '</td>';
                                     params += '<td>' + goodsName + '</td><td>' + typeName + '</td><td>' + price + '</td>';
                                     params += '<td ><input type="text" id="qty' + goodsId + '" min="1" name="combList[' + total + '].qty" value="' + qty + '" style="width:30%;" onkeyup="keyup(this)" onafterpaste="afterpaste(this)" onblur="setQuantity(this)"/></td>';
@@ -505,7 +815,7 @@
                                     total = parseInt(total) + 1;
                                 } else {
                                     var oldQty = $('#qty' + goodsId).val();
-                                    if (!isNaN(oldQty) && oldQty > 0){
+                                    if (!isNaN(oldQty) && oldQty > 0) {
                                         qty = parseInt(oldQty) + parseInt(qty);
                                         $('#qty' + goodsId).val(qty);
                                     } else {
@@ -527,15 +837,15 @@
             //删除商品组合节点
             function del_goods_comb(obj) {
                 $(obj).parent().parent().remove();
-                $("#total").val(parseInt($("#total").val())-1);
+                $("#total").val(parseInt($("#total").val()) - 1);
             }
             //看大图
-            function showBig(obj){
-                $("#big-img"+ obj).fadeIn(500);
+            function showBig(obj) {
+                $("#big-img" + obj).fadeIn(500);
             }
             //关闭大图
-            function outBig(obj){
-                $("#big-img"+ obj).fadeOut(500);
+            function outBig(obj) {
+                $("#big-img" + obj).fadeOut(500);
             }
 
             $(function () {
@@ -595,7 +905,7 @@
                 $.ajax({
                     url: '/rest/order/photo/delete',
                     method: 'POST',
-                    data:{
+                    data: {
                         photoId: photoId
                     },
                     error: function () {

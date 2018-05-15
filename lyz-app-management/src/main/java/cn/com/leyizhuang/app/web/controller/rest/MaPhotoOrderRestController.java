@@ -3,12 +3,16 @@ package cn.com.leyizhuang.app.web.controller.rest;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.MaterialListType;
 import cn.com.leyizhuang.app.core.utils.SmsUtils;
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dto.PhotoOrderDTO;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.PhotoOrderGoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsCategoryDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.GoodsBrandResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.GoodsSpecificationResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.GoodsTypeResponse;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.service.impl.SmsAccountServiceImpl;
 import cn.com.leyizhuang.app.foundation.vo.management.goods.GoodsResponseVO;
@@ -26,6 +30,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -68,6 +73,8 @@ public class MaPhotoOrderRestController extends BaseRestController{
     @Autowired
     private AdminUserStoreService adminUserStoreService;
 
+    @Resource
+    private GoodsService goodsService;
     /**
      * @title   获取拍照下单列表
      * @descripe
@@ -119,7 +126,7 @@ public class MaPhotoOrderRestController extends BaseRestController{
      */
     @GetMapping(value = "/findCategory")
     public ResultDTO<Object> findCategory(String categoryCode, Long id) {
-        logger.info("findCategory,获取商品分类，入参 categoryCode:{} id:{}", categoryCode, id);
+        logger.info("findCategory,获取商品分类，入参 categoryCode:{} id:{}",categoryCode, id);
 
         Map<String, Object> returnMap = new HashMap(2);
         List<GoodsCategoryDO> goodsCategoryDOList = this.maGoodsCategoryService.findGoodsCategoryByPCategoryCode(categoryCode);
@@ -131,6 +138,9 @@ public class MaPhotoOrderRestController extends BaseRestController{
             returnMap.put("goodsCategory", goodsCategoryDOList);
             PhotoOrderVO photoOrderVO = this.maPhotoOrderService.findById(id);
             List<GoodsResponseVO> goodsList = null;
+            List<GoodsBrandResponse> brandList = null;
+            List<GoodsSpecificationResponse> specificationList = null;
+            List<GoodsTypeResponse> goodsTypeList = null;
             if (null != photoOrderVO){
                 List<Long> cids = new ArrayList<>();
                 for (GoodsCategoryDO goodsCategoryDO:goodsCategoryDOList) {
@@ -138,11 +148,22 @@ public class MaPhotoOrderRestController extends BaseRestController{
                 }
                 if (AppIdentityType.CUSTOMER.equals(photoOrderVO.getIdentityTypeValue())){
                     goodsList = this.maGoodsService.findGoodsByCidAndCusId(photoOrderVO.getUserId(), cids);
+
+                    brandList = maGoodsService.findGoodsBrandListByCategoryCodeAndUserIdAndIdentityType(categoryCode, photoOrderVO.getUserId(), 6,null,null,null);
+                    specificationList = maGoodsService.findGoodsSpecificationListByCategoryCodeAndUserIdAndIdentityType(categoryCode, photoOrderVO.getUserId(), 6,null,null,null);
+                    goodsTypeList = maGoodsService.findGoodsTypeListByCategoryCodeAndUserIdAndIdentityType(categoryCode, photoOrderVO.getUserId(), 6,null,null,null);
                 } else {
                     goodsList = this.maGoodsService.findGoodsByCidAndEmpId(photoOrderVO.getUserId(), cids);
+                    brandList = maGoodsService.findGoodsBrandListByCategoryCodeAndUserIdAndIdentityType(categoryCode, photoOrderVO.getUserId(), 0,null,null,null);
+                    specificationList = maGoodsService.findGoodsSpecificationListByCategoryCodeAndUserIdAndIdentityType(categoryCode, photoOrderVO.getUserId(), 0,null,null,null);
+                    goodsTypeList = maGoodsService.findGoodsTypeListByCategoryCodeAndUserIdAndIdentityType(categoryCode, photoOrderVO.getUserId(), 0,null,null,null);
                 }
             }
             returnMap.put("goods", goodsList);
+            returnMap.put("brandList",brandList);
+            returnMap.put("specificationList",specificationList);
+            returnMap.put("goodsTypeList",goodsTypeList);
+
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, returnMap);
         }
     }
@@ -157,22 +178,30 @@ public class MaPhotoOrderRestController extends BaseRestController{
      * @date 2018/2/22
      */
     @GetMapping(value = "/findGoods")
-    public ResultDTO<Object> findGoods(Long categoryId, Long id) {
-        logger.info("findGoods,获取商品，入参 categoryId:{} id:{}", categoryId, id);
+    public ResultDTO<Object> findGoods(Long categoryId, Long id,String categoryType, Long brandString,String specificationString, Long goodsTypeString) {
+        logger.info("findGoods,获取商品，入参 categoryId:{} id:{} categoryType:{} brandString:{} specificationString:{} goodsTypeString:{}",
+                categoryId, id, categoryType, brandString, specificationString, goodsTypeString);
+        if (StringUtils.isBlank(specificationString)){
+            specificationString = null;
+        }
+        if (StringUtils.isBlank(categoryType)){
+            categoryType = null;
+        }
+
         List<Long> cids = new ArrayList<>();
         cids.add(categoryId);
         PhotoOrderVO photoOrderVO = this.maPhotoOrderService.findById(id);
         List<GoodsResponseVO> goodsList = null;
         if (null != photoOrderVO){
-            if (categoryId.equals(0L)){
+            if (null != categoryId && categoryId.equals(0L)){
                 if (AppIdentityType.CUSTOMER.equals(photoOrderVO.getIdentityTypeValue())) {
                     goodsList = this.maGoodsService.findGoodsByCidAndCusIdAndUserRank(photoOrderVO.getUserId());
                 }
             } else {
                 if (AppIdentityType.CUSTOMER.equals(photoOrderVO.getIdentityTypeValue())) {
-                    goodsList = this.maGoodsService.findGoodsByCidAndCusId(photoOrderVO.getUserId(), cids);
+                    goodsList = this.maGoodsService.findGoodsByMultiConditionQueryAndCusId(photoOrderVO.getUserId(), categoryId,categoryType,brandString,specificationString,goodsTypeString);
                 } else {
-                    goodsList = this.maGoodsService.findGoodsByCidAndEmpId(photoOrderVO.getUserId(), cids);
+                    goodsList = this.maGoodsService.findGoodsByMultiConditionQueryAndEmpId(photoOrderVO.getUserId(), categoryId,categoryType,brandString,specificationString,goodsTypeString);
                 }
             }
         }
