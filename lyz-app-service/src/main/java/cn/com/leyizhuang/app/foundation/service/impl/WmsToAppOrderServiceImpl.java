@@ -903,7 +903,7 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                     purchaseHeader.setHandleFlag("0");
                     purchaseHeader.setHandleTime(new Date());
                     this.wmsToAppOrderDAO.updateWtaWarehousePurchaseHeader(purchaseHeader);
-                    throw new RuntimeException();
+                    throw new RuntimeException("采购验收单: " + purchaseHeader.getRecNo() + " 没有找到对应的城市信息!");
                 }
                 if (null != purchaseHeaders && purchaseHeaders.size() > 0) {
                     for (WtaWarehousePurchaseGoods purchaseGoods : purchaseHeaders) {
@@ -914,7 +914,7 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                             purchaseHeader.setHandleFlag("0");
                             purchaseHeader.setHandleTime(new Date());
                             this.wmsToAppOrderDAO.updateWtaWarehousePurchaseHeader(purchaseHeader);
-                            throw new RuntimeException();
+                            throw new RuntimeException("商品资料中没有查询到sku为" + purchaseGoods.getSku() + "的商品信息!");
                         }
                         for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
                             CityInventory cityInventory = cityService.findCityInventoryByCityIdAndSku(city.getCityId(), purchaseGoods.getSku());
@@ -946,7 +946,7 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                                     purchaseHeader.setHandleFlag("0");
                                     purchaseHeader.setHandleTime(new Date());
                                     this.wmsToAppOrderDAO.updateWtaWarehousePurchaseHeader(purchaseHeader);
-                                    throw new RuntimeException();
+                                    throw new RuntimeException("系统繁忙，请稍后处理!");
                                 }
                             }
                         }
@@ -959,7 +959,7 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                     purchaseHeader.setHandleFlag("0");
                     purchaseHeader.setHandleTime(new Date());
                     this.wmsToAppOrderDAO.updateWtaWarehousePurchaseHeader(purchaseHeader);
-                    throw new RuntimeException();
+                    throw new RuntimeException("采购验收单: " + purchaseHeader.getRecNo() + " 没有找到明细·信息!");
                 }
             }
         } catch (Exception e) {
@@ -968,6 +968,7 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
             purchaseHeader.setErrMessage(e.getMessage());
             purchaseHeader.setHandleTime(new Date());
             this.wmsToAppOrderDAO.updateWtaWarehousePurchaseHeader(purchaseHeader);
+            throw new RuntimeException("发生异常:"  + e.getMessage());
         }
     }
 
