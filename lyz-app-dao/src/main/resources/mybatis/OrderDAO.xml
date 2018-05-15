@@ -1588,6 +1588,7 @@
         WHERE ord_no = #{orderNumber} AND delivery_status != 'SEALED_CAR'
         AND delivery_status != 'CONFIRM_ARRIVAL'
         AND delivery_status != 'REJECT'
+        AND status != 'CANCELED'
     </update>
 
     <select id="getOrderProductCouponPurchasePrice" resultType="java.lang.Double">
