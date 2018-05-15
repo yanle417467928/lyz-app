@@ -484,7 +484,7 @@ public class WeChatPayController {
                                     }
 
                                     // 激活订单赠送的产品券
-                                    productCouponService.activateCusProductCoupon(outTradeNo);
+                                    // productCouponService.activateCusProductCoupon(outTradeNo);
                                 }
                             }
                             //返回响应成功的讯息

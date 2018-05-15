@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 顾客产品券接口返回对象
@@ -33,6 +34,16 @@ public class ProductCouponResponse implements Serializable {
     private Integer leftNumber;
 
     private String coverImageUri;
+
+    /**
+     *  生效开始时间
+     */
+    private Date effectiveStartTime;
+
+    /**
+     * 生效结束时间
+     */
+    private Date effectiveEndTime;
 
     /**
      * 是否为专供

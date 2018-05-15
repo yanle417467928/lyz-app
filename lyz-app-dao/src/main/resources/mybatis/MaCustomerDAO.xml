@@ -486,7 +486,7 @@
             store_id, store_code, store_name, city_id, city_name, company_code, company_name, create_time
         )
         VALUES
-            (storeId, storeCode, storeName, cityId, cityName, companyCode, companyName, createTime)
+            (#{storeId}, #{storeCode}, #{storeName}, #{cityId}, #{cityName}, #{companyCode}, #{companyName}, #{createTime})
     </insert>
 
     <insert id="saveCusRank" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.CusRankDO">
