@@ -207,4 +207,6 @@ public interface OrderDAO {
 
     PayhelperOrder findPayhelperOrderByOrdNo(String ordNo);
 
+    int savePayhelperOrder(PayhelperOrder payhelperOrder);
+
 }

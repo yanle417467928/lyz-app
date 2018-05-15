@@ -1237,5 +1237,10 @@ public class AppOrderServiceImpl implements AppOrderService {
         return this.orderDAO.findPayhelperOrderByOrdNo(ordNo);
     }
 
+    @Override
+    public int savePayhelperOrder(PayhelperOrder payhelperOrder) {
+        return this.orderDAO.savePayhelperOrder(payhelperOrder);
+    }
+
 
 }

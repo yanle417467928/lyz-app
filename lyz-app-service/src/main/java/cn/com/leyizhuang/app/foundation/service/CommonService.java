@@ -122,5 +122,6 @@ public interface CommonService {
     void saveOrderRelevantInfo(OrderBaseInfo orderBaseInfo, OrderLogisticsInfo orderLogisticsInfo,List<OrderGoodsInfo> orderGoodsInfoList,
                                OrderBillingDetails orderBillingDetails) throws UnsupportedEncodingException;
 
+    void handleOrderRelevantBusinessAfterPayForAnother(String orderNumber, Long userId, Integer identityType, String payType, String ipAddress) throws IOException;
 
 }

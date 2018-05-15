@@ -204,4 +204,6 @@ public interface AppOrderService {
     PageInfo<OrderPageInfoVO> getFitOrderListPageInfoByUserIdAndIdentityType(Long userId, Integer identityType, String keywords, Integer page, Integer size);
 
     PayhelperOrder findPayhelperOrderByOrdNo(String ordNo);
+
+    int savePayhelperOrder(PayhelperOrder payhelperOrder);
 }

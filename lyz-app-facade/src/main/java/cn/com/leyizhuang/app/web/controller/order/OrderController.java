@@ -2012,9 +2012,9 @@ public class OrderController {
     }
 
     /**  
-     * @title   
+     * @title   用户获取订单详情
      * @descripe
-     * @param 
+     * @param
      * @return 
      * @throws 
      * @author GenerationRoad
@@ -2124,6 +2124,63 @@ public class OrderController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，用户获取订单详情失败", null);
             logger.warn("getPayForAnotherOrderDetail EXCEPTION,用户获取订单详情失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * @title   代支付订单支付
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/5/15
+     */
+    @PostMapping(value = "/handle/payForAnother", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> handleOrderRelevantBusinessAfterPayForAnother(Long userId, Integer identityType, String orderNumber,
+                                                                           String payType, HttpServletRequest request) {
+        ResultDTO<Object> resultDTO;
+        logger.info("handleOrderRelevantBusinessAfterPayForAnother CALLED,代支付订单支付，入参 userID:{}, identityType:{}, orderNumber{}", userId, identityType, orderNumber);
+        //获取客户端ip地址
+        String ipAddress = IpUtils.getIpAddress(request);
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
+            logger.info("handleOrderRelevantBusinessAfterPayForAnother OUT,代支付订单支付失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("handleOrderRelevantBusinessAfterPayForAnother OUT,代支付订单支付失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (!StringUtils.isNotBlank(orderNumber)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单信息不允许为空！", null);
+            logger.info("handleOrderRelevantBusinessAfterPayForAnother OUT,代支付订单支付失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            this.commonService.handleOrderRelevantBusinessAfterPayForAnother(orderNumber, userId, identityType, ipAddress, payType);
+            //发送订单到拆单消息队列
+            sinkSender.sendOrder(orderNumber);
+
+            //发送订单到WMS
+            OrderBaseInfo baseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
+            if (baseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
+                iCallWms.sendToWmsRequisitionOrderAndGoods(orderNumber);
+            }
+
+            // 激活订单赠送的产品券
+            productCouponService.activateCusProductCoupon(orderNumber);
+
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            logger.info("handleOrderRelevantBusinessAfterPayForAnother OUT,代支付订单支付成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，代支付订单支付失败", null);
+            logger.warn("handleOrderRelevantBusinessAfterPayForAnother EXCEPTION,代支付订单支付失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

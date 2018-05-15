@@ -1651,5 +1651,10 @@
         WHERE ord_no = #{ordNo} AND is_pay_over IS TRUE
     </select>
 
+    <insert id="savePayhelperOrder" parameterType="cn.com.leyizhuang.app.foundation.pojo.PayhelperOrder">
+        INSERT INTO payhelper_ord_relation(create_time, oid, ord_no, payhelper_amount, payhelper_id, payhelper_type, is_pay_over, pay_type)
+        VALUES (#{createTime}, #{oid}, #{orderNumber}, #{payhelperAmount}, #{payhelperId}, #{payhelperType}, #{isPayOver}, #{payType})
+    </insert>
+
 
 </mapper>
