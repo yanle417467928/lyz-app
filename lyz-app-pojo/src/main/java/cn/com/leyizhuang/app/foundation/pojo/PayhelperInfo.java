@@ -1,6 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
-import cn.com.leyizhuang.app.core.constant.FitLoanSubjectType;
+import cn.com.leyizhuang.app.core.constant.LoanSubjectType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -16,7 +16,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class FitPayhelperInfo {
+public class PayhelperInfo {
 
 
     private Long id;
@@ -44,7 +44,7 @@ public class FitPayhelperInfo {
     /**
      * 贷方主体类型
      */
-    private FitLoanSubjectType loanSubjectType;
+    private LoanSubjectType loanSubjectType;
     /**
      * 客户经理ID
      */
