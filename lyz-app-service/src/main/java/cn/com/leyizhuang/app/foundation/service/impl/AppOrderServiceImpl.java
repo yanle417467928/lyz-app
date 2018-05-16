@@ -1208,6 +1208,41 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
+    public PageInfo<OrderPageInfoVO> getFitOrderListPageInfoByUserIdAndIdentityType(Long userId, Integer identityType, String keywords, Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        List<OrderPageInfoVO> orderPageInfoVOList = orderDAO.getFitOrderListPageInfoByUserIdAndIdentityType(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), keywords);
+
+        orderPageInfoVOList.forEach(p -> {
+            List<String> goodsImgList = p.getOrderGoodsInfoList().stream().map(OrderGoodsInfo::getCoverImageUri).collect(Collectors.toList());
+            Integer count = p.getOrderGoodsInfoList().stream().mapToInt(OrderGoodsInfo::getOrderQuantity).sum();
+            p.setGoodsImgList(goodsImgList);
+            p.setCount(count);
+            p.setDeliveryType(AppDeliveryType.getAppDeliveryTypeByValue(p.getDeliveryType()).getDescription());
+            if ("UNPAID".equals(p.getStatus())) {
+                //计算剩余过期失效时间
+                Long time = ((p.getEffectiveEndTime().getTime()) - (System.currentTimeMillis()));
+                //设置
+                if (time > 0) {
+                    p.setEndTime(time);
+                }
+            }
+            p.setStatusDesc(AppOrderStatus.getAppDeliveryOrderStatusByValue(p.getStatus()).getDescription());
+            p.getOrderGoodsInfoList().clear();
+        });
+        return new PageInfo<>(orderPageInfoVOList);
+    }
+
+    @Override
+    public PayhelperOrder findPayhelperOrderByOrdNo(String ordNo) {
+        return this.orderDAO.findPayhelperOrderByOrdNo(ordNo);
+    }
+
+    @Override
+    public int savePayhelperOrder(PayhelperOrder payhelperOrder) {
+        return this.orderDAO.savePayhelperOrder(payhelperOrder);
+    }
+
+    @Override
     public PageInfo<OrderPageInfoVO> findSellerManagerPayForOrderList(Long userId, Integer page, Integer size) {
         if (userId != null) {
 

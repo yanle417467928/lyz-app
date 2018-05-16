@@ -42,4 +42,7 @@ public class ManagerBillingDetailResponse {
 
     //预存款
     private Double PreDeposit;
+
+    //代付金额
+    private Double payForAnotherMoney;
 }
