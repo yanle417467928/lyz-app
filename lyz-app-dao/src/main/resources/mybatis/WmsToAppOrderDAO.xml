@@ -365,7 +365,7 @@
                 error_message = #{errorMessage}
             </if>
         </set>
-        WHERE task_no = #{taskNo} AND order_no = #{orderNo}
+        WHERE task_no = #{taskNo}
     </update>
 
     <select id="getWtaShippingOrderHeaderNotHandling"
