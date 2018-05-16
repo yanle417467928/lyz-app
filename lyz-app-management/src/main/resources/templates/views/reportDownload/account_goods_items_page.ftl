@@ -189,7 +189,7 @@
             align: 'center'
         },  {
             field: 'orderTime',
-            title: '下单/退单时间',
+            title: '下单/反配上架时间',
             align: 'center'
         }, {
             field: 'orderNumber',

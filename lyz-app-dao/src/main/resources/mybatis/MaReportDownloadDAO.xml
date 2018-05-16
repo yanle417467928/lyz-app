@@ -247,10 +247,89 @@
         ORDER BY changeTime DESC
     </select>
 
+    <!-- 查询门店预存款 区分正负 -->
+    <select id="findStorePredepositReportDOAllNEW"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.StorePredepositReportDO">
+        SELECT
+        c.name cityName,
+        st.store_name storeName,
+        st.store_type storeType,
+        ua.create_time as changeTime,
+        ua.change_type as changeType,
+        ua.change_money as changeMoney ,
+        ua.balance as balance,
+        ua.order_number as referenceNumber,
+        ua.remarks as remarks
+         from
+        (
+            SELECT
+            spdl.store_id,
+            spdl.create_time,
+            spdl.change_type,
+            spdl.operator_id,
+            spdl.operator_type,
+            spdl.order_number ,
+            -ABS(spdl.change_money) as change_money,
+            spdl.balance,
+            spdl.remarks
+        FROM
+            st_pre_deposit_log spdl
+        WHERE
+            spdl.change_type IN (
+                'PLACE_ORDER',
+                'JX_PRICE_DIFFERENCE_DEDUCTION',
+                'WITHDRAW'
+            )
+        UNION ALL
+        SELECT
+            spdl.store_id,
+            spdl.create_time,
+            spdl.change_type,
+            spdl.operator_id,
+            spdl.operator_type,
+            spdl.order_number ,
+            spdl.change_money,
+            spdl.balance,
+            spdl.remarks
+        FROM
+            st_pre_deposit_log spdl
+        WHERE
+            spdl.change_type NOT IN (
+                'PLACE_ORDER',
+                'JX_PRICE_DIFFERENCE_DEDUCTION',
+                'WITHDRAW'
+            )
+        ) ua
+        LEFT JOIN st_store st on st.store_id = ua.store_id
+        LEFT JOIN ord_billing_details obd on obd.ord_no = ua.order_number
+        INNER JOIN city c ON c.city_id = st.city_id
+        WHERE TRUE
+        <if test="null != cityId and cityId != -1">
+            AND c.city_id = #{cityId}
+        </if>
+        <if test="null != storeId and storeId != -1">
+            AND ua.store_id = #{storeId}
+        </if>
+        <if test="null != storeType and storeType != ''">
+            AND st.store_type = #{storeType}
+        </if>
+        <if test="null != startTime and startTime != ''">
+            AND ua.create_time &gt; #{startTime}
+        </if>
+        <if test="null != endTime and endTime != ''">
+            AND ua.create_time &lt; #{endTime}
+        </if>
+        AND ua.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        ORDER BY changeTime DESC
+    </select>
+
     <select id="findAccountGoodsItemsDOAll"
             resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.AccountGoodsItemsDO">
         SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, ol.operation_time
-        orderTime, obi.ord_no orderNumber, st.store_type storeTypes,
+        orderTime,'' as createTime, obi.ord_no orderNumber, st.store_type storeTypes,
         null returnNumber, obi.customer_name customerName, obi.sales_consult_name sellerName, obi.delivery_type
         deliveryType, oli.receiver receiver, oli.receiver_phone receiverPhone,
         (CASE WHEN obi.`status` = 'FINISHED' OR obi.`status` = 'CLOSED' OR obi.`status` = 'REJECTED'
@@ -297,7 +376,7 @@
             #{item}
         </foreach>
         UNION
-        SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, rl.operation_time
+        SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType,orbi.return_time createTime, rl.operation_time
         orderTime, obi.ord_no orderNumber, st.store_type storeTypes,
         orbi.return_no returnNumber, orbi.cus_name customerName, obi.sales_consult_name sellerName, obi.delivery_type
         deliveryType, orli.rejecter receiver, orli.rejecter_phone receiverPhone,
