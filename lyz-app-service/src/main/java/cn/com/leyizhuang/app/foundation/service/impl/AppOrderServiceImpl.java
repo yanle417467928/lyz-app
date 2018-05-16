@@ -1210,5 +1210,13 @@ public class AppOrderServiceImpl implements AppOrderService {
         return "XN";
     }
 
+    @Override
+    public Boolean existOrder(String orderNo) {
+        if (null != orderNo) {
+            return orderDAO.existOrder(orderNo);
+        }
+        return null;
+    }
+
 
 }

@@ -536,14 +536,16 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
         try {
             if (null != wtaShippingOrderHeader) {
                 List<WtaShippingOrderGoods> wtaShippingOrderGoodsList = null;
-                if (OrderUtils.validationOrderNumber(orderNo)) {
+                Boolean isAppOrder = appOrderService.existOrder(orderNo);
+                if (null != isAppOrder && isAppOrder) {
+                    //普通出货单商品列表
                     wtaShippingOrderGoodsList = this.wmsToAppOrderDAO.getWtaShippingOrderGoodsByOrderNo(orderNo);
                 } else {
+                    //wms自建单据商品列表
                     wtaShippingOrderGoodsList = this.wmsToAppOrderDAO.getWtaShippingOrderGoods(orderNo, taskNo);
                 }
                 if (null != wtaShippingOrderGoodsList && wtaShippingOrderGoodsList.size() > 0) {
                     List<OrderGoodsInfo> orderGoodsInfoList = null;
-                    City city = null;
                     for (WtaShippingOrderGoods wtaShippingOrderGoods : wtaShippingOrderGoodsList) {
                         GoodsDO goodsDO = goodsService.queryBySku(wtaShippingOrderGoods.getGCode());
                         if (goodsDO == null) {
@@ -551,19 +553,19 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                             wtaShippingOrderHeader.setErrorMessage("编码为" + wtaShippingOrderGoods.getGCode() + "的商品不存在");
                             wtaShippingOrderHeader.setSendFlag("0");
                             wtaShippingOrderHeader.setSendTime(new Date());
-                            this.updateWtaShippingOrderHeader(wtaShippingOrderHeader);
-                            throw new RuntimeException();
+                            wmsToAppOrderDAO.updateWtaShippingOrderHeader(wtaShippingOrderHeader);
+                            throw new RuntimeException("编码为" + wtaShippingOrderGoods.getGCode() + "的商品不存在");
                         }
                         //这里判断是否是WMS的自己的单子,非APP订单,只做扣减城市库存操作
-                        if (OrderUtils.validationOrderNumber(wtaShippingOrderGoods.getOrderNo())) {
+                        if (null != isAppOrder && isAppOrder) {
                             if (null == orderGoodsInfoList) {
                                 orderGoodsInfoList = this.appOrderService.getOrderGoodsQtyInfoByOrderNumber(wtaShippingOrderGoods.getOrderNo());
                                 if (null == orderGoodsInfoList || orderGoodsInfoList.size() == 0) {
                                     wtaShippingOrderHeader.setErrorMessage("单号为" + wtaShippingOrderGoods.getOrderNo() + "的商品信息未查到");
                                     wtaShippingOrderHeader.setSendFlag("0");
                                     wtaShippingOrderHeader.setSendTime(new Date());
-                                    this.updateWtaShippingOrderHeader(wtaShippingOrderHeader);
-                                    throw new RuntimeException();
+                                    wmsToAppOrderDAO.updateWtaShippingOrderHeader(wtaShippingOrderHeader);
+                                    throw new RuntimeException("单号为" + wtaShippingOrderGoods.getOrderNo() + "的商品信息未查到");
                                 }
                             }
                             Integer dAckQty = null == wtaShippingOrderGoods.getDAckQty() ? 0 : wtaShippingOrderGoods.getDAckQty();
@@ -581,15 +583,17 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                                 wtaShippingOrderHeader.setErrorMessage("编码为" + wtaShippingOrderGoods.getGCode() + "的商品出货数量大于订单商品数量");
                                 wtaShippingOrderHeader.setSendFlag("0");
                                 wtaShippingOrderHeader.setSendTime(new Date());
-                                this.updateWtaShippingOrderHeader(wtaShippingOrderHeader);
-                                throw new RuntimeException();
+                                wmsToAppOrderDAO.updateWtaShippingOrderHeader(wtaShippingOrderHeader);
+                                throw new RuntimeException("编码为" + wtaShippingOrderGoods.getGCode() + "的商品出货数量大于订单商品数量,订单号: " + orderNo);
                             }
                         } else {
+                            City city = cityService.findCityByWarehouseNo(wtaShippingOrderHeader.getWhNo());
                             if (null == city) {
-                                city = new City();
-                                WareHouseDO wareHouse = wareHouseService.findByWareHouseNo(wtaShippingOrderHeader.getWhNo());
-//                                city = cityService.findByCityNumber(wareHouse.getCityId());
-                                city = cityService.findById(Long.parseLong(wareHouse.getCityId()));
+                                wtaShippingOrderHeader.setErrorMessage("配送出库主档: " + taskNo + "没有找到对应的城市信息!");
+                                wtaShippingOrderHeader.setSendFlag("0");
+                                wtaShippingOrderHeader.setSendTime(new Date());
+                                wmsToAppOrderDAO.updateWtaShippingOrderHeader(wtaShippingOrderHeader);
+                                throw new RuntimeException("配送出库主档: " + taskNo + "没有找到对应的城市信息!");
                             }
                             //wms扣减城市库存
                             for (int w = 1; w <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; w++) {
@@ -604,8 +608,8 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                                     wtaShippingOrderHeader.setErrorMessage("该城市下sku为" + wtaShippingOrderGoods.getGCode() + "的商品库存不足!");
                                     wtaShippingOrderHeader.setSendFlag("0");
                                     wtaShippingOrderHeader.setSendTime(new Date());
-                                    this.updateWtaShippingOrderHeader(wtaShippingOrderHeader);
-                                    throw new RuntimeException();
+                                    wmsToAppOrderDAO.updateWtaShippingOrderHeader(wtaShippingOrderHeader);
+                                    throw new RuntimeException("配送出库主档: " + taskNo + " 对应城市下sku为 " + wtaShippingOrderGoods.getGCode() + " 的商品库存不足!");
                                 }
                                 Integer affectLine = cityService.lockCityInventoryByCityIdAndSkuAndInventory(
                                         city.getCityId(), wtaShippingOrderGoods.getGCode(), -wtaShippingOrderGoods.getDAckQty(), cityInventory.getLastUpdateTime());
@@ -619,8 +623,13 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                                     log.setChangeQty(-1 * wtaShippingOrderGoods.getDAckQty());
                                     log.setAfterChangeQty(cityInventory.getAvailableIty() - wtaShippingOrderGoods.getDAckQty());
                                     log.setChangeTime(Calendar.getInstance().getTime());
-                                    log.setChangeType(CityInventoryAvailableQtyChangeType.HOUSE_DELIVERY_ORDER);
-                                    log.setChangeTypeDesc(CityInventoryAvailableQtyChangeType.HOUSE_DELIVERY_ORDER.getDescription());
+                                    if (AssertUtil.isNotEmpty(wtaShippingOrderHeader.getCTaskType()) && wtaShippingOrderHeader.getCTaskType().contains("退货")) {
+                                        log.setChangeType(CityInventoryAvailableQtyChangeType.CITY_PURCHASE_OUTBOUND);
+                                        log.setChangeTypeDesc(CityInventoryAvailableQtyChangeType.CITY_PURCHASE_OUTBOUND.getDescription());
+                                    } else {
+                                        log.setChangeType(CityInventoryAvailableQtyChangeType.PICKING_ORDER_OUTBOUND);
+                                        log.setChangeTypeDesc(CityInventoryAvailableQtyChangeType.PICKING_ORDER_OUTBOUND.getDescription());
+                                    }
                                     log.setReferenceNumber(wtaShippingOrderGoods.getTaskNo());
                                     cityService.addCityInventoryAvailableQtyChangeLog(log);
                                     break;
@@ -630,8 +639,8 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                                         wtaShippingOrderHeader.setErrorMessage("获取wms仓库出货信息失败,扣减城市库存失败!任务编号" + wtaShippingOrderGoods.getTaskNo());
                                         wtaShippingOrderHeader.setSendFlag("0");
                                         wtaShippingOrderHeader.setSendTime(new Date());
-                                        this.updateWtaShippingOrderHeader(wtaShippingOrderHeader);
-                                        throw new RuntimeException();
+                                        wmsToAppOrderDAO.updateWtaShippingOrderHeader(wtaShippingOrderHeader);
+                                        throw new RuntimeException("配送出库主档: " + taskNo + "处理失败，系统繁忙，稍后再试! ");
                                     }
                                 }
                             }
@@ -687,16 +696,18 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                     wtaShippingOrderHeader.setErrorMessage("未查到出货商品！");
                     wtaShippingOrderHeader.setSendFlag("0");
                     wtaShippingOrderHeader.setSendTime(new Date());
-                    this.wmsToAppOrderDAO.updateWtaShippingOrderHeader(wtaShippingOrderHeader);
+                    wmsToAppOrderDAO.updateWtaShippingOrderHeader(wtaShippingOrderHeader);
+                    throw new RuntimeException("配送出货单: " + taskNo + "未查到商品明细!");
                 }
             }
         } catch (Exception e) {
             wtaShippingOrderHeader.setErrorMessage(e.getMessage());
             wtaShippingOrderHeader.setSendFlag("0");
             wtaShippingOrderHeader.setSendTime(new Date());
-            this.updateWtaShippingOrderHeader(wtaShippingOrderHeader);
+            wmsToAppOrderDAO.updateWtaShippingOrderHeader(wtaShippingOrderHeader);
             smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "获取出货单头档wms信息失败!处理出货单头档事务失败!order:" + wtaShippingOrderHeader.getOrderNo());
-            return Boolean.FALSE;
+            throw new RuntimeException("处理配送出库主档: " + taskNo + " 出现异常,异常信息: " + e.getMessage());
+            //return Boolean.FALSE;
         }
         return Boolean.FALSE;
     }
