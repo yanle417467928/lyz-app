@@ -18,7 +18,6 @@ import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.BillingSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
-import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
@@ -29,8 +28,6 @@ import cn.com.leyizhuang.common.util.AssertUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Result;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -1210,5 +1207,32 @@ public class AppOrderServiceImpl implements AppOrderService {
         return "XN";
     }
 
+    @Override
+    public PageInfo<OrderPageInfoVO> findSellerManagerPayForOrderList(Long userId, Integer page, Integer size) {
+        if (userId != null) {
 
+            PageHelper.startPage(page, size);
+            List<OrderPageInfoVO> orderPageInfoVOList = orderDAO.findSellerManagerPayForOrderList(userId);
+
+            orderPageInfoVOList.forEach(p -> {
+                List<String> goodsImgList = p.getOrderGoodsInfoList().stream().map(OrderGoodsInfo::getCoverImageUri).collect(Collectors.toList());
+                Integer count = p.getOrderGoodsInfoList().stream().mapToInt(OrderGoodsInfo::getOrderQuantity).sum();
+                p.setGoodsImgList(goodsImgList);
+                p.setCount(count);
+                p.setDeliveryType(AppDeliveryType.getAppDeliveryTypeByValue(p.getDeliveryType()).getDescription());
+                if ("UNPAID".equals(p.getStatus())) {
+                    //计算剩余过期失效时间
+                    Long time = ((p.getEffectiveEndTime().getTime()) - (System.currentTimeMillis()));
+                    //设置
+                    if (time > 0) {
+                        p.setEndTime(time);
+                    }
+                }
+                p.setStatusDesc(AppOrderStatus.getAppDeliveryOrderStatusByValue(p.getStatus()).getDescription());
+                p.getOrderGoodsInfoList().clear();
+            });
+            return new PageInfo<>(orderPageInfoVOList);
+        }
+        return null;
+    }
 }

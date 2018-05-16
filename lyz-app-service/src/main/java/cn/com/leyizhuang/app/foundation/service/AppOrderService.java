@@ -15,11 +15,8 @@ import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;
 
 import java.io.UnsupportedEncodingException;
-import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -199,4 +196,6 @@ public interface AppOrderService {
     ResultDTO<GiftListResponse> checkGoodsCompanyFlag(List<Long> goodsIds, Long userId, Integer identityType);
 
     String returnType(List<Long> goodsIds,Long userId,Integer identityType);
+
+    PageInfo<OrderPageInfoVO> findSellerManagerPayForOrderList(Long userId, Integer page, Integer size);
 }

@@ -1374,6 +1374,34 @@
         </if>
     </select>
 
+    <select id="findSellerManagerPayForOrderList" resultMap="orderPageInfoListMap">
+        SELECT
+            obi.oid,
+            obi.`status`,
+            obi.is_evaluated,
+            obi.ord_no,
+            obi.effective_end_time,
+            obi.delivery_type,
+            obd.total_goods_price price,
+            obd.amount_payable,
+            CASE WHEN obi.delivery_type='HOUSE_DELIVERY'
+                THEN oli.shipping_address
+            ELSE oli.booking_store_name
+            END AS shipping_address,
+            obi.customer_id,
+            obi.customer_name,
+            obi.customer_phone
+        FROM
+            ord_base_info obi
+            INNER JOIN payhelper_ord_relation por ON por.oid = obi.oid
+            LEFT JOIN ord_billing_details obd ON obi.oid = obd.oid
+            LEFT JOIN ord_logistics_info oli ON obi.oid = oli.oid
+        WHERE
+            por.payhelper_id = #{userId}
+            AND creator_identity_type = 'DECORATE_MANAGER'
+        ORDER BY obi.create_time DESC
+    </select>
+
     <resultMap id="orderPageInfoListMap" type="cn.com.leyizhuang.app.foundation.pojo.response.OrderPageInfoVO">
         <id column="oid" property="oid"/>
         <result column="ord_no" property="orderNo" jdbcType="VARCHAR"/>

@@ -96,9 +96,9 @@
         ogi.sku_name skuName,
         g.brand_name,
         ogi.order_qty quantity,
-        ogi.retail_price buyPrice,
-        ogi.wholesale_price wholesalePrice,
-        (ogi.order_qty * ogi.retail_price) totalBuyPrice,
+        ifnull(ogi.retail_price,0) buyPrice,
+        ifnull(ogi.wholesale_price,0) wholesalePrice,
+        (ifnull(ogi.order_qty,0) * ifnull(ogi.retail_price,0)) totalBuyPrice,
         obi.ord_no referenceNumber
         FROM ord_billing_details obd
         INNER JOIN ord_base_info obi ON obd.oid = obi.oid

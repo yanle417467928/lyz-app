@@ -6,12 +6,10 @@ import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -200,5 +198,11 @@ public interface OrderDAO {
 
     void saveOrderShipping(OrderShipping orderShipping);
 
-
+    /**
+     * 客户经理查看自己支付的订单
+     *
+     * @param userId
+     * @return
+     */
+    List<OrderPageInfoVO> findSellerManagerPayForOrderList(@Param("userId") Long userId);
 }

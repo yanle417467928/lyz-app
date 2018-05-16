@@ -372,12 +372,25 @@ public class CommonServiceImpl implements CommonService {
             }
             // 扣减产品券时更新买券订单可退商品数量
             if (null != productCouponList && productCouponList.size() > 0) {
+                Set<String> orderNumbers = new HashSet<>();
+                Map<Long, Integer> idQuantityMap = new HashMap<>();
                 for (OrderCouponInfo orderCouponInfo : productCouponList) {
-                    // 修改回原订单的可退和已退！(SQL: 已退-renturnQty,可退+returnQty) 所以这里设置为-1
-                    List<OrderGoodsInfo> orderGoodsInfoList = orderService.getOrderGoodsInfoByOrderNumber(orderCouponInfo.getGetOrderNumber());
+                    orderNumbers.add(orderCouponInfo.getGetOrderNumber());
+
+                    Integer value = idQuantityMap.get(orderCouponInfo.getGoodsLineId());
+                    if (null == value) {
+                        idQuantityMap.put(orderCouponInfo.getGoodsLineId(), 1);
+                    } else {
+                        value++;
+                        idQuantityMap.put(orderCouponInfo.getGoodsLineId(), value);
+                    }
+                }
+                // 修改回原订单的可退和已退！(SQL: 已退-renturnQty,可退+returnQty) 所以这里设置为负数
+                for (String getNumber : orderNumbers) {
+                    List<OrderGoodsInfo> orderGoodsInfoList = orderService.getOrderGoodsInfoByOrderNumber(getNumber);
                     orderGoodsInfoList.forEach(orderGoodsInfo -> {
-                        if (orderGoodsInfo.getId().equals(orderCouponInfo.getGoodsLineId())) {
-                            orderService.updateReturnableQuantityAndReturnQuantityById(-1, orderCouponInfo.getGoodsLineId());
+                        if (idQuantityMap.containsKey(orderGoodsInfo.getId())) {
+                            orderService.updateReturnableQuantityAndReturnQuantityById(idQuantityMap.get(orderGoodsInfo.getId()) * -1, orderGoodsInfo.getId());
                         }
                     });
                 }
