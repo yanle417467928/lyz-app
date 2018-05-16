@@ -73,10 +73,10 @@
                     </#if>
                     </select>
 
-                    <input name="startTime" onchange="findByCondition()" type="text" class="form-control datepicker"
-                           id="startTime" style="width: 120px;" placeholder="购买时间">
+                    <#--<input name="startTime" onchange="findByCondition()" type="text" class="form-control datepicker"-->
+                           <#--id="startTime" style="width: 120px;" placeholder="购买时间">-->
                     <input name="endTime" onchange="findByCondition()" type="text" class="form-control datepicker"
-                           id="endTime" style="width: 120px;" placeholder="过期时间">
+                           id="endTime" style="width: 120px;" placeholder="截至时间">
 
                 <#--<@shiro.hasPermission name="/views/admin/resource/add">-->
                     <button id="btn_add" type="button" class="btn btn-default pull-left" onclick="openBillModal()">
