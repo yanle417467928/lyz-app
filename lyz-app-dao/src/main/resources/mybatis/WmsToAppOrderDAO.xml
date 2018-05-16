@@ -508,6 +508,27 @@
         WHERE task_no = #{taskNo} AND order_no = #{orderNo} AND (send_flag = 0 OR send_flag IS NULL)
     </select>
 
+    <select id="getWtaShippingOrderHeaderByTaskNo" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderHeader">
+        SELECT
+            id,
+            create_time   createTime,
+            end_dt        endDt,
+            wh_no         whNo,
+            owner_no      ownerNo,
+            task_no       taskNo,
+            c_task_type   cTaskType,
+            car_no        carNo,
+            op_status     opStatus,
+            driver        driver,
+            order_no      orderNo,
+            send_time     sendTime,
+            send_flag     sendFlag,
+            error_message errorMessage
+        FROM inter_wta_order_shipping_header
+        WHERE task_no = #{taskNo}
+    </select>
+
     <select id="getWtaShippingOrderGoods"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderGoods">
         SELECT

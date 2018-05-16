@@ -532,7 +532,7 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
     @Override
     @Transactional
     public Boolean handleWtaShippingOrder(String orderNo, String taskNo) {
-        WtaShippingOrderHeader wtaShippingOrderHeader = this.wmsToAppOrderDAO.getWtaShippingOrderHeaderByOrderNoAndTaskNo(orderNo, taskNo);
+        WtaShippingOrderHeader wtaShippingOrderHeader = this.wmsToAppOrderDAO.getWtaShippingOrderHeaderByTaskNo(taskNo);
         try {
             if (null != wtaShippingOrderHeader) {
                 List<WtaShippingOrderGoods> wtaShippingOrderGoodsList = null;

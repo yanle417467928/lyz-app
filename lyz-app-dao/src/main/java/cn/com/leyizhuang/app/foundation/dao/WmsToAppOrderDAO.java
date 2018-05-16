@@ -224,4 +224,6 @@ public interface WmsToAppOrderDAO {
     void updateReturningOrderHeaderByOrderNo(WtaReturningOrderHeader returningOrderHeader);
 
     void updateReturnOrderResultReturn(WtaCancelReturnOrderResultEnter returnOrderResultEnter);
+
+    WtaShippingOrderHeader getWtaShippingOrderHeaderByTaskNo(String taskNo);
 }
