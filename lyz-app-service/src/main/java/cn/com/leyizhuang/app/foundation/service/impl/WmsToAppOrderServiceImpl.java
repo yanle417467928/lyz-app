@@ -532,6 +532,11 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
     @Override
     @Transactional
     public Boolean handleWtaShippingOrder(String orderNo, String taskNo) {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         WtaShippingOrderHeader wtaShippingOrderHeader = this.wmsToAppOrderDAO.getWtaShippingOrderHeaderByTaskNo(taskNo);
         try {
             if (null != wtaShippingOrderHeader) {
@@ -542,7 +547,7 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                     wtaShippingOrderGoodsList = this.wmsToAppOrderDAO.getWtaShippingOrderGoodsByOrderNo(orderNo);
                 } else {
                     //wms自建单据商品列表
-                    wtaShippingOrderGoodsList = this.wmsToAppOrderDAO.getWtaShippingOrderGoods(orderNo, taskNo);
+                    wtaShippingOrderGoodsList = this.wmsToAppOrderDAO.getWtaShippingOrderGoodsByTaskNo(taskNo);
                 }
                 if (null != wtaShippingOrderGoodsList && wtaShippingOrderGoodsList.size() > 0) {
                     List<OrderGoodsInfo> orderGoodsInfoList = null;

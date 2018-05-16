@@ -546,6 +546,23 @@
         FROM inter_wta_order_shipping_goods
         WHERE task_no = #{taskNo} AND order_no = #{orderNo}
     </select>
+    <select id="getWtaShippingOrderGoodsByTaskNo" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderGoods">
+        SELECT
+            id,
+            modified_userno,
+            op_user,
+            order_no,
+            task_type,
+            task_no,
+            g_code,
+            d_ack_qty,
+            op_status,
+            source_no,
+            owner_no
+        FROM inter_wta_order_shipping_goods
+        WHERE task_no = #{taskNo}
+    </select>
 
     <select id="getWtaWarehouseAllocationHeader" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaWarehouseAllocationHeader">
