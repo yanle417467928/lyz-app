@@ -87,8 +87,8 @@
                                 message: '手机号码不能为空'
                             },
                             regexp: {
-                                regexp: /^1[34578]\d{9}$/,
-                                message: '手机号码只能输入11位数字'
+                                regexp: /^1[3456789]\d{9}$/,
+                                message: '请输入正确的手机号'
                             },
                             remote: {
                                 type: 'POST',

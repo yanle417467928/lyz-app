@@ -201,4 +201,5 @@ public interface OrderDAO {
     void saveOrderShipping(OrderShipping orderShipping);
 
 
+    Boolean existOrder(String orderNo);
 }

@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
-import cn.com.leyizhuang.app.core.constant.FitPayhelperType;
 import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
+import cn.com.leyizhuang.app.core.constant.PayhelperType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -16,7 +16,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class FitPayhelperOrder {
+public class PayhelperOrder {
 
     private Long id;
     /**
@@ -42,7 +42,7 @@ public class FitPayhelperOrder {
     /**
      * 代付人类型
      */
-    private FitPayhelperType payhelperType;
+    private PayhelperType payhelperType;
     /**
      * 是否已支付
      */

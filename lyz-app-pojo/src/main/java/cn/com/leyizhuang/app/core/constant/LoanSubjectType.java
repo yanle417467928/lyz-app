@@ -6,7 +6,7 @@ package cn.com.leyizhuang.app.core.constant;
  * desc: 装饰公司贷方主体(指未付款方)
  **/
 
-public enum FitLoanSubjectType {
+public enum LoanSubjectType {
 
     FIT("FIT", "装饰公司"), ZG("ZG", "专供");
 
@@ -14,15 +14,15 @@ public enum FitLoanSubjectType {
 
     private String description;
 
-    FitLoanSubjectType(String value, String description) {
+    LoanSubjectType(String value, String description) {
         this.value = value;
         this.description = description;
     }
 
-    public static FitLoanSubjectType getFitLoanSubjectTypeByValue(String value) {
-        for (FitLoanSubjectType fitLoanSubjectType : FitLoanSubjectType.values()) {
-            if (value.equalsIgnoreCase(fitLoanSubjectType.getValue())) {
-                return fitLoanSubjectType;
+    public static LoanSubjectType getFitLoanSubjectTypeByValue(String value) {
+        for (LoanSubjectType loanSubjectType : LoanSubjectType.values()) {
+            if (value.equalsIgnoreCase(loanSubjectType.getValue())) {
+                return loanSubjectType;
             }
         }
         return null;
