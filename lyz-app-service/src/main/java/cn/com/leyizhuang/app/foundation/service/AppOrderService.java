@@ -198,6 +198,8 @@ public interface AppOrderService {
 
     String returnType(List<Long> goodsIds,Long userId,Integer identityType);
 
+    Boolean existOrder(String orderNo);
+
     PageInfo<OrderPageInfoVO> getFitOrderListPageInfoByUserIdAndIdentityType(Long userId, Integer identityType, String keywords, Integer page, Integer size);
 
     PayhelperOrder findPayhelperOrderByOrdNo(String ordNo);

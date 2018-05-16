@@ -205,6 +205,7 @@ public interface OrderDAO {
 
     PayhelperOrder findPayhelperOrderByOrdNo(String ordNo);
 
+    Boolean existOrder(String orderNo);
     int savePayhelperOrder(PayhelperOrder payhelperOrder);
 
     /**

@@ -1208,6 +1208,14 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
+    public Boolean existOrder(String orderNo) {
+        if (null != orderNo) {
+            return orderDAO.existOrder(orderNo);
+        }
+        return null;
+    }
+
+    @Override
     public PageInfo<OrderPageInfoVO> getFitOrderListPageInfoByUserIdAndIdentityType(Long userId, Integer identityType, String keywords, Integer page, Integer size) {
         PageHelper.startPage(page, size);
         List<OrderPageInfoVO> orderPageInfoVOList = orderDAO.getFitOrderListPageInfoByUserIdAndIdentityType(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), keywords);
