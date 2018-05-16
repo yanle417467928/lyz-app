@@ -898,7 +898,9 @@
         uc.goods_unit,
         uc.left_number,
         uc.cover_image_uri,
-        uc.isZG
+        uc.isZG,
+        uc.effective_start_time,
+        uc.effective_end_time
         FROM
         (SELECT
         g.gid           goods_id,
@@ -908,7 +910,9 @@
         g.goods_unit    goods_unit,
         sum(c.quantity) left_number,
         g.cover_image_uri,
-        CASE WHEN ggp.price_type = "COMMON" THEN 0 ELSE 1 END AS isZG
+        CASE WHEN ggp.price_type = "COMMON" THEN 0 ELSE 1 END AS isZG,
+        c.effective_start_time,
+        c.effective_end_time
         FROM
         cus_customer_product_coupon c
         INNER JOIN gds_goods g ON c.gid = g.gid
@@ -938,7 +942,9 @@
         g.goods_unit goods_unit,
         sum(c.quantity) left_number,
         g.cover_image_uri,
-        0 as isZG
+        0 as isZG,
+        c.effective_start_time,
+        c.effective_end_time
         FROM
         cus_customer_product_coupon c
         INNER JOIN gds_goods g ON c.gid = g.gid
@@ -972,7 +978,9 @@
         uc.goods_unit,
         uc.left_number,
         uc.cover_image_uri,
-        uc.isZG
+        uc.isZG,
+        uc.effective_start_time,
+        uc.effective_end_time
         FROM
         (SELECT
         g.gid           goods_id,
@@ -982,7 +990,9 @@
         g.goods_unit    goods_unit,
         sum(c.quantity) left_number,
         g.cover_image_uri,
-        CASE WHEN ggp.price_type = "COMMON" THEN 0 ELSE 1 END AS isZG
+        CASE WHEN ggp.price_type = "COMMON" THEN 0 ELSE 1 END AS isZG,
+        c.effective_start_time,
+        c.effective_end_time
         FROM
         cus_customer_product_coupon c
         INNER JOIN gds_goods g ON c.gid = g.gid
@@ -1011,7 +1021,9 @@
         g.goods_unit goods_unit,
         sum(c.quantity) left_number,
         g.cover_image_uri,
-        0 as isZG
+        0 as isZG,
+        c.effective_start_time,
+        c.effective_end_time
         FROM
         cus_customer_product_coupon c
         INNER JOIN gds_goods g ON c.gid = g.gid

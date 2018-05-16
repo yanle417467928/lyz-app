@@ -25,8 +25,10 @@ public class AccountGoodsItemsDO {
     private String shippingTime;
     //退货时间
     private String returnTime;
-    //订单创建时间
+    //出货时间
     private String orderTime;
+    //下单/退单 创建时间
+    private String createTime;
     //订单号
     private String orderNumber;
     //顾客姓名
@@ -73,6 +75,8 @@ public class AccountGoodsItemsDO {
     private String customerPhone;
     //顾客姓名
     private String companyName;
+    //申请退货时间
+    private String applyReturnTime;
 
 
     public void setGoodsLineType(AppGoodsLineType goodsLineType){

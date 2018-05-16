@@ -272,20 +272,20 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                     damageAndOverflow.setErrMessage("城市信息中没有查询到仓库编号为" + damageAndOverflow.getWarehouseNo() + "的数据!");
                     damageAndOverflow.setHandleFlag("0");
                     damageAndOverflow.setHandleTime(new Date());
-                    this.updateWarehouseWholeOverflow(damageAndOverflow);
-                    return;
+                    wmsToAppOrderDAO.updateWarehouseWholeOverflow(damageAndOverflow);
+                    throw new RuntimeException("损溢单: " + damageAndOverflow.getWasteNo() + " 没有找到对应的城市信息!");
                 }
                 GoodsDO goodsDO = goodsService.queryBySku(damageAndOverflow.getSku());
                 if (null == goodsDO) {
                     damageAndOverflow.setErrMessage("商品资料中没有查询到sku为" + damageAndOverflow.getSku() + "的商品信息!");
                     damageAndOverflow.setHandleFlag("0");
                     damageAndOverflow.setHandleTime(new Date());
-                    this.updateWarehouseWholeOverflow(damageAndOverflow);
-                    return;
+                    wmsToAppOrderDAO.updateWarehouseWholeOverflow(damageAndOverflow);
+                    throw new RuntimeException("损溢单: " + damageAndOverflow.getWasteNo() + " 没有找到" + damageAndOverflow.getSku() +
+                            "对应的商品信息!");
                 }
-                Integer changeInventory = 0;
-                CityInventoryAvailableQtyChangeType changeType = null;
-                String cityCode = damageAndOverflow.getCompanyId();
+                Integer changeInventory;
+                CityInventoryAvailableQtyChangeType changeType;
                 String sku = damageAndOverflow.getSku();
                 Integer qty = damageAndOverflow.getQty();
                 if (damageAndOverflow.getWasteType().contains("一般报溢")) {
@@ -307,7 +307,7 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                         damageAndOverflow.setHandleTime(new Date());
                         this.updateWarehouseWholeOverflow(damageAndOverflow);
                         smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "获取wms信息失败,获取报损报溢失败,该城市下sku为" + damageAndOverflow.getSku() + "的商品库存不足!");
-                        return;
+                        throw new RuntimeException("损溢单: " + damageAndOverflow.getWasteNo() + " 对应城市下" + sku + "商品库存不足!");
                     }
                     Integer affectLine = cityService.lockCityInventoryByCityIdAndSkuAndInventory(city.getCityId(), sku, changeInventory, cityInventory.getLastUpdateTime());
                     if (affectLine > 0) {
@@ -324,9 +324,6 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                         log.setChangeTypeDesc(changeType.getDescription());
                         log.setReferenceNumber(damageAndOverflow.getWasteNo());
                         cityService.addCityInventoryAvailableQtyChangeLog(log);
-                        damageAndOverflow.setHandleFlag("1");
-                        damageAndOverflow.setHandleTime(new Date());
-                        this.updateWarehouseWholeOverflow(damageAndOverflow);
                         break;
                     } else {
                         if (j == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
@@ -335,16 +332,20 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                             damageAndOverflow.setHandleTime(new Date());
                             this.updateWarehouseWholeOverflow(damageAndOverflow);
                             smsAccountService.commonSendSms(AppConstant.WMS_ERR_MOBILE, "获取wms报损报溢失败!任务编号" + damageAndOverflow.getWasteNo());
-                            return;
+                            throw new RuntimeException("损溢单" + damageAndOverflow.getWasteNo() + "处理失败。系统繁忙，请稍后处理!");
                         }
                     }
                 }
+                damageAndOverflow.setHandleFlag("1");
+                damageAndOverflow.setHandleTime(new Date());
+                wmsToAppOrderDAO.updateWarehouseWholeOverflow(damageAndOverflow);
             }
         } catch (Exception e) {
             damageAndOverflow.setErrMessage(e.getMessage());
             damageAndOverflow.setHandleFlag("0");
             damageAndOverflow.setHandleTime(new Date());
             this.updateWarehouseWholeOverflow(damageAndOverflow);
+            throw new RuntimeException("报损报溢发生未知异常:" + e.getMessage());
         }
     }
 
@@ -903,7 +904,7 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                     purchaseHeader.setHandleFlag("0");
                     purchaseHeader.setHandleTime(new Date());
                     this.wmsToAppOrderDAO.updateWtaWarehousePurchaseHeader(purchaseHeader);
-                    throw new RuntimeException();
+                    throw new RuntimeException("采购验收单: " + purchaseHeader.getRecNo() + " 没有找到对应的城市信息!");
                 }
                 if (null != purchaseHeaders && purchaseHeaders.size() > 0) {
                     for (WtaWarehousePurchaseGoods purchaseGoods : purchaseHeaders) {
@@ -914,7 +915,7 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                             purchaseHeader.setHandleFlag("0");
                             purchaseHeader.setHandleTime(new Date());
                             this.wmsToAppOrderDAO.updateWtaWarehousePurchaseHeader(purchaseHeader);
-                            throw new RuntimeException();
+                            throw new RuntimeException("商品资料中没有查询到sku为" + purchaseGoods.getSku() + "的商品信息!");
                         }
                         for (int j = 1; j <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; j++) {
                             CityInventory cityInventory = cityService.findCityInventoryByCityIdAndSku(city.getCityId(), purchaseGoods.getSku());
@@ -936,7 +937,7 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                                 log.setChangeTime(Calendar.getInstance().getTime());
                                 log.setChangeType(CityInventoryAvailableQtyChangeType.CITY_PURCHASE_INBOUND);
                                 log.setChangeTypeDesc(CityInventoryAvailableQtyChangeType.CITY_PURCHASE_INBOUND.getDescription());
-                                log.setReferenceNumber(purchaseHeader.getPurchaseNo());
+                                log.setReferenceNumber(purchaseHeader.getRecNo());
                                 cityService.addCityInventoryAvailableQtyChangeLog(log);
                                 break;
                             } else {
@@ -946,7 +947,7 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                                     purchaseHeader.setHandleFlag("0");
                                     purchaseHeader.setHandleTime(new Date());
                                     this.wmsToAppOrderDAO.updateWtaWarehousePurchaseHeader(purchaseHeader);
-                                    throw new RuntimeException();
+                                    throw new RuntimeException("系统繁忙，请稍后处理!");
                                 }
                             }
                         }
@@ -959,7 +960,7 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                     purchaseHeader.setHandleFlag("0");
                     purchaseHeader.setHandleTime(new Date());
                     this.wmsToAppOrderDAO.updateWtaWarehousePurchaseHeader(purchaseHeader);
-                    throw new RuntimeException();
+                    throw new RuntimeException("采购验收单: " + purchaseHeader.getRecNo() + " 没有找到明细·信息!");
                 }
             }
         } catch (Exception e) {
@@ -968,6 +969,7 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
             purchaseHeader.setErrMessage(e.getMessage());
             purchaseHeader.setHandleTime(new Date());
             this.wmsToAppOrderDAO.updateWtaWarehousePurchaseHeader(purchaseHeader);
+            throw new RuntimeException("发生异常:" + e.getMessage());
         }
     }
 

@@ -26,6 +26,10 @@ public interface MaReportDownloadDAO {
     List<StorePredepositReportDO> findStorePredepositReportDOAll(@Param("cityId") Long cityId, @Param("storeId") Long storeId, @Param("storeType") String storeType,
                                                                  @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("list") List<Long> storeIds);
 
+    List<StorePredepositReportDO> findStorePredepositReportDOAllNEW(@Param("cityId") Long cityId, @Param("storeId") Long storeId, @Param("storeType") String storeType,
+                                                                 @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("list") List<Long> storeIds);
+
+
     List<AccountGoodsItemsDO> findAccountGoodsItemsDOAll(@Param("cityId") Long cityId, @Param("storeId") Long storeId, @Param("storeType") String storeType,
                                                          @Param("startTime") String startTime, @Param("endTime") String endTime,
                                                          @Param("keywords") String keywords, @Param("list") List<Long> storeIds);
