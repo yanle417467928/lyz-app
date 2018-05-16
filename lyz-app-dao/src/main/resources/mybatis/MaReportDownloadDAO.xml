@@ -209,6 +209,165 @@
         temp.sku
     </select>
 
+    <!-- new未提货 -->
+    <select id="findNotPickGoodsReportDOAllNEW"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.NotPickGoodsReportDO">
+        SELECT
+        obi.city_name cityName,
+        st.store_name storeName,
+        st.store_type storeType,
+        obi.delivery_type pickType,
+        obi.create_time buyTime,
+        '' effectiveTime,
+        obi.customer_id customerId,
+        obi.customer_name customerName,
+        obi.customer_phone customerPhone,
+        obi.customer_type customerType,
+        obi.sales_consult_name sellerName,
+        ogi.sku sku,
+        ogi.sku_name skuName,
+        g.brand_name,
+        if(ogi.goods_line_type = "PRODUCT_COUPON",1,ogi.order_qty )quantity,
+        if(ogi.goods_line_type = "PRODUCT_COUPON",oci.purchase_price,ogi.return_price) buyPrice,
+        IFNULL(ogi.wholesale_price,0) wholesalePrice,
+        if(ogi.goods_line_type = "PRODUCT_COUPON",oci.purchase_price,ogi.order_qty * ogi.return_price) totalBuyPrice,
+        obi.ord_no referenceNumber,
+        CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end isPayUp,
+        CASE ogi.goods_line_type WHEN 'PRODUCT_COUPON' THEN '已提产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END  goodsLineType,
+        wa.end_dt shippingTime
+        FROM ord_billing_details obd
+        INNER JOIN ord_base_info obi ON obd.oid = obi.oid
+        INNER JOIN st_store st ON st.store_id = obi.store_id
+        INNER JOIN ord_goods_info ogi ON obi.oid = ogi.oid
+        left join gds_goods g on g.gid = ogi.gid
+        LEFT JOIN  inter_wta_order_shipping_header wa on wa.order_no = obi.ord_no
+        LEFT JOIN ord_coupon_info oci on obi.oid = oci.oid and ogi.sku = oci.sku and ogi.goods_line_type = 'PRODUCT_COUPON'
+        WHERE
+        obi.delivery_type = 'HOUSE_DELIVERY' AND ((obi.status = 'PENDING_SHIPMENT' AND  obi.create_time &lt; #{endTime}) OR (wa.end_dt &gt; #{endTime} AND obi.create_time &lt; #{endTime}))
+        <if test="null != cityId and cityId != -1">
+            AND obi.city_id = #{cityId}
+        </if>
+        <if test="null != storeId and storeId != -1">
+            AND obi.store_id = #{storeId}
+        </if>
+        <if test="null != storeType and storeType != ''">
+            AND st.store_type = #{storeType}
+        </if>
+        <if test="null != pickType and pickType != ''">
+            AND obi.delivery_type = #{pickType}
+        </if>
+        AND obi.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+
+        UNION  ALL
+
+        SELECT
+        obi.city_name cityName,
+        st.store_name storeName,
+        st.store_type storeType,
+        obi.delivery_type pickType,
+        obi.create_time buyTime,
+        '' effectiveTime,
+        obi.customer_id customerId,
+        obi.customer_name customerName,
+        obi.customer_phone customerPhone,
+        obi.customer_type customerType,
+        obi.sales_consult_name sellerName,
+        ogi.sku sku,
+        ogi.sku_name skuName,
+        g.brand_name,
+        if(ogi.goods_line_type = "PRODUCT_COUPON",1,ogi.order_qty) quantity,
+        if(ogi.goods_line_type = "PRODUCT_COUPON",oci.purchase_price,ogi.return_price) buyPrice,
+        IFNULL(ogi.wholesale_price,0) wholesalePrice,
+        if(ogi.goods_line_type = "PRODUCT_COUPON",oci.purchase_price,ogi.order_qty * ogi.return_price) totalBuyPrice,
+        obi.ord_no referenceNumber,
+        CASE obd.is_pay_up WHEN 0 THEN '欠款' WHEN 1 THEN '结清' end isPayUp,
+        CASE ogi.goods_line_type WHEN 'PRODUCT_COUPON' THEN '已提产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END  goodsLineType,
+        os.shipping_time shippingTime
+        FROM ord_billing_details obd
+        INNER JOIN ord_base_info obi ON obd.oid = obi.oid
+        INNER JOIN st_store st ON st.store_id = obi.store_id
+        INNER JOIN ord_goods_info ogi ON obi.oid = ogi.oid
+        left join gds_goods g on g.gid = ogi.gid
+        LEFT JOIN  ord_shipping os on os.ord_no = obi.ord_no
+        LEFT JOIN ord_coupon_info oci on obi.oid = oci.oid and ogi.sku = oci.sku and ogi.goods_line_type = 'PRODUCT_COUPON'
+        WHERE
+        obi.delivery_type = 'SELF_TAKE' AND ((obi.status = 'PENDING_RECEIVE' and obi.create_time &lt; #{endTime}) OR (os.shipping_time &gt; #{endTime}) and obi.create_time &lt; #{endTime})
+        <if test="null != cityId and cityId != -1">
+            AND obi.city_id = #{cityId}
+        </if>
+        <if test="null != storeId and storeId != -1">
+            AND obi.store_id = #{storeId}
+        </if>
+        <if test="null != storeType and storeType != ''">
+            AND st.store_type = #{storeType}
+        </if>
+        <if test="null != pickType and pickType != ''">
+            AND obi.delivery_type = #{pickType}
+        </if>
+        AND obi.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+
+        UNION  ALL
+
+        SELECT
+        city.name cityName,
+        st.store_name storeName,
+        st.store_type storeType,
+        ccpc.get_type pickType,
+        ccpc.get_time buyTime,
+        ccpc.effective_end_time effectiveTime,
+        c.cus_id customerId,
+        c.name customerName,
+        c.mobile customerPhone,
+        c.customer_type customerType,
+        e.name sellerName,
+        g.sku sku,
+        g.sku_name skuName,
+        g.brand_name brandName,
+        IFNULL(ccpc.quantity,0) quantity,
+        IFNULL(ccpc.buy_price,0) buyPrice,
+        IFNULL(ogi.wholesale_price, 0 ) wholesalePrice,
+        (IFNULL(ccpc.quantity,0) * IFNULL(ccpc.buy_price,0)) totalBuyPrice,
+        ccpc.get_ord_no referenceNumber,
+        '' isPayUp,
+        '未提产品券' goodsLineType,
+        ccpc.use_time shippingTime
+        FROM cus_customer_product_coupon ccpc
+        INNER JOIN cus_customer c ON ccpc.cus_id = c.cus_id
+        LEFT JOIN emp_employee e ON ccpc.seller_id = e.emp_id
+        INNER JOIN st_store st ON st.store_id = ccpc.store_id
+        INNER JOIN city ON c.city_id = city.city_id
+        LEFT JOIN ord_goods_info ogi on ogi.id = ccpc.goods_line_id
+        LEFT JOIN gds_goods g on g.gid = ccpc.gid
+        WHERE (ccpc.effective_end_time > now() OR ccpc.effective_end_time IS NULL)
+        and ((ccpc.is_used = 0 and ccpc.get_time &lt; #{endTime}) OR (ccpc.use_time &gt; #{endTime}) and ccpc.get_time &lt; #{endTime})
+        <if test="null != cityId and cityId != -1">
+            AND city.city_id = #{cityId}
+        </if>
+        <if test="null != storeId and storeId != -1">
+            AND st.store_id = #{storeId}
+        </if>
+        <if test="null != storeType and storeType != ''">
+            AND st.store_type = #{storeType}
+        </if>
+        <if test="null != pickType and pickType != '' and pickType == 'PRODUCT_COUPON'">
+            AND ccpc.get_type IN ('BUY','MANUAL_GRANT','CANCEL_ORDER','RETURN_ORDER','HISTORY_IMPORT','PRESENT')
+        </if>
+        <if test="null != pickType and pickType != '' and pickType != 'PRODUCT_COUPON'">
+            AND ccpc.get_type = "-1"
+        </if>
+        AND c.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+
+    </select>
+    
     <select id="findStorePredepositReportDOAll"
             resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.StorePredepositReportDO">
         SELECT

@@ -551,17 +551,17 @@ public class MaReportDownloadRestController extends BaseRestController {
                     map.put("购买时间", "无");
                 }
                 if (null != endTime && !("".equals(endTime))) {
-                    map.put("过期时间", endTime);
+                    map.put("截至时间", endTime);
                 } else {
-                    map.put("过期时间", "无");
+                    map.put("截至时间", "无");
                 }
                 //设置筛选条件
                 ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
                 //列宽
-                int[] columnView = {10, 13, 10, 20, 20, 10, 10, 15, 20, 10, 10, 20, 30, 10, 10, 10, 10, 10, 30};
+                int[] columnView = {10, 13, 10, 20, 20, 10, 10, 15, 20, 10, 10, 20, 30, 10, 10, 10, 10, 10, 30,10,10};
                 //列标题
                 String[] titles = {"城市", "门店名称", "门店类型", "未提货类型", "购买日期", "过期时间", "顾客编号", "顾客姓名	",
-                        "顾客电话", "顾客类型", "销顾姓名", "商品编码", "商品名称", "品牌", "数量", "购买单价", "经销价", "购买总价", "相关单号"};
+                        "顾客电话", "顾客类型", "销顾姓名", "商品编码", "商品名称", "品牌", "数量", "购买单价", "经销价", "购买总价", "相关单号","是否欠款","提货时间"};
                 //计算标题开始行号
                 int row = 1;
                 if (null != map && map.size() > 0) {
@@ -603,6 +603,8 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Number(16, j + row, notPickGoodsReportDO.getWholesalePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     ws.addCell(new Number(17, j + row, notPickGoodsReportDO.getTotalBuyPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     ws.addCell(new Label(18, j + row, notPickGoodsReportDO.getReferenceNumber(), textFormat));
+                    ws.addCell(new Label(19, j+row, notPickGoodsReportDO.getIsPayUp(),textFormat));
+                    ws.addCell(new Label(20 , j+row, notPickGoodsReportDO.getShippingTime(),textFormat));
                 }
             }
         } catch (Exception e) {
