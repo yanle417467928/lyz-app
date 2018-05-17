@@ -39,6 +39,6 @@ public class DeliveryAddressDO extends BaseDO {
     private Boolean status;
     //是否默认收货地址
     private Boolean isDefault;
-
-
+    //楼盘信息
+    private String estateInfo;
 }
