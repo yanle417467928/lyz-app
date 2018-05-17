@@ -67,9 +67,10 @@ task:
 
 logging:
   level:
+    root: info
     org:
       springframework:
-        web: debug
+        web: info
 
 
 ---
