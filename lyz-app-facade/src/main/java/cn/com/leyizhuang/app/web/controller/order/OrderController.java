@@ -2135,6 +2135,7 @@ public class OrderController {
                     orderDetailsResponse.setReceiver(orderLogisticsInfo.getReceiver());
                     orderDetailsResponse.setReceiverPhone(orderLogisticsInfo.getReceiverPhone());
                     orderDetailsResponse.setShippingAddress(orderLogisticsInfo.getShippingAddress());
+                    orderDetailsResponse.setEstateInfo(orderLogisticsInfo.getEstateInfo());
                 }
                 AppStore store = appStoreService.findByStoreCode(orderBaseInfo.getStoreCode());
                 if (null != store) {

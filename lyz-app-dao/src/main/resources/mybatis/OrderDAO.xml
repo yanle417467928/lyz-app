@@ -1398,6 +1398,7 @@
             obi.delivery_type,
             obd.total_goods_price price,
             obd.amount_payable,
+            oli.estate_info,
             CASE WHEN obi.delivery_type='HOUSE_DELIVERY'
                 THEN oli.shipping_address
             ELSE oli.booking_store_name
@@ -1680,6 +1681,7 @@
             obi.delivery_type,
             obd.total_goods_price price ,
             obd.amount_payable,
+            oli.estate_info,
             CASE WHEN obi.delivery_type='HOUSE_DELIVERY'
             THEN oli.shipping_address
             ELSE oli.booking_store_name
