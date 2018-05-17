@@ -788,7 +788,7 @@ public class CommonServiceImpl implements CommonService {
     public void handleOrderRelevantBusinessAfterOnlinePayUp(String orderNumber, String tradeNo, String tradeStatus, OnlinePayType onlinePayType) throws IOException {
         if (StringUtils.isNotBlank(orderNumber)) {
             //更新订单第三方支付信息
-            List<PaymentDataDO> paymentDataList = paymentDataService.findByOutTradeNoAndTradeStatus(orderNumber, PaymentDataStatus.TRADE_SUCCESS);
+            List<PaymentDataDO> paymentDataList = paymentDataService.findByOrderNoAndTradeStatus(orderNumber, PaymentDataStatus.TRADE_SUCCESS);
             PaymentDataDO paymentData = paymentDataList.get(0);
 
             OrderBaseInfo baseInfo = orderService.getOrderByOrderNumber(orderNumber);
@@ -809,6 +809,23 @@ public class CommonServiceImpl implements CommonService {
             }
             /**/
 
+            //导购代支付装饰公司订单，导购填导购信息,代付款订单中间表
+            if (baseInfo.getOrderSubjectType() == AppOrderSubjectType.FIT) {
+                if (baseInfo.getCreatorIdentityType() == AppIdentityType.DECORATE_MANAGER
+                        && paymentData.getAppIdentityType() == AppIdentityType.SELLER) {
+                    AppEmployee employee = this.employeeService.findById(paymentData.getUserId());
+                    if (null != employee) {
+                        baseInfo.setSalesConsultId(employee.getEmpId());
+                        baseInfo.setSalesConsultName(employee.getName());
+                        baseInfo.setSalesConsultPhone(employee.getMobile());
+                    }
+                    PayhelperOrder payhelperOrder = PayhelperOrder.setPayhelperOrder(baseInfo.getId(), baseInfo.getOrderNumber(),
+                            billingDetails.getAmountPayable(), paymentData.getUserId(), paymentData.getAppIdentityType(), Boolean.TRUE,
+                            OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(onlinePayType.toString()));
+                    this.orderService.savePayhelperOrder(payhelperOrder);
+                }
+            }
+
             //新增订单账单支付明细
             OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails();
             paymentDetails.setOrderId(baseInfo.getId());
@@ -826,13 +843,24 @@ public class CommonServiceImpl implements CommonService {
                 paymentDetails.setPayType(OrderBillingPaymentType.UNION_PAY);
                 paymentDetails.setPayTypeDesc(OrderBillingPaymentType.UNION_PAY.getDescription());
             }
-            if (baseInfo.getCreatorIdentityType() == AppIdentityType.CUSTOMER) {
+            /*if (baseInfo.getCreatorIdentityType() == AppIdentityType.CUSTOMER) {
                 paymentDetails.setPaymentSubjectType(PaymentSubjectType.CUSTOMER);
                 paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.CUSTOMER.getDescription());
             } else if (baseInfo.getCreatorIdentityType() == AppIdentityType.SELLER) {
                 paymentDetails.setPaymentSubjectType(PaymentSubjectType.SELLER);
                 paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.SELLER.getDescription());
             } else if (baseInfo.getCreatorIdentityType() == AppIdentityType.DECORATE_MANAGER) {
+                paymentDetails.setPaymentSubjectType(PaymentSubjectType.DECORATE_MANAGER);
+                paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.DECORATE_MANAGER.getDescription());
+            }*/
+
+            if (paymentData.getAppIdentityType() == AppIdentityType.CUSTOMER) {
+                paymentDetails.setPaymentSubjectType(PaymentSubjectType.CUSTOMER);
+                paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.CUSTOMER.getDescription());
+            } else if (paymentData.getAppIdentityType() == AppIdentityType.SELLER) {
+                paymentDetails.setPaymentSubjectType(PaymentSubjectType.SELLER);
+                paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.SELLER.getDescription());
+            } else if (paymentData.getAppIdentityType() == AppIdentityType.DECORATE_MANAGER) {
                 paymentDetails.setPaymentSubjectType(PaymentSubjectType.DECORATE_MANAGER);
                 paymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.DECORATE_MANAGER.getDescription());
             }
