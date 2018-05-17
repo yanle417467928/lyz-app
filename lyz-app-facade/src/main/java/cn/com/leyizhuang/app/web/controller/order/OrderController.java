@@ -125,6 +125,9 @@ public class OrderController {
     @Resource
     private ReturnOrderService returnOrderService;
 
+    @Resource
+    private AppEmployeeService employeeService;
+
     /**
      * 创建订单方法
      *
@@ -1517,7 +1520,10 @@ public class OrderController {
                     managerBillingDetailResponse.setCreditMoney(orderBillingDetails.getStoreCreditMoney() == null ? 0 : orderBillingDetails.getStoreCreditMoney());
                     managerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount() == null ? 0 : orderBillingDetails.getPromotionDiscount());
                     managerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice() == null ? 0 : orderBaseInfo.getTotalGoodsPrice());
-
+                    PayhelperOrder payhelperOrder = this.appOrderService.findPayhelperOrderByOrdNo(orderNumber);
+                    if (null != payhelperOrder){
+                        managerBillingDetailResponse.setPayForAnotherMoney(null == payhelperOrder.getPayhelperAmount() ? 0 : payhelperOrder.getPayhelperAmount());
+                    }
                     orderDetailsResponse.setManagerBillingDetailResponse(managerBillingDetailResponse);
                 } else {
                     //导购
@@ -2160,8 +2166,7 @@ public class OrderController {
                 PayhelperOrder payhelperOrder = this.appOrderService.findPayhelperOrderByOrdNo(orderNumber);
                 if (null != payhelperOrder){
                     managerBillingDetailResponse.setPayForAnotherMoney(null == payhelperOrder.getPayhelperAmount() ? 0 : payhelperOrder.getPayhelperAmount());
-                } else {
-                    managerBillingDetailResponse.setPayForAnotherMoney(0D);
+                    managerBillingDetailResponse.setPayType(payhelperOrder.getPayType().getDescription());
                 }
                 orderDetailsResponse.setManagerBillingDetailResponse(managerBillingDetailResponse);
                 orderDetailsResponse.setGoodsList(appOrderService.getOrderGoodsList(orderNumber));
@@ -2214,7 +2219,35 @@ public class OrderController {
             logger.info("handleOrderRelevantBusinessAfterPayForAnother OUT,代支付订单支付失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        if (!StringUtils.isNotBlank(payType) || (OrderBillingPaymentType.EMP_CREDIT != OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)
+                && OrderBillingPaymentType.ST_PREPAY != OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType))) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "支付方式不允许为空！", null);
+            logger.info("handleOrderRelevantBusinessAfterPayForAnother OUT,代支付订单支付失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
         try {
+            if (OrderBillingPaymentType.EMP_CREDIT == OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)) {
+                EmpCreditMoney empCreditMoney = employeeService.findEmpCreditMoneyByEmpId(userId);
+                OrderBillingDetails billingDetails = appOrderService.getOrderBillingDetail(orderNumber);
+                if (null != empCreditMoney && null != billingDetails) {
+                    if (empCreditMoney.getCreditLimitAvailable() < billingDetails.getAmountPayable()) {
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "信用额度不足！", null);
+                        logger.info("handleOrderRelevantBusinessAfterPayForAnother OUT,代支付订单支付失败，出参 resultDTO:{}", resultDTO);
+                        return resultDTO;
+                    }
+                }
+            }
+            if (OrderBillingPaymentType.ST_PREPAY == OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)) {
+                OrderBillingDetails billingDetails = appOrderService.getOrderBillingDetail(orderNumber);
+                StorePreDeposit preDeposit = appStoreService.findStorePreDepositByUserIdAndIdentityType(userId, identityType);
+                if (null != preDeposit) {
+                    if (preDeposit.getBalance() < billingDetails.getAmountPayable()) {
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店预存款余额不足！", null);
+                        logger.info("handleOrderRelevantBusinessAfterPayForAnother OUT,代支付订单支付失败，出参 resultDTO:{}", resultDTO);
+                        return resultDTO;
+                    }
+                }
+            }
             this.commonService.handleOrderRelevantBusinessAfterPayForAnother(orderNumber, userId, identityType, ipAddress, payType);
             //发送订单到拆单消息队列
             sinkSender.sendOrder(orderNumber);

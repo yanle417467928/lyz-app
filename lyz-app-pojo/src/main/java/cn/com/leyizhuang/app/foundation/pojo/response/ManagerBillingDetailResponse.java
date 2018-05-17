@@ -45,4 +45,7 @@ public class ManagerBillingDetailResponse {
 
     //代付金额
     private Double payForAnotherMoney;
+
+    //代付方式
+    private String payType;
 }
