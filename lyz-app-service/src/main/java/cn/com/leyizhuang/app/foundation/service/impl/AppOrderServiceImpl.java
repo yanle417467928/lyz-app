@@ -18,7 +18,6 @@ import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.BillingSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
-import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
@@ -29,8 +28,6 @@ import cn.com.leyizhuang.common.util.AssertUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Result;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -439,6 +436,7 @@ public class AppOrderServiceImpl implements AppOrderService {
             logisticsInfo.setDeliveryStreet(deliverySimpleInfo.getDeliveryStreet());
             logisticsInfo.setResidenceName(deliverySimpleInfo.getResidenceName());
             logisticsInfo.setDetailedAddress(deliverySimpleInfo.getDetailedAddress());
+            logisticsInfo.setEstateInfo(deliverySimpleInfo.getEstateInfo());
             logisticsInfo.setShippingAddress(logisticsInfo.getDeliveryProvince().trim()
                     + logisticsInfo.getDeliveryCity().trim() + logisticsInfo.getDeliveryCounty().trim()
                     + logisticsInfo.getDeliveryStreet().trim()
