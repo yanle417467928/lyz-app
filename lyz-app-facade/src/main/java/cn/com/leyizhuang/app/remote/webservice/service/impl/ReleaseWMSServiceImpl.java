@@ -2061,8 +2061,8 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                                 log.setChangeQty(returningOrderGoods.getRecQty());
                                 log.setAfterChangeQty(cityInventory.getAvailableIty() + returningOrderGoods.getRecQty());
                                 log.setChangeTime(Calendar.getInstance().getTime());
-                                log.setChangeType(CityInventoryAvailableQtyChangeType.HOUSE_DELIVERY_ORDER_RETURN);
-                                log.setChangeTypeDesc(CityInventoryAvailableQtyChangeType.HOUSE_DELIVERY_ORDER_RETURN.getDescription());
+                                log.setChangeType(CityInventoryAvailableQtyChangeType.PICKING_ORDER_RETURN);
+                                log.setChangeTypeDesc(CityInventoryAvailableQtyChangeType.PICKING_ORDER_RETURN.getDescription());
                                 log.setReferenceNumber(returningOrderHeader.getBackNo());
                                 cityService.addCityInventoryAvailableQtyChangeLog(log);
                                 break;
