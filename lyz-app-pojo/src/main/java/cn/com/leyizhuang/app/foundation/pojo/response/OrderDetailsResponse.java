@@ -2,7 +2,6 @@ package cn.com.leyizhuang.app.foundation.pojo.response;
 
 import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.foundation.pojo.request.CustomerSimpleInfo;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.*;
 
 import java.util.List;
@@ -73,6 +72,10 @@ public class OrderDetailsResponse {
      * 门店详细地址
      */
     private String storeDetailedAddress;
+    /**
+     * 楼盘信息
+     */
+    private String estateInfo;
     /**
      * 预约提货时间
      */

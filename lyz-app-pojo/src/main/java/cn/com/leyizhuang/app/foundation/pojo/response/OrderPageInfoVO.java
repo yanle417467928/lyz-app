@@ -70,6 +70,10 @@ public class OrderPageInfoVO {
      * 配送地址或门店地址
      */
     private String shippingAddress;
+    /**
+     * 楼盘信息
+     */
+    private String estateInfo;
 
     /**
      * 商品图片

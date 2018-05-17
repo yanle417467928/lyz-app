@@ -83,4 +83,8 @@ public class DeliverySimpleInfo implements Serializable {
      * 是否业主收货
      */
     private Boolean  isOwnerReceiving;
+    /**
+     * 楼盘信息
+     */
+    private String estateInfo;
 }

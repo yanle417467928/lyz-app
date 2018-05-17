@@ -34,5 +34,6 @@ public class DeliveryAddressResponse {
     private Boolean isDefault;
     //收货省
     private String deliveryProvince;
-
+    //楼盘信息
+    private String estateInfo;
 }

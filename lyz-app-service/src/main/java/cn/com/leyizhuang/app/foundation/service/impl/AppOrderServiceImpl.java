@@ -436,6 +436,7 @@ public class AppOrderServiceImpl implements AppOrderService {
             logisticsInfo.setDeliveryStreet(deliverySimpleInfo.getDeliveryStreet());
             logisticsInfo.setResidenceName(deliverySimpleInfo.getResidenceName());
             logisticsInfo.setDetailedAddress(deliverySimpleInfo.getDetailedAddress());
+            logisticsInfo.setEstateInfo(deliverySimpleInfo.getEstateInfo());
             logisticsInfo.setShippingAddress(logisticsInfo.getDeliveryProvince().trim()
                     + logisticsInfo.getDeliveryCity().trim() + logisticsInfo.getDeliveryCounty().trim()
                     + logisticsInfo.getDeliveryStreet().trim()

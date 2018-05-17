@@ -695,13 +695,13 @@
 
     <insert id="saveOrderLogisticsInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo">
         INSERT INTO ord_logistics_info (oid, ord_no, delivery_type, booking_store_code, booking_store_name, booking_store_address, delivery_time,
-                                        delivery_clerk_no, delivery_clerk_id, delivery_clerk_name, warehouse, is_owner_receiving, receiver,
+                                        delivery_clerk_no, delivery_clerk_id, delivery_clerk_name, warehouse, is_owner_receiving, estate_info, receiver,
                                         receiver_phone, shipping_address, residence_name, delivery_province, delivery_city, delivery_county,
                                         delivery_street,
                                         detailed_address)
         VALUES (#{oid}, #{ordNo}, #{deliveryType}, #{bookingStoreCode}, #{bookingStoreName},
                         #{bookingStoreAddress}, #{deliveryTime}, #{deliveryClerkNo}, #{deliveryClerkId},
-                        #{deliveryClerkName}, #{warehouse}, #{isOwnerReceiving},
+                        #{deliveryClerkName}, #{warehouse}, #{isOwnerReceiving}, #{estateInfo}
                                                             #{receiver}, #{receiverPhone}, #{shippingAddress},
                                                             #{residenceName}, #{deliveryProvince}, #{deliveryCity},
                                                             #{deliveryCounty},
@@ -942,7 +942,8 @@
         ob.total_goods_price,
         ob.amount_payable,
         ogi.cover_image_uri,
-        oli.shipping_address
+        oli.shipping_address,
+        oli.estate_info
         FROM ord_base_info o
         INNER JOIN ord_billing_details ob ON
         o.oid = ob.oid
@@ -977,6 +978,7 @@
         <result column="is_evaluated" property="isEvaluated" jdbcType="BIT"/>
         <result column="delivery_type" property="deliveryType"
                 jdbcType="VARCHAR"/>
+        <result column="estate_info" property="estateInfo" jdbcType="VARCHAR"/>
         <result column="customer_id" property="customerId" jdbcType="BIGINT"/>
         <result column="customer_name" property="customerName" jdbcType="VARCHAR"/>
         <result column="customer_phone" property="customerPhone" jdbcType="VARCHAR"/>
@@ -1253,6 +1255,7 @@
             obi.delivery_type,
             obd.total_goods_price price ,
             obd.amount_payable,
+            oli.estate_info,
             CASE WHEN obi.delivery_type='HOUSE_DELIVERY'
             THEN oli.shipping_address
             ELSE oli.booking_store_name
@@ -1295,6 +1298,7 @@
             obi.delivery_type,
             obd.total_goods_price price ,
             obd.amount_payable,
+            oli.estate_info,
             CASE WHEN obi.delivery_type='HOUSE_DELIVERY'
             THEN oli.shipping_address
             ELSE oli.booking_store_name
@@ -1345,6 +1349,7 @@
             obi.delivery_type,
             obd.total_goods_price price ,
             obd.amount_payable,
+            oli.estate_info,
             CASE WHEN obi.delivery_type='HOUSE_DELIVERY'
             THEN oli.shipping_address
             ELSE oli.booking_store_name
@@ -1422,7 +1427,7 @@
         <result column="price" property="price" jdbcType="DECIMAL"/>
         <result column="amount_payable" property="amountPayable" jdbcType="DECIMAL"/>
         <result column="shipping_address" property="shippingAddress" jdbcType="VARCHAR"/>
-
+        <result column="estate_info" property="estateInfo" jdbcType="VARCHAR"/>
         <result column="customer_id" property="customerId" jdbcType="BIGINT"/>
         <result column="customer_name" property="customerName" jdbcType="VARCHAR"/>
         <result column="customer_phone" property="customerPhone" jdbcType="VARCHAR"/>

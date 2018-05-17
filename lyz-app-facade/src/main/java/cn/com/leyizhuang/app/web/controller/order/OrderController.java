@@ -1485,6 +1485,7 @@ public class OrderController {
                     orderDetailsResponse.setReceiver(orderLogisticsInfo.getReceiver());
                     orderDetailsResponse.setReceiverPhone(orderLogisticsInfo.getReceiverPhone());
                     orderDetailsResponse.setShippingAddress(orderLogisticsInfo.getShippingAddress());
+                    orderDetailsResponse.setEstateInfo(orderLogisticsInfo.getEstateInfo());
                 }
                 //获取订单账目明细
                 OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderNumber);
