@@ -11,7 +11,9 @@ import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,15 +47,18 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
         }
         if (StringUtils.isNotBlank(endTime)) {
             endTime += " 23:59:59";
+        }else {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            endTime = format.format(new Date());
         }
-        List<NotPickGoodsReportDO> notPickGoodsReportDOS = maReportDownloadDAO.findNotPickGoodsReportDOAll(cityId, storeId, storeType, buyTime, endTime, pickType, storeIds);
+        List<NotPickGoodsReportDO> notPickGoodsReportDOS = maReportDownloadDAO.findNotPickGoodsReportDOAllNEW(cityId, storeId, storeType, buyTime, endTime, pickType, storeIds);
         return new PageInfo<>(notPickGoodsReportDOS);
     }
 
     @Override
     public PageInfo<StorePredepositReportDO> findStorePredepositReportDOAll(Long cityId, Long storeId, String storeType, String startTime, String endTime, List<Long> storeIds, Integer page, Integer size) {
         PageHelper.startPage(page, size);
-        List<StorePredepositReportDO> storePredepositReportDOS = maReportDownloadDAO.findStorePredepositReportDOAll(cityId, storeId, storeType, startTime, endTime, storeIds);
+        List<StorePredepositReportDO> storePredepositReportDOS = maReportDownloadDAO.findStorePredepositReportDOAllNEW(cityId, storeId, storeType, startTime, endTime, storeIds);
         return new PageInfo<>(storePredepositReportDOS);
     }
 
@@ -72,13 +77,17 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
         }
         if (StringUtils.isNotBlank(effTime)) {
             effTime += " 23:59:59";
+        }else {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            effTime = format.format(new Date());
         }
-        return maReportDownloadDAO.findNotPickGoodsReportDOAll(cityId, storeId, storeType, buyTime, effTime, pickType, storeIds);
+
+        return maReportDownloadDAO.findNotPickGoodsReportDOAllNEW(cityId, storeId, storeType, buyTime, effTime, pickType, storeIds);
     }
 
     @Override
     public List<StorePredepositReportDO> storePredepositDownload(Long cityId, Long storeId, String storeType, String startTime, String endTime, List<Long> storeIds) {
-        return maReportDownloadDAO.findStorePredepositReportDOAll(cityId, storeId, storeType, startTime, endTime, storeIds);
+        return maReportDownloadDAO.findStorePredepositReportDOAllNEW(cityId, storeId, storeType, startTime, endTime, storeIds);
     }
 
     @Override

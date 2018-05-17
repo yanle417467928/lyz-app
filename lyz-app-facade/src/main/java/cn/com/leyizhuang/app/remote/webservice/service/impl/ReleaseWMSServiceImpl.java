@@ -151,16 +151,9 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,配送员不能为空,任务编号 出参 c_task_no:{}", header.getTaskNo());
                         return AppXmlUtil.resultStrXml(1, "配送员编号不能为空,任务编号" + header.getTaskNo() + "");
                     }
-                    /*AppEmployee clerk = appEmployeeService.findDeliveryByClerkNo(header.getDriver());
-                    if (null == clerk) {
-                        logger.info("GetWMSInfo OUT,获取wms信息失败,未查询该配送员,配送员编号 出参 c_driver:{}", header.getDriver());
-                        return AppXmlUtil.resultStrXml(1, "未查询该配送员,配送员编号" + header.getDriver());
-                    }*/
                     header.setCreateTime(Calendar.getInstance().getTime());
-                    //这里保存了出货单头默认都是未处理状态使用send_flag字段
-//                    header.setSendFlag(false);
                     header.setSendFlag("0");
-                    int result = wmsToAppOrderService.saveWtaShippingOrderHeader(header);
+                    int result = wmsToAppOrderDAO.saveWtaShippingOrderHeader(header);
                     if (result == 0) {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,该单已存在 出参 order_no:{}", header.getOrderNo());
                         return AppXmlUtil.resultStrXml(1, "重复传输,该单已存在!");
@@ -994,31 +987,12 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
     private WtaShippingOrderHeader mapping(WtaShippingOrderHeader wtaShippingOrderHeader, Node childNode) {
 
         if (childNode.getNodeType() == Node.ELEMENT_NODE) {
-            /*
-            <ERP><TABLE><C_OWNER_NO>001</C_OWNER_NO><C_TASK_NO>SU13021801310001</C_TASK_NO><C_TASK_ID>1</C_TASK_ID>
-            <C_TASK_TYPE>一般出货</C_TASK_TYPE><C_OP_TYPE>C</C_OP_TYPE><C_S_LOCATION_NO>F1F0111</C_S_LOCATION_NO>
-            <C_S_LOCATION_ID>28670</C_S_LOCATION_ID>
-            <C_S_CONTAINER_NO>OU13021801310003</C_S_CONTAINER_NO>
-           <C_GCODE>SJWT4503-25</C_GCODE>
-            <C_STOCKATTR_ID>1</C_STOCKATTR_ID><C_PACK_QTY>1</C_PACK_QTY><C_D_REQUEST_QTY>1.00</C_D_REQUEST_QTY>
-            <C_D_ACK_BAD_QTY>0.00</C_D_ACK_BAD_QTY><C_D_ACK_QIFT_QTY>0.00</C_D_ACK_QIFT_QTY><C_D_ACK_QTY>1.00</C_D_ACK_QTY>
-            <C_OP_USER>0000</C_OP_USER><C_OP_TOOLS>表单</C_OP_TOOLS><C_OP_STATUS>已出车</C_OP_STATUS><C_WAVE_NO>WA13021801310001</C_WAVE_NO>
-            <C_SOURCE_NO>OU13021801310003</C_SOURCE_NO><C_RESERVED1>LYZ</C_RESERVED1><C_RESERVED2></C_RESERVED2>
-            <C_RESERVED3></C_RESERVED3><C_RESERVED4>CD_XN20180131161050468455</C_RESERVED4><C_RESERVED5></C_RESERVED5>
-            <C_NOTE></C_NOTE><C_MK_DT>2018/1/31 18:38:10</C_MK_DT><C_MK_USERNO>0000</C_MK_USERNO>
-            <C_MODIFIED_DT>2018/1/31 18:38:37</C_MODIFIED_DT><C_MODIFIED_USERNO>0000</C_MODIFIED_USERNO>
-            <C_UPLOAD_STATUS></C_UPLOAD_STATUS><C_SEND_FALG>否</C_SEND_FALG></TABLE></ERP>
-             */
             // 比较字段名
             if ("c_task_no".equalsIgnoreCase(childNode.getNodeName())) {
                 // 有值
                 if (null != childNode.getChildNodes().item(0)) {
                     wtaShippingOrderHeader.setTaskNo(childNode.getChildNodes().item(0).getNodeValue());
                 }
-//            } else if ("c_begin_dt".equalsIgnoreCase(childNode.getNodeName())) {
-//                if (null != childNode.getChildNodes().item(0)) {
-//                    c_begin_dt = childNode.getChildNodes().item(0).getNodeValue();
-//                }
             } else if ("c_end_dt".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     wtaShippingOrderHeader.setEndDt(DateUtil.dateFromString(childNode.getChildNodes().item(0).getNodeValue()));
@@ -1031,14 +1005,6 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 if (null != childNode.getChildNodes().item(0)) {
                     wtaShippingOrderHeader.setOpStatus(childNode.getChildNodes().item(0).getNodeValue());
                 }
-//            } else if ("c_op_user".equalsIgnoreCase(childNode.getNodeName())) {
-//                if (null != childNode.getChildNodes().item(0)) {
-//                    c_op_user = childNode.getChildNodes().item(0).getNodeValue();
-//                }
-//            } else if ("c_modified_userno".equalsIgnoreCase(childNode.getNodeName())) {
-//                if (null != childNode.getChildNodes().item(0)) {
-//                    c_modified_userno = childNode.getChildNodes().item(0).getNodeValue();
-//                }
             } else if ("c_owner_no".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     wtaShippingOrderHeader.setOwnerNo(childNode.getChildNodes().item(0).getNodeValue());
@@ -1051,10 +1017,6 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                 if (null != childNode.getChildNodes().item(0)) {
                     wtaShippingOrderHeader.setDriver(childNode.getChildNodes().item(0).getNodeValue());
                 }
-//            } else if ("c_company_id".equalsIgnoreCase(childNode.getNodeName())) {
-//                if (null != childNode.getChildNodes().item(0)) {
-//                    cCompanyId = Long.parseLong(childNode.getChildNodes().item(0).getNodeValue());
-//                }
             } else if ("c_task_type".equalsIgnoreCase(childNode.getNodeName())) {
                 if (null != childNode.getChildNodes().item(0)) {
                     wtaShippingOrderHeader.setCTaskType(childNode.getChildNodes().item(0).getNodeValue());
