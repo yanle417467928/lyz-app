@@ -532,7 +532,12 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
     @Override
     @Transactional
     public Boolean handleWtaShippingOrder(String orderNo, String taskNo) {
-        WtaShippingOrderHeader wtaShippingOrderHeader = this.wmsToAppOrderDAO.getWtaShippingOrderHeaderByOrderNoAndTaskNo(orderNo, taskNo);
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        WtaShippingOrderHeader wtaShippingOrderHeader = this.wmsToAppOrderDAO.getWtaShippingOrderHeaderByTaskNo(taskNo);
         try {
             if (null != wtaShippingOrderHeader) {
                 List<WtaShippingOrderGoods> wtaShippingOrderGoodsList = null;
@@ -542,7 +547,7 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                     wtaShippingOrderGoodsList = this.wmsToAppOrderDAO.getWtaShippingOrderGoodsByOrderNo(orderNo);
                 } else {
                     //wms自建单据商品列表
-                    wtaShippingOrderGoodsList = this.wmsToAppOrderDAO.getWtaShippingOrderGoods(orderNo, taskNo);
+                    wtaShippingOrderGoodsList = this.wmsToAppOrderDAO.getWtaShippingOrderGoodsByTaskNo(taskNo);
                 }
                 if (null != wtaShippingOrderGoodsList && wtaShippingOrderGoodsList.size() > 0) {
                     List<OrderGoodsInfo> orderGoodsInfoList = null;
@@ -646,7 +651,7 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                             }
                         }
                     }
-                    if (OrderUtils.validationOrderNumber(wtaShippingOrderHeader.getOrderNo())) {
+                    if (null != isAppOrder && isAppOrder) {
                         for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
                             if (orderGoodsInfo.getOrderQuantity().equals(orderGoodsInfo.getShippingQuantity())) {
                                 this.appOrderService.updateOrderGoodsShippingQuantityByid(orderGoodsInfo);
@@ -682,14 +687,14 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                     }
                     // 处理完这里逻辑需要修改出货头表的处理状态(暂时使用sendFlag字段代替)
                     wtaShippingOrderHeader.setSendFlag("1");
-                    wtaShippingOrderHeader.setSendTime(Calendar.getInstance().getTime());
-                    this.wmsToAppOrderDAO.updateWtaShippingOrderHeader(wtaShippingOrderHeader);
+                    wtaShippingOrderHeader.setSendTime(new Date());
+                    wmsToAppOrderDAO.updateWtaShippingOrderHeader(wtaShippingOrderHeader);
 
                     //保存出货生命周期和出货记录
                     this.appOrderService.addAllOrderLifecycle(OrderLifecycleType.SEALED_CAR, AppOrderStatus.PENDING_RECEIVE, wtaShippingOrderHeader.getOrderNo());
                     this.appOrderService.addAllOrderShipping(wtaShippingOrderHeader.getTaskNo(), wtaShippingOrderHeader.getOrderNo());
 
-                    if (OrderUtils.validationOrderNumber(wtaShippingOrderHeader.getOrderNo())) {
+                    if (null != isAppOrder && isAppOrder) {
                         return Boolean.TRUE;
                     }
                 } else {

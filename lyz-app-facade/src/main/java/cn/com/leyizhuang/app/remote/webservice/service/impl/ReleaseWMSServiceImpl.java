@@ -153,7 +153,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     }
                     header.setCreateTime(Calendar.getInstance().getTime());
                     header.setSendFlag("0");
-                    int result = wmsToAppOrderService.saveWtaShippingOrderHeader(header);
+                    int result = wmsToAppOrderDAO.saveWtaShippingOrderHeader(header);
                     if (result == 0) {
                         logger.info("GetWMSInfo OUT,获取wms信息失败,该单已存在 出参 order_no:{}", header.getOrderNo());
                         return AppXmlUtil.resultStrXml(1, "重复传输,该单已存在!");
