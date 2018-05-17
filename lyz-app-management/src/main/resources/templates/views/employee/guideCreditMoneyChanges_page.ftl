@@ -37,7 +37,7 @@
                     </button>
                 </div>
                 <div class="box-body table-reponsive">
-                    <input type="hidden" name="id" id="guideId" value="${guideId}">
+                    <input type="hidden" name="id" id="guideId" value="${guideId?c}">
                     <table id="dataGrid" class="table table-bordered table-hover">
 
                     </table>
