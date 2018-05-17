@@ -30,6 +30,8 @@ public class StorePredepositReportDO {
     private Double balance;
     //关联单号
     private String referenceNumber;
+    //退单号
+    private String returnNo;
     //备注
     private String remarks;
 
