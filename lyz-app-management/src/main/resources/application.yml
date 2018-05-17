@@ -82,6 +82,12 @@ task:
     queue-capacity: 100
     keep-alive: 120
 
+logging:
+  level:
+    org:
+      springframework:
+        web: debug
+
 ---
 ############################################ 开发环境配置 ########################################################
 server:
