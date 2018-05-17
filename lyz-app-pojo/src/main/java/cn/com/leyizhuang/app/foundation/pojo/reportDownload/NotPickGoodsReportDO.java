@@ -57,6 +57,12 @@ public class NotPickGoodsReportDO {
     private Double totalBuyPrice;
     //关联单号
     private String referenceNumber;
+    // 是否结清
+    private String isPayUp;
+    // 产品类型
+    private String goodsLineType;
+    // 出货时间
+    private String shippingTime;
 
     public void setPickType(String deliveryType) {
         AppDeliveryType type1 = AppDeliveryType.getAppDeliveryTypeByValue(deliveryType);
@@ -64,7 +70,6 @@ public class NotPickGoodsReportDO {
             this.pickType = type1.getDescription();
         } else {
             this.pickType = CouponGetType.valueOf(deliveryType).getDescription();
-            ;
         }
     }
 
