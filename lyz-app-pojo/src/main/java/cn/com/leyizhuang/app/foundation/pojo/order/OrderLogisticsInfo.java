@@ -103,6 +103,10 @@ public class OrderLogisticsInfo {
     private Boolean isOwnerReceiving;
 
     /**
+     * 楼盘信息
+     */
+    private String estateInfo;
+    /**
      *  配送员id
      */
     private Long deliveryClerkId;

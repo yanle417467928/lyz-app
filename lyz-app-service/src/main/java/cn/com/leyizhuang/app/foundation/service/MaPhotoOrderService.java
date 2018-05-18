@@ -27,4 +27,6 @@ public interface MaPhotoOrderService {
 
     int batchDelete(Long[] ids);
 
+    List<String> findPhotosById(Long[] ids);
+
 }

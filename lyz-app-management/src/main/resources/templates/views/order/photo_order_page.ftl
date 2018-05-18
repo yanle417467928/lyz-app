@@ -57,6 +57,11 @@
                         </#if>
                     </select>
 
+                    <button id="btn_add" type="button" class="btn btn-default pull-left" onclick="downloadPhoto()">
+                        <i class="fa fa-download"></i>
+                        下载图片
+                    </button>
+
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
                         <input type="text" name="queryCusInfo" id="queryCusInfo" class="form-control" style="width:auto;"
                                placeholder="请输入要查找的姓名或电话、单号" onkeypress="findBykey()">
@@ -458,5 +463,25 @@
         window.location.href = '/views/admin/order/photo/edit/'+id;
     }
 
+    function downloadPhoto() {
+        var selected = this.getSelectedIds($('#dataGrid'));
+        if (null === selected || 0 === selected.length) {
+            $notify.warning('请在点击按钮前选中至少一条数据');
+            return;
+        }
+        var url = "/rest/order/photo//download/photo?photoIds="+ selected;
+        var escapeUrl=url.replace(/\#/g,"%23");
+        window.open(escapeUrl);
+    }
+
+    function getSelectedIds(container) {
+        var ids = [];
+        var selected = container.bootstrapTable('getSelections');
+        for (var i = 0; i < selected.length; i++) {
+            var data = selected[i];
+            ids.push(data.id);
+        }
+        return ids;
+    }
 </script>
 </body>

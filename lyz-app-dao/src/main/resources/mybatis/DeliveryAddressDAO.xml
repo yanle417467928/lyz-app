@@ -19,6 +19,7 @@
         <result column="VILLAGE_NAME" property="villageName"/>
         <result column="STATUS" property="STATUS"/>
         <result column="is_default" property="isDefault"/>
+        <result column="estate_info" property="estateInfo"/>
     </resultMap>
 
     <select id="queryListByCustomerIdAndStatusIsTrue"
@@ -33,7 +34,8 @@
             residence_name   village_name,
             detailed_address detailed_address,
             delivery_province deliveryProvince,
-            is_default
+            is_default,
+            estate_info
         FROM delivery_address
         WHERE user_id = #{userId}
               AND identity_type = 'CUSTOMER'
@@ -52,7 +54,8 @@
             residence_name   village_name,
             detailed_address detailed_address,
             delivery_province deliveryProvince,
-            is_default
+            is_default,
+            estate_info
         FROM delivery_address
         WHERE user_id = #{userId}
               AND identity_type = #{identityType}
@@ -63,12 +66,12 @@
         INSERT INTO delivery_address
         (
             user_id, identity_type, receiver, receiver_phone, delivery_province, delivery_city, delivery_county, delivery_street,
-            detailed_address, residence_name, STATUS, is_default)
+            detailed_address, residence_name, STATUS, is_default, estate_info)
         VALUES
             (#{userId}, #{identityType}, #{receiver}, #{receiverPhone},
                         #{deliveryProvince}, #{deliveryCity}, #{deliveryCounty},
                         #{deliveryStreet},
-                        #{detailedAddress}, #{residenceName}, #{status}, #{isDefault})
+                        #{detailedAddress}, #{residenceName}, #{status}, #{isDefault}, #{estateInfo})
     </insert>
 
     <update id="modifyDeliveryAddress" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.DeliveryAddressDO">
@@ -104,6 +107,9 @@
             <if test="null != status">
                 STATUS = #{status},
             </if>
+            <if test="null != estateInfo">
+                estate_info = #{estateInfo}
+            </if>
         </set>
         WHERE ID = #{id}
     </update>
@@ -120,7 +126,8 @@
             residence_name   village_name,
             detailed_address detailed_address,
             delivery_province deliveryProvince,
-            is_default
+            is_default,
+            estate_info
         FROM delivery_address
         WHERE user_id = #{userId}
               AND identity_type = #{identityType}
@@ -147,7 +154,8 @@
             residence_name   village_name,
             detailed_address detailed_address,
             delivery_province deliveryProvince,
-            is_default
+            is_default,
+            estate_info
         FROM delivery_address
         WHERE user_id = #{userId}
               AND identity_type = #{identityType}
@@ -167,7 +175,8 @@
         residence_name   village_name,
         detailed_address detailed_address,
         delivery_province deliveryProvince,
-        is_default
+        is_default,
+        estate_info
         FROM delivery_address
         WHERE user_id = #{userId}
         AND identity_type = #{identityType}
