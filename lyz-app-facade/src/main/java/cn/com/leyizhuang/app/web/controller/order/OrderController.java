@@ -2201,7 +2201,8 @@ public class OrderController {
     public ResultDTO<Object> handleOrderRelevantBusinessAfterPayForAnother(Long userId, Integer identityType, String orderNumber,
                                                                            String payType, HttpServletRequest request) {
         ResultDTO<Object> resultDTO;
-        logger.info("handleOrderRelevantBusinessAfterPayForAnother CALLED,代支付订单支付，入参 userID:{}, identityType:{}, orderNumber{}", userId, identityType, orderNumber);
+        logger.info("handleOrderRelevantBusinessAfterPayForAnother CALLED,代支付订单支付，入参 userID:{}, identityType:{}, orderNumber{},payType{}",
+                userId, identityType, orderNumber, payType);
         //获取客户端ip地址
         String ipAddress = IpUtils.getIpAddress(request);
         if (null == userId) {
@@ -2219,8 +2220,8 @@ public class OrderController {
             logger.info("handleOrderRelevantBusinessAfterPayForAnother OUT,代支付订单支付失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (!StringUtils.isNotBlank(payType) || (OrderBillingPaymentType.EMP_CREDIT != OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)
-                && OrderBillingPaymentType.ST_PREPAY != OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType))) {
+        if (!StringUtils.isNotBlank(payType) && (OrderBillingPaymentType.EMP_CREDIT != OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)
+                || OrderBillingPaymentType.ST_PREPAY != OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType))) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "支付方式不允许为空！", null);
             logger.info("handleOrderRelevantBusinessAfterPayForAnother OUT,代支付订单支付失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -2248,7 +2249,7 @@ public class OrderController {
                     }
                 }
             }
-            this.commonService.handleOrderRelevantBusinessAfterPayForAnother(orderNumber, userId, identityType, ipAddress, payType);
+            this.commonService.handleOrderRelevantBusinessAfterPayForAnother(orderNumber, userId, identityType, payType, ipAddress);
             //发送订单到拆单消息队列
             sinkSender.sendOrder(orderNumber);
 

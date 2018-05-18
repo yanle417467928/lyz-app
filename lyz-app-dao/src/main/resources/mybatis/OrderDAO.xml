@@ -777,6 +777,15 @@
             <if test="null != status ">
                 status = #{status},
             </if>
+            <if test="null != salesConsultId ">
+                sales_consult_id = #{salesConsultId},
+            </if>
+            <if test="null != salesConsultName ">
+                sales_consult_name = #{salesConsultName},
+            </if>
+            <if test="null != salesConsultPhone ">
+                sales_consult_phone = #{salesConsultPhone},
+            </if>
             <if test="null != deliveryStatus ">
                 delivery_status = #{deliveryStatus},
             </if>
@@ -799,6 +808,9 @@
         <set>
             <if test="null != onlinePayType ">
                 online_pay_type = #{onlinePayType},
+            </if>
+            <if test="null != empCreditMoney">
+                emp_credit_money = #{empCreditMoney},
             </if>
             <if test="null != onlinePayAmount ">
                 online_pay_amount = #{onlinePayAmount},
