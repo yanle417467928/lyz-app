@@ -28,4 +28,6 @@ public interface MaOrderPhotoDAO {
 
     int updateOperationUserId(@Param("userId") Long userId, @Param("id") Long id);
 
+    List<String> findPhotosById(@Param("array")Long[] ids);
+
 }
