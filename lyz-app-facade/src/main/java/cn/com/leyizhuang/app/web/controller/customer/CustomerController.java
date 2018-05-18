@@ -240,7 +240,7 @@ public class CustomerController {
                 newUser.setStoreId(store.getStoreId());
                 newUser.setCityId(cityId);
                 newUser.setMobile(registryParam.getPhone());
-                newUser.setLight(AppCustomerLightStatus.NOT);
+                newUser.setLight(AppCustomerLightStatus.CLOSE);
                 newUser.setIsCashOnDelivery(Boolean.FALSE);
                 newUser.setCustomerProfession(registryParam.getProfession());
                 List<CustomerProfession> professions = customerService.getCustomerProfessionListByStatus(AppWhetherFlag.Y.toString());
@@ -1084,7 +1084,7 @@ public class CustomerController {
                 newUser.setStoreId(store.getStoreId());
                 newUser.setCityId(cityId);
                 newUser.setMobile(registryParam.getPhone());
-                newUser.setLight(AppCustomerLightStatus.NOT);
+                newUser.setLight(AppCustomerLightStatus.CLOSE);
                 newUser.setIsCashOnDelivery(Boolean.FALSE);
                 newUser.setCustomerProfession(registryParam.getProfession());
                 List<CustomerProfession> professions = customerService.getCustomerProfessionListByStatus(AppWhetherFlag.Y.toString());
