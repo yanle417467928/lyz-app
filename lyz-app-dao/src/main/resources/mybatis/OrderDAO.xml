@@ -497,7 +497,8 @@
             is_owner_receiving,
             is_pay_up,
             pay_up_time,
-            store_cash
+            store_cash,
+            seller_store_deposit
         FROM
             ord_billing_details
         WHERE
@@ -701,7 +702,7 @@
                                         detailed_address)
         VALUES (#{oid}, #{ordNo}, #{deliveryType}, #{bookingStoreCode}, #{bookingStoreName},
                         #{bookingStoreAddress}, #{deliveryTime}, #{deliveryClerkNo}, #{deliveryClerkId},
-                        #{deliveryClerkName}, #{warehouse}, #{isOwnerReceiving}, #{estateInfo}
+                        #{deliveryClerkName}, #{warehouse}, #{isOwnerReceiving}, #{estateInfo},
                                                             #{receiver}, #{receiverPhone}, #{shippingAddress},
                                                             #{residenceName}, #{deliveryProvince}, #{deliveryCity},
                                                             #{deliveryCounty},
@@ -745,7 +746,8 @@
                                          lebi_quantity, lebi_cash_discount, cash_coupon_discount, product_coupon_discount, cus_pre_deposit,
                                          online_pay_type, online_pay_amount, st_pre_deposit, emp_credit_money, st_credit_money,
                                          st_subvention, order_amount_subtotal, amount_payable, collection_amount, arrearage, is_owner_receiving,
-                                         online_pay_time, pay_up_time, is_pay_up, store_cash, store_other_money, store_pos_money, store_pos_number, manage_receipt_time)
+                                         online_pay_time, pay_up_time, is_pay_up, store_cash, store_other_money, store_pos_money, store_pos_number, manage_receipt_time,
+                                         seller_store_deposit)
         VALUES
             (#{createTime}, #{oid}, #{orderNumber}, #{totalGoodsPrice}, #{memberDiscount}, #{promotionDiscount},
                             #{freight},
@@ -755,7 +757,7 @@
                 #{storeSubvention}, #{orderAmountSubtotal},
                 #{amountPayable}, #{collectionAmount}, #{arrearage}, #{isOwnerReceiving}, #{onlinePayTime},
                                   #{payUpTime}, #{isPayUp}, #{storeCash}, #{storeOtherMoney}, #{storePosMoney},
-                                  #{storePosNumber}, #{manageReceiptTime}
+                                  #{storePosNumber}, #{manageReceiptTime}, #{sellerStoreDeposit}
             )
     </insert>
 
@@ -1405,12 +1407,14 @@
             END AS shipping_address,
             obi.customer_id,
             obi.customer_name,
-            obi.customer_phone
+            obi.customer_phone,
+            s.store_name
         FROM
             ord_base_info obi
             INNER JOIN payhelper_ord_relation por ON por.oid = obi.oid
             LEFT JOIN ord_billing_details obd ON obi.oid = obd.oid
             LEFT JOIN ord_logistics_info oli ON obi.oid = oli.oid
+            LEFT JOIN st_store s on s.store_id = obi.store_id
         WHERE
             por.payhelper_id = #{userId}
             AND creator_identity_type = 'DECORATE_MANAGER'
