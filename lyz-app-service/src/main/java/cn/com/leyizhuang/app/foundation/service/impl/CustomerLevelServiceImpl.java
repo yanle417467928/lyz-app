@@ -200,7 +200,7 @@ public class CustomerLevelServiceImpl implements CustomerLevelService{
         if (customer.getLastConsumptionTime() == null){
             // 判断是否为无灯
 
-            customer.setLight(AppCustomerLightStatus.NOT);
+            customer.setLight(AppCustomerLightStatus.CLOSE);
             return  customer;
         }
 

@@ -120,7 +120,7 @@ public class QrcodeRegisterRestController extends BaseRestController {
                 newCustomer.setName(name);
                 newCustomer.setSex(SexType.SECRET);
                 newCustomer.setPicUrl(null);
-                newCustomer.setLight(AppCustomerLightStatus.NOT);
+                newCustomer.setLight(AppCustomerLightStatus.CLOSE);
                 newCustomer.setIsCashOnDelivery(Boolean.FALSE);
                 newCustomer.setCityId(appEmployee.getCityId());
                 newCustomer.setStoreId(appEmployee.getStoreId());
