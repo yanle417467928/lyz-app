@@ -54,12 +54,12 @@ public class ProductCouponResponse implements Serializable {
     private Boolean isZG = false;
 
     public void setEffectiveStartTime(Date dateTime){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         this.effectiveStartTime = format.format(dateTime);
     }
 
     public void setEffectiveEndTime(Date dateTime){
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         this.effectiveEndTime = format.format(dateTime);
     }
 }

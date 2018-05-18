@@ -93,5 +93,12 @@
         WHERE id = #{id}
     </update>
 
+    <select id="findPhotosById" resultType="java.lang.String">
+        SELECT photos FROM photo_order
+        WHERE id IN
+        <foreach collection="array" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
 
 </mapper>
