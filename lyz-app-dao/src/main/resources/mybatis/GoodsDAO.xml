@@ -796,7 +796,7 @@
             (SELECT gid id, sku_name skuName, goods_specification goodsSpecification, goods_unit goodsUnit,work_area workArea,work_cost workCost FROM
             gds_goods WHERE gid = #{goodsId}) g
             WHERE
-            g.id = p.gid;
+            g.id = p.gid
             GROUP BY p.sku
         </if>
         <if test="null != type and type.toString() != 'CUSTOMER'">
@@ -849,7 +849,7 @@
               AND (pcp.effective_end_time IS NULL OR pcp.effective_end_time &gt; NOW())
               AND pcp.is_used = FALSE
               AND pcp.gid = p.gid
-              AND pcp.quantity >= #{qty};
+              AND pcp.quantity >= #{qty}
               GROUP BY p.sku
     </select>
 

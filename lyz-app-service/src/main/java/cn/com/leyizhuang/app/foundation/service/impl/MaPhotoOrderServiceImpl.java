@@ -81,5 +81,14 @@ public class MaPhotoOrderServiceImpl implements MaPhotoOrderService {
         return this.maOrderPhotoDAO.batchDelete(ids);
     }
 
+    @Override
+    public List<String> findPhotosById(Long[] ids) {
+        if (null != ids || ids.length > 0) {
+            return this.maOrderPhotoDAO.findPhotosById(ids);
+        }else{
+            return null;
+        }
+    }
+
 
 }

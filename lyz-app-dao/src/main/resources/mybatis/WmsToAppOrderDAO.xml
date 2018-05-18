@@ -706,7 +706,7 @@
             err_message,
             handle_time
         FROM inter_wta_return_order_back_header
-        WHERE po_no = #{returnNo} AND rec_no = #{recNo} AND handle_flag = 0
+        WHERE po_no = #{returnNo} AND rec_no = #{recNo} AND (handle_flag = 0 OR handle_flag IS NULL)
     </select>
 
     <update id="updateReturningOrderHeaderByOrderNo"
