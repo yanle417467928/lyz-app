@@ -1294,9 +1294,16 @@ public class CommonServiceImpl implements CommonService {
             }
             if (null != orderBillingDetails.getStPreDeposit() && orderBillingDetails.getStPreDeposit() > AppConstant.DOUBLE_ZERO) {
                 OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
-                details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.ST_PREPAY, orderBillingDetails.getStPreDeposit(),
-                        PaymentSubjectType.SELLER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
-                billingPaymentDetails.add(details);
+                //2018年5月17日 Jerry 如果是装饰使用门店预存款测出无法辨别，取主单上创建者类型
+                if (AppOrderSubjectType.FIT.equals(orderBaseInfo.getOrderSubjectType())){
+                    details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.ST_PREPAY, orderBillingDetails.getStPreDeposit(),
+                            PaymentSubjectType.DECORATE_MANAGER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+                    billingPaymentDetails.add(details);
+                }else {
+                    details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.ST_PREPAY, orderBillingDetails.getStPreDeposit(),
+                            PaymentSubjectType.SELLER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+                    billingPaymentDetails.add(details);
+                }
             }
             if (null != orderBillingDetails.getStoreCreditMoney() && orderBillingDetails.getStoreCreditMoney() > AppConstant.DOUBLE_ZERO) {
                 OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
