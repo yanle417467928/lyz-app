@@ -501,13 +501,13 @@
         oli.shipping_address, og.sku sku, og.sku_name skuName, (CASE WHEN og.company_flag = 'HR' THEN '华润'
         WHEN og.company_flag = 'LYZ' THEN '乐意装' WHEN og.company_flag = 'YR' THEN '莹润' ELSE '其他' END)companyFlag,
         og.goods_line_type goodsLineType, IFNULL(og.order_qty, 0) quantity,
-        if(og.goods_line_type = "PRODUCT_COUPON",(SELECT SUM(purchase_price) from ord_coupon_info where ord_no = ob.ord_no and og.sku = sku)/og.order_qty,
+        if(og.goods_line_type = "PRODUCT_COUPON",(SELECT SUM(purchase_price) from ord_coupon_info where ord_no = obi.ord_no and og.sku = sku)/og.order_qty,
         IFNULL(og.settlement_price, 0)) settlementPrice,
-        if(og.goods_line_type = "PRODUCT_COUPON",(SELECT SUM(purchase_price) from ord_coupon_info where ord_no = ob.ord_no and og.sku = sku),
+        if(og.goods_line_type = "PRODUCT_COUPON",(SELECT SUM(purchase_price) from ord_coupon_info where ord_no = obi.ord_no and og.sku = sku),
         (IFNULL(og.order_qty, 0) * IFNULL(og.settlement_price, 0))) settlementTotlePrice,
-        if(og.goods_line_type = "PRODUCT_COUPON",(SELECT SUM(purchase_price) from ord_coupon_info where ord_no = ob.ord_no and og.sku = sku)/og.order_qty,
+        if(og.goods_line_type = "PRODUCT_COUPON",(SELECT SUM(purchase_price) from ord_coupon_info where ord_no = obi.ord_no and og.sku = sku)/og.order_qty,
         IFNULL(og.return_price, 0)) promotionSharePrice,
-        if(og.goods_line_type = "PRODUCT_COUPON",(SELECT SUM(purchase_price) from ord_coupon_info where ord_no = ob.ord_no and og.sku = sku),
+        if(og.goods_line_type = "PRODUCT_COUPON",(SELECT SUM(purchase_price) from ord_coupon_info where ord_no = obi.ord_no and og.sku = sku),
         (IFNULL(og.order_qty, 0) * IFNULL(og.return_price, 0))) promotionShareTotlePrice
         FROM
         ord_base_info obi
