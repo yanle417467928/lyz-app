@@ -167,7 +167,8 @@
             AND
             (oli.ord_no LIKE concat(concat('%',#{condition}),'%') OR oli.shipping_address LIKE
             concat(concat('%',#{condition}),'%') OR oli.receiver LIKE concat(concat('%',#{condition}),'%')
-            OR obi.customer_name LIKE concat(concat('%',#{condition}),'%') OR obi.customer_phone LIKE concat(concat('%',#{condition}),'%')
+            OR obi.customer_name LIKE concat(concat('%',#{condition}),'%') OR obi.customer_phone LIKE
+            concat(concat('%',#{condition}),'%')
             OR oli.receiver_phone LIKE concat(concat('%',#{condition}),'%'))
         </if>
         <if test="null != identityType and identityType.toString() == 'DECORATE_MANAGER'">
@@ -195,7 +196,8 @@
             AND
             (oli.ord_no LIKE concat(concat('%',#{condition}),'%') OR oli.shipping_address LIKE
             concat(concat('%',#{condition}),'%') OR oli.receiver LIKE concat(concat('%',#{condition}),'%')
-            OR obi.customer_name LIKE concat(concat('%',#{condition}),'%') OR obi.customer_phone LIKE concat(concat('%',#{condition}),'%')
+            OR obi.customer_name LIKE concat(concat('%',#{condition}),'%') OR obi.customer_phone LIKE
+            concat(concat('%',#{condition}),'%')
             OR oli.receiver_phone LIKE concat(concat('%',#{condition}),'%'))
         </if>
         <if test="null != identityType and identityType.toString() == 'SELLER'">
@@ -215,7 +217,8 @@
             AND
             (oli.ord_no LIKE concat(concat('%',#{condition}),'%') OR oli.shipping_address LIKE
             concat(concat('%',#{condition}),'%') OR oli.receiver LIKE concat(concat('%',#{condition}),'%')
-            OR obi.customer_name LIKE concat(concat('%',#{condition}),'%') OR obi.customer_phone LIKE concat(concat('%',#{condition}),'%')
+            OR obi.customer_name LIKE concat(concat('%',#{condition}),'%') OR obi.customer_phone LIKE
+            concat(concat('%',#{condition}),'%')
             OR oli.receiver_phone LIKE concat(concat('%',#{condition}),'%'))
         </if>
     </select>
@@ -347,7 +350,7 @@
             ob.sales_consult_name,
             ob.sales_consult_phone,
             ob.customer_id,
-           ob.customer_name,
+            ob.customer_name,
             ob.customer_phone,
             ob.customer_type,
             ob.total_goods_price,
@@ -359,18 +362,24 @@
             ob.sob_id,
             ob.store_org_id,
             ob.sales_number
-         from
-        ord_goods_info og LEFT JOIN ord_base_info ob on og.oid = ob.oid where
-        settlement_price > retail_price and settlement_price > VIP_price
+        FROM
+            ord_goods_info og LEFT JOIN ord_base_info ob ON og.oid = ob.oid
+        WHERE
+            settlement_price > retail_price AND settlement_price > VIP_price
         GROUP BY og.ord_no
     </select>
 
     <select id="findOrderPromotionId" resultType="java.lang.Long">
-        SELECT DISTINCT promotion_id from ord_goods_info where ord_no = #{ordNo};
+        SELECT DISTINCT promotion_id
+        FROM ord_goods_info
+        WHERE ord_no = #{ordNo};
     </select>
 
-    <select id="findOrderGoodsInfByLineId" resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf">
-        SELECT  * from inter_ate_order_goods_inf where main_order_line_id = #{lineId}
+    <select id="findOrderGoodsInfByLineId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf">
+        SELECT *
+        FROM inter_ate_order_goods_inf
+        WHERE main_order_line_id = #{lineId}
     </select>
 
     <select id="findOrderGoodsAndPresentLine" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
@@ -402,9 +411,9 @@
             price_item_id           priceItemId,
             company_flag            companyFlag,
             cover_image_uri         coverImageUri
-        from
-        ord_goods_info
-        where ord_no = #{ordNo} and promotion_id = #{actId}
+        FROM
+            ord_goods_info
+        WHERE ord_no = #{ordNo} AND promotion_id = #{actId}
     </select>
 
     <select id="getOrderDetail" parameterType="java.lang.String"
@@ -1410,36 +1419,37 @@
         WHERE oid = #{oid}
     </select>
 
-    <select id="getOrderGoodsByOrderNumberAndSkuAndGoodsLineType" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
+    <select id="getOrderGoodsByOrderNumberAndSkuAndGoodsLineType"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
         SELECT
-            id                      id,
-            oid                     oid,
-            ord_no                  orderNumber,
-            gid                     gid,
-            sku                     sku,
-            sku_name                skuName,
-            retail_price            retailPrice,
-            VIP_price               VIPPrice,
-            wholesale_price         wholesalePrice,
-            settlement_price        settlementPrice,
-            promotion_id            promotionId,
-            is_price_share          isPriceShare,
-            promotion_share_price   promotionSharePrice,
-            lb_share_price          lbSharePrice,
-            cash_coupon_share_price cashCouponSharePrice,
-            cash_return_share_price cashReturnSharePrice,
-            return_price            returnPrice,
-            is_returnable           isReturnable,
-            return_priority         returnPriority,
-            order_qty               orderQuantity,
-            shipping_qty            shippingQuantity,
-            return_qty              returnQuantity,
-            returnable_qty          returnableQuantity,
-            goods_line_type         goods_line_type,
-            price_item_id           priceItemId,
-            company_flag            companyFlag
+        id id,
+        oid oid,
+        ord_no orderNumber,
+        gid gid,
+        sku sku,
+        sku_name skuName,
+        retail_price retailPrice,
+        VIP_price VIPPrice,
+        wholesale_price wholesalePrice,
+        settlement_price settlementPrice,
+        promotion_id promotionId,
+        is_price_share isPriceShare,
+        promotion_share_price promotionSharePrice,
+        lb_share_price lbSharePrice,
+        cash_coupon_share_price cashCouponSharePrice,
+        cash_return_share_price cashReturnSharePrice,
+        return_price returnPrice,
+        is_returnable isReturnable,
+        return_priority returnPriority,
+        order_qty orderQuantity,
+        shipping_qty shippingQuantity,
+        return_qty returnQuantity,
+        returnable_qty returnableQuantity,
+        goods_line_type goods_line_type,
+        price_item_id priceItemId,
+        company_flag companyFlag
         FROM
-          ord_goods_info
+        ord_goods_info
         WHERE
         ord_no = #{ordNo}
         <if test="sku != null">
@@ -1463,69 +1473,76 @@
     </select>
 
     <select id="getNotSellDetailsOrderNOs" resultType="java.lang.String">
-        SELECT  o.ord_no from ord_base_info o
-        LEFT JOIN ord_billing_details obd on o.oid = obd.oid
-        and  o.delivery_type = 'HOUSE_DELIVERY'
-        where o.status in ('PENDING_RECEIVE','FINISHED')
-        and o.is_record_sales = #{flag}
-        and obd.pay_up_time &gt; #{fristDay}
-        and obd.is_pay_up = 1
+        SELECT o.ord_no
+        FROM ord_base_info o
+            LEFT JOIN ord_billing_details obd ON o.oid = obd.oid
+                                                 AND o.delivery_type = 'HOUSE_DELIVERY'
+        WHERE o.status IN ('PENDING_RECEIVE', 'FINISHED')
+              AND o.is_record_sales = #{flag}
+              AND obd.pay_up_time &gt; #{fristDay}
+              AND obd.is_pay_up = 1
         UNION
-        SELECT  o.ord_no from ord_base_info o
-        LEFT JOIN ord_billing_details obd on o.oid = obd.oid
-        and  o.delivery_type = 'HOUSE_DELIVERY'
-        where o.status in ('FINISHED')
-        and o.is_record_sales = #{flag}
-        and obd.pay_up_time &gt; #{fristDay}
-        and obd.is_pay_up = 1
+        SELECT o.ord_no
+        FROM ord_base_info o
+            LEFT JOIN ord_billing_details obd ON o.oid = obd.oid
+                                                 AND o.delivery_type = 'HOUSE_DELIVERY'
+        WHERE o.status IN ('FINISHED')
+              AND o.is_record_sales = #{flag}
+              AND obd.pay_up_time &gt; #{fristDay}
+              AND obd.is_pay_up = 1
         UNION
-        SELECT  o.ord_no from ord_base_info o
-        LEFT JOIN ord_billing_details obd on o.oid = obd.oid
-        LEFT JOIN inter_wta_order_shipping_header wa ON o.ord_no = wa.order_no
-        and  o.delivery_type = 'HOUSE_DELIVERY'
-        where o.status in ('PENDING_RECEIVE','FINISHED')
-        and o.is_record_sales = #{flag}
-        and wa.end_dt &gt; #{fristDay}
-        and obd.pay_up_time &lt; #{fristDay}
-        and obd.is_pay_up = 1
+        SELECT o.ord_no
+        FROM ord_base_info o
+            LEFT JOIN ord_billing_details obd ON o.oid = obd.oid
+            LEFT JOIN inter_wta_order_shipping_header wa ON o.ord_no = wa.order_no
+                                                            AND o.delivery_type = 'HOUSE_DELIVERY'
+        WHERE o.status IN ('PENDING_RECEIVE', 'FINISHED')
+              AND o.is_record_sales = #{flag}
+              AND wa.end_dt &gt; #{fristDay}
+              AND obd.pay_up_time &lt; #{fristDay}
+              AND obd.is_pay_up = 1
         UNION
-        SELECT  o.ord_no from ord_base_info o
-        LEFT JOIN ord_billing_details obd on o.oid = obd.oid
-        LEFT JOIN ord_shipping os on o.oid = os.oid
-        and  o.delivery_type = 'HOUSE_DELIVERY'
-        where o.status in ('FINISHED')
-        and o.is_record_sales = #{flag}
-        and os.shipping_time &gt; #{fristDay}
-        and obd.pay_up_time &lt; #{fristDay}
-        and obd.is_pay_up = 1
+        SELECT o.ord_no
+        FROM ord_base_info o
+            LEFT JOIN ord_billing_details obd ON o.oid = obd.oid
+            LEFT JOIN ord_shipping os ON o.oid = os.oid
+                                         AND o.delivery_type = 'HOUSE_DELIVERY'
+        WHERE o.status IN ('FINISHED')
+              AND o.is_record_sales = #{flag}
+              AND os.shipping_time &gt; #{fristDay}
+              AND obd.pay_up_time &lt; #{fristDay}
+              AND obd.is_pay_up = 1
 
     </select>
 
 
-    <select id="getOrderGoodsQtyInfoByOrderNumber" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
+    <select id="getOrderGoodsQtyInfoByOrderNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
         SELECT
-        id                      id,
-        oid                     oid,
-        ord_no                  orderNumber,
-        gid                     gid,
-        sku                     sku,
-        IFNULL(order_qty,0)     orderQuantity,
-        IFNULL(shipping_qty,0)  shippingQuantity,
-        goods_line_type         goods_line_type
+            id                      id,
+            oid                     oid,
+            ord_no                  orderNumber,
+            gid                     gid,
+            sku                     sku,
+            IFNULL(order_qty, 0)    orderQuantity,
+            IFNULL(shipping_qty, 0) shippingQuantity,
+            goods_line_type         goods_line_type
         FROM
-        ord_goods_info
+            ord_goods_info
         WHERE
-        ord_no = #{orderNumber}
+            ord_no = #{orderNumber}
     </select>
 
-    <select id="getCusProductCouponByOrderNumber" parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon">
-        SELECT  cp.* from cus_customer_product_coupon cp
-        LEFT JOIN  ord_coupon_info oc on cp.id = oc.coupon_id
+    <select id="getCusProductCouponByOrderNumber"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon">
+        SELECT cp.*
+        FROM cus_customer_product_coupon cp
+            LEFT JOIN ord_coupon_info oc ON cp.id = oc.coupon_id
         WHERE oc.ord_no = #{orderNO}
     </select>
 
     <update id="updateOrderGoodsPrice" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
-        UPDATE  ord_goods_info
+        UPDATE ord_goods_info
         <set>
             <if test="settlementPrice != null">
                 settlement_price = #{settlementPrice},
@@ -1541,8 +1558,9 @@
         id = #{id}
     </update>
 
-    <update id="updateOrderGoodsInfPrice" parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf">
-        UPDATE  inter_ate_order_goods_inf
+    <update id="updateOrderGoodsInfPrice"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf">
+        UPDATE inter_ate_order_goods_inf
         <set>
             <if test="settlementPrice != null">
                 settlement_price = #{settlementPrice},
@@ -1562,22 +1580,24 @@
 
     <update id="updateOrdCouponPrice">
         UPDATE ord_coupon_info
-        set purchase_price = #{price}
-        where ord_no = #{ordNo} and sku = #{sku}
+        SET purchase_price = #{price}
+        WHERE ord_no = #{ordNo} AND sku = #{sku}
     </update>
 
-    <update id="updateOrderGoodsShippingQuantityByid" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
+    <update id="updateOrderGoodsShippingQuantityByid"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
         UPDATE ord_goods_info
         SET shipping_qty = #{shippingQuantity}
         WHERE sku = #{sku}
               AND id = #{id}
     </update>
 
-    <update id="updateOrderGoodsReturnableQuantityByid" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
+    <update id="updateOrderGoodsReturnableQuantityByid"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
         UPDATE ord_goods_info
         SET returnable_qty = #{returnableQuantity}
         WHERE sku = #{sku}
-        AND id = #{id}
+              AND id = #{id}
     </update>
 
     <update id="updateOrderBaseInfoStatus" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
@@ -1597,20 +1617,28 @@
     </update>
 
     <select id="getOrderProductCouponPurchasePrice" resultType="java.lang.Double">
-        SELECT SUM(purchase_price) from ord_coupon_info where ord_no = #{ordNo} and sku = #{sku}
+        SELECT SUM(purchase_price)
+        FROM ord_coupon_info
+        WHERE ord_no = #{ordNo} AND sku = #{sku}
     </select>
 
     <select id="getOrderValidCouponQty" resultType="java.lang.Integer">
-        SELECT * from ord_coupon_info oci LEFT JOIN cus_customer_product_coupon ccpc on oci.coupon_id = ccpc.id
+        SELECT *
+        FROM ord_coupon_info oci LEFT JOIN cus_customer_product_coupon ccpc ON oci.coupon_id = ccpc.id
     </select>
 
     <insert id="saveOrderShipping" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderShipping">
         INSERT
-        ord_shipping(oid,ord_no,shipping_no,shipping_time)
+            ord_shipping (oid, ord_no, shipping_no, shipping_time)
         VALUES
-        (#{oid},#{ordNo},#{shippingNo},#{shippingTime})
+            (#{oid}, #{ordNo}, #{shippingNo}, #{shippingTime})
     </insert>
-
+    <select id="existOrder" parameterType="java.lang.String" resultType="java.lang.Boolean">
+        SELECT EXISTS(SELECT 1
+                      FROM ord_base_info
+                      WHERE
+                          ord_no = #{orderNo});
+    </select>
 
 
 </mapper>

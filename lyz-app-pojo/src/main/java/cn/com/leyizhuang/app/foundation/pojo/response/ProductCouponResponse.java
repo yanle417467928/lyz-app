@@ -3,8 +3,11 @@ package cn.com.leyizhuang.app.foundation.pojo.response;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -38,15 +41,25 @@ public class ProductCouponResponse implements Serializable {
     /**
      *  生效开始时间
      */
-    private Date effectiveStartTime;
+    private String effectiveStartTime;
 
     /**
      * 生效结束时间
      */
-    private Date effectiveEndTime;
+    private String effectiveEndTime;
 
     /**
      * 是否为专供
      */
     private Boolean isZG = false;
+
+    public void setEffectiveStartTime(Date dateTime){
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        this.effectiveStartTime = format.format(dateTime);
+    }
+
+    public void setEffectiveEndTime(Date dateTime){
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        this.effectiveEndTime = format.format(dateTime);
+    }
 }

@@ -551,9 +551,9 @@ public class MaReportDownloadRestController extends BaseRestController {
                     map.put("购买时间", "无");
                 }
                 if (null != endTime && !("".equals(endTime))) {
-                    map.put("过期时间", endTime);
+                    map.put("截至时间", endTime);
                 } else {
-                    map.put("过期时间", "无");
+                    map.put("截至时间", "无");
                 }
                 //设置筛选条件
                 ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
@@ -603,6 +603,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Number(16, j + row, notPickGoodsReportDO.getWholesalePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     ws.addCell(new Number(17, j + row, notPickGoodsReportDO.getTotalBuyPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     ws.addCell(new Label(18, j + row, notPickGoodsReportDO.getReferenceNumber(), textFormat));
+
                 }
             }
         } catch (Exception e) {
@@ -686,9 +687,9 @@ public class MaReportDownloadRestController extends BaseRestController {
                 //设置筛选条件
                 ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
                 //列宽
-                int[] columnView = {10, 20, 13, 20, 10, 10, 15, 20, 20};
+                int[] columnView = {10, 20, 13, 20, 10, 10, 15, 20, 20,20};
                 //列标题
-                String[] titles = {"城市", "门店名称", "门店类型", "变动类型", "变动金额", "变更后总金额", "变更时间", "相关单号", "备注"};
+                String[] titles = {"城市", "门店名称", "门店类型", "变动类型", "变动金额", "变更后总金额", "变更时间", "订单号","退单号", "备注"};
                 //计算标题开始行号
                 int row = 1;
                 if (null != map && map.size() > 0) {
@@ -718,7 +719,8 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Number(5, j + row, storePredepositReportDO.getBalance(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     ws.addCell(new Label(6, j + row, storePredepositReportDO.getChangeTime(), textFormat));
                     ws.addCell(new Label(7, j + row, storePredepositReportDO.getReferenceNumber(), textFormat));
-                    ws.addCell(new Label(8, j + row, storePredepositReportDO.getRemarks(), textFormat));
+                    ws.addCell(new Label(8, j + row, storePredepositReportDO.getReturnNo(), textFormat));
+                    ws.addCell(new Label(9, j + row, storePredepositReportDO.getRemarks(), textFormat));
                 }
             }
         } catch (Exception e) {
@@ -864,22 +866,26 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Number(20, j + row, accountGoodsItemsDO.getPromotionSharePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     ws.addCell(new Number(21, j + row, accountGoodsItemsDO.getPromotionShareTotlePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     if (StoreType.JM == accountGoodsItemsDO.getStoreTypes() || StoreType.FX == accountGoodsItemsDO.getStoreTypes()) {
-                        String orderNumber = accountGoodsItemsDO.getOrderNumber();
+                        if (accountGoodsItemsDO.getGoodsLineType().equals("本品")){
+                            String orderNumber = accountGoodsItemsDO.getOrderNumber();
 
-                        if (null != accountGoodsItemsDO.getReturnNumber()) {
-                            orderNumber = accountGoodsItemsDO.getReturnNumber();
+                            if (null != accountGoodsItemsDO.getReturnNumber()) {
+                                orderNumber = accountGoodsItemsDO.getReturnNumber();
+                            }
+                            AccountGoodsItemsDO accountGoods = this.maReportDownloadService.getJxPriceByOrderNoAndSku(orderNumber, accountGoodsItemsDO.getSku());
+                            if (null == accountGoods) {
+                                accountGoods = new AccountGoodsItemsDO();
+                            }
+                            ws.addCell(new Number(22, j + row, null == accountGoods.getWholesalePrice() ? 0D : accountGoods.getWholesalePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                            if (accountGoodsItemsDO.getQuantity() < 0){
+                                ws.addCell(new Number(23, j + row, null == accountGoods.getWholesaleTotlePrice() ? 0D : -accountGoods.getWholesaleTotlePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                            }else {
+                                ws.addCell(new Number(23, j + row, null == accountGoods.getWholesaleTotlePrice() ? 0D : accountGoods.getWholesaleTotlePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                            }
+                        }else{
+                            ws.addCell(new Number(22, j + row, 0D, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                            ws.addCell(new Number(23, j + row, 0D, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                         }
-                        AccountGoodsItemsDO accountGoods = this.maReportDownloadService.getJxPriceByOrderNoAndSku(orderNumber, accountGoodsItemsDO.getSku());
-                        if (null == accountGoods) {
-                            accountGoods = new AccountGoodsItemsDO();
-                        }
-                        ws.addCell(new Number(22, j + row, null == accountGoods.getWholesalePrice() ? 0D : accountGoods.getWholesalePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                        if (accountGoodsItemsDO.getQuantity() < 0){
-                            ws.addCell(new Number(23, j + row, null == accountGoods.getWholesaleTotlePrice() ? 0D : -accountGoods.getWholesaleTotlePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                        }else {
-                            ws.addCell(new Number(23, j + row, null == accountGoods.getWholesaleTotlePrice() ? 0D : accountGoods.getWholesaleTotlePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                        }
-
                     } else {
                         ws.addCell(new Number(22, j + row, 0D, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                         ws.addCell(new Number(23, j + row, 0D, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
