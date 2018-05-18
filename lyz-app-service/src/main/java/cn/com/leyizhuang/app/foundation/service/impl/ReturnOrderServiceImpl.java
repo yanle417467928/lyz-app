@@ -463,7 +463,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             cityInventoryAvailableQtyChangeLog.setChangeQty(orderGoodsInfo.getOrderQuantity());
                             cityInventoryAvailableQtyChangeLog.setAfterChangeQty((cityInventory.getAvailableIty() + orderGoodsInfo.getOrderQuantity()));
                             cityInventoryAvailableQtyChangeLog.setChangeType(CityInventoryAvailableQtyChangeType.HOUSE_DELIVERY_ORDER_CANCEL);
-                            cityInventoryAvailableQtyChangeLog.setChangeTypeDesc("配送单取消");
+                            cityInventoryAvailableQtyChangeLog.setChangeTypeDesc(CityInventoryAvailableQtyChangeType.HOUSE_DELIVERY_ORDER_CANCEL.getDescription());
                             cityInventoryAvailableQtyChangeLog.setReferenceNumber(orderNumber);
                             //保存记录
                             cityService.addCityInventoryAvailableQtyChangeLog(cityInventoryAvailableQtyChangeLog);

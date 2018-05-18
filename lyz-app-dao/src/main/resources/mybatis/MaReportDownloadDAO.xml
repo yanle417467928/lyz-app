@@ -232,7 +232,7 @@
         IFNULL(ogi.wholesale_price,0) wholesalePrice,
         if(ogi.goods_line_type = "PRODUCT_COUPON",oci.purchase_price,ogi.order_qty * ogi.return_price) totalBuyPrice,
         obi.ord_no referenceNumber,
-        CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end isPayUp,
+        CASE obd.is_pay_up WHEN 0 THEN '欠款' WHEN 1 THEN '结清' end isPayUp,
         CASE ogi.goods_line_type WHEN 'PRODUCT_COUPON' THEN '已提产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END  goodsLineType,
         wa.end_dt shippingTime
         FROM ord_billing_details obd
@@ -243,7 +243,7 @@
         LEFT JOIN  inter_wta_order_shipping_header wa on wa.order_no = obi.ord_no
         LEFT JOIN ord_coupon_info oci on obi.oid = oci.oid and ogi.sku = oci.sku and ogi.goods_line_type = 'PRODUCT_COUPON'
         WHERE
-        obi.delivery_type = 'HOUSE_DELIVERY' AND ((obi.status = 'PENDING_SHIPMENT' AND  obi.create_time &lt; #{endTime}) OR (wa.end_dt &gt; #{endTime} AND obi.create_time &lt; #{endTime}))
+        obi.delivery_type = 'HOUSE_DELIVERY' AND  obi.create_time &lt; #{endTime} AND (obi.status = 'PENDING_SHIPMENT' OR wa.end_dt &gt; #{endTime})
         <if test="null != cityId and cityId != -1">
             AND obi.city_id = #{cityId}
         </if>
@@ -294,7 +294,7 @@
         LEFT JOIN  ord_shipping os on os.ord_no = obi.ord_no
         LEFT JOIN ord_coupon_info oci on obi.oid = oci.oid and ogi.sku = oci.sku and ogi.goods_line_type = 'PRODUCT_COUPON'
         WHERE
-        obi.delivery_type = 'SELF_TAKE' AND ((obi.status = 'PENDING_RECEIVE' and obi.create_time &lt; #{endTime}) OR (os.shipping_time &gt; #{endTime}) and obi.create_time &lt; #{endTime})
+        obi.delivery_type = 'SELF_TAKE' and obi.create_time &lt; #{endTime} AND (obi.status = 'PENDING_RECEIVE' OR os.shipping_time &gt; #{endTime})
         <if test="null != cityId and cityId != -1">
             AND obi.city_id = #{cityId}
         </if>
@@ -344,8 +344,8 @@
         INNER JOIN city ON c.city_id = city.city_id
         LEFT JOIN ord_goods_info ogi on ogi.id = ccpc.goods_line_id
         LEFT JOIN gds_goods g on g.gid = ccpc.gid
-        WHERE (ccpc.effective_end_time > now() OR ccpc.effective_end_time IS NULL)
-        and ((ccpc.is_used = 0 and ccpc.get_time &lt; #{endTime}) OR (ccpc.use_time &gt; #{endTime}) and ccpc.get_time &lt; #{endTime})
+        WHERE (ccpc.effective_end_time > now() OR ccpc.effective_end_time IS NULL) and ccpc.get_time &lt; #{endTime}
+        and (ccpc.is_used = 0 OR ccpc.use_time &gt; #{endTime})
         <if test="null != cityId and cityId != -1">
             AND city.city_id = #{cityId}
         </if>
@@ -417,7 +417,8 @@
         ua.change_type as changeType,
         ua.change_money as changeMoney ,
         ua.balance as balance,
-        ua.order_number as referenceNumber,
+        if(orbi.roid is not NULL ,orbi.ord_no,ua.order_number) referenceNumber,
+        if(orbi.roid is not NULL , orbi.return_no,'') as returnNo,
         ua.remarks as remarks
          from
         (
@@ -461,6 +462,7 @@
         ) ua
         LEFT JOIN st_store st on st.store_id = ua.store_id
         LEFT JOIN ord_billing_details obd on obd.ord_no = ua.order_number
+        LEFT JOIN ord_return_base_info orbi ON orbi.return_no = ua.order_number
         INNER JOIN city c ON c.city_id = st.city_id
         WHERE TRUE
         <if test="null != cityId and cityId != -1">
@@ -498,11 +500,15 @@
         END)deliveryStatus,
         oli.shipping_address, og.sku sku, og.sku_name skuName, (CASE WHEN og.company_flag = 'HR' THEN '华润'
         WHEN og.company_flag = 'LYZ' THEN '乐意装' WHEN og.company_flag = 'YR' THEN '莹润' ELSE '其他' END)companyFlag,
-        og.goods_line_type goodsLineType, IFNULL(og.order_qty, 0) quantity, IFNULL(og.settlement_price, 0)
-        settlementPrice,
-        (IFNULL(og.order_qty, 0) * IFNULL(og.settlement_price, 0)) settlementTotlePrice,
-        IFNULL(og.return_price, 0) promotionSharePrice,(IFNULL(og.order_qty, 0) * IFNULL(og.return_price, 0))
-        promotionShareTotlePrice
+        og.goods_line_type goodsLineType, IFNULL(og.order_qty, 0) quantity,
+        if(og.goods_line_type = "PRODUCT_COUPON",(SELECT SUM(purchase_price) from ord_coupon_info where ord_no = ob.ord_no and og.sku = sku)/og.order_qty,
+        IFNULL(og.settlement_price, 0)) settlementPrice,
+        if(og.goods_line_type = "PRODUCT_COUPON",(SELECT SUM(purchase_price) from ord_coupon_info where ord_no = ob.ord_no and og.sku = sku),
+        (IFNULL(og.order_qty, 0) * IFNULL(og.settlement_price, 0))) settlementTotlePrice,
+        if(og.goods_line_type = "PRODUCT_COUPON",(SELECT SUM(purchase_price) from ord_coupon_info where ord_no = ob.ord_no and og.sku = sku)/og.order_qty,
+        IFNULL(og.return_price, 0)) promotionSharePrice,
+        if(og.goods_line_type = "PRODUCT_COUPON",(SELECT SUM(purchase_price) from ord_coupon_info where ord_no = ob.ord_no and og.sku = sku),
+        (IFNULL(og.order_qty, 0) * IFNULL(og.return_price, 0))) promotionShareTotlePrice
         FROM
         ord_base_info obi
         INNER JOIN st_store st ON st.store_id = obi.store_id
@@ -543,11 +549,15 @@
         WHEN orbi.return_type = 'CANCEL_RETURN' THEN '订单取消' ELSE '未知' END) deliveryStatus,
         orli.return_full_address, org.sku sku, org.sku_name skuName, (CASE WHEN org.company_flag = 'HR' THEN '华润'
         WHEN org.company_flag = 'LYZ' THEN '乐意装' WHEN org.company_flag = 'YR' THEN '莹润' ELSE '其他' END) companyFlag,
-        org.goods_line_type goodsLineType, (-1 * IFNULL(org.return_qty,0)) quantity, IFNULL(org.settlement_price, 0)
-        settlementPrice,
-        (-1 * IFNULL(org.return_qty, 0) * IFNULL(org.settlement_price, 0)) settlementTotlePrice,
-        IFNULL(org.return_price, 0) promotionSharePrice, (-1 * IFNULL(org.return_qty, 0) * IFNULL(org.return_price, 0))
-        promotionShareTotlePrice
+        org.goods_line_type goodsLineType, (-1 * IFNULL(org.return_qty,0)) quantity,
+        if(org.goods_line_type = "PRODUCT_COUPON",(SELECT SUM(purchase_price) from ord_coupon_info where ord_no = orbi.ord_no and org.sku = sku)/org.return_qty,
+        IFNULL(org.settlement_price, 0)) settlementPrice,
+        if(org.goods_line_type = "PRODUCT_COUPON",(SELECT SUM(purchase_price) from ord_coupon_info where ord_no = orbi.ord_no and org.sku = sku),
+        (-1 * IFNULL(org.return_qty, 0) * IFNULL(org.settlement_price, 0))) settlementTotlePrice,
+        if(org.goods_line_type = "PRODUCT_COUPON",(SELECT SUM(purchase_price) from ord_coupon_info where ord_no = orbi.ord_no and org.sku = sku)/org.return_qty,
+        IFNULL(org.return_price, 0)) promotionSharePrice,
+        if(org.goods_line_type = "PRODUCT_COUPON",(SELECT SUM(purchase_price) from ord_coupon_info where ord_no = orbi.ord_no and org.sku = sku),
+        (-1 * IFNULL(org.return_qty, 0) * IFNULL(org.return_price, 0))) promotionShareTotlePrice
         FROM ord_return_base_info orbi
         LEFT JOIN ord_return_lifecycle rl ON orbi.return_no = rl.return_no
         LEFT JOIN st_store st ON st.store_id = orbi.store_id
@@ -1335,7 +1345,7 @@
         e.`name` as 'name',
         ob.customer_name as 'customerName',
         ob.ord_no as 'ordNo',
-        '' as 'orderType',
+        CASE ob.delivery_type when 'HOUSE_DELIVERY' then '配送' WHEN 'SELF_TAKE' THEN '自提' end as 'orderType',
         CASE ob.`status` WHEN 'PENDING_RECEIVE' THEN '待收货' WHEN 'FINISHED' THEN '已完成' end as 'orderStatus',
         '' as 'selfTakeOrderTime',
         ob.create_time as 'createTime',
@@ -1400,7 +1410,7 @@
         e.`name` as 'name',
         ob.customer_name as 'customerName',
         ob.ord_no as 'ordNo',
-        '' as 'orderType',
+        CASE ob.delivery_type when 'HOUSE_DELIVERY' then '配送' WHEN 'SELF_TAKE' THEN '自提' end as 'orderType',
         CASE ob.`status` WHEN 'PENDING_RECEIVE' THEN '待收货' WHEN 'FINISHED' THEN '已完成' end as 'orderStatus',
         '' as 'selfTakeOrderTime',
         ob.create_time as 'createTime',
@@ -1809,7 +1819,7 @@
         e.`name` as 'name',
         ob.customer_name as 'customerName',
         ob.ord_no as 'ordNo',
-        '' as 'orderType',
+        CASE ob.delivery_type when 'HOUSE_DELIVERY' then '配送' WHEN 'SELF_TAKE' THEN '自提' end as 'orderType',
         CASE ob.`status` WHEN 'PENDING_RECEIVE' THEN '待收货' WHEN 'FINISHED' THEN '已完成' end as 'orderStatus',
         '' as 'selfTakeOrderTime',
         ob.create_time as 'createTime',
@@ -1884,7 +1894,7 @@
         e.`name` as 'name',
         ob.customer_name as 'customerName',
         ob.ord_no as 'ordNo',
-        '' as 'orderType',
+        CASE ob.delivery_type when 'HOUSE_DELIVERY' then '配送' WHEN 'SELF_TAKE' THEN '自提' end as 'orderType',
         CASE ob.`status` WHEN 'PENDING_RECEIVE' THEN '待收货' WHEN 'FINISHED' THEN '已完成' end as 'orderStatus',
         '' as 'selfTakeOrderTime',
         ob.create_time as 'createTime',
