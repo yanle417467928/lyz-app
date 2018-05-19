@@ -701,7 +701,7 @@
                                         detailed_address)
         VALUES (#{oid}, #{ordNo}, #{deliveryType}, #{bookingStoreCode}, #{bookingStoreName},
                         #{bookingStoreAddress}, #{deliveryTime}, #{deliveryClerkNo}, #{deliveryClerkId},
-                        #{deliveryClerkName}, #{warehouse}, #{isOwnerReceiving}, #{estateInfo}
+                        #{deliveryClerkName}, #{warehouse}, #{isOwnerReceiving}, #{estateInfo},
                                                             #{receiver}, #{receiverPhone}, #{shippingAddress},
                                                             #{residenceName}, #{deliveryProvince}, #{deliveryCity},
                                                             #{deliveryCounty},
