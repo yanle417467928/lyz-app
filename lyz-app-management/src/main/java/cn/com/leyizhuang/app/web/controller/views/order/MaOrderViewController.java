@@ -5,11 +5,9 @@ import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderArrearsAudi
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.foundation.vo.DetailFitOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.management.goodscategory.MaOrderGoodsDetailResponse;
-import cn.com.leyizhuang.app.foundation.vo.management.order.MaCompanyOrderDetailResponse;
-import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingDetailResponse;
-import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingPaymentDetailResponse;
-import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderDetailResponse;
+import cn.com.leyizhuang.app.foundation.vo.management.order.*;
 import cn.com.leyizhuang.common.util.CountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -377,6 +375,56 @@ public class MaOrderViewController {
             return "/views/order/arrearsAndRepaymentsOrder_detail";
         }
         logger.warn("orderNumber为空");
+        return "/error/500";
+    }
+
+
+
+    /**
+     * 装饰公司订单详情
+     *
+     * @return 自提单订单详情页面
+     */
+    @RequestMapping(value = "/fitOrderDetail/{orderNumber}")
+    public String fitOrderDetail(ModelMap map, @PathVariable(value = "orderNumber") String orderNumber) {
+        logger.info("selfTakeOrderDetail CALLED,门店订单详情，入参 orderNumber:{}", orderNumber);
+        if (!StringUtils.isBlank(orderNumber)) {
+            //获取订单基本信息
+            OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
+            //装饰公司订单代付信息
+            DetailFitOrderVO detailFitOrderVO = maOrderService.findFitOrderByOrderNumber(orderNumber);
+            map.addAttribute("detailFitOrderVO", detailFitOrderVO);
+           //物流信息
+            MaOrderDeliveryInfoResponse maOrderDeliveryInfoResponse = maOrderService.getDeliveryInfoByOrderNumber(orderNumber);
+            map.addAttribute("delivertInfo", maOrderDeliveryInfoResponse);
+            //查询出货时间
+            String time = maOrderService.getShippingTime(orderNumber);
+            map.addAttribute("shippingTime", time);
+                //查询订单详细信息
+                MaOrderDetailResponse maOrderDetailResponse = maOrderService.findMaOrderDetailByOrderNumber(orderNumber);
+                maOrderDetailResponse.setCreatorIdentityType(orderBaseInfo.getCreatorIdentityType());
+                //查询订单商品信息
+                List<MaOrderGoodsDetailResponse> maOrderGoodsDetailResponseList = maOrderService.getOrderGoodsDetailResponseList(orderNumber);
+                //创建商品返回list
+                maOrderDetailResponse.setMaOrderGoodsDetailResponseList(maOrderGoodsDetailResponseList);
+                //获取订单账目明细
+                MaOrderBillingDetailResponse maOrderBillingDetailResponse = maOrderService.getMaOrderBillingDetailByOrderNumber(orderNumber);
+                //获取订单支付明细列表
+                List<MaOrderBillingPaymentDetailResponse> maOrderBillingPaymentDetailResponseList = maOrderService.getMaOrderBillingPaymentDetailByOrderNumber(orderNumber);
+                if (null != maOrderBillingDetailResponse) {
+                    map.addAttribute("orderBillingDetail", maOrderBillingDetailResponse);
+                }
+                if (null != maOrderBillingPaymentDetailResponseList) {
+                    map.addAttribute("paymentDetailList", maOrderBillingPaymentDetailResponseList);
+                }
+                map.addAttribute("maOrderDetail", maOrderDetailResponse);
+                Boolean isPayUp = maOrderService.isPayUp(orderNumber);
+                map.addAttribute("isPayUp", isPayUp);
+                logger.info("selfTakeOrderDetail CALLED,门店订单详情成功");
+                return "/views/decorativeCompany/fitOrder_detail";
+        } else {
+            logger.warn("orderNumber为空");
+        }
         return "/error/500";
     }
 
