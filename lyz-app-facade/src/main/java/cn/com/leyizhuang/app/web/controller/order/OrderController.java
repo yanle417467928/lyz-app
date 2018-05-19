@@ -1282,27 +1282,27 @@ public class OrderController {
     @PostMapping(value = "/list/sellerManager/payFor", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> getPayForOrderList(Long userId, Integer identityType, Integer page, Integer size) {
         ResultDTO<Object> resultDTO;
-        logger.info("getOrderList CALLED,客户经理查看自己支付的订单，入参 userID:{}, identityType:{}", userId, identityType);
+        logger.info("getPayForOrderList CALLED,客户经理查看自己支付的订单，入参 userID:{}, identityType:{}", userId, identityType);
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
-            logger.info("getOrderList OUT,客户经理查看自己支付的订单失败，出参 resultDTO:{}", resultDTO);
+            logger.info("getPayForOrderList OUT,客户经理查看自己支付的订单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == identityType || identityType != 0) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不正确！", null);
-            logger.info("getOrderList OUT,客户经理查看自己支付的订单失败，出参 resultDTO:{}", resultDTO);
+            logger.info("getPayForOrderList OUT,客户经理查看自己支付的订单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == page) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
                     null);
-            logger.info("getOrderList OUT,客户经理查看自己支付的订单失败，出参 resultDTO:{}", resultDTO);
+            logger.info("getPayForOrderList OUT,客户经理查看自己支付的订单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == size) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
                     null);
-            logger.info("getOrderList OUT,客户经理查看自己支付的订单失败，出参 resultDTO:{}", resultDTO);
+            logger.info("getPayForOrderList OUT,客户经理查看自己支付的订单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         try {
@@ -1312,12 +1312,12 @@ public class OrderController {
             //创建一个返回对象list
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     new GridDataVO<OrderPageInfoVO>().transform(orderListResponsePageInfo));
-            logger.info("getOrderList OUT,客户经理查看自己支付的订单成功，出参 resultDTO:{}", orderListResponsePageInfo);
+            logger.info("getPayForOrderList OUT,客户经理查看自己支付的订单成功，出参 resultDTO:{}", orderListResponsePageInfo);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，客户经理查看自己支付的订单失败", null);
-            logger.warn("getOrderList EXCEPTION,客户经理查看自己支付的订单失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("getPayForOrderList EXCEPTION,客户经理查看自己支付的订单失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

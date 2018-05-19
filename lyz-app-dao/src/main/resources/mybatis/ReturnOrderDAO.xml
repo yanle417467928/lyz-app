@@ -141,7 +141,7 @@
         VALUES
             (#{roid}, #{returnNo}, #{preDeposit}, #{creditMoney}, #{stPreDeposit}, #{stCreditMoney}, #{stSubvention},
         #{onlinePay}, #{onlinePayType},
-        #{cash}, #{LeBiQuantity} ,#{sellerStoreDeposit})
+        #{cash}, #{leBiQuantity} ,#{sellerStoreDeposit})
     </insert>
 
     <insert id="saveReturnOrderBillingDetail"
