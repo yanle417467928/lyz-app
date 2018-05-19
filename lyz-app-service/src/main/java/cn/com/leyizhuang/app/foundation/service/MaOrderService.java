@@ -13,6 +13,8 @@ import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVO
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.vo.DetailFitOrderVO;
+import cn.com.leyizhuang.app.foundation.vo.FitOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.management.goodscategory.MaOrderGoodsDetailResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.*;
@@ -402,4 +404,33 @@ public interface MaOrderService {
     List<OrderBaseInfo> scanningUnpaidOrder(String findDate);
 
     PageInfo<MaOrderVO> findMaOrderVOPageInfo(Integer page, Integer size, List<Long> storeIds);
+
+    /**
+     * 查询装饰公司订单`
+     * @return
+     */
+    PageInfo<FitOrderVO> findFitOrderVOPageInfo(Integer page, Integer size, List<Long> storeIds);
+
+    /**
+     * 筛选装饰公司订单`
+     * @return
+     */
+    PageInfo<FitOrderVO> findFitOrderListByScreen(Integer page, Integer size,Long cityId,Long storeId, List<Long> storeIds);
+    /**
+     * 筛选装饰公司订单`
+     * @return
+     */
+    PageInfo<FitOrderVO> findFitOrderListByInfo(Integer page, Integer size, String info, List<Long> storeIds);
+
+    /**
+     * 据条件信息筛选装饰公司订单`
+     * @return
+     */
+    List<FitOrderVO> findFitOrderByCondition(MaCompanyOrderVORequest maCompanyOrderVORequest);
+    /**
+     * 查询装饰公司订单详情
+     * @return
+     */
+    DetailFitOrderVO findFitOrderByOrderNumber(String ordNumber);
+
 }

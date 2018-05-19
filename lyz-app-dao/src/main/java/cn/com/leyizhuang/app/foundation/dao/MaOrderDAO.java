@@ -6,6 +6,8 @@ import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderShipping;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
+import cn.com.leyizhuang.app.foundation.vo.DetailFitOrderVO;
+import cn.com.leyizhuang.app.foundation.vo.FitOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.management.order.*;
 import org.apache.ibatis.annotations.Param;
@@ -215,4 +217,42 @@ public interface MaOrderDAO {
     MaOrderArrearsAudit getArrearsAuditInfoById(Long id);
 
     void  updateOrderArrearsAudit(@Param(value = "orderNumber") String orderNumber,@Param(value = "repaymentTime") Date repaymentTime);
+
+
+    /**
+     * 后台装饰公司订单
+     *
+     * @return 订单列表
+     */
+    List<FitOrderVO> findFitOrderVOPageInfo(@Param("list") List<Long> storeIds);
+
+    /**
+     * 后台筛选装饰公司订单
+     *
+     * @return 订单列表
+     */
+    List<FitOrderVO> findFitOrderListByScreen(@Param("cityId")Long cityId,@Param("storeId")Long storeId,@Param("list") List<Long> storeIds);
+
+
+    /**
+     * 后台筛选装饰公司订单
+     *
+     * @return 订单列表
+     */
+    List<FitOrderVO> findFitOrderListByInfo(@Param("info")String info,@Param("list") List<Long> storeIds);
+
+    /**
+     * 据条件信息筛选装饰公司订单
+     *
+     * @return 订单列表
+     */
+    List<FitOrderVO> findFitOrderByCondition(MaCompanyOrderVORequest maCompanyOrderVORequest);
+
+
+    /**
+     * 通过订单号查询装饰公司订单
+     *
+     * @return 订单列表
+     */
+    DetailFitOrderVO findFitOrderByOrderNumber(@Param("ordNumber")String ordNumber);
 }

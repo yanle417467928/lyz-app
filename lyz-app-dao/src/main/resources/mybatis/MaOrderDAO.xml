@@ -1130,4 +1130,172 @@
         AND `status` = 'AUDIT_PASSED'
     </update>
 
+
+
+
+    <select id="findFitOrderVOPageInfo" resultType="cn.com.leyizhuang.app.foundation.vo.FitOrderVO">
+        SELECT
+        por.ord_no orderNumber,
+        por.create_time createTime,
+        obi.`status` 'status',
+        obi.delivery_type deliveryType,
+        por.payhelper_amount payhelperAmount,
+        por.is_pay_over isPayOver,
+        ss.store_name storeName
+        FROM
+        payhelper_ord_relation por
+        LEFT JOIN  ord_base_info obi ON por.ord_no = obi.ord_no
+        LEFT  JOIN  st_store ss on obi.store_id = ss.store_id
+        WHERE
+         obi.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        ORDER BY
+        obi.create_time DESC
+    </select>
+
+
+    <select id="findFitOrderListByScreen" resultType="cn.com.leyizhuang.app.foundation.vo.FitOrderVO">
+        SELECT
+        por.ord_no orderNumber,
+        por.create_time createTime,
+        obi.`status` 'status',
+        obi.delivery_type deliveryType,
+        por.payhelper_amount payhelperAmount,
+        por.is_pay_over isPayOver,
+        ss.store_name storeName
+        FROM
+        payhelper_ord_relation por
+        LEFT JOIN  ord_base_info obi ON por.ord_no = obi.ord_no
+        LEFT  JOIN  st_store ss on obi.store_id = ss.store_id
+        WHERE
+        1=1
+        <if test=" null!= storeId and -1!=storeId ">
+            AND
+            ss.store_id =#{storeId}
+        </if>
+        <if test=" null!= cityId and -1!=cityId ">
+            AND
+            obi.city_id =#{cityId}
+        </if>
+        AND
+        obi.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        ORDER BY
+        obi.create_time DESC
+    </select>
+
+
+    <select id="findFitOrderListByInfo" resultType="cn.com.leyizhuang.app.foundation.vo.FitOrderVO">
+        SELECT
+        por.ord_no orderNumber,
+        por.create_time createTime,
+        obi.`status` 'status',
+        obi.delivery_type deliveryType,
+        por.payhelper_amount payhelperAmount,
+        por.is_pay_over isPayOver,
+        ss.store_name storeName
+        FROM
+        payhelper_ord_relation por
+        LEFT JOIN  ord_base_info obi ON por.ord_no = obi.ord_no
+        LEFT  JOIN  st_store ss on obi.store_id = ss.store_id
+        WHERE
+        1=1
+        <if test=" null!= info and ''!=info ">
+            AND
+            por.ord_no LIKE concat(concat('%',#{info}),'%')
+        </if>
+        AND
+        obi.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        ORDER BY
+        obi.create_time DESC
+    </select>
+
+
+    <select id="findFitOrderByCondition"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest"
+            resultType="cn.com.leyizhuang.app.foundation.vo.FitOrderVO">
+        SELECT
+        por.ord_no orderNumber,
+        por.create_time createTime,
+        obi.`status` 'status',
+        obi.delivery_type deliveryType,
+        por.payhelper_amount payhelperAmount,
+        por.is_pay_over isPayOver,
+        ss.store_name storeName
+        FROM
+        payhelper_ord_relation por
+        LEFT JOIN  ord_base_info obi ON por.ord_no = obi.ord_no
+        LEFT JOIN   ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
+        LEFT JOIN  st_store ss on obi.store_id = ss.store_id
+        WHERE
+        obi.order_subject_type = 'FIT'
+        <if test="cityId != null and cityId != -1">
+            AND obi.city_id = #{cityId}
+        </if>
+        <if test="storeId != null and storeId != -1">
+            AND obi.store_id = #{storeId}
+        </if>
+        <if test="beginTime != null and beginTime != ''">
+            AND obi.create_time &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND obi.create_time &lt;= #{endTime}
+        </if>
+        <if test="creatorName != null and creatorName != ''">
+            AND obi.creator_name LIKE concat(concat('%',#{creatorName}),'%')
+        </if>
+        <if test="shippingAddress != null and shippingAddress != ''">
+            AND oli.shipping_address LIKE concat(concat('%',#{shippingAddress}),'%')
+        </if>
+        <if test="creatorPhone != null and creatorPhone != ''">
+            AND obi.creator_phone LIKE concat(concat('%',#{creatorPhone}),'%')
+        </if>
+        <if test="receiverName != null and receiverName != ''">
+            AND oli.receiver LIKE concat(concat('%',#{receiverName}),'%')
+        </if>
+        <if test="receiverPhone != null and receiverPhone != ''">
+            AND oli.receiver_phone LIKE concat(concat('%',#{receiverPhone}),'%')
+        </if>
+        <if test="list != null">
+            AND ss.store_id IN
+            <foreach collection="list" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        ORDER BY
+        obi.create_time DESC
+    </select>
+
+
+
+    <select id="findFitOrderByOrderNumber" resultType="cn.com.leyizhuang.app.foundation.vo.DetailFitOrderVO">
+        SELECT
+        por.ord_no orderNumber,
+        por.create_time createTime,
+        obi.`status` 'status',
+        obi.delivery_type deliveryType,
+        por.payhelper_amount payhelperAmount,
+        por.is_pay_over isPayOver,
+        ss.store_name storeName,
+        ee.name payhelper
+        FROM
+        payhelper_ord_relation por
+        LEFT JOIN  ord_base_info obi ON por.ord_no = obi.ord_no
+        LEFT  JOIN  st_store ss on obi.store_id = ss.store_id
+        LEFT  JOIN  emp_employee ee on ee.emp_id=por.payhelper_id
+        WHERE
+        1=1
+        <if test=" null!= ordNumber and ''!=ordNumber ">
+            AND
+            por.ord_no =#{ordNumber}
+        </if>
+    </select>
+
 </mapper>

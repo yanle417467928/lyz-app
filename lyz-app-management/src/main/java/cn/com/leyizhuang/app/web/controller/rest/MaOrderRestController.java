@@ -29,6 +29,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.foundation.vo.FitOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaAgencyAndArrearsOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.management.order.MaOrderBillingDetailResponse;
@@ -1106,6 +1107,122 @@ public class MaOrderRestController extends BaseRestController {
             logger.warn("saveMaProductCoupon EXCEPTION,买券订单创建失败,出参 resultDTO:{}", "发生未知异常,下单失败!");
             logger.warn("{}", e);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常,下单失败!", null);
+        }
+    }
+
+
+    /**
+     * 后台装饰公司订单(导购支付)
+     *
+     * @param offset   当前页
+     * @param size     每页条数
+     * @param keywords 不知
+     * @return 订单列表
+     */
+    @GetMapping(value = "/fitOrder/page/grid")
+    public GridDataVO<FitOrderVO> restFitOrderPageGird(Integer offset, Integer size, String keywords) {
+        logger.warn("restOrderPageGird 后台装饰公司订单列表 ,入参offsetL:{}, size:{}, kewords:{}", offset, size, keywords);
+        try {
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageInfo<FitOrderVO> maOrderVOPageInfo = maOrderService.findFitOrderVOPageInfo(page, size, storeIds);
+            logger.warn("restOrderPageGird ,后台装饰公司订单列表成功", maOrderVOPageInfo.getList().size());
+            return new GridDataVO<FitOrderVO>().transform(maOrderVOPageInfo.getList(), maOrderVOPageInfo.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("restOrderPageGird EXCEPTION,发生未知错误，后台装饰公司订单列表失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
+
+    /**
+     * 后台根据筛选条件分页查询装饰公司订单
+     *
+     * @param offset   当前页
+     * @param size     每页条数
+     * @param keywords
+     * @return 订单列表
+     */
+    @GetMapping(value = "/fitOrder/page/screenGrid")
+    public GridDataVO<FitOrderVO> restFitOrderPageGirdByScreen(Integer offset, Integer size, String keywords, @RequestParam(value = "cityId") Long cityId, @RequestParam(value = "storeId") Long storeId) {
+        logger.info("restFitOrderPageGirdByScreen 后台根据筛选条件分页查询装饰公司订单 ,入参offset:{}, size:{}, kewords:{},cityId:{},storeId:{},status:{},isPayUp:{}", offset, size, keywords, cityId, storeId);
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<FitOrderVO> maFitOrderVOPageInfo = this.maOrderService.findFitOrderListByScreen(page, size, cityId, storeId, storeIds);
+            List<FitOrderVO> maFitOrderVOList = maFitOrderVOPageInfo.getList();
+            logger.info("restFitOrderPageGirdByScreen ,后台根据筛选条件分页查询装饰公司订单列表成功", (maFitOrderVOList == null) ? 0 : maFitOrderVOList.size());
+            return new GridDataVO<FitOrderVO>().transform(maFitOrderVOList, maFitOrderVOPageInfo.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("restSelfTakeOrderPageGirdByCityId EXCEPTION,发生未知错误，后台根据筛选条件分页查询所有自提订单列表失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
+
+    /**
+     * 后台根据条件信息分页查询装饰公司订单
+     *
+     * @param offset   当前页
+     * @param size     每页条数
+     * @param keywords
+     * @return 订单列表
+     */
+    @GetMapping(value = "/fitOrder/page/infoGrid")
+    public GridDataVO<FitOrderVO> restFitOrderPageGirdByInfo(Integer offset, Integer size, String keywords, @RequestParam(value = "info") String info) {
+        logger.info("restFitOrderPageGirdByInfo 后台根据条件信息分页查询装饰公司订单 ,入参offsetL:{}, size:{}, kewords:{},info:{}", offset, size, keywords, info);
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<FitOrderVO> maFitOrderVOPageInfo = this.maOrderService.findFitOrderListByInfo(page, size, info, storeIds);
+            List<FitOrderVO> maFitVOList = maFitOrderVOPageInfo.getList();
+            logger.info("restFitOrderPageGirdByInfo ,后台根据条件信息分页查询自提装饰公司表成功", (maFitVOList == null) ? 0 : maFitVOList.size());
+            return new GridDataVO<FitOrderVO>().transform(maFitVOList, maFitOrderVOPageInfo.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("restFitOrderPageGirdByInfo EXCEPTION,发生未知错误，后台根据条件信息分页查询装饰公司订单列表失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
+    /**
+     * 多条件分页查询装饰公司订单列表
+     *
+     * @param offset       当前页
+     * @param size         每页条数
+     * @param keywords     不知
+     * @param maCompanyOrderVORequest  多条件查询请求参数类
+     * @return 订单列表
+     */
+    @GetMapping(value = "/fitOrder/page/conditionGrid")
+    public GridDataVO<FitOrderVO> findOrderByCondition(Integer offset, Integer size, String keywords, MaCompanyOrderVORequest maCompanyOrderVORequest) {
+        logger.info("findOrderByCondition 多条件分页查询装饰公司订单列表 ,入参 offsetL:{}, size:{}, kewords:{}, maOrderVORequest:{}",offset, size, keywords, maCompanyOrderVORequest);
+        try {
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageHelper.startPage(page, size);
+            maCompanyOrderVORequest.setList(storeIds);
+            List<FitOrderVO> maOrderVOList = this.maOrderService.findFitOrderByCondition(maCompanyOrderVORequest);
+            PageInfo<FitOrderVO> maOrderVOPageInfo = new PageInfo<>(maOrderVOList);
+            List<FitOrderVO> orderVOList = maOrderVOPageInfo.getList();
+            logger.info("getOrderByStoreIdAndCityIdAndDeliveryType ,多条件分页查询装饰公司订单列表成功", orderVOList.size());
+            return new GridDataVO<FitOrderVO>().transform(orderVOList, maOrderVOPageInfo.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("getOrderByStoreIdAndCityIdAndDeliveryType EXCEPTION,发生未知错误，多条件分页查询装饰公司订单列表失败");
+            logger.warn("{}", e);
+            return null;
         }
     }
 }

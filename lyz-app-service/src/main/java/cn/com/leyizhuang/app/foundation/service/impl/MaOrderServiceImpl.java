@@ -37,6 +37,8 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.foundation.vo.DetailFitOrderVO;
+import cn.com.leyizhuang.app.foundation.vo.FitOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.management.goodscategory.MaOrderGoodsDetailResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.*;
@@ -1877,5 +1879,50 @@ public class MaOrderServiceImpl implements MaOrderService {
         rechargeOrder.setPaymentSubjectTypeDesc(PaymentSubjectType.STORE.getDescription());
         rechargeOrder.setPayUpTime(date);
         return rechargeOrder;
+    }
+
+
+    @Override
+    public PageInfo<FitOrderVO> findFitOrderVOPageInfo(Integer page, Integer size, List<Long> storeIds) {
+        if (null != page && null != size && AssertUtil.isNotEmpty(storeIds)) {
+            PageHelper.startPage(page, size);
+            List<FitOrderVO> maOrderVOList = maOrderDAO.findFitOrderVOPageInfo(storeIds);
+            return new PageInfo<>(maOrderVOList);
+        }
+        return null;
+    }
+
+
+    @Override
+    public PageInfo<FitOrderVO> findFitOrderListByScreen(Integer page, Integer size,Long cityId,Long storeId,List<Long> storeIds) {
+        if (null != page && null != size && AssertUtil.isNotEmpty(storeIds)) {
+            PageHelper.startPage(page, size);
+            List<FitOrderVO> maOrderVOList = maOrderDAO.findFitOrderListByScreen(cityId,storeId,storeIds);
+            return new PageInfo<>(maOrderVOList);
+        }
+        return null;
+    }
+
+    @Override
+    public PageInfo<FitOrderVO> findFitOrderListByInfo(Integer page, Integer size,String info,List<Long> storeIds) {
+        if (null != page && null != size && AssertUtil.isNotEmpty(storeIds)) {
+            PageHelper.startPage(page, size);
+            List<FitOrderVO> maOrderVOList = maOrderDAO.findFitOrderListByInfo(info,storeIds);
+            return new PageInfo<>(maOrderVOList);
+        }
+        return null;
+    }
+
+    @Override
+    public List<FitOrderVO> findFitOrderByCondition(MaCompanyOrderVORequest maCompanyOrderVORequest) {
+        List<FitOrderVO> maOrderVOList = maOrderDAO.findFitOrderByCondition(maCompanyOrderVORequest);
+        return maOrderVOList;
+    }
+
+
+    @Override
+    public DetailFitOrderVO findFitOrderByOrderNumber(String ordNumber) {
+        DetailFitOrderVO detailFitOrderVO = maOrderDAO.findFitOrderByOrderNumber(ordNumber);
+        return detailFitOrderVO;
     }
 }
