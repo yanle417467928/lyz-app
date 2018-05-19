@@ -88,6 +88,13 @@ logging:
     org:
       springframework:
         web: info
+    # mybatis: debug
+    cn:
+      com:
+        leyizhuang:
+          app:
+            foundation:
+              dao: debug
 
 ---
 ############################################ 开发环境配置 ########################################################
