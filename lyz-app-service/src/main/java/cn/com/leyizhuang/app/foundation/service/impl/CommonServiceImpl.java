@@ -1276,7 +1276,8 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public List<OrderJxPriceDifferenceReturnDetails> createOrderJxPriceDifferenceReturnDetails(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList) {
+    public List<OrderJxPriceDifferenceReturnDetails> createOrderJxPriceDifferenceReturnDetails(OrderBaseInfo orderBaseInfo,
+                                                                                               List<OrderGoodsInfo> orderGoodsInfoList) {
         AppStore store = storeService.findById(orderBaseInfo.getStoreId());
         if (null != store && null != store.getStoreType()) {
             if (store.getStoreType() == StoreType.FX || store.getStoreType() == StoreType.JM) {

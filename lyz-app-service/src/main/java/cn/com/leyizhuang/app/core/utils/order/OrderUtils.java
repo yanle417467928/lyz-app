@@ -107,11 +107,11 @@ public class OrderUtils {
                 String receiptNumber = city.getBriefSpell() + "_RC";
                 Calendar calendar = Calendar.getInstance();
                 Date date = calendar.getTime();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
                 String timeStamp = sdf.format(date);
                 receiptNumber += timeStamp;
                 Random random = new Random();
-                String randomNumber = random.nextInt(900) + 100 + "";
+                String randomNumber = random.nextInt(900000) + 100000 + "";
                 receiptNumber += randomNumber;
                 System.out.println(receiptNumber);
                 return receiptNumber;

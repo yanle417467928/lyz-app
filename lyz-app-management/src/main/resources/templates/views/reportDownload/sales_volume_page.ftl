@@ -105,10 +105,10 @@
                                            checked>
                                     是&nbsp;&nbsp;&nbsp;
                                 </label>
-                                <label class="control-label margin-6" style="margin-left: 5%">
-                                    <input type="radio" name="product" value="0" class="iradio_square-blue ">
-                                    否
-                                </label>
+                                <#--<label class="control-label margin-6" style="margin-left: 5%">-->
+                                    <#--<input type="radio" name="product" value="0" class="iradio_square-blue ">-->
+                                    <#--否-->
+                                <#--</label>-->
                             </div>
                         </div>
                     </div>
