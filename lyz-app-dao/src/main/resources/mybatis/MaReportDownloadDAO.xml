@@ -1379,11 +1379,11 @@
         and ob.`status` IN ('FINISHED')
         <if test="null !=startTime and ''!=startTime">
             AND
-            wro.create_time >= #{startTime}
+            wro.c_end_dt >= #{startTime}
         </if>
         <if test="null!=endTime and ''!=endTime">
             and
-            <![CDATA[ wro.create_time <= #{endTime} ]]>
+            <![CDATA[ wro.c_end_dt <= #{endTime} ]]>
         </if>
         <!--   <if test="null!=companyCode and ''!=companyCode">
                and s.store_structure_code like concat('%',#{companyCode},'%')
@@ -1861,11 +1861,11 @@
         and ob.`status` IN ('FINISHED')
         <if test="null!=startTime and ''!=startTime">
             AND
-            wro.create_time > #{startTime}
+            wro.c_end_dt > #{startTime}
         </if>
         <if test="null!=endTime and ''!=endTime">
             and
-            <![CDATA[ wro.create_time <= #{endTime} ]]>
+            <![CDATA[ wro.c_end_dt <= #{endTime} ]]>
         </if>
         <!--   <if test="null!=companyCode and ''!=companyCode">
                and s.store_structure_code like concat('%',#{companyCode},'%')
