@@ -877,11 +877,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                                 accountGoods = new AccountGoodsItemsDO();
                             }
                             ws.addCell(new Number(22, j + row, null == accountGoods.getWholesalePrice() ? 0D : accountGoods.getWholesalePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                            if (accountGoodsItemsDO.getQuantity() < 0){
-                                ws.addCell(new Number(23, j + row, null == accountGoods.getWholesaleTotlePrice() ? 0D : -accountGoods.getWholesaleTotlePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                            }else {
-                                ws.addCell(new Number(23, j + row, null == accountGoods.getWholesaleTotlePrice() ? 0D : accountGoods.getWholesaleTotlePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                            }
+                            ws.addCell(new Number(23, j + row, null == accountGoods.getWholesalePrice() ? 0D : accountGoods.getWholesalePrice() * accountGoodsItemsDO.getQuantity(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                         }else{
                             ws.addCell(new Number(22, j + row, 0D, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                             ws.addCell(new Number(23, j + row, 0D, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
