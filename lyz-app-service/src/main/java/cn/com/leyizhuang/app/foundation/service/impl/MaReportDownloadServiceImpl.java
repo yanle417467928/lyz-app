@@ -87,6 +87,12 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
 
     @Override
     public List<StorePredepositReportDO> storePredepositDownload(Long cityId, Long storeId, String storeType, String startTime, String endTime, List<Long> storeIds) {
+        if (StringUtils.isNotBlank(startTime)) {
+            startTime += " 00:00:00";
+        }
+        if (StringUtils.isNotBlank(endTime)) {
+            endTime += " 23:59:59";
+        }
         return maReportDownloadDAO.findStorePredepositReportDOAllNEW(cityId, storeId, storeType, startTime, endTime, storeIds);
     }
 

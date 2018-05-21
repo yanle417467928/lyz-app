@@ -475,10 +475,10 @@
             AND st.store_type = #{storeType}
         </if>
         <if test="null != startTime and startTime != ''">
-            AND ua.create_time &gt; #{startTime}
+            AND ua.create_time &gt;= #{startTime}
         </if>
         <if test="null != endTime and endTime != ''">
-            AND ua.create_time &lt; #{endTime}
+            AND ua.create_time &lt;= #{endTime}
         </if>
         AND ua.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
@@ -512,12 +512,13 @@
         FROM
         ord_base_info obi
         INNER JOIN st_store st ON st.store_id = obi.store_id
-        LEFT JOIN ord_lifecycle ol ON obi.ord_no = ol.ord_no
+        LEFT JOIN (SELECT DISTINCT ord_no,post_status,operation_time from ord_lifecycle) ol ON obi.ord_no = ol.ord_no
         LEFT JOIN ord_logistics_info oli ON oli.ord_no = obi.ord_no
         LEFT JOIN ord_goods_info og ON og.ord_no = oli.ord_no
         WHERE obi.`status` != 'UNPAID' AND  obi.`status` != 'CANCELED'
         AND (ol.post_status = 'PENDING_SHIPMENT' OR (ol.post_status = 'PENDING_RECEIVE' AND obi.delivery_type =
         'SELF_TAKE'))
+        AND (obi.delivery_type = 'HOUSE_DELIVERY' OR (obi.delivery_type = 'SELF_TAKE' AND st.store_type != 'JM'))
         <if test="null != cityId and cityId != -1">
             AND obi.city_id = #{cityId}
         </if>
@@ -559,12 +560,13 @@
         if(org.goods_line_type = "PRODUCT_COUPON",IFNULL((SELECT SUM(purchase_price) from ord_coupon_info where ord_no = orbi.ord_no and org.sku = sku),0),
         (-1 * IFNULL(org.return_qty, 0) * IFNULL(org.return_price, 0))) promotionShareTotlePrice
         FROM ord_return_base_info orbi
-        LEFT JOIN ord_return_lifecycle rl ON orbi.return_no = rl.return_no
+        LEFT JOIN (SELECT DISTINCT return_no,post_status,operation_time from ord_return_lifecycle) rl ON orbi.return_no = rl.return_no
         LEFT JOIN st_store st ON st.store_id = orbi.store_id
         LEFT JOIN ord_base_info obi ON obi.ord_no = orbi.ord_no
         LEFT JOIN ord_return_logistic_info orli ON orli.return_no = orbi.return_no
         LEFT JOIN ord_return_goods_info org ON org.return_no = orbi.return_no
         WHERE orbi.return_status = 'FINISHED' AND rl.post_status = 'FINISHED' AND orbi.return_type != 'CANCEL_RETURN'
+        AND (obi.delivery_type = 'HOUSE_DELIVERY' OR (obi.delivery_type = 'SELF_TAKE' AND st.store_type != 'JM'))
         <if test="null != cityId and cityId != -1">
             AND obi.city_id = #{cityId}
         </if>
@@ -1074,7 +1076,7 @@
         </if>
         <if test=" null != endTime and ''!=endTime">
             and
-            <![CDATA[ obd.pay_up_time<= #{endTime}]]>
+            <![CDATA[ obd.pay_up_time<= #{endTime}]]> and wa.end_dt &lt; #{endTime}
         </if>
         and ob.delivery_type = 'HOUSE_DELIVERY'
         and obd.is_pay_up = 1
@@ -1149,7 +1151,7 @@
         </if>
         <if test=" null!=endTime and ''!=endTime">
             and
-            <![CDATA[ obd.pay_up_time<= #{endTime}]]>
+            <![CDATA[ obd.pay_up_time<= #{endTime}]]> and os.shipping_time &lt; #{endTime}
         </if>
         AND ob.delivery_type = 'SELF_TAKE'
         and obd.is_pay_up = 1
@@ -1379,7 +1381,11 @@
         and ob.`status` IN ('FINISHED')
         <if test="null !=startTime and ''!=startTime">
             AND
-            wro.create_time >= #{startTime}
+            wro.c_end_dt >= #{startTime}
+        </if>
+        <if test="null!=endTime and ''!=endTime">
+            and
+            <![CDATA[ wro.c_end_dt <= #{endTime} ]]>
         </if>
         <!--   <if test="null!=companyCode and ''!=companyCode">
                and s.store_structure_code like concat('%',#{companyCode},'%')
@@ -1526,7 +1532,7 @@
         </if>
         <if test="null!=endTime and ''!=endTime">
             and
-            <![CDATA[obd.pay_up_time<= #{endTime}]]>
+            <![CDATA[obd.pay_up_time<= #{endTime}]]> and wa.end_dt &lt; #{endTime}
         </if>
         and obd.is_pay_up = 1
         and ob.delivery_type = 'HOUSE_DELIVERY'
@@ -1606,7 +1612,7 @@
             AND obd.pay_up_time >= #{startTime}
         </if>
         <if test="null!=endTime and ''!=endTime">
-            and   <![CDATA[ obd.pay_up_time <= #{endTime}]]>
+            and   <![CDATA[ obd.pay_up_time <= #{endTime}]]> and os.shipping_time &lt; #{endTime}
         </if>
         AND ob.delivery_type = 'SELF_TAKE'
         and obd.is_pay_up = 1
@@ -1857,11 +1863,11 @@
         and ob.`status` IN ('FINISHED')
         <if test="null!=startTime and ''!=startTime">
             AND
-            wro.create_time > #{startTime}
+            wro.c_end_dt > #{startTime}
         </if>
         <if test="null!=endTime and ''!=endTime">
             and
-            <![CDATA[ wro.create_time <= #{endTime} ]]>
+            <![CDATA[ wro.c_end_dt <= #{endTime} ]]>
         </if>
         <!--   <if test="null!=companyCode and ''!=companyCode">
                and s.store_structure_code like concat('%',#{companyCode},'%')
