@@ -39,5 +39,5 @@ public interface MaterialAuditSheetDAO {
     List<MaterialAuditSheetResponse> queryListByEmployeeIDAndStatus(@Param("employeeID") Long employeeID, @Param("status") Integer status);
 
     //项目经理根据状态查看所属装饰公司下的所有物料审核单
-    List<MaterialAuditSheet> queryListByStoreIDAndStatus(@Param("storeID") Long storeID, @Param("status") Integer status);
+    List<MaterialAuditSheet> queryListByStoreIDAndStatus(@Param("storeID") Long storeID, @Param("userID") Long userID, @Param("status") Integer status);
 }

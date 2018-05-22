@@ -238,16 +238,18 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
 
     <select id="queryListByStoreIDAndStatus"
             resultType="cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet">
-        SELECT AUDIT_HEADER_ID, EMPLOYEE_ID, EMPLOYEE_NAME, DELIVERY_TYPE, STORE_ID, RECEIVER, RECEIVER_PHONE,
-        DELIVERY_CITY, DELIVERY_COUNTY, DELIVERY_STREET, RESIDENCE_NAME, DETAILED_ADDRESS, IS_OWNER_RECEIVING,
-        REMARK, STATUS, RESERVATION_DELIVERY_TIME, CREATE_TIME, AUDIT_NO, AUDITOR_ID, IS_AUDITED
-        FROM material_audit_sheet
+        SELECT m.audit_header_id, m.employee_id, m.employee_name, m.delivery_type, m.store_id, m.receiver, m.receiver_phone,
+        m.delivery_city, m.delivery_county, m.delivery_street, m.residence_name, m.detailed_address, m.is_owner_receiving,
+        m.remark, m.status, m.reservation_delivery_time, m.create_time, m.audit_no, m.auditor_id, m.is_audited
+        FROM material_audit_sheet m
+        LEFT JOIN emp_employee e ON e.emp_id = m.employee_id
         WHERE
-        STORE_ID = #{storeID}
+        m.store_id = #{storeID}
+        AND (e.manager_id = #{userID} OR e.manager_id IS NULL )
         <if test="null != status">
-            AND STATUS = #{status}
+            AND m.status = #{status}
         </if>
-        ORDER BY AUDIT_HEADER_ID DESC
+        ORDER BY m.audit_header_id DESC
     </select>
 
 </mapper>

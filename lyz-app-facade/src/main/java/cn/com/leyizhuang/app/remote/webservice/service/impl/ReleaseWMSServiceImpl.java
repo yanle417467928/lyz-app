@@ -309,20 +309,25 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     Node node = nodeList.item(i);
                     NodeList childNodeList = node.getChildNodes();
                     WtaReturningOrderHeader header = new WtaReturningOrderHeader();
-                    for (int idx = 0; idx < childNodeList.getLength(); idx++) {
-                        Node childNode = childNodeList.item(idx);
-                        header = mapping(header, childNode);
-                    }
-                    header.setHandleFlag("0");
-                    header.setCreateTime(Calendar.getInstance().getTime());
-                    wmsToAppOrderDAO.saveWtaReturningOrderHeader(header);
-                    WtaReturningOrderHeader finalHeader = header;
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            handleReturningOrderHeaderAsync(finalHeader.getPoNo(), finalHeader.getRecNo());
+                    if (redisLock.lock(AppLock.CANCEL_ORDER, header.getPoNo(), 30)) {
+                        for (int idx = 0; idx < childNodeList.getLength(); idx++) {
+                            Node childNode = childNodeList.item(idx);
+                            header = mapping(header, childNode);
                         }
-                    }).start();
+                        header.setHandleFlag("0");
+                        header.setCreateTime(Calendar.getInstance().getTime());
+                        wmsToAppOrderDAO.saveWtaReturningOrderHeader(header);
+                        WtaReturningOrderHeader finalHeader = header;
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                handleReturningOrderHeaderAsync(finalHeader.getPoNo(), finalHeader.getRecNo());
+                            }
+                        }).start();
+                    }else{
+                        logger.warn("cancelOrder OUT,返配订单重复提交，出参 returnNo:{}", header.getPoNo());
+                        return AppXmlUtil.resultStrXml(1, "正在处理该" + header.getPoNo() + "订单!");
+                    }
                 }
                 logger.info("GetWMSInfo OUT,获取返配单wms信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");

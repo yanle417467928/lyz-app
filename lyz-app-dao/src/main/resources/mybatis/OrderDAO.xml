@@ -825,7 +825,7 @@
         UPDATE ord_base_info
         <set>
             <if test="null != status">
-                status = #{status},
+                `status` = #{status},
             </if>
             <if test="null != deliveryStatus">
                 delivery_status = #{deliveryStatus}
