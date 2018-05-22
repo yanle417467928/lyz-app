@@ -86,22 +86,6 @@
                     <div class="row">
                         <div class="col-xs-12">
                             <div class="form-group">
-                                <label class="control-label col-md-2 col-xs-3" for="number" style="text-align: center">是否含产品劵:</label>
-                                <label class="control-label margin-6" style="margin-left: 5%">
-                                    <input type="radio" name="product" value="1" class="iradio_square-blue "
-                                           checked>
-                                    是&nbsp;&nbsp;&nbsp;
-                                </label>
-                                <label class="control-label margin-6" style="margin-left: 5%">
-                                    <input type="radio" name="product" value="0" class="iradio_square-blue ">
-                                    否
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <div class="form-group">
                                 <div class="col-md-2 col-xs-3" style="text-align:center;">
                                     <button id="btn_add" type="button" class=" btn btn-default"
                                             onclick="openBillModal()">
@@ -154,7 +138,7 @@
     });
 
 
-    function initDateGird(keywords, companyCode, storeType, product) {
+    function initDateGird(keywords, companyCode, storeType) {
         $grid.init($('#dataGrid'), $('#toolbar'), '/rest/reportDownload/arrearsReport/page/grid', 'get', false, function (params) {
             return {
                 offset: params.offset,
@@ -162,7 +146,6 @@
                 keywords: keywords,
                 companyCode: companyCode,
                 storeType: storeType,
-                isProductCoupon: product
             }
         }, [{
             checkbox: true,
@@ -216,9 +199,8 @@
         $("#dataGrid").bootstrapTable('destroy');
         var keywords = $('#queryCusInfo').val();
         var storeType = $('input[name="storeType"]:checked ').val()
-        var isProductCoupon = $('input[name="product"]:checked ').val()
         var companyCode = $('#companyCode').val();
-        initDateGird(keywords, companyCode, storeType, isProductCoupon);
+        initDateGird(keywords, companyCode, storeType);
     }
 
 
@@ -229,7 +211,7 @@
         var storeType = $('input[name="storeType"]:checked ').val()
 
         var url = "/rest/reportDownload/arrearsReport/download?companyCode=" + companyCode
-             + "&storeType=" + storeType + "&isProductCoupon=" + isProductCoupon;
+             + "&storeType=" + storeType;
         var escapeUrl = url.replace(/\#/g, "%23");
         window.open(escapeUrl);
 

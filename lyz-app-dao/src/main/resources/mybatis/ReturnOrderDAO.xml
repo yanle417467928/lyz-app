@@ -137,11 +137,11 @@
             useGeneratedKeys="true" keyProperty="id">
         INSERT INTO ord_return_billing
         (roid, return_no, pre_deposit, credit_money, st_pre_deposit, st_credit_money, st_subvention, online_pay,
-        online_pay_type, cash, lb_quantity)
+        online_pay_type, cash, lb_quantity, seller_store_deposit)
         VALUES
             (#{roid}, #{returnNo}, #{preDeposit}, #{creditMoney}, #{stPreDeposit}, #{stCreditMoney}, #{stSubvention},
         #{onlinePay}, #{onlinePayType},
-        #{cash}, #{LeBiQuantity})
+        #{cash}, #{leBiQuantity} ,#{sellerStoreDeposit})
     </insert>
 
     <insert id="saveReturnOrderBillingDetail"
@@ -433,7 +433,8 @@
             online_pay,
             online_pay_type,
             cash,
-            lb_quantity
+            lb_quantity,
+            seller_store_deposit
         FROM ord_return_billing
         WHERE return_no = #{returnOrderNumber}
     </select>

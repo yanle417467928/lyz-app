@@ -96,9 +96,9 @@
         ogi.sku_name skuName,
         g.brand_name,
         ogi.order_qty quantity,
-        ogi.retail_price buyPrice,
-        ogi.wholesale_price wholesalePrice,
-        (ogi.order_qty * ogi.retail_price) totalBuyPrice,
+        ifnull(ogi.retail_price,0) buyPrice,
+        ifnull(ogi.wholesale_price,0) wholesalePrice,
+        (ifnull(ogi.order_qty,0) * ifnull(ogi.retail_price,0)) totalBuyPrice,
         obi.ord_no referenceNumber
         FROM ord_billing_details obd
         INNER JOIN ord_base_info obi ON obd.oid = obi.oid
@@ -2060,124 +2060,38 @@
         ORDER BY orderTime DESC
     </select>
 
-    <select id="findNoProductArrearsList"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.SalesReportDO">
-        (SELECT
+
+
+    <select id="findArrearsList" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.ArrearsReportDO">
+
+        SELECT
         s.city as 'cityName',
         s.store_code as 'storeCode',
         s.store_name as 'storeName',
-        e.`name` as 'name',
-        ob.customer_name as 'customerName',
-        ob.ord_no as 'ordNo',
-        '配送' as 'orderType',
-        CASE ob.`status` WHEN 'PENDING_RECEIVE' THEN '待收货' WHEN 'FINISHED' THEN '已完成' end as 'orderStatus',
-        '' as 'selfTakeOrderTime',
-        ob.create_time as 'createTime',
-        CASE wa.end_dt WHEN null THEN '一代数据' ELSE wa.end_dt END as 'shippingDate',
-        CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
-        CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
-        og.sku as 'sku',
-        og.sku_name as 'skuName',
-        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END
-        as'goodsType',
-        og.company_flag as 'companyFlag',
-        if(og.goods_line_type = "PRODUCT_COUPON" ,(SELECT SUM(purchase_price) from ord_coupon_info where ord_no =
-        ob.ord_no and og.sku = sku) , (og.order_qty ) * og.return_price ) as 'financialSales',
-        if(og.goods_line_type = "PRODUCT_COUPON" ,(SELECT SUM(purchase_price - (sog.settlement_price -
-        sog.wholesale_price)) from ord_coupon_info soc LEFT JOIN ord_goods_info sog ON soc.oid = sog.oid where
-        soc.ord_no = ob.ord_no and og.sku = soc.sku and soc.purchase_price != 0) , (og.order_qty ) * (og.return_price -
-        (og.settlement_price - og.wholesale_price)) ) as 'distributionSales',
-        og.wholesale_price as 'wholesalePrice',
-        og.retail_price as 'retailPrice',
-        og.settlement_price as 'settlementPrice',
-        (og.retail_price - og.settlement_price) as 'memberDiscount',
-        og.promotion_share_price as 'promotionSharePrice',
-        og.cash_coupon_share_price as 'cashCouponSharePrice',
-        og.order_qty as 'orderQty'
-        FROM
-        ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
-        LEFT JOIN st_store s on ob.store_id = s.store_id
-        LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
-        LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
-        LEFT JOIN inter_wta_order_shipping_header wa ON ob.ord_no = wa.order_no
-
-        WHERE
-        ob.`status` IN (
-        'PENDING_RECEIVE',
-        'FINISHED'
-        )
-        and ob.delivery_type = 'HOUSE_DELIVERY'
-        AND obd.is_pay_up = 0
-        <!--<if test="null!=companyCode and ''!=companyCode">
-                and s.store_structure_code like concat('%',#{companyCode},'%')
-            </if>-->
-        <choose>
-            <when test="'ZS'==storeType">
-                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
-            </when>
-            <when test="'FX'==storeType">
-                and s.store_type in ('FX','FXCK')
-            </when>
-            <otherwise>
-                <if test="null!=storeType and ''!=storeType">
-                    and s.store_type =#{storeType}
-                </if>
-                AND ob.store_id IN
-                <foreach collection="list" item="item" open="(" close=")" separator=",">
-                    #{item}
-                </foreach>
-            </otherwise>
-        </choose>
-        order by ob.store_id,ob.sales_consult_id,ob.create_time)
-
-        UNION ALL
-        (SELECT
-        s.city as 'cityName',
-        s.store_code as 'storeCode',
-        s.store_name as 'storeName',
-        e.`name` as 'name',
-        ob.customer_name as 'customerName',
-        ob.ord_no as 'ordNo',
-        '自提' as 'orderType',
-        CASE ob.`status` WHEN 'PENDING_RECEIVE' THEN '待收货' WHEN 'FINISHED' THEN '已完成' end as 'orderStatus',
+        o.sales_consult_name as 'name',
+        o.customer_name as 'customerName',
+        o.create_time as 'createTime',
+        o.ord_no as 'ordNo',
+        if(o.delivery_type='SELF_TAKE','门店自提','送货上门')as 'orderType',
+        o.`status` as 'orderStatus',
         os.shipping_time as 'selfTakeOrderTime',
-        ob.create_time as 'createTime',
-        CASE os.shipping_time WHEN null THEN '一代数据' ELSE os.shipping_time END as 'shippingDate',
-        CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
-        CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
-        og.sku as 'sku',
-        og.sku_name as 'skuName',
-        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END
-        as'goodsType',
-        og.company_flag as 'companyFlag',
-        if(og.goods_line_type = "PRODUCT_COUPON" ,(SELECT SUM(purchase_price) from ord_coupon_info where ord_no =
-        ob.ord_no and og.sku = sku) , (og.order_qty ) * og.return_price ) as 'financialSales',
-        if(og.goods_line_type = "PRODUCT_COUPON" ,(SELECT SUM(purchase_price - (sog.settlement_price -
-        sog.wholesale_price)) from ord_coupon_info soc LEFT JOIN ord_goods_info sog ON soc.oid = sog.oid where
-        soc.ord_no = ob.ord_no and og.sku = soc.sku and soc.purchase_price != 0) , (og.order_qty ) * (og.return_price -
-        (og.settlement_price - og.wholesale_price)) ) as 'distributionSales',
-        og.wholesale_price as 'wholesalePrice',
-        og.retail_price as 'retailPrice',
-        og.settlement_price as 'settlementPrice',
-        (og.retail_price - og.settlement_price) as 'memberDiscount',
-        og.promotion_share_price as 'promotionSharePrice',
-        og.cash_coupon_share_price as 'cashCouponSharePrice',
-        og.order_qty as 'orderQty'
-        FROM
-        ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
-        LEFT JOIN st_store s on ob.store_id = s.store_id
-        LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
-        LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
-        LEFT JOIN ord_shipping os on ob.oid = os.oid
-        WHERE
-        ob.`status` IN (
-        'FINISHED'
-        )
-        AND ob.delivery_type = 'SELF_TAKE'
-        <!--      <if test="null !=companyCode and ''!=companyCode">
-                  and s.store_structure_code like concat('%',#{companyCode},'%')
-              </if>-->
-        AND obd.is_pay_up = 0
+        o.create_time as 'createTime',
+        wa.end_dt as 'shippingDate',
+        b.order_amount_subtotal as 'orderAmount',
+        b.emp_credit_money as 'orderCreditMoney',
+        b.arrearage as 'orderArrearage',
+        IFNULL(a.order_money,b.arrearage) as 'orderArrearageBefore',
+        IFNULL(p.amount,0) as 'payUpMoney',
+        IF(b.is_pay_up = TRUE,'是','否') as 'isPayUp',
+        b.pay_up_time as 'payUpTime'
+        FROM ord_base_info o
+        LEFT JOIN ord_billing_details b ON b.ord_no = o.ord_no
+        LEFT JOIN (SELECT SUM(amount) amount,ord_no FROM ord_billing_payment_details GROUP BY ord_no) p ON o.ord_no = p.ord_no
+        LEFT JOIN (SELECT * FROM ord_arrears_audit WHERE status = 'AUDIT_PASSED' GROUP BY ord_no) a ON a.ord_no = o.ord_no
+        LEFT JOIN st_store s ON s.store_id = o.store_id
+        LEFT JOIN ord_shipping os on o.oid = os.oid
+        LEFT JOIN inter_wta_order_shipping_header wa ON o.ord_no = wa.order_no
+       where 1=1
         <choose>
             <when test="'ZS'==storeType">
                 and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
@@ -2189,161 +2103,15 @@
                 <if test="null!=storeType and ''!=storeType">
                     and s.store_type =#{storeType}
                 </if>
-                AND ob.store_id IN
+                AND o.store_id IN
                 <foreach collection="list" item="item" open="(" close=")" separator=",">
                     #{item}
                 </foreach>
             </otherwise>
         </choose>
-        order by ob.store_id,ob.sales_consult_id,ob.create_time)
-    </select>
+        GROUP BY o.ord_no
+        ORDER BY storeName, name, createTime
 
-
-
-    <select id="findProductArrearsList" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.SalesReportDO">
-        (SELECT
-        s.city as 'cityName',
-        s.store_code as 'storeCode',
-        s.store_name as 'storeName',
-        e.`name` as 'name',
-        ob.customer_name as 'customerName',
-        ob.ord_no as 'ordNo',
-        '配送' as 'orderType',
-        CASE ob.`status` WHEN 'PENDING_RECEIVE' THEN '待收货' WHEN 'FINISHED' THEN '已完成' end as 'orderStatus',
-        '' as 'selfTakeOrderTime',
-        ob.create_time as 'createTime',
-        CASE wa.end_dt WHEN null THEN '一代数据' ELSE wa.end_dt END as 'shippingDate',
-        CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
-        CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
-        og.sku as 'sku',
-        og.sku_name as 'skuName',
-        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END as
-        'goodsType',
-        og.company_flag as 'companyFlag',
-        if(og.goods_line_type = "PRODUCT_COUPON" ,oci.purchase_price , (og.order_qty ) * og.return_price ) as
-        'financialSales',
-        if(og.goods_line_type = "PRODUCT_COUPON" ,(oci.purchase_price - (og.settlement_price - og.wholesale_price)) ,
-        (og.order_qty ) * (og.return_price - (og.settlement_price - og.wholesale_price)) ) as 'distributionSales',
-        og.wholesale_price as 'wholesalePrice',
-        og.retail_price as 'retailPrice',
-        og.settlement_price as 'settlementPrice',
-        (og.retail_price - og.settlement_price) as 'memberDiscount',
-        og.promotion_share_price as 'promotionSharePrice',
-        og.cash_coupon_share_price as 'cashCouponSharePrice',
-        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty',
-        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END  as 'couponType'
-        FROM
-        ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
-        LEFT JOIN st_store s on ob.store_id = s.store_id
-        LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
-        -- LEFT JOIN gds_goods_grade gp on og.sku = gp.sku
-        LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
-        LEFT JOIN inter_wta_order_shipping_header wa ON ob.ord_no = wa.order_no
-        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku and og.goods_line_type = 'PRODUCT_COUPON'
-        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
-        LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
-        WHERE
-        ob.`status` IN (
-        'PENDING_RECEIVE',
-        'FINISHED'
-        )
-        and ob.delivery_type = 'HOUSE_DELIVERY'
-        AND obd.is_pay_up = 0
-        <!--       <if test="null!=companyCode and ''!=companyCode">
-                   and s.store_structure_code like concat('%',#{companyCode},'%')
-               </if>-->
-        <choose>
-            <when test="'ZS'==storeType">
-                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
-            </when>
-            <when test="'FX'==storeType">
-                and s.store_type in ('FX','FXCK')
-            </when>
-            <otherwise>
-                <if test="null!=storeType and ''!=storeType">
-                    and s.store_type =#{storeType}
-                </if>
-                AND ob.store_id IN
-                <foreach collection="list" item="item" open="(" close=")" separator=",">
-                    #{item}
-                </foreach>
-            </otherwise>
-        </choose>
-        order by ob.store_id,ob.sales_consult_id,ob.create_time)
-
-        UNION ALL
-        (SELECT
-        s.city as 'cityName',
-        s.store_code as 'storeCode',
-        s.store_name as 'storeName',
-        e.`name` as 'name',
-        ob.customer_name as 'customerName',
-        ob.ord_no as 'ordNo',
-        '自提' as 'orderType',
-        CASE ob.`status` WHEN 'PENDING_RECEIVE' THEN '待收货' WHEN 'FINISHED' THEN '已完成' end as
-        'orderStatus',
-        os.shipping_time as 'selfTakeOrderTime',
-        ob.create_time as 'createTime',
-        CASE os.shipping_time WHEN null THEN '一代数据' ELSE os.shipping_time END as 'shippingDate',
-        CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
-        CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
-        og.sku as 'sku',
-        og.sku_name as 'skuName',
-        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT'
-        THEN '赠品' END as
-        'goodsType',
-        og.company_flag as 'companyFlag',
-
-        if(og.goods_line_type = "PRODUCT_COUPON" ,purchase_price , (og.order_qty ) * og.return_price )
-        as 'financialSales',
-        if(og.goods_line_type = "PRODUCT_COUPON" ,(oci.purchase_price - (og.settlement_price -
-        og.wholesale_price)) ,
-        (og.order_qty ) * (og.return_price - (og.settlement_price - og.wholesale_price)) ) as
-        'distributionSales',
-        og.wholesale_price as 'wholesalePrice',
-        og.retail_price as 'retailPrice',
-        og.settlement_price as 'settlementPrice',
-        (og.retail_price - og.settlement_price) as 'memberDiscount',
-        og.promotion_share_price as 'promotionSharePrice',
-        og.cash_coupon_share_price as 'cashCouponSharePrice',
-        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty',
-        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END  as 'couponType'
-        FROM
-        ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
-        LEFT JOIN st_store s on ob.store_id = s.store_id
-        LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
-        LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
-        LEFT JOIN ord_shipping os on ob.oid = os.oid
-        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku and og.goods_line_type = 'PRODUCT_COUPON'
-        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
-        LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
-        WHERE
-        ob.`status` IN (
-        'FINISHED'
-        )
-        AND ob.delivery_type = 'SELF_TAKE'
-        <!--        <if test="null!=companyCode and ''!=companyCode">
-                    and s.store_structure_code like concat('%',#{companyCode},'%')
-                </if>-->
-        AND obd.is_pay_up = 0
-        <choose>
-            <when test="'ZS'==storeType">
-                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
-            </when>
-            <when test="'FX'==storeType">
-                and s.store_type in ('FX','FXCK')
-            </when>
-            <otherwise>
-                <if test="null!=storeType and ''!=storeType">
-                    and s.store_type =#{storeType}
-                </if>
-                AND ob.store_id IN
-                <foreach collection="list" item="item" open="(" close=")" separator=",">
-                    #{item}
-                </foreach>
-            </otherwise>
-        </choose>
-        order by ob.store_id,ob.sales_consult_id,ob.create_time)
     </select>
 
 
