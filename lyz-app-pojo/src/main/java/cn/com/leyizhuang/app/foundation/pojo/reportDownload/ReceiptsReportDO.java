@@ -21,14 +21,18 @@ public class ReceiptsReportDO {
     private String storeName;
     //门店类型
     private String storeType;
-    //付款/退款时间
+    //付款时间
     private String payTime;
+    //退款时间
+    private String returnPayTime;
     //支付方式
     private String payType;
     //支付金额
     private Double money;
     //订/退单号
     private String orderNumber;
+    //退单号
+    private String returnOrderNumber;
     //备注
     private String remarks;
 

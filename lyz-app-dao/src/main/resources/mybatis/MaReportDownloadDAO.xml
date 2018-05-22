@@ -4,8 +4,8 @@
     <select id="findReceiptsReportDOAll"
             resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.ReceiptsReportDO">
         SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, obi.sales_consult_name
-        sellerName, obpd.pay_time payTime,
-        obpd.pay_type payTypes, obpd.pay_type payType, IFNULL(obpd.amount, 0) money, obi.ord_no orderNumber,
+        sellerName, obpd.pay_time as payTime,null as returnPayTime,
+        obpd.pay_type payTypes, obpd.pay_type payType, IFNULL(obpd.amount, 0) money, obi.ord_no as orderNumber,null as returnOrderNumber,
         IF(obpd.pay_type = 'POS',obd.store_pos_number,null) remarks, obpd.payment_subject_type paymentSubjectType
         FROM
         ord_billing_payment_details obpd
@@ -40,10 +40,9 @@
         </foreach>
         UNION
         SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, obi.sales_consult_name
-        sellerName, orbd.create_time
-        payTime,
+        sellerName,null as payTime, orbd.create_time as returnPayTime,
         orbd.return_pay_type payTypes, orbd.return_pay_type payType, (-1 * IFNULL(orbd.return_money, 0)) money,
-        orbi.return_no orderNumber,
+        null as orderNumber,orbi.return_no as returnOrderNumber,
         NULL remarks, null paymentSubjectType
         FROM ord_return_billing_detail orbd
         INNER JOIN ord_return_base_info orbi ON orbi.return_no = orbd.return_no

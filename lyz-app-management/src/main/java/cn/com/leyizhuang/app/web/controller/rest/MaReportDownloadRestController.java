@@ -351,9 +351,9 @@ public class MaReportDownloadRestController extends BaseRestController {
                 //设置筛选条件
                 ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
                 //列宽
-                int[] columnView = {10, 13, 10, 15, 20, 12, 10, 30, 15, 15, 15, 25};
+                int[] columnView = {10, 13, 10, 15, 20, 20,12, 10, 30,30, 15, 15, 15, 25};
                 //列标题
-                String[] titles = {"城市", "门店名称", "门店类型", "导购姓名", "付款/退款时间", "支付方式", "支付金额", "订/退单号", "备注"};
+                String[] titles = {"城市", "门店名称", "门店类型", "导购姓名", "付款时间","退款时间", "支付方式", "支付金额", "订单号","退单号", "备注"};
                 //计算标题开始行号
                 int row = 1;
                 if (null != map && map.size() > 0) {
@@ -404,18 +404,20 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Label(2, j + row, receiptsReportDO.getStoreType(), textFormat));
                     ws.addCell(new Label(3, j + row, receiptsReportDO.getSellerName(), textFormat));
                     ws.addCell(new Label(4, j + row, receiptsReportDO.getPayTime(), textFormat));
-                    ws.addCell(new Label(5, j + row, receiptsReportDO.getPayType(), textFormat));
+                    ws.addCell(new Label(5, j + row, receiptsReportDO.getReturnPayTime(), textFormat));
+                    ws.addCell(new Label(6, j + row, receiptsReportDO.getPayType(), textFormat));
                     if ("DELIVERY_CLERK".equals(receiptsReportDO.getPaymentSubjectType())) {
                         if ("CASH".equals(receiptsReportDO.getPayTypes())) {
-                            ws.addCell(new Label(5, j + row, "配送现金", textFormat));
+                            ws.addCell(new Label(6, j + row, "配送现金", textFormat));
                         }
                         if ("POS".equals(receiptsReportDO.getPayTypes())) {
-                            ws.addCell(new Label(5, j + row, "配送POS", textFormat));
+                            ws.addCell(new Label(6, j + row, "配送POS", textFormat));
                         }
                     }
-                    ws.addCell(new Number(6, j + row, receiptsReportDO.getMoney(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                    ws.addCell(new Label(7, j + row, receiptsReportDO.getOrderNumber(), textFormat));
-                    ws.addCell(new Label(8, j + row, receiptsReportDO.getRemarks(), textFormat));
+                    ws.addCell(new Number(7, j + row, receiptsReportDO.getMoney(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Label(8, j + row, receiptsReportDO.getOrderNumber(), textFormat));
+                    ws.addCell(new Label(9, j + row, receiptsReportDO.getReturnOrderNumber(), textFormat));
+                    ws.addCell(new Label(10, j + row, receiptsReportDO.getRemarks(), textFormat));
                     if ("CUS_PREPAY".equals(receiptsReportDO.getPayTypes())) {
                         cusPrepay = CountUtil.add(cusPrepay, null == receiptsReportDO.getMoney() ? 0D : receiptsReportDO.getMoney());
                     } else if ("ST_PREPAY".equals(receiptsReportDO.getPayTypes())) {
