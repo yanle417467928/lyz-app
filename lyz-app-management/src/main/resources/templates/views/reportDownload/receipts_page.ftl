@@ -200,7 +200,11 @@
             align: 'center'
         },  {
             field: 'payTime',
-            title: '付款/退款时间',
+            title: '付款时间',
+            align: 'center'
+        }, {
+            field: 'returnPayTime',
+            title: '退款时间',
             align: 'center'
         }, {
             field: 'payType',
@@ -223,7 +227,11 @@
             align: 'center'
         }, {
             field: 'orderNumber',
-            title: '订/退单号',
+            title: '订单号',
+            align: 'center'
+        }, {
+            field: 'returnOrderNumber',
+            title: '退单号',
             align: 'center'
         }, {
             field: 'remarks',

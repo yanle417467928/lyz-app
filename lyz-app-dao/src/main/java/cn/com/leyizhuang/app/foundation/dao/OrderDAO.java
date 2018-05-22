@@ -5,13 +5,12 @@ import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.PayhelperOrder;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -200,6 +199,20 @@ public interface OrderDAO {
 
     void saveOrderShipping(OrderShipping orderShipping);
 
+    List<OrderPageInfoVO> getFitOrderListPageInfoByUserIdAndIdentityType(@Param(value = "userId") Long userId,
+                                                                         @Param(value = "identityType") AppIdentityType identityType,
+                                                                         @Param(value = "keywords") String keywords);
+
+    PayhelperOrder findPayhelperOrderByOrdNo(String ordNo);
 
     Boolean existOrder(String orderNo);
+    int savePayhelperOrder(PayhelperOrder payhelperOrder);
+
+    /**
+     * 客户经理查看自己支付的订单
+     *
+     * @param userId
+     * @return
+     */
+    List<OrderPageInfoVO> findSellerManagerPayForOrderList(@Param("userId") Long userId);
 }

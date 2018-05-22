@@ -57,9 +57,14 @@ public class ReturnOrderBilling {
     /**
      * 使用乐币数量
      */
-    private Double LeBiQuantity;
+    private Double leBiQuantity;
 
-    public ReturnOrderBilling(String returnNo, Double preDeposit, Double creditMoney, Double stPreDeposit, Double stCreditMoney, Double stSubvention, Double onlinePay, Double cash, Double leBiQuantity) {
+    /**
+     * 导购代支付门店预存款
+     */
+    private Double sellerStoreDeposit;
+
+    public ReturnOrderBilling(String returnNo, Double preDeposit, Double creditMoney, Double stPreDeposit, Double stCreditMoney, Double stSubvention, Double onlinePay, Double cash, Double leBiQuantity, Double sellerStoreDeposit) {
         this.returnNo = returnNo;
         this.preDeposit = preDeposit;
         this.creditMoney = creditMoney;
@@ -68,6 +73,7 @@ public class ReturnOrderBilling {
         this.stSubvention = stSubvention;
         this.onlinePay = onlinePay;
         this.cash = cash;
-        LeBiQuantity = leBiQuantity;
+        this.leBiQuantity = leBiQuantity;
+        this.sellerStoreDeposit = sellerStoreDeposit;
     }
 }

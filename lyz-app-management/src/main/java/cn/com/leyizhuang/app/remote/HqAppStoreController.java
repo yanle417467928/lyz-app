@@ -115,6 +115,8 @@ public class HqAppStoreController {
                         appStore.setStoreType(StoreType.FX);
                     }else if (hqAppStoreDTO.getStoreType().equals("分销仓库")) {
                         appStore.setStoreType(StoreType.FXCK);
+                    }else if (hqAppStoreDTO.getStoreType().equals("装饰公司")) {
+                        appStore.setStoreType(StoreType.ZS);
                     }
                     appStore.setCreatorType(hqAppStoreDTO.getCreatorType());
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

@@ -69,9 +69,8 @@ public interface MaReportDownloadDAO {
 
 
 
-    List<SalesReportDO> findProductArrearsList(@Param("companyCode") String companyCode, @Param("storeType") String storeType, @Param("list") List<Long> storeIds);
+    List<ArrearsReportDO> findArrearsList(@Param("companyCode") String companyCode, @Param("storeType") String storeType, @Param("list") List<Long> storeIds);
 
 
-    List<SalesReportDO> findNoProductArrearsList(@Param("companyCode") String companyCode, @Param("storeType") String storeType, @Param("list") List<Long> storeIds);
 
 }
