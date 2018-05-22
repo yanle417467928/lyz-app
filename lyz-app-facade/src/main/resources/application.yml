@@ -71,6 +71,12 @@ logging:
     org:
       springframework:
         web: info
+    cn:
+      com:
+        leyizhuang:
+          app:
+            foundation:
+              dao: debug
 
 
 ---

@@ -39,5 +39,5 @@ public interface MaterialAuditSheetService {
     PageInfo<MaterialAuditSheetResponse> queryListByEmployeeIDAndStatus(Long employeeID, Integer status, Integer page, Integer size);
 
     //项目经理根据状态查看所属装饰公司下的所有物料审核单
-    PageInfo<MaterialAuditSheet> queryListByStoreIDAndStatus(Long storeID, Integer status,Integer page, Integer size);
+    PageInfo<MaterialAuditSheet> queryListByStoreIDAndStatus(Long storeID, Long userID, Integer status,Integer page, Integer size);
 }

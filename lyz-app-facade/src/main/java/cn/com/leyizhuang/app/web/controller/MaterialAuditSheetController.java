@@ -412,7 +412,7 @@ public class MaterialAuditSheetController {
             //创建一个存储返回参数对象的list
             List<MaterialAuditSheetResponse> materialAuditSheetResponsesList = new ArrayList<>();
             //获取工人所有的物料审核单列表
-            PageInfo<MaterialAuditSheet> materialAuditSheetList = materialAuditSheetService.queryListByStoreIDAndStatus(appEmployee.getStoreId(), status, page, size);
+            PageInfo<MaterialAuditSheet> materialAuditSheetList = materialAuditSheetService.queryListByStoreIDAndStatus(appEmployee.getStoreId(), userID, status, page, size);
             //遍历工人所有的物料审核单
             for (MaterialAuditSheet materialAuditSheet1 : materialAuditSheetList.getList()) {
                 //创建一个返回参数对象

@@ -526,34 +526,34 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
 
             //********************************返还虚拟货币********************************
             if (AppIdentityType.getAppIdentityTypeByValue(identityType).equals(AppIdentityType.CUSTOMER)) {
-                //返回乐币
-                if (orderBillingDetails.getLebiQuantity() != null && orderBillingDetails.getLebiQuantity() > 0) {
-                    for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
-                        //获取顾客当前乐币数量
-                        CustomerLeBi customerLeBi = appCustomerService.findCustomerLebiByCustomerId(userId);
-                        //返还乐币后顾客乐币数量
-                        Integer lebiTotal = (customerLeBi.getQuantity() + orderBillingDetails.getLebiQuantity());
-                        //更改顾客乐币数量
-                        Integer affectLine = leBiVariationLogService.updateLeBiQtyByUserId(lebiTotal, customerLeBi.getLastUpdateTime(), userId);
-                        if (affectLine > 0) {
-                            //记录乐币日志
-                            CustomerLeBiVariationLog leBiVariationLog = new CustomerLeBiVariationLog();
-                            leBiVariationLog.setCusId(userId);
-                            leBiVariationLog.setVariationQuantity(orderBillingDetails.getLebiQuantity());
-                            leBiVariationLog.setAfterVariationQuantity(lebiTotal);
-                            leBiVariationLog.setVariationTime(date);
-                            leBiVariationLog.setLeBiVariationType(LeBiVariationType.CANCEL_ORDER);
-                            leBiVariationLog.setVariationTypeDesc("取消订单");
-                            leBiVariationLog.setOrderNum(orderNumber);
-                            //保存日志
-                            leBiVariationLogService.addCustomerLeBiVariationLog(leBiVariationLog);
-                            break;
-                        } else {
-                            if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                throw new SystemBusyException("系统繁忙，请稍后再试!");
+                    //返回乐币
+                    if (orderBillingDetails.getLebiQuantity() != null && orderBillingDetails.getLebiQuantity() > 0) {
+                        for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                            //获取顾客当前乐币数量
+                            CustomerLeBi customerLeBi = appCustomerService.findCustomerLebiByCustomerId(userId);
+                            //返还乐币后顾客乐币数量
+                            Integer lebiTotal = (customerLeBi.getQuantity() + orderBillingDetails.getLebiQuantity());
+                            //更改顾客乐币数量
+                            Integer affectLine = leBiVariationLogService.updateLeBiQtyByUserId(lebiTotal, customerLeBi.getLastUpdateTime(), userId);
+                            if (affectLine > 0) {
+                                //记录乐币日志
+                                CustomerLeBiVariationLog leBiVariationLog = new CustomerLeBiVariationLog();
+                                leBiVariationLog.setCusId(userId);
+                                leBiVariationLog.setVariationQuantity(orderBillingDetails.getLebiQuantity());
+                                leBiVariationLog.setAfterVariationQuantity(lebiTotal);
+                                leBiVariationLog.setVariationTime(date);
+                                leBiVariationLog.setLeBiVariationType(LeBiVariationType.CANCEL_ORDER);
+                                leBiVariationLog.setVariationTypeDesc("取消订单");
+                                leBiVariationLog.setOrderNum(orderNumber);
+                                //保存日志
+                                leBiVariationLogService.addCustomerLeBiVariationLog(leBiVariationLog);
+                                break;
+                            } else {
+                                if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                    throw new SystemBusyException("系统繁忙，请稍后再试!");
+                                }
                             }
                         }
-                    }
                 }
                 //返回顾客预存款
                 if (orderBillingDetails.getCusPreDeposit() != null && orderBillingDetails.getCusPreDeposit() > 0) {
@@ -2396,7 +2396,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                     }
                 }
                 //返回门店现金返利（装饰公司）
-                if (AssertUtil.isNotEmpty(orderBillingDetails.getStoreSubvention())) {
+                if (null != orderBillingDetails.getStoreSubvention() && orderBillingDetails.getStoreSubvention() > 0) {
                     for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                         //获取门店现金返利
                         StoreSubvention storeSubvention = appStoreService.findStoreSubventionByEmpId(orderBaseInfo.getCreatorId());
