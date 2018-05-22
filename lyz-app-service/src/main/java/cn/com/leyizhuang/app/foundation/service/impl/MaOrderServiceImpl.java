@@ -369,6 +369,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                     storeInventoryChange.setCityName(storeInventory.getCityName());
                     storeInventoryChange.setStoreId(storeInventory.getStoreId());
                     storeInventoryChange.setStoreCode(storeInventory.getStoreCode());
+                    storeInventoryChange.setStoreName(storeInventory.getStoreName());
                     storeInventoryChange.setReferenceNumber(orderNumber);
                     storeInventoryChange.setGid(maOrderGoodsInfo.getGid());
                     storeInventoryChange.setSku(maOrderGoodsInfo.getSku());

@@ -290,6 +290,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                         storeInventoryChange.setCityName(storeInventory.getCityName());
                         storeInventoryChange.setStoreId(storeInventory.getStoreId());
                         storeInventoryChange.setStoreCode(storeInventory.getStoreCode());
+                        storeInventoryChange.setStoreName(storeInventory.getStoreName());
                         storeInventoryChange.setReferenceNumber(returnNumber);
                         storeInventoryChange.setGid(returnOrderGoodsInfo.getGid());
                         storeInventoryChange.setSku(returnOrderGoodsInfo.getSku());
@@ -306,6 +307,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                         maStoreInventoryChange.setCityName(storeInventory.getCityName());
                         maStoreInventoryChange.setStoreId(storeInventory.getStoreId());
                         maStoreInventoryChange.setStoreCode(storeInventory.getStoreCode());
+                        maStoreInventoryChange.setStoreName(storeInventory.getStoreName());
                         maStoreInventoryChange.setReferenceNumber(returnNumber);
                         maStoreInventoryChange.setGid(returnOrderGoodsInfo.getGid());
                         maStoreInventoryChange.setSku(returnOrderGoodsInfo.getSku());
