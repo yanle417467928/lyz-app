@@ -47,7 +47,7 @@ public class ArrearsReportDO {
     private Double orderArrearageBefore;
     //订单欠款
     private Double orderArrearage;
-    //已订单支付总金额
+    //订单已支付总金额
     private Double payUpMoney;
    //是否结清
     private String isPayUp;

@@ -171,24 +171,20 @@
             title: '订单号',
             align: 'center'
         }, {
+            field: 'orderArrearage',
+            title: '订单欠款',
+            align: 'center'
+        }, {
+            field: 'payUpMoney',
+            title: '订单已支付总金额',
+            align: 'center'
+        }, {
             field: 'isPayUp',
             title: '是否结清',
             align: 'center'
         }, {
             field: 'payUpTime',
             title: '结清时间',
-            align: 'center'
-        }, {
-            field: 'sku',
-            title: '产品编码',
-            align: 'center'
-        }, {
-            field: 'financialSales',
-            title: '财务销量',
-            align: 'center'
-        }, {
-            field: 'distributionSales',
-            title: '经销财务销量',
             align: 'center'
         }
         ]);
