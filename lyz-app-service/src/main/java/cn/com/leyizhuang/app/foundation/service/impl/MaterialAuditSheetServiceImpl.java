@@ -162,9 +162,9 @@ public class MaterialAuditSheetServiceImpl implements MaterialAuditSheetService 
     }
 
     @Override
-    public PageInfo<MaterialAuditSheet> queryListByStoreIDAndStatus(Long storeID, Integer status,Integer page, Integer size) {
+    public PageInfo<MaterialAuditSheet> queryListByStoreIDAndStatus(Long storeID, Long userID, Integer status,Integer page, Integer size) {
         PageHelper.startPage(page, size);
-        List<MaterialAuditSheet> materialAuditSheetList = materialAuditSheetDAO.queryListByStoreIDAndStatus(storeID, status);
+        List<MaterialAuditSheet> materialAuditSheetList = materialAuditSheetDAO.queryListByStoreIDAndStatus(storeID, userID, status);
         return new PageInfo<>(materialAuditSheetList);
     }
 

@@ -1481,6 +1481,7 @@
 
 
     <select id="findProductSalesList" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.SalesReportDO">
+        <!-- 配送 -->
         (SELECT
         s.city as 'cityName',
         s.store_code as 'storeCode',
@@ -1502,7 +1503,7 @@
         og.company_flag as 'companyFlag',
         if(og.goods_line_type = "PRODUCT_COUPON" ,oci.purchase_price , (og.order_qty ) * og.return_price ) as
         'financialSales',
-        if(og.goods_line_type = "PRODUCT_COUPON" ,(oci.purchase_price - (og.settlement_price - og.wholesale_price)) ,
+        if(og.goods_line_type = "PRODUCT_COUPON" ,if(oci.purchase_price = 0,0,(oci.purchase_price - (og.settlement_price - og.wholesale_price))) ,
         (og.order_qty ) * (og.return_price - (og.settlement_price - og.wholesale_price)) ) as 'distributionSales',
         og.wholesale_price as 'wholesalePrice',
         og.retail_price as 'retailPrice',
@@ -1541,7 +1542,7 @@
                </if>-->
         <choose>
             <when test="'ZS'==storeType">
-                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
+                and ((s.store_type in ('ZS') and s.fit_compay_type = 'MONTHLY') or s.store_structure_code like concat("%|JZC001|%") )
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in ('FX','FXCK')
@@ -1559,6 +1560,7 @@
         order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
         UNION ALL
+        <!-- 自提 -->
         (SELECT
         s.city as 'cityName',
         s.store_code as 'storeCode',
@@ -1583,8 +1585,8 @@
 
         if(og.goods_line_type = "PRODUCT_COUPON" ,purchase_price , (og.order_qty ) * og.return_price )
         as 'financialSales',
-        if(og.goods_line_type = "PRODUCT_COUPON" ,(oci.purchase_price - (og.settlement_price -
-        og.wholesale_price)) ,
+        if(og.goods_line_type = "PRODUCT_COUPON" ,
+        if(oci.purchase_price = 0,0,(oci.purchase_price - (og.settlement_price - og.wholesale_price))),
         (og.order_qty ) * (og.return_price - (og.settlement_price - og.wholesale_price)) ) as
         'distributionSales',
         og.wholesale_price as 'wholesalePrice',
@@ -1621,7 +1623,7 @@
                 </if>-->
         <choose>
             <when test="'ZS'==storeType">
-                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
+                and ((s.store_type in ('ZS') and s.fit_compay_type = 'MONTHLY') or s.store_structure_code like concat("%|JZC001|%") )
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in ('FX','FXCK')
@@ -1640,6 +1642,7 @@
 
         UNION ALL
 
+        <!-- 配送 之前结清本月出货 -->
         (SELECT
         s.city as 'cityName',
         s.store_code as 'storeCode',
@@ -1664,8 +1667,8 @@
         og.company_flag as 'companyFlag',
         if(og.goods_line_type = "PRODUCT_COUPON" ,purchase_price , (og.order_qty ) *
         og.return_price ) as 'financialSales',
-        if(og.goods_line_type = "PRODUCT_COUPON" ,(oci.purchase_price -
-        (og.settlement_price - og.wholesale_price)) ,
+        if(og.goods_line_type = "PRODUCT_COUPON" ,
+        if(oci.purchase_price = 0,0,(oci.purchase_price - (og.settlement_price - og.wholesale_price))),
         (og.order_qty ) * (og.return_price - (og.settlement_price - og.wholesale_price))
         ) as 'distributionSales',
         og.wholesale_price as 'wholesalePrice',
@@ -1709,7 +1712,7 @@
                 </if>-->
         <choose>
             <when test="'ZS'==storeType">
-                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
+                and ((s.store_type in ('ZS') and s.fit_compay_type = 'MONTHLY') or s.store_structure_code like concat("%|JZC001|%") )
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in  ('FX','FXCK')
@@ -1728,6 +1731,7 @@
 
         UNION ALL
 
+        <!-- 自提 之前结清本月出货 -->
         (SELECT
         s.city as 'cityName',
         s.store_code as 'storeCode',
@@ -1755,8 +1759,8 @@
 
         if(og.goods_line_type = "PRODUCT_COUPON" ,purchase_price ,
         (og.order_qty ) * og.return_price ) as 'financialSales',
-        if(og.goods_line_type = "PRODUCT_COUPON" ,(oci.purchase_price -
-        (og.settlement_price - og.wholesale_price)) ,
+        if(og.goods_line_type = "PRODUCT_COUPON" ,
+        if(oci.purchase_price = 0,0,(oci.purchase_price - (og.settlement_price - og.wholesale_price))),
         (og.order_qty ) * (og.return_price - (og.settlement_price -
         og.wholesale_price)) ) as 'distributionSales',
         og.wholesale_price as 'wholesalePrice',
@@ -1799,7 +1803,7 @@
 
         <choose>
             <when test="'ZS'==storeType">
-                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
+                and ((s.store_type in ('ZS') and s.fit_compay_type = 'MONTHLY') or s.store_structure_code like concat("%|JZC001|%") )
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in  ('FX','FXCK')
@@ -1818,6 +1822,7 @@
 
         UNION ALL
 
+        <!-- 配送 退货 -->
         (SELECT
         s.city as 'cityName',
         s.store_code as 'storeCode',
@@ -1837,8 +1842,10 @@
         CASE org.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END as
         'goodsType',
         org.company_flag as 'companyFlag',
-        -ABS(org.return_price * org.return_qty) as 'financialSales',
-        -ABS(org.wholesale_price * org.return_qty) as 'distributionSales',
+        if(org.goods_line_type = "PRODUCT_COUPON" ,-ABS(oci.purchase_price),-ABS(org.return_price * org.return_qty)) as 'financialSales',
+        if(org.goods_line_type = "PRODUCT_COUPON" ,
+        if(oci.purchase_price = 0,0,-ABS((oci.purchase_price - (org.settlement_price - org.wholesale_price)) * org.return_qty)) ,
+        -ABS((org.settlement_price - org.wholesale_price) * org.return_qty)) as 'distributionSales',
         -ABS(org.wholesale_price) as 'wholesalePrice',
         0 as 'retailPrice',
         0 as 'settlementPrice',
@@ -1874,7 +1881,7 @@
            </if>-->
         <choose>
             <when test="'ZS'==storeType">
-                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
+                and ((s.store_type in ('ZS') and s.fit_compay_type = 'MONTHLY') or s.store_structure_code like concat("%|JZC001|%") )
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in ('FX','FXCK')
@@ -1893,6 +1900,7 @@
 
         UNION  ALL
 
+        <!-- 自提 退货 -->
         (SELECT
         s.city as 'cityName',
         s.store_code as 'storeCode',
@@ -1912,8 +1920,10 @@
         CASE org.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END as
         'goodsType',
         org.company_flag as 'companyFlag',
-        -ABS(org.return_price * org.return_qty) as 'financialSales',
-        -ABS(org.wholesale_price * org.return_qty) as 'distributionSales',
+        if(org.goods_line_type = "PRODUCT_COUPON" ,-ABS(oci.purchase_price),-ABS(org.return_price * org.return_qty)) as 'financialSales',
+        if(org.goods_line_type = "PRODUCT_COUPON" ,
+        if(oci.purchase_price = 0,0,-ABS((oci.purchase_price - (org.settlement_price - org.wholesale_price)) * org.return_qty)) ,
+        -ABS((org.settlement_price - org.wholesale_price) * org.return_qty)) as 'distributionSales',
         -ABS(org.wholesale_price) as 'wholesalePrice',
         0 as 'retailPrice',
         0 as 'settlementPrice',
@@ -1950,7 +1960,7 @@
            </if>-->
         <choose>
             <when test="'ZS'==storeType">
-                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
+                and ((s.store_type in ('ZS') and s.fit_compay_type = 'MONTHLY') or s.store_structure_code like concat("%|JZC001|%") )
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in ('FX','FXCK')
@@ -1963,6 +1973,162 @@
                 <foreach collection="list" item="item" open="(" close=")" separator=",">
                     #{item}
                 </foreach>
+            </otherwise>
+        </choose>
+        )
+
+        <!-- 配送 现结装饰公司销量 -->
+
+        UNION ALL
+        (
+        SELECT
+        s.city as 'cityName',
+        s.store_code as 'storeCode',
+        s.store_name as 'storeName',
+        e2.`name` as 'name',
+        ob.customer_name as 'customerName',
+        ob.ord_no as 'ordNo',
+        '配送' as 'orderType',
+        CASE ob.`status` WHEN 'PENDING_RECEIVE' THEN '待收货' WHEN 'FINISHED' THEN '已完成' end as 'orderStatus',
+        '' as 'selfTakeOrderTime',
+        ob.create_time as 'createTime',
+        CASE wa.end_dt WHEN null THEN '一代数据' ELSE wa.end_dt END as 'shippingDate',
+        CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
+        CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
+        og.sku as 'sku',
+        og.sku_name as 'skuName',
+        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END as
+        'goodsType',
+        og.company_flag as 'companyFlag',
+        if(og.goods_line_type = "PRODUCT_COUPON" ,oci.purchase_price , (og.order_qty ) * og.return_price ) as
+        'financialSales',
+        if(og.goods_line_type = "PRODUCT_COUPON" ,if(oci.purchase_price = 0,0,(oci.purchase_price - (og.settlement_price - og.wholesale_price))) ,
+        (og.order_qty ) * (og.return_price - (og.settlement_price - og.wholesale_price)) ) as 'distributionSales',
+        og.wholesale_price as 'wholesalePrice',
+        og.retail_price as 'retailPrice',
+        og.settlement_price as 'settlementPrice',
+        (og.retail_price - og.settlement_price) as 'memberDiscount',
+        og.promotion_share_price as 'promotionSharePrice',
+        og.cash_coupon_share_price as 'cashCouponSharePrice',
+        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty',
+        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END  as 'couponType'
+        FROM
+        ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
+        LEFT JOIN st_store s on ob.store_id = s.store_id
+        LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
+        -- LEFT JOIN gds_goods_grade gp on og.sku = gp.sku
+        LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
+        LEFT JOIN inter_wta_order_shipping_header wa ON ob.ord_no = wa.order_no
+        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku  and og.goods_line_type = 'PRODUCT_COUPON'
+        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
+        LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
+        LEFT JOIN emp_employee e2 on e2.emp_id = s.sales_manager
+        LEFT JOIN st_store st2 on st2.store_id = e2.store_id
+        WHERE
+        ob.`status` IN (
+        'PENDING_RECEIVE',
+        'FINISHED'
+        )
+        <if test="null!=startTime and ''!=startTime">
+            AND obd.pay_up_time >= #{startTime}
+        </if>
+        <if test="null!=endTime and ''!=endTime">
+            and
+            <![CDATA[obd.pay_up_time<= #{endTime}]]> and wa.end_dt &lt; #{endTime}
+        </if>
+        and obd.is_pay_up = 1
+        and ob.delivery_type = 'HOUSE_DELIVERY'
+        <!--       <if test="null!=companyCode and ''!=companyCode">
+                   and s.store_structure_code like concat('%',#{companyCode},'%')
+               </if>-->
+        <choose>
+            <when test="'ZS'==storeType">
+                and ((s.store_type in ('ZS') and s.fit_compay_type = 'MONTHLY') or s.store_structure_code like concat("%|JZC001|%") )
+            </when>
+            <when test="'FX'==storeType">
+                and s.store_type in ('FX','FXCK')
+            </when>
+            <otherwise>
+                and st2.store_structure_code like concat('%',#{companyCode},'%')
+                and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
+            </otherwise>
+        </choose>
+        order by ob.store_id,ob.sales_consult_id,ob.create_time
+        )
+
+        <!-- 配送 现结装饰公司退货-->
+
+        UNION ALL
+
+        (
+        SELECT
+        s.city as 'cityName',
+        s.store_code as 'storeCode',
+        s.store_name as 'storeName',
+        e2.`name` as 'name',
+        ob.customer_name as 'customerName',
+        ob.ord_no as 'ordNo',
+        CASE ob.delivery_type when 'HOUSE_DELIVERY' then '配送' WHEN 'SELF_TAKE' THEN '自提' end as 'orderType',
+        CASE ob.`status` WHEN 'PENDING_RECEIVE' THEN '待收货' WHEN 'FINISHED' THEN '已完成' end as 'orderStatus',
+        '' as 'selfTakeOrderTime',
+        ob.create_time as 'createTime',
+        '' as 'shippingDate',
+        CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
+        CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
+        org.sku as 'sku',
+        org.sku_name as 'skuName',
+        CASE org.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END as
+        'goodsType',
+        org.company_flag as 'companyFlag',
+        if(org.goods_line_type = "PRODUCT_COUPON" ,-ABS(oci.purchase_price),-ABS(org.return_price * org.return_qty)) as 'financialSales',
+        if(org.goods_line_type = "PRODUCT_COUPON" ,
+        if(oci.purchase_price = 0,0,-ABS((oci.purchase_price - (org.settlement_price - org.wholesale_price)) * org.return_qty)) ,
+        -ABS((org.settlement_price - org.wholesale_price) * org.return_qty)) as 'distributionSales',
+        -ABS(org.wholesale_price) as 'wholesalePrice',
+        0 as 'retailPrice',
+        0 as 'settlementPrice',
+        0 as 'memberDiscount',
+        0 as 'promotionSharePrice',
+        0 as 'cashCouponSharePrice',
+        CASE org.goods_line_type WHEN 'PRODUCT_COUPON' THEN -1 ELSE -ABS(org.return_qty) END as 'orderQty',
+        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END  as 'couponType'
+        FROM
+        ord_return_base_info orb
+        LEFT JOIN ord_base_info ob on orb.oid = ob.oid
+        LEFT JOIN ord_return_goods_info org on orb.roid = org.roid
+        LEFT JOIN st_store s on ob.store_id = s.store_id
+        LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
+        LEFT JOIN inter_wta_return_order_back_header wro ON wro.po_no = orb.return_no
+        LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
+        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and org.sku = oci.sku and org.goods_line_type = 'PRODUCT_COUPON'
+        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
+        LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
+        LEFT JOIN emp_employee e2 on e2.emp_id = s.sales_manager
+        LEFT JOIN st_store st2 on st2.store_id = e2.store_id
+        where
+        1=1
+        and ob.`status` IN ('FINISHED')
+        <if test="null!=startTime and ''!=startTime">
+            AND
+            wro.c_end_dt > #{startTime}
+        </if>
+        <if test="null!=endTime and ''!=endTime">
+            and
+            <![CDATA[ wro.c_end_dt <= #{endTime} ]]>
+        </if>
+        <!--   <if test="null!=companyCode and ''!=companyCode">
+               and s.store_structure_code like concat('%',#{companyCode},'%')
+           </if>-->
+        <choose>
+            <when test="'ZS'==storeType">
+                and ((s.store_type in ('ZS') and s.fit_compay_type = 'MONTHLY') or s.store_structure_code like concat("%|JZC001|%") )
+            </when>
+            <when test="'FX'==storeType">
+                and s.store_type in ('FX','FXCK')
+            </when>
+            <otherwise>
+                and st2.store_structure_code like concat('%',#{companyCode},'%')
+                and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
             </otherwise>
         </choose>
         )
