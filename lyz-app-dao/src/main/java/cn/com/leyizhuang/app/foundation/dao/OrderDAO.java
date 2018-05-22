@@ -199,20 +199,6 @@ public interface OrderDAO {
 
     void saveOrderShipping(OrderShipping orderShipping);
 
-    List<OrderPageInfoVO> getFitOrderListPageInfoByUserIdAndIdentityType(@Param(value = "userId") Long userId,
-                                                                         @Param(value = "identityType") AppIdentityType identityType,
-                                                                         @Param(value = "keywords") String keywords);
-
-    PayhelperOrder findPayhelperOrderByOrdNo(String ordNo);
 
     Boolean existOrder(String orderNo);
-    int savePayhelperOrder(PayhelperOrder payhelperOrder);
-
-    /**
-     * 客户经理查看自己支付的订单
-     *
-     * @param userId
-     * @return
-     */
-    List<OrderPageInfoVO> findSellerManagerPayForOrderList(@Param("userId") Long userId);
 }

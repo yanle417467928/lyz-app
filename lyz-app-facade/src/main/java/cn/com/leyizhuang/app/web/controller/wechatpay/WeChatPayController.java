@@ -133,14 +133,14 @@ public class WeChatPayController {
         }
         String totalFeeFormat = CountUtil.retainTwoDecimalPlaces(totalFee);
         Double totalFeeParse = Double.parseDouble(totalFeeFormat);
-        String outTradeNo = OrderUtils.generatePayNumber();
 
-        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo, orderNumber, identityType, AppApplicationConstant.wechatReturnUrlAsnyc,
+
+        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, orderNumber, orderNumber, identityType, AppApplicationConstant.wechatReturnUrlAsnyc,
                 totalFeeParse, PaymentDataStatus.WAIT_PAY, OnlinePayType.WE_CHAT, "订单支付");
         this.paymentDataService.save(paymentDataDO);
 
         try {
-            SortedMap<String, Object> secondSignMap = (SortedMap<String, Object>) WechatPrePay.wechatSign(outTradeNo, paymentDataDO.getPaymentTypeDesc(),
+            SortedMap<String, Object> secondSignMap = (SortedMap<String, Object>) WechatPrePay.wechatSign(orderNumber, paymentDataDO.getPaymentTypeDesc(),
                     new BigDecimal(totalFeeParse), req);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, secondSignMap);
             logger.info("orderWeChatPay OUT,微信支付订单成功，出参 resultDTO:{}", resultDTO);
@@ -425,15 +425,6 @@ public class WeChatPayController {
 //                            if (PaymentDataStatus.TRADE_SUCCESS.equals(paymentDataDO.getOnlinePayType())){
 //                                return;
 //                            }
-
-                            //如果已处理就跳过处理代码
-                            if (!outTradeNo.contains("_CZ")) {
-                                List<PaymentDataDO> paymentDataList = this.paymentDataService.findByOrderNoAndTradeStatus(paymentDataDO.getOrderNumber(), PaymentDataStatus.TRADE_SUCCESS);
-                                if (null != paymentDataList && paymentDataList.size() > 0) {
-                                    logger.warn("weChatReturnSync,微信支付异步回调接口");
-                                    return ;
-                                }
-                            }
                             //判断是否是充值订单
                             if (outTradeNo.contains("_CZ")) {
                                 logger.info("weChatReturnSync,微信支付异步回调接口,回调单据类型:{}", "预存款充值");
@@ -471,10 +462,9 @@ public class WeChatPayController {
                                     //2018-05-03 13:28:24 Jerry.Ren 修改这里收款拆单到Controller最后发送消息队列
                                     sinkSender.sendOrderReceipt(outTradeNo);
                                 }
-                            } else if (paymentDataDO.getOrderNumber().contains("_XN")) {
+                            } else if (outTradeNo.contains("_XN")) {
                                 logger.info("weChatReturnSync,微信支付异步回调接口,回调单据类型:{}", "订单");
                                 if (null != paymentDataDO.getId() && paymentDataDO.getTotalFee().equals(totalFeeParse)) {
-                                    String orderNumber = paymentDataDO.getOrderNumber();
                                     paymentDataDO.setTradeNo(tradeNo);
                                     paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
                                     paymentDataDO.setNotifyTime(new Date());
@@ -482,15 +472,15 @@ public class WeChatPayController {
                                     logger.info("weChatReturnSync ,微信支付异步回调接口，支付数据记录信息:{}",
                                             paymentDataDO);
                                     //处理第三方支付成功之后订单相关事务
-                                    commonService.handleOrderRelevantBusinessAfterOnlinePayUp(orderNumber, tradeNo, tradeStatus, OnlinePayType.WE_CHAT);
+                                    commonService.handleOrderRelevantBusinessAfterOnlinePayUp(outTradeNo, tradeNo, tradeStatus, OnlinePayType.WE_CHAT);
 
                                     //发送订单到拆单消息队列
-                                    sinkSender.sendOrder(orderNumber);
+                                    sinkSender.sendOrder(outTradeNo);
 
                                     //发送订单到WMS
-                                    OrderBaseInfo baseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
+                                    OrderBaseInfo baseInfo = appOrderService.getOrderByOrderNumber(outTradeNo);
                                     if (baseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
-                                        iCallWms.sendToWmsRequisitionOrderAndGoods(orderNumber);
+                                        iCallWms.sendToWmsRequisitionOrderAndGoods(outTradeNo);
                                     }
 
                                     // 激活订单赠送的产品券

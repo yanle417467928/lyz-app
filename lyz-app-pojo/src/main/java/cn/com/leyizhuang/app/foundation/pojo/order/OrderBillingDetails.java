@@ -169,8 +169,4 @@ public class OrderBillingDetails {
      * 后台收款时间
      */
     private Date manageReceiptTime;
-    /**
-     * 导购代支付门店预存款
-     */
-    private Double sellerStoreDeposit;
 }

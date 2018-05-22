@@ -188,7 +188,6 @@ public class AliPayController {
             return resultDTO;
         }
         String totalFee = CountUtil.retainTwoDecimalPlaces(payableAmount);
-        String outTradeNo = OrderUtils.generatePayNumber();
         PaymentDataDO paymentData = new PaymentDataDO();
         paymentData.setUserId(userId);
         paymentData.setOnlinePayType(OnlinePayType.ALIPAY);
@@ -196,7 +195,7 @@ public class AliPayController {
         paymentData.setPaymentTypeDesc(PaymentDataType.ORDER.getDescription());
         paymentData.setAppIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
         paymentData.setCreateTime(LocalDateTime.now());
-        paymentData.setOutTradeNo(outTradeNo);
+        paymentData.setOutTradeNo(orderNumber);
         paymentData.setOrderNumber(orderNumber);
         paymentData.setTotalFee(Double.parseDouble(totalFee));
         paymentData.setTradeStatus(PaymentDataStatus.WAIT_PAY);
@@ -215,7 +214,7 @@ public class AliPayController {
         //SDK已经封装掉了公共参数，这里只需要传入业务参数。以下方法为sdk的model入参方式(model和biz_content同时存在的情况下取biz_content)。
         AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
         model.setSubject(paymentData.getPaymentType().getDescription());
-        model.setOutTradeNo(outTradeNo);
+        model.setOutTradeNo(orderNumber);
         model.setTimeoutExpress("30m");
         model.setTotalAmount(totalFee);
         model.setProductCode(AlipayConfig.productCode);
@@ -283,20 +282,17 @@ public class AliPayController {
                 logger.info("alipayReturnAsync,支付宝支付回调接口，入参 out_trade_no:{}, trade_no:{}, trade_status:{}, total_fee:{}",
                         outTradeNo, tradeNo, tradeStatus, totalFee);
 
+                List<PaymentDataDO> paymentDataList = this.paymentDataService.findByOutTradeNoAndTradeStatus(outTradeNo, PaymentDataStatus.TRADE_SUCCESS);
+                if (null != paymentDataList && paymentDataList.size() > 0) {
+                    logger.warn("alipayReturnAsync,支付宝支付回调接口，响应支付宝结果 result:{}", "success");
+                    return "success";
+                }
                 if ("TRADE_FINISHED".equals(tradeStatus) || "TRADE_SUCCESS".equals(tradeStatus)) {
 
                     PaymentDataDO paymentDataDO = new PaymentDataDO();
                     List<PaymentDataDO> paymentDataDOList = this.paymentDataService.findByOutTradeNoAndTradeStatus(outTradeNo, PaymentDataStatus.WAIT_PAY);
                     if (null != paymentDataDOList && paymentDataDOList.size() > 0) {
                         paymentDataDO = paymentDataDOList.get(0);
-                    }
-                    //如果已处理就跳过处理代码
-                    if (!outTradeNo.contains("_CZ")) {
-                        List<PaymentDataDO> paymentDataList = this.paymentDataService.findByOrderNoAndTradeStatus(paymentDataDO.getOrderNumber(), PaymentDataStatus.TRADE_SUCCESS);
-                        if (null != paymentDataList && paymentDataList.size() > 0) {
-                            logger.warn("alipayReturnAsync,支付宝支付回调接口，响应支付宝结果 result:{}", "success");
-                            return "success";
-                        }
                     }
                     if (outTradeNo.contains("_CZ")) {
                         //充值加预存款和日志
@@ -340,9 +336,8 @@ public class AliPayController {
                             logger.warn("alipayReturnAsync OUT,支付宝支付回调接口处理成功，出参 result:{}", "success");
                             return "success";
                         }
-                    } else if (paymentDataDO.getOrderNumber().contains("_XN")) {
+                    } else if (outTradeNo.contains("_XN")) {
                         if (null != paymentDataDO.getId() && paymentDataDO.getTotalFee().equals(Double.parseDouble(totalFee))) {
-                            String orderNumber = paymentDataDO.getOrderNumber();
                             paymentDataDO.setTradeNo(tradeNo);
                             paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
                             paymentDataDO.setNotifyTime(new Date());
@@ -350,15 +345,15 @@ public class AliPayController {
                             logger.info("alipayReturnAsync ,支付宝支付回调接口，支付数据记录信息 paymentDataDO:{}",
                                     paymentDataDO);
                             //处理第三方支付成功之后订单相关事务
-                            commonService.handleOrderRelevantBusinessAfterOnlinePayUp(orderNumber, tradeNo, tradeStatus, OnlinePayType.ALIPAY);
+                            commonService.handleOrderRelevantBusinessAfterOnlinePayUp(outTradeNo, tradeNo, tradeStatus, OnlinePayType.ALIPAY);
                             //发送订单到拆单消息队列
-                            sinkSender.sendOrder(orderNumber);
+                            sinkSender.sendOrder(outTradeNo);
 
                             logger.warn("alipayReturnAsync OUT,支付宝支付回调接口处理成功，出参 result:{}", "success");
                             //发送订单到WMS
-                            OrderBaseInfo baseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
+                            OrderBaseInfo baseInfo = appOrderService.getOrderByOrderNumber(outTradeNo);
                             if (baseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
-                                iCallWms.sendToWmsRequisitionOrderAndGoods(orderNumber);
+                                iCallWms.sendToWmsRequisitionOrderAndGoods(outTradeNo);
                             }
                             return "success";
                         }
