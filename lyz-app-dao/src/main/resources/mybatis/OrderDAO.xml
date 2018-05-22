@@ -747,7 +747,7 @@
                                          online_pay_type, online_pay_amount, st_pre_deposit, emp_credit_money, st_credit_money,
                                          st_subvention, order_amount_subtotal, amount_payable, collection_amount, arrearage, is_owner_receiving,
                                          online_pay_time, pay_up_time, is_pay_up, store_cash, store_other_money, store_pos_money, store_pos_number, manage_receipt_time,
-                                         seller_store_deposit)
+                                         seller_store_deposit,jx_price_difference_amount)
         VALUES
             (#{createTime}, #{oid}, #{orderNumber}, #{totalGoodsPrice}, #{memberDiscount}, #{promotionDiscount},
                             #{freight},
@@ -757,7 +757,7 @@
                 #{storeSubvention}, #{orderAmountSubtotal},
                 #{amountPayable}, #{collectionAmount}, #{arrearage}, #{isOwnerReceiving}, #{onlinePayTime},
                                   #{payUpTime}, #{isPayUp}, #{storeCash}, #{storeOtherMoney}, #{storePosMoney},
-                                  #{storePosNumber}, #{manageReceiptTime}, #{sellerStoreDeposit}
+                                  #{storePosNumber}, #{manageReceiptTime}, #{sellerStoreDeposit},#{jxPriceDifferenceAmount}
             )
     </insert>
 
