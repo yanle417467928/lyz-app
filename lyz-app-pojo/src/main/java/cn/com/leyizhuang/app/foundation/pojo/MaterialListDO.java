@@ -71,6 +71,11 @@ public class MaterialListDO {
      */
     private String remark;
 
+    /**
+     * 地址id
+     */
+    private Long deliveryId;
+
 
     @Override
     public boolean equals(Object o) {

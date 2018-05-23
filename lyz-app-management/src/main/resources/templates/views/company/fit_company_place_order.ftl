@@ -28,9 +28,11 @@
     <script src="https://cdn.bootcss.com/select2/4.0.2/js/select2.full.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
-
+    <%@ taglib uri="/WEB-INF/tld/c.tld" prefix="c"%>
     <script>
         $(function () {
+            findProvince();
+
             $(".select2").select2();
             $('.btn-cancel').on('click', function () {
                 history.go(-1);
@@ -277,10 +279,78 @@
             var storeId = $("#storeId").val();
             var guideId = $("#guideId").val();
             var remark = $("#remark").val();
+            var receiverName = $("#receiverName").val();
+            var receiverPhone = $("#receiverPhone").val();
+            var province = $("#province").val();
+            var city = $("#city").val();
+            var county = $("#county").val();
+            var street = $("#street").val();
+            var residenceName = $("#residenceName").val();
+            var estateInfo = $("#estateInfo").val();
+            var detailedAddress = $("#detailedAddress").val();
+            if(null == receiverName || '' == receiverName){
+                $notify.danger('收货人姓名不能为空！');
+                return false;
+            }
+            if(null == receiverPhone || '' == receiverPhone){
+                $notify.danger('收货人电话不能为空!');
+                return false;
+            }
+            if (receiverPhone.length != 11){
+                $notify.danger('请重新输入11位正确电话号码！');
+                return false;
+            }
+            if(null == province || '' == province){
+                $notify.danger('省不能为空!');
+                return false;
+            }
+            if(null == city || '' == city){
+                $notify.danger('市不能为空!');
+                return false;
+            }
+            if(null == county || '' == county){
+                $notify.danger('区/县不能为空!');
+                return false;
+            }
+            if(null == street || '' == street){
+                $notify.danger('街道不能为空!');
+                return false;
+            }
+            if(null == detailedAddress || '' == detailedAddress){
+                $notify.danger('详细地址不能为空!');
+                return false;
+            }
+            if((null == residenceName || '' == residenceName)){
+                $notify.danger('小区名不能为空！');
+                return false;
+            }
+            var receiverNameLength = getInputLength(receiverName);
+            var residenceNameLength = getInputLength(residenceName);
+
+            if (receiverNameLength > 10){
+                $notify.danger('收货人姓名长度超长，请重新输入！');
+                return false;
+            }
+            if (residenceNameLength > 30){
+                $notify.danger('小区名长度超长，请重新输入！');
+                return false;
+            }
+
+
+
             var json = {
                 "storeId": storeId,
                 "guideId": guideId,
                 "remark": remark,
+                "receiverName": receiverName,
+                "receiverPhone": receiverPhone,
+                "province": province,
+                "city": city,
+                "county": county,
+                "street": street,
+                "detailedAddress": detailedAddress,
+                "residenceName": residenceName,
+                "estateInfo": estateInfo,
                 "goodsDetails": JSON.stringify(goodsDetails)
             };
             var url = "/rest/admin/fit/place/order/submit/goods"
@@ -320,6 +390,10 @@
             console.log(goodsDetails);
         }
 
+        function getInputLength(str) {
+            return str.replace(/[\u0391-\uFFE5]/g,"aa").length;
+        }
+
     //删除商品节点
     function del_goods_comb(obj) {
         $(obj).parent().parent().remove();
@@ -337,6 +411,146 @@
             $("#submitGoods").removeAttr("disabled");
         }
     }
+
+        //获取城市列表
+        function findProvince() {
+            var province = "";
+            var city = "";
+            var county = "";
+            var street = "";
+            $.ajax({
+                url: '/rest/admin/fit/place/order/find/areaManagement',
+                method: 'GET',
+                error: function () {
+                    clearTimeout($global.timer);
+                    $loading.close();
+                    $global.timer = null;
+                    $notify.danger('网络异常，请稍后重试或联系管理员');
+                },
+                success: function (result) {
+                    clearTimeout($global.timer);
+                    $.each(result, function (i, item) {
+                        if (item.level == 2) {
+                            province += "<option value=" + item.code + ">" + item.areaName + "</option>";
+                        }
+                        if (item.level == 3 ){
+                            city += "<option value=" + item.code + ">" + item.areaName + "</option>";
+                        }
+                        if (item.level == 4 && item.parentCode == '510100'){
+                            county += "<option value=" + item.code + ">" + item.areaName + "</option>";
+                        }
+                        if (item.level == 5 && item.parentCode == '510104'){
+                            street += "<option value=" + item.areaName + ">" + item.areaName + "</option>";
+                        }
+                    })
+                    $("#province").append(province);
+                    $("#city").append(city);
+                    $("#county").append(county);
+                    $("#street").append(street);
+                }
+            });
+        }
+
+
+        function conditionalQueryAreaManagement(value,mag) {
+            if (1 == mag){
+                var city = "";
+                var county = "";
+                var street = "";
+                $.ajax({
+                    url: '/rest/admin/fit/place/order/find/areaManagement/1/'+value,
+                    method: 'GET',
+                    error: function () {
+                        clearTimeout($global.timer);
+                        $loading.close();
+                        $global.timer = null;
+                        $notify.danger('网络异常，请稍后重试或联系管理员');
+                    },
+                    success: function (result) {
+                        clearTimeout($global.timer);
+                        $.each(result, function (i, item) {
+                            if (item.level == 3 ){
+                                city += "<option value=" + item.code + ">" + item.areaName + "</option>";
+                            }
+                            if (item.level == 4){
+                                county += "<option value=" + item.code + ">" + item.areaName + "</option>";
+                            }
+                            if (item.level == 5){
+                                street += "<option value=" + item.areaName + ">" + item.areaName + "</option>";
+                            }
+                        })
+                        document.getElementById('city').innerHTML="";
+                        document.getElementById('county').innerHTML="";
+                        document.getElementById('street').innerHTML="";
+                        $("#city").append(city);
+                        $("#county").append(county);
+                        $("#street").append(street);
+                        $('#city').selectpicker('refresh');
+                        $('#city').selectpicker('render');
+                        $('#county').selectpicker('refresh');
+                        $('#county').selectpicker('render');
+                        $('#street').selectpicker('refresh');
+                        $('#street').selectpicker('render');
+                    }
+                });
+            }else if(2 == mag){
+                var county = "";
+                var street = "";
+                $.ajax({
+                    url: '/rest/admin/fit/place/order/find/areaManagement/2/'+value,
+                    method: 'GET',
+                    error: function () {
+                        clearTimeout($global.timer);
+                        $loading.close();
+                        $global.timer = null;
+                        $notify.danger('网络异常，请稍后重试或联系管理员');
+                    },
+                    success: function (result) {
+                        clearTimeout($global.timer);
+                        $.each(result, function (i, item) {
+                            if (item.level == 4){
+                                county += "<option value=" + item.code + ">" + item.areaName + "</option>";
+                            }
+                            if (item.level == 5){
+                                street += "<option value=" + item.areaName + ">" + item.areaName + "</option>";
+                            }
+                        })
+                        document.getElementById('county').innerHTML="";
+                        document.getElementById('street').innerHTML="";
+                        $("#county").append(county);
+                        $("#street").append(street);
+                        $('#county').selectpicker('refresh');
+                        $('#county').selectpicker('render');
+                        $('#street').selectpicker('refresh');
+                        $('#street').selectpicker('render');
+                    }
+                });
+            }else if(3 == mag){
+                var street = "";
+                $.ajax({
+                    url: '/rest/admin/fit/place/order/find/areaManagement/2/'+value,
+                    method: 'GET',
+                    error: function () {
+                        clearTimeout($global.timer);
+                        $loading.close();
+                        $global.timer = null;
+                        $notify.danger('网络异常，请稍后重试或联系管理员');
+                    },
+                    success: function (result) {
+                        clearTimeout($global.timer);
+                        $.each(result, function (i, item) {
+                            if (item.level == 5){
+                                street += "<option value=" + item.areaName + ">" + item.areaName + "</option>";
+                            }
+                        })
+                        document.getElementById('street').innerHTML="";
+                        $("#street").append(street);
+                        $('#street').selectpicker('refresh');
+                        $('#street').selectpicker('render');
+                    }
+                });
+            }
+        }
     </script>
 
 </head>
@@ -358,7 +572,7 @@
 </section>
 
 <section class="content">
-    <div class="nav-tabs-custom">
+    <div class="nav-tabs-custom" id="target">
         <div class="row">
             <div class="col-xs-12">
                 <div class="box box-primary">
@@ -392,6 +606,111 @@
                             </div>
                         </div>
                     </div>
+
+
+                    <div class="row">
+                        <div class="col-xs-12 col-md-3">
+                            <div class="form-group">
+                                <label>
+                                    收货人姓名
+                                </label>
+                                <input type="text" name="receiverName" id="receiverName" class="form-control" onkeyup="value=value=value.replace(/[\d]/g, '只能输入汉子和字母')" maxlength="10"\>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-3">
+                            <div class="form-group">
+                                <label>
+                                    收货人电话
+                                </label>
+                                <input type="text" name="receiverPhone" id="receiverPhone" class="form-control" \>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                    <div class="row">
+                        <div class="col-xs-12 col-md-2">
+                            <div class="form-group">
+                                <label>
+                                   省
+                                </label>
+                                <select name="province" id="province" class="form-control select"
+                                        onchange="conditionalQueryAreaManagement(this.value,'1')">
+
+                                </select>
+                                <#--<input type="text" name="province" id="province" class="form-control" \>-->
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-2">
+                            <div class="form-group">
+                                <label>
+                                    市
+                                </label>
+                                <select name="city" id="city" class="form-control select"
+                                onchange="conditionalQueryAreaManagement(this.value,'2')">
+
+                                </select>
+                                <#--<input type="text" name="city" id="city" class="form-control" \>-->
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-2">
+                            <div class="form-group">
+                                <label>
+                                    区/县
+                                </label>
+                                <select name="county" id="county" class="form-control select"
+                                onchange="conditionalQueryAreaManagement(this.value,'3')">
+
+                                </select>
+                                <#--<input type="text" name="county" id="county" class="form-control" \>-->
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12 col-md-4">
+                            <div class="form-group">
+                                <label>
+                                    街道
+                                </label>
+                                <select name="street" id="street" class="form-control select">
+                                <#--onchange="findProvince(this.value)">-->
+
+                                </select>
+                                <#--<input type="text" name="street" id="street" class="form-control" \>-->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-12 col-md-3">
+                            <div class="form-group">
+                                <label>
+                                    小区名
+                                </label>
+                                <input type="text" name="residenceName" id="residenceName" class="form-control" onkeyup="value=value.replace(/[^\w\u4E00-\u9FA5]/g, '只能输入汉子、字母和数字')"\>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-3">
+                            <div class="form-group">
+                                <label>
+                                    楼盘信息
+                                </label>
+                                <input type="text" name="estateInfo" id="estateInfo" class="form-control" \>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6">
+                            <div class="form-group">
+                                <label>
+                                    详细地址
+                                </label>
+                                <input type="text" name="detailedAddress" id="detailedAddress" class="form-control" \>
+                            </div>
+                        </div>
+                    </div>
+
+
+
 
                     <div class="row">
                         <div class="col-xs-12 col-md-4">
@@ -456,12 +775,12 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-xs-12 col-md-8"></div>
-                        <div class="col-xs-12 col-md-2">
-                            <button type="button" class="btn btn-danger footer-btn btn-cancel">
-                                <i class="fa fa-close"></i> 取消
-                            </button>
-                        </div>
+                        <#--<div class="col-xs-12 col-md-8"></div>-->
+                        <#--<div class="col-xs-12 col-md-2">-->
+                            <#--<button type="button" class="btn btn-danger footer-btn btn-cancel">-->
+                                <#--<i class="fa fa-close"></i> 取消-->
+                            <#--</button>-->
+                        <#--</div>-->
                         <div class="col-xs-12 col-md-2">
                             <button type="button" class="btn btn-primary footer-btn" id="submitGoods"
                                     onclick="submitGoodsInfo()">
@@ -470,6 +789,21 @@
                         </div>
                     </div>
                 </form>
+                <div class="col-xs-12 col-md-2">
+                    <button type="button" class="btn btn-danger footer-btn btn-cancel" style="position:fixed;right:-100;bottom:0;width:150px;height:40px;margin-left: 500px;">
+                        <i class="fa fa-close"></i> 取消
+                    </button>
+
+                    <button type="button" class="btn btn-primary footer-btn" id="submitGoods"
+                            onclick="submitGoodsInfo()" style="position:fixed;right:-100;bottom:0;width:150px;height:40px;margin-left: 700px;">
+                        <i class="fa fa-check"></i> 下一步
+                    </button>
+                <#--</div>-->
+                <#--<div class="col-xs-12 col-md-2">-->
+                    <button class="btn btn-primary footer-btn" id="backTop" style="position:fixed;right:0;bottom:0;width:150px;height:40px;">
+                        返回顶部
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -477,6 +811,10 @@
 
 
 <script>
+
+    backTop.onclick = function () {
+        target.scrollIntoView();
+    }
 
 </script>
 </body>
