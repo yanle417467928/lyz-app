@@ -311,7 +311,11 @@
                                     data.storeType = '装饰公司';
                                 } else if ('JM' === data.storeType) {
                                     data.storeType = '加盟店';
-                                } else {
+                                } else if('FXCK' === data.storeType){
+                                    data.storeType = '分销仓库';
+                                } else if('FX' === data.storeType){
+                                    data.storeType = '分销';
+                                } else{
                                     data.storeType = '-';
                                 }
                                 $('#storeType').html(data.storeType);
@@ -415,10 +419,6 @@
             $("#dataGrid").bootstrapTable('destroy');
             initDateGird('/rest/stores/page/grid');
         } else {
-            if (!checkCharacter(queryStoreInfo)) {
-                $notify.warning('请检查输入是否为汉子或者字母');
-                return false;
-            }
             $("#dataGrid").bootstrapTable('destroy');
             initDateGird('/rest/stores/page/storeGrid/' + queryStoreInfo);
         }

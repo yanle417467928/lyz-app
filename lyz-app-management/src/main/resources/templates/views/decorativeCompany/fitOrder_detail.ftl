@@ -476,7 +476,7 @@
                                                 status = '拒签';
                                             }
 
-                                            var a = '<ul><span class="logisticCreateTime" id="logisticCreateTime">' + time + '</span><i class="fa fa-circle" style="color: red"></i> <span class="logisticStatus" id="logisticStatus" style="padding-left: 100px">' + status + '</span></ul><div style="padding-left: 140px"> <ul class="timeline" style="margin-bottom: 0px"> <i class="fa fa-circle" style="color: white"></i> </ul></div>';
+                                            var a = '<ul><span class="logisticCreateTime" id="logisticCreateTime">' + time + '</span><i class="fa fa-circle" style="margin-left:2% ;color: red"></i> <span class="logisticStatus" id="logisticStatus" style="padding-left: 100px">' + status + '</span></ul><div style="padding-left: 140px"> <ul class="timeline" style="margin-bottom: 0px"> <i class="fa fa-circle" style="color: white"></i> </ul></div>';
                                             /*        $('#logisticCreateTime').html();
                                              $('#logisticStatus').html();*/
                                             b += a;

@@ -343,7 +343,7 @@
             success: function (result) {
                 clearTimeout($global.timer);
                 $.each(result, function (i, item) {
-                    company += "<option value=" + item.id + ">" + item.storeName + "</option>";
+                    company += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
                 })
                 $("#diyCode").append(company);
             }

@@ -143,9 +143,9 @@
                             data-live-search="true" onchange="findOrderByCity(this.value)">
                         <option value="-1">选择城市</option>
                     </select>
-                    <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px"
+                    <select name="store" id="storeCode" class="form-control selectpicker" data-width="130px"
                             onchange="findOrderByCondition()" data-live-search="true">
-                        <option value="-1">选择门店</option>
+                        <option value="-1">选择装饰公司</option>
                     </select>
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
                         <input type="text" name="queryOrderInfo" id="queryOrderInfo" class="form-control "
@@ -237,7 +237,7 @@
             title: '选择'
         }, {
             field: 'storeName',
-            title: '门店',
+            title: '装饰公司',
             align: 'center'
         }, {
             field: 'orderNumber',
@@ -291,7 +291,16 @@
         }, {
             field: 'isPayOver',
             title: '是否付清',
-            align: 'center'
+            align: 'center',
+            formatter: function (value, row, index) {
+                if (true == value) {
+                    return '<span class="label label-success">是</span>';
+                } else if(false == value) {
+                    return '<span class="label label-danger">否</span>';
+                }else{
+                    return '<span class="label label-danger">-</span>';
+                }
+            }
         }]);
     }
 
@@ -308,7 +317,7 @@
 
 
     function findOrderByCity(cityId) {
-        initSelect("#storeCode", "选择门店");
+        initSelect("#storeCode", "选择装饰公司");
         findOrderByCondition();
         if (cityId == -1) {
             findStoreSelection();
