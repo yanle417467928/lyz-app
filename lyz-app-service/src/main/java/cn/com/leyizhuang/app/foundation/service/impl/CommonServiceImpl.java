@@ -2116,7 +2116,7 @@ public class CommonServiceImpl implements CommonService {
                                 throw new LockStorePreDepositException("没有找到该导购所在门店的预存款信息!");
                             }
                         }
-                        billingDetails.setStPreDeposit(billingDetails.getAmountPayable());
+                        billingDetails.setSellerStoreDeposit(billingDetails.getAmountPayable());
                         billingDetails.setArrearage(CountUtil.sub(billingDetails.getArrearage(), billingDetails.getAmountPayable()));
                         if (null != billingDetails.getStPreDeposit() && billingDetails.getStPreDeposit() > AppConstant.DOUBLE_ZERO) {
                             OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();

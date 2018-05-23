@@ -2227,26 +2227,28 @@ public class OrderController {
             return resultDTO;
         }
         try {
+            OrderBaseInfo baseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
+            if (AppOrderStatus.UNPAID != baseInfo.getStatus()){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单操作错误！", null);
+                logger.info("handleOrderRelevantBusinessAfterPayForAnother OUT,代支付订单支付失败，订单状态错误，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
             if (OrderBillingPaymentType.EMP_CREDIT == OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)) {
                 EmpCreditMoney empCreditMoney = employeeService.findEmpCreditMoneyByEmpId(userId);
                 OrderBillingDetails billingDetails = appOrderService.getOrderBillingDetail(orderNumber);
-                if (null != empCreditMoney && null != billingDetails) {
-                    if (empCreditMoney.getCreditLimitAvailable() < billingDetails.getAmountPayable()) {
-                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "信用额度不足！", null);
-                        logger.info("handleOrderRelevantBusinessAfterPayForAnother OUT,代支付订单支付失败，出参 resultDTO:{}", resultDTO);
-                        return resultDTO;
-                    }
+                if (null == empCreditMoney || null == billingDetails || empCreditMoney.getCreditLimitAvailable() < billingDetails.getAmountPayable()) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "信用额度不足！", null);
+                    logger.info("handleOrderRelevantBusinessAfterPayForAnother OUT,代支付订单支付失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
                 }
             }
             if (OrderBillingPaymentType.ST_PREPAY == OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)) {
                 OrderBillingDetails billingDetails = appOrderService.getOrderBillingDetail(orderNumber);
                 StorePreDeposit preDeposit = appStoreService.findStorePreDepositByUserIdAndIdentityType(userId, identityType);
-                if (null != preDeposit) {
-                    if (preDeposit.getBalance() < billingDetails.getAmountPayable()) {
-                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店预存款余额不足！", null);
-                        logger.info("handleOrderRelevantBusinessAfterPayForAnother OUT,代支付订单支付失败，出参 resultDTO:{}", resultDTO);
-                        return resultDTO;
-                    }
+                if (null == preDeposit || null == billingDetails || preDeposit.getBalance() < billingDetails.getAmountPayable()) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店预存款余额不足！", null);
+                    logger.info("handleOrderRelevantBusinessAfterPayForAnother OUT,代支付订单支付失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
                 }
             }
             this.commonService.handleOrderRelevantBusinessAfterPayForAnother(orderNumber, userId, identityType, payType, ipAddress);
@@ -2254,7 +2256,6 @@ public class OrderController {
             sinkSender.sendOrder(orderNumber);
 
             //发送订单到WMS
-            OrderBaseInfo baseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
             if (baseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
                 iCallWms.sendToWmsRequisitionOrderAndGoods(orderNumber);
             }
