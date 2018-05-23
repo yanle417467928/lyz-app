@@ -255,7 +255,11 @@ public class MaterialListController {
         List<NormalMaterialListResponse> normalMaterialListRespons = this.materialListServiceImpl.findByUserIdAndIdentityType(userId, identityType);
         //设置备注信息
         String remark = "";
+        Long deliveryId = null;
         for (NormalMaterialListResponse response : normalMaterialListRespons) {
+            if (null != response.getDeliveryId()){
+                deliveryId = response.getDeliveryId();
+            }
             if (StringUtils.isNotBlank(response.getRemark())) {
                 remark = response.getRemark();
                 break;
@@ -350,6 +354,7 @@ public class MaterialListController {
         returnMap.put("auditListRes", materialWorkerAuditResponse);
         returnMap.put("materialListRes", normalMaterialListRespons);
         returnMap.put("remark", remark);
+        returnMap.put("deliveryId", deliveryId);
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, returnMap);
         logger.info("getMaterialList OUT,获取下料清单列表成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;

@@ -15,6 +15,8 @@ import lombok.ToString;
 @ToString
 public class DeliveryAddressDO extends BaseDO {
 
+    //自增id
+    private Long id;
     //收货人姓名
     private String receiver;
     //收货人号码
