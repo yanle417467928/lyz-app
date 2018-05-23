@@ -2120,7 +2120,7 @@ public class CommonServiceImpl implements CommonService {
                         billingDetails.setArrearage(CountUtil.sub(billingDetails.getArrearage(), billingDetails.getAmountPayable()));
                         if (null != billingDetails.getStPreDeposit() && billingDetails.getStPreDeposit() > AppConstant.DOUBLE_ZERO) {
                             OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
-                            details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.ST_PREPAY, billingDetails.getStPreDeposit(),
+                            details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.SELLER_ST_PREPAY, billingDetails.getStPreDeposit(),
                                     PaymentSubjectType.SELLER, billingDetails.getOrderNumber(), OrderUtils.generateReceiptNumber(baseInfo.getCityId()));
                             details.setOrderId(baseInfo.getId());
                             orderService.saveOrderBillingPaymentDetail(details);

@@ -314,8 +314,20 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         receiptInf.setCreateTime(new Date());
                         receiptInf.setReceiptDate(billing.getPayTime());
                         receiptInf.setReceiptType(billing.getPayType());
-                        receiptInf.setStoreOrgId(baseInfo.getStoreOrgId());
-                        receiptInf.setDiySiteCode(baseInfo.getStoreCode());
+                        //代付款导购门店预存款 --门店信息挂导购的门店
+                        if (OrderBillingPaymentType.SELLER_ST_PREPAY == billing.getPayType()
+                                && PaymentSubjectType.SELLER == billing.getPaymentSubjectType()
+                                && AppOrderSubjectType.FIT == baseInfo.getOrderSubjectType()){
+                            AppStore store = this.storeService.findStoreByUserIdAndIdentityType(baseInfo.getSalesConsultId(), AppIdentityType.SELLER.getValue());
+                            if (null != store){
+                                receiptInf.setStoreOrgId(store.getStoreId());
+                                receiptInf.setDiySiteCode(store.getStoreCode());
+                                receiptInf.setReceiptType(OrderBillingPaymentType.ST_PREPAY);
+                            }
+                        } else {
+                            receiptInf.setStoreOrgId(baseInfo.getStoreOrgId());
+                            receiptInf.setDiySiteCode(baseInfo.getStoreCode());
+                        }
                         receiptInf.setReceiptNumber(billing.getReceiptNumber());
                         receiptInf.setSobId(baseInfo.getSobId());
                         receiptInf.setUserId(null == baseInfo.getCustomerId() ? baseInfo.getCreatorId() : baseInfo.getCustomerId());
@@ -1479,10 +1491,8 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         ReturnOrderRefundInf refundInf = new ReturnOrderRefundInf();
                         refundInf.setAmount(billingDetail.getReturnMoney());
                         refundInf.setCreateTime(billingDetail.getCreateTime());
-                        refundInf.setDiySiteCode(orderBaseInfo.getStoreCode());
                         refundInf.setMainOrderNumber(orderBaseInfo.getOrderNumber());
                         refundInf.setMainReturnNumber(returnOrderBaseInfo.getReturnNo());
-                        refundInf.setStoreOrgCode(orderBaseInfo.getStoreStructureCode());
                         refundInf.setUserId(returnOrderBaseInfo.getCreatorIdentityType() == AppIdentityType.SELLER ?
                                 returnOrderBaseInfo.getCustomerId() : returnOrderBaseInfo.getCreatorId());
                         refundInf.setRefundDate(billingDetail.getIntoAmountTime());
@@ -1490,6 +1500,18 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         refundInf.setRefundType(billingDetail.getReturnPayType());
                         refundInf.setSobId(orderBaseInfo.getSobId());
                         refundInf.setDescription(null != refundInf.getRefundType() ? refundInf.getRefundType().getDescription() : "");
+                        //代付款导购门店预存款 --门店信息挂导购的门店
+                        if (OrderBillingPaymentType.SELLER_ST_PREPAY == billingDetail.getReturnPayType()){
+                            AppStore store = this.storeService.findStoreByUserIdAndIdentityType(orderBaseInfo.getSalesConsultId(), AppIdentityType.SELLER.getValue());
+                            if (null != store){
+                                refundInf.setStoreOrgCode(store.getStoreStructureCode());
+                                refundInf.setDiySiteCode(store.getStoreCode());
+                                refundInf.setRefundType(OrderBillingPaymentType.ST_PREPAY);
+                            }
+                        } else {
+                            refundInf.setDiySiteCode(orderBaseInfo.getStoreCode());
+                            refundInf.setStoreOrgCode(orderBaseInfo.getStoreStructureCode());
+                        }
                         //设置分销门店编码至attribute3
                         if (StringUtils.isNotBlank(fxStoreCode)) {
                             refundInf.setAttribute3(fxStoreCode);

@@ -799,7 +799,7 @@ public class ReturnOrderController {
                                     returnOrderBilling.setStPreDeposit(tempPrice);
                                 } else {
                                     if (identityType == 2) {
-                                        //大于门店预存款再判断导购门店预存款
+                                        //大于门店预存款再判断 代付款导购 门店预存款
                                         returnOrderBilling.setStPreDeposit(storePrePay);
                                         tempPrice = CountUtil.sub(tempPrice, storePrePay);
                                         if (tempPrice <= sellerStoreDeposit) {
