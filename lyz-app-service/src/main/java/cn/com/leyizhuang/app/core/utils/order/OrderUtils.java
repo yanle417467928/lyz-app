@@ -375,25 +375,4 @@ public class OrderUtils {
         }
         return false;
     }
-
-    /**
-     * @title   生成支付单号
-     * @descripe
-     * @param
-     * @return
-     * @throws
-     * @author GenerationRoad
-     * @date 2018/5/17
-     */
-    public static String generatePayNumber() {
-        StringBuilder orderNumberTemp = new StringBuilder();
-        Calendar calendar = Calendar.getInstance();
-        Date date = calendar.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-        String timeStamp = sdf.format(date);
-        orderNumberTemp.append(timeStamp);
-        Random random = new Random();
-        orderNumberTemp.append(random.nextInt(900000) + 100000);
-        return orderNumberTemp.toString();
-    }
 }

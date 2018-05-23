@@ -42,7 +42,7 @@
         SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, obi.sales_consult_name
         sellerName,null as payTime, orbd.create_time as returnPayTime,
         orbd.return_pay_type payTypes, orbd.return_pay_type payType, (-1 * IFNULL(orbd.return_money, 0)) money,
-        null as orderNumber,orbi.return_no as returnOrderNumber,
+        orbi.ord_no as orderNumber,orbi.return_no as returnOrderNumber,
         NULL remarks, null paymentSubjectType
         FROM ord_return_billing_detail orbd
         INNER JOIN ord_return_base_info orbi ON orbi.return_no = orbd.return_no
