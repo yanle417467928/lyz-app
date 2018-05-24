@@ -552,11 +552,11 @@
         org.goods_line_type goodsLineType, (-1 * IFNULL(org.return_qty,0)) quantity,
         if(org.goods_line_type = "PRODUCT_COUPON",IFNULL((SELECT SUM(purchase_price) from ord_coupon_info where ord_no = orbi.ord_no and org.sku = sku)/org.return_qty,0),
         IFNULL(org.settlement_price, 0)) settlementPrice,
-        if(org.goods_line_type = "PRODUCT_COUPON",IFNULL((SELECT SUM(purchase_price) from ord_coupon_info where ord_no = orbi.ord_no and org.sku = sku),0),
+        if(org.goods_line_type = "PRODUCT_COUPON",-1 * IFNULL((SELECT SUM(purchase_price) from ord_coupon_info where ord_no = orbi.ord_no and org.sku = sku),0),
         (-1 * IFNULL(org.return_qty, 0) * IFNULL(org.settlement_price, 0))) settlementTotlePrice,
         if(org.goods_line_type = "PRODUCT_COUPON",IFNULL((SELECT SUM(purchase_price) from ord_coupon_info where ord_no = orbi.ord_no and org.sku = sku)/org.return_qty,0),
         IFNULL(org.return_price, 0)) promotionSharePrice,
-        if(org.goods_line_type = "PRODUCT_COUPON",IFNULL((SELECT SUM(purchase_price) from ord_coupon_info where ord_no = orbi.ord_no and org.sku = sku),0),
+        if(org.goods_line_type = "PRODUCT_COUPON",-1 * IFNULL((SELECT SUM(purchase_price) from ord_coupon_info where ord_no = orbi.ord_no and org.sku = sku),0),
         (-1 * IFNULL(org.return_qty, 0) * IFNULL(org.return_price, 0))) promotionShareTotlePrice
         FROM ord_return_base_info orbi
         LEFT JOIN (SELECT DISTINCT return_no,post_status,operation_time from ord_return_lifecycle) rl ON orbi.return_no = rl.return_no
