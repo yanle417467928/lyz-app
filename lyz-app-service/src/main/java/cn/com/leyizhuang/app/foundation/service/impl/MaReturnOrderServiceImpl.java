@@ -441,6 +441,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                             stPreDepositLogDO.setRemarks("退还第三方支付转预存款");
                             stPreDepositLogDO.setOrderNumber(maReturnOrderDetailInfo.getOrderNo());
                             stPreDepositLogDO.setChangeType(StorePreDepositChangeType.RETURN_ORDER);
+                            stPreDepositLogDO.setChangeTypeDesc(StorePreDepositChangeType.RETURN_ORDER.getDescription());
                             stPreDepositLogDO.setStoreId(maReturnOrderDetailInfo.getStoreId());
                             stPreDepositLogDO.setOperatorId(null);
                             stPreDepositLogDO.setOperatorType(AppIdentityType.ADMINISTRATOR);
@@ -563,6 +564,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                     stPreDepositLogDO.setChangeMoney(stPreDepositAmount);
                     stPreDepositLogDO.setOrderNumber(maReturnOrderDetailInfo.getOrderNo());
                     stPreDepositLogDO.setChangeType(StorePreDepositChangeType.RETURN_ORDER);
+                    stPreDepositLogDO.setChangeTypeDesc(StorePreDepositChangeType.RETURN_ORDER.getDescription());
                     stPreDepositLogDO.setStoreId(maReturnOrderDetailInfo.getStoreId());
                     stPreDepositLogDO.setOperatorId(null);
                     stPreDepositLogDO.setOperatorType(AppIdentityType.ADMINISTRATOR);
