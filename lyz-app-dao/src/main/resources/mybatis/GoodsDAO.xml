@@ -1379,6 +1379,10 @@
             INNER JOIN gds_goods_category gc ON g.cid = gc.cid
             WHERE
             c.cus_id = #{userId}
+            <if test="keywords != null and keywords != ''">
+                AND (g.sku_name LIKE concat('%', #{keywords}, '%')
+                OR g.sku LIKE concat('%', #{keywords}, '%'))
+            </if>
         </if>
     </select>
 
@@ -1512,6 +1516,10 @@
             WHERE
             e.emp_id = #{userId}
             AND p.price_type = #{rankCode}
+            <if test="keywords != null and keywords != ''">
+                AND (g.sku_name LIKE concat('%', #{keywords}, '%')
+                OR g.sku LIKE concat('%', #{keywords}, '%'))
+            </if>
         </if>
     </select>
 
