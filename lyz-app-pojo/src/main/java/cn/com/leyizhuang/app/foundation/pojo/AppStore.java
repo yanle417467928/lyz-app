@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
 
+import cn.com.leyizhuang.app.core.constant.FitCompayType;
 import cn.com.leyizhuang.app.core.constant.StoreType;
 import lombok.Getter;
 import lombok.Setter;
@@ -108,5 +109,20 @@ public class AppStore {
      * 是否开通门店自提
      */
     private Boolean isOpenDelivery;
+
+    /**
+     * 销售经理id
+     */
+    private Long salesManager;
+
+    /**
+     * 装饰公司经理名称
+     */
+    private Long salesManagerName;
+
+    /**
+     * 装饰公司类型 CASH : 现结 ； MONTHLY： 月结
+     */
+    private FitCompayType fitCompayType;
 
 }

@@ -405,6 +405,11 @@ public class AppOrderServiceImpl implements AppOrderService {
                 tempOrder.setCreatorId(decoratorManager.getEmpId());
                 tempOrder.setCreatorName(decoratorManager.getName());
                 tempOrder.setCustomerPhone(decoratorManager.getMobile());
+                tempOrder.setSalesManagerId(userStore.getSalesManager());
+                AppEmployee appEmployee = this.appEmployeeService.findByUserId(userStore.getSalesManager());
+                if (null != appEmployee){
+                    tempOrder.setSalesManagerStoreId(appEmployee.getStoreId());
+                }
                 break;
             default:
                 break;
