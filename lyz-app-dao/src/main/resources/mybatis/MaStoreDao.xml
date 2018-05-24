@@ -762,6 +762,8 @@
         store_id=#{storeId}
         AND
         store_structure_code  LIKE CONCAT(CONCAT('%', #{companyCode}), '%')
+        AND
+        store_type=#{storeType}
         )
 
     </select>

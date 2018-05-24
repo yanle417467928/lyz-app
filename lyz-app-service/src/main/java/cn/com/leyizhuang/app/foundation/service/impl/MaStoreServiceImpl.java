@@ -326,8 +326,11 @@ public class MaStoreServiceImpl implements MaStoreService {
 
 
     @Override
-    public Boolean exsitStoreInCompany(Long storeId,String companyCode) {
-        return this.mastoreDAO.exsitStoreInCompany(storeId,companyCode);
+    public Boolean exsitStoreInCompany(Long storeId,String companyCode,String storeType) {
+        if(null ==storeId|| null ==companyCode || null ==storeType){
+            return false;
+        }
+        return this.mastoreDAO.exsitStoreInCompany(storeId,companyCode,storeType);
     }
 
     @Override

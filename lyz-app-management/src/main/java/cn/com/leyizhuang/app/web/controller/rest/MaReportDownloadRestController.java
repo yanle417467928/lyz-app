@@ -253,7 +253,7 @@ public class MaReportDownloadRestController extends BaseRestController {
             EmployeeDetailVO employeeDO = maEmployeeService.queryEmployeeById(id);
             if(null !=employeeDO && null!=employeeDO.getStoreId()){
                 Long storeId=employeeDO.getStoreId().getStoreId();
-                if(maStoreService.exsitStoreInCompany(storeId,companyCode)){
+                if(maStoreService.exsitStoreInCompany(storeId,companyCode,storeType)){
                    //找到该导购下的所有装饰公司
                     List<Long> fitCompanyId = maStoreService.findFitCompanyIdBySellerId(id);
                     if(null !=fitCompanyId && fitCompanyId.size()>0){
@@ -1468,7 +1468,24 @@ public class MaReportDownloadRestController extends BaseRestController {
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
         List<Long> storeIdInCompany = maStoreService.findStoresIdByStructureCode(companyCode);
+        //查询该分公司下的 关联小型装饰公司
+        List<Long> sellerId = maStoreService.findAllFitCompanySellerId();
+        List<Long> AllfitCompanyIds = new ArrayList<>();
+        for(Long id:sellerId){
+            EmployeeDetailVO employeeDO = maEmployeeService.queryEmployeeById(id);
+            if(null !=employeeDO && null!=employeeDO.getStoreId()){
+                Long storeId=employeeDO.getStoreId().getStoreId();
+                if(maStoreService.exsitStoreInCompany(storeId,companyCode,storeType)){
+                    //找到该导购下的所有装饰公司
+                    List<Long> fitCompanyId = maStoreService.findFitCompanyIdBySellerId(id);
+                    if(null !=fitCompanyId && fitCompanyId.size()>0){
+                        AllfitCompanyIds.addAll(fitCompanyId);
+                    }
+                }
+            }
+        }
         storeIds.retainAll(storeIdInCompany);
+        storeIds.addAll(AllfitCompanyIds);
         List<ArrearsReportDO> salesList = this.maReportDownloadService.downArrearsList(companyCode, storeType, storeIds);
         ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
         String shiroName = "";

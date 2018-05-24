@@ -2256,7 +2256,7 @@
         IFNULL(a.order_money,b.arrearage) as 'orderArrearageBefore',
         IFNULL(p.amount,0) as 'payUpMoney',
         IF(b.is_pay_up = TRUE,'是','否') as 'isPayUp',
-        b.pay_up_time as 'payUpTime'
+        IF(b.is_pay_up = TRUE, b.pay_up_time,null) as 'payUpTime'
         FROM ord_base_info o
         LEFT JOIN ord_billing_details b ON b.ord_no = o.ord_no
         LEFT JOIN (SELECT SUM(amount) amount,ord_no FROM ord_billing_payment_details GROUP BY ord_no) p ON o.ord_no = p.ord_no
@@ -2275,8 +2275,8 @@
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
-                    and s.store_type =#{storeType}
-                    OR  s.store_type = 'ZS'
+                    and  ( s.store_type =#{storeType}
+                    OR  s.store_type = 'ZS')
                 </if>
                 AND o.store_id IN
                 <foreach collection="list" item="item" open="(" close=")" separator=",">

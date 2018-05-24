@@ -133,7 +133,7 @@ public interface MaStoreService {
 
     List<Long> findAllFitCompanySellerId();
 
-    Boolean exsitStoreInCompany(Long storeId,String companyCode);
+    Boolean exsitStoreInCompany(Long storeId,String companyCode,String storeType);
 
     List<Long> findFitCompanyIdBySellerId(Long id);
 

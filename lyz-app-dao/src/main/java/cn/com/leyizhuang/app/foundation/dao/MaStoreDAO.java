@@ -125,7 +125,7 @@ public interface MaStoreDAO {
 
     List<Long> findAllFitCompanySellerId();
 
-    Boolean exsitStoreInCompany(@Param("storeId")Long storeId,@Param("companyCode")String companyCode);
+    Boolean exsitStoreInCompany(@Param("storeId")Long storeId,@Param("companyCode")String companyCode,@Param("storeType")String storeType);
 
     List<Long> findFitCompanyIdBySellerId(@Param("id") Long id);
 
