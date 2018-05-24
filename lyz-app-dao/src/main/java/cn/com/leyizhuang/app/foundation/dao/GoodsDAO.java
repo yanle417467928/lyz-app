@@ -186,7 +186,9 @@ public interface GoodsDAO {
      */
     List<MaBuyProductCouponGoodsResponse> queryGoodsPageByStoreIdAndInfo(@Param("storeId") Long storeId, @Param("queryGoodsInfo") String queryGoodsInfo);
 
-    List<UserGoodsResponse> findGoodsListByCustomerIdAndIdentityTypeAndUserRank(@Param(value = "userId") Long userId, @Param("identityType") AppIdentityType identityType);
+    List<UserGoodsResponse> findGoodsListByCustomerIdAndIdentityTypeAndUserRank(@Param(value = "userId") Long userId,
+                                                                                @Param("identityType") AppIdentityType identityType,
+                                                                                @Param("keywords") String keywords);
 
     List<GoodsDO> getGoodsBykeywordsAndCompanyAndBrandCodeAndCategoryCodeAndStoreId(
             @Param("keywords") String keywords, @Param("companyCode") String companyCode, @Param("brandCode") Long brandCode,
@@ -203,7 +205,7 @@ public interface GoodsDAO {
 
     List<UserGoodsResponse> findGoodsListBySellerIdAndIdentityTypeAndRankCode(@Param(value = "userId") Long userId,
                                                                               @Param("identityType") AppIdentityType identityType,
-                                                                              @Param("rankCode") String rankCode);
+                                                                              @Param("rankCode") String rankCode, @Param("keywords") String keywords);
 
     GoodsDetailResponse findSellerZGGoodsDetailByGoodsId(@Param("userId") Long userId, @Param("goodsId") Long goodsId,
                                      @Param("type") AppIdentityType appIdentityType, @Param("rankCode") String rankCode);
