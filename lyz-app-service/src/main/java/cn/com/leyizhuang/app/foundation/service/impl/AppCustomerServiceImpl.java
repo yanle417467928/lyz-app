@@ -9,6 +9,8 @@ import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.*;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
+import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
+import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.CusPreDepositLogService;
 import cn.com.leyizhuang.common.core.exception.AppConcurrentExcp;
 import cn.com.leyizhuang.common.util.AssertUtil;
@@ -42,6 +44,12 @@ public class AppCustomerServiceImpl implements AppCustomerService {
 
     @Resource
     private AppCustomerDAO customerDAO;
+
+    @Resource
+    private AppEmployeeService appEmployeeService;
+
+    @Resource
+    private AppStoreService appStoreService;
 
     @Autowired
     private CusPreDepositLogService cusPreDepositLogServiceImpl;
@@ -573,14 +581,25 @@ public class AppCustomerServiceImpl implements AppCustomerService {
 
 
     @Override
-    public List<SupportHotlineResponse> getCustomerSupportHotline(Long userId) {
+    public List<SupportHotlineResponse> getCustomerSupportHotline(Long userId, Integer identityType) {
         List<SupportHotlineResponse> supportHotlineList = customerDAO.findAllSupportHotline();
-        String sellerMobile = customerDAO.getCustomerSupportHotline(userId);
-        if (null != sellerMobile) {
-            SupportHotlineResponse supportHotlineResponse =  new SupportHotlineResponse();
-            supportHotlineResponse.setName("导购热线");
-            supportHotlineResponse.setSupportHotline(sellerMobile);
-            supportHotlineList.add(supportHotlineResponse);
+        SupportHotlineResponse supportHotlineResponse =  new SupportHotlineResponse();
+        if(6==identityType){
+            String sellerMobile = customerDAO.getCustomerSupportHotline(userId);
+            if (null != sellerMobile) {
+                supportHotlineResponse.setName("导购热线");
+                supportHotlineResponse.setSupportHotline(sellerMobile);
+                supportHotlineList.add(supportHotlineResponse);
+            }
+        }else if(3==identityType||2==identityType){
+            AppStore appStore = appStoreService.findStoreByUserIdAndIdentityType(userId,identityType);
+            String storeCode = appStore.getStoreCode();
+                String sellerMobile = appEmployeeService.getSalesManagerSupportHotline(storeCode);
+            if (null != sellerMobile) {
+                supportHotlineResponse.setName("销售经理热线");
+                supportHotlineResponse.setSupportHotline(sellerMobile);
+                supportHotlineList.add(supportHotlineResponse);
+            }
         }
         return supportHotlineList;
     }

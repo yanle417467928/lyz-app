@@ -262,7 +262,7 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
                 maStoreInventoryChange.setCityName(to.getCity());
                 maStoreInventoryChange.setStoreId(to.getStoreId());
                 maStoreInventoryChange.setStoreCode(to.getStoreCode());
-                maStoreInventoryChange.setStoreCode(to.getStoreName());
+                maStoreInventoryChange.setStoreName(to.getStoreName());
                 maStoreInventoryChange.setReferenceNumber(allocation.getNumber());
                 maStoreInventoryChange.setGid(detail.getGoodsId());
                 maStoreInventoryChange.setSku(detail.getSku());

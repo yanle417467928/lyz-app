@@ -341,7 +341,7 @@ public class UserHomePageController {
             List<EmployeeListResponse> appEmployeeList = employeeService.searchBySalesConsultIdAndKeywords(userId, keywords, identityType);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     (appEmployeeList != null && appEmployeeList.size() > 0) ? appEmployeeList : null);
-            logger.info("getDecorateEmployeeList OUT,搜索我的工人列表成功，出参 resultDTO:{}", resultDTO);
+            logger.info("searchDecorateEmployeeList OUT,搜索我的工人列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，搜索我的工人失败", null);

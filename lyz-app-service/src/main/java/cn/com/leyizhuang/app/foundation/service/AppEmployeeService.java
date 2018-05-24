@@ -88,4 +88,11 @@ public interface AppEmployeeService {
     List<SellerResponse> querySellerByStructureCode(String structureCode);
 
     List<StoreRankClassification> getStoreRankClassification(Long userId, AppIdentityType identityType);
+
+    /**
+     * 得到销售经理电话
+     * @param storeCode
+     * @return
+     */
+    String getSalesManagerSupportHotline(String storeCode);
 }

@@ -2410,30 +2410,32 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                     for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                         //获取门店现金返利
                         StoreSubvention storeSubvention = appStoreService.findStoreSubventionByEmpId(orderBaseInfo.getCreatorId());
-                        //返还后门店现金返利余额
-                        Double subvention = CountUtil.add(storeSubvention.getBalance(), orderBillingDetails.getStoreSubvention());
-                        //修改门店现金返利
-                        Integer affectLine = appStoreService.updateStoreSubventionByUserIdAndVersion(orderBillingDetails.getStoreSubvention(), orderBaseInfo.getCreatorId(), storeSubvention.getLastUpdateTime());
-                        if (affectLine > 0) {
-                            //记录门店现金返利变更日志
-                            StoreSubventionChangeLog storeSubventionChangeLog = new StoreSubventionChangeLog();
-                            storeSubventionChangeLog.setStoreId(storeSubvention.getStoreId());
-                            storeSubventionChangeLog.setCreateTime(date);
-                            storeSubventionChangeLog.setChangeAmount(orderBillingDetails.getStoreSubvention());
-                            storeSubventionChangeLog.setBalance(subvention);
-                            storeSubventionChangeLog.setReferenceNumber(orderNumber);
-                            storeSubventionChangeLog.setChangeType(StoreSubventionChangeType.RETURN_ORDER);
-                            storeSubventionChangeLog.setChangeTypeDesc("拒签退货返还门店现金返利");
-                            storeSubventionChangeLog.setOperatorId(orderBaseInfo.getCreatorId());
-                            storeSubventionChangeLog.setOperatorType(orderBaseInfo.getCreatorIdentityType());
-                            storeSubventionChangeLog.setRemark("拒签退货");
-                            //保存日志
-                            appStoreService.addStoreSubventionChangeLog(storeSubventionChangeLog);
-                            break;
-                        } else {
-                            if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                logger.info("refusedOrder OUT,拒签退货失败，修改门店现金返利失败");
-                                throw new SystemBusyException("系统繁忙，请稍后再试!");
+                        if (null != storeSubvention) {
+                            //返还后门店现金返利余额
+                            Double subvention = CountUtil.add(storeSubvention.getBalance(), orderBillingDetails.getStoreSubvention());
+                            //修改门店现金返利
+                            Integer affectLine = appStoreService.updateStoreSubventionByUserIdAndVersion(orderBillingDetails.getStoreSubvention(), orderBaseInfo.getCreatorId(), storeSubvention.getLastUpdateTime());
+                            if (affectLine > 0) {
+                                //记录门店现金返利变更日志
+                                StoreSubventionChangeLog storeSubventionChangeLog = new StoreSubventionChangeLog();
+                                storeSubventionChangeLog.setStoreId(storeSubvention.getStoreId());
+                                storeSubventionChangeLog.setCreateTime(date);
+                                storeSubventionChangeLog.setChangeAmount(orderBillingDetails.getStoreSubvention());
+                                storeSubventionChangeLog.setBalance(subvention);
+                                storeSubventionChangeLog.setReferenceNumber(orderNumber);
+                                storeSubventionChangeLog.setChangeType(StoreSubventionChangeType.RETURN_ORDER);
+                                storeSubventionChangeLog.setChangeTypeDesc("拒签退货返还门店现金返利");
+                                storeSubventionChangeLog.setOperatorId(orderBaseInfo.getCreatorId());
+                                storeSubventionChangeLog.setOperatorType(orderBaseInfo.getCreatorIdentityType());
+                                storeSubventionChangeLog.setRemark("拒签退货");
+                                //保存日志
+                                appStoreService.addStoreSubventionChangeLog(storeSubventionChangeLog);
+                                break;
+                            } else {
+                                if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                    logger.info("refusedOrder OUT,拒签退货失败，修改门店现金返利失败");
+                                    throw new SystemBusyException("系统繁忙，请稍后再试!");
+                                }
                             }
                         }
                     }

@@ -143,7 +143,7 @@ public interface GoodsService {
      */
     List<MaBuyProductCouponGoodsResponse> queryGoodsPageByStoreIdAndInfo(Long storeId,String queryGoodsInfo);
 
-    PageInfo<UserGoodsResponse> findGoodsListByCustomerIdAndIdentityTypeAndUserRank(Long userId, AppIdentityType identityType, Integer page, Integer size);
+    PageInfo<UserGoodsResponse> findGoodsListByCustomerIdAndIdentityTypeAndUserRank(Long userId, AppIdentityType identityType, String keywords, Integer page, Integer size);
 
     PageInfo<GoodsDO> getGoodsBykeywordsAndCompanyAndBrandCodeAndCategoryCodeAndStoreId(Integer page, Integer size, String keywords,String companyCode, Long brandCode,
                                                                                           String categoryCode, Long storeId);
@@ -158,7 +158,7 @@ public interface GoodsService {
 
     Boolean isFWGoods(Long goodsId);
 
-    PageInfo<UserGoodsResponse> findGoodsListBySellerIdAndIdentityTypeAndRankCode(Long userId, AppIdentityType identityType, String rankCode, Integer page, Integer size);
+    PageInfo<UserGoodsResponse> findGoodsListBySellerIdAndIdentityTypeAndRankCode(Long userId, AppIdentityType identityType, String rankCode, String keywords, Integer page, Integer size);
 
     GoodsDetailResponse findSellerZGGoodsDetailByGoodsId(Long userId, Long goodsId, Integer identityType, String rankCode);
 }

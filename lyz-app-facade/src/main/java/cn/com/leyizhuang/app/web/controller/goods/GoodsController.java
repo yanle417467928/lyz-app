@@ -463,7 +463,7 @@ public class GoodsController {
      * @date 2018/3/6
      */
     @RequestMapping(value = "/rank/list", method = RequestMethod.POST)
-    public ResultDTO<Object> getCustomerRankGoodsListByUserIdAndIdentityType(Long userId, Integer identityType,Integer page, Integer size) {
+    public ResultDTO<Object> getCustomerRankGoodsListByUserIdAndIdentityType(Long userId, Integer identityType, String keywords, Integer page, Integer size) {
         ResultDTO<Object> resultDTO;
         logger.info("getCustomerRankGoodsListByUserIdAndIdentityType CALLED,获取会员专供商品列表，入参userId:{},identityType:{},page:{},size:{}", userId, identityType,page,size);
 
@@ -497,7 +497,7 @@ public class GoodsController {
                 logger.info("getCustomerRankGoodsListByUserIdAndIdentityType OUT,获取会员专供商品列表失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            PageInfo<UserGoodsResponse> goodsVOList = goodsService.findGoodsListByCustomerIdAndIdentityTypeAndUserRank(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), page, size);
+            PageInfo<UserGoodsResponse> goodsVOList = goodsService.findGoodsListByCustomerIdAndIdentityTypeAndUserRank(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), keywords, page, size);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,new GridDataVO<UserGoodsResponse>().transform(goodsVOList));
             logger.info("getCustomerRankGoodsListByUserIdAndIdentityType OUT,获取会员专供商品列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -520,7 +520,7 @@ public class GoodsController {
      * @date 2018/5/2
      */
     @RequestMapping(value = "/seller/rank/list", method = RequestMethod.POST)
-    public ResultDTO<Object> getSellerRankGoodsListByUserIdAndIdentityType(Long userId, Integer identityType, String rankCode, Integer page, Integer size) {
+    public ResultDTO<Object> getSellerRankGoodsListByUserIdAndIdentityType(Long userId, Integer identityType, String rankCode, String keywords, Integer page, Integer size) {
         ResultDTO<Object> resultDTO;
         logger.info("getSellerRankGoodsListByUserIdAndIdentityType CALLED,获取专供商品列表，入参userId:{},identityType:{},rankCode{},page:{},size:{}", userId, identityType,rankCode,page,size);
 
@@ -553,7 +553,7 @@ public class GoodsController {
             return resultDTO;
         }
         try {
-            PageInfo<UserGoodsResponse> goodsVOList = goodsService.findGoodsListBySellerIdAndIdentityTypeAndRankCode(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), rankCode, page, size);
+            PageInfo<UserGoodsResponse> goodsVOList = goodsService.findGoodsListBySellerIdAndIdentityTypeAndRankCode(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), rankCode, keywords, page, size);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
             (null!=goodsVOList&&null!=goodsVOList.getList()&&goodsVOList.getList().size() > 0) ? new GridDataVO<UserGoodsResponse>().transform(goodsVOList) : null);
             logger.info("getSellerRankGoodsListByUserIdAndIdentityType OUT,获取专供商品列表成功，出参 resultDTO:{}", resultDTO);
