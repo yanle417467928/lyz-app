@@ -147,9 +147,12 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         Node childNode = childNodeList.item(j);
                         header = mapping(header, childNode);
                     }
-                    if (StringUtils.isBlank(header.getDriver())) {
-                        logger.info("GetWMSInfo OUT,获取wms信息失败,配送员不能为空,任务编号 出参 c_task_no:{}", header.getTaskNo());
-                        return AppXmlUtil.resultStrXml(1, "配送员编号不能为空,任务编号" + header.getTaskNo() + "");
+                    Boolean isAppOrder = appOrderService.existOrder(header.getOrderNo());
+                    if (null != isAppOrder && isAppOrder){
+                        if (StringUtils.isBlank(header.getDriver())) {
+                            logger.info("GetWMSInfo OUT,获取wms信息失败,配送员不能为空,任务编号 出参 c_task_no:{}", header.getTaskNo());
+                            return AppXmlUtil.resultStrXml(1, "配送员编号不能为空,任务编号" + header.getTaskNo() + "");
+                        }
                     }
                     header.setCreateTime(Calendar.getInstance().getTime());
                     header.setSendFlag("0");

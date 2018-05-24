@@ -103,7 +103,8 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
             e.create_time
         FROM emp_employee e
         WHERE e.identity_type = 'DECORATE_EMPLOYEE'
-              AND e.manager_id = #{userId}
+              AND (e.manager_id = #{userId} or e.manager_id IS NULL)
+              AND e.store_id = (SELECT store_id FROM emp_employee WHERE emp_id = #{userId})
     </select>
 
     <select id="searchBySalesConsultIdAndKeywords"

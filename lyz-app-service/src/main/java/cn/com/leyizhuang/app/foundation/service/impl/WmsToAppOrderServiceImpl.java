@@ -1015,22 +1015,22 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
                 List<WtaReturningOrderGoods> returningOrderGoodsList = wmsToAppOrderDAO.findWtaReturningOrderGoodsByReturnOrderNo(returningOrderHeader.getPoNo());
                 if (null != returningOrderGoodsList && returningOrderGoodsList.size() > 0) {
                     List<ReturnOrderGoodsInfo> returnOrderGoodsInfoList = returnOrderService.findReturnOrderGoodsInfoByOrderNumber(returnNo);
-                    //验证反配数量正确
-                    for (WtaReturningOrderGoods goods : returningOrderGoodsList) {
-                        Boolean flag = Boolean.FALSE;
-                        for (ReturnOrderGoodsInfo orderGoodsInfo : returnOrderGoodsInfoList) {
-                            if (goods.getGcode().equals(orderGoodsInfo.getSku()) && goods.getRecQty().equals(orderGoodsInfo.getReturnQty())) {
-                                flag = Boolean.TRUE;
-                            }
-                        }
-                        if (!flag) {
-                            returningOrderHeader.setErrMessage("商品sku为" + goods.getGcode() + "的商品反配数量错误!");
-                            returningOrderHeader.setHandleFlag("0");
-                            returningOrderHeader.setHandleTime(new Date());
-                            this.wmsToAppOrderDAO.updateReturningOrderHeaderByOrderNo(returningOrderHeader);
-                            throw new RuntimeException();
-                        }
-                    }
+//                    //验证反配数量正确
+//                    for (WtaReturningOrderGoods goods : returningOrderGoodsList) {
+//                        Boolean flag = Boolean.FALSE;
+//                        for (ReturnOrderGoodsInfo orderGoodsInfo : returnOrderGoodsInfoList) {
+//                            if (goods.getGcode().equals(orderGoodsInfo.getSku()) && goods.getRecQty().equals(orderGoodsInfo.getReturnQty())) {
+//                                flag = Boolean.TRUE;
+//                            }
+//                        }
+//                        if (!flag) {
+//                            returningOrderHeader.setErrMessage("商品sku为" + goods.getGcode() + "的商品反配数量错误!");
+//                            returningOrderHeader.setHandleFlag("0");
+//                            returningOrderHeader.setHandleTime(new Date());
+//                            this.wmsToAppOrderDAO.updateReturningOrderHeaderByOrderNo(returningOrderHeader);
+//                            throw new RuntimeException();
+//                        }
+//                    }
                     //变更库存、退非第三方金额
                     ReturnOrderBaseInfo returnOrder = returnOrderService.queryByReturnNo(returnNo);
                     City city = cityService.findCityByWarehouseNo(returningOrderHeader.getWhNo());

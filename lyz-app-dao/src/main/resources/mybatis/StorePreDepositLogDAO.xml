@@ -18,10 +18,10 @@
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO">
         INSERT INTO st_pre_deposit_log
-        (create_time, change_money, remarks, change_type, store_id, operator_id, operator_type,
+        (create_time, change_money, remarks, change_type, change_type_desc,store_id, operator_id, operator_type,
         operator_ip, order_number, balance, detail_reason, transfer_time, merchant_order_number)
         VALUES
-        (#{createTime}, #{changeMoney}, #{remarks}, #{changeType}, #{storeId}, #{operatorId}, #{operatorType},
+        (#{createTime}, #{changeMoney}, #{remarks}, #{changeType}, #{changeTypeDesc},#{storeId}, #{operatorId}, #{operatorType},
         #{operatorIp}, #{orderNumber}, #{balance}, #{detailReason}, #{transferTime}, #{merchantOrderNumber})
     </insert>
 
