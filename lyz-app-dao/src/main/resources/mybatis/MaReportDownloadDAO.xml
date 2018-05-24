@@ -1503,8 +1503,8 @@
         if(og.goods_line_type = "PRODUCT_COUPON" ,oci.purchase_price , (og.order_qty ) * og.return_price ) as
         'financialSales',
         if(og.goods_line_type = "PRODUCT_COUPON" ,if(oci.purchase_price = 0,0,(oci.purchase_price - (og.settlement_price - og.wholesale_price))) ,
-        (og.order_qty ) * (og.return_price - (og.settlement_price - og.wholesale_price)) ) as 'distributionSales',
-        og.wholesale_price as 'wholesalePrice',
+        IF(og.goods_line_type = "GOODS" , (og.wholesale_price * og.order_qty) , 0) ) as 'distributionSales',
+        if(og.goods_line_type = "GOODS", og.wholesale_price , if((og.goods_line_type = "PRESENT" OR oci.get_type = 'MANUAL_GRANT' or oci.purchase_price = 0),0,og.wholesale_price)) as 'wholesalePrice',
         og.retail_price as 'retailPrice',
         og.settlement_price as 'settlementPrice',
         (og.retail_price - og.settlement_price) as 'memberDiscount',
@@ -1541,7 +1541,7 @@
                </if>-->
         <choose>
             <when test="'ZS'==storeType">
-                and ((s.store_type in ('ZS') and s.fit_compay_type = 'MONTHLY') or s.store_structure_code like concat("%|JZC001|%") )
+                and ((s.store_type in ('ZS') and s.fit_compay_type = "MONTHLY") or (s.store_structure_code like concat("%|JZC001|%") and s.store_type = 'ZY' ) )
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in ('FX','FXCK')
@@ -1586,9 +1586,9 @@
         as 'financialSales',
         if(og.goods_line_type = "PRODUCT_COUPON" ,
         if(oci.purchase_price = 0,0,(oci.purchase_price - (og.settlement_price - og.wholesale_price))),
-        (og.order_qty ) * (og.return_price - (og.settlement_price - og.wholesale_price)) ) as
+        IF(og.goods_line_type = "GOODS" , (og.wholesale_price * og.order_qty) , 0) ) as
         'distributionSales',
-        og.wholesale_price as 'wholesalePrice',
+        if(og.goods_line_type = "GOODS", og.wholesale_price , if((og.goods_line_type = "PRESENT" OR oci.get_type = 'MANUAL_GRANT' or oci.purchase_price = 0),0,og.wholesale_price)) as 'wholesalePrice',
         og.retail_price as 'retailPrice',
         og.settlement_price as 'settlementPrice',
         (og.retail_price - og.settlement_price) as 'memberDiscount',
@@ -1622,7 +1622,7 @@
                 </if>-->
         <choose>
             <when test="'ZS'==storeType">
-                and ((s.store_type in ('ZS') and s.fit_compay_type = 'MONTHLY') or s.store_structure_code like concat("%|JZC001|%") )
+                and ((s.store_type in ('ZS') and s.fit_compay_type = "MONTHLY") or (s.store_structure_code like concat("%|JZC001|%") and s.store_type = 'ZY' ) )
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in ('FX','FXCK')
@@ -1668,9 +1668,9 @@
         og.return_price ) as 'financialSales',
         if(og.goods_line_type = "PRODUCT_COUPON" ,
         if(oci.purchase_price = 0,0,(oci.purchase_price - (og.settlement_price - og.wholesale_price))),
-        (og.order_qty ) * (og.return_price - (og.settlement_price - og.wholesale_price))
+        IF(og.goods_line_type = "GOODS" , (og.wholesale_price * og.order_qty) , 0)
         ) as 'distributionSales',
-        og.wholesale_price as 'wholesalePrice',
+        if(og.goods_line_type = "GOODS", og.wholesale_price , if((og.goods_line_type = "PRESENT" OR oci.get_type = 'MANUAL_GRANT' or oci.purchase_price = 0),0,og.wholesale_price)) as 'wholesalePrice',
         og.retail_price as 'retailPrice',
         og.settlement_price as 'settlementPrice',
         (og.retail_price - og.settlement_price) as 'memberDiscount',
@@ -1711,7 +1711,7 @@
                 </if>-->
         <choose>
             <when test="'ZS'==storeType">
-                and ((s.store_type in ('ZS') and s.fit_compay_type = 'MONTHLY') or s.store_structure_code like concat("%|JZC001|%") )
+                and ((s.store_type in ('ZS') and s.fit_compay_type = "MONTHLY") or (s.store_structure_code like concat("%|JZC001|%") and s.store_type = 'ZY' ) )
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in  ('FX','FXCK')
@@ -1760,9 +1760,9 @@
         (og.order_qty ) * og.return_price ) as 'financialSales',
         if(og.goods_line_type = "PRODUCT_COUPON" ,
         if(oci.purchase_price = 0,0,(oci.purchase_price - (og.settlement_price - og.wholesale_price))),
-        (og.order_qty ) * (og.return_price - (og.settlement_price -
-        og.wholesale_price)) ) as 'distributionSales',
-        og.wholesale_price as 'wholesalePrice',
+        IF(og.goods_line_type = "GOODS" , (og.wholesale_price * og.order_qty) , 0)
+         ) as 'distributionSales',
+        if(og.goods_line_type = "GOODS", og.wholesale_price , if((og.goods_line_type = "PRESENT" OR oci.get_type = 'MANUAL_GRANT' or oci.purchase_price = 0),0,og.wholesale_price)) as 'wholesalePrice',
         og.retail_price as 'retailPrice',
         og.settlement_price as 'settlementPrice',
         (og.retail_price - og.settlement_price) as 'memberDiscount',
@@ -1802,7 +1802,7 @@
 
         <choose>
             <when test="'ZS'==storeType">
-                and ((s.store_type in ('ZS') and s.fit_compay_type = 'MONTHLY') or s.store_structure_code like concat("%|JZC001|%") )
+                and ((s.store_type in ('ZS') and s.fit_compay_type = "MONTHLY") or (s.store_structure_code like concat("%|JZC001|%") and s.store_type = 'ZY' ) )
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in  ('FX','FXCK')
@@ -1844,8 +1844,8 @@
         if(org.goods_line_type = "PRODUCT_COUPON" ,-ABS(oci.purchase_price),-ABS(org.return_price * org.return_qty)) as 'financialSales',
         if(org.goods_line_type = "PRODUCT_COUPON" ,
         if(oci.purchase_price = 0,0,-ABS((oci.purchase_price - (org.settlement_price - org.wholesale_price)) * org.return_qty)) ,
-        -ABS((org.settlement_price - org.wholesale_price) * org.return_qty)) as 'distributionSales',
-        -ABS(org.wholesale_price) as 'wholesalePrice',
+        -ABS(IF(org.goods_line_type = "GOODS" , (org.wholesale_price * org.return_qty) , 0))) as 'distributionSales',
+        -ABS(if(org.goods_line_type = "GOODS", org.wholesale_price , if((org.goods_line_type = "PRESENT" OR oci.get_type = 'MANUAL_GRANT' or oci.purchase_price = 0),0,org.wholesale_price))) as 'wholesalePrice',
         0 as 'retailPrice',
         0 as 'settlementPrice',
         0 as 'memberDiscount',
@@ -1880,7 +1880,7 @@
            </if>-->
         <choose>
             <when test="'ZS'==storeType">
-                and ((s.store_type in ('ZS') and s.fit_compay_type = 'MONTHLY') or s.store_structure_code like concat("%|JZC001|%") )
+                and ((s.store_type in ('ZS') and s.fit_compay_type = "MONTHLY") or (s.store_structure_code like concat("%|JZC001|%") and s.store_type = 'ZY' ) )
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in ('FX','FXCK')
@@ -1922,8 +1922,8 @@
         if(org.goods_line_type = "PRODUCT_COUPON" ,-ABS(oci.purchase_price),-ABS(org.return_price * org.return_qty)) as 'financialSales',
         if(org.goods_line_type = "PRODUCT_COUPON" ,
         if(oci.purchase_price = 0,0,-ABS((oci.purchase_price - (org.settlement_price - org.wholesale_price)) * org.return_qty)) ,
-        -ABS((org.settlement_price - org.wholesale_price) * org.return_qty)) as 'distributionSales',
-        -ABS(org.wholesale_price) as 'wholesalePrice',
+        -ABS(IF(org.goods_line_type = "GOODS" , (org.wholesale_price * org.return_qty) , 0))) as 'distributionSales',
+        -ABS(if(org.goods_line_type = "GOODS", org.wholesale_price , if((org.goods_line_type = "PRESENT" OR oci.get_type = 'MANUAL_GRANT' or oci.purchase_price = 0),0,org.wholesale_price))) as 'wholesalePrice',
         0 as 'retailPrice',
         0 as 'settlementPrice',
         0 as 'memberDiscount',
@@ -1959,7 +1959,7 @@
            </if>-->
         <choose>
             <when test="'ZS'==storeType">
-                and ((s.store_type in ('ZS') and s.fit_compay_type = 'MONTHLY') or s.store_structure_code like concat("%|JZC001|%") )
+                and ((s.store_type in ('ZS') and s.fit_compay_type = "MONTHLY") or (s.store_structure_code like concat("%|JZC001|%") and s.store_type = 'ZY' ) )
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in ('FX','FXCK')
@@ -2002,8 +2002,8 @@
         if(og.goods_line_type = "PRODUCT_COUPON" ,oci.purchase_price , (og.order_qty ) * og.return_price ) as
         'financialSales',
         if(og.goods_line_type = "PRODUCT_COUPON" ,if(oci.purchase_price = 0,0,(oci.purchase_price - (og.settlement_price - og.wholesale_price))) ,
-        (og.order_qty ) * (og.return_price - (og.settlement_price - og.wholesale_price)) ) as 'distributionSales',
-        og.wholesale_price as 'wholesalePrice',
+        IF(og.goods_line_type = "GOODS" , (og.wholesale_price * og.order_qty) , 0)) as 'distributionSales',
+        if(og.goods_line_type = "GOODS", og.wholesale_price , if((og.goods_line_type = "PRESENT" OR oci.get_type = 'MANUAL_GRANT' or oci.purchase_price = 0),0,og.wholesale_price)) as 'wholesalePrice',
         og.retail_price as 'retailPrice',
         og.settlement_price as 'settlementPrice',
         (og.retail_price - og.settlement_price) as 'memberDiscount',
@@ -2042,14 +2042,18 @@
                </if>-->
         <choose>
             <when test="'ZS'==storeType">
-                and ((s.store_type in ('ZS') and s.fit_compay_type = 'MONTHLY') or s.store_structure_code like concat("%|JZC001|%") )
+                and s.store_type = -1
             </when>
             <when test="'FX'==storeType">
-                and s.store_type in ('FX','FXCK')
+                and s.store_type = -1
             </when>
             <otherwise>
-                and st2.store_structure_code like concat('%',#{companyCode},'%')
+
                 and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
+                and st2.store_id in
+                <foreach collection="list" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
             </otherwise>
         </choose>
         order by ob.store_id,ob.sales_consult_id,ob.create_time
@@ -2082,8 +2086,8 @@
         if(org.goods_line_type = "PRODUCT_COUPON" ,-ABS(oci.purchase_price),-ABS(org.return_price * org.return_qty)) as 'financialSales',
         if(org.goods_line_type = "PRODUCT_COUPON" ,
         if(oci.purchase_price = 0,0,-ABS((oci.purchase_price - (org.settlement_price - org.wholesale_price)) * org.return_qty)) ,
-        -ABS((org.settlement_price - org.wholesale_price) * org.return_qty)) as 'distributionSales',
-        -ABS(org.wholesale_price) as 'wholesalePrice',
+        -ABS(IF(org.goods_line_type = "GOODS" , (org.wholesale_price * org.return_qty) , 0))) as 'distributionSales',
+        -ABS(if(org.goods_line_type = "GOODS", org.wholesale_price , if((org.goods_line_type = "PRESENT" OR oci.get_type = 'MANUAL_GRANT' or oci.purchase_price = 0),0,org.wholesale_price))) as 'wholesalePrice',
         0 as 'retailPrice',
         0 as 'settlementPrice',
         0 as 'memberDiscount',
@@ -2120,14 +2124,18 @@
            </if>-->
         <choose>
             <when test="'ZS'==storeType">
-                and ((s.store_type in ('ZS') and s.fit_compay_type = 'MONTHLY') or s.store_structure_code like concat("%|JZC001|%") )
+                and s.store_type = -1
             </when>
             <when test="'FX'==storeType">
-                and s.store_type in ('FX','FXCK')
+                and s.store_type = -1
             </when>
             <otherwise>
-                and st2.store_structure_code like concat('%',#{companyCode},'%')
+
                 and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
+                and st2.store_id in
+                <foreach collection="list" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
             </otherwise>
         </choose>
         )

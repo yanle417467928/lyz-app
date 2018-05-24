@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.DeliveryAddressDAO;
+import cn.com.leyizhuang.app.foundation.pojo.AreaManagementDO;
 import cn.com.leyizhuang.app.foundation.pojo.request.DeliveryAddressRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.DeliveryAddressDO;
@@ -75,6 +76,14 @@ public class DeliveryAddressServiceImpl implements DeliveryAddressService {
     }
 
     @Override
+    public DeliveryAddressResponse getDefaultDeliveryAddressByUserIdAndIdentityTypeAndDeliveryId(Long userId, AppIdentityType identityType, Long deliveryId) {
+        if (null != userId && null != identityType && null != deliveryId) {
+            return deliveryAddressDAO.getDefaultDeliveryAddressByUserIdAndIdentityTypeAndDeliveryId(userId, identityType,deliveryId);
+        }
+        return null;
+    }
+
+    @Override
     public void clearDefaultAddressByUserIdAndIdentityType(Long userId, AppIdentityType identityType) {
         if (null != userId && null != identityType) {
             deliveryAddressDAO.clearDefaultAddressByUserIdAndIdentityType(userId, identityType);
@@ -95,6 +104,26 @@ public class DeliveryAddressServiceImpl implements DeliveryAddressService {
             return deliveryAddressDAO.queryListByUserIdAndIdentityTypeAndStatusIsTrueAndKeywords(userId, identityType, keywords);
         }
         return null;
+    }
+
+    @Override
+    public void maAddDeliveryAddress(DeliveryAddressDO deliveryAddress) {
+        deliveryAddressDAO.addDeliveryAddress(deliveryAddress);
+    }
+
+    @Override
+    public List<AreaManagementDO> findAllAreaManagement() {
+        return deliveryAddressDAO.findAllAreaManagement();
+    }
+
+    @Override
+    public List<AreaManagementDO> findAreaManagementByProvinceCode(String provinceCode,Long type) {
+        return deliveryAddressDAO.findAreaManagementByProvinceCode(provinceCode,type);
+    }
+
+    @Override
+    public String findAreaNameByCode(String provinceCode) {
+        return deliveryAddressDAO.findAreaNameByCode(provinceCode);
     }
 
     private DeliveryAddressDO transform(Long userId, AppIdentityType identityType, DeliveryAddressRequest deliveryAddress) {

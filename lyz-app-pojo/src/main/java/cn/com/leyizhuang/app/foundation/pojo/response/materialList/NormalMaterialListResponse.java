@@ -57,4 +57,9 @@ public class NormalMaterialListResponse {
      */
     private String remark;
 
+    /**
+     * 地址id
+     */
+    private Long deliveryId;
+
 }

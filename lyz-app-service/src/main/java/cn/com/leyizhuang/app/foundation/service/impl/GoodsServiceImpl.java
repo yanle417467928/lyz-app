@@ -522,9 +522,9 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public PageInfo<UserGoodsResponse> findGoodsListByCustomerIdAndIdentityTypeAndUserRank(Long userId, AppIdentityType identityType, Integer page, Integer size) {
+    public PageInfo<UserGoodsResponse> findGoodsListByCustomerIdAndIdentityTypeAndUserRank(Long userId, AppIdentityType identityType, String keywords, Integer page, Integer size) {
         PageHelper.startPage(page, size);
-        List<UserGoodsResponse> list = goodsDAO.findGoodsListByCustomerIdAndIdentityTypeAndUserRank(userId, identityType);
+        List<UserGoodsResponse> list = goodsDAO.findGoodsListByCustomerIdAndIdentityTypeAndUserRank(userId, identityType, keywords);
         return new PageInfo<>(list);
     }
 
@@ -593,9 +593,9 @@ public class GoodsServiceImpl implements GoodsService {
         return flag;
     }
     @Override
-    public PageInfo<UserGoodsResponse> findGoodsListBySellerIdAndIdentityTypeAndRankCode(Long userId, AppIdentityType identityType, String rankCode, Integer page, Integer size) {
+    public PageInfo<UserGoodsResponse> findGoodsListBySellerIdAndIdentityTypeAndRankCode(Long userId, AppIdentityType identityType, String rankCode, String keywords, Integer page, Integer size) {
         PageHelper.startPage(page, size);
-        List<UserGoodsResponse> list = goodsDAO.findGoodsListBySellerIdAndIdentityTypeAndRankCode(userId, identityType, rankCode);
+        List<UserGoodsResponse> list = goodsDAO.findGoodsListBySellerIdAndIdentityTypeAndRankCode(userId, identityType, rankCode, keywords);
         return new PageInfo<>(list);
     }
 
