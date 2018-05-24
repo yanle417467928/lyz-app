@@ -230,7 +230,7 @@
 
     <update id="updateBillStatus" >
       UPDATE bill_info SET
-      `status` = {afterStatus}
+      `status` = #{afterStatus}
       WHERE store_id = #{storeId} AND `status` = #{beforeStatus}
     </update>
 

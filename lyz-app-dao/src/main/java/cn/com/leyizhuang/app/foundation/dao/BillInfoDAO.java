@@ -44,7 +44,8 @@ public interface BillInfoDAO {
 
     void saveBillInfo(BillInfoDO billInfo);
 
-    void updateBillStatus(@Param("storeId") Long storeId, @Param("beforeStatus")BillStatusEnum beforeStatus, @Param("afterStatus")BillStatusEnum afterStatus);
+    void updateBillStatus(@Param("storeId") Long storeId, @Param("beforeStatus")BillStatusEnum beforeStatus,
+                          @Param("afterStatus")BillStatusEnum afterStatus);
 
     BillInfoDO findBillInfoByBillEndDateAndStoreIdAndStatus(@Param("storeId") Long storeId, @Param("billEndDate")String billEndDate, @Param("status")BillStatusEnum status);
 
