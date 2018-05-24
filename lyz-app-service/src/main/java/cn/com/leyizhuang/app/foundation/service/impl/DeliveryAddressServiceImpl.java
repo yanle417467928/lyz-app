@@ -146,6 +146,7 @@ public class DeliveryAddressServiceImpl implements DeliveryAddressService {
             deliveryAddressDO.setUserId(userId);
             deliveryAddressDO.setIsDefault(deliveryAddress.getIsDefault());
             deliveryAddressDO.setStatus(true);
+            deliveryAddressDO.setEstateInfo(deliveryAddress.getEstateInfo());
             return deliveryAddressDO;
         } else {
             return null;
