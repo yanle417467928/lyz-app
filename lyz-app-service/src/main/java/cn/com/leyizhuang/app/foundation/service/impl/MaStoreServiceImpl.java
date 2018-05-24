@@ -319,4 +319,26 @@ public class MaStoreServiceImpl implements MaStoreService {
         return this.mastoreDAO.findStoresIdByStructureCode(structureCode);
     }
 
+    @Override
+    public List<Long> findAllFitCompanySellerId() {
+        return this.mastoreDAO.findAllFitCompanySellerId();
+    }
+
+
+    @Override
+    public Boolean exsitStoreInCompany(Long storeId,String companyCode) {
+        return this.mastoreDAO.exsitStoreInCompany(storeId,companyCode);
+    }
+
+    @Override
+    public List<Long> findFitCompanyIdBySellerId(Long id) {
+        return this.mastoreDAO.findFitCompanyIdBySellerId(id);
+    }
+
+
+    @Override
+    public List<SimpleStoreParam> findStoresListByCompanyCodeAndStoreType(String companyCode,String storeType,List<Long> storeIds) {
+        return this.mastoreDAO.findStoresListByCompanyCodeAndStoreType(companyCode,storeType,storeIds);
+    }
+
 }

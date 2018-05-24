@@ -737,4 +737,67 @@
      s.store_structure_code like concat('%',#{structureCode},'%')
     </select>
 
+
+    <select id="findAllFitCompanySellerId"
+            resultType="java.lang.Long">
+        SELECT
+        DISTINCT
+        sales_manager
+        FROM
+        st_store s
+        WHERE
+       store_type='ZS'
+       AND
+       sales_manager is not null
+    </select>
+
+
+    <select id="exsitStoreInCompany"
+            resultType="java.lang.Boolean">
+     SELECT EXISTS (  SELECT
+        1
+        FROM
+        st_store s
+        WHERE
+        store_id=#{storeId}
+        AND
+        store_structure_code  LIKE CONCAT(CONCAT('%', #{companyCode}), '%')
+        )
+
+    </select>
+
+
+    <select id="findFitCompanyIdBySellerId"
+            resultType="java.lang.Long">
+        SELECT
+        store_id
+        FROM
+        st_store s
+        WHERE
+        sales_manager=#{id}
+        AND
+       fit_compay_type='CASH'
+    </select>
+
+
+    <select id="findStoresListByCompanyCodeAndStoreType" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
+        SELECT
+        s.store_id,
+        s.store_name
+        FROM
+        st_store s
+        WHERE
+        1=1
+        <if test="null != companyCode and companyCode != ''">
+            AND s.store_structure_code LIKE CONCAT('%',#{companyCode},'%')
+        </if>
+        <if test="null != storeType and storeType != ''">
+            AND s.store_type = #{storeType}
+        </if>
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
 </mapper>

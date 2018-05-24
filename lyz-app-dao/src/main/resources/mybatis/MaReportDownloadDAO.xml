@@ -2265,16 +2265,18 @@
         LEFT JOIN ord_shipping os on o.oid = os.oid
         LEFT JOIN inter_wta_order_shipping_header wa ON o.ord_no = wa.order_no
        where 1=1
+        and
+        o.`status` != 'REJECTED'
+        AND
+        o.`status` != 'CANCELED'
         <choose>
-            <when test="'ZS'==storeType">
-                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
-            </when>
             <when test="'FX'==storeType">
                 and s.store_type in ('FX','FXCK')
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
                     and s.store_type =#{storeType}
+                    OR  s.store_type = 'ZS'
                 </if>
                 AND o.store_id IN
                 <foreach collection="list" item="item" open="(" close=")" separator=",">
