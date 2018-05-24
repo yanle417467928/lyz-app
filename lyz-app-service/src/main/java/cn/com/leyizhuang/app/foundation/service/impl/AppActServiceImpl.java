@@ -38,12 +38,12 @@ public class AppActServiceImpl implements AppActService {
     /**
      * 不参与专供促销的商品
      */
-    private final String ZG_EXCLUDE_GOODS = "VHED8000-5L,";
+    private final String ZG_EXCLUDE_GOODS = "";
 
     /**
      * 不参与专供促销的等级
      */
-    private final String ZG_EXCLUDE_LEVEL = "B";
+    private final String ZG_EXCLUDE_LEVEL = "";
 
     @Autowired
     private ActBaseDAO actBaseDAO;
@@ -851,16 +851,16 @@ public class AppActServiceImpl implements AppActService {
         }
 
         /** 一部等级分专供会员不享受促销 **/
-        String[] excludeLevel = this.ZG_EXCLUDE_LEVEL.split(",");
-        String[] excludeGoods = this.ZG_EXCLUDE_GOODS.split(",");
+//        String[] excludeLevel = this.ZG_EXCLUDE_LEVEL.split(",");
+//        String[] excludeGoods = this.ZG_EXCLUDE_GOODS.split(",");
 
-        if (excludeLevel != null && excludeLevel.length > 0){
-            for (String level : excludeLevel){
-                if (level.equals(customerRankInfoResponse.getRankCode())){
-                    return null;
-                }
-            }
-        }
+//        if (excludeLevel != null && excludeLevel.length > 0){
+//            for (String level : excludeLevel){
+//                if (level.equals(customerRankInfoResponse.getRankCode())){
+//                    return null;
+//                }
+//            }
+//        }
 
         // 根据用户购买产品id 返回专供产品
         List<GiftListResponseGoods> goodsZGList = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserId(goodsIdList,cusId,AppIdentityType.CUSTOMER);
@@ -871,20 +871,20 @@ public class AppActServiceImpl implements AppActService {
         }
 
         /** 首先排除一部分不享受专供的商品 **/
-        if(customerRankInfoResponse.getCityId().equals(2L)){
-            // 目前只有郑州有这种神操作 C线 一部分商品没有促销
-            if (excludeGoods != null && excludeGoods.length > 0){
-                for (String sku : excludeGoods){
-                    for (int i = goodsZGList.size()-1 ; i >= 0; i--){
-                        GiftListResponseGoods goods = goodsZGList.get(i);
-                        if (sku.equals(goods.getSku())){
-                            goodsZGList.remove(i);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
+//        if(customerRankInfoResponse.getCityId().equals(2L)){
+//            // 目前只有郑州有这种神操作 C线 一部分商品没有促销
+//            if (excludeGoods != null && excludeGoods.length > 0){
+//                for (String sku : excludeGoods){
+//                    for (int i = goodsZGList.size()-1 ; i >= 0; i--){
+//                        GiftListResponseGoods goods = goodsZGList.get(i);
+//                        if (sku.equals(goods.getSku())){
+//                            goodsZGList.remove(i);
+//                            break;
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
         // 排除掉华润以外的专供产品
         for (int i = goodsZGList.size()-1 ; i >= 0; i--){

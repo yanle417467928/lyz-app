@@ -108,6 +108,9 @@ public class ActBaseDO{
     // 互斥性 true: 与其他促销互斥
     private Boolean mutex = true;
 
+    // 专供类型
+    private String rankCode;
+
     /**
      * 获取最终促销类型
      */

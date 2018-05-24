@@ -64,6 +64,10 @@ public interface ActBaseDAO{
 
     List<ActBaseDO> queryZgFirstList(@Param("cityId") Long cityId,@Param("now") LocalDateTime now);
 
+    List<ActBaseDAO> queryZgFirstListByRankCode(@Param("cityId") Long cityId,@Param("now") LocalDateTime now,
+                                                @Param("storeId") Long storeId,@Param("actTarget") String actTarget,
+                                                @Param("skus") List<String> skus);
+
     /**
      * 批量插入
      * @param trainRecordList
