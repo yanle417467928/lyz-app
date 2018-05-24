@@ -416,4 +416,11 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
         GROUP BY r.rank_code
     </select>
 
+
+    <select id="getSalesManagerSupportHotline" resultType="java.lang.String">
+    select mobile
+    from emp_employee
+    where emp_id =(select sales_manager from st_store where store_code = #{storeCode})
+    </select>
+
 </mapper>
