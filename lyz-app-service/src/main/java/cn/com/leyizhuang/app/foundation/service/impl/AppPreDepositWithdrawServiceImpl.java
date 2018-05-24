@@ -204,7 +204,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
         log.setOrderNumber(stPreDepositWithdraw.getApplyNo());
         log.setMerchantOrderNumber("");
         log.setBalance(CountUtil.add(preDeposit.getBalance(), -subBalance));
-        log.setChangeTypeDesc("门店预存款提现");
+        //log.setChangeTypeDesc("门店预存款提现");
         this.storePreDepositLogService.save(log);
 
         //生成提现退款信息
