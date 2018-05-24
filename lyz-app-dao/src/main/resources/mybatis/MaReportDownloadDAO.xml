@@ -1541,7 +1541,7 @@
                </if>-->
         <choose>
             <when test="'ZS'==storeType">
-                and ((s.store_type in ('ZS') and s.fit_compay_type = 'MONTHLY') or s.store_structure_code like concat("%|JZC001|%") )
+                and ((s.store_type in ('ZS') and s.fit_compay_type = "MONTHLY") or (s.store_structure_code like concat("%|JZC001|%") and s.store_type = 'ZY' ) )
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in ('FX','FXCK')
@@ -1622,7 +1622,7 @@
                 </if>-->
         <choose>
             <when test="'ZS'==storeType">
-                and ((s.store_type in ('ZS') and s.fit_compay_type = 'MONTHLY') or s.store_structure_code like concat("%|JZC001|%") )
+                and ((s.store_type in ('ZS') and s.fit_compay_type = "MONTHLY") or (s.store_structure_code like concat("%|JZC001|%") and s.store_type = 'ZY' ) )
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in ('FX','FXCK')
@@ -1711,7 +1711,7 @@
                 </if>-->
         <choose>
             <when test="'ZS'==storeType">
-                and ((s.store_type in ('ZS') and s.fit_compay_type = 'MONTHLY') or s.store_structure_code like concat("%|JZC001|%") )
+                and ((s.store_type in ('ZS') and s.fit_compay_type = "MONTHLY") or (s.store_structure_code like concat("%|JZC001|%") and s.store_type = 'ZY' ) )
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in  ('FX','FXCK')
@@ -1802,7 +1802,7 @@
 
         <choose>
             <when test="'ZS'==storeType">
-                and ((s.store_type in ('ZS') and s.fit_compay_type = 'MONTHLY') or s.store_structure_code like concat("%|JZC001|%") )
+                and ((s.store_type in ('ZS') and s.fit_compay_type = "MONTHLY") or (s.store_structure_code like concat("%|JZC001|%") and s.store_type = 'ZY' ) )
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in  ('FX','FXCK')
@@ -1880,7 +1880,7 @@
            </if>-->
         <choose>
             <when test="'ZS'==storeType">
-                and ((s.store_type in ('ZS') and s.fit_compay_type = 'MONTHLY') or s.store_structure_code like concat("%|JZC001|%") )
+                and ((s.store_type in ('ZS') and s.fit_compay_type = "MONTHLY") or (s.store_structure_code like concat("%|JZC001|%") and s.store_type = 'ZY' ) )
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in ('FX','FXCK')
@@ -1959,7 +1959,7 @@
            </if>-->
         <choose>
             <when test="'ZS'==storeType">
-                and ((s.store_type in ('ZS') and s.fit_compay_type = 'MONTHLY') or s.store_structure_code like concat("%|JZC001|%") )
+                and ((s.store_type in ('ZS') and s.fit_compay_type = "MONTHLY") or (s.store_structure_code like concat("%|JZC001|%") and s.store_type = 'ZY' ) )
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in ('FX','FXCK')
@@ -2042,10 +2042,10 @@
                </if>-->
         <choose>
             <when test="'ZS'==storeType">
-                and ((s.store_type in ('ZS') and s.fit_compay_type = 'MONTHLY') or s.store_structure_code like concat("%|JZC001|%") )
+                and s.store_type = -1
             </when>
             <when test="'FX'==storeType">
-                and s.store_type in ('FX','FXCK')
+                and s.store_type = -1
             </when>
             <otherwise>
 
@@ -2124,10 +2124,10 @@
            </if>-->
         <choose>
             <when test="'ZS'==storeType">
-                and ((s.store_type in ('ZS') and s.fit_compay_type = 'MONTHLY') or s.store_structure_code like concat("%|JZC001|%") )
+                and s.store_type = -1
             </when>
             <when test="'FX'==storeType">
-                and s.store_type in ('FX','FXCK')
+                and s.store_type = -1
             </when>
             <otherwise>
 
