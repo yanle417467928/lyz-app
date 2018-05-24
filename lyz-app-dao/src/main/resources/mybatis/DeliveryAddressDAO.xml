@@ -183,7 +183,8 @@
         AND (receiver LIKE concat(concat('%',#{keywords}),'%')
           OR receiver_phone LIKE concat(concat('%',#{keywords}),'%')
           OR residence_name LIKE concat(concat('%',#{keywords}),'%')
-          OR detailed_address LIKE concat(concat('%',#{keywords}),'%'))
+          OR detailed_address LIKE concat(concat('%',#{keywords}),'%')
+          OR estate_info LIKE concat(concat('%',#{keywords}),'%'))
         AND status IS TRUE
         ORDER BY id DESC
     </select>
