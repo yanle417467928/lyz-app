@@ -1057,8 +1057,8 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             stPreDepositLogDO.setChangeMoney(orderBillingDetails.getStPreDeposit());
                             stPreDepositLogDO.setRemarks("拒签退货返还门店预存款");
                             stPreDepositLogDO.setOrderNumber(orderNumber);
-                            stPreDepositLogDO.setChangeType(StorePreDepositChangeType.RETURN_ORDER);
-                            stPreDepositLogDO.setChangeTypeDesc(StorePreDepositChangeType.RETURN_ORDER.getDescription());
+                            stPreDepositLogDO.setChangeType(StorePreDepositChangeType.REJECT_ORDER);
+                            stPreDepositLogDO.setChangeTypeDesc(StorePreDepositChangeType.REJECT_ORDER.getDescription());
                             stPreDepositLogDO.setStoreId(storePreDeposit.getStoreId());
                             stPreDepositLogDO.setOperatorId(orderBaseInfo.getCustomerId());
                             stPreDepositLogDO.setOperatorType(AppIdentityType.CUSTOMER);
@@ -1138,8 +1138,8 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             stPreDepositLogDO.setChangeMoney(orderBillingDetails.getStPreDeposit());
                             stPreDepositLogDO.setRemarks("拒签退货返还门店预存款");
                             stPreDepositLogDO.setOrderNumber(orderNumber);
-                            stPreDepositLogDO.setChangeType(StorePreDepositChangeType.RETURN_ORDER);
-                            stPreDepositLogDO.setChangeTypeDesc(StorePreDepositChangeType.RETURN_ORDER.getDescription());
+                            stPreDepositLogDO.setChangeType(StorePreDepositChangeType.REJECT_ORDER);
+                            stPreDepositLogDO.setChangeTypeDesc(StorePreDepositChangeType.REJECT_ORDER.getDescription());
                             stPreDepositLogDO.setStoreId(storePreDeposit.getStoreId());
                             stPreDepositLogDO.setOperatorId(orderBaseInfo.getCustomerId());
                             stPreDepositLogDO.setOperatorType(AppIdentityType.CUSTOMER);
@@ -2261,8 +2261,8 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             stPreDepositLogDO.setChangeMoney(orderBillingDetails.getStPreDeposit());
                             stPreDepositLogDO.setRemarks("拒签退货返还门店预存款");
                             stPreDepositLogDO.setOrderNumber(orderNumber);
-                            stPreDepositLogDO.setChangeType(StorePreDepositChangeType.RETURN_ORDER);
-                            stPreDepositLogDO.setChangeTypeDesc(StorePreDepositChangeType.RETURN_ORDER.getDescription());
+                            stPreDepositLogDO.setChangeType(StorePreDepositChangeType.REJECT_ORDER);
+                            stPreDepositLogDO.setChangeTypeDesc(StorePreDepositChangeType.REJECT_ORDER.getDescription());
                             stPreDepositLogDO.setStoreId(storePreDeposit.getStoreId());
                             stPreDepositLogDO.setOperatorId(orderBaseInfo.getCustomerId());
                             stPreDepositLogDO.setOperatorType(AppIdentityType.CUSTOMER);
@@ -2342,8 +2342,8 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             stPreDepositLogDO.setChangeMoney(orderBillingDetails.getStPreDeposit());
                             stPreDepositLogDO.setRemarks("拒签退货返还门店预存款");
                             stPreDepositLogDO.setOrderNumber(orderNumber);
-                            stPreDepositLogDO.setChangeType(StorePreDepositChangeType.RETURN_ORDER);
-                            stPreDepositLogDO.setChangeTypeDesc(StorePreDepositChangeType.RETURN_ORDER.getDescription());
+                            stPreDepositLogDO.setChangeType(StorePreDepositChangeType.REJECT_ORDER);
+                            stPreDepositLogDO.setChangeTypeDesc(StorePreDepositChangeType.REJECT_ORDER.getDescription());
                             stPreDepositLogDO.setStoreId(storePreDeposit.getStoreId());
                             stPreDepositLogDO.setOperatorId(orderBaseInfo.getCustomerId());
                             stPreDepositLogDO.setOperatorType(AppIdentityType.CUSTOMER);
