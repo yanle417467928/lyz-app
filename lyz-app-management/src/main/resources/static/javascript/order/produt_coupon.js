@@ -1228,6 +1228,7 @@ function openGoPay() {
     var subAmount = $("#subAmount").val();
 
     if ('RETAIL' == customerType) {
+        $("#vipDiscount").text('0.00');
         if (null == subAmount) {
             //设置应付金额
             $("#amountsPayable").text(totalPrice.toFixed(2))

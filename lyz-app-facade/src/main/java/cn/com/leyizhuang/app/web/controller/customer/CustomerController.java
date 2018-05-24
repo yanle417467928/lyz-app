@@ -883,14 +883,14 @@ public class CustomerController {
             logger.info("getCustomerSupportHotline OUT,顾客获取咨询电话失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == identityType || 6 != identityType) {
+        if (null == identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误",
                     null);
             logger.info("getCustomerSupportHotline OUT,顾客获取咨询电话失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         try {
-            List<SupportHotlineResponse> supportHotline = customerService.getCustomerSupportHotline(userId);
+            List<SupportHotlineResponse> supportHotline = customerService.getCustomerSupportHotline(userId,identityType);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, supportHotline);
             logger.info("getCustomerSupportHotline OUT顾客获取咨询电话成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;

@@ -279,4 +279,9 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     public List<StoreRankClassification> getStoreRankClassification(Long userId, AppIdentityType identityType) {
         return employeeDAO.getStoreRankClassification(userId, identityType);
     }
+
+    @Override
+    public String getSalesManagerSupportHotline(String storeCode) {
+        return employeeDAO.getSalesManagerSupportHotline(storeCode);
+    }
 }
