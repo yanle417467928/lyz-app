@@ -1397,7 +1397,7 @@ public class CommonServiceImpl implements CommonService {
                     if (affectLine > 0) {
                         StPreDepositLogDO log = new StPreDepositLogDO();
                         log.setStoreId(preDeposit.getStoreId());
-                        log.setChangeMoney(-jxPrice);
+                        log.setChangeMoney(jxPrice);
                         log.setBalance(preDeposit.getBalance() - jxPrice);
                         log.setCreateTime(LocalDateTime.now());
                         log.setOrderNumber(returnOrderBaseInfo.getReturnNo());
