@@ -2256,7 +2256,8 @@
         IFNULL(a.order_money,b.arrearage) as 'orderArrearageBefore',
         IFNULL(p.amount,0) as 'payUpMoney',
         IF(b.is_pay_up = TRUE,'是','否') as 'isPayUp',
-        b.pay_up_time as 'payUpTime'
+        IF(b.is_pay_up = TRUE, b.pay_up_time,null) as 'payUpTime',
+        CASE  d.status WHEN 'AUDITING' THEN '审核中' WHEN 'AUDIT_NO' THEN '审核不通过' WHEN 'AUDIT_PASSED' THEN '审核通过' END as auditStatus
         FROM ord_base_info o
         LEFT JOIN ord_billing_details b ON b.ord_no = o.ord_no
         LEFT JOIN (SELECT SUM(amount) amount,ord_no FROM ord_billing_payment_details GROUP BY ord_no) p ON o.ord_no = p.ord_no
@@ -2264,17 +2265,20 @@
         LEFT JOIN st_store s ON s.store_id = o.store_id
         LEFT JOIN ord_shipping os on o.oid = os.oid
         LEFT JOIN inter_wta_order_shipping_header wa ON o.ord_no = wa.order_no
-       where 1=1
+        LEFT JOIN  (SELECT * FROM (SELECT * FROM ord_arrears_audit  ORDER BY create_time DESC) c GROUP BY  c.ord_no) d ON  d.ord_no = o.ord_no
+        where 1=1
+        and
+        o.`status` != 'REJECTED'
+        AND
+        o.`status` != 'CANCELED'
         <choose>
-            <when test="'ZS'==storeType">
-                and (s.store_type in ('ZS') or s.store_structure_code like concat("%|JZC001|%") )
-            </when>
             <when test="'FX'==storeType">
                 and s.store_type in ('FX','FXCK')
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
-                    and s.store_type =#{storeType}
+                    and  ( s.store_type =#{storeType}
+                    OR  s.store_type = 'ZS')
                 </if>
                 AND o.store_id IN
                 <foreach collection="list" item="item" open="(" close=")" separator=",">

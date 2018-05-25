@@ -130,4 +130,12 @@ public interface MaStoreService {
     List<SimpleStoreParam> findStoresListByCityIdAndStoreType(Long cityId, String storeType);
 
     List<Long> findStoresIdByStructureCode(String structureCode);
+
+    List<Long> findAllFitCompanySellerId();
+
+    Boolean exsitStoreInCompany(Long storeId,String companyCode,String storeType);
+
+    List<Long> findFitCompanyIdBySellerId(Long id);
+
+    List<SimpleStoreParam> findStoresListByCompanyCodeAndStoreType(String companyCode,String storeType,List<Long> storeIds);
 }

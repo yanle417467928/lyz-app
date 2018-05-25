@@ -43,7 +43,7 @@
                         <div class="col-xs-12">
                             <div class="form-group">
                                 <label class="control-label col-md-2 col-xs-3" for="number" style="text-align: center">分公司:</label>
-                                <div class="col-md-2 col-xs-3" style="text-align: left">
+                                <div class="col-md-2 col-xs-3" style="text-align: left;margin-left: -6%">
                                     <select id="companyCode" name="companyCode" class="form-control selectpicker">
                                         <option value="RCC001">润成分公司</option>
                                         <option value="PCC001">鹏成分公司</option>
@@ -55,6 +55,11 @@
                                         <option value="CQC001">重庆分公司</option>
                                     </select>
                                 </div>
+                             <#--   <label class="control-label col-md-2 col-xs-3" for="number" style="text-align: center">门店:</label>
+                                <div class="col-md-2 col-xs-3" style="text-align: left;margin-left: -6%">
+                                    <select id="storeCode" name="storeCode" class="form-control selectpicker">
+                                    </select>
+                                </div>-->
                             </div>
                         </div>
                     </div>
@@ -63,9 +68,8 @@
                             <div class="form-group">
                                 <label class="control-label col-md-2 col-xs-3" for="storeType"
                                        style="text-align: center">门店类型:</label>
-                                <label class="control-label margin-6" style="margin-left: 5%">
-                                    <input type="radio" name="storeType" value="ZY" class="iradio_square-blue "
-                                           checked>
+                                <label class="control-label margin-6" style="margin-left: 0%">
+                                    <input type="radio" name="storeType" value="ZY" class="iradio_square-blue " checked>
                                     直营
                                 </label>
                                 <label class="control-label margin-6" style="margin-left: 5%">
@@ -75,10 +79,6 @@
                                 <label class="control-label margin-6" style="margin-left: 5%">
                                     <input type="radio" name="storeType" value="FX" class="iradio_square-blue ">
                                     分销(不分公司)
-                                </label>
-                                <label class="control-label margin-6" style="margin-left: 5%">
-                                    <input type="radio" name="storeType" value="ZS" class="iradio_square-blue ">
-                                    装饰公司(不分公司)
                                 </label>
                             </div>
                         </div>
@@ -134,7 +134,7 @@
             language: 'zh-CN',
             autoclose: true
         });
-
+        //findStorelist();
     });
 
 
@@ -217,6 +217,42 @@
         $('select').prop('selectedIndex', 0);
         $("select").selectpicker('refresh');
         $("#dataGrid").bootstrapTable('destroy');
+    }
+
+    function initSelect(select, optionName) {
+        $(select).empty();
+        var selectOption = "<option value=-1>" + optionName + "</option>";
+        $(select).append(selectOption);
+    }
+
+    function findStorelist() {
+        initSelect("#storeCode", "选择门店");
+        var store = "";
+        var companyCode = $('#companyCode').val();
+        var storeType = $('input[name="storeType"]:checked ').val()
+        $.ajax({
+            url: '/rest/stores/findStoresListByCompanyCodeAndStoreType',
+            method: 'GET',
+            data: {
+                storeType: storeType,
+                companyCode: companyCode
+            },
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
+                });
+                $("#storeCode").append(store);
+                $('#storeCode').selectpicker('refresh');
+                $('#storeCode').selectpicker('render');
+            }
+        });
     }
 
 </script>
