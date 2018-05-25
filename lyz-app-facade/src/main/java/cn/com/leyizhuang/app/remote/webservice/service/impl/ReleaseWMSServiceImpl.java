@@ -147,9 +147,12 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         Node childNode = childNodeList.item(j);
                         header = mapping(header, childNode);
                     }
-                    if (StringUtils.isBlank(header.getDriver())) {
-                        logger.info("GetWMSInfo OUT,获取wms信息失败,配送员不能为空,任务编号 出参 c_task_no:{}", header.getTaskNo());
-                        return AppXmlUtil.resultStrXml(1, "配送员编号不能为空,任务编号" + header.getTaskNo() + "");
+                    Boolean isAppOrder = appOrderService.existOrder(header.getOrderNo());
+                    if (null != isAppOrder && isAppOrder) {
+                        if (StringUtils.isBlank(header.getDriver())) {
+                            logger.info("GetWMSInfo OUT,获取wms信息失败,配送员不能为空,任务编号 出参 c_task_no:{}", header.getTaskNo());
+                            return AppXmlUtil.resultStrXml(1, "配送员编号不能为空,任务编号" + header.getTaskNo() + "");
+                        }
                     }
                     header.setCreateTime(Calendar.getInstance().getTime());
                     header.setSendFlag("0");
@@ -309,11 +312,11 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     Node node = nodeList.item(i);
                     NodeList childNodeList = node.getChildNodes();
                     WtaReturningOrderHeader header = new WtaReturningOrderHeader();
-                    if (redisLock.lock(AppLock.CANCEL_ORDER, header.getPoNo(), 30)) {
-                        for (int idx = 0; idx < childNodeList.getLength(); idx++) {
-                            Node childNode = childNodeList.item(idx);
-                            header = mapping(header, childNode);
-                        }
+                    for (int idx = 0; idx < childNodeList.getLength(); idx++) {
+                        Node childNode = childNodeList.item(idx);
+                        header = mapping(header, childNode);
+                    }
+                    if (redisLock.lock(AppLock.BACK_ORDER, header.getPoNo(), 30)) {
                         header.setHandleFlag("0");
                         header.setCreateTime(Calendar.getInstance().getTime());
                         wmsToAppOrderDAO.saveWtaReturningOrderHeader(header);
@@ -324,7 +327,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                                 handleReturningOrderHeaderAsync(finalHeader.getPoNo(), finalHeader.getRecNo());
                             }
                         }).start();
-                    }else{
+                    } else {
                         logger.warn("cancelOrder OUT,返配订单重复提交，出参 returnNo:{}", header.getPoNo());
                         return AppXmlUtil.resultStrXml(1, "正在处理该" + header.getPoNo() + "订单!");
                     }

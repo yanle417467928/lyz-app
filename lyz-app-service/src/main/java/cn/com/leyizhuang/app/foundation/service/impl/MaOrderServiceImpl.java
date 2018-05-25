@@ -1474,6 +1474,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                             stPreDepositLogDO.setRemarks("超过待付款时间");
                             stPreDepositLogDO.setOrderNumber(orderBaseInfo.getOrderNumber());
                             stPreDepositLogDO.setChangeType(StorePreDepositChangeType.CANCEL_ORDER);
+                            stPreDepositLogDO.setChangeTypeDesc(StorePreDepositChangeType.CANCEL_ORDER.getDescription());
                             stPreDepositLogDO.setStoreId(storePreDeposit.getStoreId());
                             stPreDepositLogDO.setOperatorId(null);
                             stPreDepositLogDO.setOperatorType(AppIdentityType.ADMINISTRATOR);
@@ -1573,6 +1574,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                             stPreDepositLogDO.setRemarks("超过待付款时间");
                             stPreDepositLogDO.setOrderNumber(orderBaseInfo.getOrderNumber());
                             stPreDepositLogDO.setChangeType(StorePreDepositChangeType.CANCEL_ORDER);
+                            stPreDepositLogDO.setChangeTypeDesc(StorePreDepositChangeType.CANCEL_ORDER.getDescription());
                             stPreDepositLogDO.setStoreId(storePreDeposit.getStoreId());
                             stPreDepositLogDO.setOperatorId(null);
                             stPreDepositLogDO.setOperatorType(AppIdentityType.ADMINISTRATOR);
@@ -1895,20 +1897,20 @@ public class MaOrderServiceImpl implements MaOrderService {
 
 
     @Override
-    public PageInfo<FitOrderVO> findFitOrderListByScreen(Integer page, Integer size,Long cityId,Long storeId,List<Long> storeIds) {
+    public PageInfo<FitOrderVO> findFitOrderListByScreen(Integer page, Integer size, Long cityId, Long storeId, List<Long> storeIds) {
         if (null != page && null != size && AssertUtil.isNotEmpty(storeIds)) {
             PageHelper.startPage(page, size);
-            List<FitOrderVO> maOrderVOList = maOrderDAO.findFitOrderListByScreen(cityId,storeId,storeIds);
+            List<FitOrderVO> maOrderVOList = maOrderDAO.findFitOrderListByScreen(cityId, storeId, storeIds);
             return new PageInfo<>(maOrderVOList);
         }
         return null;
     }
 
     @Override
-    public PageInfo<FitOrderVO> findFitOrderListByInfo(Integer page, Integer size,String info,List<Long> storeIds) {
+    public PageInfo<FitOrderVO> findFitOrderListByInfo(Integer page, Integer size, String info, List<Long> storeIds) {
         if (null != page && null != size && AssertUtil.isNotEmpty(storeIds)) {
             PageHelper.startPage(page, size);
-            List<FitOrderVO> maOrderVOList = maOrderDAO.findFitOrderListByInfo(info,storeIds);
+            List<FitOrderVO> maOrderVOList = maOrderDAO.findFitOrderListByInfo(info, storeIds);
             return new PageInfo<>(maOrderVOList);
         }
         return null;

@@ -13,6 +13,7 @@ public enum StorePreDepositChangeType {
 
     PLACE_ORDER("PLACE_ORDER", "订单消费"),
     RETURN_ORDER("RETURN_ORDER", "退单返还"),
+    REJECT_ORDER("REJECT_ORDER", "拒签退货返还"),
     CANCEL_ORDER("CANCEL_ORDER", "取消订单返还"),
     ALIPAY_RECHARGE("ALIPAY_RECHARGE", "支付宝充值"),
     WECHAT_RECHARGE("WECHAT_RECHARGE", "微信充值"),
@@ -21,8 +22,8 @@ public enum StorePreDepositChangeType {
     ADMIN_CHANGE("ADMIN_CHANGE", "管理员修改"),
     JX_PRICE_DIFFERENCE_RETURN("JX_PRICE_DIFFERENCE_RETURN", "经销差价返还"),
     JX_PRICE_DIFFERENCE_DEDUCTION("JX_PRICE_DIFFERENCE_DEDUCTION", "经销差价扣除"),
-    WITHDRAW("WITHDRAW","提现"),
-    RETURN_WITHDRAW("RETURN_WITHDRAW","提现退还");
+    WITHDRAW("WITHDRAW", "提现"),
+    RETURN_WITHDRAW("RETURN_WITHDRAW", "提现退还");
 
     private final String value;
     private final String description;
