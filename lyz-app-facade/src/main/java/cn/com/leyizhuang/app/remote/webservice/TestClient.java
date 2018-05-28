@@ -71,7 +71,7 @@ public class TestClient {
         /**************微信手动退款******************/
 //        onlinePayRefundService.wechatReturnMoney(128L, 6, 70D, "CD_XN20180315145706348560", "T20180315150003738", 1333L);
         /****************支付宝手动退款************************/
-        onlinePayRefundService.alipayRefundRequest(433L,0,"CD_XN20180419094134298188","T20180423151915059",1,3355L);
+        onlinePayRefundService.alipayRefundRequest(433L,0,"","T20180423151915059",1,3355L);
 //
     }
 }
