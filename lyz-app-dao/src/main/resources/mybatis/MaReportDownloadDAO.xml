@@ -51,7 +51,7 @@
         INNER JOIN ord_return_base_info orbi ON orbi.return_no = orbd.return_no
         INNER JOIN st_store st ON st.store_id = orbi.store_id
         INNER JOIN ord_base_info obi ON obi.ord_no = orbi.ord_no
-        LEFT JOIN (SELECT * from payment_data where payment_type in ("ORDER") and trade_status = "REPAYMENT") pd
+        LEFT JOIN (SELECT * from payment_data where payment_type in ("ORDER") and trade_status = "REFUND_SUCCESS") pd
         on pd.ord_no = orbd.return_no and orbd.return_pay_type = pd.online_pay_type
         WHERE 1 = 1
         <if test="null != cityId and cityId != -1">
