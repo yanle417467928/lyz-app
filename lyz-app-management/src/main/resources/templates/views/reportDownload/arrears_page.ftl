@@ -45,14 +45,11 @@
                                 <label class="control-label col-md-2 col-xs-3" for="number" style="text-align: center">分公司:</label>
                                 <div class="col-md-2 col-xs-3" style="text-align: left;margin-left: -6%">
                                     <select id="companyCode" name="companyCode" class="form-control selectpicker">
-                                        <option value="RCC001">润成分公司</option>
-                                        <option value="PCC001">鹏成分公司</option>
-                                        <option value="BYC001">北宇分公司</option>
-                                        <option value="RDC001">润东分公司</option>
-                                        <option value="ZZC001">郑州分公司</option>
-                                        <option value="GZC001">贵州分公司</option>
-                                        <option value="SXC001">陕西分公司</option>
-                                        <option value="CQC001">重庆分公司</option>
+                                    <#if structureList?? && structureList?size gt 0 >
+                                        <#list structureList as structure>
+                                            <option value="${structure.number!''}">${structure.structureName!''}</option>
+                                        </#list>
+                                    </#if>
                                     </select>
                                 </div>
                              <#--   <label class="control-label col-md-2 col-xs-3" for="number" style="text-align: center">门店:</label>

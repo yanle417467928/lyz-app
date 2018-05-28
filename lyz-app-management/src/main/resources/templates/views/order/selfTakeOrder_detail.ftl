@@ -538,10 +538,12 @@
                             if (result.code == 10100) {
                                 $('#confirmReceivables').modal();
                                 $("#message").html(result.message);
+                                clearTimeout($global.timer);
                                 $loading.close();
                                 $global.timer = null;
                             } else if (result.code == -1) {
                                 $("#message").html(result.message);
+                                clearTimeout($global.timer);
                                 $loading.close();
                                 $global.timer = null;
                             } else if (result.code == 0) {
@@ -606,6 +608,7 @@
                     if (0 === result.code) {
                         window.location.reload();
                     } else {
+                        clearTimeout($global.timer);
                         $loading.close();
                         $global.timer = null;
                         $notify.danger('发货失败，请稍后重试或联系管理员');
@@ -628,6 +631,7 @@
                 url: '/rest/order/judgmentVerification',
                 method: 'GET',
                 data: {'orderNumber': orderNumber, 'code': data},
+                async: false,
                 error: function () {
                     clearTimeout($global.timer);
                     $loading.close();
@@ -635,12 +639,14 @@
                 },
                 success: function (result) {
                     if (0 === result.code) {
+                        clearTimeout($global.timer);
                         $loading.close();
                         $global.timer = null;
                         $('#secondCode').val(data);
                         $('#confirmShip').attr("disabled", false);
                         $('#msg').html('<font color="green">验证成功</font>')
                     } else {
+                        clearTimeout($global.timer);
                         $loading.close();
                         $global.timer = null;
                         $('#msg').html('<font color="red">验证失败</font>')
