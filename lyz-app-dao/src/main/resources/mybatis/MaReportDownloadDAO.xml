@@ -6,12 +6,15 @@
         SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, obi.sales_consult_name
         sellerName, obpd.pay_time as payTime,null as returnPayTime,
         obpd.pay_type payTypes, obpd.pay_type payType, IFNULL(obpd.amount, 0) money, obi.ord_no as orderNumber,null as returnOrderNumber,
-        IF(obpd.pay_type = 'POS',obd.store_pos_number,null) remarks, obpd.payment_subject_type paymentSubjectType
+        IF(obpd.pay_type = 'POS',obd.store_pos_number,null) remarks, obpd.payment_subject_type paymentSubjectType ,
+        pd.out_trade_no as outTradeNo, pd.trade_no as tradeNo,obi.customer_name
         FROM
         ord_billing_payment_details obpd
         INNER JOIN ord_base_info obi ON obi.ord_no = obpd.ord_no
         INNER JOIN st_store st ON st.store_id = obi.store_id
         INNER JOIN ord_billing_details obd ON obd.ord_no = obi.ord_no
+        LEFT JOIN (SELECT * from payment_data where payment_type in ("ORDER","REPAYMENT") and trade_status = "TRADE_SUCCESS") pd
+        on pd.ord_no = obpd.ord_no and obpd.pay_type = pd.online_pay_type
         WHERE 1=1
         <if test="null != cityId and cityId != -1">
             AND obi.city_id = #{cityId}
@@ -43,11 +46,13 @@
         sellerName,null as payTime, orbd.create_time as returnPayTime,
         orbd.return_pay_type payTypes, orbd.return_pay_type payType, (-1 * IFNULL(orbd.return_money, 0)) money,
         orbi.ord_no as orderNumber,orbi.return_no as returnOrderNumber,
-        NULL remarks, null paymentSubjectType
+        NULL remarks, null paymentSubjectType,pd.out_trade_no as outTradeNo, pd.trade_no as tradeNo,obi.customer_name
         FROM ord_return_billing_detail orbd
         INNER JOIN ord_return_base_info orbi ON orbi.return_no = orbd.return_no
         INNER JOIN st_store st ON st.store_id = orbi.store_id
         INNER JOIN ord_base_info obi ON obi.ord_no = orbi.ord_no
+        LEFT JOIN (SELECT * from payment_data where payment_type in ("ORDER") and trade_status = "REPAYMENT") pd
+        on pd.ord_no = orbd.return_no and orbd.return_pay_type = pd.online_pay_type
         WHERE 1 = 1
         <if test="null != cityId and cityId != -1">
             AND obi.city_id = #{cityId}
@@ -486,6 +491,7 @@
         ORDER BY changeTime DESC
     </select>
 
+    <!-- 逻辑 下单时间 和 反配时间 为节点 -->
     <select id="findAccountGoodsItemsDOAll"
             resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.AccountGoodsItemsDO">
         SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, ol.operation_time
@@ -1482,6 +1488,7 @@
     <select id="findProductSalesList" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.SalesReportDO">
         <!-- 配送 -->
         (SELECT
+        s.store_type as 'storeType',
         s.city as 'cityName',
         s.store_code as 'storeCode',
         s.store_name as 'storeName',
@@ -1561,6 +1568,7 @@
         UNION ALL
         <!-- 自提 -->
         (SELECT
+        s.store_type as 'storeType',
         s.city as 'cityName',
         s.store_code as 'storeCode',
         s.store_name as 'storeName',
@@ -1643,6 +1651,7 @@
 
         <!-- 配送 之前结清本月出货 -->
         (SELECT
+        s.store_type as 'storeType',
         s.city as 'cityName',
         s.store_code as 'storeCode',
         s.store_name as 'storeName',
@@ -1732,6 +1741,7 @@
 
         <!-- 自提 之前结清本月出货 -->
         (SELECT
+        s.store_type as 'storeType',
         s.city as 'cityName',
         s.store_code as 'storeCode',
         s.store_name as 'storeName',
@@ -1823,6 +1833,7 @@
 
         <!-- 配送 退货 -->
         (SELECT
+        s.store_type as 'storeType',
         s.city as 'cityName',
         s.store_code as 'storeCode',
         s.store_name as 'storeName',
@@ -1901,6 +1912,7 @@
 
         <!-- 自提 退货 -->
         (SELECT
+        s.store_type as 'storeType',
         s.city as 'cityName',
         s.store_code as 'storeCode',
         s.store_name as 'storeName',
@@ -1981,6 +1993,7 @@
         UNION ALL
         (
         SELECT
+        s.store_type as 'storeType',
         s.city as 'cityName',
         s.store_code as 'storeCode',
         s.store_name as 'storeName',
@@ -2065,6 +2078,7 @@
 
         (
         SELECT
+        s.store_type as 'storeType',
         s.city as 'cityName',
         s.store_code as 'storeCode',
         s.store_name as 'storeName',
