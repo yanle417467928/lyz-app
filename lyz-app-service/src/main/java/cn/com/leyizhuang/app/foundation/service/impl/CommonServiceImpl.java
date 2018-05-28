@@ -2137,9 +2137,10 @@ public class CommonServiceImpl implements CommonService {
             String pickUpCode = this.sendPickUpCodeAndRemindMessageAfterPayUp(baseInfo);
             baseInfo.setPickUpCode(pickUpCode);
 
-            //导购代支付装饰公司订单，导购填导购信息
+            //导购代支付订单，导购填导购信息
             AppEmployee employee = this.employeeService.findById(userId);
-            if (baseInfo.getCreatorIdentityType() == AppIdentityType.DECORATE_MANAGER
+            if ((baseInfo.getCreatorIdentityType() == AppIdentityType.DECORATE_MANAGER
+                    || baseInfo.getCreatorIdentityType() == AppIdentityType.CUSTOMER)
                     && AppIdentityType.getAppIdentityTypeByValue(identityType) == AppIdentityType.SELLER) {
                 baseInfo.setSalesConsultId(employee.getEmpId());
                 baseInfo.setSalesConsultName(employee.getName());

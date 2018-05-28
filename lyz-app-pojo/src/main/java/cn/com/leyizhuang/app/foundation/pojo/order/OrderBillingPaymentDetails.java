@@ -47,10 +47,10 @@ public class OrderBillingPaymentDetails {
      * 关联单号
      */
     private String orderNumber;
-    /**
-     * 支付人id
-     */
-    private Long paymentSubjectId;
+//    /**
+//     * 支付人id
+//     */
+//    private Long paymentSubjectId;
     /**
      * 支付主体类型
      */

@@ -137,4 +137,13 @@ public class OrderDetailsResponse {
     private String remark;
     //门店名称（装饰公司名称）
     private String storeName;
+    /**
+     *  是否可用门店预存款
+     */
+    private Boolean isUseStorePre;
+    /**
+     *  是否可用导购信用额度
+     */
+    private Boolean isUseEmpCredit;
+
 }

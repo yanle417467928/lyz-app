@@ -1692,6 +1692,7 @@
 
         <if test="null != identityType and identityType.toString() == 'SELLER'">
             SELECT
+            obi.create_time,
             obi.oid,
             obi.`status`,
             obi.is_evaluated,
@@ -1712,8 +1713,9 @@
             LEFT JOIN ord_billing_details obd ON obi.oid = obd.oid
             LEFT JOIN ord_logistics_info oli ON obi.oid = oli.oid
             WHERE
-            order_subject_type = 'FIT'
+            obi.order_subject_type = 'FIT'
             AND pi.seller_manager_id = #{userId}
+            AND pi.loan_subject_type = 'FIT'
             AND pi.is_open_payhelper IS TRUE
             AND obi.`status` = 'UNPAID'
             AND obi.effective_end_time > NOW()
@@ -1722,7 +1724,41 @@
                 OR oli.receiver LIKE concat(concat('%',#{keywords}),'%') OR pi.lender_name LIKE concat(concat('%',#{keywords}),'%')
                 OR oli.receiver_phone LIKE concat(concat('%',#{keywords}),'%'))
             </if>
-            ORDER BY obi.create_time DESC
+            UNION
+            SELECT
+            obi.create_time,
+            obi.oid,
+            obi.`status`,
+            obi.is_evaluated,
+            obi.ord_no,
+            obi.effective_end_time,
+            obi.delivery_type,
+            obd.total_goods_price price ,
+            obd.amount_payable,
+            oli.estate_info,
+            CASE WHEN obi.delivery_type='HOUSE_DELIVERY'
+            THEN oli.shipping_address
+            ELSE oli.booking_store_name
+            END AS shipping_address,
+            pi.lender_name storeName
+            FROM
+            payhelper_info pi
+            LEFT JOIN ord_base_info obi ON pi.lender_id = obi.creator_id
+            LEFT JOIN ord_billing_details obd ON obi.oid = obd.oid
+            LEFT JOIN ord_logistics_info oli ON obi.oid = oli.oid
+            WHERE
+            obi.order_subject_type = 'STORE'
+            AND pi.seller_manager_id = #{userId}
+            AND pi.loan_subject_type = 'ZG'
+            AND pi.is_open_payhelper IS TRUE
+            AND obi.`status` = 'UNPAID'
+            AND obi.effective_end_time > NOW()
+            <if test="null != keywords and keywords != ''">
+                (obi.ord_no LIKE concat(concat('%',#{keywords}),'%') OR oli.shipping_address LIKE concat(concat('%',#{keywords}),'%')
+                OR oli.receiver LIKE concat(concat('%',#{keywords}),'%') OR pi.lender_name LIKE concat(concat('%',#{keywords}),'%')
+                OR oli.receiver_phone LIKE concat(concat('%',#{keywords}),'%'))
+            </if>
+            ORDER BY create_time DESC
         </if>
 
     </select>
