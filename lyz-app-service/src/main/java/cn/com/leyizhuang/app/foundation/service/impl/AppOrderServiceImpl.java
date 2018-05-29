@@ -623,6 +623,7 @@ public class AppOrderServiceImpl implements AppOrderService {
         //根据应付金额判断订单账单是否已付清
         if (Math.abs(orderBillingDetails.getArrearage()) <= AppConstant.PAY_UP_LIMIT) {
             orderBillingDetails.setIsPayUp(true);
+            orderBillingDetails.setPayUpTime(new Date());
         } else {
             orderBillingDetails.setIsPayUp(false);
         }

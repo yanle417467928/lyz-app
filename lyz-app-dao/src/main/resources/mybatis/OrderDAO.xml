@@ -606,11 +606,11 @@
             parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails">
         INSERT INTO ord_billing_payment_details
         (oid, ord_no, create_time, pay_time, pay_type, amount, reply_code, receipt_number,
-         pay_type_desc, payment_subject_type, payment_subject_type_desc)
+         pay_type_desc, payment_subject_type, payment_subject_type_desc, payment_subject_id)
         VALUES
             (#{orderId}, #{orderNumber}, #{createTime}, #{payTime}, #{payType}, #{amount}, #{replyCode},
                          #{receiptNumber},
-                         #{payTypeDesc}, #{paymentSubjectType}, #{paymentSubjectTypeDesc})
+                         #{payTypeDesc}, #{paymentSubjectType}, #{paymentSubjectTypeDesc}, #{paymentSubjectId})
     </insert>
 
     <update id="updateOwnMoneyByOrderNo"
@@ -764,11 +764,11 @@
     <insert id="saveOrderBillingPaymentDetail"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails">
         INSERT INTO ord_billing_payment_details (oid, ord_no, create_time, pay_time, pay_type, pay_type_desc, payment_subject_type,
-                                                 payment_subject_type_desc, amount, reply_code, receipt_number)
+                                                 payment_subject_type_desc, amount, reply_code, receipt_number, payment_subject_id)
         VALUES
             (#{orderId}, #{orderNumber}, #{createTime}, #{payTime}, #{payType}, #{payTypeDesc}, #{paymentSubjectType},
                          #{paymentSubjectTypeDesc},
-                         #{amount}, #{replyCode}, #{receiptNumber})
+                         #{amount}, #{replyCode}, #{receiptNumber}, #{paymentSubjectId})
     </insert>
 
     <update id="updateOrderBaseInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
@@ -1423,7 +1423,7 @@
             obi.customer_id,
             obi.customer_name,
             obi.customer_phone,
-            s.store_name
+            (CASE obi.creator_identity_type WHEN 'DECORATE_MANAGER' THEN s.store_name WHEN 'CUSTOMER' THEN obi.creator_name END ) as store_name
         FROM
             ord_base_info obi
             INNER JOIN payhelper_ord_relation por ON por.oid = obi.oid
@@ -1432,7 +1432,7 @@
             LEFT JOIN st_store s on s.store_id = obi.store_id
         WHERE
             por.payhelper_id = #{userId}
-            AND creator_identity_type = 'DECORATE_MANAGER'
+            /*AND creator_identity_type = 'DECORATE_MANAGER'*/
         ORDER BY obi.create_time DESC
     </select>
 

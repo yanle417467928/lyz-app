@@ -671,7 +671,7 @@ public class CommonServiceImpl implements CommonService {
 
         if (null != orderBaseInfo) {
             if (null != orderBillingDetails && orderBillingDetails.getAmountPayable() <= AppConstant.PAY_UP_LIMIT) {
-                orderBillingDetails.setPayUpTime(new Date());
+
                 //发送提货码给顾客,及提示导购顾客下单信息
                 String pickUpCode = this.sendPickUpCodeAndRemindMessageAfterPayUp(orderBaseInfo);
                 orderBaseInfo.setPickUpCode(pickUpCode);
@@ -867,7 +867,7 @@ public class CommonServiceImpl implements CommonService {
             paymentDetails.setReceiptNumber(OrderUtils.generateReceiptNumber(baseInfo.getCityId()));
             paymentDetails.setReplyCode(tradeStatus);
             paymentDetails.setCreateTime(paymentData.getNotifyTime());
-
+            paymentDetails.setPaymentSubjectId(baseInfo.getCreatorId());
             //发送提货码给顾客,及提示导购顾客下单信息
             String pickUpCode = this.sendPickUpCodeAndRemindMessageAfterPayUp(baseInfo);
             baseInfo.setPickUpCode(pickUpCode);
@@ -1290,6 +1290,7 @@ public class CommonServiceImpl implements CommonService {
                 OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
                 details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.CUS_PREPAY, orderBillingDetails.getCusPreDeposit(),
                         PaymentSubjectType.CUSTOMER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+                details.setPaymentSubjectId(orderBaseInfo.getCreatorId());
                 billingPaymentDetails.add(details);
             }
             if (null != orderBillingDetails.getStPreDeposit() && orderBillingDetails.getStPreDeposit() > AppConstant.DOUBLE_ZERO) {
@@ -1298,10 +1299,12 @@ public class CommonServiceImpl implements CommonService {
                 if (AppOrderSubjectType.FIT.equals(orderBaseInfo.getOrderSubjectType())){
                     details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.ST_PREPAY, orderBillingDetails.getStPreDeposit(),
                             PaymentSubjectType.DECORATE_MANAGER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+                    details.setPaymentSubjectId(orderBaseInfo.getStoreId());
                     billingPaymentDetails.add(details);
                 }else {
                     details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.ST_PREPAY, orderBillingDetails.getStPreDeposit(),
                             PaymentSubjectType.SELLER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+                    details.setPaymentSubjectId(orderBaseInfo.getStoreId());
                     billingPaymentDetails.add(details);
                 }
             }
@@ -1309,12 +1312,14 @@ public class CommonServiceImpl implements CommonService {
                 OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
                 details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.STORE_CREDIT_MONEY, orderBillingDetails.getStoreCreditMoney(),
                         PaymentSubjectType.DECORATE_MANAGER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+                details.setPaymentSubjectId(orderBaseInfo.getStoreId());
                 billingPaymentDetails.add(details);
             }
-            if (null != orderBillingDetails.getLebiCashDiscount() && orderBillingDetails.getStoreCreditMoney() > AppConstant.DOUBLE_ZERO) {
+            if (null != orderBillingDetails.getLebiCashDiscount() && orderBillingDetails.getLebiCashDiscount() > AppConstant.DOUBLE_ZERO) {
                 OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
                 details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.LE_BI, orderBillingDetails.getLebiCashDiscount(),
                         PaymentSubjectType.CUSTOMER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+                details.setPaymentSubjectId(orderBaseInfo.getCreatorId());
                 billingPaymentDetails.add(details);
             }
         }
@@ -2123,6 +2128,7 @@ public class CommonServiceImpl implements CommonService {
                             details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.SELLER_ST_PREPAY, billingDetails.getStPreDeposit(),
                                     PaymentSubjectType.SELLER, billingDetails.getOrderNumber(), OrderUtils.generateReceiptNumber(baseInfo.getCityId()));
                             details.setOrderId(baseInfo.getId());
+                            details.setPaymentSubjectId(baseInfo.getStoreId());
                             orderService.saveOrderBillingPaymentDetail(details);
                         }
                     }

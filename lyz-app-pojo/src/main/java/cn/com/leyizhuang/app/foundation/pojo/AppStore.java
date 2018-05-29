@@ -118,7 +118,7 @@ public class AppStore {
     /**
      * 装饰公司经理名称
      */
-    private Long salesManagerName;
+    private String salesManagerName;
 
     /**
      * 装饰公司类型 CASH : 现结 ； MONTHLY： 月结
