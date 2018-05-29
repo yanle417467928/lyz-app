@@ -1687,7 +1687,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                     int[] columnView = {10, 20, 15,10, 10, 30, 10,  15, 15, 15, 15, 15, 20, 15, 15, 15,15,15, 15,15};
                     //列标题城市
 
-                    String[] titles = {"城市", "门店","门店编码", "名称", "会员名称", "订单号", "配送/自提", "订单状态", "自提提货日期", "订单日期", "出货时间", "是否结清", "订单还清日期", "编号","商品名称", "品牌","下单数量","本赠品" , "经销财务销量", "经销单价", "原单价","产品券类型"
+                    String[] titles = {"城市", "门店","门店编码", "名称", "会员名称", "订单号", "退单号", "配送/自提", "订单状态", "订单日期", "出货时间", "是否结清", "订单还清日期", "编号","商品名称", "品牌","下单数量","本赠品" , "经销财务销量", "经销单价", "原单价","产品券类型"
                     };
                     //计算标题开始行号
                     int row = 1;
@@ -1742,9 +1742,9 @@ public class MaReportDownloadRestController extends BaseRestController {
                         ws.addCell(new Label(3, j + row, salesReportDO.getName(), textFormat));
                         ws.addCell(new Label(4, j + row, salesReportDO.getCustomerName(), textFormat));
                         ws.addCell(new Label(5, j + row, salesReportDO.getOrdNo(), textFormat));
-                        ws.addCell(new Label(6, j + row, salesReportDO.getOrderType(), textFormat));
-                        ws.addCell(new Label(7, j + row, salesReportDO.getOrderStatus(), textFormat));
-                        ws.addCell(new Label(8, j + row, salesReportDO.getSelfTakeOrderTime(), textFormat));
+                        ws.addCell(new Label(6, j + row, salesReportDO.getReturnNo(), textFormat));
+                        ws.addCell(new Label(7, j + row, salesReportDO.getOrderType(), textFormat));
+                        ws.addCell(new Label(8, j + row, salesReportDO.getOrderStatus(), textFormat));
                         ws.addCell(new Label(9, j + row, salesReportDO.getCreateTime(), textFormat));
                         ws.addCell(new Label(10, j + row, salesReportDO.getShippingDate(), textFormat));
                         ws.addCell(new Label(11, j + row, salesReportDO.getIsPayUp(), textFormat));
@@ -1776,10 +1776,10 @@ public class MaReportDownloadRestController extends BaseRestController {
                     // 分销
 
                     //列宽
-                    int[] columnView = {10, 20, 15,10, 10, 30, 10,  15, 15, 15, 15, 15, 20, 15, 15, 15,15,15, 15,15};
+                    int[] columnView = {10, 20, 15,10, 10, 30, 10,  15, 15, 15, 15, 15, 20, 15, 15, 15,15,15, 15,15,15};
                     //列标题城市
 
-                    String[] titles = {"城市", "门店","门店编码", "名称", "会员名称", "订单号", "配送/自提", "订单状态", "自提提货日期", "订单日期", "出货时间", "是否结清", "订单还清日期", "编号","商品名称", "品牌","下单数量","本赠品" , "分销财务销量", "经销单价", "原单价","产品券类型"
+                    String[] titles = {"城市", "门店","门店编码", "名称", "会员名称", "订单号", "退单号", "配送/自提", "订单状态", "订单日期", "出货时间", "是否结清", "订单还清日期", "编号","商品名称", "品牌","下单数量","本赠品" , "分销财务销量", "经销单价", "原单价","产品券类型","分销门店编码"
                     };
                     //计算标题开始行号
                     int row = 1;
@@ -1834,9 +1834,9 @@ public class MaReportDownloadRestController extends BaseRestController {
                         ws.addCell(new Label(3, j + row, salesReportDO.getName(), textFormat));
                         ws.addCell(new Label(4, j + row, salesReportDO.getCustomerName(), textFormat));
                         ws.addCell(new Label(5, j + row, salesReportDO.getOrdNo(), textFormat));
-                        ws.addCell(new Label(6, j + row, salesReportDO.getOrderType(), textFormat));
-                        ws.addCell(new Label(7, j + row, salesReportDO.getOrderStatus(), textFormat));
-                        ws.addCell(new Label(8, j + row, salesReportDO.getSelfTakeOrderTime(), textFormat));
+                        ws.addCell(new Label(6, j + row, salesReportDO.getReturnNo(), textFormat));
+                        ws.addCell(new Label(7, j + row, salesReportDO.getOrderType(), textFormat));
+                        ws.addCell(new Label(8, j + row, salesReportDO.getOrderStatus(), textFormat));
                         ws.addCell(new Label(9, j + row, salesReportDO.getCreateTime(), textFormat));
                         ws.addCell(new Label(10, j + row, salesReportDO.getShippingDate(), textFormat));
                         ws.addCell(new Label(11, j + row, salesReportDO.getIsPayUp(), textFormat));
@@ -1870,6 +1870,9 @@ public class MaReportDownloadRestController extends BaseRestController {
                         if (null != salesReportDO.getCouponType()){
                             ws.addCell(new Label( 21 , j + row , salesReportDO.getCouponType().toString(),textFormat));
                         }
+                        if (null != salesReportDO.getFxStoreCode()){
+                            ws.addCell(new Label( 22 , j + row , salesReportDO.getFxStoreCode().toString(),textFormat));
+                        }
                     }
                 }
                 else {
@@ -1878,7 +1881,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                     int[] columnView = {10, 20, 15,10, 10, 30, 15, 15, 15, 15, 15, 20, 15, 15, 15,15,15, 15, 15, 15,15, 15, 15};
                     //列标题城市
 
-                    String[] titles = {"城市", "门店","门店编码", "名称", "会员名称", "订单号", "配送/自提", "订单状态", "自提提货日期", "订单日期", "出货时间", "是否结清", "订单还清日期", "编号","商品名称", "品牌","下单数量","本赠品" ,"财务销量",  "原单价", "结算单价", "会员折扣", "折扣或者赠品分摊", "现金券","产品券类型"
+                    String[] titles = {"城市", "门店","门店编码", "名称", "会员名称", "订单号","退货单号","配送/自提", "订单状态", "订单日期", "出货时间", "是否结清", "订单还清日期", "编号","商品名称", "品牌","下单数量","本赠品" ,"财务销量",  "原单价", "结算单价", "会员折扣", "折扣或者赠品分摊", "现金券","产品券类型"
                     };
                     //计算标题开始行号
                     int row = 1;
@@ -1933,9 +1936,9 @@ public class MaReportDownloadRestController extends BaseRestController {
                         ws.addCell(new Label(3, j + row, salesReportDO.getName(), textFormat));
                         ws.addCell(new Label(4, j + row, salesReportDO.getCustomerName(), textFormat));
                         ws.addCell(new Label(5, j + row, salesReportDO.getOrdNo(), textFormat));
-                        ws.addCell(new Label(6, j + row, salesReportDO.getOrderType(), textFormat));
-                        ws.addCell(new Label(7, j + row, salesReportDO.getOrderStatus(), textFormat));
-                        ws.addCell(new Label(8, j + row, salesReportDO.getSelfTakeOrderTime(), textFormat));
+                        ws.addCell(new Label(6, j + row, salesReportDO.getReturnNo(), textFormat));
+                        ws.addCell(new Label(7, j + row, salesReportDO.getOrderType(), textFormat));
+                        ws.addCell(new Label(8, j + row, salesReportDO.getOrderStatus(), textFormat));
                         ws.addCell(new Label(9, j + row, salesReportDO.getCreateTime(), textFormat));
                         ws.addCell(new Label(10, j + row, salesReportDO.getShippingDate(), textFormat));
                         ws.addCell(new Label(11, j + row, salesReportDO.getIsPayUp(), textFormat));
