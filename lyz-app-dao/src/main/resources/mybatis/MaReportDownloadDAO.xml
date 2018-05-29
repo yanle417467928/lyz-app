@@ -414,6 +414,7 @@
     <select id="findStorePredepositReportDOAllNEW"
             resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.StorePredepositReportDO">
         SELECT
+        ua.id,
         c.name cityName,
         st.store_name storeName,
         st.store_type storeType,
@@ -427,6 +428,7 @@
          from
         (
             SELECT
+            spdl.id,
             spdl.store_id,
             spdl.create_time,
             spdl.change_type,
@@ -446,6 +448,7 @@
             )
         UNION ALL
         SELECT
+            spdl.id,
             spdl.store_id,
             spdl.create_time,
             spdl.change_type,
@@ -488,7 +491,7 @@
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
-        ORDER BY changeTime DESC
+        ORDER BY ua.id DESC
     </select>
 
     <!-- 逻辑 下单时间 和 反配时间 为节点 -->
@@ -1509,7 +1512,8 @@
         og.company_flag as 'companyFlag',
         if(og.goods_line_type = "PRODUCT_COUPON" ,oci.purchase_price , (og.order_qty ) * og.return_price ) as
         'financialSales',
-        if(og.goods_line_type = "PRODUCT_COUPON" ,if(oci.purchase_price = 0,0,(oci.purchase_price - (og.settlement_price - og.wholesale_price))) ,
+        if(og.goods_line_type = "PRODUCT_COUPON" ,
+        if(oci.purchase_price = 0,0,if(og2.goods_line_type = "GOODS",(oci.purchase_price - (og.settlement_price - og.wholesale_price)),oci.purchase_price)) ,
         IF(og.goods_line_type = "GOODS" , (og.wholesale_price * og.order_qty) , 0) ) as 'distributionSales',
         if(og.goods_line_type = "GOODS", og.wholesale_price , if((og.goods_line_type = "PRESENT" OR oci.get_type = 'MANUAL_GRANT' or oci.purchase_price = 0),0,og.wholesale_price)) as 'wholesalePrice',
         og.retail_price as 'retailPrice',
@@ -1593,7 +1597,7 @@
         if(og.goods_line_type = "PRODUCT_COUPON" ,purchase_price , (og.order_qty ) * og.return_price )
         as 'financialSales',
         if(og.goods_line_type = "PRODUCT_COUPON" ,
-        if(oci.purchase_price = 0,0,(oci.purchase_price - (og.settlement_price - og.wholesale_price))),
+        if(oci.purchase_price = 0,0,if(og2.goods_line_type = "GOODS",(oci.purchase_price - (og.settlement_price - og.wholesale_price)),oci.purchase_price)),
         IF(og.goods_line_type = "GOODS" , (og.wholesale_price * og.order_qty) , 0) ) as
         'distributionSales',
         if(og.goods_line_type = "GOODS", og.wholesale_price , if((og.goods_line_type = "PRESENT" OR oci.get_type = 'MANUAL_GRANT' or oci.purchase_price = 0),0,og.wholesale_price)) as 'wholesalePrice',
@@ -1676,7 +1680,7 @@
         if(og.goods_line_type = "PRODUCT_COUPON" ,purchase_price , (og.order_qty ) *
         og.return_price ) as 'financialSales',
         if(og.goods_line_type = "PRODUCT_COUPON" ,
-        if(oci.purchase_price = 0,0,(oci.purchase_price - (og.settlement_price - og.wholesale_price))),
+        if(oci.purchase_price = 0,0,if(og2.goods_line_type = "GOODS",(oci.purchase_price - (og.settlement_price - og.wholesale_price)),oci.purchase_price)),
         IF(og.goods_line_type = "GOODS" , (og.wholesale_price * og.order_qty) , 0)
         ) as 'distributionSales',
         if(og.goods_line_type = "GOODS", og.wholesale_price , if((og.goods_line_type = "PRESENT" OR oci.get_type = 'MANUAL_GRANT' or oci.purchase_price = 0),0,og.wholesale_price)) as 'wholesalePrice',
@@ -1769,7 +1773,7 @@
         if(og.goods_line_type = "PRODUCT_COUPON" ,purchase_price ,
         (og.order_qty ) * og.return_price ) as 'financialSales',
         if(og.goods_line_type = "PRODUCT_COUPON" ,
-        if(oci.purchase_price = 0,0,(oci.purchase_price - (og.settlement_price - og.wholesale_price))),
+        if(oci.purchase_price = 0,0,if(og2.goods_line_type = "GOODS",(oci.purchase_price - (og.settlement_price - og.wholesale_price)),oci.purchase_price)),
         IF(og.goods_line_type = "GOODS" , (og.wholesale_price * og.order_qty) , 0)
          ) as 'distributionSales',
         if(og.goods_line_type = "GOODS", og.wholesale_price , if((og.goods_line_type = "PRESENT" OR oci.get_type = 'MANUAL_GRANT' or oci.purchase_price = 0),0,og.wholesale_price)) as 'wholesalePrice',
@@ -1854,7 +1858,7 @@
         org.company_flag as 'companyFlag',
         if(org.goods_line_type = "PRODUCT_COUPON" ,-ABS(oci.purchase_price),-ABS(org.return_price * org.return_qty)) as 'financialSales',
         if(org.goods_line_type = "PRODUCT_COUPON" ,
-        if(oci.purchase_price = 0,0,-ABS((oci.purchase_price - (org.settlement_price - org.wholesale_price)) * org.return_qty)) ,
+        if(oci.purchase_price = 0,0,-ABS(if(og2.goods_line_type = "GOODS",(oci.purchase_price - (org.settlement_price - org.wholesale_price)),oci.purchase_price) * org.return_qty)) ,
         -ABS(IF(org.goods_line_type = "GOODS" , (org.wholesale_price * org.return_qty) , 0))) as 'distributionSales',
         -ABS(if(org.goods_line_type = "GOODS", org.wholesale_price , if((org.goods_line_type = "PRESENT" OR oci.get_type = 'MANUAL_GRANT' or oci.purchase_price = 0),0,org.wholesale_price))) as 'wholesalePrice',
         0 as 'retailPrice',
@@ -1933,7 +1937,7 @@
         org.company_flag as 'companyFlag',
         if(org.goods_line_type = "PRODUCT_COUPON" ,-ABS(oci.purchase_price),-ABS(org.return_price * org.return_qty)) as 'financialSales',
         if(org.goods_line_type = "PRODUCT_COUPON" ,
-        if(oci.purchase_price = 0,0,-ABS((oci.purchase_price - (org.settlement_price - org.wholesale_price)) * org.return_qty)) ,
+        if(oci.purchase_price = 0,0,-ABS(if(og2.goods_line_type = "GOODS",(oci.purchase_price - (org.settlement_price - org.wholesale_price)),oci.purchase_price) * org.return_qty)) ,
         -ABS(IF(org.goods_line_type = "GOODS" , (org.wholesale_price * org.return_qty) , 0))) as 'distributionSales',
         -ABS(if(org.goods_line_type = "GOODS", org.wholesale_price , if((org.goods_line_type = "PRESENT" OR oci.get_type = 'MANUAL_GRANT' or oci.purchase_price = 0),0,org.wholesale_price))) as 'wholesalePrice',
         0 as 'retailPrice',
@@ -2014,7 +2018,8 @@
         og.company_flag as 'companyFlag',
         if(og.goods_line_type = "PRODUCT_COUPON" ,oci.purchase_price , (og.order_qty ) * og.return_price ) as
         'financialSales',
-        if(og.goods_line_type = "PRODUCT_COUPON" ,if(oci.purchase_price = 0,0,(oci.purchase_price - (og.settlement_price - og.wholesale_price))) ,
+        if(og.goods_line_type = "PRODUCT_COUPON" ,
+        if(oci.purchase_price = 0,0,if(og2.goods_line_type = "GOODS",(oci.purchase_price - (og.settlement_price - og.wholesale_price)),oci.purchase_price)) ,
         IF(og.goods_line_type = "GOODS" , (og.wholesale_price * og.order_qty) , 0)) as 'distributionSales',
         if(og.goods_line_type = "GOODS", og.wholesale_price , if((og.goods_line_type = "PRESENT" OR oci.get_type = 'MANUAL_GRANT' or oci.purchase_price = 0),0,og.wholesale_price)) as 'wholesalePrice',
         og.retail_price as 'retailPrice',
@@ -2099,7 +2104,8 @@
         org.company_flag as 'companyFlag',
         if(org.goods_line_type = "PRODUCT_COUPON" ,-ABS(oci.purchase_price),-ABS(org.return_price * org.return_qty)) as 'financialSales',
         if(org.goods_line_type = "PRODUCT_COUPON" ,
-        if(oci.purchase_price = 0,0,-ABS((oci.purchase_price - (org.settlement_price - org.wholesale_price)) * org.return_qty)) ,
+        if(oci.purchase_price = 0,0,
+        -ABS(if(og2.goods_line_type = "GOODS",(oci.purchase_price - (org.settlement_price - org.wholesale_price)),oci.purchase_price) * org.return_qty)) ,
         -ABS(IF(org.goods_line_type = "GOODS" , (org.wholesale_price * org.return_qty) , 0))) as 'distributionSales',
         -ABS(if(org.goods_line_type = "GOODS", org.wholesale_price , if((org.goods_line_type = "PRESENT" OR oci.get_type = 'MANUAL_GRANT' or oci.purchase_price = 0),0,org.wholesale_price))) as 'wholesalePrice',
         0 as 'retailPrice',

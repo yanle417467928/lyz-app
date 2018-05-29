@@ -1108,8 +1108,6 @@ public class DataTransferServiceImpl implements DataTransferService {
                         new Date()));
             }
         }
-
-
     }
 
     private List<OrderDeliveryInfoDetails> saveOrderDeliveryInfoDetails(OrderBaseInfo orderBaseInfo) {

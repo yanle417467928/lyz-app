@@ -121,7 +121,7 @@ public class MaReportDownloadRestController extends BaseRestController {
      * @param
      * @return
      * @throws
-     * @title 对账商品明细报表查询
+     * @title 订单明细报表查询
      * @descripe
      * @author GenerationRoad
      * @date 2018/4/2
@@ -759,7 +759,7 @@ public class MaReportDownloadRestController extends BaseRestController {
      * @param
      * @return
      * @throws
-     * @title 对账商品明细报表下载
+     * @title 订单明细报表下载
      * @descripe
      * @author GenerationRoad
      * @date 2018/4/2
@@ -779,7 +779,7 @@ public class MaReportDownloadRestController extends BaseRestController {
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "对账商品明细报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
+        String fileurl = "订单明细报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
