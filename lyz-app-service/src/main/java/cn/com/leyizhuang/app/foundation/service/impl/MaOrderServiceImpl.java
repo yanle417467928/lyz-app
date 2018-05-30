@@ -637,14 +637,14 @@ public class MaOrderServiceImpl implements MaOrderService {
 
     @Override
     @Transactional
-    public String auditOrderStatus(String orderNumber, String status) throws RuntimeException {
+    public String auditOrderStatus(String orderNumber, String status,Long auditId) throws RuntimeException {
         if (ArrearsAuditStatus.AUDIT_PASSED.toString().equals(status)) {
             Date date = new Date();
             //获取订单基本信息
             OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
 
             OrderTempInfo orderTempInfo = this.appOrderServiceImpl.getOrderInfoByOrderNo(orderNumber);
-            MaOrderArrearsAudit maOrderArrearsAudit = this.getArrearsAuditInfo(orderNumber);
+            MaOrderArrearsAudit maOrderArrearsAudit = this.getArrearsAuditInfoById(auditId);
             //生成收款单号
             String receiptNumber = OrderUtils.generateReceiptNumber(orderTempInfo.getCityId());
             Double collectionAmount = orderTempInfo.getCollectionAmount();
@@ -715,12 +715,12 @@ public class MaOrderServiceImpl implements MaOrderService {
             orderInfo.setDeliveryStatus(LogisticStatus.CONFIRM_ARRIVAL);
             this.appOrderServiceImpl.updateOrderStatusByOrderNo(orderInfo);
             //修改审核状态
-            this.maOrderDAO.auditOrderStatus(orderNumber, status);
+            this.maOrderDAO.auditOrderStatus(orderNumber, status,auditId);
             //传ebs收款接口
             return receiptNumber;
         } else if (ArrearsAuditStatus.AUDIT_NO.toString().equals(status)) {
             //修改审核状态
-            this.maOrderDAO.auditOrderStatus(orderNumber, status);
+            this.maOrderDAO.auditOrderStatus(orderNumber, status,auditId);
         }
         return null;
     }

@@ -7,10 +7,12 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.management.User;
+import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
 import cn.com.leyizhuang.app.foundation.pojo.reportDownload.*;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsVO;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingVO;
+import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeDetailVO;
 import cn.com.leyizhuang.common.util.CountUtil;
 import com.github.pagehelper.PageInfo;
 import jxl.Workbook;
@@ -37,6 +39,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.Boolean;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -69,6 +77,9 @@ public class MaReportDownloadRestController extends BaseRestController {
 
     @Autowired
     private MaStoreService maStoreService;
+
+    @Autowired
+    private MaEmployeeService maEmployeeService;
 
     private static final int maxRowNum = 60000;
 
@@ -252,11 +263,27 @@ public class MaReportDownloadRestController extends BaseRestController {
     public GridDataVO<ArrearsReportDO> restArrearsReportPageGird(Integer offset, Integer size, String companyCode, String storeType) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
         List<Long> storeIdInCompany = maStoreService.findStoresIdByStructureCode(companyCode);
+        //查询该分公司下的 关联小型装饰公司
+        List<Long> sellerId = maStoreService.findAllFitCompanySellerId();
+        List<Long> AllfitCompanyIds = new ArrayList<>();
+        for(Long id:sellerId){
+            EmployeeDetailVO employeeDO = maEmployeeService.queryEmployeeById(id);
+            if(null !=employeeDO && null!=employeeDO.getStoreId()){
+                Long storeId=employeeDO.getStoreId().getStoreId();
+                if(maStoreService.exsitStoreInCompany(storeId,companyCode,storeType)){
+                   //找到该导购下的所有装饰公司
+                    List<Long> fitCompanyId = maStoreService.findFitCompanyIdBySellerId(id);
+                    if(null !=fitCompanyId && fitCompanyId.size()>0){
+                        AllfitCompanyIds.addAll(fitCompanyId);
+                    }
+                }
+            }
+        }
         storeIds.retainAll(storeIdInCompany);
+        storeIds.addAll(AllfitCompanyIds);
         PageInfo<ArrearsReportDO> salesList = this.maReportDownloadService.findArrearsList(companyCode, storeType
                 , storeIds, page, size);
         return new GridDataVO<ArrearsReportDO>().transform(salesList.getList(), salesList.getTotal());
@@ -1464,7 +1491,24 @@ public class MaReportDownloadRestController extends BaseRestController {
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
         List<Long> storeIdInCompany = maStoreService.findStoresIdByStructureCode(companyCode);
+        //查询该分公司下的 关联小型装饰公司
+        List<Long> sellerId = maStoreService.findAllFitCompanySellerId();
+        List<Long> AllfitCompanyIds = new ArrayList<>();
+        for(Long id:sellerId){
+            EmployeeDetailVO employeeDO = maEmployeeService.queryEmployeeById(id);
+            if(null !=employeeDO && null!=employeeDO.getStoreId()){
+                Long storeId=employeeDO.getStoreId().getStoreId();
+                if(maStoreService.exsitStoreInCompany(storeId,companyCode,storeType)){
+                    //找到该导购下的所有装饰公司
+                    List<Long> fitCompanyId = maStoreService.findFitCompanyIdBySellerId(id);
+                    if(null !=fitCompanyId && fitCompanyId.size()>0){
+                        AllfitCompanyIds.addAll(fitCompanyId);
+                    }
+                }
+            }
+        }
         storeIds.retainAll(storeIdInCompany);
+        storeIds.addAll(AllfitCompanyIds);
         List<ArrearsReportDO> salesList = this.maReportDownloadService.downArrearsList(companyCode, storeType, storeIds);
         ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
         String shiroName = "";
@@ -1514,10 +1558,10 @@ public class MaReportDownloadRestController extends BaseRestController {
 
 
                 //列宽
-                int[] columnView = {10, 20, 15,10, 10, 30, 10, 10, 15, 15, 15, 15, 15, 20, 15,15, 15, 15};
+                int[] columnView = {10, 20, 15,10, 10, 30, 10, 10, 15, 15, 15,15, 15, 15, 20, 15,15, 15, 15};
                 //列标题城市
 
-                String[] titles = {"城市","门店","门店编码","名称","会员名称","订单号","配送/自提","订单状态","自提提货日期","订单日期","出货时间","订单小计","订单使用额度","第一次还款前的欠款","订单欠款","订单已支付总金额","是否结清","订单还清日期"
+                String[] titles = {"城市","门店","门店编码","名称","会员名称","订单号","配送/自提","订单状态","自提提货日期","订单日期","出货时间","审核状态","订单小计","订单使用额度","第一次还款前的欠款","订单欠款","订单已支付总金额","是否结清","订单还清日期"
                 };
 
 
@@ -1551,27 +1595,28 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Label(8, j + row, arrearsReportDO.getSelfTakeOrderTime(), textFormat));
                     ws.addCell(new Label(9, j + row, arrearsReportDO.getCreateTime(), textFormat));
                     ws.addCell(new Label(10, j + row, arrearsReportDO.getShippingDate(), textFormat));
+                    ws.addCell(new Label(11, j + row, arrearsReportDO.getAuditStatus(), textFormat));
                     if(null != arrearsReportDO.getOrderAmount()){
-                        ws.addCell(new Label(11, j + row, arrearsReportDO.getOrderAmount().toString(), textFormat));
+                        ws.addCell(new Label(12, j + row, arrearsReportDO.getOrderAmount().toString(), textFormat));
                     }
 
                     if(null != arrearsReportDO.getOrderCreditMoney()){
-                        ws.addCell(new Label(12, j + row, arrearsReportDO.getOrderCreditMoney().toString(), textFormat));
+                        ws.addCell(new Label(13, j + row, arrearsReportDO.getOrderCreditMoney().toString(), textFormat));
                     }
 
                     if(null != arrearsReportDO.getOrderArrearageBefore()){
-                        ws.addCell(new Label(13, j + row, arrearsReportDO.getOrderArrearageBefore().toString(), textFormat));
+                        ws.addCell(new Label(14, j + row, arrearsReportDO.getOrderArrearageBefore().toString(), textFormat));
                     }
 
                     if(null !=arrearsReportDO.getOrderArrearage()){
-                        ws.addCell(new Label(14, j + row, arrearsReportDO.getOrderArrearage().toString(), textFormat));
+                        ws.addCell(new Label(15, j + row, arrearsReportDO.getOrderArrearage().toString(), textFormat));
                     }
 
                     if(null !=arrearsReportDO.getPayUpMoney()){
-                        ws.addCell(new Label(15, j + row, arrearsReportDO.getPayUpMoney().toString(), textFormat));
+                        ws.addCell(new Label(16, j + row, arrearsReportDO.getPayUpMoney().toString(), textFormat));
                     }
-                    ws.addCell(new Label(16, j + row, arrearsReportDO.getIsPayUp(), textFormat));
-                    ws.addCell(new Label(17, j + row, arrearsReportDO.getPayUpTime(), textFormat));
+                    ws.addCell(new Label(17, j + row, arrearsReportDO.getIsPayUp(), textFormat));
+                    ws.addCell(new Label(18, j + row, arrearsReportDO.getPayUpTime(), textFormat));
                 }
             }
         } catch (Exception e) {

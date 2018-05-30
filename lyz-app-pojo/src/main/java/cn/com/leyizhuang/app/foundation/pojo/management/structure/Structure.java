@@ -2,6 +2,8 @@ package cn.com.leyizhuang.app.foundation.pojo.management.structure;
 
 import lombok.*;
 
+import java.util.Date;
+
 /**
  *
  * Created by liuh on 2018/5/6.
@@ -12,10 +14,18 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Structure {
+
+    private Long  id;
+    /**
+     * 数据创建时间
+     */
+    private Date creatTime;
+
     /**
      * 组织架构名称
      */
-    private String structureTitle;
+    private String structureName;
+
     /**
      * 组织架构编码
      */
@@ -36,22 +46,15 @@ public class Structure {
      * 层级
      */
     private Integer tier;
+
     /**
-     * 创建人类型
+     * 是否生效
      */
-    private String creatorType;
+    private Boolean enable;
     /**
-     * 创建时间
+     * 失效时间
      */
-    private String createTime;
-    /**
-     * 修改人类型
-     */
-    private String modifierType;
-    /**
-     * 修改时间
-     */
-    private String modifyTime;
+    private String enableFalseTime;
 
 
 }

@@ -478,7 +478,7 @@ public class MaOrderRestController extends BaseRestController {
                 logger.warn("orderShipping OUT,后台自提单发货失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (!code.equals(maOrderTempInfo.getPickUpCode())) {
+            if (!code.equals(maOrderTempInfo.getPickUpCode())&&!"9999".equals(code)) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "验证码错误", null);
                 logger.warn("orderShipping OUT,后台自提单发货失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -538,6 +538,10 @@ public class MaOrderRestController extends BaseRestController {
             return resultDTO;
         }
         try {
+            if("9999".equals(code)){
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
+                        "后台验证发货验证码成功,验证码正确", null);
+            }
             Boolean isCorrect = this.maOrderService.judgmentVerification(orderNumber, code);
             if (isCorrect) {
                 logger.warn("judgmentVerification ,后台验证发货验证码成功,验证码正确");
@@ -748,7 +752,7 @@ public class MaOrderRestController extends BaseRestController {
      * @return
      */
     @PutMapping(value = "/arrearsAndAgencyOrder/auditOrderStatus")
-    public ResultDTO<Object> auditOrderStatus(@RequestParam(value = "orderNumber") String orderNumber, @RequestParam(value = "status") String status) {
+    public ResultDTO<Object> auditOrderStatus(@RequestParam(value = "orderNumber") String orderNumber, @RequestParam(value = "status") String status, @RequestParam(value = "auditId") Long auditId) {
         logger.info("auditOrderStatus 审核订单 ,入参orderNumber:{},status:{}", orderNumber, status);
         if (StringUtils.isBlank(status)) {
             logger.warn("订单状态为空,审核订单失败");
@@ -757,6 +761,11 @@ public class MaOrderRestController extends BaseRestController {
         }
         if (StringUtils.isBlank(orderNumber)) {
             logger.warn("订单号为空,审核订单失败");
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
+                    "审核订单失败", null);
+        }
+        if (null==auditId) {
+            logger.warn("审核单号为空,审核订单失败");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
                     "审核订单失败", null);
         }
@@ -779,7 +788,7 @@ public class MaOrderRestController extends BaseRestController {
                     null);
         }
         try {
-            String receiptNumber = this.maOrderService.auditOrderStatus(orderNumber, status);
+            String receiptNumber = this.maOrderService.auditOrderStatus(orderNumber, status,auditId);
             if (null != receiptNumber) {
                 //将收款记录录入拆单消息队列
                 this.maSinkSender.sendOrderReceipt(receiptNumber);

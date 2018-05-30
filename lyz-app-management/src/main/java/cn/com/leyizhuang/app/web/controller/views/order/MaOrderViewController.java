@@ -372,6 +372,7 @@ public class MaOrderViewController {
             map.addAttribute("repaymentAmount", repaymentAmount);
             map.addAttribute("isPayUp", isPayUp);
             map.addAttribute("auditStatus", maOrderArrearsAudit.getStatus());
+            map.addAttribute("auditId", maOrderArrearsAudit.getId());
             return "/views/order/arrearsAndRepaymentsOrder_detail";
         }
         logger.warn("orderNumber为空");

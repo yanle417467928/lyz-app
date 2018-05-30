@@ -959,12 +959,14 @@
     </select>
 
 
-    <update id="auditOrderStatus" parameterType="java.lang.String">
+    <update id="auditOrderStatus" >
         UPDATE ord_arrears_audit
         SET
         status = #{status},
         update_time = now()
         WHERE ord_no = #{orderNumber}
+        AND
+        id =#{auditId}
     </update>
 
 

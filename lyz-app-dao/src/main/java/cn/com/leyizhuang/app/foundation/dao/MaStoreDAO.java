@@ -122,4 +122,12 @@ public interface MaStoreDAO {
     List<SimpleStoreParam> findAllStoresListByCityIdAndStoreType(@Param("cityId") Long cityId, @Param("storeType") String storeType);
 
     List<Long> findStoresIdByStructureCode(String structureCode);
+
+    List<Long> findAllFitCompanySellerId();
+
+    Boolean exsitStoreInCompany(@Param("storeId")Long storeId,@Param("companyCode")String companyCode,@Param("storeType")String storeType);
+
+    List<Long> findFitCompanyIdBySellerId(@Param("id") Long id);
+
+    List<SimpleStoreParam> findStoresListByCompanyCodeAndStoreType(@Param("companyCode") String companyCode,@Param("storeType") String storeType,@Param("list") List<Long> storeIds);
 }
