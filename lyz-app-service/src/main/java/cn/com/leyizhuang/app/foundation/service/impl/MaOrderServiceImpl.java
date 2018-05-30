@@ -660,7 +660,7 @@ public class MaOrderServiceImpl implements MaOrderService {
             //创建收款记录
             OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails(null, Calendar.getInstance().getTime(),
                     orderTempInfo.getOrderId(), Calendar.getInstance().getTime(), OrderBillingPaymentType.getOrderBillingPaymentTypeByDescription(maOrderArrearsAudit.getPaymentMethod()),
-                    maOrderArrearsAudit.getPaymentMethod(), orderNumber, orderTempInfo.getSellerId(), PaymentSubjectType.DELIVERY_CLERK,
+                    maOrderArrearsAudit.getPaymentMethod(), orderNumber, maOrderArrearsAudit.getUserId(), PaymentSubjectType.DELIVERY_CLERK,
                     PaymentSubjectType.DELIVERY_CLERK.getDescription(), realMoney, null, receiptNumber);
             this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
             if (realMoney >= 0) {

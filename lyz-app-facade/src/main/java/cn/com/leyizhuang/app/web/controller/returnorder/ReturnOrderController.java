@@ -534,6 +534,8 @@ public class ReturnOrderController {
                     }
                 }
             }
+            returnOrderBaseInfo.setSalesManagerId(order.getSalesManagerId());
+            returnOrderBaseInfo.setSalesManagerStoreId(order.getSalesManagerStoreId());
 
             //******************* 创建退货单物流信息 ************************
             ReturnOrderLogisticInfo returnOrderLogisticInfo = returnOrderService.createReturnOrderLogisticInfo(param.getReturnDeliveryInfo());

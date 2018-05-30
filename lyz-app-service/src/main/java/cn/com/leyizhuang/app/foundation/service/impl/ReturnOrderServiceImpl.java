@@ -379,6 +379,8 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             returnOrderBaseInfo.setReturnTime(new Date());
             returnOrderBaseInfo.setReturnNo(returnNumber);
             returnOrderBaseInfo.setReturnType(ReturnOrderType.CANCEL_RETURN);
+            returnOrderBaseInfo.setSalesManagerId(orderBaseInfo.getSalesManagerId());
+            returnOrderBaseInfo.setSalesManagerStoreId(orderBaseInfo.getSalesManagerStoreId());
             //退款金额
             Double returnPrice = 0.00;
             //获取订单商品
@@ -592,6 +594,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             returnOrderBillingDetail.setIntoAmountTime(new Date());
                             returnOrderBillingDetail.setReplyCode(null);
                             returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
+                            returnOrderBillingDetail.setReturnSubjectId(orderBaseInfo.getCustomerId());
                             returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
                             break;
                         } else {
@@ -639,6 +642,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             returnOrderBillingDetail.setIntoAmountTime(new Date());
                             returnOrderBillingDetail.setReplyCode(null);
                             returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
+                            returnOrderBillingDetail.setReturnSubjectId(orderBaseInfo.getStoreId());
                             returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
                             break;
                         } else {
@@ -717,6 +721,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             returnOrderBillingDetail.setIntoAmountTime(new Date());
                             returnOrderBillingDetail.setReplyCode(null);
                             returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
+                            returnOrderBillingDetail.setReturnSubjectId(orderBaseInfo.getStoreId());
                             returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
                             break;
                         } else {
@@ -750,6 +755,17 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             storeCreditMoneyChangeLog.setRemark("取消订单");
                             //保存日志
                             appStoreService.addStoreCreditMoneyChangeLog(storeCreditMoneyChangeLog);
+
+                            ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                            returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
+                            returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                            returnOrderBillingDetail.setReturnNo(returnOrderBaseInfo.getReturnNo());
+                            returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.STORE_CREDIT_MONEY);
+                            returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getStoreCreditMoney());
+                            returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
+                            returnOrderBillingDetail.setReplyCode(null);
+                            returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
+                            returnOrderBillingDetail.setReturnSubjectId(orderBaseInfo.getStoreId());
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
@@ -794,6 +810,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                                 returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
                                 returnOrderBillingDetail.setReplyCode(null);
                                 returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
+                                returnOrderBillingDetail.setReturnSubjectId(orderBaseInfo.getSalesManagerStoreId());
                                 returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
                                 break;
                             } else {
@@ -1533,6 +1550,8 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             returnOrderBaseInfo.setReasonInfo(reasonInfo);
             returnOrderBaseInfo.setOrderType(orderBaseInfo.getOrderType());
             returnOrderBaseInfo.setReturnStatus(AppReturnOrderStatus.PENDING_REFUND);
+            returnOrderBaseInfo.setSalesManagerId(orderBaseInfo.getSalesManagerId());
+            returnOrderBaseInfo.setSalesManagerStoreId(orderBaseInfo.getSalesManagerStoreId());
             //保存退单头信息
             returnOrderService.saveReturnOrderBaseInfo(returnOrderBaseInfo);
             //获取退单头id
@@ -2283,6 +2302,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             returnOrderBillingDetail.setIntoAmountTime(new Date());
                             returnOrderBillingDetail.setReplyCode(null);
                             returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
+                            returnOrderBillingDetail.setReturnSubjectId(orderBaseInfo.getCustomerId());
                             returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
                             break;
                         } else {
@@ -2331,6 +2351,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             returnOrderBillingDetail.setIntoAmountTime(new Date());
                             returnOrderBillingDetail.setReplyCode(null);
                             returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
+                            returnOrderBillingDetail.setReturnSubjectId(orderBaseInfo.getStoreId());
                             returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
                             break;
                         } else {
@@ -2412,6 +2433,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             returnOrderBillingDetail.setIntoAmountTime(new Date());
                             returnOrderBillingDetail.setReplyCode(null);
                             returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
+                            returnOrderBillingDetail.setReturnSubjectId(orderBaseInfo.getStoreId());
                             returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
                             break;
                         } else {
@@ -2446,6 +2468,18 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             storeCreditMoneyChangeLog.setRemark("拒签退货");
                             //保存日志
                             appStoreService.addStoreCreditMoneyChangeLog(storeCreditMoneyChangeLog);
+
+                            ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                            returnOrderBillingDetail.setCreateTime(new Date());
+                            returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                            returnOrderBillingDetail.setReturnNo(returnOrderBaseInfo.getReturnNo());
+                            returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.STORE_CREDIT_MONEY);
+                            returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getStoreCreditMoney());
+                            returnOrderBillingDetail.setIntoAmountTime(new Date());
+                            returnOrderBillingDetail.setReplyCode(null);
+                            returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
+                            returnOrderBillingDetail.setReturnSubjectId(orderBaseInfo.getStoreId());
+                            returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
                             break;
                         } else {
                             if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
@@ -2491,6 +2525,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                                 returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
                                 returnOrderBillingDetail.setReplyCode(null);
                                 returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
+                                returnOrderBillingDetail.setReturnSubjectId(orderBaseInfo.getSalesManagerStoreId());
                                 returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
                                 break;
                             } else {
@@ -2666,6 +2701,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                                 returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
                                 returnOrderBillingDetail.setReplyCode(null);
                                 returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
+                                returnOrderBillingDetail.setReturnSubjectId(orderBaseInfo.getCustomerId());
                                 returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
                                 break;
                             } else {
@@ -2711,6 +2747,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                                 returnOrderBillingDetail.setIntoAmountTime(calendar.getTime());
                                 returnOrderBillingDetail.setReplyCode(null);
                                 returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
+                                returnOrderBillingDetail.setReturnSubjectId(orderBaseInfo.getStoreId());
                                 returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
                                 break;
                             } else {

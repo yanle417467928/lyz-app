@@ -44,7 +44,7 @@
         creator_name,
         creator_identityType, creator_phone, store_id, store_code, store_structure_code, cus_id, cus_name, cus_phone,
         cus_type, reason_info, return_pic, ord_type,
-         return_status,is_record_sales)
+         return_status,is_record_sales,sales_manager_id,sales_manager_store_id)
         VALUES
             (#{orderId}, #{orderNo}, #{orderTime},
                          #{returnTime}, #{returnNo}, #{returnType},
@@ -52,7 +52,7 @@
         #{creatorId}, #{creatorName,}, #{creatorIdentityType},
         #{creatorPhone}, #{storeId}, #{storeCode}, #{storeStructureCode},
         #{customerId}, #{customerName}, #{customerPhone}, #{customerType}, #{reasonInfo},
-        #{returnPrice}, #{orderType}, #{returnStatus},#{isRecordSales})
+        #{returnPrice}, #{orderType}, #{returnStatus},#{isRecordSales},#{salesManagerId},#{salesManagerStoreId})
     </insert>
 
     <update id="modifyReturnOrderBaseInfo"
@@ -147,10 +147,10 @@
     <insert id="saveReturnOrderBillingDetail"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBillingDetail">
         INSERT INTO ord_return_billing_detail
-        (roid, return_no,return_pay_type, return_money, into_amount_time, reply_code, refund_number, create_time)
+        (roid, return_no,return_pay_type, return_money, into_amount_time, reply_code, refund_number, create_time, return_subject_id)
         VALUES
         (#{roid}, #{returnNo}, #{returnPayType}, #{returnMoney}, #{intoAmountTime}, #{replyCode}, #{refundNumber},
-        #{createTime})
+        #{createTime}, #{returnSubjectId})
     </insert>
 
     <insert id="saveReturnOrderCashCoupon"
