@@ -243,7 +243,7 @@ public class OrderArriveController {
                                         Calendar.getInstance().getTime(), OrderBillingPaymentType.getOrderBillingPaymentTypeByDescription(paymentMethod),
                                         paymentMethod, orderNo, PaymentSubjectType.DELIVERY_CLERK,
                                         PaymentSubjectType.DELIVERY_CLERK.getDescription(), amount, "", receiptNumber);
-
+                                paymentDetails.setPaymentSubjectId(orderTempInfo.getSellerId());
                                 //修改订单欠款为0
                                 orderBillingDetails = new OrderBillingDetails();
                                 orderBillingDetails.setOrderNumber(orderNo);
@@ -318,7 +318,7 @@ public class OrderArriveController {
                                     Calendar.getInstance().getTime(), OrderBillingPaymentType.getOrderBillingPaymentTypeByDescription(paymentMethod),
                                     paymentMethod, orderNo, PaymentSubjectType.DELIVERY_CLERK,
                                     PaymentSubjectType.DELIVERY_CLERK.getDescription(), ownManey, "", receiptNumber);
-
+                            paymentDetails.setPaymentSubjectId(orderTempInfo.getSellerId());
 //                        this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
 
                             //修改订单欠款为0

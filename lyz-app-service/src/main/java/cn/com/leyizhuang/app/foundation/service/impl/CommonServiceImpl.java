@@ -867,7 +867,7 @@ public class CommonServiceImpl implements CommonService {
             paymentDetails.setReceiptNumber(OrderUtils.generateReceiptNumber(baseInfo.getCityId()));
             paymentDetails.setReplyCode(tradeStatus);
             paymentDetails.setCreateTime(paymentData.getNotifyTime());
-            paymentDetails.setPaymentSubjectId(baseInfo.getCreatorId());
+            paymentDetails.setPaymentSubjectId(paymentData.getUserId());
             //发送提货码给顾客,及提示导购顾客下单信息
             String pickUpCode = this.sendPickUpCodeAndRemindMessageAfterPayUp(baseInfo);
             baseInfo.setPickUpCode(pickUpCode);

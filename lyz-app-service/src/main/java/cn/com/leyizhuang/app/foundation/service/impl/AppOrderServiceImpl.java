@@ -806,6 +806,7 @@ public class AppOrderServiceImpl implements AppOrderService {
         orderBillingPaymentDetails.setPaymentSubjectType(PaymentSubjectType.SELLER);
         orderBillingPaymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.SELLER.getDescription());
         orderBillingPaymentDetails.setCreateTime(repaymentTime);
+        orderBillingPaymentDetails.setPaymentSubjectId(orderBaseInfo.getSalesConsultId());
         //保存还款记录
         orderDAO.savePaymentDetails(orderBillingPaymentDetails);
         //导购欠款还款后修改欠款审核表
@@ -895,6 +896,7 @@ public class AppOrderServiceImpl implements AppOrderService {
         orderBillingPaymentDetails.setPaymentSubjectType(PaymentSubjectType.SELLER);
         orderBillingPaymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.SELLER.getDescription());
         orderBillingPaymentDetails.setCreateTime(new Date());
+        orderBillingPaymentDetails.setPaymentSubjectId(orderBaseInfo.getSalesConsultId());
         //保存还款记录
         orderDAO.savePaymentDetails(orderBillingPaymentDetails);
         //导购欠款还款后修改欠款审核表
