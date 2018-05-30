@@ -244,6 +244,7 @@ public class HqAppEmployeeController {
             logger.warn("同步删除员工信息成功！");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         } catch (Exception e) {
+            e.printStackTrace();
             logger.warn("deleteEmployee EXCEPTION,同步删除员工信息失败，出参 resultDTO:{}", e);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未知异常，同步删除员工信息失败！", null);
 
