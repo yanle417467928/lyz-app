@@ -76,4 +76,8 @@ public class SalesReportDO {
     private String couponType;
     //门店类型
     private String storeType;
+    //退单号
+    private String returnNo;
+    //分销门店编码
+    private String fxStoreCode;
 }
