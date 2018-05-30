@@ -31,6 +31,10 @@ public class MaOrdReturnBillingDetail {
      */
     private String returnNo;
     /**
+     * 退款账号id
+     */
+    private Long returnSubjectId;
+    /**
      * 退款类型（预存款，支付宝等）
      */
     private String returnPayType;

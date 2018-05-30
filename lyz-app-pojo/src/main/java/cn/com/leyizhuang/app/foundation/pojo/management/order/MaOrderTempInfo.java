@@ -172,6 +172,13 @@ public class MaOrderTempInfo {
      * 订单备注
      */
     private String remark;
-
+    /**
+     * (装饰公司）销售经理id
+     */
+    private Long salesManagerId;
+    /**
+     * (装饰公司）销售经理门店id
+     */
+    private Long salesManagerStoreId;
 
 }

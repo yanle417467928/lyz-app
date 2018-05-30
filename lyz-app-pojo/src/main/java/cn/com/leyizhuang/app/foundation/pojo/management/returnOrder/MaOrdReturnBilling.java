@@ -55,4 +55,9 @@ public class MaOrdReturnBilling {
      */
     private Double LeBiQuantity;
 
+    /**
+     * 导购代支付门店预存款
+     */
+    private Double sellerStoreDeposit;
+
 }

@@ -2128,7 +2128,7 @@ public class CommonServiceImpl implements CommonService {
                             details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.SELLER_ST_PREPAY, billingDetails.getStPreDeposit(),
                                     PaymentSubjectType.SELLER, billingDetails.getOrderNumber(), OrderUtils.generateReceiptNumber(baseInfo.getCityId()));
                             details.setOrderId(baseInfo.getId());
-                            details.setPaymentSubjectId(baseInfo.getStoreId());
+                            details.setPaymentSubjectId(baseInfo.getSalesManagerStoreId());
                             orderService.saveOrderBillingPaymentDetail(details);
                         }
                     }

@@ -251,7 +251,8 @@
       st_subvention,
       online_pay,
       cash,
-      lb_quantity
+      lb_quantity,
+      seller_store_deposit
         FROM ord_return_billing orb
         WHERE orb.roid = #{roid}
     </select>

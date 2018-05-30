@@ -712,7 +712,9 @@
             customer_id,
             sales_consult_id,
             delivery_type,
-            store_structure_code
+            store_structure_code,
+            sales_manager_id,
+            sales_manager_store_id
         FROM ord_base_info obi
         WHERE obi.ord_no = #{orderNo}
     </select>
