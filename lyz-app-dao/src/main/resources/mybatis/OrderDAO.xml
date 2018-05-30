@@ -498,8 +498,7 @@
             is_pay_up,
             pay_up_time,
             store_cash,
-            seller_store_deposit
-            store_cash,
+            seller_store_deposit,
             store_other_money,
             store_pos_money
         FROM
