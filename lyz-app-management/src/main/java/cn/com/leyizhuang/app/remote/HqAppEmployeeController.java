@@ -95,7 +95,9 @@ public class HqAppEmployeeController {
             employee.setLoginName(employeeDTO.getNumber());
             employee.setName(employeeDTO.getName());
             employee.setMobile(employeeDTO.getMobile());
-            employee.setBirthday(employeeDTO.getBirthday());
+            if(null != employeeDTO.getBirthday()){
+                employee.setBirthday(employeeDTO.getBirthday());
+            }
             employee.setSex(employeeDTO.getSex() ? SexType.MALE : SexType.FEMALE);
             employee.setStatus(employeeDTO.getStatus() != 0);
             employee.setPicUrl(employeeDTO.getPicUrl());
@@ -170,7 +172,9 @@ public class HqAppEmployeeController {
             }
             employee.setName(employeeDTO.getName());
             employee.setMobile(employeeDTO.getMobile());
-            employee.setBirthday(employeeDTO.getBirthday());
+            if(null != employeeDTO.getBirthday()){
+                employee.setBirthday(employeeDTO.getBirthday());
+            }
             employee.setSex(employeeDTO.getSex() ? SexType.MALE : SexType.FEMALE);
             employee.setStatus(employeeDTO.getStatus() != 0);
             employee.setPicUrl(employeeDTO.getPicUrl());
