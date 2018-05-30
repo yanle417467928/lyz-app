@@ -497,7 +497,9 @@
             is_owner_receiving,
             is_pay_up,
             pay_up_time,
-            store_cash
+            store_cash,
+            store_other_money,
+            store_pos_money
         FROM
             ord_billing_details
         WHERE

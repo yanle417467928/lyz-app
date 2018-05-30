@@ -59,19 +59,25 @@ public class SalesReportDO {
     //经销财务销量
     private String distributionSales;
     //经销单价
-    private Double wholesalePrice;
+    private Double wholesalePrice = 0.00;
     //原单价
-    private Double retailPrice;
+    private Double retailPrice = 0.00;
     //结算单价
-    private Double settlementPrice;
+    private Double settlementPrice = 0.00;
     //会员折扣
-    private Double memberDiscount;
+    private Double memberDiscount = 0.00;
     //折扣或者赠品分摊
-    private Double promotionSharePrice;
+    private Double promotionSharePrice = 0.00;
     //现金券
-    private Double cashCouponSharePrice;
+    private Double cashCouponSharePrice = 0.00;
     //下单数量
     private Double orderQty;
     //产品券类型
     private String couponType;
+    //门店类型
+    private String storeType;
+    //退单号
+    private String returnNo;
+    //分销门店编码
+    private String fxStoreCode;
 }
