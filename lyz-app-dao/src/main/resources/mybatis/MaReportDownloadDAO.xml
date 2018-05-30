@@ -2315,9 +2315,79 @@
         o.`status` != 'REJECTED'
         AND
         o.`status` != 'CANCELED'
+        AND
+        o.`status` != 'UNPAID'
+        AND
+        b.is_pay_up = 0
         <choose>
             <when test="'FX'==storeType">
                 and s.store_type in ('FX','FXCK')
+                <!-- AND o.store_id IN
+                 <foreach collection="list" item="item" open="(" close=")" separator=",">
+                     #{item}
+                 </foreach>-->
+            </when>
+            <otherwise>
+                <if test="null!=storeType and ''!=storeType">
+                    and  ( s.store_type =#{storeType}
+                    OR  s.store_type = 'ZS')
+                </if>
+                AND o.store_id IN
+                <foreach collection="list" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+            </otherwise>
+        </choose>
+        GROUP BY o.ord_no
+        ORDER BY storeName, name, createTime
+
+        UNION ALL
+
+        SELECT
+        s.city as 'cityName',
+        s.store_code as 'storeCode',
+        s.store_name as 'storeName',
+        o.sales_consult_name as 'name',
+        o.customer_name as 'customerName',
+        o.create_time as 'createTime',
+        o.ord_no as 'ordNo',
+        if(o.delivery_type='SELF_TAKE','门店自提','送货上门')as 'orderType',
+        CASE  o.`status`  WHEN 'CANCELING' THEN '取消中' WHEN 'REJECTED' THEN '拒签' WHEN 'PENDING_SHIPMENT' THEN '待发货'
+        WHEN 'PENDING_RECEIVE' THEN '待收货' WHEN 'FINISHED' THEN '已完成' WHEN 'CANCELED' THEN '已取消'   END  as orderStatus,
+        os.shipping_time as 'selfTakeOrderTime',
+        wa.end_dt as 'shippingDate',
+        b.order_amount_subtotal as 'orderAmount',
+        b.emp_credit_money as 'orderCreditMoney',
+        b.arrearage as 'orderArrearage',
+        IFNULL(a.order_money,b.arrearage) as 'orderArrearageBefore',
+        IFNULL(p.amount,0) as 'payUpMoney',
+        IF(b.is_pay_up = TRUE,'是','否') as 'isPayUp',
+        IF(b.is_pay_up = TRUE, b.pay_up_time,null) as 'payUpTime',
+        CASE  d.status WHEN 'AUDITING' THEN '审核中' WHEN 'AUDIT_NO' THEN '审核不通过' WHEN 'AUDIT_PASSED' THEN '审核通过' END as auditStatus
+        FROM ord_base_info o
+        LEFT JOIN ord_billing_details b ON b.ord_no = o.ord_no
+        LEFT JOIN (SELECT SUM(amount) amount,ord_no FROM ord_billing_payment_details GROUP BY ord_no) p ON o.ord_no = p.ord_no
+        LEFT JOIN (SELECT * FROM ord_arrears_audit WHERE status = 'AUDIT_PASSED' GROUP BY ord_no) a ON a.ord_no = o.ord_no
+        LEFT JOIN st_store s ON s.store_id = o.store_id
+        LEFT JOIN ord_shipping os on o.oid = os.oid
+        LEFT JOIN inter_wta_order_shipping_header wa ON o.ord_no = wa.order_no
+        LEFT JOIN  (SELECT * FROM (SELECT * FROM ord_arrears_audit  ORDER BY create_time DESC) c GROUP BY  c.ord_no) d ON  d.ord_no = o.ord_no
+        LEFT  JOIN ord_return_base_info orbi ON o.ord_no = orbi.ord_no
+        LEFT JOIN  inter_wta_return_order_back_header iwr ON orbi.return_no = iwr.po_no
+        where 1=1
+        and
+        o.`status` = 'REJECTED'
+        AND
+        iwr.id is NULL
+        AND
+        b.is_pay_up = 0
+        <choose>
+            <when test="'FX'==storeType">
+                and s.store_type in ('FX','FXCK')
+                <!-- AND o.store_id IN
+                 <foreach collection="list" item="item" open="(" close=")" separator=",">
+                     #{item}
+                 </foreach>-->
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">

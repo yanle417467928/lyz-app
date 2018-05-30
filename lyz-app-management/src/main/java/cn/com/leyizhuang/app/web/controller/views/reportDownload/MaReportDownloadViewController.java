@@ -3,6 +3,8 @@ package cn.com.leyizhuang.app.web.controller.views.reportDownload;
 import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
 import cn.com.leyizhuang.app.core.constant.StoreType;
+import cn.com.leyizhuang.app.foundation.pojo.management.structure.SimpaleGroupStructureParam;
+import cn.com.leyizhuang.app.foundation.service.MaGroupStructureService;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +13,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +28,9 @@ public class MaReportDownloadViewController extends BaseController {
     protected static final String PRE_URL = "/views/reportDownload";
 
     private final Logger logger = LoggerFactory.getLogger(MaReportDownloadViewController.class);
+
+    @Resource
+    private MaGroupStructureService  maGroupStructureService;
 
     /**
      * @title    收款报表
@@ -120,7 +126,7 @@ public class MaReportDownloadViewController extends BaseController {
      * @param
      * @return
      * @throws
-     * @author GenerationRoad
+     * @author liuh
      * @date 2018/4/3
      */
     @GetMapping(value = "/goods/shipmentAndReturn/list")
@@ -137,12 +143,13 @@ public class MaReportDownloadViewController extends BaseController {
      * @param
      * @return
      * @throws
-     * @author GenerationRoad
+     * @author liuh
      * @date 2018/4/3
      */
     @GetMapping(value = "/salesVolume/list")
     public String getSalesVolumeList(ModelMap map) {
-
+        List<SimpaleGroupStructureParam>  structureList = maGroupStructureService.querySimpaleStructureList();
+        map.addAttribute("structureList", structureList);
         map.addAttribute("storeTypes", StoreType.getNotZsType());
         return "/views/reportDownload/sales_volume_page";
     }
@@ -163,17 +170,18 @@ public class MaReportDownloadViewController extends BaseController {
 
 
     /**
-     * @title    销量报表
+     * @title    欠款报表
      * @descripe
      * @param
      * @return
      * @throws
-     * @author GenerationRoad
+     * @author liuh
      * @date 2018/4/3
      */
     @GetMapping(value = "/arrears/list")
     public String getArrearsList(ModelMap map) {
-
+        List<SimpaleGroupStructureParam>  structureList = maGroupStructureService.querySimpaleStructureList();
+        map.addAttribute("structureList", structureList);
         map.addAttribute("storeTypes", StoreType.getNotZsType());
         return "/views/reportDownload/arrears_page";
     }

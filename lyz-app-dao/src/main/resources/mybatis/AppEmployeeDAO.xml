@@ -203,6 +203,9 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
             <if test="null != identityType">
                 identity_type = #{identityType},
             </if>
+            <if test="null != sellerType">
+                seller_type = #{sellerType},
+            </if>
             <if test="null != mobile">
                 mobile = #{mobile},
             </if>
