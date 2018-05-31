@@ -166,6 +166,8 @@ public interface GoodsDAO {
     List<MaBuyProductCouponGoodsResponse> findMaStoreGoodsByStoreId(@Param("storeId") Long storeId);
 
     List<MaBuyProductCouponGoodsResponse> findMaStoreGoodsByStoreIdAndPricceType(@Param("storeId") Long storeId , @Param("priceType") String priceType,@Param("queryGoodsInfo") String queryGoodsInfo);
+
+    List<MaBuyProductCouponGoodsResponse> findZGMaStoreGoodsByStoreIdAndPricceType(@Param("storeId") Long storeId , @Param("priceType") String priceType,@Param("queryGoodsInfo") String queryGoodsInfo);
     /**
      * 后台购买产品券条件查询商品信息
      *

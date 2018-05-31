@@ -52,6 +52,22 @@ function initDateGird(url) {
         title: '标题',
         align: 'left'
     },{
+        field: 'scope',
+        title: '范围',
+        align: 'left',
+        formatter: function(value) {
+            var val =  "";
+
+            if (value == "GOODS"){
+                val = "买商品"
+            }else if(value == "COUPON"){
+                val = "买券"
+            }else if(value == "ALL"){
+                val = "买商品、买券"
+            }
+            return val;
+        }
+    },{
         field: 'type',
         title: '类型',
         align: 'left'
@@ -92,7 +108,11 @@ function initDateGird(url) {
         field: 'sortId',
         title: '排序号',
         align: 'center'
-    },
+    },{
+        field: 'rankCode',
+        title: '专供等级',
+        align: 'center'
+    }
 
     ]);
 

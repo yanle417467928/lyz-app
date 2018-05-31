@@ -28,11 +28,11 @@
     <script src="https://cdn.bootcss.com/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>
     <script src="https://cdn.bootcss.com/select2/4.0.2/js/select2.full.min.js"></script>
 
-    <script type="text/javascript" src="/javascript/order/produt_coupon.js"></script>
+    <script type="text/javascript" src="/javascript/order/zg_produt_coupon.js"></script>
 </head>
 <body>
 <section class="content-header">
-    <h1>购买产品券</h1>
+    <h1>购买专供产品券</h1>
 </section>
 <section class="content">
     <div class="nav-tabs-custom">
@@ -123,6 +123,8 @@
                             2) 产品券提货：依照产品券上之关联产品进行出货。
                         <br>
                             3) 产品券提货时效：需于六个月内（含）出货完毕，若逾期，则此订单自动取消，按产品券购买之价格退至会员预存款。
+                        <br>
+                            4) 专供产品券：需要指定专供会员归属导购，才可购买。
                         </ul>
                     </div>
                 <#--</div>-->
@@ -493,8 +495,8 @@
                                                             </select>
                                                             <select name="productType" id="productType"
                                                                     class="selectpicker" data-width="120px" style="width:auto;"
-                                                                    onchange="screenGoods()">
-                                                                <option value="common">普通</option>
+                                                                   >
+                                                                <option value="zg">专供</option>
 
                                                             </select>
                                                             <div class="input-group col-md-3"

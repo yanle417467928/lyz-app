@@ -66,6 +66,12 @@ public class ActBaseVO {
 
     private String type;
 
+    // 专供类型
+    private String rankCode;
+
+    // 促销范围
+    private String scope;
+
     public static final ActBaseVO transform(ActBaseDO actBaseDO) {
         if (actBaseDO != null) {
             ActBaseVO actBaseVO = new ActBaseVO();
@@ -103,7 +109,8 @@ public class ActBaseVO {
             }
 
             actBaseVO.setType(actBaseDO.getBaseType().getDescription() + "_" + actBaseDO.getConditionType().getDescription() + "_" + actBaseDO.getPromotionType().getDescription());
-
+            actBaseVO.setScope(actBaseDO.getScope());
+            actBaseVO.setRankCode(actBaseDO.getRankCode());
             return actBaseVO;
         } else {
             return null;

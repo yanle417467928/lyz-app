@@ -250,7 +250,7 @@ public class OrderGiftController {
                         }
                     }
                 }
-                promotionsGiftList = actService.countGift(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsInfo, cusId);
+                promotionsGiftList = actService.countGift(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsInfo, cusId,"GOODS");
             }
 
             /******计算促销******/

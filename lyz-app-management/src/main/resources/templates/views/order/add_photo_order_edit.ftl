@@ -84,6 +84,12 @@
                 <div class="box-header">
                     <h3 class="box-title" style="padding-left: 20px;">基本信息</h3>
                 </div>
+                <div class="col-xs-12">
+                    <button type="button" class="btn btn-primary btn-xs"
+                            onclick="findCreatePhotoOrderPeople()" style="width:100px;height:30px">
+                        选择下单人
+                    </button>
+                </div>
                 <div class="col-sm-4 invoice-col">
                     <div class="col-sm-5 invoice-col">
                         <b>门&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -91,7 +97,9 @@
                         <br>
                         <b>下单人身份类型:</b>
                         <br>
-                        <b>拍&nbsp;照&nbsp;下&nbsp;单&nbsp;单&nbsp;号:</b>
+                        <#--<b>拍&nbsp;照&nbsp;下&nbsp;单&nbsp;单&nbsp;号:</b>-->
+                        <br>
+                        <br>
                         <br>
                         <b>备&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注:</b>
@@ -99,16 +107,16 @@
                     </div>
                     <div class="col-sm-7 invoice-col">
                         <b></b>
-                        <spanp class="span">${photoOrderVO.storeName!""}</spanp>
+                        <spanp id="storeName" class="span"></spanp>
                         <br>
                         <b></b>
-                        <spanp id="identityType" class="span">${photoOrderVO.identityType!""}</spanp>
+                        <spanp id="identityType" class="span"></spanp>
                         <br>
                         <b></b>
-                        <spanp class="span"> ${photoOrderVO.photoOrderNo!""}</spanp>
+                        <spanp id="photoNo" class="span"></spanp>
                         <br>
                         <b></b>
-                        <spanp class="span"> ${photoOrderVO.remark!""}</spanp>
+                        <input id ="remark" class="input" style="width:300px"></input>
                         <br>
                     </div>
                 </div>
@@ -118,19 +126,21 @@
                         <br>
                         <b>联系人姓名:</b>
                         <br>
-                        <b>下&nbsp;单&nbsp;&nbsp;时&nbsp;&nbsp;间:</b>
+                        <#--<b>下&nbsp;单&nbsp;&nbsp;时&nbsp;&nbsp;间:</b>-->
                         <br>
                     </div>
                     <div class="col-sm-8 invoice-col">
                         <b></b>
-                        <spanp class="span"> ${photoOrderVO.username!""}</spanp>
+                        <spanp id="createPeopleName" class="span"></spanp>
                         <br>
                         <b></b>
-                        <spanp class="span"> ${photoOrderVO.contactName!""}</spanp>
+                        <spanp id="contactName" class="span"></spanp>
                         <br>
                         <b></b>
-                        <spanp class="span"> ${photoOrderVO.createTime!""}</spanp>
+                        <spanp id="createPeopleTime" class="span"></spanp>
                         <br>
+                        <input id="storeCode" type="hidden"/>
+                        <input id="peopleId" type="hidden"/>
                     </div>
                 </div>
                 <!-- /.col -->
@@ -140,19 +150,19 @@
                         <br>
                         <b>联&nbsp;&nbsp;&nbsp;系&nbsp;&nbsp;人&nbsp;&nbsp;电&nbsp;&nbsp;话:</b>
                         <br>
-                        <b>状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态:</b>
+                        <#--<b>状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->
+                            <#--&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态:</b>-->
                         <br>
                     </div>
                     <div class="col-sm-7 invoice-col">
                         <b></b>
-                        <spanp id="userMobile" class="span">${photoOrderVO.userMobile!""}</spanp>
+                        <spanp id="createOrderPhone" class="span"></spanp>
                         <br>
                         <b></b>
-                        <spanp class="span"> ${photoOrderVO.contactPhone!""}</spanp>
+                        <spanp id="contactPhone" class="span"></spanp>
                         <br>
                         <b></b>
-                        <spanp class="span"> ${photoOrderVO.status!""}</spanp>
+                        <spanp id="status" class="span"></spanp>
                         <br>
                     </div>
                 </div>
@@ -164,31 +174,7 @@
 
 
                     <input type="hidden" id="guideName" name="guideName" value="">
-                    <div class="row">
-                        <div class="col-xs-12 col-md-6">
-                            <div class="form-group">
-                                <label for="storeId">
-                                    下单装饰公司/门店
-                                </label>
-                                <select name="storeId" id="storeId"
-                                        class="form-control selectpicker"
-                                        data-live-search="true" onchange="findOrderCreator()">
-                                    <option value="-1">选择下单装饰公司/门店</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-xs-12 col-md-6">
-                            <div class="form-group">
-                                <label for="guideId">
-                                    下单员工/导购
-                                </label>
-                                <select name="guideId" id="guideId" class="form-control select"
-                                        onchange="resetAddress()">
-                                    <option value="-1">选择下单员工/导购</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
+
                     <button type="button" id="addDeliveryAddressButton" class="btn btn-primary btn-xs"
                             style="width:200px;height:50px;"
                             onclick="addDeliveryAddress()">
@@ -202,7 +188,7 @@
 
                     <button type="button" id="findDeliveryAddressButton" class="btn btn-primary btn-xs"
                             style="width:200px;height:50px;display:none;margin-left: 220px;margin-top: -50px;"
-                            onclick="openAddressModal('/rest/order/photo/find/address')">
+                            onclick="openAddressModal()">
                         从地址库查找
                     </button>
 
@@ -261,7 +247,6 @@
                                             onchange="conditionalQueryAreaManagement(this.value,'2')">
 
                                     </select>
-                                <#--<input type="text" name="city" id="city" class="form-control" \>-->
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-2">
@@ -273,7 +258,6 @@
                                             onchange="conditionalQueryAreaManagement(this.value,'3')">
 
                                     </select>
-                                <#--<input type="text" name="county" id="county" class="form-control" \>-->
                                 </div>
                             </div>
 
@@ -283,10 +267,8 @@
                                         街道
                                     </label>
                                     <select name="street" id="street" class="form-control select">
-                                    <#--onchange="findProvince(this.value)">-->
 
                                     </select>
-                                <#--<input type="text" name="street" id="street" class="form-control" \>-->
                                 </div>
                             </div>
                         </div>
@@ -345,14 +327,8 @@
                             </tr>
                             </thead>
                             <tbody id="tbody">
-                            <#--<tr>-->
-                                    <#--<td><input type="hidden" id="number" name="combList[0].gid" class="td-input" value="1254" />sku</td>-->
-                                    <#--<td>商品名称</td>-->
-                                    <#--<td>商品类型</td>-->
-                                    <#--<td>单价</td>-->
-                                    <#--<td ><input type="text" id="number" name="combList[0].qty" class="td-input" value="1254" style="width:30%;"/></td>-->
-                                    <#--<td>删除</td>-->
-                                <#--</tr>-->
+
+
                             </tbody>
                         </table>
                     </div>
@@ -385,9 +361,6 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4>选择地址</h4>
-                        <button type="button" name="search" class="btn btn-default pull-left"
-                                onclick="returnAddress()" style="margin-left:700px;margin-top: -35px;">返回
-                        </button>
                     </div>
                     <div class="modal-body">
                         <!--  设置这个div的大小，超出部分显示滚动条 -->
@@ -398,17 +371,17 @@
                                         <div class="box box-primary">
                                             <div id="addressToolbar" class="form-inline">
 
-                                                <div class="input-group col-md-3"
-                                                     style="margin-top:0px positon:relative">
-                                                    <input type="text" name="sellerAddressConditions"
-                                                           id="sellerAddressConditions"
-                                                           class="form-control" style="width:300px;height:34px;"
-                                                           placeholder="请输入收货人姓名、电话、小区、楼盘、详细地址">
-                                                    <span class="input-group-btn">
-                            <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
-                                    onclick="openAddressModal('/rest/order/photo/find/address')">查找</button>
-                        </span>
-                                                </div>
+                                            <#--<div class="input-group col-md-3"-->
+                                                     <#--style="margin-top:0px positon:relative">-->
+                                                    <#--<input type="text" name="sellerQueryConditions"-->
+                                                           <#--id="sellerQueryConditions"-->
+                                                           <#--class="form-control" style="width:auto;"-->
+                                                           <#--placeholder="请输入导购姓名或电话">-->
+                                                    <#--<span class="input-group-btn">-->
+                            <#--<button type="button" name="search" id="search-btn" class="btn btn-info btn-search"-->
+                                    <#--onclick="return findSellerByNameOrMobil()">查找</button>-->
+                        <#--</span>-->
+                                                <#--</div>-->
                                             </div>
                                             <div class="box-body table-reponsive">
                                                 <table id="addressDataGrid"
@@ -427,58 +400,70 @@
         </div>
 
 
+        <!-- 下单人选择框 -->
+        <div id="selectCreateOrderPeopleGrid" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document" style="width: 60%">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4>选择下单人</h4>
+                    </div>
+                    <div class="modal-body">
+                        <!--  设置这个div的大小，超出部分显示滚动条 -->
+                        <div id="createOrderPeopleDataGridTree" class="ztree" style="height: 60%;overflow:auto; ">
+                            <section class="content">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="box box-primary">
+                                            <div id="peopleToolbar" class="form-inline">
+
+                                                <div class="input-group col-md-3"
+                                                     style="margin-top:0px positon:relative">
+
+                                                    <select name="peopleType" id="peopleType"
+                                                            class="form-control selectpicker">
+                                                        <option value="-1" selected="selected">选择下单人类型</option>
+                                                        <option value="会员">会&nbsp;&nbsp;&nbsp;员&nbsp;&nbsp;&nbsp;下&nbsp;&nbsp;&nbsp;单</option>
+                                                        <option value="装饰公司">装饰公司下单</option>
+                                                    </select>
+
+                                                </div>
+                                                <div class="input-group col-md-3"
+                                                     style="margin-top:0px positon:relative">
+                                                    <input type="text" name="selectCreateOrderPeopleConditions"
+                                                           id="selectCreateOrderPeopleConditions"
+                                                           class="form-control" style="width:auto;"
+                                                           placeholder="请输入导购姓名或电话">
+                                                    <span class="input-group-btn">
+                            <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
+                                    onclick="findPeople()">查找</button>
+                        </span>
+                                                </div>
+                                            </div>
+                                            <div class="box-body table-reponsive">
+                                                <table id="createOrderPeopleDataGrid"
+                                                       class="table table-bordered table-hover">
+
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <div class="col-sm-12 invoice-col" style="height: 20px; border-bottom-style: solid;"></div>
         <div class="col-sm-12 invoice-col" style="height: 5px; "></div>
         <div class="row">
-            <div class="col-xs-4">
-                <div class="box">
-                    <div class="box-header">
-                        <h3 class="box-title">照片</h3>
-                    </div>
-
-                    <div id="carousel-example-generic" class="carousel slide" data-ride="carousel">
-                        <ol class="carousel-indicators">
-                        <#if photoOrderVO??&&photoOrderVO.photos??>
-                            <#list photoOrderVO.photos as photo>
-                                <li data-target="#carousel-example-generic" data-slide-to="${photo_index}"
-                                    class="<#if photo_index == 0>active</#if>"></li>
-                            </#list>
-                        </#if>
-                        </ol>
-                        <div class="carousel-inner">
-                        <#if photoOrderVO??&&photoOrderVO.photos??>
-                            <#list photoOrderVO.photos as photo>
-                                <div class="item <#if photo_index == 0>active</#if>">
-                                    <img src="${photo!''}" style="height: 300px;width: 325px;" id="show${photo_index}"
-                                         onclick="showBig(${photo_index})" alt="First slide">
-
-                                <#--<div class="carousel-caption">
-                                    First Slide
-                                </div>-->
-                                </div>
-                            </#list>
-                        </#if>
-                        </div>
-                        <a class="left carousel-control" href="#carousel-example-generic" data-slide="prev">
-                            <span class="fa fa-angle-left"></span>
-                        </a>
-                        <a class="right carousel-control" href="#carousel-example-generic" style="margin-right:30px; "
-                           data-slide="next">
-                            <span class="fa fa-angle-right"></span>
-                        </a>
-                    </div>
-                    <!-- /.box-body -->
-                </div>
-            </div>
-            <!-- /.col -->
-            <div class="col-xs-8">
+            <div class="col-xs-12">
                 <div class="box" id="target">
                     <div class="box-header">
                         <h3 class="box-title">选择商品</h3>
                     </div>
-                <#--<div class="col-sm-1 invoice-col" style="border-bottom-style: solid; border-right-style: solid; border-width: 1px;">
-                    <b>&nbsp; </b>
-                </div>-->
                     <div class="col-sm-2 invoice-col"
                          style="border-bottom-style: solid; border-right-style: solid; border-width: 1px; text-align: center;">
                         <b><a id="WATER" name="category1" onclick="findCategory('WATER')">水</a></b>
@@ -596,20 +581,11 @@
 
         <script>
             $(function () {
-                $('#WATER').click();
-                findStoreList();
+//                $('#WATER').click();
+//                findStoreList();
                 findProvince();
                 $("#writeDeliveryAddress").hide();
             });
-
-            function returnAddress() {
-                $('#selectAddressDataGrid').modal('hide');
-            }
-
-
-            function resetAddress() {
-                cancelAddDeliveryAddress();
-            }
 
             function addDeliveryAddress() {
                 findProvince();
@@ -910,6 +886,9 @@
 
             function findGoodsByCategoryId(categoryId) {
                 document.getElementById("categoryString").value = categoryId;
+                var identityType = $('#identityType').text();
+                var peopleId = $('#peopleId').val();
+
                 var categoryType = $('#categoryType').val();
 //                var categoryString = $('#categoryString').val();
                 var brandString = $('#brandString').val();
@@ -938,7 +917,9 @@
                         categoryType: categoryType,
                         brandString: brandString,
                         specificationString: specificationString,
-                        goodsTypeString: goodsTypeString
+                        goodsTypeString: goodsTypeString,
+                        identityType:identityType,
+                        peopleId:peopleId
                     },
                     error: function () {
                         clearTimeout($global.timer);
@@ -1296,7 +1277,7 @@
                         return false;
                     }
                     if (detailedAddressLength > 200) {
-                        $notify.danger('详细地址长度超长，请重新输入！');
+                        $notify.danger('楼盘名称长度超长，请重新输入！');
                         $('#form').bootstrapValidator('disableSubmitButtons', false);
                         return false;
                     }
@@ -1374,7 +1355,6 @@
 
 
             function findOrderCreator() {
-                resetAddress();
                 var storeId = $("#storeId").val();
                 if (null == storeId || -1 == storeId) {
                     return false;
@@ -1398,6 +1378,7 @@
                         })
                         $("#guideId").append(guide);
                         $('#guideId').selectpicker('refresh');
+                        $('#guideId').selectpicker('render');
                     }
                 });
             }
@@ -1406,11 +1387,10 @@
                 return str.replace(/[\u0391-\uFFE5]/g, "aa").length;
             }
 
-            function findDeliveryAddress(url) {
-                var userMobile = $('#userMobile').text();
+            function findDeliveryAddress() {
+                var userMobile = $('#createOrderPhone').text();
                 var identityType = $('#identityType').text();
-                var sellerAddressConditions = $("#sellerAddressConditions").val();
-                var guideId = $("#guideId").val();
+                var url = '/rest/order/photo/find/address';
                 $("#addressDataGrid").bootstrapTable('destroy');
                 $grid.init($('#addressDataGrid'), $('#addressToolbar'), url, 'get', false, function (params) {
                     return {
@@ -1418,9 +1398,7 @@
                         size: params.limit,
                         keywords: params.search,
                         userMobile: userMobile,
-                        identityType: identityType,
-                        guideId:guideId,
-                        sellerAddressConditions: sellerAddressConditions
+                        identityType: identityType
                     }
                 }, [{
                     field: 'id',
@@ -1489,9 +1467,15 @@
                 ]);
             }
 
-            function openAddressModal(url) {
+            function openAddressModal() {
+                var userMobile = $('#createOrderPhone').text();
+                var identityType = $('#identityType').text();
+                if (null == userMobile || '' == userMobile || null == identityType || '' == identityType){
+                    $notify.warning("请先选择下单人！");
+                    return false;
+                }
                 //查询地址列表
-                findDeliveryAddress(url);
+                findDeliveryAddress();
                 $("#customerModalConfirm").unbind('click').click(function () {
                 });
                 $('#selectAddressDataGrid').modal('show');
@@ -1539,6 +1523,84 @@
                 var manuallyEnterBtn = document.getElementById("manuallyEnterDeliveryAddressButton");
                 findBtn.style.display = "block"; //style中的display属性
                 manuallyEnterBtn.style.display = "none"; //style中的display属性
+            }
+
+            function findCreatePhotoOrderPeople() {
+                $('#selectCreateOrderPeopleGrid').modal('show');
+            }
+
+            function findPeople() {
+                var peopleType = $('#peopleType').val();
+                var selectCreateOrderPeopleConditions = $('#selectCreateOrderPeopleConditions').val();
+                if (-1 == peopleType || null == peopleType || '' == peopleType) {
+                    $notify.warning("请选择下单人类型！");
+                    return false;
+                }
+                var url = '/rest/order/photo/find/people';
+                $("#createOrderPeopleDataGrid").bootstrapTable('destroy');
+                $grid.init($('#createOrderPeopleDataGrid'), $('#peopleToolbar'), url, 'get', false, function (params) {
+                    return {
+                        offset: params.offset,
+                        size: params.limit,
+                        keywords: params.search,
+                        peopleType: peopleType,
+                        selectCreateOrderPeopleConditions: selectCreateOrderPeopleConditions
+                    }
+                }, [{
+                    field: 'peopleId',
+                    title: 'ID',
+                    align: 'center'
+//                    visible:false
+                }, {
+                    field: 'name',
+                    title: '下单人姓名',
+                    align: 'center',
+                    events: {
+                        'click .scan': function (e, value, row) {
+                            fillingPeople(row);
+                        }
+                    },
+                    formatter: function (value) {
+                        return '<a class="scan" href="#' + value + '">' + value + '</a>';
+                    }
+                }, {
+                    field: 'phone',
+                    title: '下单人电话',
+                    align: 'center'
+                }, {
+                    field: 'identityType',
+                    title: '身份类型',
+                    align: 'center'
+                }, {
+                    field: 'storeName',
+                    title: '下单人归属门店名',
+                    align: 'center'
+                }, {
+                    field: 'storeCode',
+                    title: '下单人归属门店code',
+                    align: 'center',
+                    visible: false
+                }
+                ]);
+            }
+
+            function  fillingPeople(row) {
+                document.getElementById("storeName").innerText = row.storeName;
+                if ('CUSTOMER' == row.identityType) {
+                    document.getElementById("identityType").innerText = "顾客";
+                }else{
+                    document.getElementById("identityType").innerText = "装饰公司";
+                }
+                document.getElementById("photoNo").innerText = "";
+                document.getElementById("contactName").innerText = row.name;
+                document.getElementById("createPeopleName").innerText = row.name;
+                document.getElementById("createPeopleTime").innerText = "";
+                document.getElementById("createOrderPhone").innerText = row.phone;
+                document.getElementById("contactPhone").innerText = row.phone;
+                document.getElementById("status").innerText = "";
+                $("#storeCode").val(row.storeCode);
+                $("#peopleId").val(row.peopleId);
+                $('#selectCreateOrderPeopleGrid').modal('hide');
             }
         </script>
     </section>

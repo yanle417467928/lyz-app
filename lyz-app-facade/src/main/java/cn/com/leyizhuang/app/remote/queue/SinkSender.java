@@ -80,11 +80,11 @@ public class SinkSender {
 
 
     /**
-     * @title  订单收款消息队列
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 订单收款消息队列
+     * @descripe
      * @author GenerationRoad
      * @date 2018/3/2
      */
@@ -114,5 +114,16 @@ public class SinkSender {
             orderChannel.sendOrder().send(MessageBuilder.withPayload(message).build());
         }
         log.info("sendOrderReceipt,发送订单退款信息到拆单队列,End", JSON.toJSONString(refundNumber));
+    }
+
+    public void sendKdSell(String mainOrderNumber) {
+        log.info("sendKdSell,发送金蝶销退表发送请求到消息队列,Begin\n 主单号:{}", mainOrderNumber);
+        if (StringUtils.isNotBlank(mainOrderNumber)) {
+            MqMessage message = new MqMessage();
+            message.setType(MqMessageType.KD_SELL_SEND);
+            message.setContent(JSON.toJSONString(mainOrderNumber));
+            orderChannel.sendOrder().send(MessageBuilder.withPayload(message).build());
+        }
+        log.info("sendKdSell,发送金蝶销退表发送请求到消息队列,End", JSON.toJSONString(mainOrderNumber));
     }
 }

@@ -118,11 +118,11 @@ public class MaSinkSender {
     }
 
     /**
-     * @title   装饰公司信用金收款
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 装饰公司信用金收款
+     * @descripe
      * @author GenerationRoad
      * @date 2018/3/20
      */
@@ -147,4 +147,17 @@ public class MaSinkSender {
         }
         log.info("sendWithdrawRefund,发送提现退款到拆单队列,End", JSON.toJSONString(refundNumber));
     }
+
+
+    public void sendKdSell(String mainOrderNumber) {
+        log.info("sendKdSell,发送金蝶销退表发送请求到消息队列,Begin\n 主单号:{}", mainOrderNumber);
+        if (StringUtils.isNotBlank(mainOrderNumber)) {
+            MqMessage message = new MqMessage();
+            message.setType(MqMessageType.KD_SELL_SEND);
+            message.setContent(JSON.toJSONString(mainOrderNumber));
+            orderChannel.sendOrder().send(MessageBuilder.withPayload(message).build());
+        }
+        log.info("sendKdSell,发送金蝶销退表发送请求到消息队列,End", JSON.toJSONString(mainOrderNumber));
+    }
+
 }

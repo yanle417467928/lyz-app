@@ -2849,53 +2849,6 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                                 }
                             }
                         }
-                    }//装饰公司退门店信用额度
-                    if (null != returnOrderBilling.getStCreditMoney() && returnOrderBilling.getStCreditMoney() > AppConstant.PAY_UP_LIMIT) {
-                        if (AppIdentityType.DECORATE_MANAGER.equals(orderBaseInfo.getCreatorIdentityType())) {
-
-                            for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
-                                //查询门店信用金
-                                StoreCreditMoney storeCreditMoney = storeCreditMoneyLogService.findStoreCreditMoneyByUserId(returnOrderBaseInfo.getCreatorId());
-                                //返还后门店信用金额度
-                                Double creditMoney = CountUtil.add(storeCreditMoney.getCreditLimitAvailable(), returnOrderBilling.getStCreditMoney());
-                                //修改门店可用信用金
-                                Integer affectLine = appStoreService.updateStoreCreditByUserIdAndVersion(
-                                        returnOrderBaseInfo.getCreatorId(), returnOrderBilling.getStCreditMoney(), storeCreditMoney.getLastUpdateTime());
-                                if (affectLine > 0) {
-                                    //记录门店信用金变更日志
-                                    StoreCreditMoneyChangeLog storeCreditMoneyChangeLog = new StoreCreditMoneyChangeLog();
-                                    storeCreditMoneyChangeLog.setStoreId(storeCreditMoney.getStoreId());
-                                    storeCreditMoneyChangeLog.setCreateTime(Calendar.getInstance().getTime());
-                                    storeCreditMoneyChangeLog.setChangeAmount(returnOrderBilling.getStCreditMoney());
-                                    storeCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
-                                    storeCreditMoneyChangeLog.setReferenceNumber(orderBaseInfo.getOrderNumber());
-                                    storeCreditMoneyChangeLog.setChangeType(StoreCreditMoneyChangeType.RETURN_ORDER);
-                                    storeCreditMoneyChangeLog.setChangeTypeDesc(StoreCreditMoneyChangeType.RETURN_ORDER.getDescription());
-                                    storeCreditMoneyChangeLog.setOperatorId(returnOrderBaseInfo.getCreatorId());
-                                    storeCreditMoneyChangeLog.setOperatorType(returnOrderBaseInfo.getCreatorIdentityType());
-                                    storeCreditMoneyChangeLog.setRemark(ReturnOrderType.NORMAL_RETURN.getDescription());
-                                    //保存日志
-                                    appStoreService.addStoreCreditMoneyChangeLog(storeCreditMoneyChangeLog);
-
-                                    ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
-                                    returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
-                                    returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
-                                    returnOrderBillingDetail.setReturnNo(returnOrderNumber);
-                                    returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.STORE_CREDIT_MONEY);
-                                    returnOrderBillingDetail.setReturnMoney(returnOrderBilling.getStCreditMoney());
-                                    returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
-                                    returnOrderBillingDetail.setReplyCode(null);
-                                    returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
-                                    returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
-                                    break;
-                                } else {
-                                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                                        logger.info("refusedOrder OUT,正常退货失败，修改门店可用信用金失败");
-                                        throw new SystemBusyException("系统繁忙，请稍后再试!");
-                                    }
-                                }
-                            }
-                        }
                     }
 
                     //装饰公司退门店现金返利
@@ -2934,6 +2887,54 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
 //                            }
 //                        }
 //                    }
+                }
+                //装饰公司退门店信用额度
+                if (null != returnOrderBilling.getStCreditMoney() && returnOrderBilling.getStCreditMoney() > AppConstant.PAY_UP_LIMIT) {
+                    if (AppIdentityType.DECORATE_MANAGER.equals(orderBaseInfo.getCreatorIdentityType())) {
+
+                        for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                            //查询门店信用金
+                            StoreCreditMoney storeCreditMoney = storeCreditMoneyLogService.findStoreCreditMoneyByUserId(returnOrderBaseInfo.getCreatorId());
+                            //返还后门店信用金额度
+                            Double creditMoney = CountUtil.add(storeCreditMoney.getCreditLimitAvailable(), returnOrderBilling.getStCreditMoney());
+                            //修改门店可用信用金
+                            Integer affectLine = appStoreService.updateStoreCreditByUserIdAndVersion(
+                                    returnOrderBaseInfo.getCreatorId(), returnOrderBilling.getStCreditMoney(), storeCreditMoney.getLastUpdateTime());
+                            if (affectLine > 0) {
+                                //记录门店信用金变更日志
+                                StoreCreditMoneyChangeLog storeCreditMoneyChangeLog = new StoreCreditMoneyChangeLog();
+                                storeCreditMoneyChangeLog.setStoreId(storeCreditMoney.getStoreId());
+                                storeCreditMoneyChangeLog.setCreateTime(Calendar.getInstance().getTime());
+                                storeCreditMoneyChangeLog.setChangeAmount(returnOrderBilling.getStCreditMoney());
+                                storeCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
+                                storeCreditMoneyChangeLog.setReferenceNumber(orderBaseInfo.getOrderNumber());
+                                storeCreditMoneyChangeLog.setChangeType(StoreCreditMoneyChangeType.RETURN_ORDER);
+                                storeCreditMoneyChangeLog.setChangeTypeDesc(StoreCreditMoneyChangeType.RETURN_ORDER.getDescription());
+                                storeCreditMoneyChangeLog.setOperatorId(returnOrderBaseInfo.getCreatorId());
+                                storeCreditMoneyChangeLog.setOperatorType(returnOrderBaseInfo.getCreatorIdentityType());
+                                storeCreditMoneyChangeLog.setRemark(ReturnOrderType.NORMAL_RETURN.getDescription());
+                                //保存日志
+                                appStoreService.addStoreCreditMoneyChangeLog(storeCreditMoneyChangeLog);
+
+                                ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                                returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
+                                returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                                returnOrderBillingDetail.setReturnNo(returnOrderNumber);
+                                returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.STORE_CREDIT_MONEY);
+                                returnOrderBillingDetail.setReturnMoney(returnOrderBilling.getStCreditMoney());
+                                returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
+                                returnOrderBillingDetail.setReplyCode(null);
+                                returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
+                                returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
+                                break;
+                            } else {
+                                if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                    logger.info("refusedOrder OUT,正常退货失败，修改门店可用信用金失败");
+                                    throw new SystemBusyException("系统繁忙，请稍后再试!");
+                                }
+                            }
+                        }
+                    }
                 }
                 //******************判断是否是三个月以前的单子,如果是就退预存款****************************
 

@@ -91,6 +91,9 @@
                             <b>促销名称</b> <a class="pull-right" id="title"></a>
                         </li>
                         <li class="list-group-item">
+                            <b>范围</b> <a class="pull-right" id="scope"></a>
+                        </li>
+                        <li class="list-group-item">
                             <b>促销类型</b> <a class="pull-right" id="type"></a>
                         </li>
                         <li class="list-group-item">
@@ -105,7 +108,9 @@
                         <li class="list-group-item">
                             <b>排序号</b> <a class="pull-right" id="sortId"></a>
                         </li>
-
+                        <li class="list-group-item">
+                            <b>专供等级</b> <a class="pull-right" id="rankCode"></a>
+                        </li>
                     </ul>
                 </div>
             </div>

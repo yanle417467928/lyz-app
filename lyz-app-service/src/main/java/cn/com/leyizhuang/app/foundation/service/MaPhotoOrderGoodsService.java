@@ -12,4 +12,6 @@ public interface MaPhotoOrderGoodsService {
 
     int batchSave(List<PhotoOrderGoodsDO> photoOrderGoodsDOList);
 
+    List<PhotoOrderGoodsDO> findPhotoOrderGoodsByPhotoOrderNo(String photoOrderNo);
+
 }

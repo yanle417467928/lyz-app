@@ -372,7 +372,6 @@ public class OrderController {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                         new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), true, false));
                 logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
-                return resultDTO;
             } else {
                 //判断是否可选择货到付款
                 Boolean isCashDelivery = this.commonService.checkCashDelivery(orderGoodsInfoList, userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
@@ -380,9 +379,8 @@ public class OrderController {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                         new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), false, isCashDelivery));
                 logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
-                return resultDTO;
             }
-
+            return resultDTO;
         } catch (LockStoreInventoryException | LockStorePreDepositException | LockCityInventoryException | LockCustomerCashCouponException |
                 LockCustomerLebiException | LockCustomerPreDepositException | LockEmpCreditMoneyException | LockStoreCreditMoneyException |
                 LockStoreSubventionException | SystemBusyException | LockCustomerProductCouponException | GoodsMultipartPriceException | GoodsNoPriceException |
@@ -564,6 +562,8 @@ public class OrderController {
                     }
                 }
             }
+            // 本品集合 用来计算立减促销
+            List<OrderGoodsSimpleResponse> bGoodsList = goodsInfo;
 
             //赠品的数量和标识
             if (AssertUtil.isNotEmpty(giftsInfo)) {
@@ -603,7 +603,7 @@ public class OrderController {
 
             //计算订单金额小计
             //********* 计算促销立减金额 *************
-            List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsInfo, customer.getCusId());
+            List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), bGoodsList, customer.getCusId(),"GOODS");
             for (PromotionDiscountListResponse discountResponse : discountListResponseList) {
                 orderDiscount = CountUtil.add(orderDiscount, discountResponse.getDiscountPrice());
                 PromotionSimpleInfo promotionSimpleInfo = new PromotionSimpleInfo();

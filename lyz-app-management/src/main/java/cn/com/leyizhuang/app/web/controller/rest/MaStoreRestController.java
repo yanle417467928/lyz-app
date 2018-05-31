@@ -597,6 +597,20 @@ public class MaStoreRestController extends BaseRestController {
         }
     }
 
+    /**
+     * @return 管理员管辖门店列表
+     */
+    @GetMapping(value = "/findStoresListByLoginAdministrator/fit")
+    public List<AppStore> findFitStoresListByLoginAdministrator() {
+        try {
+            //查询登录用户门店权限的门店ID
+            return storeService.findFitStoreListByLoginAdministrator();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
     /**
      * @param

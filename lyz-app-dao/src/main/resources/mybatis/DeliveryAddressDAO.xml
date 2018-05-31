@@ -136,6 +136,33 @@
         LIMIT 1
     </select>
 
+    <select id="getDefaultDeliveryAddressListByUserIdAndIdentityType"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse">
+        SELECT
+        id,
+        receiver         delivery_name,
+        receiver_phone   delivery_phone,
+        delivery_city    delivery_city,
+        delivery_county  delivery_county,
+        delivery_street  delivery_street,
+        residence_name   village_name,
+        detailed_address detailed_address,
+        delivery_province deliveryProvince,
+        is_default,
+        estate_info
+        FROM delivery_address
+        WHERE user_id = #{userId}
+        AND identity_type = #{identityType}
+        AND status IS TRUE
+        <if test="null != keywords and keywords != ''">
+        AND (receiver LIKE concat(concat('%',#{keywords}),'%')
+          OR receiver_phone LIKE concat(concat('%',#{keywords}),'%')
+          OR residence_name LIKE concat(concat('%',#{keywords}),'%')
+          OR detailed_address LIKE concat(concat('%',#{keywords}),'%')
+          OR estate_info LIKE concat(concat('%',#{keywords}),'%'))
+        </if>
+    </select>
+
     <update id="clearDefaultAddressByUserIdAndIdentityType">
         UPDATE delivery_address
         SET is_default = FALSE

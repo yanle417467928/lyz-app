@@ -38,12 +38,12 @@ public class AppActServiceImpl implements AppActService {
     /**
      * 不参与专供促销的商品
      */
-    private final String ZG_EXCLUDE_GOODS = "VHED8000-5L,";
+    private final String ZG_EXCLUDE_GOODS = "";
 
     /**
      * 不参与专供促销的等级
      */
-    private final String ZG_EXCLUDE_LEVEL = "B";
+    private final String ZG_EXCLUDE_LEVEL = "";
 
     @Autowired
     private ActBaseDAO actBaseDAO;
@@ -91,28 +91,28 @@ public class AppActServiceImpl implements AppActService {
     }
 
     @Override
-    public List<ActBaseDO> queryValidListByStoreId(Long storeId){
+    public List<ActBaseDO> queryValidListByStoreId(Long storeId) {
 
-        if (storeId == null){
+        if (storeId == null) {
             return null;
         }
 
-        return actBaseDAO.queryValidListByStoreId(storeId,LocalDateTime.now());
+        return actBaseDAO.queryValidListByStoreId(storeId, LocalDateTime.now());
     }
 
     @Override
-    public List<PromotionListViewResponse> queryValidRepListByStoreId(Long userId , AppIdentityType identityType,Long storeId){
-        if (storeId == null){
+    public List<PromotionListViewResponse> queryValidRepListByStoreId(Long userId, AppIdentityType identityType, Long storeId) {
+        if (storeId == null) {
             return null;
         }
 
-        List<ActBaseDO> actBaseDOList = actBaseDAO.queryValidListByStoreId(storeId,LocalDateTime.now());
+        List<ActBaseDO> actBaseDOList = actBaseDAO.queryValidListByStoreId(storeId, LocalDateTime.now());
         List<PromotionListViewResponse> viewResponses = new ArrayList<>();
 
         // 设置购物车已选数量
         List<NormalMaterialListResponse> normalMaterialListRespons = this.materialListServiceImpl.findByUserIdAndIdentityType(userId, identityType.getValue());
 
-        for (ActBaseDO actBaseDO : actBaseDOList){
+        for (ActBaseDO actBaseDO : actBaseDOList) {
             PromotionListViewResponse viewResponse = new PromotionListViewResponse();
 
             viewResponse.setCityId(actBaseDO.getCityId());
@@ -121,17 +121,17 @@ public class AppActServiceImpl implements AppActService {
             viewResponse.setPicUrl(actBaseDO.getPicUrl());
 
             // 查询出参与促销的商品
-            List<Long> gidList =  actGoodsMappingDAO.queryGidByActId(actBaseDO.getId());
+            List<Long> gidList = actGoodsMappingDAO.queryGidByActId(actBaseDO.getId());
 
             List<GiftListResponseGoods> goodsListResponseGoods = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserIdAndIdentityType(
                     gidList, userId, identityType);
 
-            for (NormalMaterialListResponse response : normalMaterialListRespons){
-                for (GiftListResponseGoods goods : goodsListResponseGoods){
-                    if (response.getGoodsId().equals(goods.getGoodsId())){
+            for (NormalMaterialListResponse response : normalMaterialListRespons) {
+                for (GiftListResponseGoods goods : goodsListResponseGoods) {
+                    if (response.getGoodsId().equals(goods.getGoodsId())) {
                         goods.setQty(response.getQty());
                         continue;
-                    }else{
+                    } else {
                         goods.setQty(0);
                     }
                 }
@@ -168,12 +168,13 @@ public class AppActServiceImpl implements AppActService {
      * @param userId
      * @param userType
      * @param goodsInfoList
+     * @Param scope 促销范围 买券还是买商品
      * @return
      */
     @Override
-    public List<PromotionsGiftListResponse> countGift(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList,Long cusId) throws UnsupportedEncodingException {
+    public List<PromotionsGiftListResponse> countGift(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList, Long cusId,String scope) throws UnsupportedEncodingException {
         List<PromotionsGiftListResponse> giftList = new ArrayList<>();
-        PromotionsListResponse actResultInfos = countAct(userId, userType, goodsInfoList,cusId);
+        PromotionsListResponse actResultInfos = countAct(userId, userType, goodsInfoList, cusId,scope);
 
         if (actResultInfos != null && actResultInfos.getPromotionGiftList() != null) {
             giftList = actResultInfos.getPromotionGiftList();
@@ -191,9 +192,9 @@ public class AppActServiceImpl implements AppActService {
      * @return
      */
     @Override
-    public List<PromotionDiscountListResponse> countDiscount(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList,Long cusId) throws UnsupportedEncodingException {
+    public List<PromotionDiscountListResponse> countDiscount(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList, Long cusId,String scope) throws UnsupportedEncodingException {
         List<PromotionDiscountListResponse> discountList = new ArrayList<>();
-        PromotionsListResponse actResultInfos = countAct(userId, userType, goodsInfoList,cusId);
+        PromotionsListResponse actResultInfos = countAct(userId, userType, goodsInfoList, cusId,scope);
         if (actResultInfos != null && actResultInfos.getPromotionDiscountList() != null) {
             discountList = actResultInfos.getPromotionDiscountList();
         }
@@ -211,7 +212,7 @@ public class AppActServiceImpl implements AppActService {
      */
     @Override
     @Transactional
-    public PromotionsListResponse countAct(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList,Long cusId) throws UnsupportedEncodingException {
+    public PromotionsListResponse countAct(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList, Long cusId,String scope) throws UnsupportedEncodingException {
         //*****促销结果*****
         PromotionsListResponse result = new PromotionsListResponse();
         List<PromotionDiscountListResponse> proDiscountList = new ArrayList<>();
@@ -235,7 +236,7 @@ public class AppActServiceImpl implements AppActService {
 
             skus.add(goods.getSku());
             // 把商品注入本品池 排除产品券商品
-            if (goods.getGoodsLineType() == null || !goods.getGoodsLineType().equals(AppGoodsLineType.PRODUCT_COUPON.getValue())){
+            if (goods.getGoodsLineType() == null || !goods.getGoodsLineType().equals(AppGoodsLineType.PRODUCT_COUPON.getValue())) {
                 goodsPool.put(goods.getSku(), goods);
                 goodsIdList.add(goods.getId());
             }
@@ -253,12 +254,12 @@ public class AppActServiceImpl implements AppActService {
             cusId = userId;
 
             /** 计算专供促销 **/
-            List<PromotionsGiftListResponse> zgGiftResponse = this.countZgPromotion(cusId,goodsIdList,goodsPool);
-            if (zgGiftResponse != null && zgGiftResponse.size() > 0){
+            List<PromotionsGiftListResponse> zgGiftResponse = this.countZgPromotion(cusId, goodsIdList, goodsPool,scope);
+            if (zgGiftResponse != null && zgGiftResponse.size() > 0) {
                 proGiftList.addAll(zgGiftResponse);
             }
 
-            actList = this.getActList(customer, skus);
+            actList = this.getActList(customer, skus,scope);
             customerType = customer.getCustomerType();
 
             result.setPromotionGiftList(proGiftList);
@@ -270,12 +271,12 @@ public class AppActServiceImpl implements AppActService {
             }
 
             /** 计算专供促销 **/
-            List<PromotionsGiftListResponse> zgGiftResponse = this.countZgPromotion(cusId,goodsIdList,goodsPool);
-            if (zgGiftResponse != null && zgGiftResponse.size() > 0){
+            List<PromotionsGiftListResponse> zgGiftResponse = this.countZgPromotion(cusId, goodsIdList, goodsPool,scope);
+            if (zgGiftResponse != null && zgGiftResponse.size() > 0) {
                 proGiftList.addAll(zgGiftResponse);
             }
 
-            actList = this.getActList(employee, skus);
+            actList = this.getActList(employee, skus,scope);
             customerType = AppCustomerType.MEMBER;
 
             result.setPromotionGiftList(proGiftList);
@@ -292,7 +293,7 @@ public class AppActServiceImpl implements AppActService {
 
             // 判断当前用户身份
             String target = act.getActTarget();
-            if (!target.contains(String.valueOf(userType.getValue()))){
+            if (!target.contains(String.valueOf(userType.getValue()))) {
                 /**不可参与此促销，计算下一个促销**/
                 continue;
             }
@@ -359,7 +360,7 @@ public class AppActServiceImpl implements AppActService {
                         enjoyTimes = this.countFamoActEnjoyTimes(actualTotalPrice, act.getFullAmount());
                     }
                     // 创建一个促销结果
-                    proDiscountList.add(this.getPromotionDiscountResponse(act, enjoyTimes,actualTotalPrice));
+                    proDiscountList.add(this.getPromotionDiscountResponse(act, enjoyTimes, actualTotalPrice));
                     // 结束本次促销循环
                     continue;
                 }
@@ -398,19 +399,19 @@ public class AppActServiceImpl implements AppActService {
                     continue;
                 }
                 //***************** 普通-满数量-打折 ************
-            }else if (actType.equals("COMMON_FQTY_DIS")){
+            } else if (actType.equals("COMMON_FQTY_DIS")) {
                 // 判断本品是否满足数量要求 得出参与此促销次数
                 int enjoyTimes = checkActGoodsNum(goodsPool, act);
                 // 满足条件的商品总价
                 Double totalPrice = 0.00;
 
                 if (enjoyTimes > 0) {
-                    proDiscountList.add(this.getPromotionDiscountResponse(act, enjoyTimes,totalPrice));
+                    proDiscountList.add(this.getPromotionDiscountResponse(act, enjoyTimes, totalPrice));
                     // 结束本次促销循环
                     continue;
                 }
                 //***************** 普通-满数量-送券 ************
-            }else if (actType.equals("COMMON_FQTY_PRO")){
+            } else if (actType.equals("COMMON_FQTY_PRO")) {
                 // 判断本品是否满足数量要求 得出参与此促销次数
                 int enjoyTimes = checkActGoodsNum(goodsPool, act);
 
@@ -433,7 +434,7 @@ public class AppActServiceImpl implements AppActService {
     /*
        返回商品参与的促销 (顾客)
      */
-    private List<ActBaseDO> getActList(AppCustomer cus, List<String> skus) {
+    private List<ActBaseDO> getActList(AppCustomer cus, List<String> skus,String scope) {
         // 创建一个促销 集合
         List<ActBaseDO> actList = new ArrayList<>();
         // 当前时间
@@ -444,7 +445,7 @@ public class AppActServiceImpl implements AppActService {
         Long storeId = cus.getStoreId();
 
         // 返回用户购买商品参与的未过期的活动
-        actList = actBaseDAO.queryListBySkus(skus, now, cityId, "6", storeId);
+        actList = actBaseDAO.queryListBySkus(skus, now, cityId, "6", storeId ,scope);
         return actList;
     }
 
@@ -452,7 +453,7 @@ public class AppActServiceImpl implements AppActService {
     /*
         返回商品参与的促销 (导购)
      */
-    private List<ActBaseDO> getActList(AppEmployee employee, List<String> skus) {
+    private List<ActBaseDO> getActList(AppEmployee employee, List<String> skus,String scope) {
         // 创建一个促销 集合
         List<ActBaseDO> actList = new ArrayList<>();
         // 当前时间
@@ -463,7 +464,7 @@ public class AppActServiceImpl implements AppActService {
         Long storeId = employee.getStoreId();
 
         // 返回用户购买商品参与的未过期的活动
-        actList = actBaseDAO.queryListBySkus(skus, now, cityId, "0", storeId);
+        actList = actBaseDAO.queryListBySkus(skus, now, cityId, "0", storeId,scope);
         return actList;
     }
 
@@ -542,7 +543,7 @@ public class AppActServiceImpl implements AppActService {
         // 促销需要满足总数量
         Integer fullNumber = act.getFullNumber();
 
-        if(fullNumber == null || fullNumber == 0){
+        if (fullNumber == null || fullNumber == 0) {
             return enjoyTimes;
         }
 
@@ -557,7 +558,7 @@ public class AppActServiceImpl implements AppActService {
             Iterator<Map.Entry<String, OrderGoodsSimpleResponse>> it = goodsPool.entrySet().iterator();
 
             // 满足条件商品数量
-            Integer  matchGoodsQty = 0;
+            Integer matchGoodsQty = 0;
             List<String> matchSku = new ArrayList<>();
 
             while (it.hasNext()) {
@@ -575,20 +576,20 @@ public class AppActServiceImpl implements AppActService {
                 }
             }
 
-            if (matchGoodsQty >= fullNumber){
+            if (matchGoodsQty >= fullNumber) {
                 // 满足促销条件 向下取整获取次数
-                enjoyTimes = (int) Math.floor(Double.valueOf(matchGoodsQty)/Double.valueOf(fullNumber));
+                enjoyTimes = (int) Math.floor(Double.valueOf(matchGoodsQty) / Double.valueOf(fullNumber));
 
                 // 扣掉本品池中所有促销范围内商品
 
-                for (String sku : matchSku){
+                for (String sku : matchSku) {
                     goodsPool.remove(sku);
                 }
-            }else {
+            } else {
                 return 0;
             }
 
-            if (!act.getIsDouble()){
+            if (!act.getIsDouble()) {
                 // 不可重复参与
                 enjoyTimes = 1;
             }
@@ -630,12 +631,12 @@ public class AppActServiceImpl implements AppActService {
                         // 不满足要求 返回false
                         falg = false;
                         return 0;
-                    }else{
+                    } else {
                         // 向下取整 得出单品参与次数 最终取最小次数
-                        Integer singleEnjoyTimes = (int) Math.floor(Double.valueOf(buyNum)/Double.valueOf(qty));
-                        if(enjoyTimes == 0){
+                        Integer singleEnjoyTimes = (int) Math.floor(Double.valueOf(buyNum) / Double.valueOf(qty));
+                        if (enjoyTimes == 0) {
                             enjoyTimes = singleEnjoyTimes;
-                        }else if(singleEnjoyTimes < enjoyTimes){
+                        } else if (singleEnjoyTimes < enjoyTimes) {
                             enjoyTimes = singleEnjoyTimes;
                         }
                     }
@@ -645,7 +646,7 @@ public class AppActServiceImpl implements AppActService {
             // 说明以上条件都满足 扣掉商品池中商品
             if (falg) {
 
-                if (!act.getIsDouble()){
+                if (!act.getIsDouble()) {
                     // 不可重复参与
                     enjoyTimes = 1;
                 }
@@ -717,7 +718,7 @@ public class AppActServiceImpl implements AppActService {
                 }
             }
         }
-        logger.info("促销："+act.getTitle()+",包含赠品"+giftIdList.size()+"件");
+        logger.info("促销：" + act.getTitle() + ",包含赠品" + giftIdList.size() + "件");
 
         List<GiftListResponseGoods> giftListResponseGoods = new ArrayList<>();
         giftListResponseGoods = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserIdAndIdentityType(
@@ -731,17 +732,17 @@ public class AppActServiceImpl implements AppActService {
         } else if (actType.contains("GOO")) {
             // 赠送 将价格设置为0
             for (GiftListResponseGoods gift : giftListResponseGoods) {
-                if (act.getIsGiftOptionalQty()){
+                if (act.getIsGiftOptionalQty()) {
                     gift.setQty(0);
-                }else{
+                } else {
                     // 设置每个赠品的固定数量
                     List<ActGiftDetailsDO> giftDetailList = new ArrayList<>();
                     giftDetailList = actGiftDetailsDAO.queryByActId(act.getId());
 
-                    for (ActGiftDetailsDO detail : giftDetailList){
-                        for(GiftListResponseGoods responseGoods : giftListResponseGoods){
-                            if (detail.getGiftId().equals(responseGoods.getGoodsId())){
-                                responseGoods.setQty(detail.getGiftFixedQty()*enjoyTime);
+                    for (ActGiftDetailsDO detail : giftDetailList) {
+                        for (GiftListResponseGoods responseGoods : giftListResponseGoods) {
+                            if (detail.getGiftId().equals(responseGoods.getGoodsId())) {
+                                responseGoods.setQty(detail.getGiftFixedQty() * enjoyTime);
                             }
                         }
                     }
@@ -751,7 +752,7 @@ public class AppActServiceImpl implements AppActService {
             }
         }
 
-        logger.info("享受："+act.getTitle()+",价目表下存在 有效赠品"+giftListResponseGoods.size()+"件");
+        logger.info("享受：" + act.getTitle() + ",价目表下存在 有效赠品" + giftListResponseGoods.size() + "件");
 
         response.setGiftList(giftListResponseGoods);
         return response;
@@ -774,14 +775,14 @@ public class AppActServiceImpl implements AppActService {
         proDiscount.setDiscountPrice(CountUtil.mul(sub_amount.getSubAmount(), enjoyTimes));
         proDiscount.setEnjoyTimes(enjoyTimes);
 
-        logger.info("享受："+act.getTitle());
+        logger.info("享受：" + act.getTitle());
         return proDiscount;
     }
 
-    private PromotionDiscountListResponse getPromotionDiscountResponse(ActBaseDO act, int enjoyTimes,Double totalPrice) {
+    private PromotionDiscountListResponse getPromotionDiscountResponse(ActBaseDO act, int enjoyTimes, Double totalPrice) {
 
         // 如果促销不能重复参与 参与次数只能为1
-        if(act.getIsDouble() == false){
+        if (act.getIsDouble() == false) {
             enjoyTimes = 1;
         }
 
@@ -790,13 +791,13 @@ public class AppActServiceImpl implements AppActService {
         ActSubAmountDO sub_amount = actSubAmountDAO.queryByActId(act.getId());
 
         Double discountPrice = 0.00;
-        if (act.getActType().contains("DIS")){
+        if (act.getActType().contains("DIS")) {
             Double discount = sub_amount.getDiscount() == null ? 1 : sub_amount.getDiscount();
-            discountPrice = CountUtil.mul(CountUtil.sub(10D,discount),totalPrice);
-            discountPrice = CountUtil.mul(0.1,discountPrice);
-        }else if (act.getActType().contains("SUB")){
+            discountPrice = CountUtil.mul(CountUtil.sub(10D, discount), totalPrice);
+            discountPrice = CountUtil.mul(0.1, discountPrice);
+        } else if (act.getActType().contains("SUB")) {
             discountPrice = sub_amount.getSubAmount() == null ? 0 : sub_amount.getSubAmount();
-            discountPrice = CountUtil.mul(discountPrice,enjoyTimes);
+            discountPrice = CountUtil.mul(discountPrice, enjoyTimes);
         }
 
         proDiscount.setPromotionId(act.getId());
@@ -804,7 +805,7 @@ public class AppActServiceImpl implements AppActService {
         proDiscount.setDiscountPrice(discountPrice);
         proDiscount.setEnjoyTimes(enjoyTimes);
 
-        logger.info("享受："+act.getTitle());
+        logger.info("享受：" + act.getTitle());
         return proDiscount;
     }
 
@@ -830,66 +831,78 @@ public class AppActServiceImpl implements AppActService {
 
     /**
      * 计算专供促销
+     *
      * @return
      */
-    public List<PromotionsGiftListResponse> countZgPromotion(Long cusId,List<Long> goodsIdList,Map<String, OrderGoodsSimpleResponse> goodsPool){
+    public List<PromotionsGiftListResponse> countZgPromotion(Long cusId, List<Long> goodsIdList, Map<String, OrderGoodsSimpleResponse> goodsPool,String scope) {
         List<PromotionsGiftListResponse> giftListResponseList = new ArrayList<>();
+        Long cityId = -1L;
+        Long storeId = -1L;
+        List<String> skus = new ArrayList<>();
+        String rankCode = "";
 
         //判断会员身份
         CustomerRankInfoResponse customerRankInfoResponse = appCustomerService.findCusRankinfoByCusId(cusId);
         AppCustomer appCustomer = null;
+
         try {
             appCustomer = appCustomerService.findById(cusId);
+
+            cityId = appCustomer.getCityId();
+            storeId = appCustomer.getStoreId();
+            rankCode = customerRankInfoResponse.getRankCode();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-            logger.info("计算专供促销，顾客id:"+cusId+"找不到顾客信息");
+            logger.info("计算专供促销，顾客id:" + cusId + "找不到顾客信息");
         }
 
-        if (customerRankInfoResponse == null){
+        if (customerRankInfoResponse == null) {
             // 非专供会员 不能参与专供促销
             return null;
         }
 
         /** 一部等级分专供会员不享受促销 **/
-        String[] excludeLevel = this.ZG_EXCLUDE_LEVEL.split(",");
-        String[] excludeGoods = this.ZG_EXCLUDE_GOODS.split(",");
+//        String[] excludeLevel = this.ZG_EXCLUDE_LEVEL.split(",");
+//        String[] excludeGoods = this.ZG_EXCLUDE_GOODS.split(",");
 
-        if (excludeLevel != null && excludeLevel.length > 0){
-            for (String level : excludeLevel){
-                if (level.equals(customerRankInfoResponse.getRankCode())){
-                    return null;
-                }
-            }
-        }
+//        if (excludeLevel != null && excludeLevel.length > 0){
+//            for (String level : excludeLevel){
+//                if (level.equals(customerRankInfoResponse.getRankCode())){
+//                    return null;
+//                }
+//            }
+//        }
 
         // 根据用户购买产品id 返回专供产品
-        List<GiftListResponseGoods> goodsZGList = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserId(goodsIdList,cusId,AppIdentityType.CUSTOMER);
+        List<GiftListResponseGoods> goodsZGList = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserId(goodsIdList, cusId, AppIdentityType.CUSTOMER);
 
-        if (goodsZGList == null || goodsZGList.size() == 0){
+        if (goodsZGList == null || goodsZGList.size() == 0) {
             // 无专供产品
             return giftListResponseList;
         }
 
         /** 首先排除一部分不享受专供的商品 **/
-        if(customerRankInfoResponse.getCityId().equals(2L)){
-            // 目前只有郑州有这种神操作 C线 一部分商品没有促销
-            if (excludeGoods != null && excludeGoods.length > 0){
-                for (String sku : excludeGoods){
-                    for (int i = goodsZGList.size()-1 ; i >= 0; i--){
-                        GiftListResponseGoods goods = goodsZGList.get(i);
-                        if (sku.equals(goods.getSku())){
-                            goodsZGList.remove(i);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
+//        if(customerRankInfoResponse.getCityId().equals(2L)){
+//            // 目前只有郑州有这种神操作 C线 一部分商品没有促销
+//            if (excludeGoods != null && excludeGoods.length > 0){
+//                for (String sku : excludeGoods){
+//                    for (int i = goodsZGList.size()-1 ; i >= 0; i--){
+//                        GiftListResponseGoods goods = goodsZGList.get(i);
+//                        if (sku.equals(goods.getSku())){
+//                            goodsZGList.remove(i);
+//                            break;
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
         // 排除掉华润以外的专供产品
-        for (int i = goodsZGList.size()-1 ; i >= 0; i--){
+        for (int i = goodsZGList.size() - 1; i >= 0; i--) {
             GiftListResponseGoods goods = goodsZGList.get(i);
-            if (!goods.getCompanyFlag().equals("HR")){
+            // 把sku 装入sku
+            skus.add(goods.getSku());
+            if (!goods.getCompanyFlag().equals("HR")) {
                 goodsZGList.remove(i);
             }
         }
@@ -897,87 +910,95 @@ public class AppActServiceImpl implements AppActService {
         // 获取专供会员 专供产品销量
         List<SellZgDetailsDO> sellZgDetailsDOList = statisticsSellDetailsService.getZgDetailsByCusId(cusId);
 
-        if (sellZgDetailsDOList == null || sellZgDetailsDOList.size() == 0){
+        if (sellZgDetailsDOList == null || sellZgDetailsDOList.size() == 0) {
             // 首单专供 享受首单促销
 
             //查看是否享受过首单促销记录
-            SellZgCusTimes sellZgCusTimes = statisticsSellDetailsService.getTimesByCusIdAndSku(cusId,null,ActBaseType.ZGFRIST);
-            if (sellZgCusTimes == null){
+            SellZgCusTimes sellZgCusTimes = statisticsSellDetailsService.getTimesByCusIdAndSku(cusId, null, ActBaseType.ZGFRIST);
+            if (sellZgCusTimes == null ) {
                 // 首单
-                List<ActBaseDO> zgFirstList = actBaseDAO.queryZgFirstList(appCustomer.getCityId(),LocalDateTime.now());
+                List<ActBaseDO> zgFirstList = actBaseDAO.queryZgFirstListByRankCode(cityId, LocalDateTime.now(), storeId, skus, rankCode,scope);
 
-                if (zgFirstList != null && zgFirstList.size() > 0){
-                    ActBaseDO actBaseDO = zgFirstList.get(0);
-                    // 促销条件数量
-                    Integer fullQty = actBaseDO.getFullNumber();
-                    // 赠送数量
-                    Integer sentQty = actBaseDO.getGiftChooseNumber();
+                if (zgFirstList != null && zgFirstList.size() > 0) {
 
-                    /** 首单促销  专供产品满足数量为fullQty个的产品，选择一个单价最高的产品，送sentQty个**/
+                    for (ActBaseDO actBaseDO : zgFirstList) { // 循环遍历促销
+                        // 促销条件数量
+                        Integer fullQty = actBaseDO.getFullNumber();
+                        // 赠送数量
+                        Integer sentQty = actBaseDO.getGiftChooseNumber();
 
-                    List<GiftListResponseGoods> enjoyActGoodsList = new ArrayList();
-                    for (GiftListResponseGoods zgGoods : goodsZGList){
-                        OrderGoodsSimpleResponse orderGoodsSimpleResponse = goodsPool.get(zgGoods.getSku());
-                        // 判断数量
-                        if (orderGoodsSimpleResponse.getGoodsQty() >= fullQty){
+                        /** 首单促销  专供产品满足数量为fullQty个的产品，送sentQty个**/
 
-                            zgGoods.setRetailPrice(orderGoodsSimpleResponse.getRetailPrice());
-                            enjoyActGoodsList.add(zgGoods);
-                        }
-                    }
+                        List<GiftListResponseGoods> enjoyActGoodsList = new ArrayList();
+                        for (GiftListResponseGoods zgGoods : goodsZGList) {
+                            OrderGoodsSimpleResponse orderGoodsSimpleResponse = goodsPool.get(zgGoods.getSku());
+                            // 判断数量
+                            if (orderGoodsSimpleResponse.getGoodsQty() >= fullQty) {
 
-                    if (enjoyActGoodsList.size() > 0 ){
-                        // 排序 按价格正序
-
-                        Collections.sort(enjoyActGoodsList, new Comparator<GiftListResponseGoods>() {
-                            @Override
-                            public int compare(GiftListResponseGoods s1, GiftListResponseGoods s2) {
-                                return (int)(s1.getRetailPrice()-(s2.getRetailPrice()));
+                                zgGoods.setRetailPrice(orderGoodsSimpleResponse.getRetailPrice());
+                                enjoyActGoodsList.add(zgGoods);
                             }
-                        });
-
-                        // 拿到赠品样本
-                        GiftListResponseGoods giftTemplate = enjoyActGoodsList.get(enjoyActGoodsList.size()-1);
-
-                        OrderGoodsSimpleResponse orderGoodsSimpleResponse = goodsPool.get(giftTemplate.getSku());
-                        Integer remainQty = orderGoodsSimpleResponse.getGoodsQty() - fullQty;
-
-                        if (remainQty == 0){
-                            goodsPool.remove(giftTemplate.getSku());
-                        }else if (remainQty > 0){
-                            orderGoodsSimpleResponse.setGoodsQty(remainQty);
-                            goodsPool.put(giftTemplate.getSku(),orderGoodsSimpleResponse);
                         }
 
-                        // 创建一个促销结果
-                        PromotionsGiftListResponse response = new PromotionsGiftListResponse();
+                        if (enjoyActGoodsList.size() > 0) {
+                            // 排序 按价格正序
 
-                        response.setPromotionId(actBaseDO.getId());
-                        response.setPromotionTitle(actBaseDO.getTitle());
-                        response.setIsGiftOptionalQty(actBaseDO.getIsGiftOptionalQty());
-                        response.setMaxChooseNumber(actBaseDO.getGiftChooseNumber() * 1);
-                        response.setEnjoyTimes(1);
+                            Collections.sort(enjoyActGoodsList, new Comparator<GiftListResponseGoods>() {
+                                @Override
+                                public int compare(GiftListResponseGoods s1, GiftListResponseGoods s2) {
+                                    return (int) (s1.getRetailPrice() - (s2.getRetailPrice()));
+                                }
+                            });
 
-                        // 创建赠品list
-                        List<GiftListResponseGoods> giftList = new ArrayList<>();
-                        GiftListResponseGoods gift = new GiftListResponseGoods();
+                            // 创建赠品list
+                            List<GiftListResponseGoods> giftList = new ArrayList<>();
+                            // 获取促销商品范围
+                            List<String> scopeSkus = actGoodsMappingDAO.querySkusByActId(actBaseDO.getId());
+                            for (GiftListResponseGoods giftTemplate : enjoyActGoodsList) {
 
-                        gift.setGoodsId(giftTemplate.getGoodsId());
-                        gift.setSku(giftTemplate.getSku());
-                        gift.setSkuName(giftTemplate.getSkuName());
-                        gift.setQty(actBaseDO.getGiftChooseNumber() * 1);
-                        gift.setRetailPrice(0D);
-                        gift.setCoverImageUri(giftTemplate.getCoverImageUri());
-                        gift.setGoodsUnit(giftTemplate.getGoodsUnit());
-                        gift.setGoodsType(AppGoodsLineType.PRESENT);
-                        gift.setGoodsSpecification(giftTemplate.getGoodsSpecification());
+                                // 判断此专供是否在促销范围下 不在则跳过
+                                if (!scopeSkus.contains(giftTemplate.getSku())){
+                                    continue;
+                                }
 
-                        giftList.add(gift);
-                        response.setGiftList(giftList);
-                        giftListResponseList.add(response);
-                        logger.info("专供促销："+response.getPromotionTitle());
+                                OrderGoodsSimpleResponse orderGoodsSimpleResponse = goodsPool.get(giftTemplate.getSku());
+                                Integer remainQty = orderGoodsSimpleResponse.getGoodsQty() - fullQty;
 
-                        // 记录
+                                if (remainQty == 0) {
+                                    goodsPool.remove(giftTemplate.getSku());
+                                } else if (remainQty > 0) {
+                                    orderGoodsSimpleResponse.setGoodsQty(remainQty);
+                                    goodsPool.put(giftTemplate.getSku(), orderGoodsSimpleResponse);
+                                }
+
+                                GiftListResponseGoods gift = new GiftListResponseGoods();
+
+                                gift.setGoodsId(giftTemplate.getGoodsId());
+                                gift.setSku(giftTemplate.getSku());
+                                gift.setSkuName(giftTemplate.getSkuName());
+                                gift.setQty(actBaseDO.getGiftChooseNumber() * 1);
+                                gift.setRetailPrice(0D);
+                                gift.setCoverImageUri(giftTemplate.getCoverImageUri());
+                                gift.setGoodsUnit(giftTemplate.getGoodsUnit());
+                                gift.setGoodsType(AppGoodsLineType.PRESENT);
+                                gift.setGoodsSpecification(giftTemplate.getGoodsSpecification());
+
+                                giftList.add(gift);
+                            }
+
+                            // 创建一个促销结果
+                            PromotionsGiftListResponse response = new PromotionsGiftListResponse();
+
+                            response.setPromotionId(actBaseDO.getId());
+                            response.setPromotionTitle(actBaseDO.getTitle());
+                            response.setIsGiftOptionalQty(actBaseDO.getIsGiftOptionalQty());
+                            response.setMaxChooseNumber(actBaseDO.getGiftChooseNumber() * enjoyActGoodsList.size());
+                            response.setEnjoyTimes(enjoyActGoodsList.size());
+                            response.setGiftList(giftList);
+                            giftListResponseList.add(response);
+                            logger.info("专供促销：" + response.getPromotionTitle());
+
+                            // 记录
 //                        SellZgCusTimes sellZgCusTimes1 = new SellZgCusTimes();
 //                        sellZgCusTimes1.setCusId(cusId);
 //                        sellZgCusTimes1.setSku(gift.getSku());
@@ -985,6 +1006,7 @@ public class AppActServiceImpl implements AppActService {
 //                        sellZgCusTimes1.setActBaseType(ActBaseType.ZGFRIST);
 //
 //                        statisticsSellDetailsService.addSellZgCusTimes(sellZgCusTimes1);
+                        }
                     }
                 }
             }
@@ -992,9 +1014,9 @@ public class AppActServiceImpl implements AppActService {
         }
 
         // 享受 累积促销
-        List<ActBaseDO> actBaseDOList = actBaseDAO.queryZgList(appCustomer.getCityId(),LocalDateTime.now());
+        List<ActBaseDO> actBaseDOList = actBaseDAO.queryZgList(appCustomer.getCityId(), LocalDateTime.now());
 
-        if (actBaseDOList != null && actBaseDOList.size() > 0){
+        if (actBaseDOList != null && actBaseDOList.size() > 0) {
             ActBaseDO actBaseDO = actBaseDOList.get(0);
 
             // 参与促销需要累积数量
@@ -1004,15 +1026,15 @@ public class AppActServiceImpl implements AppActService {
 
 
             // 循环遍历专供产品 找到符合促销条件的产品
-            for (GiftListResponseGoods zgGoods : goodsZGList){
+            for (GiftListResponseGoods zgGoods : goodsZGList) {
 
                 // 得到专供产品的桶数
-                Integer saledQty = statisticsSellDetailsService.getZgTsBycusIdAndsku(cusId,zgGoods.getSku());
+                Integer saledQty = statisticsSellDetailsService.getZgTsBycusIdAndsku(cusId, zgGoods.getSku());
 
                 // 拿到用户买的产品
                 OrderGoodsSimpleResponse orderGoodsSimpleResponse = goodsPool.get(zgGoods.getSku());
 
-                if (orderGoodsSimpleResponse != null){
+                if (orderGoodsSimpleResponse != null) {
                     Integer currentQty = orderGoodsSimpleResponse.getGoodsQty();
                     Integer sumQty = saledQty + currentQty;
 
@@ -1024,21 +1046,21 @@ public class AppActServiceImpl implements AppActService {
                     int enjoiedTimes = 0;
 
                     //取得用户参与专供累积促销的记录
-                    SellZgCusTimes sellZgCusTimes = statisticsSellDetailsService.getTimesByCusIdAndSku(cusId,zgGoods.getSku(),ActBaseType.ACCUMULATE);
+                    SellZgCusTimes sellZgCusTimes = statisticsSellDetailsService.getTimesByCusIdAndSku(cusId, zgGoods.getSku(), ActBaseType.ACCUMULATE);
 
-                    if(sellZgCusTimes != null){
+                    if (sellZgCusTimes != null) {
                         /**验证用户有没有重复参与**/
                         enjoiedTimes = sellZgCusTimes.getTimes();
 
-                        if (enjoyTimes > enjoiedTimes){
+                        if (enjoyTimes > enjoiedTimes) {
 //                            sellZgCusTimes.setTimes(enjoiedTimes+enjoyTimes);
 //                            statisticsSellDetailsService.updateSellZgCusTimes(sellZgCusTimes);
-                        }else{
+                        } else {
                             // 不能参与
                             continue;
                         }
 
-                    }else {
+                    } else {
 //                        if (enjoyTimes > 0){
 //                            //新增一条参与记录
 //                            SellZgCusTimes sellZgCusTimes1 = new SellZgCusTimes();
@@ -1052,15 +1074,15 @@ public class AppActServiceImpl implements AppActService {
                     }
 
                     currentEnjoyTimes = enjoyTimes - enjoiedTimes;
-                    if (currentEnjoyTimes > 0){
+                    if (currentEnjoyTimes > 0) {
 
                         //Integer remainQty = currentQty - ((enjoyTimes * accumulateQty) - saledQty);
                         Integer remainQty = sumQty % accumulateQty;
-                        if (remainQty == 0){
+                        if (remainQty == 0) {
                             goodsPool.remove(zgGoods.getSku());
-                        }else if (remainQty > 0){
+                        } else if (remainQty > 0) {
                             orderGoodsSimpleResponse.setGoodsQty(remainQty);
-                            goodsPool.put(zgGoods.getSku(),orderGoodsSimpleResponse);
+                            goodsPool.put(zgGoods.getSku(), orderGoodsSimpleResponse);
                         }
 
                         // 创建一个促销结果
@@ -1090,7 +1112,7 @@ public class AppActServiceImpl implements AppActService {
                         response.setGiftList(giftList);
 
                         giftListResponseList.add(response);
-                        logger.info("专供促销："+response.getPromotionTitle());
+                        logger.info("专供促销：" + response.getPromotionTitle());
                     }
                 }
 
@@ -1169,7 +1191,7 @@ public class AppActServiceImpl implements AppActService {
      * @param subAmount
      */
     @Transactional
-    public void save(ActBaseDO baseDO, List<ActGoodsMappingDO> goodsList, List<ActGiftDetailsDO> giftList, Double subAmount, List<ActStoreDO> storeDOList,Double discount) {
+    public void save(ActBaseDO baseDO, List<ActGoodsMappingDO> goodsList, List<ActGiftDetailsDO> giftList, Double subAmount, List<ActStoreDO> storeDOList, Double discount) {
         String cityName = cityService.findById(baseDO.getCityId()).getName();
         baseDO.setCityName(cityName);
 
@@ -1198,7 +1220,14 @@ public class AppActServiceImpl implements AppActService {
                 }
                 baseDO.setGiftChooseNumber(totalQty);
             }
+        }
 
+        if (baseDO.getBaseType().equals("ZGFRIST")){
+            /** 专供首单赠送产品数量设置 默认 1 **/
+            baseDO.setGiftChooseNumber(1);
+            baseDO.setIsGoodsOptionalQty(false);
+            subAmount = 0.00;
+            discount = 10.00;
         }
 
         baseDO.setStatus(ActStatusType.NEW);
@@ -1206,6 +1235,7 @@ public class AppActServiceImpl implements AppActService {
         // 生成编码
         String code = baseDO.createCode();
         baseDO.setActCode(code);
+
         actBaseDAO.save(baseDO);
 
         // 门店和促销映射
@@ -1240,7 +1270,7 @@ public class AppActServiceImpl implements AppActService {
                     actGiftDetailsDAO.save(item);
                 }
             }
-        }else if (act_type.contains("PRO")) {
+        } else if (act_type.contains("PRO")) {
             // 创建赠品对象与促销的映射
             if (giftList != null && giftList.size() > 0) {
                 for (ActGiftDetailsDO item : giftList) {
@@ -1250,7 +1280,7 @@ public class AppActServiceImpl implements AppActService {
                     actGiftDetailsDAO.save(item);
                 }
             }
-        }  else if (act_type.contains("ADD")) {
+        } else if (act_type.contains("ADD")) {
             // 加价购
             if (giftList != null && giftList.size() > 0) {
                 for (ActGiftDetailsDO item : giftList) {
@@ -1286,7 +1316,7 @@ public class AppActServiceImpl implements AppActService {
      * @param storeDOList
      */
     @Transactional
-    public void edit(ActBaseDO baseDO, List<ActGoodsMappingDO> goodsList, List<ActGiftDetailsDO> giftList, Double subAmount, List<ActStoreDO> storeDOList,Double discount) {
+    public void edit(ActBaseDO baseDO, List<ActGoodsMappingDO> goodsList, List<ActGiftDetailsDO> giftList, Double subAmount, List<ActStoreDO> storeDOList, Double discount) {
         String cityName = cityService.findById(baseDO.getCityId()).getName();
         baseDO.setCityName(cityName);
 
@@ -1383,7 +1413,7 @@ public class AppActServiceImpl implements AppActService {
                     actAddSaleDAO.save(actAddSaleDO);
                 }
             }
-        }else if (act_type.contains("DIS")) {
+        } else if (act_type.contains("DIS")) {
             // 折扣
             actSubAmountDAO.deleteByActBaseId(baseDO.getId());
             ActSubAmountDO actSubAmountDO = new ActSubAmountDO();
@@ -1460,9 +1490,10 @@ public class AppActServiceImpl implements AppActService {
 
     /**
      * 检查是否为工程单
+     *
      * @return
      */
-    public Boolean checkIsGcOrder(Long actId){
+    public Boolean checkIsGcOrder(Long actId) {
         ActBaseDO actBaseDO = actBaseDAO.queryById(actId);
 
         return actBaseDO.getIsGcOrder();
@@ -1473,27 +1504,27 @@ public class AppActServiceImpl implements AppActService {
      * @return 工程促销id + 每桶工程单促销差价
      */
     @Override
-    public Map<Long,Double> returnGcActIdAndJXDiscunt(List<PromotionSimpleInfo> simpleInfo){
-        Map<Long,Double> map = new HashMap<>();
+    public Map<Long, Double> returnGcActIdAndJXDiscunt(List<PromotionSimpleInfo> simpleInfo) {
+        Map<Long, Double> map = new HashMap<>();
 
-        for (PromotionSimpleInfo info : simpleInfo){
+        for (PromotionSimpleInfo info : simpleInfo) {
             ActBaseDO actBaseDO = actBaseDAO.queryById(info.getPromotionId());
 
-            if (actBaseDO != null){
-                if (actBaseDO.getIsGcOrder()){
+            if (actBaseDO != null) {
+                if (actBaseDO.getIsGcOrder()) {
                     ActSubAmountDO subAmountDO = actSubAmountDAO.queryByActId(actBaseDO.getId());
 
-                    if (subAmountDO != null){
+                    if (subAmountDO != null) {
                         Integer qty = actBaseDO.getFullNumber();
                         Double subAmount = 0.00;
-                        if (actBaseDO.getPromotionType().equals(ActPromotionType.SUB)){
+                        if (actBaseDO.getPromotionType().equals(ActPromotionType.SUB)) {
                             subAmount = subAmountDO.getSubAmount() == null ? 0.00 : subAmountDO.getSubAmount();
                         }
 
                         // 计算单桶工程差价
-                        Double gcDiff = CountUtil.div(subAmount,qty);
+                        Double gcDiff = CountUtil.div(subAmount, qty);
 
-                        map.put(actBaseDO.getId(),gcDiff);
+                        map.put(actBaseDO.getId(), gcDiff);
                     }
 
                 }

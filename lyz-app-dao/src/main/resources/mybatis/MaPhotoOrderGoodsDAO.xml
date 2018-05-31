@@ -8,4 +8,17 @@
                   (#{item.gid}, #{item.skuName}, #{item.goodsQty}, #{item.photoOrderNo})
                 </foreach>
     </insert>
+
+    <select id="findPhotoOrderGoodsByPhotoOrderNo" resultType="cn.com.leyizhuang.app.foundation.pojo.PhotoOrderGoodsDO">
+        SELECT
+            id,
+            gid,
+            sku_name,
+            goods_qty,
+            photo_order_no
+        FROM
+            photo_order_goods
+        WHERE
+            photo_order_no = #{photoOrderNo};
+    </select>
 </mapper>

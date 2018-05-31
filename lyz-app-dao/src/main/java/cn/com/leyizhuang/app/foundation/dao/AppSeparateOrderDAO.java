@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomerFxStoreRelation;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.Date;
 import java.util.List;
@@ -185,4 +186,16 @@ public interface AppSeparateOrderDAO {
 
     List<RechargeReceiptInf> getCreditRechargeReceiptInfByReceiptNumber(String receiptNumber);
 
+    List<KdSell> getOrderKdSellByMainOrderNumber(String mainOrderNumber);
+
+    void saveKdSellList(@Param(value = "list") List<KdSell> kdSellList);
+
+    List<KdSell> getReturnOrderKdSellByMainOrderNumber(String mainOrderNumber);
+
+    List<KdSell> getPendingSendKdSell(String mainOrderNumber);
+
+    void updateKdSellFlagAndSendTimeAndErrorMsg(@Param(value = "kdSellIds") List<Long> kdSellIds,
+                                                @Param(value = "errorMsg") String msg,
+                                                @Param(value = "sendTime") Date sendTime,
+                                                @Param(value = "sendFlag") AppWhetherFlag flag);
 }

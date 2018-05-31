@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.dto.CusPreDepositDTO;
 import cn.com.leyizhuang.app.foundation.pojo.RankStore;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.MaCustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.response.MaCreateOrderPeopleResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ManageUpdateCustomerTypeResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.CusRankDO;
 import cn.com.leyizhuang.app.foundation.pojo.user.RankClassification;
@@ -103,6 +104,8 @@ public interface MaCustomerService {
      * 修改会员类型
      */
     void updateMemberType(ManageUpdateCustomerTypeResponse manageUpdateCustomerTypeResponse) throws UnsupportedEncodingException;
+
+    PageInfo<MaCreateOrderPeopleResponse> maFindCreatePeople(Integer page, Integer size,String keywords);
 
 
 }
