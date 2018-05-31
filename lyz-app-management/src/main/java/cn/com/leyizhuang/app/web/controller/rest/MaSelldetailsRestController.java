@@ -116,4 +116,10 @@ public class MaSelldetailsRestController {
         return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "修复商品数据完成", null);
     }
 
+    @GetMapping("re/coupon/order/{flag}")
+    public ResultDTO<Object> repairCouponOrderGoodsLine(@PathVariable("flag") String flag){
+        dutchService.repaireSubpriceOrder(flag);
+        return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "修复未分摊商品完成", null);
+    }
+
 }

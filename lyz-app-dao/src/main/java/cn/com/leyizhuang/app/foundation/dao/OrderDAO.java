@@ -55,6 +55,8 @@ public interface OrderDAO {
 
     List<OrderBaseInfo> findErrorOrderData();
 
+    List<OrderBaseInfo> findErrorCouponOrderData();
+
     List<Long> findOrderPromotionId(@Param("ordNo") String ordNo);
 
     OrderGoodsInf findOrderGoodsInfByLineId(@Param("lineId") Long lineId);
