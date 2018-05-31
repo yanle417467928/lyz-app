@@ -48,7 +48,7 @@ public interface ActBaseDAO{
      */
     List<ActBaseDO> queryListBySkus(@Param("skus") List<String> skus, @Param("now") LocalDateTime now,
                                     @Param("cityId") Long cityId, @Param("actTarget") String actTarget,
-                                    @Param("storeId") Long storeId);
+                                    @Param("storeId") Long storeId,@Param("scope") String scope);
 
     /**
      * 返回id集合中过期的促销
@@ -64,9 +64,9 @@ public interface ActBaseDAO{
 
     List<ActBaseDO> queryZgFirstList(@Param("cityId") Long cityId,@Param("now") LocalDateTime now);
 
-    List<ActBaseDAO> queryZgFirstListByRankCode(@Param("cityId") Long cityId,@Param("now") LocalDateTime now,
-                                                @Param("storeId") Long storeId,@Param("actTarget") String actTarget,
-                                                @Param("skus") List<String> skus);
+    List<ActBaseDO> queryZgFirstListByRankCode(@Param("cityId") Long cityId,@Param("now") LocalDateTime now,
+                                                @Param("storeId") Long storeId,@Param("skus") List<String> skus,
+                                                @Param("rankCode") String rankCode,@Param("scope") String scope);
 
     /**
      * 批量插入

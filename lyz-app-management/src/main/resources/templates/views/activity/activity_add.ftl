@@ -30,10 +30,10 @@
     <script type="text/javascript" src="/javascript/activity/activity_add.js"></script>
 </head>
 <style>
-    #stores label{
-        white-space: normal!important;
-        margin: 5px!important;
-        display: inline-block!important;
+    #stores label {
+        white-space: normal !important;
+        margin: 5px !important;
+        display: inline-block !important;
     }
 </style>
 <body>
@@ -148,6 +148,22 @@
 
                     <div class="row">
                         <div class="col-xs-12 col-md-2">
+                            <div class="form-group">
+                                <label for="title">
+                                    促销范围
+                                </label>
+                                <select name="scope" id="scope" class="form-control select">
+                                    <option value="All">全部</option>
+                                    <option value="GOODS">买商品</option>
+                                    <option value="COUPON">买券</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-12 col-md-2">
                             <label for="title">
                                 城市
                             </label>
@@ -201,9 +217,10 @@
                             <select name="baseType" id="baseType" class="form-control select"
                                     onchange="changeBaseType(this.value);">
                                 <option value="COMMON">普通</option>
+                                <option value="ZGFRIST">专供首单促销</option>
                             </select>
                         </div>
-                        <div class="col-xs-12 col-md-2">
+                        <div id="actConditionDiv" class="col-xs-12 col-md-2">
                             <div class="form-group">
                                 <label for="title">
                                     促销条件
@@ -217,7 +234,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xs-12 col-md-2">
+                        <div id="actResultDiv" class="col-xs-12 col-md-2">
                             <div class="form-group">
                                 <label for="title">
                                     促销结果
@@ -230,6 +247,24 @@
                                         <option value="ADD">加价购买</option>
                                         <option value="DIS">打折</option>
                                         <option value="PRO">送产品券</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="rankCodeDiv" class="col-xs-12 col-md-4" style="display: none;">
+                            <div class="form-group">
+                                <label for="title">
+                                    专供等级(专供促销无需选赠品!)
+                                </label>
+                                <div class="form-group">
+                                    <select name="rankCode" id="rankCode" class="form-control select">
+                                        <option value=""></option>
+                                    <#if rankScopeList??>
+                                        <#list rankScopeList as item>
+                                            <option value="${item.rankCode}">${item.rankName}</option>
+                                        </#list>
+                                    </#if>
                                     </select>
                                 </div>
                             </div>
@@ -292,7 +327,7 @@
                                             <div class="col-xs-12 col-md-2">
                                                 <div class="input-group">
                                                     <input name="fullNumber" type="number" class="form-control"
-                                                           id="fullNumber" placeholder="总数量" onblur ="gcOrderTip(this)">
+                                                           id="fullNumber" placeholder="总数量" onblur="gcOrderTip(this)">
                                                 </div>
                                             </div>
                                         </div>
@@ -344,7 +379,7 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-cny"></i></span>
-                                    <input name="discount" type="text" class="form-control" id="discount" >
+                                    <input name="discount" type="text" class="form-control" id="discount">
                                 </div>
                             </div>
                         </div>
@@ -359,7 +394,7 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-cny"></i></span>
-                                    <input name="fixedAmount" type="text" class="form-control" id="fixedAmount" >
+                                    <input name="fixedAmount" type="text" class="form-control" id="fixedAmount">
                                 </div>
                             </div>
                         </div>
@@ -409,7 +444,8 @@
 
                                         <div class="col-xs-12 col-md-1">
                                             <div class="input-group">
-                                                <input id="is_gift_optional_qty" type="checkbox" class="flat-red" onclick="clickGiftFixedQty(this)">任选数量
+                                                <input id="is_gift_optional_qty" type="checkbox" class="flat-red"
+                                                       onclick="clickGiftFixedQty(this)">任选数量
                                             </div>
                                         </div>
                                         <div id="gift_optional_qty_div" style="display: none;">
@@ -506,17 +542,20 @@
                                                 <div class="box box-primary">
                                                     <div id="toolbar" class="form-inline">
                                                         <select name="brandCode" id="brandCode"
-                                                                class="selectpicker" data-width="120px" style="width:auto;"
+                                                                class="selectpicker" data-width="120px"
+                                                                style="width:auto;"
                                                                 onchange="screenGoods()">
                                                             <option value="-1">选择品牌</option>
                                                         </select>
                                                         <select name="categoryCode" id="categoryCode"
-                                                                class="selectpicker" data-width="120px" style="width:auto;"
+                                                                class="selectpicker" data-width="120px"
+                                                                style="width:auto;"
                                                                 onchange="screenGoods()">
                                                             <option value="-1">选择分类</option>
                                                         </select>
                                                         <select name="companyCode" id="companyCode"
-                                                                class="selectpicker" data-width="120px" style="width:auto;"
+                                                                class="selectpicker" data-width="120px"
+                                                                style="width:auto;"
                                                                 onchange="screenGoods()">
                                                             <option value="-1">选择公司</option>
                                                             <option value="LYZ">乐易装</option>

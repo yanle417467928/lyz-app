@@ -111,6 +111,9 @@ public class ActBaseDO{
     // 专供类型
     private String rankCode;
 
+    // 促销范围
+    private String scope;
+
     /**
      * 获取最终促销类型
      */

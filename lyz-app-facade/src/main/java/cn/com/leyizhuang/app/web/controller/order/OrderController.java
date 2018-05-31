@@ -564,6 +564,8 @@ public class OrderController {
                     }
                 }
             }
+            // 本品集合 用来计算立减促销
+            List<OrderGoodsSimpleResponse> bGoodsList = goodsInfo;
 
             //赠品的数量和标识
             if (AssertUtil.isNotEmpty(giftsInfo)) {
@@ -603,7 +605,7 @@ public class OrderController {
 
             //计算订单金额小计
             //********* 计算促销立减金额 *************
-            List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsInfo, customer.getCusId());
+            List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), bGoodsList, customer.getCusId(),"GOODS");
             for (PromotionDiscountListResponse discountResponse : discountListResponseList) {
                 orderDiscount = CountUtil.add(orderDiscount, discountResponse.getDiscountPrice());
                 PromotionSimpleInfo promotionSimpleInfo = new PromotionSimpleInfo();
