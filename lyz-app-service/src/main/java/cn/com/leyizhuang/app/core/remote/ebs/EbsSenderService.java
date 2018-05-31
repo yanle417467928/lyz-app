@@ -58,4 +58,6 @@ public interface EbsSenderService {
     void sendOrderKeyInfAndRecord(OrderKeyInf orderFreightInf);
 
     void sendWithdrawRefundInfAndRecord(WithdrawRefundInf refundInf);
+
+    void sendKdSellAndRecord(List<KdSell> kdSellList);
 }
