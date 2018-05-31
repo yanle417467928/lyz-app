@@ -14,11 +14,10 @@ import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.*;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreRealInventoryChange;
-import cn.com.leyizhuang.app.foundation.service.AppStoreService;
-import cn.com.leyizhuang.app.foundation.service.ItyAllocationService;
-import cn.com.leyizhuang.app.foundation.service.MaStoreInventoryService;
-import cn.com.leyizhuang.app.foundation.service.MaStoreService;
+import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.foundation.vo.management.city.CityDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
 import cn.com.leyizhuang.ebs.entity.dto.second.AllocationDetailSecond;
 import cn.com.leyizhuang.ebs.entity.dto.second.AllocationHeaderSecond;
@@ -67,6 +66,8 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
 
     @Autowired
     private MaStoreInventoryService maStoreInventoryService;
+    @Autowired
+    private MaCityService maCityService;
 
     @Override
     public PageInfo<AllocationVO> queryPage(Integer offset, Integer size, String keywords, AllocationQuery query, Long storeId) {
@@ -209,7 +210,7 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
     @Transactional
     public void receive(Allocation allocation, String username) {
         AppStore to = appStoreService.findById(allocation.getAllocationTo());
-
+        CityDetailVO cityDetailVO = maCityService.queryCityVOById(to.getCityId());
         List<AllocationDetail> allocationDetails = ityAllocationDAO.queryDetailsByAllocationId(allocation.getId());
         if (allocationDetails == null || allocationDetails.size() == 0) {
             logger.info("调拨单商品详情不存在");
@@ -221,6 +222,59 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
             StoreInventory storeInventory = appStoreService.findStoreInventoryByStoreCodeAndGoodsId(to.getStoreCode(), detail.getGoodsId());
             if (storeInventory == null) {
                 // 无此库存 TODO 新建门店库存
+                MaStoreInventory maStoreInventory = new MaStoreInventory();
+                Date date = new Date();
+                maStoreInventory.setCityId(to.getCityId());
+                maStoreInventory.setCityCode(to.getCityCode());
+                maStoreInventory.setCityName(cityDetailVO.getName());
+                maStoreInventory.setStoreName(to.getStoreName());
+                maStoreInventory.setStoreId(to.getStoreId());
+                maStoreInventory.setStoreCode(to.getStoreCode());
+                maStoreInventory.setSkuName(detail.getSkuName());
+                maStoreInventory.setSku(detail.getSku());
+                maStoreInventory.setAvailableIty(detail.getRealQty());
+                maStoreInventory.setRealIty(detail.getRealQty());
+                maStoreInventory.setCreateTime(date);
+                maStoreInventory.setGid(detail.getGoodsId());
+                maStoreInventory.setLastUpdateTime(DateUtil.getCurrentTimestamp());
+                maStoreInventoryService.saveStoreInventory(maStoreInventory);
+
+                // 创建库存变化日志
+                StoreInventoryAvailableQtyChangeLog iLog = new StoreInventoryAvailableQtyChangeLog();
+                iLog.setCityId(to.getCityId());
+                iLog.setCityName(to.getCity());
+                iLog.setAfterChangeQty(detail.getRealQty());
+                iLog.setChangeQty(detail.getRealQty());
+                iLog.setChangeTime(new Date());
+                iLog.setChangeType(StoreInventoryAvailableQtyChangeType.STORE_ALLOCATE_INBOUND);
+                iLog.setStoreId(to.getStoreId());
+                iLog.setStoreCode(to.getStoreCode());
+                iLog.setStoreName(to.getStoreName());
+                iLog.setGid(detail.getGoodsId());
+                iLog.setSku(detail.getSku());
+                iLog.setSkuName(detail.getSkuName());
+                iLog.setChangeTypeDesc(StoreInventoryAvailableQtyChangeType.STORE_ALLOCATE_INBOUND.getDescription());
+                iLog.setReferenceNumber(allocation.getNumber());
+
+                appStoreService.addStoreInventoryAvailableQtyChangeLog(iLog);
+
+                //创建门店真实库存变化日志
+                MaStoreRealInventoryChange maStoreInventoryChange = new MaStoreRealInventoryChange();
+                maStoreInventoryChange.setCityId(to.getCityId());
+                maStoreInventoryChange.setCityName(to.getCity());
+                maStoreInventoryChange.setStoreId(to.getStoreId());
+                maStoreInventoryChange.setStoreCode(to.getStoreCode());
+                maStoreInventoryChange.setStoreName(to.getStoreName());
+                maStoreInventoryChange.setReferenceNumber(allocation.getNumber());
+                maStoreInventoryChange.setGid(detail.getGoodsId());
+                maStoreInventoryChange.setSku(detail.getSku());
+                maStoreInventoryChange.setSkuName(detail.getSkuName());
+                maStoreInventoryChange.setChangeTime(new Date());
+                maStoreInventoryChange.setAfterChangeQty(detail.getRealQty());
+                maStoreInventoryChange.setChangeQty(detail.getRealQty());
+                maStoreInventoryChange.setChangeType(StoreInventoryRealQtyChangeType.STORE_ALLOCATE_INBOUND);
+                maStoreInventoryChange.setChangeTypeDesc(StoreInventoryRealQtyChangeType.STORE_ALLOCATE_INBOUND.getDescription());
+                maStoreInventoryService.addRealInventoryChangeLog(maStoreInventoryChange);
 
             } else {
 

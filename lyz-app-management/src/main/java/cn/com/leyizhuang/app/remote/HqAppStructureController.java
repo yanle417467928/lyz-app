@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * HQ-APP同步组织
@@ -85,6 +86,14 @@ public class HqAppStructureController {
                 Structure structure = structureService.findByStructureNumber(hqAppStructureDTO.getStructureNumber());
                 if (null == structure) {
                     Structure maStructure = new Structure();
+                    maStructure.setCreatTime(new Date());
+                    maStructure.setEnable(Boolean.TRUE);
+                    maStructure.setNumber(hqAppStructureDTO.getNumber());
+                    maStructure.setParentId(hqAppStructureDTO.getParentId());
+                    maStructure.setStructureName(hqAppStructureDTO.getStructureTitle());
+                    maStructure.setStructureNumber(hqAppStructureDTO.getStructureNumber());
+                    maStructure.setTier(hqAppStructureDTO.getTier());
+                    maStructure.setType(hqAppStructureDTO.getType());
                     structureService.SaveStructure(maStructure);
                     logger.warn("addStore EXCEPTION,同步添加组织信息成功，出参 resultDTO:{}", maStructure);
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
@@ -94,6 +103,7 @@ public class HqAppStructureController {
                 }
 
             } catch (Exception e) {
+                e.printStackTrace();
                 logger.warn("addStore EXCEPTION,同步添加组织信息失败，出参 resultDTO:{}", e);
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未知异常，同步添加组织信息失败！", null);
             }
@@ -122,12 +132,20 @@ public class HqAppStructureController {
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "修改时间不允许为空！", null);
             }
             try {
-                Structure structure = structureService.findByStructureNumber(hqAppStructureDTO.getStructureNumber());
-
-                structureService.ModifyStructure(structure);
-                logger.warn("同步修改组织信息成功！，出参 resultDTO:{}",structure);
+                Structure maStructure = new Structure();
+                maStructure.setCreatTime(new Date());
+                maStructure.setEnable(Boolean.TRUE);
+                maStructure.setNumber(hqAppStructureDTO.getNumber());
+                maStructure.setParentId(hqAppStructureDTO.getParentId());
+                maStructure.setStructureName(hqAppStructureDTO.getStructureTitle());
+                maStructure.setStructureNumber(hqAppStructureDTO.getStructureNumber());
+                maStructure.setTier(hqAppStructureDTO.getTier());
+                maStructure.setType(hqAppStructureDTO.getType());
+                structureService.ModifyStructure(maStructure);
+                logger.warn("同步修改组织信息成功！，出参 resultDTO:{}",maStructure);
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             } catch (Exception e) {
+                e.printStackTrace();
                 logger.warn("updateStore EXCEPTION,同步修改组织信息失败，出参 resultDTO:{}", e);
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未知异常，同步修改组织信息失败！", null);
             }
@@ -155,6 +173,7 @@ public class HqAppStructureController {
             logger.warn("同步删除组织信息成功！");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         } catch (Exception e) {
+            e.printStackTrace();
             logger.warn("deleteStore EXCEPTION,同步删除组织信息失败，出参 resultDTO:{}", e);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未知异常，同步删除组织信息失败！", null);
         }

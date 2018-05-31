@@ -369,6 +369,51 @@
         GROUP BY og.ord_no
     </select>
 
+    <select id="findErrorCouponOrderData" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
+        SELECT
+            ob.oid    id,
+            ob.ord_no order_number,
+            ob.order_type,
+            ob.create_time,
+            ob.effective_end_time,
+            ob.status,
+            ob.delivery_status,
+            ob.pick_up_code,
+            ob.delivery_type,
+            ob.order_subject_type,
+            ob.creator_identity_type,
+            ob.creator_id,
+            ob.creator_name,
+            ob.creator_phone,
+            ob.store_id,
+            ob.store_code,
+            ob.store_structure_code,
+            ob.sales_consult_id,
+            ob.sales_consult_name,
+            ob.sales_consult_phone,
+            ob.customer_id,
+            ob.customer_name,
+            ob.customer_phone,
+            ob.customer_type,
+            ob.total_goods_price,
+            ob.is_evaluated,
+            ob.audit_no,
+            ob.remark,
+            ob.city_id,
+            ob.city_name,
+            ob.sob_id,
+            ob.store_org_id,
+            ob.sales_number
+        FROM
+            ord_goods_info og RIGHT JOIN ord_base_info ob ON og.oid = ob.oid
+            LEFT JOIN ord_billing_details obd on ob.ord_no = obd.ord_no
+        WHERE
+            ob.delivery_type = 'PRODUCT_COUPON' and ob.`status` = "FINISHED" and ob.create_time > '2018-04-01 00:00:00'
+            and ((obd.total_goods_price != (obd.member_discount + obd.store_cash + obd.store_pos_money + obd.store_other_money))
+            or (obd.st_pre_deposit > 0 and (obd.st_pre_deposit + obd.member_discount) != obd.total_goods_price ))
+        GROUP BY ob.ord_no
+    </select>
+
     <select id="findOrderPromotionId" resultType="java.lang.Long">
         SELECT DISTINCT promotion_id
         FROM ord_goods_info
@@ -497,7 +542,9 @@
             is_owner_receiving,
             is_pay_up,
             pay_up_time,
-            store_cash
+            store_cash,
+            store_other_money,
+            store_pos_money
         FROM
             ord_billing_details
         WHERE

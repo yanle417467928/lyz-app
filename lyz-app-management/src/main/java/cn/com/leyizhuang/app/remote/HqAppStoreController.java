@@ -148,6 +148,7 @@ public class HqAppStoreController {
                 }
 
             } catch (Exception e) {
+                e.printStackTrace();
                 logger.warn("addStore EXCEPTION,同步添加门店信息失败，出参 resultDTO:{}", e);
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未知异常，同步添加门店信息失败！", null);
             }
@@ -207,6 +208,7 @@ public class HqAppStoreController {
                 logger.warn("同步修改门店信息成功！，出参 resultDTO:{}",appStore);
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             } catch (Exception e) {
+                e.printStackTrace();
                 logger.warn("updateStore EXCEPTION,同步修改门店信息失败，出参 resultDTO:{}", e);
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未知异常，同步修改门店信息失败！", null);
             }
@@ -234,6 +236,7 @@ public class HqAppStoreController {
             logger.warn("同步删除门店信息成功！");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
         } catch (Exception e) {
+            e.printStackTrace();
             logger.warn("deleteStore EXCEPTION,同步删除门店信息失败，出参 resultDTO:{}", e);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未知异常，同步删除门店信息失败！", null);
         }

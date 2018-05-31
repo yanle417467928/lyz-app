@@ -43,27 +43,24 @@
                         <div class="col-xs-12">
                             <div class="form-group">
                                 <label class="control-label col-md-2 col-xs-3" for="number" style="text-align: center">分公司:</label>
-                                <div class="col-md-2 col-xs-3" style="text-align: left">
+                                <div class="col-md-2 col-xs-3" style="text-align: left;margin-left: -6%">
                                     <select id="companyCode" name="companyCode" class="form-control selectpicker">
-                                        <option value="RCC001">润成分公司</option>
-                                        <option value="PCC001">鹏成分公司</option>
-                                        <option value="BYC001">北宇分公司</option>
-                                        <option value="RDC001">润东分公司</option>
-                                        <option value="ZZC001">郑州分公司</option>
-                                        <option value="GZC001">贵州分公司</option>
-                                        <option value="SXC001">陕西分公司</option>
-                                        <option value="CQC001">重庆分公司</option>
+                                    <#if structureList?? && structureList?size gt 0 >
+                                        <#list structureList as structure>
+                                            <option value="${structure.number!''}">${structure.structureName!''}</option>
+                                        </#list>
+                                    </#if>
                                     </select>
                                 </div>
-                                <label class="control-label col-md-1 col-xs-3" for="startTime">日期:</label>
-                                <div class="col-md-2 col-xs-3" style="text-align:left;">
+                                <label class="control-label col-md-1 col-xs-3" for="startTime" style="text-align:left;margin-left: 2%">日期:</label>
+                                <div class="col-md-2 col-xs-3" style="text-align:left;margin-left: -4%">
                                     <input name="startTime" type="text" class="form-control datepicker" id="startTime"
                                            placeholder="开始时间"
                                            readonly>
                                 </div>
                                 <label class="control-label col-md-1 col-xs-3" for="endTime"
-                                       style="text-align: center">至</label>
-                                <div class="col-md-2 col-xs-3" style="text-align:left;">
+                                       style="text-align: center;margin-left: -4%">至</label>
+                                <div class="col-md-2 col-xs-3" style="text-align:left;margin-left: -4%">
                                     <input name="endTime" type="text" class="form-control datepicker" id="endTime"
                                            placeholder="结束时间"
                                            readonly>
@@ -76,7 +73,7 @@
                             <div class="form-group">
                                 <label class="control-label col-md-2 col-xs-3" for="storeType"
                                        style="text-align: center">门店类型:</label>
-                                <label class="control-label margin-6" style="margin-left: 5%">
+                                <label class="control-label margin-6" >
                                     <input type="radio" name="storeType" value="ZY" class="iradio_square-blue "
                                            checked>
                                     直营
@@ -100,7 +97,7 @@
                         <div class="col-xs-12">
                             <div class="form-group">
                                 <label class="control-label col-md-2 col-xs-3" for="number" style="text-align: center">是否平铺产品劵:</label>
-                                <label class="control-label margin-6" style="margin-left: 5%">
+                                <label class="control-label margin-6" >
                                     <input type="radio" name="product" value="1" class="iradio_square-blue "
                                            checked>
                                     是&nbsp;&nbsp;&nbsp;

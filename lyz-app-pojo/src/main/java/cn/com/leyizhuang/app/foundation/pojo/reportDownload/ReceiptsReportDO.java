@@ -43,6 +43,15 @@ public class ReceiptsReportDO {
     //导购姓名
     private String sellerName;
 
+    //订单交易单号
+    private String outTradeNo;
+
+    //流水单号
+    private String tradeNo;
+
+    //顾客姓名
+    private String customerName;
+
     public void setPayType(OrderBillingPaymentType payType){
         this.payType = payType.getDescription();
     }

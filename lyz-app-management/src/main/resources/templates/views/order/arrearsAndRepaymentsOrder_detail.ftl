@@ -56,6 +56,7 @@
                     <input type="hidden" id="isPayUp" readonly value="${isPayUp?c}">
                     <input type="hidden" id="orderNumber" readonly value="${maOrderDetail.orderNumber!""}">
                     <input type="hidden" id="auditStatus" readonly value="${auditStatus!""}">
+                    <input type="hidden" id="auditId" readonly value="${auditId?c}">
                 </div>
             </div>
         </div>
@@ -644,10 +645,12 @@
                         success: function (result) {
                             if (result.code == 10100) {
                                 $("#message").html(result.message);
+                                clearTimeout($global.timer);
                                 $loading.close();
                                 $global.timer = null;
                             } else if (result.code == -1) {
                                 $("#message").html(result.message);
+                                clearTimeout($global.timer);
                                 $loading.close();
                                 $global.timer = null;
                             } else if (result.code == 0) {
@@ -680,6 +683,7 @@
     function OrderAuditSubmit(statusType) {
         var orderNumber = $("#orderNumber").val();
         var auditStatus = $("#auditStatus").val();
+        var auditId = $("#auditId").val();
         if ('AUDITING' != auditStatus) {
             return false;
         }
@@ -691,7 +695,7 @@
             $.ajax({
                 url: '/rest/order/arrearsAndAgencyOrder/auditOrderStatus',
                 method: 'PUT',
-                data: {"orderNumber": orderNumber, "status": statusType},
+                data: {"orderNumber": orderNumber, "status": statusType,'auditId':auditId},
                 error: function () {
                     clearTimeout($global.timer);
                     $loading.close();
@@ -703,6 +707,7 @@
                         window.location.reload();
                     } else {
                         $notify.danger(result.message);
+                        clearTimeout($global.timer);
                         $loading.close();
                         $global.timer = null;
                     }
