@@ -269,11 +269,12 @@ public class AppActServiceImpl implements AppActService {
             if (employee == null) {
                 return result;
             }
-
-            /** 计算专供促销 **/
-            List<PromotionsGiftListResponse> zgGiftResponse = this.countZgPromotion(cusId, goodsIdList, goodsPool, scope);
-            if (zgGiftResponse != null && zgGiftResponse.size() > 0) {
-                proGiftList.addAll(zgGiftResponse);
+            if (scope.equals("COUPON")){
+                /** 计算专供促销 **/
+                List<PromotionsGiftListResponse> zgGiftResponse = this.countZgPromotion(cusId, goodsIdList, goodsPool, scope);
+                if (zgGiftResponse != null && zgGiftResponse.size() > 0) {
+                    proGiftList.addAll(zgGiftResponse);
+                }
             }
 
             actList = this.getActList(employee, skus, scope);
