@@ -1882,11 +1882,14 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
     @SuppressWarnings("WeakerAccess")
     public void handleWtaShippingOrderAsync(String orderNo, String taskNo) {
         Boolean flag = this.wmsToAppOrderService.handleWtaShippingOrder(orderNo, taskNo);
+        //flag 标识 是否为app内部订单
         if (flag) {
             //推送物流信息
             NoticePushUtils.pushOrderLogisticInfo(orderNo);
             // rabbit 记录下单销量
             sellDetailsSender.sendOrderSellDetailsTOManagement(orderNo);
+            //发送金蝶销退明细表到EBS
+            sinkSender.sendKdSell(orderNo);
         }
     }
 
@@ -2006,6 +2009,10 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                             sellDetailsSender.sendReturnOrderSellDetailsTOManagement(returningOrderHeader.getPoNo());
                             //发送退单拆单消息到拆单消息队列
                             sinkSender.sendReturnOrder(returnOrderBaseInfo.getReturnNo());
+                            //等待拆单完成
+                            Thread.sleep(2000);
+                            //发送金蝶销退明细表到EBS
+                            sinkSender.sendKdSell(returnOrderBaseInfo.getReturnNo());
                             logger.info("cancelOrderToWms OUT,正常退货成功");
                             returningOrderHeader.setHandleFlag("1");
                             returningOrderHeader.setHandleTime(new Date());

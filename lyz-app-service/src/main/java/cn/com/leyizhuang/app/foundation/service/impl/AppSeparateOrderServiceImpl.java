@@ -1065,6 +1065,46 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     }
 
     @Override
+    public List<KdSell> getOrderKdSellByMainOrderNumber(String mainOrderNumber) {
+        if (StringUtils.isNotBlank(mainOrderNumber)){
+            return  separateOrderDAO.getOrderKdSellByMainOrderNumber(mainOrderNumber);
+        }
+        return null;
+    }
+
+    @Override
+    public void saveKdSellList(List<KdSell> kdSellList) {
+        separateOrderDAO.saveKdSellList(kdSellList);
+    }
+
+    @Override
+    public List<KdSell> getReturnOrderKdSellByMainOrderNumber(String mainOrderNumber) {
+        if (StringUtils.isNotBlank(mainOrderNumber)){
+            return  separateOrderDAO.getReturnOrderKdSellByMainOrderNumber(mainOrderNumber);
+        }
+        return null;
+    }
+
+    @Override
+    public void sendKdSell(String mainOrderNumber) {
+        if (null != mainOrderNumber) {
+            //发送金蝶销退表到EBS
+            List<KdSell> kdSellList = separateOrderDAO.getPendingSendKdSell(mainOrderNumber);
+            if (AssertUtil.isNotEmpty(kdSellList)) {
+                ebsSenderService.sendKdSellAndRecord(kdSellList);
+            }
+        }
+    }
+
+    @Override
+    public void updateKdSellFlagAndSendTimeAndErrorMsg(List<Long> kdSellIds, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (null != kdSellIds && kdSellIds.size() > 0) {
+            separateOrderDAO.updateKdSellFlagAndSendTimeAndErrorMsg(kdSellIds, msg, sendTime, flag);
+        }
+    }
+
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveOrderCouponInf(OrderCouponInf couponInf) {
         if (null != couponInf) {

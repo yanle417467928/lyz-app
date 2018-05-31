@@ -1,9 +1,16 @@
 package cn.com.leyizhuang.app.remote.queue;
 
 import cn.com.leyizhuang.app.core.utils.JsonUtils;
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.remote.queue.MqMessage;
 import cn.com.leyizhuang.app.foundation.pojo.remote.queue.MqOrderChannel;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.KdSell;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.remote.queue.stategy.KdSellGenerator;
+import cn.com.leyizhuang.app.remote.queue.stategy.KdSellStrategy;
+import cn.com.leyizhuang.app.remote.queue.stategy.OrderKdSellStrategy;
+import cn.com.leyizhuang.app.remote.queue.stategy.ReturnOrderKdSellStrategy;
+import cn.com.leyizhuang.common.util.AssertUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.annotation.EnableBinding;
@@ -12,6 +19,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Richard
@@ -35,6 +44,12 @@ public class SinkReceiver {
 
     @Resource
     private MaReturnOrderService maReturnOrderService;
+
+    @Resource
+    private OrderKdSellStrategy orderKdSellStrategy;
+
+    @Resource
+    private ReturnOrderKdSellStrategy returnOrderKdSellStrategy;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -178,7 +193,7 @@ public class SinkReceiver {
                     separateOrderService.sendReturnOrderRefundInf(returnNumber);
                     //发送经退单销差价扣除信息
                     separateOrderService.sendReturnOrderJxPriceDifferenceRefundInf(returnNumber);
-                     //发送门店退货基本信息
+                    //发送门店退货基本信息
                     maReturnOrderService.sendReturnOrderReceiptInfAndRecord(returnNumber);
                 } catch (IOException e) {
                     log.warn("消息格式错误!");
@@ -266,6 +281,40 @@ public class SinkReceiver {
                 } catch (Exception e) {
                     log.warn("{}", e);
                     e.printStackTrace();
+                }
+                break;
+            case KD_SELL_SEND:
+                try {
+                    String mainOrderNumber = objectMapper.readValue(message.getContent(), String.class);
+                    //生成金蝶销量明细
+                    if (StringUtils.isNotBlank(mainOrderNumber)) {
+                        //选择生成策略
+                        KdSellStrategy sellStrategy;
+                        if (mainOrderNumber.contains("XN")) {
+                            sellStrategy = this.orderKdSellStrategy;
+                        } else {
+                            sellStrategy = this.returnOrderKdSellStrategy;
+                        }
+                        //创建策略执行器
+                        KdSellGenerator kdSellGenerator = new KdSellGenerator(sellStrategy);
+
+                        //按策略生成 金蝶销退明细
+                        List<KdSell> kdSellList = kdSellGenerator.generate(mainOrderNumber);
+                        if (AssertUtil.isNotEmpty(kdSellList)) {
+                            kdSellList.forEach(p -> {
+                                p.setCreateTime(new Date());
+                            });
+                            separateOrderService.saveKdSellList(kdSellList);
+                        }
+
+                    } else {
+                        throw new RuntimeException("金蝶销退表主单号为空，消息内容:" + message.getContent());
+                    }
+                    //发送金蝶销量明细
+                    separateOrderService.sendKdSell(mainOrderNumber);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    log.warn("金蝶销退表主单号读取异常，消息内容:{}", message.getContent());
                 }
                 break;
             default:

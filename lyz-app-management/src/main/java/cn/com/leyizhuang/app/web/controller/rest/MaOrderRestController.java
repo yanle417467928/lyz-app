@@ -503,6 +503,9 @@ public class MaOrderRestController extends BaseRestController {
 
             // 记录销量
 
+            //发送金蝶销退明细表到EBS
+            maSinkSender.sendKdSell(orderNumber);
+
             logger.info("orderShipping ,后台自提单发货成功");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
                     "后台自提单发货成功", null);

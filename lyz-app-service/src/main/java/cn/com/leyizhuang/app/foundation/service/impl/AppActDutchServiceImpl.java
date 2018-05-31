@@ -8,10 +8,12 @@ import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActGoodsMappingDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
@@ -977,6 +979,65 @@ public class AppActDutchServiceImpl implements AppActDutchService {
 
         if (flag.equals("go")){
             for (OrderGoodsInfo goodsInfo : allOrderGoodsList){
+                orderDAO.updateOrderGoodsPrice(goodsInfo);
+
+                // 找到接口表
+                OrderGoodsInf inf = orderDAO.findOrderGoodsInfByLineId(goodsInfo.getId());
+
+                if (inf != null){
+                    Double promotonDiscount = goodsInfo.getPromotionSharePrice();
+                    Double totalDiscount = CountUtil.add(promotonDiscount,inf.getCashCouponDiscount(),inf.getLebiDiscount(),inf.getSubventionDiscount());
+                    inf.setSettlementPrice(goodsInfo.getSettlementPrice());
+                    inf.setReturnPrice(goodsInfo.getReturnPrice());
+                    inf.setPromotionDiscount(promotonDiscount);
+                    inf.setDiscountTotalPrice(totalDiscount);
+
+                    //跟新
+                    orderDAO.updateOrderGoodsInfPrice(inf);
+                }
+            }
+        }
+    }
+
+    /**
+     * 修复立减促销没有分摊的券订单
+     * @param flag
+     */
+    public void repaireSubpriceOrder(String flag){
+        List<OrderBaseInfo> orderBaseList = new ArrayList<>();
+        List<OrderGoodsInfo> orderGoodsInfoList = new ArrayList<>();
+        orderBaseList = orderDAO.findErrorCouponOrderData();
+
+        logger.info("一共"+orderBaseList.size()+"个单子未分摊，分摊请输入flag=go");
+
+        for (OrderBaseInfo base : orderBaseList){
+            OrderBillingDetails billingDetails = orderService.getOrderBillingDetail(base.getOrderNumber());
+            Double totalGoodsPrice = billingDetails.getTotalGoodsPrice();
+            Double memberDiscount = billingDetails.getMemberDiscount();
+            Double freight = billingDetails.getFreight();
+            Double storeCash = billingDetails.getStoreCash();
+            Double storePos = billingDetails.getStorePosMoney();
+            Double stOther = billingDetails.getStoreOtherMoney();
+            Double stPre = billingDetails.getStPreDeposit();
+
+            Double disCount = 0.00;
+            Double totalPrice = CountUtil.add(totalGoodsPrice,freight); // 加运费
+            if (stPre != null && stPre > 0.00){
+                disCount = CountUtil.sub(totalPrice,memberDiscount,stPre);
+            }else {
+                disCount = CountUtil.sub(totalPrice,memberDiscount,storeCash,storePos,stOther);
+            }
+
+            List<OrderGoodsInfo> orderGoodsInfo = orderService.getOrderGoodsInfoByOrderNumber(base.getOrderNumber());
+
+            // 分摊
+            List<OrderGoodsInfo> newOrderGoodsList = this.countDutchPrice(orderGoodsInfo,totalGoodsPrice,disCount,null,null);
+            newOrderGoodsList = this.countReturnPrice(newOrderGoodsList);
+            orderGoodsInfoList.addAll(newOrderGoodsList);
+        }
+
+        if (flag.equals("go")){
+            for (OrderGoodsInfo goodsInfo : orderGoodsInfoList){
                 orderDAO.updateOrderGoodsPrice(goodsInfo);
 
                 // 找到接口表
