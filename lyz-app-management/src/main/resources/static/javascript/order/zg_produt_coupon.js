@@ -719,13 +719,25 @@ function openGoodsModal(id) {
     $("#selectedGoodsTable").find("a").attr("onclick", "del_goods_comb(this)");
 
     var storeId = $('#storeId').val();
+    var customerId = $('#customerId').text();
+    var sellerId = $('#sellerId').text();
 
     if (-1 == storeId) {
-        $notify.warning("请先选择门店");
+        $notify.warning("请选择门店");
+        return false;
+    }
+
+    if (null == customerId || '' == customerId){
+        $notify.warning("请选择顾客");
+        return false;
+    }
+
+    if (null == sellerId || '' == sellerId){
+        $notify.warning("请选择导购");
         return false;
     }
     //初始化商品信息
-    initGoodsGrid("/rest/goods/page/grid/buy/coupon?storeId=" + storeId);
+    initGoodsGrid("/rest/goods/page/grid/buy/zg/coupon?storeId=" + storeId+ '&cusId=' + customerId + '&sellerId=' + sellerId);
 
     $("#goodsModalConfirm").unbind('click').click(function () {
         chooseGoods(id);
@@ -1125,11 +1137,23 @@ function giftDetail(details, divId) {
 //模糊查询商品信息
 function findGoodsByNameOrCode() {
     var storeId = $('#storeId').val();
-    var cusId = $("#customerId").html();
-    var sellerId = $("#sellerId").html();
+    var cusId = $("#customerId").text();
 
     if (-1 == storeId) {
         $notify.warning("请先选择门店");
+        return false;
+    }
+    var customerId = $('#customerId').text();
+    var sellerId = $('#sellerId').text();
+
+
+    if (null == customerId || '' == customerId){
+        $notify.warning("请选择顾客");
+        return false;
+    }
+
+    if (null == sellerId || '' == sellerId){
+        $notify.warning("请选择导购");
         return false;
     }
     var queryGoodsInfo = $("#queryGoodsInfo").val();
@@ -1140,7 +1164,7 @@ function findGoodsByNameOrCode() {
     // } else {
     //     initGoodsGrid('/rest/goods/page/query/goodsInfo?queryGoodsInfo=' + queryGoodsInfo + '&storeId=' + storeId);
     // }
-    initGoodsGrid('/rest/goods/page/grid/buy/coupon?storeId=' + storeId + '&cusId=' + cusId + '&keywords=' + queryGoodsInfo + '&sellerId=' + sellerId);
+    initGoodsGrid('/rest/goods/page/grid/buy/zg/coupon?storeId=' + storeId + '&cusId=' + cusId +  '&sellerId=' + sellerId + '&keywords=' + queryGoodsInfo);
 }
 
 

@@ -143,4 +143,6 @@ public interface AppStoreDAO {
                                                   @Param(value = "version") Timestamp version);
 
     List<AppStore> findStoreListByLoginAdministrator(Long id);
+
+    List<AppStore> findFitStoreListByLoginAdministrator(Long id);
 }

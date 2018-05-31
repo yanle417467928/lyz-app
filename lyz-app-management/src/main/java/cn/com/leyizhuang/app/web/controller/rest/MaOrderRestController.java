@@ -911,7 +911,8 @@ public class MaOrderRestController extends BaseRestController {
     @PostMapping(value = "/save/productCoupon")
     public ResultDTO<?> saveMaProductCoupon(HttpServletRequest request, Long sellerId, Long customerId, String goodsDetails, String giftDetails,
                                             Double cashMoney, Double posMoney, Double otherMoney, String posNumber, Double totalMoney,
-                                            String collectMoneyTime, String remarks, String salesNumber, Double preDepositMoney, String preDepositCollectMoneyTime, String preDepositRemarks) throws IOException {
+                                            String collectMoneyTime, String remarks, String salesNumber, Double preDepositMoney, String preDepositCollectMoneyTime, String preDepositRemarks,
+                                            Double memberDiscount, Double promotionDiscount) throws IOException {
         logger.info("saveMaProductCoupon 保存买券信息，创建买券订单,入参 sellerId:{},customerId:{},goodsDetails:{},giftDateils:{},cashMoney:{},posMoney:{},otherMoney:{}," +
                         "posNumber:{},collectMoneyTime:{},remarks:{},preDepositMoney:{},preDepositCollectMoneyTime:{},preDepositRemarks:{},preDepositRemarks:{},salesNumber:{}", sellerId, customerId, goodsDetails, giftDetails,
                 cashMoney, posMoney, otherMoney, posNumber, collectMoneyTime, remarks, preDepositMoney, preDepositCollectMoneyTime, preDepositRemarks, totalMoney, salesNumber);
@@ -1051,8 +1052,8 @@ public class MaOrderRestController extends BaseRestController {
             OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
             orderBillingDetails.setOrderNumber(orderBaseInfo.getOrderNumber());
             orderBillingDetails.setTotalGoodsPrice(support.getGoodsTotalPrice());
-            orderBillingDetails.setMemberDiscount(support.getMemberDiscount());
-            orderBillingDetails.setPromotionDiscount(support.getPromotionDiscount());
+            orderBillingDetails.setMemberDiscount(CountUtil.sub(0D,memberDiscount));
+            orderBillingDetails.setPromotionDiscount(CountUtil.sub(0D,promotionDiscount));
             orderBillingDetails.setFreight(0D);
             String payTime = "";
             if (null != preDepositMoney) {

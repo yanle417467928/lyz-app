@@ -1289,10 +1289,33 @@
         <if test="null != queryGoodsInfo">
             AND (gg.sku LIKE CONCAT('%' ,#{queryGoodsInfo},'%') OR gg.sku_name LIKE CONCAT('%' ,#{queryGoodsInfo},'%'))
         </if>
-        and ggp.price_type = 'COMMON'
-        <if test="priceType != null">
-            or ggp.price_type = #{priceType}
+         AND ggp.price_type = 'COMMON'
+        ORDER BY gid DESC
+    </select>
+
+
+    <select id="findZGMaStoreGoodsByStoreIdAndPricceType"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.MaBuyProductCouponGoodsResponse">
+        SELECT
+        gg.gid,
+        gg.sku,
+        gg.sku_name,
+        gg.goods_specification,
+        gg.brand_name,
+        gg.type_name,
+        gg.company_flag,
+        ggp.retail_price,
+        ggp.vip_price,
+        ggp.price_type
+        FROM
+        gds_goods AS gg
+        INNER JOIN gds_goods_price AS ggp ON gg.gid = ggp.gid
+        WHERE
+        ggp.store_id = #{storeId}
+        <if test="null != queryGoodsInfo">
+            AND (gg.sku LIKE CONCAT('%' ,#{queryGoodsInfo},'%') OR gg.sku_name LIKE CONCAT('%' ,#{queryGoodsInfo},'%'))
         </if>
+        and ggp.price_type = #{priceType}
         ORDER BY gid DESC
     </select>
 

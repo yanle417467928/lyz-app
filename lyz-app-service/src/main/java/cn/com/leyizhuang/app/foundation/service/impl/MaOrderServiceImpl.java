@@ -790,7 +790,6 @@ public class MaOrderServiceImpl implements MaOrderService {
             throw new OrderPayableAmountException("订单应付款金额异常(<0)");
         }
         orderBillingDetails.setArrearage(0D);
-        //根据应付金额判断订单账单是否已付清
         orderBillingDetails.setIsPayUp(true);
 
         //设置门店预存款
@@ -811,7 +810,7 @@ public class MaOrderServiceImpl implements MaOrderService {
         orderBillingDetails.setStPreDeposit(stPreDeposit);
         orderBillingDetails.setPayUpTime(new Date());
         if (StringUtils.isNotBlank(payTime)) {
-            orderBillingDetails.setManageReceiptTime(DateUtil.parseDateTime(payTime));
+            orderBillingDetails.setManageReceiptTime(DateUtil.parseToDate(payTime,"yyyy-MM-dd"));
         }
         return orderBillingDetails;
     }

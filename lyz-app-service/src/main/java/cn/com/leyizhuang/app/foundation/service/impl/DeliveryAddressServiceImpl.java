@@ -76,6 +76,17 @@ public class DeliveryAddressServiceImpl implements DeliveryAddressService {
     }
 
     @Override
+    public PageInfo<DeliveryAddressResponse> getDefaultDeliveryAddressListByUserIdAndIdentityType(Integer page, Integer size,Long userId, AppIdentityType
+            identityType,String keywords) {
+        if (null != userId && null != identityType) {
+            PageHelper.startPage(page, size);
+            List<DeliveryAddressResponse> deliveryAddressResponseList = deliveryAddressDAO.getDefaultDeliveryAddressListByUserIdAndIdentityType(userId, identityType,keywords);
+            return new PageInfo<>(deliveryAddressResponseList);
+        }
+        return null;
+    }
+
+    @Override
     public DeliveryAddressResponse getDefaultDeliveryAddressByUserIdAndIdentityTypeAndDeliveryId(Long userId, AppIdentityType identityType, Long deliveryId) {
         if (null != userId && null != identityType && null != deliveryId) {
             return deliveryAddressDAO.getDefaultDeliveryAddressByUserIdAndIdentityTypeAndDeliveryId(userId, identityType,deliveryId);

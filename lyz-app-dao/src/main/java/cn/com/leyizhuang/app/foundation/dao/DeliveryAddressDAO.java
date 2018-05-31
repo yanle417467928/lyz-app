@@ -51,5 +51,9 @@ public interface DeliveryAddressDAO {
 
     String findAreaNameByCode(@Param(value = "provinceCode") String provinceCode);
 
+    List<DeliveryAddressResponse> getDefaultDeliveryAddressListByUserIdAndIdentityType(@Param(value = "userId") Long userId,
+                                                                                       @Param(value = "identityType") AppIdentityType identityType,
+                                                                                       @Param(value = "keywords")String keywords);
+
 
 }

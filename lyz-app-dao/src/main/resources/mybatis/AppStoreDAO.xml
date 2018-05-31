@@ -544,4 +544,26 @@
               AND c.name IS NOT NULL
               AND s.store_id IS NOT NULL
     </select>
+
+    <select id="findFitStoreListByLoginAdministrator" resultType="cn.com.leyizhuang.app.foundation.pojo.AppStore">
+        SELECT
+        us.store_id,
+        s.store_name
+        FROM admin_user_store us
+        LEFT JOIN st_store s ON s.store_id = us.store_id
+        WHERE us.uid = #{id}
+        AND s.store_name IS NOT NULL
+        AND s.store_type = 'ZS'
+        UNION
+        SELECT
+        s.store_id,
+        s.store_name
+        FROM admin_user_store us
+        LEFT JOIN city c ON c.city_id = us.city_id
+        LEFT JOIN st_store s ON s.city_id = c.city_id
+        WHERE us.uid = #{id}
+        AND c.name IS NOT NULL
+        AND s.store_id IS NOT NULL
+        AND s.store_type = 'ZS'
+    </select>
 </mapper>

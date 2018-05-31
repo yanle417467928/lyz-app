@@ -260,6 +260,16 @@ public class MaOrderViewController {
     }
 
     /**
+     * 购买专供产品券
+     *
+     * @return 购买产品券页面
+     */
+    @RequestMapping(value = "/buy/zg/produtCoupon")
+    public String buyZGProdutCoupon() {
+        return "/views/order/zg_produt_coupon";
+    }
+
+    /**
      * 跳转门店自提单页面
      *
      * @return

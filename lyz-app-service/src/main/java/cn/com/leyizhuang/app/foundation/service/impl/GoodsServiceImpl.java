@@ -512,6 +512,12 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
+    public List<MaBuyProductCouponGoodsResponse> findZGMaStoreGoodsByStoreIdAndPricceType(Long storeId, Long cusId, Long sellerId, String queryGoodsInfo, String priceType) {
+
+        return goodsDAO.findZGMaStoreGoodsByStoreIdAndPricceType(storeId, priceType, queryGoodsInfo);
+    }
+
+    @Override
     public List<MaBuyProductCouponGoodsResponse> screenMaGoodsGrid(Long storeId, Long brandCode, String categoryCode, String companyCode) {
         return goodsDAO.screenMaGoodsGrid(storeId, brandCode, categoryCode, companyCode);
     }

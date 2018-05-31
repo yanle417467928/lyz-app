@@ -25,6 +25,8 @@ public interface DeliveryAddressService {
 
     DeliveryAddressResponse getDefaultDeliveryAddressByUserIdAndIdentityType(Long userId, AppIdentityType identityType);
 
+    PageInfo<DeliveryAddressResponse> getDefaultDeliveryAddressListByUserIdAndIdentityType(Integer page, Integer size,Long userId, AppIdentityType identityType,String keywords);
+
     DeliveryAddressResponse getDefaultDeliveryAddressByUserIdAndIdentityTypeAndDeliveryId(Long userId, AppIdentityType identityType,Long deliveryId);
 
     void clearDefaultAddressByUserIdAndIdentityType(Long userId, AppIdentityType appIdentityTypeByValue);

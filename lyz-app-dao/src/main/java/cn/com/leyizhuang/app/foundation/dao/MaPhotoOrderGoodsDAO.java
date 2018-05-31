@@ -15,4 +15,6 @@ public interface MaPhotoOrderGoodsDAO {
 
     int batchSave(@Param("list") List<PhotoOrderGoodsDO> photoOrderGoodsDOList);
 
+    List<PhotoOrderGoodsDO> findPhotoOrderGoodsByPhotoOrderNo(@Param("photoOrderNo")String photoOrderNo);
+
 }
