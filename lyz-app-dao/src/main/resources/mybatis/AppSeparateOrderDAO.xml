@@ -3,177 +3,223 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.AppSeparateOrderDAO">
 
     <select id="isOrderExist" parameterType="java.lang.String" resultType="java.lang.Boolean">
-        SELECT exists(SELECT 1
-                      FROM inter_ate_order_base_inf
-                      WHERE main_order_number = #{orderNumber})
+        SELECT exists(SELECT 1 FROM inter_ate_order_base_inf WHERE main_order_number = #{orderNumber})
     </select>
 
     <insert id="saveOrderBaseInf"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf"
             useGeneratedKeys="true" keyProperty="orderHeaderId">
         INSERT INTO inter_ate_order_base_inf (create_time, order_subject_type, send_flag, error_msg, send_time,
-                                              main_order_number, order_number,
-                                              sob_id, order_date, product_type, order_type_id, user_id, sales_consult_id,
-                                              coupon_flag, invoice_flag, credit_flag, store_org_id, diy_site_code, delivery_type_title,
-                                              order_amt, rec_amt, lebi_discount, store_subvention_discount, promotion_discount,
-                                              member_discount, cash_coupon_discount, product_coupon_discount, attribute1,
-                                              attribute2, attribute3, attribute4, attribute5, attribute6, attribute7)
-        VALUES (
-            #{createTime}, #{orderSubjectType}, #{sendFlag}, #{errorMsg}, #{sendTime}, #{mainOrderNumber},
-                           #{orderNumber}, #{sobId},
-                           #{orderDate}, #{productType},
-                           #{orderTypeId}, #{userId}, #{salesConsultId}, #{couponFlag}, #{invoiceFlag}, #{creditFlag},
-                                           #{storeOrgId}, #{diySiteCode}, #{deliveryTypeTitle},
-                                           #{orderAmt}, #{recAmt}, #{lebiDiscount},
-                                                                   #{storeSubventionDiscount}, #{promotionDiscount},
-                                                                   #{memberDiscount}, #{cashCouponDiscount},
-                                                                   #{productCouponDiscount}, #{attribute1},
-                                                                   #{attribute2}, #{attribute3}, #{attribute4},
-            #{attribute5}, #{attribute6}, #{attribute7}
-        )
-    </insert>
-
-    <insert id="saveOrderGoodsInf"
-            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf">
-        INSERT INTO inter_ate_order_goods_inf (order_header_id, create_time, send_flag, error_msg, send_time, main_order_line_id, main_order_number,
-                                               order_number, sku, goods_title, quantity, ls_price, hy_price, jx_price, settlement_price, return_price,
-                                               lebi_discount, subvention_discount, cash_coupon_discount, promotion_discount, discount_total_price,
-                                               gift_flag, promotion_id, product_type, attribute1, attribute2, attribute3, attribute4)
-        VALUES
-            (#{orderHeaderId}, #{createTime}, #{sendFlag}, #{errorMsg}, #{sendTime}, #{mainOrderLineId},
-                               #{mainOrderNumber},
-                               #{orderNumber},
-                               #{sku}, #{goodsTitle}, #{quantity}, #{lsPrice}, #{hyPrice},
-                                                                   #{jxPrice}, #{settlementPrice},
-                                                                   #{returnPrice}, #{lebiDiscount},
-                                                                   #{subventionDiscount},
-                                                                   #{cashCouponDiscount},
-                                                                   #{promotionDiscount},
-                                                                   #{discountTotalPrice}, #{giftFlag},
-             #{promotionId}, #{productType}, #{attribute1}, #{attribute2}, #{attribute3}, #{attribute4})
-    </insert>
-
-    <insert id="saveOrderCouponInf"
-            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderCouponInf">
-        INSERT INTO inter_ate_order_coupon_inf (main_order_number, create_time, send_flag, error_msg, send_time, history_flag,
-                                                get_type, product_type, buy_price, cost_price, coupon_id, sku, quantity, coupon_type_id,
-                                                sob_id, promotion, attribute1, attribute2, attribute3, attribute4)
-        VALUES (#{mainOrderNumber}, #{createTime}, #{sendFlag}, #{errorMsg}, #{sendTime}, #{historyFlag}, #{getType},
-                                    #{productType}, #{buyPrice},
-                                    #{costPrice}, #{couponId}, #{sku}, #{quantity}, #{couponTypeId}, #{sobId},
-                #{promotion},
-                #{attribute1}, #{attribute2}, #{attribute3}, #{attribute4})
-    </insert>
-
-    <insert id="saveOrderReceiptInf"
-            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderReceiptInf">
-        INSERT INTO inter_ate_order_receipt_inf (create_time, send_flag, error_msg, send_time, main_order_number, receipt_number,
-                                                 receipt_type, store_org_id, diy_site_code, receipt_date, amount, description,
-                                                 sob_id, user_id, username, user_phone, guide_id, attribute1, attribute2, attribute3, attribute4, attribute5)
-            SELECT
-                #{createTime},
+                           main_order_number, order_number, sob_id, order_date, product_type, order_type_id, user_id,
+                           sales_consult_id, coupon_flag, invoice_flag, credit_flag, store_org_id, diy_site_code,
+                           delivery_type_title, order_amt, rec_amt, lebi_discount, store_subvention_discount,
+                           promotion_discount, member_discount, cash_coupon_discount, product_coupon_discount,
+                           attribute1, attribute2, attribute3, attribute4, attribute5, attribute6, attribute7)
+        VALUES (#{createTime},
+                #{orderSubjectType},
                 #{sendFlag},
                 #{errorMsg},
                 #{sendTime},
                 #{mainOrderNumber},
-                #{receiptNumber},
-                #{receiptType},
+                #{orderNumber},
+                #{sobId},
+                #{orderDate},
+                #{productType},
+                #{orderTypeId},
+                #{userId},
+                #{salesConsultId},
+                #{couponFlag},
+                #{invoiceFlag},
+                #{creditFlag},
                 #{storeOrgId},
                 #{diySiteCode},
-                #{receiptDate},
-                #{amount},
-                #{description},
-                #{sobId},
-                #{userId},
-                #{username},
-                #{userPhone},
-                #{guideId},
+                #{deliveryTypeTitle},
+                #{orderAmt},
+                #{recAmt},
+                #{lebiDiscount},
+                #{storeSubventionDiscount},
+                #{promotionDiscount},
+                #{memberDiscount},
+                #{cashCouponDiscount},
+                #{productCouponDiscount},
                 #{attribute1},
                 #{attribute2},
                 #{attribute3},
                 #{attribute4},
-                #{attribute5}
-            FROM dual
-            WHERE NOT exists(SELECT 1
-                             FROM inter_ate_order_receipt_inf
-                             WHERE receipt_number = #{receiptNumber})
+                #{attribute5},
+                #{attribute6},
+                #{attribute7})
+    </insert>
+
+    <insert id="saveOrderGoodsInf"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf">
+        INSERT INTO inter_ate_order_goods_inf (order_header_id, create_time, send_flag, error_msg, send_time,
+                           main_order_line_id, main_order_number, order_number, sku, goods_title, quantity, ls_price,
+                           hy_price, jx_price, settlement_price, return_price, lebi_discount, subvention_discount,
+                           cash_coupon_discount, promotion_discount, discount_total_price, gift_flag, promotion_id,
+                           product_type, attribute1, attribute2, attribute3, attribute4)
+        VALUES (#{orderHeaderId},
+                #{createTime},
+                #{sendFlag},
+                #{errorMsg},
+                #{sendTime},
+                #{mainOrderLineId},
+                #{mainOrderNumber},
+                #{orderNumber},
+                #{sku},
+                #{goodsTitle},
+                #{quantity},
+                #{lsPrice},
+                #{hyPrice},
+                #{jxPrice},
+                #{settlementPrice},
+                #{returnPrice},
+                #{lebiDiscount},
+                #{subventionDiscount},
+                #{cashCouponDiscount},
+                #{promotionDiscount},
+                #{discountTotalPrice},
+                #{giftFlag},
+                #{promotionId},
+                #{productType},
+                #{attribute1},
+                #{attribute2},
+                #{attribute3},
+                #{attribute4})
+    </insert>
+
+    <insert id="saveOrderCouponInf"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderCouponInf">
+        INSERT INTO inter_ate_order_coupon_inf (main_order_number, create_time, send_flag, error_msg, send_time,
+                           history_flag, get_type, product_type, buy_price, cost_price, coupon_id, sku, quantity,
+                           coupon_type_id, sob_id, promotion, attribute1, attribute2, attribute3, attribute4)
+        VALUES (#{mainOrderNumber},
+                #{createTime},
+                #{sendFlag},
+                #{errorMsg},
+                #{sendTime},
+                #{historyFlag},
+                #{getType},
+                #{productType},
+                #{buyPrice},
+                #{costPrice},
+                #{couponId},
+                #{sku},
+                #{quantity},
+                #{couponTypeId},
+                #{sobId},
+                #{promotion},
+                #{attribute1},
+                #{attribute2},
+                #{attribute3},
+                #{attribute4})
+    </insert>
+
+    <insert id="saveOrderReceiptInf"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderReceiptInf">
+        INSERT INTO inter_ate_order_receipt_inf (create_time, send_flag, error_msg, send_time, main_order_number,
+                           receipt_number, receipt_type, store_org_id, diy_site_code, receipt_date, amount, description,
+                           sob_id, user_id, username, user_phone, guide_id, attribute1, attribute2, attribute3,
+                           attribute4, attribute5)
+        SELECT #{createTime},
+               #{sendFlag},
+               #{errorMsg},
+               #{sendTime},
+               #{mainOrderNumber},
+               #{receiptNumber},
+               #{receiptType},
+               #{storeOrgId},
+               #{diySiteCode},
+               #{receiptDate},
+               #{amount},
+               #{description},
+               #{sobId},
+               #{userId},
+               #{username},
+               #{userPhone},
+               #{guideId},
+               #{attribute1},
+               #{attribute2},
+               #{attribute3},
+               #{attribute4},
+               #{attribute5}
+        FROM dual
+        WHERE NOT exists(SELECT 1 FROM inter_ate_order_receipt_inf WHERE receipt_number = #{receiptNumber})
     </insert>
 
     <select id="getPendingSendOrderBaseInf" parameterType="java.lang.String" resultType=
             "cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf">
-        SELECT
-            order_header_id,
-            create_time,
-            send_flag,
-            error_msg,
-            send_time,
-            main_order_number,
-            order_number,
-            sob_id,
-            order_date,
-            order_subject_type,
-            product_type,
-            order_type_id,
-            user_id,
-            sales_consult_id,
-            decorate_manager_id,
-            coupon_flag,
-            invoice_flag,
-            credit_flag,
-            store_org_id,
-            diy_site_code,
-            delivery_type_title,
-            order_amt,
-            rec_amt,
-            lebi_discount,
-            store_subvention_discount,
-            promotion_discount,
-            member_discount,
-            cash_coupon_discount,
-            product_coupon_discount,
-            attribute1,
-            attribute2,
-            attribute3,
-            attribute4,
-            attribute5,
-            attribute6,
-            attribute7
+        SELECT order_header_id,
+               create_time,
+               send_flag,
+               error_msg,
+               send_time,
+               main_order_number,
+               order_number,
+               sob_id,
+               order_date,
+               order_subject_type,
+               product_type,
+               order_type_id,
+               user_id,
+               sales_consult_id,
+               decorate_manager_id,
+               coupon_flag,
+               invoice_flag,
+               credit_flag,
+               store_org_id,
+               diy_site_code,
+               delivery_type_title,
+               order_amt,
+               rec_amt,
+               lebi_discount,
+               store_subvention_discount,
+               promotion_discount,
+               member_discount,
+               cash_coupon_discount,
+               product_coupon_discount,
+               attribute1,
+               attribute2,
+               attribute3,
+               attribute4,
+               attribute5,
+               attribute6,
+               attribute7
         FROM inter_ate_order_base_inf
         WHERE main_order_number = #{orderNumber}
     </select>
 
     <select id="getOrderGoodsInfByOrderNumber" parameterType="java.lang.String" resultType=
             "cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf">
-        SELECT
-            order_line_id,
-            order_header_id,
-            create_time,
-            send_flag,
-            send_time,
-            error_msg,
-            main_order_line_id,
-            main_order_number,
-            order_number,
-            sku,
-            goods_title,
-            quantity,
-            ls_price,
-            hy_price,
-            jx_price,
-            settlement_price,
-            return_price,
-            lebi_discount,
-            subvention_discount,
-            cash_coupon_discount,
-            promotion_discount,
-            discount_total_price,
-            gift_flag,
-            promotion_id,
-            product_type,
-            attribute1,
-            attribute2,
-            attribute3,
-            attribute4
+        SELECT order_line_id,
+               order_header_id,
+               create_time,
+               send_flag,
+               send_time,
+               error_msg,
+               main_order_line_id,
+               main_order_number,
+               order_number,
+               sku,
+               goods_title,
+               quantity,
+               ls_price,
+               hy_price,
+               jx_price,
+               settlement_price,
+               return_price,
+               lebi_discount,
+               subvention_discount,
+               cash_coupon_discount,
+               promotion_discount,
+               discount_total_price,
+               gift_flag,
+               promotion_id,
+               product_type,
+               attribute1,
+               attribute2,
+               attribute3,
+               attribute4
         FROM inter_ate_order_goods_inf
         WHERE order_number = #{orderNumber}
     </select>
@@ -212,77 +258,74 @@
 
     <select id="getOrderBillingPaymentDetailsByOrderNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails">
-        SELECT
-            id,
-            oid    order_id,
-            ord_no order_number,
-            create_time,
-            pay_time,
-            pay_type,
-            pay_type_desc,
-            payment_subject_type,
-            payment_subject_type_desc,
-            amount,
-            reply_code,
-            receipt_number
+        SELECT id,
+               oid    order_id,
+               ord_no order_number,
+               create_time,
+               pay_time,
+               pay_type,
+               pay_type_desc,
+               payment_subject_type,
+               payment_subject_type_desc,
+               amount,
+               reply_code,
+               receipt_number
         FROM ord_billing_payment_details
         WHERE ord_no = #{orderNumber}
     </select>
 
     <select id="getOrderReceiptInf" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderReceiptInf">
-        SELECT
-            receipt_id,
-            create_time,
-            send_flag,
-            error_msg,
-            send_time,
-            main_order_number,
-            receipt_number,
-            receipt_type,
-            store_org_id,
-            diy_site_code,
-            receipt_date,
-            amount,
-            description,
-            sob_id,
-            user_id,
-            username,
-            user_phone,
-            guide_id,
-            attribute1,
-            attribute2,
-            attribute3,
-            attribute4,
-            attribute5
+        SELECT receipt_id,
+               create_time,
+               send_flag,
+               error_msg,
+               send_time,
+               main_order_number,
+               receipt_number,
+               receipt_type,
+               store_org_id,
+               diy_site_code,
+               receipt_date,
+               amount,
+               description,
+               sob_id,
+               user_id,
+               username,
+               user_phone,
+               guide_id,
+               attribute1,
+               attribute2,
+               attribute3,
+               attribute4,
+               attribute5
         FROM inter_ate_order_receipt_inf
         WHERE main_order_number = #{orderNumber}
     </select>
 
     <select id="getOrderCouponInf" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderCouponInf">
-        SELECT
-            id,
-            main_order_number,
-            create_time,
-            send_flag,
-            error_msg,
-            send_time,
-            history_flag,
-            get_type,
-            product_type,
-            buy_price,
-            cost_price,
-            coupon_id,
-            sob_id,
-            sku,
-            quantity,
-            coupon_type_id,
-            attribute1,
-            attribute2,
-            attribute3,
-            attribute4,
-            promotion
+        SELECT id,
+               main_order_number,
+               create_time,
+               send_flag,
+               error_msg,
+               send_time,
+               history_flag,
+               get_type,
+               product_type,
+               buy_price,
+               cost_price,
+               coupon_id,
+               sob_id,
+               sku,
+               quantity,
+               coupon_type_id,
+               attribute1,
+               attribute2,
+               attribute3,
+               attribute4,
+               promotion
         FROM inter_ate_order_coupon_inf
         WHERE main_order_number = #{orderNumber}
     </select>
@@ -342,70 +385,64 @@
     </update>
 
     <select id="isRechargeReceiptExist" parameterType="java.lang.String" resultType="java.lang.Boolean">
-        SELECT exists(SELECT 1
-                      FROM inter_ate_recharge_receipt_inf
-                      WHERE charge_number = #{rechargeNo})
+        SELECT exists(SELECT 1 FROM inter_ate_recharge_receipt_inf WHERE charge_number = #{rechargeNo})
     </select>
 
     <insert id="saveRechargeReceiptInf"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.RechargeReceiptInf">
-        INSERT INTO inter_ate_recharge_receipt_inf (charge_number, sob_id, charge_obj, charge_type, receiptType,
-                                                    userid, store_org_code, diy_site_code, receipt_date, amount, description, attribute1,
-                                                    attribute2, attribute3, attribute4, attribute5, create_time, send_flag, error_msg, send_time,
-                                                    receipt_number)
-            SELECT
-                #{chargeNumber},
-                #{sobId},
-                #{chargeObj},
-                #{chargeType},
-                #{receiptType},
-                #{userid},
-                #{storeOrgCode},
-                #{diySiteCode},
-                #{receiptDate},
-                #{amount},
-                #{description},
-                #{attribute1},
-                #{attribute2},
-                #{attribute3},
-                #{attribute4},
-                #{attribute5},
-                #{createTime},
-                #{sendFlag},
-                #{errorMsg},
-                #{sendTime},
-                #{receiptNumber}
-            FROM dual
-            WHERE NOT exists(SELECT 1
-                             FROM inter_ate_recharge_receipt_inf
-                             WHERE receipt_number = #{receiptNumber})
+        INSERT INTO inter_ate_recharge_receipt_inf (charge_number, sob_id, charge_obj, charge_type, receiptType, userid,
+                           store_org_code, diy_site_code, receipt_date, amount, description, attribute1, attribute2,
+                           attribute3, attribute4, attribute5, create_time, send_flag, error_msg, send_time,
+                           receipt_number)
+        SELECT #{chargeNumber},
+               #{sobId},
+               #{chargeObj},
+               #{chargeType},
+               #{receiptType},
+               #{userid},
+               #{storeOrgCode},
+               #{diySiteCode},
+               #{receiptDate},
+               #{amount},
+               #{description},
+               #{attribute1},
+               #{attribute2},
+               #{attribute3},
+               #{attribute4},
+               #{attribute5},
+               #{createTime},
+               #{sendFlag},
+               #{errorMsg},
+               #{sendTime},
+               #{receiptNumber}
+        FROM dual
+        WHERE NOT exists(SELECT 1 FROM inter_ate_recharge_receipt_inf WHERE receipt_number = #{receiptNumber})
     </insert>
 
     <select id="getRechargeReceiptInfByRechargeNo" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.RechargeReceiptInf">
-        SELECT
-            receipt_id,
-            charge_number,
-            sob_id,
-            charge_obj,
-            charge_type,
-            receiptType,
-            userid,
-            store_org_code,
-            diy_site_code,
-            receipt_date,
-            amount,
-            description,
-            attribute1,
-            attribute2,
-            attribute3,
-            attribute4,
-            attribute5,
-            create_time,
-            send_flag,
-            error_msg,
-            send_time,
-            receipt_number
+        SELECT receipt_id,
+               charge_number,
+               sob_id,
+               charge_obj,
+               charge_type,
+               receiptType,
+               userid,
+               store_org_code,
+               diy_site_code,
+               receipt_date,
+               amount,
+               description,
+               attribute1,
+               attribute2,
+               attribute3,
+               attribute4,
+               attribute5,
+               create_time,
+               send_flag,
+               error_msg,
+               send_time,
+               receipt_number
         FROM inter_ate_recharge_receipt_inf
         WHERE charge_number = #{rechargeNo}
     </select>
@@ -428,91 +465,89 @@
 
     <insert id="saveOrderJxPriceDifferenceReturnInf"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderJxPriceDifferenceReturnInf">
-        INSERT INTO inter_ate_order_jx_price_difference_return_inf (main_order_number, sob_id, store_org_code, diy_site_code, receipt_date, sku,
-                                                                    amount, description, attribute1, attribute2, attribute3, attribute4, attribute5,
-                                                                    create_time, send_flag, error_msg, send_time, receipt_number)
-            SELECT
-                #{mainOrderNumber},
-                #{sobId},
-                #{storeOrgCode},
-                #{diySiteCode},
-                #{receiptDate},
-                #{sku},
-                #{amount},
-                #{description},
-                #{attribute1},
-                #{attribute2},
-                #{attribute3},
-                #{attribute4},
-                #{attribute5},
-                #{createTime},
-                #{sendFlag},
-                #{errorMsg},
-                #{sendTime},
-                #{receiptNumber}
-            FROM dual
-            WHERE NOT exists(SELECT 1
-                             FROM inter_ate_order_jx_price_difference_return_inf
-                             WHERE main_order_number = #{mainOrderNumber}
-                                   AND sku = #{sku})
+        INSERT INTO inter_ate_order_jx_price_difference_return_inf (main_order_number, sob_id, store_org_code,
+                           diy_site_code, receipt_date, sku, amount, description, attribute1, attribute2, attribute3,
+                           attribute4, attribute5, create_time, send_flag, error_msg, send_time, receipt_number)
+        SELECT #{mainOrderNumber},
+               #{sobId},
+               #{storeOrgCode},
+               #{diySiteCode},
+               #{receiptDate},
+               #{sku},
+               #{amount},
+               #{description},
+               #{attribute1},
+               #{attribute2},
+               #{attribute3},
+               #{attribute4},
+               #{attribute5},
+               #{createTime},
+               #{sendFlag},
+               #{errorMsg},
+               #{sendTime},
+               #{receiptNumber}
+        FROM dual
+        WHERE NOT exists(SELECT 1
+                         FROM inter_ate_order_jx_price_difference_return_inf
+                         WHERE main_order_number = #{mainOrderNumber}
+                           AND sku = #{sku})
 
     </insert>
 
     <insert id="saveOrderJxPriceDifferenceRefundInf"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderJxPriceDifferenceRefundInf">
-        INSERT INTO inter_ate_return_order_jx_price_difference_refund_inf (main_return_number, main_order_number, sob_id, store_org_code, diy_site_code,
-                                                                           refund_date, refund_number, sku, amount, description, attribute1, attribute2,
-                                                                           attribute3, attribute4, attribute5, create_time, send_flag, error_msg, send_time)
-            SELECT
-                #{mainReturnNumber},
-                #{mainOrderNumber},
-                #{sobId},
-                #{storeOrgCode},
-                #{diySiteCode},
-                #{refundDate},
-                #{refundNumber},
-                #{sku},
-                #{amount},
-                #{description},
-                #{attribute1},
-                #{attribute2},
-                #{attribute3},
-                #{attribute4},
-                #{attribute5},
-                #{createTime},
-                #{sendFlag},
-                #{errorMsg},
-                #{sendTime}
-            FROM dual
-            WHERE NOT exists(SELECT 1
-                             FROM inter_ate_return_order_jx_price_difference_refund_inf
-                             WHERE main_return_number = #{mainReturnNumber}
-                                   AND sku = #{sku})
+        INSERT INTO inter_ate_return_order_jx_price_difference_refund_inf (main_return_number, main_order_number,
+                           sob_id, store_org_code, diy_site_code, refund_date, refund_number, sku, amount, description,
+                           attribute1, attribute2, attribute3, attribute4, attribute5, create_time, send_flag,
+                           error_msg, send_time)
+        SELECT #{mainReturnNumber},
+               #{mainOrderNumber},
+               #{sobId},
+               #{storeOrgCode},
+               #{diySiteCode},
+               #{refundDate},
+               #{refundNumber},
+               #{sku},
+               #{amount},
+               #{description},
+               #{attribute1},
+               #{attribute2},
+               #{attribute3},
+               #{attribute4},
+               #{attribute5},
+               #{createTime},
+               #{sendFlag},
+               #{errorMsg},
+               #{sendTime}
+        FROM dual
+        WHERE NOT exists(SELECT 1
+                         FROM inter_ate_return_order_jx_price_difference_refund_inf
+                         WHERE main_return_number = #{mainReturnNumber}
+                           AND sku = #{sku})
 
     </insert>
 
     <select id="getOrderJxPriceDifferenceReturnInf" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderJxPriceDifferenceReturnInf">
-        SELECT
-            receipt_id,
-            main_order_number,
-            sob_id,
-            store_org_code,
-            diy_site_code,
-            receipt_date,
-            sku,
-            amount,
-            description,
-            attribute1,
-            attribute2,
-            attribute3,
-            attribute4,
-            attribute5,
-            create_time,
-            send_flag,
-            error_msg,
-            send_time,
-            receipt_number
+        SELECT receipt_id,
+               main_order_number,
+               sob_id,
+               store_org_code,
+               diy_site_code,
+               receipt_date,
+               sku,
+               amount,
+               description,
+               attribute1,
+               attribute2,
+               attribute3,
+               attribute4,
+               attribute5,
+               create_time,
+               send_flag,
+               error_msg,
+               send_time,
+               receipt_number
         FROM inter_ate_order_jx_price_difference_return_inf
         WHERE main_order_number = #{orderNumber}
     </select>
@@ -544,9 +579,7 @@
     </update>
 
     <select id="isReturnOrderExist" parameterType="java.lang.String" resultType="java.lang.Boolean">
-        SELECT exists(SELECT 1
-                      FROM inter_ate_return_order_base_inf
-                      WHERE main_return_number = #{returnNumber})
+        SELECT exists(SELECT 1 FROM inter_ate_return_order_base_inf WHERE main_return_number = #{returnNumber})
     </select>
 
     <update id="updateOrderJxPriceDifferenceRefundInf">
@@ -570,244 +603,232 @@
 
     <select id="getOrderBaseInfByMainOrderNumberAndCompanFlag"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf">
-        SELECT
-            order_header_id,
-            create_time,
-            send_flag,
-            error_msg,
-            send_time,
-            main_order_number,
-            order_number,
-            sob_id,
-            order_date,
-            order_subject_type,
-            product_type,
-            order_type_id,
-            user_id,
-            sales_consult_id,
-            decorate_manager_id,
-            coupon_flag,
-            invoice_flag,
-            credit_flag,
-            store_org_id,
-            diy_site_code,
-            delivery_type_title,
-            order_amt,
-            rec_amt,
-            lebi_discount,
-            store_subvention_discount,
-            promotion_discount,
-            member_discount,
-            cash_coupon_discount,
-            product_coupon_discount,
-            attribute1,
-            attribute2,
-            attribute3,
-            attribute4,
-            attribute5,
-            attribute6,
-            attribute7
+        SELECT order_header_id,
+               create_time,
+               send_flag,
+               error_msg,
+               send_time,
+               main_order_number,
+               order_number,
+               sob_id,
+               order_date,
+               order_subject_type,
+               product_type,
+               order_type_id,
+               user_id,
+               sales_consult_id,
+               decorate_manager_id,
+               coupon_flag,
+               invoice_flag,
+               credit_flag,
+               store_org_id,
+               diy_site_code,
+               delivery_type_title,
+               order_amt,
+               rec_amt,
+               lebi_discount,
+               store_subvention_discount,
+               promotion_discount,
+               member_discount,
+               cash_coupon_discount,
+               product_coupon_discount,
+               attribute1,
+               attribute2,
+               attribute3,
+               attribute4,
+               attribute5,
+               attribute6,
+               attribute7
         FROM inter_ate_order_base_inf
-        WHERE main_order_number = #{orderNumber} AND product_type = #{flag}
+        WHERE main_order_number = #{orderNumber}
+          AND product_type = #{flag}
     </select>
 
     <insert id="saveReturnOrderBaseInf"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderBaseInf"
             keyColumn="rt_header_id" keyProperty="rtHeaderId" useGeneratedKeys="true">
         INSERT INTO inter_ate_return_order_base_inf (rt_header_id, return_number, main_return_number, order_number,
-                                                     main_order_number, sob_id, return_date, rt_full_flag, refund_amount, return_type,
-                                                     userid, seller_id, diy_site_code, store_org_code, order_type_id, deliver_type_title,
-                                                     attribute1, attribute2, attribute3, attribute4, attribute5, create_time, send_flag,
-                                                     error_msg, send_time)
-            SELECT
-                #{rtHeaderId},
-                #{returnNumber},
-                #{mainReturnNumber},
-                #{orderNumber},
-                #{mainOrderNumber},
-                #{sobId},
-                #{returnDate},
-                #{rtFullFlag},
-                #{refundAmount},
-                #{returnType},
-                #{userId},
-                #{sellerId},
-                #{diySiteCode},
-                #{storeOrgCode},
-                #{orderTypeId},
-                #{deliverTypeTitle},
-                #{attribute1},
-                #{attribute2},
-                #{attribute3},
-                #{attribute4},
-                #{attribute5},
-                #{createTime},
-                #{sendFlag},
-                #{errorMsg},
-                #{sendTime}
-            FROM dual
-            WHERE NOT exists(
-                    SELECT 1
-                    FROM inter_ate_return_order_base_inf
-                    WHERE return_number = #{returnNumber}
-            )
+                           main_order_number, sob_id, return_date, rt_full_flag, refund_amount, return_type, userid,
+                           seller_id, diy_site_code, store_org_code, order_type_id, deliver_type_title, attribute1,
+                           attribute2, attribute3, attribute4, attribute5, create_time, send_flag, error_msg, send_time)
+        SELECT #{rtHeaderId},
+               #{returnNumber},
+               #{mainReturnNumber},
+               #{orderNumber},
+               #{mainOrderNumber},
+               #{sobId},
+               #{returnDate},
+               #{rtFullFlag},
+               #{refundAmount},
+               #{returnType},
+               #{userId},
+               #{sellerId},
+               #{diySiteCode},
+               #{storeOrgCode},
+               #{orderTypeId},
+               #{deliverTypeTitle},
+               #{attribute1},
+               #{attribute2},
+               #{attribute3},
+               #{attribute4},
+               #{attribute5},
+               #{createTime},
+               #{sendFlag},
+               #{errorMsg},
+               #{sendTime}
+        FROM dual
+        WHERE NOT exists(
+                SELECT 1 FROM inter_ate_return_order_base_inf WHERE return_number = #{returnNumber}
+                )
 
     </insert>
 
     <insert id="saveReturnOrderGoodsInf"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderGoodsInf">
-        INSERT INTO inter_ate_return_order_goods_inf (rt_header_id, return_number, main_return_number, order_number, main_order_number, order_line_id,
-                                                      goods_title, sku, quantity, ls_price, hy_price, jx_price, settlement_price,
-                                                      return_price, attribute1, attribute2, attribute3, attribute4, attribute5, create_time,
-                                                      send_flag, error_msg, send_time)
-            SELECT
-                #{rtHeaderId},
-                #{returnNumber},
-                #{mainReturnNumber},
-                #{orderNumber},
-                #{mainOrderNumber},
-                #{orderLineId},
-                #{goodsTitle},
-                #{sku},
-                #{quantity},
-                #{lsPrice},
-                #{hyPrice},
-                #{jxPrice},
-                #{settlementPrice},
-                #{returnPrice},
-                #{attribute1},
-                #{attribute2},
-                #{attribute3},
-                #{attribute4},
-                #{attribute5},
-                #{createTime},
-                #{sendFlag},
-                #{errorMsg},
-                #{sendTime}
-            FROM dual
-            WHERE NOT exists(
-                    SELECT 1
-                    FROM inter_ate_return_order_goods_inf
-                    WHERE order_line_id = #{orderLineId}
-            )
+        INSERT INTO inter_ate_return_order_goods_inf (rt_header_id, return_number, main_return_number, order_number,
+                           main_order_number, order_line_id, goods_title, sku, quantity, ls_price, hy_price, jx_price,
+                           settlement_price, return_price, attribute1, attribute2, attribute3, attribute4, attribute5,
+                           create_time, send_flag, error_msg, send_time)
+        SELECT #{rtHeaderId},
+               #{returnNumber},
+               #{mainReturnNumber},
+               #{orderNumber},
+               #{mainOrderNumber},
+               #{orderLineId},
+               #{goodsTitle},
+               #{sku},
+               #{quantity},
+               #{lsPrice},
+               #{hyPrice},
+               #{jxPrice},
+               #{settlementPrice},
+               #{returnPrice},
+               #{attribute1},
+               #{attribute2},
+               #{attribute3},
+               #{attribute4},
+               #{attribute5},
+               #{createTime},
+               #{sendFlag},
+               #{errorMsg},
+               #{sendTime}
+        FROM dual
+        WHERE NOT exists(
+                SELECT 1 FROM inter_ate_return_order_goods_inf WHERE order_line_id = #{orderLineId}
+                )
     </insert>
 
     <insert id="saveReturnOrderCouponInf"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderCouponInf">
-        INSERT INTO inter_ate_return_order_coupon_inf (main_return_number, main_order_number, coupon_type_id, sku, buy_price, quantity,
-                                                       attribute1, attribute2, attribute3, attribute4, attribute5, error_msg, send_flag, send_time,
-                                                       create_time)
-        VALUES (
-            #{mainReturnNumber},
-            #{mainOrderNumber},
-            #{couponTypeId},
-            #{sku},
-            #{buyPrice},
-            #{quantity},
-            #{attribute1},
-            #{attribute2},
-            #{attribute3},
-            #{attribute4},
-            #{attribute5},
-            #{errorMsg},
-            #{sendFlag},
-            #{sendTime},
-            #{createTime})
-    </insert>
-
-    <insert id="saveReturnOrderRefundInf"
-            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderRefundInf">
-        INSERT INTO inter_ate_return_order_refund_inf (main_order_number, main_return_number, refund_number, user_id, diy_site_code, store_org_code,
-                                                       refund_type, refund_date, amount, description, sob_id, attribute1, attribute2, attribute3,
-                                                       attribute4, attribute5, create_time, send_flag, error_msg, send_time)
-            SELECT
+        INSERT INTO inter_ate_return_order_coupon_inf (main_return_number, main_order_number, coupon_type_id, sku,
+                           buy_price, quantity, attribute1, attribute2, attribute3, attribute4, attribute5, error_msg,
+                           send_flag, send_time, create_time)
+        VALUES (#{mainReturnNumber},
                 #{mainOrderNumber},
-                #{mainReturnNumber},
-                #{refundNumber},
-                #{userId},
-                #{diySiteCode},
-                #{storeOrgCode},
-                #{refundType},
-                #{refundDate},
-                #{amount},
-                #{description},
-                #{sobId},
+                #{couponTypeId},
+                #{sku},
+                #{buyPrice},
+                #{quantity},
                 #{attribute1},
                 #{attribute2},
                 #{attribute3},
                 #{attribute4},
                 #{attribute5},
-                #{createTime},
-                #{sendFlag},
                 #{errorMsg},
-                #{sendTime}
-            FROM dual
-            WHERE NOT exists(
-                    SELECT 1
-                    FROM inter_ate_return_order_refund_inf
-                    WHERE refund_number = #{refundNumber}
-            )
+                #{sendFlag},
+                #{sendTime},
+                #{createTime})
+    </insert>
+
+    <insert id="saveReturnOrderRefundInf"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderRefundInf">
+        INSERT INTO inter_ate_return_order_refund_inf (main_order_number, main_return_number, refund_number, user_id,
+                           diy_site_code, store_org_code, refund_type, refund_date, amount, description, sob_id,
+                           attribute1, attribute2, attribute3, attribute4, attribute5, create_time, send_flag,
+                           error_msg, send_time)
+        SELECT #{mainOrderNumber},
+               #{mainReturnNumber},
+               #{refundNumber},
+               #{userId},
+               #{diySiteCode},
+               #{storeOrgCode},
+               #{refundType},
+               #{refundDate},
+               #{amount},
+               #{description},
+               #{sobId},
+               #{attribute1},
+               #{attribute2},
+               #{attribute3},
+               #{attribute4},
+               #{attribute5},
+               #{createTime},
+               #{sendFlag},
+               #{errorMsg},
+               #{sendTime}
+        FROM dual
+        WHERE NOT exists(
+                SELECT 1 FROM inter_ate_return_order_refund_inf WHERE refund_number = #{refundNumber}
+                )
     </insert>
 
     <select id="getReturnOrderBaseInfByReturnNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderBaseInf">
-        SELECT
-            rt_header_id,
-            return_number,
-            main_return_number,
-            order_number,
-            main_order_number,
-            sob_id,
-            return_date,
-            rt_full_flag,
-            refund_amount,
-            return_type,
-            userid,
-            seller_id,
-            diy_site_code,
-            store_org_code,
-            order_type_id,
-            deliver_type_title,
-            attribute1,
-            attribute2,
-            attribute3,
-            attribute4,
-            attribute5,
-            create_time,
-            send_flag,
-            error_msg,
-            send_time
+        SELECT rt_header_id,
+               return_number,
+               main_return_number,
+               order_number,
+               main_order_number,
+               sob_id,
+               return_date,
+               rt_full_flag,
+               refund_amount,
+               return_type,
+               userid,
+               seller_id,
+               diy_site_code,
+               store_org_code,
+               order_type_id,
+               deliver_type_title,
+               attribute1,
+               attribute2,
+               attribute3,
+               attribute4,
+               attribute5,
+               create_time,
+               send_flag,
+               error_msg,
+               send_time
         FROM inter_ate_return_order_base_inf
         WHERE main_return_number = #{returnNumber}
     </select>
 
     <select id="getReturnOrderGoodsInfByReturnNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderGoodsInf">
-        SELECT
-            rt_line_id,
-            rt_header_id,
-            return_number,
-            main_return_number,
-            order_number,
-            main_order_number,
-            order_line_id,
-            goods_title,
-            sku,
-            quantity,
-            ls_price,
-            hy_price,
-            jx_price,
-            settlement_price,
-            return_price,
-            attribute1,
-            attribute2,
-            attribute3,
-            attribute4,
-            attribute5,
-            create_time,
-            send_flag,
-            error_msg,
-            send_time
+        SELECT rt_line_id,
+               rt_header_id,
+               return_number,
+               main_return_number,
+               order_number,
+               main_order_number,
+               order_line_id,
+               goods_title,
+               sku,
+               quantity,
+               ls_price,
+               hy_price,
+               jx_price,
+               settlement_price,
+               return_price,
+               attribute1,
+               attribute2,
+               attribute3,
+               attribute4,
+               attribute5,
+               create_time,
+               send_flag,
+               error_msg,
+               send_time
         FROM inter_ate_return_order_goods_inf
         WHERE return_number = #{returnNumber}
     </select>
@@ -880,23 +901,22 @@
 
     <select id="getReturnOrderCouponInf" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderCouponInf">
-        SELECT
-            line_id,
-            main_return_number,
-            main_order_number,
-            coupon_type_id,
-            sku,
-            buy_price,
-            quantity,
-            attribute1,
-            attribute2,
-            attribute3,
-            attribute4,
-            attribute5,
-            error_msg,
-            send_flag,
-            send_time,
-            create_time
+        SELECT line_id,
+               main_return_number,
+               main_order_number,
+               coupon_type_id,
+               sku,
+               buy_price,
+               quantity,
+               attribute1,
+               attribute2,
+               attribute3,
+               attribute4,
+               attribute5,
+               error_msg,
+               send_flag,
+               send_time,
+               create_time
         FROM inter_ate_return_order_coupon_inf
         WHERE main_return_number = #{returnNumber}
     </select>
@@ -923,28 +943,27 @@
 
     <select id="getReturnOrderRefundInf" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderRefundInf">
-        SELECT
-            refund_id,
-            main_order_number,
-            main_return_number,
-            refund_number,
-            user_id,
-            diy_site_code,
-            store_org_code,
-            refund_type,
-            refund_date,
-            amount,
-            description,
-            sob_id,
-            attribute1,
-            attribute2,
-            attribute3,
-            attribute4,
-            attribute5,
-            create_time,
-            send_flag,
-            error_msg,
-            send_time
+        SELECT refund_id,
+               main_order_number,
+               main_return_number,
+               refund_number,
+               user_id,
+               diy_site_code,
+               store_org_code,
+               refund_type,
+               refund_date,
+               amount,
+               description,
+               sob_id,
+               attribute1,
+               attribute2,
+               attribute3,
+               attribute4,
+               attribute5,
+               create_time,
+               send_flag,
+               error_msg,
+               send_time
         FROM inter_ate_return_order_refund_inf
         WHERE main_return_number = #{returnNumber}
     </select>
@@ -970,27 +989,26 @@
 
     <select id="getReturnOrderJxPriceDifferenceRefundInf" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderJxPriceDifferenceRefundInf">
-        SELECT
-            refund_id,
-            main_return_number,
-            main_order_number,
-            sob_id,
-            store_org_code,
-            diy_site_code,
-            refund_date,
-            refund_number,
-            sku,
-            amount,
-            description,
-            attribute1,
-            attribute2,
-            attribute3,
-            attribute4,
-            attribute5,
-            create_time,
-            send_flag,
-            error_msg,
-            send_time
+        SELECT refund_id,
+               main_return_number,
+               main_order_number,
+               sob_id,
+               store_org_code,
+               diy_site_code,
+               refund_date,
+               refund_number,
+               sku,
+               amount,
+               description,
+               attribute1,
+               attribute2,
+               attribute3,
+               attribute4,
+               attribute5,
+               create_time,
+               send_flag,
+               error_msg,
+               send_time
         FROM inter_ate_return_order_jx_price_difference_refund_inf
         WHERE main_return_number = #{returnNumber}
     </select>
@@ -1016,38 +1034,51 @@
 
     <insert id="saveOrderKeyInf"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderKeyInf">
-        INSERT INTO inter_ate_order_key_inf (main_order_number, type, order_amt, goods_amt, freight, attribute1, attribute2, attribute3, attribute4,
-                                             attribute5, create_time, send_flag, error_msg, send_time, dec_credit_money, dec_pre_deposit,
-                                             dec_subvention, emp_credit_money, arrearage)
-        VALUES (#{mainOrderNumber}, #{type}, #{orderAmt}, #{goodsAmt}, #{freight}, #{attribute1}, #{attribute2},
-                                    #{attribute3},
-                                    #{attribute4}, #{attribute5}, #{createTime}, #{sendFlag}, #{errorMsg}, #{sendTime},
+        INSERT INTO inter_ate_order_key_inf (main_order_number, type, order_amt, goods_amt, freight, attribute1,
+                           attribute2, attribute3, attribute4, attribute5, create_time, send_flag, error_msg, send_time,
+                           dec_credit_money, dec_pre_deposit, dec_subvention, emp_credit_money, arrearage)
+        VALUES (#{mainOrderNumber},
+                #{type},
+                #{orderAmt},
+                #{goodsAmt},
+                #{freight},
+                #{attribute1},
+                #{attribute2},
+                #{attribute3},
+                #{attribute4},
+                #{attribute5},
+                #{createTime},
+                #{sendFlag},
+                #{errorMsg},
+                #{sendTime},
                 #{decCreditMoney},
-                #{decPreDeposit}, #{decSubvention}, #{empCreditMoney}, #{arrearage})
+                #{decPreDeposit},
+                #{decSubvention},
+                #{empCreditMoney},
+                #{arrearage})
     </insert>
     <select id="getOrderKeyInfByMainOrderNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderKeyInf">
-        SELECT
-            id,
-            main_order_number,
-            type,
-            order_amt,
-            goods_amt,
-            freight,
-            attribute1,
-            attribute2,
-            attribute3,
-            attribute4,
-            attribute5,
-            create_time,
-            send_flag,
-            error_msg,
-            send_time,
-            dec_credit_money,
-            dec_pre_deposit,
-            dec_subvention,
-            emp_credit_money,
-            arrearage
+        SELECT id,
+               main_order_number,
+               type,
+               order_amt,
+               goods_amt,
+               freight,
+               attribute1,
+               attribute2,
+               attribute3,
+               attribute4,
+               attribute5,
+               create_time,
+               send_flag,
+               error_msg,
+               send_time,
+               dec_credit_money,
+               dec_pre_deposit,
+               dec_subvention,
+               emp_credit_money,
+               arrearage
         FROM inter_ate_order_key_inf
         WHERE main_order_number = #{orderNumber}
     </select>
@@ -1070,81 +1101,75 @@
 
     <select id="getCustomerFxStoreRelationByCusId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppCustomerFxStoreRelation">
-        SELECT
-            id,
-            fx_store_code,
-            cus_id,
-            create_time
+        SELECT id,
+               fx_store_code,
+               cus_id,
+               create_time
         FROM cus_customer_fx_store_relation
         WHERE cus_id = #{cusId}
     </select>
 
     <select id="isWithdrawRefundExist" parameterType="java.lang.String" resultType="java.lang.Boolean">
-        SELECT exists(SELECT 1
-                      FROM inter_ate_withdraw_refund_inf
-                      WHERE refund_number = #{refundNo})
+        SELECT exists(SELECT 1 FROM inter_ate_withdraw_refund_inf WHERE refund_number = #{refundNo})
     </select>
 
     <insert id="saveWithdrawRefundInf"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.WithdrawRefundInf">
-        INSERT INTO inter_ate_withdraw_refund_inf (refund_number, withdraw_number, sob_id, withdraw_type, withdraw_obj, refund_type,
-                                                   userid, diy_site_code, store_org_code, refund_date, amount, description, attribute1, attribute2,
-                                                   attribute3, attribute4, attribute5, create_time, send_flag, error_msg, send_time)
-            SELECT
-                #{refundNumber},
-                #{withdrawNumber},
-                #{sobId},
-                #{withdrawType},
-                #{withdrawObj},
-                #{refundType},
-                #{userid},
-                #{diySiteCode},
-                #{storeOrgCode},
-                #{refundDate},
-                #{amount},
-                #{description},
-                #{attribute1},
-                #{attribute2},
-                #{attribute3},
-                #{attribute4},
-                #{attribute5},
-                #{createTime},
-                #{sendFlag},
-                #{errorMsg},
-                #{sendTime}
-            FROM dual
-            WHERE NOT exists(
-                    SELECT 1
-                    FROM inter_ate_withdraw_refund_inf
-                    WHERE refund_number = #{refundNumber}
-            )
+        INSERT INTO inter_ate_withdraw_refund_inf (refund_number, withdraw_number, sob_id, withdraw_type, withdraw_obj,
+                           refund_type, userid, diy_site_code, store_org_code, refund_date, amount, description,
+                           attribute1, attribute2, attribute3, attribute4, attribute5, create_time, send_flag,
+                           error_msg, send_time)
+        SELECT #{refundNumber},
+               #{withdrawNumber},
+               #{sobId},
+               #{withdrawType},
+               #{withdrawObj},
+               #{refundType},
+               #{userid},
+               #{diySiteCode},
+               #{storeOrgCode},
+               #{refundDate},
+               #{amount},
+               #{description},
+               #{attribute1},
+               #{attribute2},
+               #{attribute3},
+               #{attribute4},
+               #{attribute5},
+               #{createTime},
+               #{sendFlag},
+               #{errorMsg},
+               #{sendTime}
+        FROM dual
+        WHERE NOT exists(
+                SELECT 1 FROM inter_ate_withdraw_refund_inf WHERE refund_number = #{refundNumber}
+                )
     </insert>
 
     <select id="getWithdrawRefundInfByRefundNo" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.WithdrawRefundInf">
-        SELECT
-            refund_id,
-            refund_number,
-            withdraw_number,
-            sob_id,
-            withdraw_type,
-            withdraw_obj,
-            refund_type,
-            userid,
-            diy_site_code,
-            store_org_code,
-            refund_date,
-            amount,
-            description,
-            attribute1,
-            attribute2,
-            attribute3,
-            attribute4,
-            attribute5,
-            create_time,
-            send_flag,
-            error_msg,
-            send_time
+        SELECT refund_id,
+               refund_number,
+               withdraw_number,
+               sob_id,
+               withdraw_type,
+               withdraw_obj,
+               refund_type,
+               userid,
+               diy_site_code,
+               store_org_code,
+               refund_date,
+               amount,
+               description,
+               attribute1,
+               attribute2,
+               attribute3,
+               attribute4,
+               attribute5,
+               create_time,
+               send_flag,
+               error_msg,
+               send_time
         FROM inter_ate_withdraw_refund_inf
         WHERE refund_number = #{refundNo}
     </select>
@@ -1166,75 +1191,323 @@
     </select>
 
     <select id="isReceiptExist" parameterType="java.lang.String" resultType="java.lang.Boolean">
-        SELECT exists(SELECT 1
-                      FROM inter_ate_order_receipt_inf
-                      WHERE receipt_number = #{receiptNumber})
+        SELECT exists(SELECT 1 FROM inter_ate_order_receipt_inf WHERE receipt_number = #{receiptNumber})
     </select>
 
     <select id="getOrderReceiptInfByReceiptNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderReceiptInf">
-        SELECT
-            receipt_id,
-            create_time,
-            send_flag,
-            error_msg,
-            send_time,
-            main_order_number,
-            receipt_number,
-            receipt_type,
-            store_org_id,
-            diy_site_code,
-            receipt_date,
-            amount,
-            description,
-            sob_id,
-            user_id,
-            username,
-            user_phone,
-            guide_id,
-            attribute1,
-            attribute2,
-            attribute3,
-            attribute4,
-            attribute5
+        SELECT receipt_id,
+               create_time,
+               send_flag,
+               error_msg,
+               send_time,
+               main_order_number,
+               receipt_number,
+               receipt_type,
+               store_org_id,
+               diy_site_code,
+               receipt_date,
+               amount,
+               description,
+               sob_id,
+               user_id,
+               username,
+               user_phone,
+               guide_id,
+               attribute1,
+               attribute2,
+               attribute3,
+               attribute4,
+               attribute5
         FROM inter_ate_order_receipt_inf
         WHERE receipt_number = #{receiptNumber}
     </select>
 
 
     <select id="isCreditRechargeReceiptExist" parameterType="java.lang.String" resultType="java.lang.Boolean">
-        SELECT exists(SELECT 1
-        FROM inter_ate_recharge_receipt_inf
-        WHERE receipt_number = #{receiptNumber})
+        SELECT exists(SELECT 1 FROM inter_ate_recharge_receipt_inf WHERE receipt_number = #{receiptNumber})
     </select>
 
     <select id="getCreditRechargeReceiptInfByReceiptNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.RechargeReceiptInf">
-        SELECT
-        receipt_id,
-        charge_number,
-        sob_id,
-        charge_obj,
-        charge_type,
-        receiptType,
-        userid,
-        store_org_code,
-        diy_site_code,
-        receipt_date,
-        amount,
-        description,
-        attribute1,
-        attribute2,
-        attribute3,
-        attribute4,
-        attribute5,
-        create_time,
-        send_flag,
-        error_msg,
-        send_time,
-        receipt_number
+        SELECT receipt_id,
+               charge_number,
+               sob_id,
+               charge_obj,
+               charge_type,
+               receiptType,
+               userid,
+               store_org_code,
+               diy_site_code,
+               receipt_date,
+               amount,
+               description,
+               attribute1,
+               attribute2,
+               attribute3,
+               attribute4,
+               attribute5,
+               create_time,
+               send_flag,
+               error_msg,
+               send_time,
+               receipt_number
         FROM inter_ate_recharge_receipt_inf
         WHERE receipt_number = #{receiptNumber}
     </select>
+
+
+    <select id="getOrderKdSellByMainOrderNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.KdSell">
+        SELECT 'S'              sell_type,
+               CASE s.fit_compay_type
+               WHEN 'CASH'
+                   THEN
+                       'Y'
+               ELSE
+                   'N'
+               END AS           is_smal_fit,
+               o.ord_no         main_order_number,
+               i.order_number   order_number,
+               o.store_code     store_code,
+               ss.store_code    zy_store_code,
+               og.sku,
+               g.goods_unit     unit,
+               og.order_qty     qty,
+               'N'              is_product_coupon,
+               CASE og.goods_line_type
+               WHEN 'PRESENT'
+                   THEN
+                       'Y'
+               ELSE
+                   'N'
+               END AS           is_present,
+               og.return_price  price,
+               CASE s.fit_compay_type
+               WHEN 'CASH'
+                   THEN
+                       o.sales_manager_id
+               WHEN 'MONTHLY'
+                   THEN
+                       ''
+               ELSE
+                   o.sales_consult_id
+               END              shoppers_id,
+               os.shipping_time handle_time,
+               i.sob_id         sob_id
+        FROM inter_ate_order_base_inf i
+            LEFT JOIN inter_ate_order_goods_inf ogi ON i.order_number = ogi.order_number
+            LEFT JOIN ord_base_info o ON o.ord_no = i.main_order_number
+            LEFT JOIN st_store s ON o.store_id = s.store_id
+            LEFT JOIN st_store ss ON o.sales_manager_store_id = ss.store_id
+            LEFT JOIN gds_goods g ON ogi.sku = g.sku
+            LEFT JOIN ord_goods_info og ON ogi.main_order_line_id = og.id
+            LEFT JOIN ord_shipping os on o.ord_no = os.ord_no
+        WHERE o.ord_no = #{mainOrderNumber}
+          AND og.goods_line_type IN ('GOODS', 'PRESENT')
+        UNION ALL
+        SELECT 'S'               sell_type,
+               CASE s.fit_compay_type
+               WHEN 'CASH'
+                   THEN
+                       'Y'
+               ELSE
+                   'N'
+               END AS            is_smal_fit,
+               o.ord_no          main_order_number,
+               i.order_number    order_number,
+               o.store_code      store_code,
+               ss.store_code     zy_store_code,
+               oci.sku,
+               g.goods_unit      unit,
+               oci.quantity      qty,
+               'Y'               is_product_coupon,
+               'N'               is_present,
+               oci.buy_price     price,
+               CASE s.fit_compay_type
+               WHEN 'CASH'
+                   THEN
+                       o.sales_manager_id
+               WHEN 'MONTHLY'
+                   THEN
+                       ''
+               ELSE
+                   o.sales_consult_id
+               END               shoppers_id,
+               os2.shipping_time handle_time,
+               i.sob_id          sob_id
+        FROM inter_ate_order_coupon_inf oci
+            LEFT JOIN ord_base_info o ON o.ord_no = oci.main_order_number
+                AND oci.coupon_type_id = 1
+            LEFT JOIN inter_ate_order_base_inf i ON o.ord_no = i.main_order_number
+                AND oci.product_type = i.product_type
+            LEFT JOIN st_store s ON o.store_id = s.store_id
+            LEFT JOIN st_store ss ON o.sales_manager_store_id = ss.store_id
+            LEFT JOIN gds_goods g ON oci.sku = g.sku
+            LEFT JOIN ord_shipping os2 on o.oid = os2.oid
+        WHERE oci.main_order_number = #{mainOrderNumber}
+    </select>
+
+    <insert id="saveKdSellList">
+        insert into inter_ate_kd_sell (sell_type, is_smal_fit, main_order_number, order_number, store_code,
+        zy_store_code, sku, unit, qty, is_product_coupon, price, shoppers_id, is_present,handle_time,sob_id,
+        attribute1, attribute2, attribute3, attribute4, attribute5, create_time,
+        send_flag, error_msg, send_time)
+        values
+        <foreach collection="list" separator="," item="item" index="index">
+            (
+            #{item.sellType},#{item.isSmalFit},#{item.mainOrderNumber},#{item.orderNumber},#{item.storeCode},#{item.zyStoreCode},
+            #{item.sku},#{item.unit},#{item.qty},#{item.isProductCoupon},#{item.price},#{item.shoppersId},#{item.isPresent},
+            #{item.handleTime},#{item.sobId},#{item.attribute1},
+            #{item.attribute2},#{item.attribute3},#{item.attribute4},#{item.attribute5},#{item.createTime},#{item.sendFlag},#{item.errorMsg},
+            #{item.sendTime})
+        </foreach>
+    </insert>
+
+    <select id="getReturnOrderKdSellByMainOrderNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.KdSell">
+        SELECT 'R'                sell_type,
+               CASE s.fit_compay_type
+               WHEN 'CASH'
+                   THEN
+                       'Y'
+               ELSE
+                   'N'
+               END AS             is_smal_fit,
+               ro.return_no       main_order_number,
+               ri.return_number   order_number,
+               ro.store_code      store_code,
+               ss.store_code      zy_store_code,
+               og.sku             sku,
+               g.goods_unit       unit,
+               -ogi.quantity      qty,
+               'N'                is_product_coupon,
+               CASE og.goods_line_type
+               WHEN 'PRESENT'
+                   THEN
+                       'Y'
+               ELSE
+                   'N'
+               END AS             is_present,
+               og.return_price    price,
+               CASE s.fit_compay_type
+               WHEN 'CASH'
+                   THEN
+                       o.sales_manager_id
+               WHEN 'MONTHLY'
+                   THEN
+                       ''
+               ELSE
+                   o.sales_consult_id
+               END                shoppers_id,
+               orl.operation_time handle_time,
+               ri.sob_id          sob_id
+        FROM ord_return_base_info ro
+            LEFT JOIN ord_base_info o ON ro.ord_no = o.ord_no
+            LEFT JOIN inter_ate_return_order_base_inf ri ON ro.return_no = ri.main_return_number
+            LEFT JOIN inter_ate_return_order_goods_inf rgi ON ri.return_number = rgi.return_number
+            LEFT JOIN inter_ate_order_goods_inf ogi ON rgi.order_line_id = ogi.order_line_id
+            LEFT JOIN ord_goods_info og ON ogi.main_order_line_id = og.id
+            LEFT JOIN st_store s ON o.store_id = s.store_id
+            LEFT JOIN st_store ss ON o.sales_manager_store_id = ss.store_id
+            LEFT JOIN gds_goods g ON ogi.sku = g.sku
+            LEFT JOIN ord_return_lifecycle orl on ro.return_no = orl.return_no
+                AND orl.operation IN ('NORMAL_RETURN', 'CANCEL_ORDER', 'REJECTED')
+        WHERE ro.return_no = #{mainOrderNumber}
+          AND og.goods_line_type IN ('GOODS', 'PRESENT')
+        UNION ALL
+        SELECT 'R'                   sell_type,
+               CASE s.fit_compay_type
+               WHEN 'CASH'
+                   THEN
+                       'Y'
+               ELSE
+                   'N'
+               END AS                is_smal_fit,
+               ri.main_return_number main_order_number,
+               ri.return_number      order_number,
+               ro.store_code         store_code,
+               ss.store_code         zy_store_code,
+               rci.sku               sku,
+               g.goods_unit          unit,
+               -rci.quantity         qty,
+               'Y'                   is_product_coupon,
+               'N'                   is_present,
+               rci.buy_price         price,
+               CASE s.fit_compay_type
+               WHEN 'CASH'
+                   THEN
+                       o.sales_manager_id
+               WHEN 'MONTHLY'
+                   THEN
+                       ''
+               ELSE
+                   o.sales_consult_id
+               END                   shoppers_id,
+               orl.operation_time    handle_time,
+               ri.sob_id             sob_id
+        FROM inter_ate_return_order_coupon_inf rci
+            LEFT JOIN inter_ate_return_order_base_inf ri ON rci.main_return_number = ri.main_return_number
+                AND rci.coupon_type_id = 1
+            LEFT JOIN ord_return_base_info ro ON ri.main_return_number = ro.return_no
+            LEFT JOIN ord_base_info o ON ro.ord_no = o.ord_no
+            LEFT JOIN st_store s ON o.store_id = s.store_id
+            LEFT JOIN st_store ss ON o.sales_manager_store_id = ss.store_id
+            LEFT JOIN gds_goods g ON rci.sku = g.sku
+            LEFT JOIN ord_return_lifecycle orl on ro.return_no = orl.return_no
+                AND orl.operation IN ('NORMAL_RETURN', 'CANCEL_ORDER', 'REJECTED')
+        WHERE ro.return_no = #{mainOrderNumber};
+    </select>
+
+
+    <select id="getPendingSendKdSell" resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.KdSell">
+        select line_id,
+               create_time,
+               send_flag,
+               error_msg,
+               send_time,
+               sell_type,
+               is_smal_fit,
+               main_order_number,
+               order_number,
+               store_code,
+               zy_store_code,
+               sku,
+               unit,
+               qty,
+               is_product_coupon,
+               price,
+               shoppers_id,
+               is_present,
+               handle_time,
+               sob_id,
+               attribute1,
+               attribute2,
+               attribute3,
+               attribute4,
+               attribute5
+        from inter_ate_kd_sell
+        where main_order_number = #{mainOrderNumber}
+    </select>
+
+    <update id="updateKdSellFlagAndSendTimeAndErrorMsg">
+        UPDATE inter_ate_kd_sell
+        <set>
+            <if test="null != sendFlag">
+                send_flag = #{sendFlag},
+            </if>
+            <if test="null != sendTime">
+                send_time = #{sendTime},
+            </if>
+            <if test="null != errorMsg">
+                error_msg = #{errorMsg}
+            </if>
+        </set>
+        WHERE line_id in
+        <foreach collection="kdSellIds" open="(" close=")" separator="," item="id" index="index">
+            #{id}
+        </foreach>
+    </update>
+
 
 </mapper>
