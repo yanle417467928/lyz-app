@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppCustomerCreateType;
 import cn.com.leyizhuang.app.core.constant.AppCustomerLightStatus;
+import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.MaCustomerDAO;
 import cn.com.leyizhuang.app.foundation.dto.CusLebiDTO;
 import cn.com.leyizhuang.app.foundation.dto.CusPreDepositDTO;
@@ -10,6 +11,7 @@ import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.RankStore;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.MaCustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.response.MaCreateOrderPeopleResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ManageUpdateCustomerTypeResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.*;
 import cn.com.leyizhuang.app.foundation.service.*;
@@ -297,7 +299,7 @@ public class MaCustomerServiceImpl implements MaCustomerService {
             }
         }else{
             if (null == rankStore){
-                AppStore store = appStoreService.findByStoreCode(rankStore.getStoreCode());
+                AppStore store = appStoreService.findById(customer.getStoreId());
                 RankStore newRankStore = new RankStore();
                 newRankStore.setStoreId(store.getStoreId());
                 newRankStore.setStoreCode(store.getStoreCode());
@@ -320,6 +322,13 @@ public class MaCustomerServiceImpl implements MaCustomerService {
         }else{
             maCustomerDAO.updateMemberTypeByRankIdAndCusId(rankClassification.getRankId(),manageUpdateCustomerTypeResponse.getCusId());
         }
+    }
+
+    @Override
+    public PageInfo<MaCreateOrderPeopleResponse> maFindCreatePeople(Integer page, Integer size,String keywords) {
+        PageHelper.startPage(page, size);
+        List<MaCreateOrderPeopleResponse> maCreateOrderPeopleResponseList =maCustomerDAO.maFindCreatePeople(keywords);
+        return new PageInfo<>(maCreateOrderPeopleResponseList);
     }
 
 }

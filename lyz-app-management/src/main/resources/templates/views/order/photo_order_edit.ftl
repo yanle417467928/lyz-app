@@ -30,6 +30,8 @@
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <script src="https://cdn.bootcss.com/select2/4.0.2/js/select2.full.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
     <style>
         b {
             line-height: 30px;
@@ -100,7 +102,7 @@
                         <spanp class="span">${photoOrderVO.storeName!""}</spanp>
                         <br>
                         <b></b>
-                        <spanp class="span">${photoOrderVO.identityType!""}</spanp>
+                        <spanp id="identityType" class="span">${photoOrderVO.identityType!""}</spanp>
                         <br>
                         <b></b>
                         <spanp class="span"> ${photoOrderVO.photoOrderNo!""}</spanp>
@@ -144,7 +146,7 @@
                     </div>
                     <div class="col-sm-7 invoice-col">
                         <b></b>
-                        <spanp class="span">${photoOrderVO.userMobile!""}</spanp>
+                        <spanp id="userMobile" class="span">${photoOrderVO.userMobile!""}</spanp>
                         <br>
                         <b></b>
                         <spanp class="span"> ${photoOrderVO.contactPhone!""}</spanp>
@@ -159,6 +161,168 @@
         <form id="form">
             <div class="row">
                 <div class="col-xs-12 table-responsive">
+
+
+                    <input type="hidden" id="guideName" name="guideName" value="">
+                    <div class="row">
+                        <div class="col-xs-12 col-md-6">
+                            <div class="form-group">
+                                <label for="storeId">
+                                    下单装饰公司/门店
+                                </label>
+                                <select name="storeId" id="storeId"
+                                        class="form-control selectpicker"
+                                        data-live-search="true" onchange="findOrderCreator()">
+                                    <option value="-1">选择下单装饰公司/门店</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6">
+                            <div class="form-group">
+                                <label for="guideId">
+                                    下单员工/导购
+                                </label>
+                                <select name="guideId" id="guideId" class="form-control select"
+                                        onchange="resetAddress()">
+                                    <option value="-1">选择下单员工/导购</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" id="addDeliveryAddressButton" class="btn btn-primary btn-xs"
+                            style="width:200px;height:50px;"
+                            onclick="addDeliveryAddress()">
+                        填写收货地址
+                    </button>
+                    <button type="button" id="cancelAddDeliveryAddressButton" class="btn btn-danger footer-btn"
+                            style="width:200px;height:50px;display:none;"
+                            onclick="cancelAddDeliveryAddress()">
+                        取消收货地址
+                    </button>
+
+                    <button type="button" id="findDeliveryAddressButton" class="btn btn-primary btn-xs"
+                            style="width:200px;height:50px;display:none;margin-left: 220px;margin-top: -50px;"
+                            onclick="openAddressModal('/rest/order/photo/find/address')">
+                        从地址库查找
+                    </button>
+
+                    <button type="button" id="manuallyEnterDeliveryAddressButton" class="btn btn-primary btn-xs"
+                            style="width:200px;height:50px;display:none;margin-left: 220px;margin-top: -50px;"
+                            onclick="manuallyEnterAddress()">
+                        手动输入地址
+                    </button>
+
+
+                    <input id="goAddDeliveryAddressType" name="goAddDeliveryAddressType" type="hidden" value="1"/>
+
+                    <div id="writeDeliveryAddress">
+                        <div class="row">
+                            <div class="col-xs-12 col-md-3">
+                                <div class="form-group">
+                                    <label>
+                                        收货人姓名
+                                    </label>
+                                    <input type="text" name="receiverName" id="receiverName" class="form-control"
+                                           onkeyup="value=value=value.replace(/[\d]/g, '只能输入汉子和字母')" maxlength="10" \>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-md-3">
+                                <div class="form-group">
+                                    <label>
+                                        收货人电话
+                                    </label>
+                                    <input type="text" name="receiverPhone" id="receiverPhone" class="form-control" \>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-12 col-md-2">
+                                <div class="form-group">
+                                    <label>
+                                        省
+                                    </label>
+                                    <select name="province" id="province" class="form-control select"
+                                            onchange="conditionalQueryAreaManagement(this.value,'1')">
+
+                                    </select>
+                                    <input type="hidden" name="deliveryId" id="deliveryId" class="form-control" \>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-12 col-md-2">
+                                <div class="form-group">
+                                    <label>
+                                        市
+                                    </label>
+                                    <select name="city" id="city" class="form-control select"
+                                            onchange="conditionalQueryAreaManagement(this.value,'2')">
+
+                                    </select>
+                                <#--<input type="text" name="city" id="city" class="form-control" \>-->
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <div class="form-group">
+                                    <label>
+                                        区/县
+                                    </label>
+                                    <select name="county" id="county" class="form-control select"
+                                            onchange="conditionalQueryAreaManagement(this.value,'3')">
+
+                                    </select>
+                                <#--<input type="text" name="county" id="county" class="form-control" \>-->
+                                </div>
+                            </div>
+
+                            <div class="col-xs-12 col-md-4">
+                                <div class="form-group">
+                                    <label>
+                                        街道
+                                    </label>
+                                    <select name="street" id="street" class="form-control select">
+                                    <#--onchange="findProvince(this.value)">-->
+
+                                    </select>
+                                <#--<input type="text" name="street" id="street" class="form-control" \>-->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-12 col-md-3">
+                                <div class="form-group">
+                                    <label>
+                                        小区名
+                                    </label>
+                                    <input type="text" name="residenceName" id="residenceName" class="form-control"
+                                           onkeyup="value=value.replace(/[^\w\u4E00-\u9FA5]/g, '只能输入汉子、字母和数字')" \>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-md-3">
+                                <div class="form-group">
+                                    <label>
+                                        楼盘信息
+                                    </label>
+                                    <input type="text" name="estateInfo" id="estateInfo" class="form-control" \>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-md-6">
+                                <div class="form-group">
+                                    <label>
+                                        详细地址
+                                    </label>
+                                    <input type="text" name="detailedAddress" id="detailedAddress" class="form-control"
+                                           \>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+
                     <div class="box">
                         <div class="box-header">
                             <h3 class="box-title">订单商品</h3>
@@ -213,6 +377,56 @@
                 </div>
             </div>
         </form>
+
+
+        <!-- 地址选择框 -->
+        <div id="selectAddressDataGrid" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document" style="width: 60%">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4>选择地址</h4>
+                        <button type="button" name="search" class="btn btn-default pull-left"
+                                onclick="returnAddress()" style="margin-left:700px;margin-top: -35px;">返回
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!--  设置这个div的大小，超出部分显示滚动条 -->
+                        <div id="addressDataGridTree" class="ztree" style="height: 60%;overflow:auto; ">
+                            <section class="content">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="box box-primary">
+                                            <div id="addressToolbar" class="form-inline">
+
+                                                <div class="input-group col-md-3"
+                                                     style="margin-top:0px positon:relative">
+                                                    <input type="text" name="sellerAddressConditions"
+                                                           id="sellerAddressConditions"
+                                                           class="form-control" style="width:300px;height:34px;"
+                                                           placeholder="请输入收货人姓名、电话、小区、楼盘、详细地址">
+                                                    <span class="input-group-btn">
+                            <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
+                                    onclick="openAddressModal('/rest/order/photo/find/address')">查找</button>
+                        </span>
+                                                </div>
+                                            </div>
+                                            <div class="box-body table-reponsive">
+                                                <table id="addressDataGrid"
+                                                       class="table table-bordered table-hover">
+
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <div class="col-sm-12 invoice-col" style="height: 20px; border-bottom-style: solid;"></div>
         <div class="col-sm-12 invoice-col" style="height: 5px; "></div>
         <div class="row">
@@ -363,12 +577,12 @@
                 <div class="row">
                     <div class="col-xs-12 col-md-8"></div>
                     <div class="col-xs-12 col-md-3">
-                        <#--<button type="button" onclick="addCart();" class="btn btn-primary footer-btn">-->
-                            <#--<i class="fa fa-check"></i> 一键添加-->
-                        <#--</button>-->
-                            <button id="test" class="btn btn-primary footer-btn" onclick="addCart();"
-                                    style="position:fixed;right:100;bottom:0;width:100px;height:50px;">一键添加
-                            </button>
+                    <#--<button type="button" onclick="addCart();" class="btn btn-primary footer-btn">-->
+                    <#--<i class="fa fa-check"></i> 一键添加-->
+                    <#--</button>-->
+                        <button id="test" class="btn btn-primary footer-btn" onclick="addCart();"
+                                style="position:fixed;right:100;bottom:0;width:100px;height:50px;">一键添加
+                        </button>
 
                         <div class="col-xs-4 col-md-3">
                             <button id="backTop" class="btn btn-primary footer-btn"
@@ -383,18 +597,241 @@
         <script>
             $(function () {
                 $('#WATER').click();
+                findStoreList();
+                findProvince();
+                $("#writeDeliveryAddress").hide();
             });
+
+            function returnAddress() {
+                $('#selectAddressDataGrid').modal('hide');
+            }
+
+
+            function resetAddress() {
+                cancelAddDeliveryAddress();
+            }
+
+            function addDeliveryAddress() {
+                findProvince();
+                $("#writeDeliveryAddress").show();
+                $("#goAddDeliveryAddressType").val(0);
+                var addBtn = document.getElementById("addDeliveryAddressButton");
+                var cancelBtn = document.getElementById("cancelAddDeliveryAddressButton");
+                var findBtn = document.getElementById("findDeliveryAddressButton");
+                cancelBtn.style.display = "block"; //style中的display属性
+                findBtn.style.display = "block"; //style中的display属性
+                addBtn.style.display = "none"; //style中的display属性
+            }
+
+            function cancelAddDeliveryAddress() {
+
+                $('#receiverName').val("").attr("readOnly", false);
+                $('#receiverPhone').val("").attr("readOnly", false);
+                $('#residenceName').val("").attr("readOnly", false);
+                $('#estateInfo').val("").attr("readOnly", false);
+                $('#detailedAddress').val("").attr("readOnly", false);
+                $('#deliveryId').val(-1);
+
+                jQuery('#province').attr("disabled", false);
+                jQuery('#city').attr("disabled", false);
+                jQuery('#county').attr("disabled", false);
+                jQuery('#street').attr("disabled", false);
+
+
+                $("#writeDeliveryAddress").hide();
+                $("#goAddDeliveryAddressType").val(1);
+                $("#deliveryId").val(-1);
+                var addBtn = document.getElementById("addDeliveryAddressButton");
+                var cancelBtn = document.getElementById("cancelAddDeliveryAddressButton");
+                var findBtn = document.getElementById("findDeliveryAddressButton");
+                var manuallyEnterBtn = document.getElementById("manuallyEnterDeliveryAddressButton");
+                cancelBtn.style.display = "none"; //style中的display属性
+                findBtn.style.display = "none"; //style中的display属性
+                addBtn.style.display = "block"; //style中的display属性
+                manuallyEnterBtn.style.display = "none"; //style中的display属性
+            }
+
+            function findStoreList() {
+//                $("#storeId").empty()
+                var store = "";
+                $.ajax({
+                    url: '/rest/stores/findStoresListByLoginAdministrator/fit',
+                    method: 'GET',
+                    error: function () {
+                        clearTimeout($global.timer);
+                        $loading.close();
+                        $global.timer = null;
+                        $notify.danger('网络异常，请稍后重试或联系管理员');
+                    },
+                    success: function (result) {
+                        clearTimeout($global.timer);
+                        $.each(result, function (i, item) {
+                            store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
+                        })
+                        $("#storeId").append(store);
+                        $('#storeId').selectpicker('refresh');
+                        $('#storeId').selectpicker('render');
+                        findOrderCreator();
+                    }
+                });
+            }
+
+
+            //获取城市列表
+            function findProvince() {
+                var province = "";
+                var city = "";
+                var county = "";
+                var street = "";
+                $("#province").empty();
+                $("#city").empty();
+                $("#county").empty();
+                $("#street").empty();
+                $.ajax({
+                    url: '/rest/admin/fit/place/order/find/areaManagement',
+                    method: 'GET',
+                    error: function () {
+                        clearTimeout($global.timer);
+                        $loading.close();
+                        $global.timer = null;
+                        $notify.danger('网络异常，请稍后重试或联系管理员');
+                    },
+                    success: function (result) {
+                        clearTimeout($global.timer);
+                        $.each(result, function (i, item) {
+                            if (item.level == 2) {
+                                province += "<option value=" + item.code + ">" + item.areaName + "</option>";
+                            }
+                            if (item.level == 3 && item.parentCode == '510000') {
+                                city += "<option value=" + item.code + ">" + item.areaName + "</option>";
+                            }
+                            if (item.level == 4 && item.parentCode == '510100') {
+                                county += "<option value=" + item.code + ">" + item.areaName + "</option>";
+                            }
+                            if (item.level == 5 && item.parentCode == '510104') {
+                                street += "<option value=" + item.areaName + ">" + item.areaName + "</option>";
+                            }
+                        })
+                        $("#province").append(province);
+                        $("#city").append(city);
+                        $("#county").append(county);
+                        $("#street").append(street);
+                    }
+                });
+            }
+
+
+            function conditionalQueryAreaManagement(value, mag) {
+                if (1 == mag) {
+                    var city = "";
+                    var county = "";
+                    var street = "";
+                    $.ajax({
+                        url: '/rest/admin/fit/place/order/find/areaManagement/1/' + value,
+                        method: 'GET',
+                        error: function () {
+                            clearTimeout($global.timer);
+                            $loading.close();
+                            $global.timer = null;
+                            $notify.danger('网络异常，请稍后重试或联系管理员');
+                        },
+                        success: function (result) {
+                            clearTimeout($global.timer);
+                            $.each(result, function (i, item) {
+                                if (item.level == 3) {
+                                    city += "<option value=" + item.code + ">" + item.areaName + "</option>";
+                                }
+                                if (item.level == 4) {
+                                    county += "<option value=" + item.code + ">" + item.areaName + "</option>";
+                                }
+                                if (item.level == 5) {
+                                    street += "<option value=" + item.areaName + ">" + item.areaName + "</option>";
+                                }
+                            })
+                            document.getElementById('city').innerHTML = "";
+                            document.getElementById('county').innerHTML = "";
+                            document.getElementById('street').innerHTML = "";
+                            $("#city").append(city);
+                            $("#county").append(county);
+                            $("#street").append(street);
+                            $('#city').selectpicker('refresh');
+                            $('#city').selectpicker('render');
+                            $('#county').selectpicker('refresh');
+                            $('#county').selectpicker('render');
+                            $('#street').selectpicker('refresh');
+                            $('#street').selectpicker('render');
+                        }
+                    });
+                } else if (2 == mag) {
+                    var county = "";
+                    var street = "";
+                    $.ajax({
+                        url: '/rest/admin/fit/place/order/find/areaManagement/2/' + value,
+                        method: 'GET',
+                        error: function () {
+                            clearTimeout($global.timer);
+                            $loading.close();
+                            $global.timer = null;
+                            $notify.danger('网络异常，请稍后重试或联系管理员');
+                        },
+                        success: function (result) {
+                            clearTimeout($global.timer);
+                            $.each(result, function (i, item) {
+                                if (item.level == 4) {
+                                    county += "<option value=" + item.code + ">" + item.areaName + "</option>";
+                                }
+                                if (item.level == 5) {
+                                    street += "<option value=" + item.areaName + ">" + item.areaName + "</option>";
+                                }
+                            })
+                            document.getElementById('county').innerHTML = "";
+                            document.getElementById('street').innerHTML = "";
+                            $("#county").append(county);
+                            $("#street").append(street);
+                            $('#county').selectpicker('refresh');
+                            $('#county').selectpicker('render');
+                            $('#street').selectpicker('refresh');
+                            $('#street').selectpicker('render');
+                        }
+                    });
+                } else if (3 == mag) {
+                    var street = "";
+                    $.ajax({
+                        url: '/rest/admin/fit/place/order/find/areaManagement/2/' + value,
+                        method: 'GET',
+                        error: function () {
+                            clearTimeout($global.timer);
+                            $loading.close();
+                            $global.timer = null;
+                            $notify.danger('网络异常，请稍后重试或联系管理员');
+                        },
+                        success: function (result) {
+                            clearTimeout($global.timer);
+                            $.each(result, function (i, item) {
+                                if (item.level == 5) {
+                                    street += "<option value=" + item.areaName + ">" + item.areaName + "</option>";
+                                }
+                            })
+                            document.getElementById('street').innerHTML = "";
+                            $("#street").append(street);
+                            $('#street').selectpicker('refresh');
+                            $('#street').selectpicker('render');
+                        }
+                    });
+                }
+            }
 
             backTop.onclick = function () {
                 target.scrollIntoView();
             }
 
             function findCategory(categoryCode) {
-                document.getElementById("categoryType").value=categoryCode;
-                document.getElementById("categoryString").value='';
-                document.getElementById("brandString").value='';
-                document.getElementById("specificationString").value='';
-                document.getElementById("goodsTypeString").value='';
+                document.getElementById("categoryType").value = categoryCode;
+                document.getElementById("categoryString").value = '';
+                document.getElementById("brandString").value = '';
+                document.getElementById("specificationString").value = '';
+                document.getElementById("goodsTypeString").value = '';
+                var guideId = $('#guideId').val();
 
                 var category = '';
                 var goods = '';
@@ -409,7 +846,8 @@
                     method: 'GET',
                     data: {
                         categoryCode: categoryCode,
-                        id: photoId
+                        id: photoId,
+                        guideId: guideId
                     },
                     error: function () {
                         clearTimeout($global.timer);
@@ -445,7 +883,6 @@
                         $("#goodsType").html(goodsType);
 
 
-
                         $.each(result.content.goods, function (i, item) {
                             goods += '<div class="col-sm-12 invoice-col">';
                             goods += '<div class="col-sm-3 invoice-col"><img src="' + item.coverImageUri + '" style="height: 80px;width: 80px;" alt="First slide"></div>';
@@ -472,12 +909,13 @@
             }
 
             function findGoodsByCategoryId(categoryId) {
-                document.getElementById("categoryString").value=categoryId;
+                document.getElementById("categoryString").value = categoryId;
                 var categoryType = $('#categoryType').val();
 //                var categoryString = $('#categoryString').val();
                 var brandString = $('#brandString').val();
                 var specificationString = $('#specificationString').val();
                 var goodsTypeString = $('#goodsTypeString').val();
+                var guideId = $('#guideId').val();
 
                 var goods = '';
                 var photoId = $('#photoId').val();
@@ -496,10 +934,11 @@
                     data: {
                         categoryId: categoryId,
                         id: photoId,
-                        categoryType:categoryType,
-                        brandString:brandString,
-                        specificationString:specificationString,
-                        goodsTypeString:goodsTypeString
+                        guideId: guideId,
+                        categoryType: categoryType,
+                        brandString: brandString,
+                        specificationString: specificationString,
+                        goodsTypeString: goodsTypeString
                     },
                     error: function () {
                         clearTimeout($global.timer);
@@ -536,7 +975,7 @@
 
 
             function findGoodsByBrandId(brandId) {
-                document.getElementById("brandString").value=brandId;
+                document.getElementById("brandString").value = brandId;
                 var categoryType = $('#categoryType').val();
                 var categoryId = $('#categoryString').val();
 //                var brandString = $('#brandString').val();
@@ -556,10 +995,10 @@
                     data: {
                         categoryId: categoryId,
                         id: photoId,
-                        categoryType:categoryType,
-                        brandString:brandId,
-                        specificationString:specificationString,
-                        goodsTypeString:goodsTypeString
+                        categoryType: categoryType,
+                        brandString: brandId,
+                        specificationString: specificationString,
+                        goodsTypeString: goodsTypeString
                     },
                     error: function () {
                         clearTimeout($global.timer);
@@ -596,7 +1035,7 @@
 
 
             function findGoodsBySpecification(specificationString) {
-                document.getElementById("specificationString").value=specificationString;
+                document.getElementById("specificationString").value = specificationString;
                 var categoryType = $('#categoryType').val();
                 var categoryId = $('#categoryString').val();
                 var brandString = $('#brandString').val();
@@ -616,10 +1055,10 @@
                     data: {
                         categoryId: categoryId,
                         id: photoId,
-                        categoryType:categoryType,
-                        brandString:brandString,
-                        specificationString:specificationString,
-                        goodsTypeString:goodsTypeString
+                        categoryType: categoryType,
+                        brandString: brandString,
+                        specificationString: specificationString,
+                        goodsTypeString: goodsTypeString
                     },
                     error: function () {
                         clearTimeout($global.timer);
@@ -655,15 +1094,8 @@
             }
 
 
-
-
-
-
-
-
-
             function findGoodsBytypeId(typeId) {
-                document.getElementById("goodsTypeString").value=typeId;
+                document.getElementById("goodsTypeString").value = typeId;
                 var categoryType = $('#categoryType').val();
                 var categoryId = $('#categoryString').val();
                 var brandString = $('#brandString').val();
@@ -683,10 +1115,10 @@
                     data: {
                         categoryId: categoryId,
                         id: photoId,
-                        categoryType:categoryType,
-                        brandString:brandString,
-                        specificationString:specificationString,
-                        goodsTypeString:typeId
+                        categoryType: categoryType,
+                        brandString: brandString,
+                        specificationString: specificationString,
+                        goodsTypeString: typeId
                     },
                     error: function () {
                         clearTimeout($global.timer);
@@ -720,18 +1152,6 @@
                     }
                 });
             }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
             // 改变商品数量的方法
@@ -861,6 +1281,31 @@
                     },
                     verbose: false
                 }).on('success.form.bv', function (e) {
+                    var residenceName = $("#residenceName").val();
+                    var estateInfo = $("#estateInfo").val();
+                    var detailedAddress = $("#detailedAddress").val();
+
+
+                    var estateInfoLength = getInputLength(estateInfo);
+                    var residenceNameLength = getInputLength(residenceName);
+                    var detailedAddressLength = getInputLength(detailedAddress);
+
+                    if (estateInfoLength > 50) {
+                        $notify.danger('楼盘名称长度超长，请重新输入！');
+                        $('#form').bootstrapValidator('disableSubmitButtons', false);
+                        return false;
+                    }
+                    if (detailedAddressLength > 200) {
+                        $notify.danger('详细地址长度超长，请重新输入！');
+                        $('#form').bootstrapValidator('disableSubmitButtons', false);
+                        return false;
+                    }
+                    if (residenceNameLength > 50) {
+                        $notify.danger('小区名长度超长，请重新输入！');
+                        $('#form').bootstrapValidator('disableSubmitButtons', false);
+                        return false;
+                    }
+
                     e.preventDefault();
                     var $form = $(e.target);
                     var origin = $form.serializeArray();
@@ -925,6 +1370,175 @@
                         }
                     }
                 });
+            }
+
+
+            function findOrderCreator() {
+                resetAddress();
+                var storeId = $("#storeId").val();
+                if (null == storeId || -1 == storeId) {
+                    return false;
+                }
+                findCategory("WATER");
+                $("#guideId").empty();
+                var guide;
+                $.ajax({
+                    url: '/rest/employees/findSellerByStoreId/' + storeId,
+                    method: 'GET',
+                    error: function () {
+                        clearTimeout($global.timer);
+                        $loading.close();
+                        $global.timer = null;
+                        $notify.danger('网络异常，请稍后重试或联系管理员');
+                    },
+                    success: function (result) {
+                        clearTimeout($global.timer);
+                        $.each(result, function (i, item) {
+                            guide += "<option value=" + item.id + ">" + item.name + "</option>";
+                        })
+                        $("#guideId").append(guide);
+                        $('#guideId').selectpicker('refresh');
+                    }
+                });
+            }
+
+            function getInputLength(str) {
+                return str.replace(/[\u0391-\uFFE5]/g, "aa").length;
+            }
+
+            function findDeliveryAddress(url) {
+                var userMobile = $('#userMobile').text();
+                var identityType = $('#identityType').text();
+                var sellerAddressConditions = $("#sellerAddressConditions").val();
+                var guideId = $("#guideId").val();
+                $("#addressDataGrid").bootstrapTable('destroy');
+                $grid.init($('#addressDataGrid'), $('#addressToolbar'), url, 'get', false, function (params) {
+                    return {
+                        offset: params.offset,
+                        size: params.limit,
+                        keywords: params.search,
+                        userMobile: userMobile,
+                        identityType: identityType,
+                        guideId:guideId,
+                        sellerAddressConditions: sellerAddressConditions
+                    }
+                }, [{
+                    field: 'id',
+                    title: 'ID',
+                    align: 'center',
+                    visible: false
+                }, {
+                    field: 'deliveryName',
+                    title: '收货人姓名',
+                    align: 'center',
+                    events: {
+                        'click .scan': function (e, value, row) {
+                            filling(row);
+                        }
+                    },
+                    formatter: function (value) {
+                        return '<a class="scan" href="#' + value + '">' + value + '</a>';
+                    }
+                }, {
+                    field: 'deliveryPhone',
+                    title: '收货人号码',
+                    align: 'center'
+//
+//                    events: {
+//                        'click .scan': function (e, value, row) {
+//                            showSeller(row.empId, value, row.mobile, row.storeType, row.storeCode, row.balance);
+//                        }
+//                    },
+//                    formatter: function (value) {
+//                        if (null == value) {
+//                            return '<a class="scan" href="#">' + '未知' + '</a>';
+//                        } else {
+//                            return '<a class="scan" href="#' + value + '">' + value + '</a>';
+//                        }
+//                    }
+                }, {
+                    field: 'deliveryProvince',
+                    title: '省份',
+                    align: 'center'
+                }, {
+                    field: 'deliveryCity',
+                    title: '城市',
+                    align: 'center'
+                }, {
+                    field: 'deliveryCounty',
+                    title: '区/县',
+                    align: 'center'
+//                    visible: false
+                }, {
+                    field: 'deliveryStreet',
+                    title: '街道',
+                    align: 'center'
+                }, {
+                    field: 'villageName',
+                    title: '小区',
+                    align: 'center'
+                }, {
+                    field: 'detailedAddress',
+                    title: '详细地址',
+                    align: 'center'
+                }, {
+                    field: 'estateInfo',
+                    title: '楼盘信息',
+                    align: 'center'
+                }
+                ]);
+            }
+
+            function openAddressModal(url) {
+                //查询地址列表
+                findDeliveryAddress(url);
+                $("#customerModalConfirm").unbind('click').click(function () {
+                });
+                $('#selectAddressDataGrid').modal('show');
+            }
+
+            function filling(row) {
+                $('#receiverName').val(row.deliveryName).attr("readOnly", "true");
+                $('#receiverPhone').val(row.deliveryPhone).attr("readOnly", "true");
+                $('#residenceName').val(row.villageName).attr("readOnly", "true");
+                $('#estateInfo').val(row.estateInfo).attr("readOnly", "true");
+                $('#detailedAddress').val(row.detailedAddress).attr("readOnly", "true");
+
+                $('#deliveryId').val(row.id);
+
+
+                jQuery('#province').append("<option value='" + row.deliveryProvince + "' selected='selected'>" + row.deliveryProvince + "</option>").attr("disabled", true);
+                jQuery('#city').append("<option value='" + row.deliveryCity + "' selected='selected'>" + row.deliveryCity + "</option>").attr("disabled", true);
+                jQuery('#county').append("<option value='" + row.deliveryCounty + "' selected='selected'>" + row.deliveryCounty + "</option>").attr("disabled", true);
+                jQuery('#street').append("<option value='" + row.deliveryStreet + "' selected='selected'>" + row.deliveryStreet + "</option>").attr("disabled", true);
+
+                var findBtn = document.getElementById("findDeliveryAddressButton");
+                var manuallyEnterBtn = document.getElementById("manuallyEnterDeliveryAddressButton");
+                findBtn.style.display = "none"; //style中的display属性
+                manuallyEnterBtn.style.display = "block"; //style中的display属性
+
+                $('#selectAddressDataGrid').modal('hide');
+            }
+
+            function manuallyEnterAddress() {
+                $('#receiverName').val("").attr("readOnly", false);
+                $('#receiverPhone').val("").attr("readOnly", false);
+                $('#residenceName').val("").attr("readOnly", false);
+                $('#estateInfo').val("").attr("readOnly", false);
+                $('#detailedAddress').val("").attr("readOnly", false);
+                $('#deliveryId').val(-1);
+
+                jQuery('#province').attr("disabled", false);
+                jQuery('#city').attr("disabled", false);
+                jQuery('#county').attr("disabled", false);
+                jQuery('#street').attr("disabled", false);
+
+                findProvince();
+                $("#deliveryId").val(-1);
+                var findBtn = document.getElementById("findDeliveryAddressButton");
+                var manuallyEnterBtn = document.getElementById("manuallyEnterDeliveryAddressButton");
+                findBtn.style.display = "block"; //style中的display属性
+                manuallyEnterBtn.style.display = "none"; //style中的display属性
             }
         </script>
     </section>

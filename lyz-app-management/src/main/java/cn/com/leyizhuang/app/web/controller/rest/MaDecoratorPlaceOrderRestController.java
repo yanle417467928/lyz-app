@@ -186,7 +186,8 @@ public class MaDecoratorPlaceOrderRestController {
 
     @RequestMapping(value = "/submit/goods", method = RequestMethod.POST)
     public ResultDTO<Object> submitOrderGoods(Long storeId, Long guideId, String remark, String goodsDetails,String receiverName,String receiverPhone,String province,
-                                              String city,String county,String street,String residenceName,String estateInfo,String detailedAddress) {
+                                              String city,String county,String street,String residenceName,String estateInfo,
+                                              String detailedAddress,Long goAddDeliveryAddressType,Long deliveryId) {
         ResultDTO<Object> resultDTO;
         System.out.println("进入方法");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -196,31 +197,33 @@ public class MaDecoratorPlaceOrderRestController {
             AppEmployee employee = employeeService.findById(guideId);
             if (null != employee) {
 
-                //*************************************增加地址信息**************************************
-               String provinceName = deliveryAddressService.findAreaNameByCode(province);
-               String cityName = deliveryAddressService.findAreaNameByCode(city);
-               String countyName = deliveryAddressService.findAreaNameByCode(county);
+                Long deliveryIds = deliveryId;
+                if (0 == goAddDeliveryAddressType && (null == deliveryId || -1 == deliveryId)) {
+                    //*************************************增加地址信息**************************************
+                    String provinceName = deliveryAddressService.findAreaNameByCode(province);
+                    String cityName = deliveryAddressService.findAreaNameByCode(city);
+                    String countyName = deliveryAddressService.findAreaNameByCode(county);
 
-                DeliveryAddressDO deliveryAddressDO = new DeliveryAddressDO();
-                deliveryAddressDO.setReceiver(receiverName);
-                deliveryAddressDO.setReceiverPhone(receiverPhone);
-                deliveryAddressDO.setDeliveryProvince(provinceName);
-                deliveryAddressDO.setDeliveryCity(cityName);
-                deliveryAddressDO.setDeliveryCounty(countyName);
-                deliveryAddressDO.setDeliveryStreet(street);
-                deliveryAddressDO.setDetailedAddress(detailedAddress);
-                deliveryAddressDO.setResidenceName(residenceName);
-                deliveryAddressDO.setUserId(employee.getEmpId());
-                deliveryAddressDO.setIdentityType(employee.getIdentityType());
-                deliveryAddressDO.setStatus(Boolean.TRUE);
-                deliveryAddressDO.setIsDefault(Boolean.FALSE);
-                deliveryAddressDO.setEstateInfo(estateInfo);
+                    DeliveryAddressDO deliveryAddressDO = new DeliveryAddressDO();
+                    deliveryAddressDO.setReceiver(receiverName);
+                    deliveryAddressDO.setReceiverPhone(receiverPhone);
+                    deliveryAddressDO.setDeliveryProvince(provinceName);
+                    deliveryAddressDO.setDeliveryCity(cityName);
+                    deliveryAddressDO.setDeliveryCounty(countyName);
+                    deliveryAddressDO.setDeliveryStreet(street);
+                    deliveryAddressDO.setDetailedAddress(detailedAddress);
+                    deliveryAddressDO.setResidenceName(residenceName);
+                    deliveryAddressDO.setUserId(employee.getEmpId());
+                    deliveryAddressDO.setIdentityType(employee.getIdentityType());
+                    deliveryAddressDO.setStatus(Boolean.TRUE);
+                    deliveryAddressDO.setIsDefault(Boolean.FALSE);
+                    deliveryAddressDO.setEstateInfo(estateInfo);
 
-                deliveryAddressService.maAddDeliveryAddress(deliveryAddressDO);
-                //*******************************************************************************************
-
-                //获取地址id
-                Long deliveryId = deliveryAddressDO.getId();
+                    deliveryAddressService.maAddDeliveryAddress(deliveryAddressDO);
+                    //获取地址id
+                    deliveryIds = deliveryAddressDO.getId();
+                    //*******************************************************************************************
+                }
 
                 List<GoodsSkuQtyParam> goodsList = objectMapper.readValue(goodsDetails, goodsSimpleInfo);
                 log.info("{}", goodsList);
@@ -252,7 +255,7 @@ public class MaDecoratorPlaceOrderRestController {
                                     materialListDOTemp.setUserId(guideId);
                                     materialListDOTemp.setIdentityType(employee.getIdentityType());
                                     materialListDOTemp.setRemark(remark);
-                                    materialListDOTemp.setDeliveryId(deliveryId);
+                                    materialListDOTemp.setDeliveryId(deliveryIds);
                                     materialListDOTemp.setQty(goodsList.get(i).getQty());
                                     materialListDOTemp.setMaterialListType(MaterialListType.NORMAL);
                                     materialListSave.add(materialListDOTemp);
@@ -262,7 +265,7 @@ public class MaDecoratorPlaceOrderRestController {
                                 materialListDOTemp.setUserId(guideId);
                                 materialListDOTemp.setIdentityType(employee.getIdentityType());
                                 materialListDOTemp.setRemark(remark);
-                                materialListDOTemp.setDeliveryId(deliveryId);
+                                materialListDOTemp.setDeliveryId(deliveryIds);
                                 materialListDOTemp.setQty(goodsList.get(i).getQty());
                                 materialListDOTemp.setMaterialListType(MaterialListType.NORMAL);
                                 materialListSave.add(materialListDOTemp);

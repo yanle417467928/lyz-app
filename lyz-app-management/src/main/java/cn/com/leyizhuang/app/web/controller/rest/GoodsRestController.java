@@ -471,6 +471,67 @@ public class GoodsRestController extends BaseRestController {
             keywords = null;
         }
 
+//        //判断会员身份
+//        CustomerRankInfoResponse customerRankInfoResponse = appCustomerService.findCusRankinfoByCusId(cusId);
+
+        //获取用户登录名
+        String userName = this.getShiroUser().getLoginName();
+        size = getSize(size);
+        Integer page = getPage(offset, size);
+        PageHelper.startPage(page, size);
+        List<MaBuyProductCouponGoodsResponse> goodsResponses = null;
+
+//        if (customerRankInfoResponse == null){
+//            // 非专供会员 只能找到门店下非专供产品
+            goodsResponses = goodsService.findGoodsForBuyCoupon(storeId,cusId,sellerId,keywords,null);
+//        }else{
+//            // 校验 门店 导购信息是否准确
+//            AppCustomer appCustomer = null;
+//            try {
+//                appCustomer = appCustomerService.findById(cusId);
+//            } catch (UnsupportedEncodingException e) {
+//                e.printStackTrace();
+//                logger.info("购买产品券失败，到不到id："+cusId+"顾客找不到");
+//            }
+//
+//            Long cusStoreId = appCustomer.getStoreId();
+//            Long cusSellerId = appCustomer.getSalesConsultId();
+//
+//            if (cusStoreId.equals(storeId) && cusSellerId.equals(sellerId)){
+//               String priceType = customerRankInfoResponse.getRankCode();
+//
+//                goodsResponses = goodsService.findGoodsForBuyCoupon(storeId,cusId,sellerId,keywords,priceType);
+//            }else{
+//                goodsResponses = goodsService.findGoodsForBuyCoupon(storeId,cusId,sellerId,keywords,null);
+//            }
+
+//        }
+
+        PageInfo<MaBuyProductCouponGoodsResponse> goodsResponseListPageInfo = new PageInfo<>(goodsResponses);
+        List<MaBuyProductCouponGoodsResponse> goodsResponseList = goodsResponseListPageInfo.getList();
+        logger.warn("restStoreGoodsPageGird ,门店商品信息分页查询成功", goodsResponseList.size());
+        return new GridDataVO<MaBuyProductCouponGoodsResponse>().transform(goodsResponseList, goodsResponseListPageInfo.getTotal());
+    }
+
+    /**
+     * 后台买专供券专用
+     * @param offset
+     * @param size
+     * @param keywords
+     * @param storeId
+     * @return
+     */
+    @GetMapping(value = "/page/grid/buy/zg/coupon")
+    public GridDataVO<MaBuyProductCouponGoodsResponse> restStoreBuyZGCouponGoodsPageGird(Integer offset, Integer size,
+                                                                                       Long storeId, Long cusId, Long sellerId,
+                                                                                       String keywords) {
+        logger.info("restStoreBuyZGCouponGoodsPageGird 门店专供商品信息分页查询,入参 offset:{},size:{},keywords:{},storeId:{},cusId:{},sellerId:{}",
+                offset, size, storeId,cusId,sellerId);
+
+        if (StringUtils.isBlank(keywords)){
+            keywords = null;
+        }
+
         //判断会员身份
         CustomerRankInfoResponse customerRankInfoResponse = appCustomerService.findCusRankinfoByCusId(cusId);
 
@@ -482,8 +543,8 @@ public class GoodsRestController extends BaseRestController {
         List<MaBuyProductCouponGoodsResponse> goodsResponses = null;
 
         if (customerRankInfoResponse == null){
-            // 非专供会员 只能找到门店下非专供产品
-            goodsResponses = goodsService.findGoodsForBuyCoupon(storeId,cusId,sellerId,keywords,null);
+            logger.info("restStoreBuyZGCouponGoodsPageGird   该顾客不是专供会员！");
+            return null;
         }else{
             // 校验 门店 导购信息是否准确
             AppCustomer appCustomer = null;
@@ -491,25 +552,24 @@ public class GoodsRestController extends BaseRestController {
                 appCustomer = appCustomerService.findById(cusId);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
-                logger.info("购买产品券失败，到不到id："+cusId+"顾客找不到");
+                logger.info("restStoreBuyZGCouponGoodsPageGird    购买产品券失败，到不到id："+cusId+"顾客找不到");
             }
-
             Long cusStoreId = appCustomer.getStoreId();
             Long cusSellerId = appCustomer.getSalesConsultId();
 
             if (cusStoreId.equals(storeId) && cusSellerId.equals(sellerId)){
-               String priceType = customerRankInfoResponse.getRankCode();
-
-                goodsResponses = goodsService.findGoodsForBuyCoupon(storeId,cusId,sellerId,keywords,priceType);
+                String priceType = customerRankInfoResponse.getRankCode();
+                goodsResponses = goodsService.findZGMaStoreGoodsByStoreIdAndPricceType(storeId,cusId,sellerId,keywords,priceType);
             }else{
-                goodsResponses = goodsService.findGoodsForBuyCoupon(storeId,cusId,sellerId,keywords,null);
+                logger.info("restStoreBuyZGCouponGoodsPageGird   该顾客对应所选导购或所选门店错误！");
+               return null;
             }
 
         }
 
         PageInfo<MaBuyProductCouponGoodsResponse> goodsResponseListPageInfo = new PageInfo<>(goodsResponses);
         List<MaBuyProductCouponGoodsResponse> goodsResponseList = goodsResponseListPageInfo.getList();
-        logger.warn("restStoreGoodsPageGird ,门店商品信息分页查询成功", goodsResponseList.size());
+        logger.warn("restStoreBuyZGCouponGoodsPageGird ,门店专供商品信息分页查询成功", goodsResponseList.size());
         return new GridDataVO<MaBuyProductCouponGoodsResponse>().transform(goodsResponseList, goodsResponseListPageInfo.getTotal());
     }
 

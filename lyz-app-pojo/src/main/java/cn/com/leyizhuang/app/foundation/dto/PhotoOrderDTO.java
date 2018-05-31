@@ -19,7 +19,46 @@ public class PhotoOrderDTO implements Serializable {
     //拍照下单ID
     private Long photoId;
 
+    //门店id
+    private Long storeId;
+
+    //下单导购id
+    private Long guideId;
+
+    //收货人姓名
+    private String receiverName;
+
+    //收货人电话
+    private String receiverPhone;
+
+    //省
+    private String province;
+
+    //市
+    private String city;
+
+    //区/县
+    private String county;
+
+    //街道
+    private String street;
+
+    //小区名
+    private String residenceName;
+
+    //楼盘名
+    private String estateInfo;
+
+    //详细地址
+    private String detailedAddress;
+
+    //地址id
+    private Long deliveryId;
+
     //商品列表
     private List<MaterialListDO> combList;
+
+    //是否填写收货地址
+    private Long goAddDeliveryAddressType;
 
 }

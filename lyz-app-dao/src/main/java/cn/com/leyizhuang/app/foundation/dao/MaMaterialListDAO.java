@@ -19,6 +19,6 @@ public interface MaMaterialListDAO {
 
     void batchSave(List<MaterialListDO> materialLists);
 
-    void modifyQty(@Param("id") Long id, @Param("qty") Integer qty);
+    void modifyQty(@Param("id") Long id, @Param("qty") Integer qty, @Param("deliveryId")Long deliveryId);
 
 }
