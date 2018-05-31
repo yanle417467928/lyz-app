@@ -2281,6 +2281,7 @@
 
     <select id="findArrearsList" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.ArrearsReportDO">
 
+      (
         SELECT
         s.city as 'cityName',
         s.store_code as 'storeCode',
@@ -2340,9 +2341,10 @@
         </choose>
         GROUP BY o.ord_no
         ORDER BY storeName, name, createTime
-
+        )
         UNION ALL
 
+        (
         SELECT
         s.city as 'cityName',
         s.store_code as 'storeCode',
@@ -2402,6 +2404,7 @@
         </choose>
         GROUP BY o.ord_no
         ORDER BY storeName, name, createTime
+        )
 
     </select>
 
