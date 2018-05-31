@@ -1222,7 +1222,7 @@ public class AppActServiceImpl implements AppActService {
             }
         }
 
-        if (baseDO.getBaseType().equals("ZGFRIST")){
+        if (baseDO.getBaseType().equals(ActBaseType.ZGFRIST)){
             /** 专供首单赠送产品数量设置 默认 1 **/
             baseDO.setGiftChooseNumber(1);
             baseDO.setIsGoodsOptionalQty(false);

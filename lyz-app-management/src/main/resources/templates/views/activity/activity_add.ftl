@@ -153,7 +153,7 @@
                                     促销范围
                                 </label>
                                 <select name="scope" id="scope" class="form-control select">
-                                    <option value="All">全部</option>
+                                    <option value="ALL">全部</option>
                                     <option value="GOODS">买商品</option>
                                     <option value="COUPON">买券</option>
                                 </select>

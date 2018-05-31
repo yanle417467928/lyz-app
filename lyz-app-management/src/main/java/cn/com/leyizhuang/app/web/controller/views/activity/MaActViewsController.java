@@ -56,6 +56,10 @@ public class MaActViewsController extends BaseController{
     @GetMapping("/add/{id}")
     public String activityAdd(@PathVariable Long id, ModelMap map){
         if(id == 0){
+            // 获取专供类型
+            List<RankClassification> rankClassificationList = maCustomerService.findRankAll();
+            map.addAttribute("rankScopeList",rankClassificationList);
+
             return "/views/activity/activity_add";
         }else{
             appActService.getModelMapByActBaseId(map,id);
