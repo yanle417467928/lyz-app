@@ -688,7 +688,7 @@
             WHERE NOT exists(
                     SELECT 1
                     FROM inter_ate_return_order_goods_inf
-                    WHERE order_line_id = #{orderLineId}
+                    WHERE order_line_id = #{orderLineId} and rt_header_id = #{rtHeaderId}
             )
     </insert>
 
