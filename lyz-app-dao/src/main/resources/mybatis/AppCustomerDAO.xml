@@ -712,7 +712,8 @@
             status,
             goods_line_id goodsLineId,
             disable_time,
-            last_update_time
+            last_update_time,
+            id
         FROM cus_customer_product_coupon
         WHERE get_ord_no = #{orderNumber}
         AND (effective_end_time IS NULL OR effective_end_time &gt; NOW())
