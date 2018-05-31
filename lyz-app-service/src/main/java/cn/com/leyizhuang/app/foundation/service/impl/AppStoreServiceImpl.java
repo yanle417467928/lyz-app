@@ -400,6 +400,15 @@ public class AppStoreServiceImpl implements AppStoreService {
     }
 
     @Override
+    public List<AppStore> findFitStoreListByLoginAdministrator() {
+        ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
+        if (null != shiroUser) {
+            return storeDAO.findFitStoreListByLoginAdministrator(shiroUser.getId());
+        }
+        return null;
+    }
+
+    @Override
     public StorePreDeposit findStorePreDepositByUserIdAndIdentityType(Long userId, Integer identityType) {
         if (null != userId && null != identityType) {
             return storeDAO.findStorePreDepositByUserIdAndIdentityType(userId, identityType);

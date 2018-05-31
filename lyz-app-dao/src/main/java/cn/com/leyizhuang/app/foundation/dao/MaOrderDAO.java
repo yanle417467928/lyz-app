@@ -200,7 +200,7 @@ public interface MaOrderDAO {
 
     List<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByInfo(@Param("info") String info,@Param("list") List<Long> storeIds);
 
-    void auditOrderStatus(@Param(value = "orderNumber")String orderNumber,@Param(value = "status")String status);
+    void auditOrderStatus(@Param(value = "orderNumber")String orderNumber,@Param(value = "status")String status,@Param(value = "auditId") Long auditId);
 
     Long querySellerIdByOrderNumber(String orderNumber);
 

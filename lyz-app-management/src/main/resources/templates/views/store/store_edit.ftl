@@ -120,6 +120,9 @@
                                     <option value="4" <#if store?? && store.storeType?? && store.storeType=="FXCK" >
                                             selected</#if>>分销仓库
                                     </option>
+                                    <option value="5" <#if store?? && store.storeType?? && store.storeType=="FX" >
+                                            selected</#if>>分销
+                                    </option>
                                 </select>
                             </div>
                         </div>

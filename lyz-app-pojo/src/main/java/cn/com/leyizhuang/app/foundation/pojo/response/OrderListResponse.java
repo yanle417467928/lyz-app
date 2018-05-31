@@ -77,4 +77,9 @@ public class OrderListResponse {
      */
     private String shippingAddress;
 
+    /**
+     *  楼盘信息
+     */
+    private String estateInfo;
+
 }

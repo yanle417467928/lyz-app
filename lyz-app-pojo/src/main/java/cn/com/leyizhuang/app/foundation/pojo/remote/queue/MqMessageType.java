@@ -25,7 +25,9 @@ public enum MqMessageType {
     ORDER_RECEIVE("ORDER_RECEIVE", "自提单发货"),
     RETURN_ORDER_RECEIPT("RETURN_ORDER_RECEIPT", "自提单退单收货"),
     WITHDRAW_REFUND("WITHDRAW_REFUND", "提现退款"),
-    CREDIT_RECHARGE_RECEIPT("CREDIT_RECHARGE_RECEIPT", "信用金充值");
+    CREDIT_RECHARGE_RECEIPT("CREDIT_RECHARGE_RECEIPT", "信用金充值"),
+    KD_SELL_SEND("KD_SELL_SEND", "金蝶销退货发送");
+
 
     private String value;
 

@@ -688,7 +688,7 @@
             WHERE NOT exists(
                     SELECT 1
                     FROM inter_ate_return_order_goods_inf
-                    WHERE order_line_id = #{orderLineId}
+                    WHERE order_line_id = #{orderLineId} and rt_header_id = #{rtHeaderId}
             )
     </insert>
 
@@ -1236,5 +1236,259 @@
         FROM inter_ate_recharge_receipt_inf
         WHERE receipt_number = #{receiptNumber}
     </select>
+
+
+    <select id="getOrderKdSellByMainOrderNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.KdSell">
+        SELECT 'S'              sell_type,
+               CASE s.fit_compay_type
+               WHEN 'CASH'
+                   THEN
+                       'Y'
+               ELSE
+                   'N'
+               END AS           is_smal_fit,
+               o.ord_no         main_order_number,
+               i.order_number   order_number,
+               o.store_code     store_code,
+               ss.store_code    zy_store_code,
+               og.sku,
+               g.goods_unit     unit,
+               og.order_qty     qty,
+               'N'              is_product_coupon,
+               CASE og.goods_line_type
+               WHEN 'PRESENT'
+                   THEN
+                       'Y'
+               ELSE
+                   'N'
+               END AS           is_present,
+               og.return_price  price,
+               CASE s.fit_compay_type
+               WHEN 'CASH'
+                   THEN
+                       o.sales_manager_id
+               WHEN 'MONTHLY'
+                   THEN
+                       ''
+               ELSE
+                   o.sales_consult_id
+               END              shoppers_id,
+               os.shipping_time handle_time,
+               i.sob_id         sob_id
+        FROM inter_ate_order_base_inf i
+            LEFT JOIN inter_ate_order_goods_inf ogi ON i.order_number = ogi.order_number
+            LEFT JOIN ord_base_info o ON o.ord_no = i.main_order_number
+            LEFT JOIN st_store s ON o.store_id = s.store_id
+            LEFT JOIN st_store ss ON o.sales_manager_store_id = ss.store_id
+            LEFT JOIN gds_goods g ON ogi.sku = g.sku
+            LEFT JOIN ord_goods_info og ON ogi.main_order_line_id = og.id
+            LEFT JOIN ord_shipping os on o.ord_no = os.ord_no
+        WHERE o.ord_no = #{mainOrderNumber}
+          AND og.goods_line_type IN ('GOODS', 'PRESENT')
+        UNION ALL
+        SELECT 'S'               sell_type,
+               CASE s.fit_compay_type
+               WHEN 'CASH'
+                   THEN
+                       'Y'
+               ELSE
+                   'N'
+               END AS            is_smal_fit,
+               o.ord_no          main_order_number,
+               i.order_number    order_number,
+               o.store_code      store_code,
+               ss.store_code     zy_store_code,
+               oci.sku,
+               g.goods_unit      unit,
+               oci.quantity      qty,
+               'Y'               is_product_coupon,
+               'N'               is_present,
+               oci.buy_price     price,
+               CASE s.fit_compay_type
+               WHEN 'CASH'
+                   THEN
+                       o.sales_manager_id
+               WHEN 'MONTHLY'
+                   THEN
+                       ''
+               ELSE
+                   o.sales_consult_id
+               END               shoppers_id,
+               os2.shipping_time handle_time,
+               i.sob_id          sob_id
+        FROM inter_ate_order_coupon_inf oci
+            LEFT JOIN ord_base_info o ON o.ord_no = oci.main_order_number
+                AND oci.coupon_type_id = 1
+            LEFT JOIN inter_ate_order_base_inf i ON o.ord_no = i.main_order_number
+                AND oci.product_type = i.product_type
+            LEFT JOIN st_store s ON o.store_id = s.store_id
+            LEFT JOIN st_store ss ON o.sales_manager_store_id = ss.store_id
+            LEFT JOIN gds_goods g ON oci.sku = g.sku
+            LEFT JOIN ord_shipping os2 on o.oid = os2.oid
+        WHERE oci.main_order_number = #{mainOrderNumber}
+    </select>
+
+    <insert id="saveKdSellList">
+        insert into inter_ate_kd_sell (sell_type, is_smal_fit, main_order_number, order_number, store_code,
+        zy_store_code, sku, unit, qty, is_product_coupon, price, shoppers_id, is_present,handle_time,sob_id,
+        attribute1, attribute2, attribute3, attribute4, attribute5, create_time,
+        send_flag, error_msg, send_time)
+        values
+        <foreach collection="list" separator="," item="item" index="index">
+            (
+            #{item.sellType},#{item.isSmalFit},#{item.mainOrderNumber},#{item.orderNumber},#{item.storeCode},#{item.zyStoreCode},
+            #{item.sku},#{item.unit},#{item.qty},#{item.isProductCoupon},#{item.price},#{item.shoppersId},#{item.isPresent},
+            #{item.handleTime},#{item.sobId},#{item.attribute1},
+            #{item.attribute2},#{item.attribute3},#{item.attribute4},#{item.attribute5},#{item.createTime},#{item.sendFlag},#{item.errorMsg},
+            #{item.sendTime})
+        </foreach>
+    </insert>
+
+    <select id="getReturnOrderKdSellByMainOrderNumber" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.KdSell">
+        SELECT 'R'                sell_type,
+               CASE s.fit_compay_type
+               WHEN 'CASH'
+                   THEN
+                       'Y'
+               ELSE
+                   'N'
+               END AS             is_smal_fit,
+               ro.return_no       main_order_number,
+               ri.return_number   order_number,
+               ro.store_code      store_code,
+               ss.store_code      zy_store_code,
+               og.sku             sku,
+               g.goods_unit       unit,
+               -ogi.quantity      qty,
+               'N'                is_product_coupon,
+               CASE og.goods_line_type
+               WHEN 'PRESENT'
+                   THEN
+                       'Y'
+               ELSE
+                   'N'
+               END AS             is_present,
+               og.return_price    price,
+               CASE s.fit_compay_type
+               WHEN 'CASH'
+                   THEN
+                       o.sales_manager_id
+               WHEN 'MONTHLY'
+                   THEN
+                       ''
+               ELSE
+                   o.sales_consult_id
+               END                shoppers_id,
+               orl.operation_time handle_time,
+               ri.sob_id          sob_id
+        FROM ord_return_base_info ro
+            LEFT JOIN ord_base_info o ON ro.ord_no = o.ord_no
+            LEFT JOIN inter_ate_return_order_base_inf ri ON ro.return_no = ri.main_return_number
+            LEFT JOIN inter_ate_return_order_goods_inf rgi ON ri.return_number = rgi.return_number
+            LEFT JOIN inter_ate_order_goods_inf ogi ON rgi.order_line_id = ogi.order_line_id
+            LEFT JOIN ord_goods_info og ON ogi.main_order_line_id = og.id
+            LEFT JOIN st_store s ON o.store_id = s.store_id
+            LEFT JOIN st_store ss ON o.sales_manager_store_id = ss.store_id
+            LEFT JOIN gds_goods g ON ogi.sku = g.sku
+            LEFT JOIN ord_return_lifecycle orl on ro.return_no = orl.return_no
+                AND orl.operation IN ('NORMAL_RETURN', 'CANCEL_ORDER', 'REJECTED')
+        WHERE ro.return_no = #{mainOrderNumber}
+          AND og.goods_line_type IN ('GOODS', 'PRESENT')
+        UNION ALL
+        SELECT 'R'                   sell_type,
+               CASE s.fit_compay_type
+               WHEN 'CASH'
+                   THEN
+                       'Y'
+               ELSE
+                   'N'
+               END AS                is_smal_fit,
+               ri.main_return_number main_order_number,
+               ri.return_number      order_number,
+               ro.store_code         store_code,
+               ss.store_code         zy_store_code,
+               rci.sku               sku,
+               g.goods_unit          unit,
+               -rci.quantity         qty,
+               'Y'                   is_product_coupon,
+               'N'                   is_present,
+               rci.buy_price         price,
+               CASE s.fit_compay_type
+               WHEN 'CASH'
+                   THEN
+                       o.sales_manager_id
+               WHEN 'MONTHLY'
+                   THEN
+                       ''
+               ELSE
+                   o.sales_consult_id
+               END                   shoppers_id,
+               orl.operation_time    handle_time,
+               ri.sob_id             sob_id
+        FROM inter_ate_return_order_coupon_inf rci
+            LEFT JOIN inter_ate_return_order_base_inf ri ON rci.main_return_number = ri.main_return_number
+                AND rci.coupon_type_id = 1
+            LEFT JOIN ord_return_base_info ro ON ri.main_return_number = ro.return_no
+            LEFT JOIN ord_base_info o ON ro.ord_no = o.ord_no
+            LEFT JOIN st_store s ON o.store_id = s.store_id
+            LEFT JOIN st_store ss ON o.sales_manager_store_id = ss.store_id
+            LEFT JOIN gds_goods g ON rci.sku = g.sku
+            LEFT JOIN ord_return_lifecycle orl on ro.return_no = orl.return_no
+                AND orl.operation IN ('NORMAL_RETURN', 'CANCEL_ORDER', 'REJECTED')
+        WHERE ro.return_no = #{mainOrderNumber};
+    </select>
+
+
+    <select id="getPendingSendKdSell" resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.KdSell">
+        select line_id,
+               create_time,
+               send_flag,
+               error_msg,
+               send_time,
+               sell_type,
+               is_smal_fit,
+               main_order_number,
+               order_number,
+               store_code,
+               zy_store_code,
+               sku,
+               unit,
+               qty,
+               is_product_coupon,
+               price,
+               shoppers_id,
+               is_present,
+               handle_time,
+               sob_id,
+               attribute1,
+               attribute2,
+               attribute3,
+               attribute4,
+               attribute5
+        from inter_ate_kd_sell
+        where main_order_number = #{mainOrderNumber}
+    </select>
+
+    <update id="updateKdSellFlagAndSendTimeAndErrorMsg">
+        UPDATE inter_ate_kd_sell
+        <set>
+            <if test="null != sendFlag">
+                send_flag = #{sendFlag},
+            </if>
+            <if test="null != sendTime">
+                send_time = #{sendTime},
+            </if>
+            <if test="null != errorMsg">
+                error_msg = #{errorMsg}
+            </if>
+        </set>
+        WHERE line_id in
+        <foreach collection="kdSellIds" open="(" close=")" separator="," item="id" index="index">
+            #{id}
+        </foreach>
+    </update>
+
 
 </mapper>

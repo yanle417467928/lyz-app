@@ -197,6 +197,8 @@ public class MaRetrunOrderRestController extends BaseRestController {
             }
             //发送门店自提单收货消息队列
             maSinkSender.sendStorePickUpReturnOrderReceiptToEBSAndRecord(returnNumber);
+            //发送金蝶销退表
+            maSinkSender.sendKdSell(returnNumber);
             logger.info("orderShipping ,后台到店退货单收货成功");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
                     "后台到店退货单收货成功", null);

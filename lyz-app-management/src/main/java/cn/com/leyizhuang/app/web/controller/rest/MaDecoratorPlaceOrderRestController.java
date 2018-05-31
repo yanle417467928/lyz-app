@@ -9,6 +9,7 @@ import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.user.DeliveryAddressDO;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -17,10 +18,10 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.map.HashedMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -44,7 +45,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class MaDecoratorPlaceOrderRestController {
 
-
+    private static final Logger logger = LoggerFactory.getLogger(MaDecoratorPlaceOrderRestController.class);
     @Resource
     private AppStoreService storeService;
 
@@ -66,9 +67,12 @@ public class MaDecoratorPlaceOrderRestController {
     @Resource
     private CommonService commonService;
 
+    @Resource
+    private DeliveryAddressService deliveryAddressService;
+
     @RequestMapping(value = "/import/goods", method = RequestMethod.POST)
     public Map<String, Object> importOrderGoods(@RequestParam(value = "file") MultipartFile excelFile,
-                                                @RequestParam(value = "storeId") Long storeId, @RequestParam(value = "guideId") Long guideId) {
+                                                @RequestParam(value = "storeId") Long storeId) {
         Map<String, Object> map = new HashMap<>(5);
         if (null == excelFile) {
             map.put("code", -1);
@@ -181,7 +185,9 @@ public class MaDecoratorPlaceOrderRestController {
     }
 
     @RequestMapping(value = "/submit/goods", method = RequestMethod.POST)
-    public ResultDTO<Object> submitOrderGoods(Long storeId, Long guideId, String remark, String goodsDetails) {
+    public ResultDTO<Object> submitOrderGoods(Long storeId, Long guideId, String remark, String goodsDetails,String receiverName,String receiverPhone,String province,
+                                              String city,String county,String street,String residenceName,String estateInfo,
+                                              String detailedAddress,Long goAddDeliveryAddressType,Long deliveryId) {
         ResultDTO<Object> resultDTO;
         System.out.println("进入方法");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -190,6 +196,35 @@ public class MaDecoratorPlaceOrderRestController {
         try {
             AppEmployee employee = employeeService.findById(guideId);
             if (null != employee) {
+
+                Long deliveryIds = deliveryId;
+                if (0 == goAddDeliveryAddressType && (null == deliveryId || -1 == deliveryId)) {
+                    //*************************************增加地址信息**************************************
+                    String provinceName = deliveryAddressService.findAreaNameByCode(province);
+                    String cityName = deliveryAddressService.findAreaNameByCode(city);
+                    String countyName = deliveryAddressService.findAreaNameByCode(county);
+
+                    DeliveryAddressDO deliveryAddressDO = new DeliveryAddressDO();
+                    deliveryAddressDO.setReceiver(receiverName);
+                    deliveryAddressDO.setReceiverPhone(receiverPhone);
+                    deliveryAddressDO.setDeliveryProvince(provinceName);
+                    deliveryAddressDO.setDeliveryCity(cityName);
+                    deliveryAddressDO.setDeliveryCounty(countyName);
+                    deliveryAddressDO.setDeliveryStreet(street);
+                    deliveryAddressDO.setDetailedAddress(detailedAddress);
+                    deliveryAddressDO.setResidenceName(residenceName);
+                    deliveryAddressDO.setUserId(employee.getEmpId());
+                    deliveryAddressDO.setIdentityType(employee.getIdentityType());
+                    deliveryAddressDO.setStatus(Boolean.TRUE);
+                    deliveryAddressDO.setIsDefault(Boolean.FALSE);
+                    deliveryAddressDO.setEstateInfo(estateInfo);
+
+                    deliveryAddressService.maAddDeliveryAddress(deliveryAddressDO);
+                    //获取地址id
+                    deliveryIds = deliveryAddressDO.getId();
+                    //*******************************************************************************************
+                }
+
                 List<GoodsSkuQtyParam> goodsList = objectMapper.readValue(goodsDetails, goodsSimpleInfo);
                 log.info("{}", goodsList);
                 //新增记录
@@ -220,6 +255,7 @@ public class MaDecoratorPlaceOrderRestController {
                                     materialListDOTemp.setUserId(guideId);
                                     materialListDOTemp.setIdentityType(employee.getIdentityType());
                                     materialListDOTemp.setRemark(remark);
+                                    materialListDOTemp.setDeliveryId(deliveryIds);
                                     materialListDOTemp.setQty(goodsList.get(i).getQty());
                                     materialListDOTemp.setMaterialListType(MaterialListType.NORMAL);
                                     materialListSave.add(materialListDOTemp);
@@ -229,6 +265,7 @@ public class MaDecoratorPlaceOrderRestController {
                                 materialListDOTemp.setUserId(guideId);
                                 materialListDOTemp.setIdentityType(employee.getIdentityType());
                                 materialListDOTemp.setRemark(remark);
+                                materialListDOTemp.setDeliveryId(deliveryIds);
                                 materialListDOTemp.setQty(goodsList.get(i).getQty());
                                 materialListDOTemp.setMaterialListType(MaterialListType.NORMAL);
                                 materialListSave.add(materialListDOTemp);
@@ -320,5 +357,19 @@ public class MaDecoratorPlaceOrderRestController {
             materialListDOTemp.setCoverImageUri(uri[0]);
         }
         return materialListDOTemp;
+    }
+
+    @RequestMapping(value ="/find/areaManagement", method = RequestMethod.GET)
+    private List<AreaManagementDO> findDelivery(){
+        return deliveryAddressService.findAllAreaManagement();
+    }
+
+    @RequestMapping(value ="/find/areaManagement/{type}/{code}", method = RequestMethod.GET)
+    private List<AreaManagementDO> conditionalQueryAreaManagement(String province,String city,
+                                                                  @PathVariable(value = "type") Long type,@PathVariable(value = "code") String code){
+        logger.info("conditionalQueryAreaManagement 装饰公司后台下单查询省、市、区及街道  入参 province{},city{},type{},code{}",province,city,type,code);
+
+        return deliveryAddressService.findAreaManagementByProvinceCode(code,type);
+
     }
 }

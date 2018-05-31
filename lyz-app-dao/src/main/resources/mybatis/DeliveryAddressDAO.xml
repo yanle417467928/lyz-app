@@ -62,7 +62,7 @@
               AND status IS TRUE
         ORDER BY id DESC
     </select>
-    <insert id="addDeliveryAddress" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.DeliveryAddressDO">
+    <insert id="addDeliveryAddress" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.DeliveryAddressDO" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO delivery_address
         (
             user_id, identity_type, receiver, receiver_phone, delivery_province, delivery_city, delivery_county, delivery_street,
@@ -136,6 +136,33 @@
         LIMIT 1
     </select>
 
+    <select id="getDefaultDeliveryAddressListByUserIdAndIdentityType"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse">
+        SELECT
+        id,
+        receiver         delivery_name,
+        receiver_phone   delivery_phone,
+        delivery_city    delivery_city,
+        delivery_county  delivery_county,
+        delivery_street  delivery_street,
+        residence_name   village_name,
+        detailed_address detailed_address,
+        delivery_province deliveryProvince,
+        is_default,
+        estate_info
+        FROM delivery_address
+        WHERE user_id = #{userId}
+        AND identity_type = #{identityType}
+        AND status IS TRUE
+        <if test="null != keywords and keywords != ''">
+        AND (receiver LIKE concat(concat('%',#{keywords}),'%')
+          OR receiver_phone LIKE concat(concat('%',#{keywords}),'%')
+          OR residence_name LIKE concat(concat('%',#{keywords}),'%')
+          OR detailed_address LIKE concat(concat('%',#{keywords}),'%')
+          OR estate_info LIKE concat(concat('%',#{keywords}),'%'))
+        </if>
+    </select>
+
     <update id="clearDefaultAddressByUserIdAndIdentityType">
         UPDATE delivery_address
         SET is_default = FALSE
@@ -183,9 +210,112 @@
         AND (receiver LIKE concat(concat('%',#{keywords}),'%')
           OR receiver_phone LIKE concat(concat('%',#{keywords}),'%')
           OR residence_name LIKE concat(concat('%',#{keywords}),'%')
-          OR detailed_address LIKE concat(concat('%',#{keywords}),'%'))
+          OR detailed_address LIKE concat(concat('%',#{keywords}),'%')
+          OR estate_info LIKE concat(concat('%',#{keywords}),'%'))
         AND status IS TRUE
         ORDER BY id DESC
     </select>
 
+    <select id="getDefaultDeliveryAddressByUserIdAndIdentityTypeAndDeliveryId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse">
+        SELECT
+        id,
+        receiver         delivery_name,
+        receiver_phone   delivery_phone,
+        delivery_city    delivery_city,
+        delivery_county  delivery_county,
+        delivery_street  delivery_street,
+        residence_name   village_name,
+        detailed_address detailed_address,
+        delivery_province deliveryProvince,
+        is_default,
+        estate_info
+        FROM delivery_address
+        WHERE user_id = #{userId}
+        AND identity_type = #{identityType}
+        AND id = #{deliveryId}
+        AND status IS TRUE
+        LIMIT 1
+    </select>
+
+    <select id="findAllAreaManagement" resultType="cn.com.leyizhuang.app.foundation.pojo.AreaManagementDO">
+        SELECT
+            id,
+            area_name,
+            `code`,
+            `level`,
+            parent_code,
+            `status`,
+            create_time
+        FROM
+            area_management
+        WHERE
+            `status` IS TRUE
+    </select>
+
+    <select id="findAreaManagementByProvinceCode" resultType="cn.com.leyizhuang.app.foundation.pojo.AreaManagementDO">
+        <if test="null != type and type == 1">
+        SELECT
+            a.*
+        FROM
+            area_management a
+        WHERE
+            a.parent_code = #{provinceCode}
+        OR a.parent_code IN (
+            SELECT
+                e.`code`
+            FROM
+                area_management e
+            WHERE
+                e.parent_code = #{provinceCode}
+        )
+        OR a.parent_code IN (SELECT
+            c.`code`
+        FROM
+            area_management c
+        WHERE
+            c.parent_code = #{provinceCode}
+        OR c.parent_code IN (
+            SELECT
+                d.`code`
+            FROM
+                area_management d
+            WHERE
+                d.parent_code = #{provinceCode}
+        ))
+        </if>
+        <if test="null != type and type == 2">
+            SELECT
+            a.*
+            FROM
+            area_management a
+            WHERE
+            a.parent_code = #{provinceCode}
+            OR a.parent_code IN (
+            SELECT
+            e.`code`
+            FROM
+            area_management e
+            WHERE
+            e.parent_code = #{provinceCode}
+            )
+        </if>
+        <if test="null != type and type == 3">
+            SELECT
+            a.*
+            FROM
+            area_management a
+            WHERE
+            a.parent_code = #{provinceCode}
+        </if>
+    </select>
+
+    <select id="findAreaNameByCode" resultType="java.lang.String">
+       SELECT
+            area_name
+        FROM
+            area_management
+        WHERE
+            `code` = #{provinceCode};
+    </select>
 </mapper>

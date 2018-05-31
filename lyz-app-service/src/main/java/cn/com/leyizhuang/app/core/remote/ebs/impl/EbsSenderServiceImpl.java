@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.core.remote.ebs.impl;
 import cn.com.leyizhuang.app.core.constant.AppConstant;
 import cn.com.leyizhuang.app.core.constant.AppWhetherFlag;
 import cn.com.leyizhuang.app.core.remote.ebs.EbsSenderService;
+import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.foundation.dao.ItyAllocationDAO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationInf;
@@ -1081,6 +1082,71 @@ public class EbsSenderServiceImpl implements EbsSenderService {
             updateWithdrawRefundFlagAndSendTimeAndErrorMsg(refundInf.getRefundId(), (String) result.get("msg"), null, AppWhetherFlag.N);
         } else {
             updateWithdrawRefundFlagAndSendTimeAndErrorMsg(refundInf.getRefundId(), null, new Date(), AppWhetherFlag.Y);
+        }
+    }
+
+    @Override
+    public void sendKdSellAndRecord(List<KdSell> kdSellList) {
+        Map<String, Object> result = sendKdSellToEbs(kdSellList);
+        List<Long> kdSellIds = new ArrayList<>(10);
+        for (KdSell kdSell : kdSellList) {
+            kdSellIds.add(kdSell.getLineId());
+        }
+        if (!(Boolean) result.get("success")) {
+            updateKdSellFlagAndSendTimeAndErrorMsg(kdSellIds, (String) result.get("msg"), null, AppWhetherFlag.N);
+        } else {
+            updateKdSellFlagAndSendTimeAndErrorMsg(kdSellIds, null, new Date(), AppWhetherFlag.Y);
+        }
+    }
+
+    private Map<String, Object> sendKdSellToEbs(List<KdSell> kdSellList) {
+        log.info("sendKdSellToEbs, kdSellList=" + kdSellList);
+        List<KdSellSecond> kdSellSeconds = new ArrayList<>();
+        if (null != kdSellList && kdSellList.size() > 0) {
+            for (KdSell kdSell : kdSellList) {
+                KdSellSecond kdSellSecond = new KdSellSecond();
+                kdSellSecond.setAttribute1(toString(kdSell.getAttribute1()));
+                kdSellSecond.setAttribute1(toString(kdSell.getAttribute2()));
+                kdSellSecond.setAttribute1(toString(kdSell.getAttribute3()));
+                kdSellSecond.setAttribute1(toString(kdSell.getAttribute4()));
+                kdSellSecond.setAttribute1(toString(kdSell.getAttribute5()));
+                kdSellSecond.setIsPresent(toString(kdSell.getIsPresent()));
+                kdSellSecond.setIsProductCoupon(toString(kdSell.getIsProductCoupon()));
+                kdSellSecond.setIsSmalFit(toString(kdSell.getIsSmalFit()));
+                kdSellSecond.setLineId(toString(kdSell.getLineId()));
+                kdSellSecond.setMainOrderNum(toString(kdSell.getMainOrderNumber()));
+                kdSellSecond.setOrderNum(toString(kdSell.getOrderNumber()));
+                kdSellSecond.setPrice(toString(kdSell.getPrice()));
+                kdSellSecond.setQty(toString(kdSell.getQty()));
+                kdSellSecond.setSellType(toString(kdSell.getSellType()));
+                kdSellSecond.setShoppersId(toString(kdSell.getShoppersId()));
+                kdSellSecond.setSku(toString(kdSell.getSku()));
+                kdSellSecond.setStoreCode(toString(kdSell.getStoreCode()));
+                kdSellSecond.setUnit(toString(kdSell.getUnit()));
+                kdSellSecond.setZyStoreCode(toString(kdSell.getZyStoreCode()));
+                kdSellSecond.setHandleTime(toString(DateUtil.formatDate(kdSell.getHandleTime(), "yyyy-MM-dd HH:mm:ss")));
+                kdSellSecond.setSobId(toString(kdSell.getSobId()));
+
+                kdSellSeconds.add(kdSellSecond);
+            }
+
+        }
+        String kdSellSecondJson = JSON.toJSONString(kdSellSeconds);
+        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+        parameters.add(new BasicNameValuePair("kdSellJson", kdSellSecondJson));
+        Map<String, Object> result = this.postToEbs(AppConstant.EBS_NEW_URL + "callKdSellSecond", parameters);
+        if (!(Boolean) result.get("success")) {
+            JSONObject content = new JSONObject();
+            content.put("kdSellSecondJson", kdSellSecondJson);
+            result.put("content", JSON.toJSONString(content));
+        }
+        log.info("sendKdSellToEbs, result=" + result);
+        return result;
+    }
+
+    private void updateKdSellFlagAndSendTimeAndErrorMsg(List<Long> kdSellIds, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (null != kdSellIds && kdSellIds.size() > 0) {
+            separateOrderService.updateKdSellFlagAndSendTimeAndErrorMsg(kdSellIds, msg, sendTime, flag);
         }
     }
 

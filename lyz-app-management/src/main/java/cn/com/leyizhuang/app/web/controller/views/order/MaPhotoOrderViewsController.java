@@ -47,6 +47,19 @@ public class MaPhotoOrderViewsController extends BaseController {
         return "/views/order/photo_order_page";
     }
 
+
+    /**
+     * @title   跳转新增订单页面
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     */
+    @RequestMapping(value = "add")
+    public String addPhotoOrder() {
+        return "/views/order/add_photo_order_edit";
+    }
+
     @GetMapping(value = "/edit/{id}")
     public String resourceEdit(ModelMap map, @PathVariable(value = "id") Long id) {
         List<PhotoOrderStatus> status = new ArrayList<>();
@@ -55,7 +68,7 @@ public class MaPhotoOrderViewsController extends BaseController {
         PhotoOrderVO photoOrderVO = this.maPhotoOrderService.findByIdAndStatus(id, status);
 
         if (null == photoOrderVO) {
-            logger.warn("跳转变更预存款页面失败，photoOrderVO(id = {}) == null", id);
+            logger.warn("跳转拍照下单详情页面失败，photoOrderVO(id = {}) == null", id);
             error404();
             return "/error/404";
         } else {

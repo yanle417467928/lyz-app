@@ -32,5 +32,6 @@ public class DeliveryAddressRequest {
     private String villageName;
     //是否默认收货地址
     private Boolean isDefault;
-
+    //楼盘信息
+    private String estateInfo;
 }

@@ -103,7 +103,8 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
             e.create_time
         FROM emp_employee e
         WHERE e.identity_type = 'DECORATE_EMPLOYEE'
-              AND e.manager_id = #{userId}
+              AND (e.manager_id = #{userId} or e.manager_id IS NULL)
+              AND e.store_id = (SELECT store_id FROM emp_employee WHERE emp_id = #{userId})
     </select>
 
     <select id="searchBySalesConsultIdAndKeywords"
@@ -201,6 +202,9 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
             </if>
             <if test="null != identityType">
                 identity_type = #{identityType},
+            </if>
+            <if test="null != sellerType">
+                seller_type = #{sellerType},
             </if>
             <if test="null != mobile">
                 mobile = #{mobile},
@@ -414,6 +418,13 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
         LEFT JOIN rank_classification r ON r.rank_code = p.price_type
         WHERE e.emp_id = #{userId} AND e.identity_type = #{type} AND r.rank_code IS NOT NULL
         GROUP BY r.rank_code
+    </select>
+
+
+    <select id="getSalesManagerSupportHotline" resultType="java.lang.String">
+    select mobile
+    from emp_employee
+    where emp_id =(select sales_manager from st_store where store_code = #{storeCode})
     </select>
 
 </mapper>

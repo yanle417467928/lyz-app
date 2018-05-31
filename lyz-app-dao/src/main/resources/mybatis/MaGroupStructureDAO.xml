@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaGroupStructureDAO">
+
+    <select id="querySimpaleStructureList"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.structure.SimpaleGroupStructureParam">
+        select number,structure_name from group_structure where tier = 2 AND  enable = TRUE
+    </select>
+
+
+    <select id="findByStructureNumber"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.structure.Structure">
+        select * from group_structure where structure_number =#{structureNumber}
+    </select>
+
+    <insert id="SaveStructure" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.structure.Structure">
+           INSERT  group_structure
+           (creat_time,structure_name,number,structure_number,type,parent_id,tier,enable,enable_false_time)
+           VALUES
+           (#{creatTime},#{structureName},#{number},#{structureNumber},#{type},#{parentId},#{tier},#enable},#{enableFalseTime})
+    </insert>
+
+    <update id="ModifyStructure" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.structure.Structure">
+        update group_structure
+        <set>
+            <if test="null!=creatTime">
+                creat_time= #{creatTime}
+            </if>
+            <if test="null!=structureName">
+                structure_name=#{structureName}
+            </if>
+            <if test="null!=number">
+                number=#{number}
+            </if>
+            <if test="null!=structureNumber">
+                structure_number=#{structureNumber}
+            </if>
+            <if test="null!=type">
+                type=#{type}
+            </if>
+            <if test="null!=parentId">
+                parent_id=#{parentId}
+            </if>
+            <if test="null!=tier">
+                tier=#{tier}
+            </if>
+            <if test="null!=enable">
+                enable=#{enable}
+            </if>
+            <if test="null!=enableFalseTime">
+            enable_false_time=#{enableFalseTime}
+            </if>
+        </set>
+        where
+        number=#{number}
+    </update>
+
+    <delete id="delStructure"  parameterType="java.lang.String">
+            DELETE  * from group_structure where  structure_number=#{structureNumber}
+    </delete>
+
+</mapper>

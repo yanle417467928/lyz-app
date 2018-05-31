@@ -14,14 +14,14 @@
         INSERT INTO material_list
         (user_id, identity_type,cus_id, gid, sku, sku_name, goods_specification, cover_image_uri, goods_unit, qty,
         audit_no,
-        material_list_type,remark)
+        material_list_type,remark,delivery_id)
         VALUES
         <foreach collection="list" item="materialListDO" separator=",">
             (#{materialListDO.userId}, #{materialListDO.identityType}, #{materialListDO.cusId},#{materialListDO.gid},
             #{materialListDO.sku},#{materialListDO.skuName}, #{materialListDO.goodsSpecification},
             #{materialListDO.coverImageUri},
             #{materialListDO.goodsUnit}, #{materialListDO.qty},
-            #{materialListDO.auditNo},#{materialListDO.materialListType},#{materialListDO.remark})
+            #{materialListDO.auditNo},#{materialListDO.materialListType},#{materialListDO.remark},#{materialListDO.deliveryId})
         </foreach>
     </insert>
 
@@ -42,7 +42,7 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.materialList.NormalMaterialListResponse">
         <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
             SELECT DISTINCT m.id,m.gid goodsId, m.sku_name, m.goods_specification, m.cover_image_uri, m.goods_unit,
-            m.qty,p.retail_price,m.remark,min(p.vip_price)AS vip_price
+            m.qty,p.retail_price,m.remark,min(p.vip_price)AS vip_price,m.delivery_id
             FROM material_list m
             LEFT JOIN cus_customer c ON c.cus_id = m.user_id
             LEFT JOIN cus_rank cr ON cr.cus_id = c.cus_id
@@ -61,7 +61,7 @@
         </if>
         <if test="null != identityType and identityType.toString() != 'CUSTOMER'">
             SELECT DISTINCT m.id, m.gid goodsId, m.sku_name, m.goods_specification, m.cover_image_uri, m.goods_unit,
-            m.qty, p.retail_price,m.remark
+            m.qty, p.retail_price,m.remark,m.delivery_id
             FROM material_list m
             LEFT JOIN emp_employee c ON c.emp_id = m.user_id
             INNER JOIN gds_goods_price p ON c.store_id = p.store_id AND m.gid = p.gid

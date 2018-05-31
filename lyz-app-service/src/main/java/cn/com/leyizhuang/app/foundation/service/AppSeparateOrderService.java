@@ -144,4 +144,14 @@ public interface AppSeparateOrderService {
     void separateReturnOrderRefundInf(String returnNumber);
 
     void separateReturnOrderJxPriceInf(String returnNumber);
+
+    List<KdSell> getOrderKdSellByMainOrderNumber(String mainOrderNumber);
+
+    void saveKdSellList(List<KdSell> kdSellList);
+
+    List<KdSell> getReturnOrderKdSellByMainOrderNumber(String mainOrderNumber);
+
+    void sendKdSell(String mainOrderNumber);
+
+    void updateKdSellFlagAndSendTimeAndErrorMsg(List<Long> kdSellIds, String msg, Date sendTime, AppWhetherFlag flag);
 }

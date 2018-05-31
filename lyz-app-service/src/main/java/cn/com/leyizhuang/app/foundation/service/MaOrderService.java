@@ -265,7 +265,7 @@ public interface MaOrderService {
     /**
      * 审核订单
      */
-    String auditOrderStatus(String orderNumber, String status);
+    String auditOrderStatus(String orderNumber, String status,Long auditId);
 
     /**
      * 通过订单id得到销售id

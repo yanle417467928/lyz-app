@@ -722,21 +722,21 @@ public class ReturnOrderController {
                             hasFreight = false;
                         } else {
                             temp = CountUtil.sub(billingDetails.getFreight(), customerPrePay);
-                            returnOrderBilling.setPreDeposit(0D);
+                            returnOrderBilling.setPreDeposit(customerPrePay);
                         }
-                        if (storePrePay >= billingDetails.getFreight()) {
-                            returnOrderBilling.setStPreDeposit(hasFreight ? CountUtil.sub(storePrePay, billingDetails.getFreight()) : storePrePay);
+                        if (storePrePay >= temp) {
+                            returnOrderBilling.setStPreDeposit(hasFreight ? CountUtil.sub(storePrePay, temp) : storePrePay);
                             hasFreight = false;
                         } else {
-                            temp = CountUtil.sub(billingDetails.getFreight(), storePrePay);
-                            returnOrderBilling.setStPreDeposit(0D);
+                            temp = CountUtil.sub(temp, storePrePay);
+                            returnOrderBilling.setStPreDeposit(storePrePay);
                         }
                         if (onlinePayPrice >= temp) {
                             returnOrderBilling.setOnlinePay(hasFreight ? CountUtil.sub(onlinePayPrice, temp) : onlinePayPrice);
                             hasFreight = false;
                         } else {
                             temp = CountUtil.sub(temp, onlinePayPrice);
-                            returnOrderBilling.setOnlinePay(0D);
+                            returnOrderBilling.setOnlinePay(onlinePayPrice);
                         }
                         if (cashPosPrice >= temp) {
                             returnOrderBilling.setCash(hasFreight ? CountUtil.sub(cashPosPrice, temp) : cashPosPrice);

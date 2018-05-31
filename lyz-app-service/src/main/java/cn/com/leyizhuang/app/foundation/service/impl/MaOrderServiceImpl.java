@@ -635,14 +635,14 @@ public class MaOrderServiceImpl implements MaOrderService {
 
     @Override
     @Transactional
-    public String auditOrderStatus(String orderNumber, String status) throws RuntimeException {
+    public String auditOrderStatus(String orderNumber, String status,Long auditId) throws RuntimeException {
         if (ArrearsAuditStatus.AUDIT_PASSED.toString().equals(status)) {
             Date date = new Date();
             //获取订单基本信息
             OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
 
             OrderTempInfo orderTempInfo = this.appOrderServiceImpl.getOrderInfoByOrderNo(orderNumber);
-            MaOrderArrearsAudit maOrderArrearsAudit = this.getArrearsAuditInfo(orderNumber);
+            MaOrderArrearsAudit maOrderArrearsAudit = this.getArrearsAuditInfoById(auditId);
             //生成收款单号
             String receiptNumber = OrderUtils.generateReceiptNumber(orderTempInfo.getCityId());
             Double collectionAmount = orderTempInfo.getCollectionAmount();
@@ -713,12 +713,12 @@ public class MaOrderServiceImpl implements MaOrderService {
             orderInfo.setDeliveryStatus(LogisticStatus.CONFIRM_ARRIVAL);
             this.appOrderServiceImpl.updateOrderStatusByOrderNo(orderInfo);
             //修改审核状态
-            this.maOrderDAO.auditOrderStatus(orderNumber, status);
+            this.maOrderDAO.auditOrderStatus(orderNumber, status,auditId);
             //传ebs收款接口
             return receiptNumber;
         } else if (ArrearsAuditStatus.AUDIT_NO.toString().equals(status)) {
             //修改审核状态
-            this.maOrderDAO.auditOrderStatus(orderNumber, status);
+            this.maOrderDAO.auditOrderStatus(orderNumber, status,auditId);
         }
         return null;
     }
@@ -788,7 +788,6 @@ public class MaOrderServiceImpl implements MaOrderService {
             throw new OrderPayableAmountException("订单应付款金额异常(<0)");
         }
         orderBillingDetails.setArrearage(0D);
-        //根据应付金额判断订单账单是否已付清
         orderBillingDetails.setIsPayUp(true);
 
         //设置门店预存款
@@ -809,7 +808,7 @@ public class MaOrderServiceImpl implements MaOrderService {
         orderBillingDetails.setStPreDeposit(stPreDeposit);
         orderBillingDetails.setPayUpTime(new Date());
         if (StringUtils.isNotBlank(payTime)) {
-            orderBillingDetails.setManageReceiptTime(DateUtil.parseDateTime(payTime));
+            orderBillingDetails.setManageReceiptTime(DateUtil.parseToDate(payTime,"yyyy-MM-dd"));
         }
         return orderBillingDetails;
     }
@@ -1474,6 +1473,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                             stPreDepositLogDO.setRemarks("超过待付款时间");
                             stPreDepositLogDO.setOrderNumber(orderBaseInfo.getOrderNumber());
                             stPreDepositLogDO.setChangeType(StorePreDepositChangeType.CANCEL_ORDER);
+                            stPreDepositLogDO.setChangeTypeDesc(StorePreDepositChangeType.CANCEL_ORDER.getDescription());
                             stPreDepositLogDO.setStoreId(storePreDeposit.getStoreId());
                             stPreDepositLogDO.setOperatorId(null);
                             stPreDepositLogDO.setOperatorType(AppIdentityType.ADMINISTRATOR);
@@ -1573,6 +1573,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                             stPreDepositLogDO.setRemarks("超过待付款时间");
                             stPreDepositLogDO.setOrderNumber(orderBaseInfo.getOrderNumber());
                             stPreDepositLogDO.setChangeType(StorePreDepositChangeType.CANCEL_ORDER);
+                            stPreDepositLogDO.setChangeTypeDesc(StorePreDepositChangeType.CANCEL_ORDER.getDescription());
                             stPreDepositLogDO.setStoreId(storePreDeposit.getStoreId());
                             stPreDepositLogDO.setOperatorId(null);
                             stPreDepositLogDO.setOperatorType(AppIdentityType.ADMINISTRATOR);
@@ -1895,20 +1896,20 @@ public class MaOrderServiceImpl implements MaOrderService {
 
 
     @Override
-    public PageInfo<FitOrderVO> findFitOrderListByScreen(Integer page, Integer size,Long cityId,Long storeId,List<Long> storeIds) {
+    public PageInfo<FitOrderVO> findFitOrderListByScreen(Integer page, Integer size, Long cityId, Long storeId, List<Long> storeIds) {
         if (null != page && null != size && AssertUtil.isNotEmpty(storeIds)) {
             PageHelper.startPage(page, size);
-            List<FitOrderVO> maOrderVOList = maOrderDAO.findFitOrderListByScreen(cityId,storeId,storeIds);
+            List<FitOrderVO> maOrderVOList = maOrderDAO.findFitOrderListByScreen(cityId, storeId, storeIds);
             return new PageInfo<>(maOrderVOList);
         }
         return null;
     }
 
     @Override
-    public PageInfo<FitOrderVO> findFitOrderListByInfo(Integer page, Integer size,String info,List<Long> storeIds) {
+    public PageInfo<FitOrderVO> findFitOrderListByInfo(Integer page, Integer size, String info, List<Long> storeIds) {
         if (null != page && null != size && AssertUtil.isNotEmpty(storeIds)) {
             PageHelper.startPage(page, size);
-            List<FitOrderVO> maOrderVOList = maOrderDAO.findFitOrderListByInfo(info,storeIds);
+            List<FitOrderVO> maOrderVOList = maOrderDAO.findFitOrderListByInfo(info, storeIds);
             return new PageInfo<>(maOrderVOList);
         }
         return null;

@@ -126,7 +126,11 @@ public class DeliveryFeeRuleServiceImpl implements DeliveryFeeRuleService {
             }
         }
 
-        DeliveryFeeRule deliveryFeeRule = deliveryFeeRuleDAO.findRuleByCityId(cityId).get(0);
+        List<DeliveryFeeRule> ruleList = deliveryFeeRuleDAO.findRuleByCityId(cityId);
+        if (null == ruleList || ruleList.size() == 0){
+            return 0.00;
+        }
+        DeliveryFeeRule deliveryFeeRule = ruleList.get(0);
         if (deliveryFeeRule == null) {
             return 0.00;
         } else {

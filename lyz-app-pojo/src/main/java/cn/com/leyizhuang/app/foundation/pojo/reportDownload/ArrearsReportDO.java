@@ -53,6 +53,7 @@ public class ArrearsReportDO {
     private String isPayUp;
     //订单还清日期
     private String payUpTime;
-
+    //审核状态
+    private String auditStatus;
 
 }

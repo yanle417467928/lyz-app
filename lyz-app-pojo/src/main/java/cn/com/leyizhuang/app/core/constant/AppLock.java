@@ -16,4 +16,9 @@ public class AppLock {
 
     public static final String NORMAL_RETURN = "REDIS_LOCK_NORMAL_RETURN";
 
+    /**
+     * 返配上架
+     */
+    public static final String BACK_ORDER = "REDIS_LOCK_BACK_ORDER";
+
 }

@@ -341,7 +341,7 @@ public class UserHomePageController {
             List<EmployeeListResponse> appEmployeeList = employeeService.searchBySalesConsultIdAndKeywords(userId, keywords, identityType);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     (appEmployeeList != null && appEmployeeList.size() > 0) ? appEmployeeList : null);
-            logger.info("getDecorateEmployeeList OUT,搜索我的工人列表成功，出参 resultDTO:{}", resultDTO);
+            logger.info("searchDecorateEmployeeList OUT,搜索我的工人列表成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，搜索我的工人失败", null);
@@ -657,5 +657,50 @@ public class UserHomePageController {
         }
         return resultDTO;
     }
+
+
+    /**
+     * 获取后台下单收货地址
+     *
+     * @param userId       用户id
+     * @param identityType 用户身份类型
+     * @param deliveryId 地址id
+     * @return 用户默认收货地址
+     */
+    @PostMapping(value = "/get/deliveryAddress", produces = "application/json;charset=UTF-8")
+    public ResultDTO getDeliveryAddressByUserIdAndIdentityTypeAndDeliveryId(Long userId, Integer identityType,Long deliveryId) {
+        logger.info("getUserDefaultDeliveryAddress CALLED,获取用户收货地址，入参 userId {},identityType{}", userId, identityType);
+        ResultDTO resultDTO;
+        try {
+            if (null == userId) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+                logger.info("getDeliveryAddress OUT,获取用户收货地址失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == identityType) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "identityType不能为空！", null);
+                logger.info("getDeliveryAddress OUT,获取用户收货地址失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == deliveryId) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "地址id不能为空！", null);
+                logger.info("getDeliveryAddress OUT,获取用户收货地址失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            DeliveryAddressResponse deliveryAddressResponse = deliveryAddressService.
+                    getDefaultDeliveryAddressByUserIdAndIdentityTypeAndDeliveryId(userId, AppIdentityType.getAppIdentityTypeByValue(identityType),deliveryId);
+
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, deliveryAddressResponse);
+            logger.info("getDeliveryAddress OUT,获取用户收货地址成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,获取用户收货地址失败!", null);
+            logger.warn("addDeliveryAddress EXCEPTION,获取用户收货地址失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
 
 }

@@ -36,7 +36,7 @@
                 #{item}
             </foreach>-->
             UNION
-            SELECT ord.create_time createTime, ori.return_no orderNumber, orb.st_credit_money creditMoney,
+            SELECT ord.create_time createTime, ori.return_no orderNumber, -1*orb.st_credit_money creditMoney,
                 s.store_name storeName, ori.creator_name creatorName,
                 IF(orl.delivery_type = 'HOUSE_PICK', orl.return_full_address, orl.return_store_address) deliveryAddress, orl.rejecter
             FROM ord_return_base_info ori
@@ -81,7 +81,7 @@
                 #{item}
             </foreach>
             UNION
-            SELECT SUM(orb.st_credit_money) creditMoney
+            SELECT -1*SUM(orb.st_credit_money) creditMoney
             FROM ord_return_base_info ori
             INNER JOIN ord_return_billing orb ON ori.return_no = orb.return_no
             LEFT JOIN decoration_company_credit_billing_details dcd ON dcd.order_number = ori.ord_no

@@ -36,7 +36,7 @@ public class MaMaterialListServiceImpl implements MaMaterialListService {
         }
         if (null != materialListUpdate && materialListUpdate.size() > 0) {
             for (MaterialListDO materialListDO : materialListUpdate) {
-                maMaterialListDAO.modifyQty(materialListDO.getId(), materialListDO.getQty());
+                maMaterialListDAO.modifyQty(materialListDO.getId(), materialListDO.getQty(),materialListDO.getDeliveryId());
             }
         }
     }

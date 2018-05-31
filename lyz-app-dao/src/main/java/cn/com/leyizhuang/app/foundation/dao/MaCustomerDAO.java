@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 import cn.com.leyizhuang.app.foundation.pojo.RankStore;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.MaCustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.response.MaCreateOrderPeopleResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ManageUpdateCustomerTypeResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.CusRankDO;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
@@ -138,4 +139,11 @@ public interface MaCustomerDAO {
     RankClassification findRankClassificationByRankCode(@Param("rankCode")String rankCode);
 
     void deleteCusRankByCusId(@Param("cusId")Long cusId);
+
+    /**
+     * 后台查询下单人
+     * @param keywords 关键字
+     * @return
+     */
+    List<MaCreateOrderPeopleResponse> maFindCreatePeople(@Param("keywords")String keywords);
 }

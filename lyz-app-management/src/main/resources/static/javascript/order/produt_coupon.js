@@ -192,8 +192,8 @@ function screenGoods() {
     $("#goodsDataGrid").bootstrapTable('destroy');
     initGoodsGrid('/rest/goods/page/screenGoodsGrid/buy/coupon?storeId='
         + storeId + '&brandCode=' + brandCode + '&categoryCode='
-        + categoryCode + '&companyCode=' + companyCode+'&productType='+productType
-        + '&cusId='+cusId+'&sellerId='+sellerId);
+        + categoryCode + '&companyCode=' + companyCode + '&productType=' + productType
+        + '&cusId=' + cusId + '&sellerId=' + sellerId);
 }
 //初始化商品信息
 function initGoodsGrid(url) {
@@ -276,18 +276,18 @@ function initGoodsGrid(url) {
                 return '<sapn class="scan" >' + value + '</sapn>';
             }
         }
-    },{
+    }, {
         field: 'priceType',
         title: '产品类型',
         align: 'center',
         formatter: function (value) {
             if (null == value) {
                 return '<span class="scan" >' + '-' + '</span>';
-            } else if (value == "A" || value == "C"){
+            } else if (value == "A" || value == "C") {
                 return '<sapn class="scan" >钻石专供</sapn>';
-            }else if(value == "B" || value == "D"){
+            } else if (value == "B" || value == "D") {
                 return '<sapn class="scan" >黄金专供</sapn>';
-            }else {
+            } else {
                 return '<sapn class="scan" >普通</sapn>';
             }
         }
@@ -340,7 +340,7 @@ function initSeller(url) {
         field: 'mobile',
         title: '导购电话',
         align: 'center',
-        visible:false
+        visible: false
     }, {
         field: 'loginName',
         title: '导购登录名',
@@ -548,7 +548,7 @@ function openGiftsModal() {
                         var giftList = giftListResponse[i].giftList
                         for (var j = 0; j < giftList.length; j++) {
                             var price = giftList[j].retailPrice.toFixed(2);
-                            if ('是' == isArbitraryChoice ){
+                            if ('是' == isArbitraryChoice) {
                                 title += "<tr>" +
                                     "<td><input type='text' id='gid'value=" + giftList[j].goodsId + " style='width:90%;border: none;' readonly /></td>" +
                                     "<td><input id='retailPrice' type='text' value='" + price + "' style='width:90%;border: none;' readonly></td>" +
@@ -558,12 +558,12 @@ function openGiftsModal() {
                                     "<td><input id='enjoyTimes' type='hidden' value='" + giftListResponse[i].enjoyTimes + "'></td>" +
                                     "<td><input id='maxChooseNumber' type='hidden' value='" + giftListResponse[i].maxChooseNumber + "'></td>" +
                                     "</tr>"
-                            }else{
+                            } else {
                                 title += "<tr>" +
                                     "<td><input type='text' id='gid'value=" + giftList[j].goodsId + " style='width:90%;border: none;' readonly /></td>" +
                                     "<td><input id='retailPrice' type='text' value='" + price + "' style='width:90%;border: none;' readonly></td>" +
                                     "<td><input id='title' type='text' value='" + giftList[j].skuName + "' style='width:90%;border: none;' readonly></td>" +
-                                    "<td><input id='giftQty' type='number' value='"+giftList[j].qty+"' readonly></td>" +
+                                    "<td><input id='giftQty' type='number' value='" + giftList[j].qty + "' readonly></td>" +
                                     "<td><input id='promotionId' type='hidden' value='" + giftListResponse[i].promotionId + "'></td>" +
                                     "<td><input id='enjoyTimes' type='hidden' value='" + giftListResponse[i].enjoyTimes + "'></td>" +
                                     "<td><input id='maxChooseNumber' type='hidden' value='" + giftListResponse[i].maxChooseNumber + "'></td>" +
@@ -582,14 +582,29 @@ function openGiftsModal() {
             var promotionDiscountList = promotionsListResponse.promotionDiscountList;
             if (null != promotionDiscountList) {
                 var money = 0;
+                var promotionDiscountTitle = "";
                 for (var a = 0; a < promotionDiscountList.length; a++) {
+                    promotionDiscountTitle += "<div id='promotionDiscountTitle'>" +
+                        "<b style='padding-left: 10px'>立减促销标题:</b>" +
+                        "<span id='promotionDiscountTitle' style='padding-left: 5px'>" + promotionDiscountList[i].promotionTitle + "</span>" +
+                        "<b style='padding-left: 150px'>参与此促销次数:</b>" +
+                        "<span id='promotionDiscountenjoyTimesQty' style='padding-left: 5px'>" + promotionDiscountList[i].enjoyTimes + "</span>" +
+                        "<b style='padding-left: 150px'>优惠金额:</b>" +
+                        "<span id='discountPrice' style='padding-left: 5px'>" + promotionDiscountList[i].discountPrice + "</span>" +
+                        "<div name='aa' id='aa'>" +
+                        "<td><input id='promotionDiscountId' type='hidden' value='" + promotionDiscountList[i].promotionId + "'></td>" +
+                        "<td><input id='promotionDiscountPrice' type='hidden' value='" + promotionDiscountList[i].discountPrice + "'></td>" +
+                        "<td><input id='promotionDiscountenjoyTimes' type='hidden' value='" + promotionDiscountList[i].enjoyTimes + "'></td>" +
+                        "</div>" +
+                        "</div>";
                     money += promotionDiscountList[a].discountPrice;
+
                 }
 
-                var promotionDiscount = "<div class='col-xs-12 col-md-6'>" +
+                promotionDiscountTitle += "</br><div class='col-xs-12 col-md-6'>" +
                     "<div class='form-group'>" +
                     "<label for='description'>" +
-                    "立减金额￥" +
+                    "总共立减金额￥" +
                     "</label>" +
                     "<div class='input-group'>" +
                     "<span class='input-group-addon'><i class='fa fa-cny'></i></span>" +
@@ -600,7 +615,7 @@ function openGiftsModal() {
             }
 
             $("#giftMessage").append(title);
-            $("#subAmount_div").append(promotionDiscount);
+            $("#subAmount_div").append(promotionDiscountTitle);
             //锁定input输入款与a标签按钮
             $("#selectedGoodsTable").find("input,button,textarea,select").attr("readOnly", "readOnly");
             $("#selectedGoodsTable").find("a").removeAttr("onclick");
@@ -776,6 +791,8 @@ function save() {
     var sellerId = $('#sellerId').text();
     var customerId = $('#customerId').text();
     var selectPaymnet = $('#selectPaymnet').val();
+    var vipDiscount = $('#vipDiscount').text();
+    var promotionsDiscount = $('#promotionsDiscount').text();
 
     var salesNumber = $('#salesNumber').val();
     if ('' == sellerId || null == sellerId) {
@@ -813,13 +830,13 @@ function save() {
     }
 
     if (1 == cityId && 'ZY' == storeType && ('' == salesNumber || null == salesNumber)) {
-            $loading.close();
-            $notify.warning("请填写销售纸质单号");
-            return;
+        $loading.close();
+        $notify.warning("请填写销售纸质单号");
+        return;
 
     }
 
-    var totalMoneys = (Number(cashMoney)*100 + Number(posMoney)*100 + Number(otherMoney)*100)/100;
+    var totalMoneys = (Number(cashMoney) * 100 + Number(posMoney) * 100 + Number(otherMoney) * 100) / 100;
 
     var availableMoney = $('#availableMoney').val();
     var preDepositMoney = $('#preDepositMoney').val();
@@ -843,13 +860,13 @@ function save() {
         }
         if (posMoney > 0) {
             if (null == posNumber || '' == posNumber) {
-                    $loading.close();
-                    $notify.warning("请输入POS流水号后六位！");
-                    return;
+                $loading.close();
+                $notify.warning("请输入POS流水号后六位！");
+                return;
             }
         }
-        if (cashMoney < 0){
-            if ((Number(cashMoney)*100 + Number(posMoney)*100)/100 <= 0 ){
+        if (cashMoney < 0) {
+            if ((Number(cashMoney) * 100 + Number(posMoney) * 100) / 100 <= 0) {
                 $loading.close();
                 $notify.warning("当现金金额为负数时，POS金额+现金金额必须大于0");
                 return;
@@ -913,6 +930,8 @@ function save() {
     datas["preDepositCollectMoneyTime"] = preDepositCollectMoneyTime;
     datas["preDepositRemarks"] = preDepositRemarks;
     datas["salesNumber"] = salesNumber;
+    datas["memberDiscount"] = vipDiscount;
+    datas["promotionDiscount"] = promotionsDiscount;
 
     datas["goodsDetails"] = JSON.stringify(goodsDetails);
     datas["giftDetails"] = JSON.stringify(giftDetails);
@@ -984,9 +1003,9 @@ function goodsAndPriceDetail(details, tableId, totalMoney) {
         var retailMoney = $(n).find("#retailPrice").val();
         var memberMoney = $(n).find("#vipPrice").val();
         if ('RETAIL' == customerType) {
-            retailTotalMoney += (Number(retailMoney)*100* Number(num))/100;
+            retailTotalMoney += (Number(retailMoney) * 100 * Number(num)) / 100;
         } else if ('MEMBER' == customerType) {
-            memberTotalMoney += (Number(memberMoney)*100* Number(num))/100;
+            memberTotalMoney += (Number(memberMoney) * 100 * Number(num)) / 100;
         }
         goodsSkus.push(goodsSku);
         details.push({
@@ -1001,13 +1020,13 @@ function goodsAndPriceDetail(details, tableId, totalMoney) {
 
 
     if ('RETAIL' == customerType) {
-        if (null == subAmount){
+        if (null == subAmount) {
             if (Number(retailTotalMoney) != Number(totalMoney)) {
                 $notify.warning("应付金额与收款金额不等，请检查！");
                 return 1;
             }
-        }else{
-            var  mon = (Number(retailTotalMoney)*100 - Number(subAmount)*100)/100;
+        } else {
+            var mon = (Number(retailTotalMoney) * 100 - Number(subAmount) * 100) / 100;
             if (Number(mon) != Number(totalMoney)) {
                 $notify.warning("应付金额与收款金额不等，请检查！");
                 return 1;
@@ -1019,8 +1038,8 @@ function goodsAndPriceDetail(details, tableId, totalMoney) {
                 $notify.warning("应付金额与收款金额不等，请检查！");
                 return 1;
             }
-        }else{
-            var  mone = (Number(memberTotalMoney)*100 - Number(subAmount)*100)/100;
+        } else {
+            var mone = (Number(memberTotalMoney) * 100 - Number(subAmount) * 100) / 100;
             if (Number(mone) != Number(totalMoney)) {
                 $notify.warning("应付金额与收款金额不等，请检查！");
                 return 1;
@@ -1035,24 +1054,41 @@ function goodsAndPriceDetail(details, tableId, totalMoney) {
 function giftDetail(details, divId) {
 
     var tables = $("#" + divId).find("tbody");
+
+    var tabless = $('div[name="aa"]');
+
+
     var subAmount = $("#subAmount").val();
     var discountMoney = 0;
     var num = 0;
     //数量正则
     var re = /^[0-9]+.?[0-9]*$/;
 
+    tabless.each(function (i, n) {
+        var promotionDiscountId = $(n).find("#promotionDiscountId").val();
+        var promotionDiscountPrice = $(n).find("#promotionDiscountPrice").val();
+        var promotionDiscountenjoyTimes = $(n).find("#promotionDiscountenjoyTimes").val();
+
+        details.push({
+            promotionId: promotionDiscountId,
+            discount: promotionDiscountPrice,
+            enjoyTimes: promotionDiscountenjoyTimes,
+            presentInfo: null
+        });
+
+    });
     tables.each(function (i, n) {
-        var maxChooseNumber;
+        var maxChooseNumber = 0;
         var trs = $(n).find('tr');
         var giftGoodsList = new Array();
         var totalQty = 0;
-        var promotionId;
-        var enjoyTimes;
-
+        var promotionId = 0;
+        var enjoyTimes = 0;
         trs.each(function (i, m) {
             var id = $(m).find("#gid").val();
             var qty = $(m).find("#giftQty").val();
             promotionId = $(m).find("#promotionId").val();
+            $notify.warning(promotionId);
             enjoyTimes = $(m).find("#enjoyTimes").val();
             maxChooseNumber = $(n).find("#maxChooseNumber").val();
             totalQty += Number(qty);
@@ -1074,6 +1110,7 @@ function giftDetail(details, divId) {
         } else {
             discountMoney = null;
         }
+
         details.push({
             promotionId: promotionId,
             discount: discountMoney,
@@ -1103,7 +1140,7 @@ function findGoodsByNameOrCode() {
     // } else {
     //     initGoodsGrid('/rest/goods/page/query/goodsInfo?queryGoodsInfo=' + queryGoodsInfo + '&storeId=' + storeId);
     // }
-    initGoodsGrid('/rest/goods/page/grid/buy/coupon?storeId='+ storeId+'&cusId='+cusId+'&keywords='+queryGoodsInfo+'&sellerId='+sellerId);
+    initGoodsGrid('/rest/goods/page/grid/buy/coupon?storeId=' + storeId + '&cusId=' + cusId + '&keywords=' + queryGoodsInfo + '&sellerId=' + sellerId);
 }
 
 
@@ -1143,7 +1180,7 @@ function priceBlur(id) {
         var otherMoney = $("#otherMoney").val();
         var cashMoney = $("#cashMoney").val();
 
-        var totalMoney = (Number(posMoney)*100 + Number(otherMoney)*100 + Number(cashMoney)*100)/100;
+        var totalMoney = (Number(posMoney) * 100 + Number(otherMoney) * 100 + Number(cashMoney) * 100) / 100;
         document.getElementById("totalMoney").value = totalMoney.toFixed(2);
     }
 
@@ -1218,25 +1255,26 @@ function openGoPay() {
             $notify.warning("亲，本品【" + goodsSku + "】数量不正确");
             return;
         }
-        totalPrice += ($(n).find("#retailPrice").val() *100* num)/100;
-        totalVipPrice += ($(n).find("#vipPrice").val() *100* num)/100;
+        totalPrice += ($(n).find("#retailPrice").val() * 100 * num) / 100;
+        totalVipPrice += ($(n).find("#vipPrice").val() * 100 * num) / 100;
 
         $("#totalGoodsPrice").text(totalPrice.toFixed(2));
-        $("#vipDiscount").text(((totalVipPrice*100 - totalPrice*100)/100).toFixed(2));
+        $("#vipDiscount").text(((totalVipPrice * 100 - totalPrice * 100) / 100).toFixed(2));
     });
     var amountsPayable1 = 0.00;
     var subAmount = $("#subAmount").val();
 
     if ('RETAIL' == customerType) {
+        $("#vipDiscount").text('0.00');
         if (null == subAmount) {
             //设置应付金额
             $("#amountsPayable").text(totalPrice.toFixed(2))
         } else {
-            amountsPayable1 = (Number(totalPrice)*100 - Number(subAmount)*100)/100;
+            amountsPayable1 = (Number(totalPrice) * 100 - Number(subAmount) * 100) / 100;
             //设置应付金额
             $("#amountsPayable").text(amountsPayable1.toFixed(2))
             //设置促销折扣
-            $("#promotionsDiscount").text(((0 - Number(subAmount)*100)/100).toFixed(2))
+            $("#promotionsDiscount").text(((0 - Number(subAmount) * 100) / 100).toFixed(2))
         }
 
     } else if ('MEMBER' == customerType) {
@@ -1244,11 +1282,11 @@ function openGoPay() {
             //设置应付金额
             $("#amountsPayable").text(totalVipPrice.toFixed(2))
         } else {
-            amountsPayable1 = (Number(totalVipPrice)*100 - Number(subAmount)*100)/100;
+            amountsPayable1 = (Number(totalVipPrice) * 100 - Number(subAmount) * 100) / 100;
             //设置应付金额
             $("#amountsPayable").text(amountsPayable1.toFixed(2))
             //设置促销折扣
-            $("#promotionsDiscount").text(((0 - Number(subAmount)*100)/100).toFixed(2))
+            $("#promotionsDiscount").text(((0 - Number(subAmount) * 100) / 100).toFixed(2))
         }
     }
 
