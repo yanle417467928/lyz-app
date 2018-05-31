@@ -600,13 +600,12 @@ public class ReturnOrderController {
                     for (ReturnOrderGoodsInfo returnOrderGoodsInfo : goodsInfos) {
                         int index = 0;
                         for (CustomerProductCoupon productCoupon : customerProductCouponList) {
-                            if (AppGoodsLineType.PRODUCT_COUPON.equals(returnOrderGoodsInfo.getGoodsLineType()) &&
-                                    productCoupon.getGoodsLineId().equals(returnOrderGoodsInfo.getOrderGoodsId())) {
+                            if (productCoupon.getGoodsLineId().equals(returnOrderGoodsInfo.getOrderGoodsId())) {
                                 if (index == returnOrderGoodsInfo.getReturnQty()) {
                                     break;
                                 }
                                 ReturnOrderProductCoupon returnOrderProductCoupon = new ReturnOrderProductCoupon();
-                                returnOrderProductCoupon.setGid(returnOrderGoodsInfo.getGid());
+                                returnOrderProductCoupon.setGid(productCoupon.getGoodsId());
                                 returnOrderProductCoupon.setIsReturn(Boolean.FALSE);
                                 returnOrderProductCoupon.setOrderNo(orderNo);
                                 returnOrderProductCoupon.setPcid(productCoupon.getId());

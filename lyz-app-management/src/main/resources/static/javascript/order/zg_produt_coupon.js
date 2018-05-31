@@ -964,7 +964,7 @@ function save() {
             if (result.code === 0) {
                 $loading.close();
                 window.location.href = "/views/admin/order/buy/produtCoupon";
-                $notify.info(result.message);
+                // $notify.info(result.message);
             } else {
                 $loading.close();
                 $notify.danger(result.message);
@@ -1100,7 +1100,6 @@ function giftDetail(details, divId) {
             var id = $(m).find("#gid").val();
             var qty = $(m).find("#giftQty").val();
             promotionId = $(m).find("#promotionId").val();
-            $notify.warning(promotionId);
             enjoyTimes = $(m).find("#enjoyTimes").val();
             maxChooseNumber = $(n).find("#maxChooseNumber").val();
             totalQty += Number(qty);
