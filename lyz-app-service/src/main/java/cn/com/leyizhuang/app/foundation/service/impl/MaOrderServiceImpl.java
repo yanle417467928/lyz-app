@@ -978,8 +978,13 @@ public class MaOrderServiceImpl implements MaOrderService {
                                     customerProductCoupon.setQuantity(1);
                                     customerProductCoupon.setGetType(CouponGetType.BUY);
                                     customerProductCoupon.setGetTime(orderBaseInfo.getCreateTime());
-                                    customerProductCoupon.setEffectiveStartTime(orderBaseInfo.getCreateTime());
-                                    customerProductCoupon.setEffectiveEndTime(null);
+
+                                    Calendar c = Calendar.getInstance();
+                                    customerProductCoupon.setEffectiveStartTime(c.getTime());
+
+                                    c.add(Calendar.MONTH, 6);
+
+                                    customerProductCoupon.setEffectiveEndTime(c.getTime());
                                     customerProductCoupon.setIsUsed(Boolean.FALSE);
                                     customerProductCoupon.setUseTime(null);
                                     customerProductCoupon.setUseOrderNumber(null);
