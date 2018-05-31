@@ -168,13 +168,13 @@ public class AppActServiceImpl implements AppActService {
      * @param userId
      * @param userType
      * @param goodsInfoList
-     * @Param scope 促销范围 买券还是买商品
      * @return
+     * @Param scope 促销范围 买券还是买商品
      */
     @Override
-    public List<PromotionsGiftListResponse> countGift(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList, Long cusId,String scope) throws UnsupportedEncodingException {
+    public List<PromotionsGiftListResponse> countGift(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList, Long cusId, String scope) throws UnsupportedEncodingException {
         List<PromotionsGiftListResponse> giftList = new ArrayList<>();
-        PromotionsListResponse actResultInfos = countAct(userId, userType, goodsInfoList, cusId,scope);
+        PromotionsListResponse actResultInfos = countAct(userId, userType, goodsInfoList, cusId, scope);
 
         if (actResultInfos != null && actResultInfos.getPromotionGiftList() != null) {
             giftList = actResultInfos.getPromotionGiftList();
@@ -192,9 +192,9 @@ public class AppActServiceImpl implements AppActService {
      * @return
      */
     @Override
-    public List<PromotionDiscountListResponse> countDiscount(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList, Long cusId,String scope) throws UnsupportedEncodingException {
+    public List<PromotionDiscountListResponse> countDiscount(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList, Long cusId, String scope) throws UnsupportedEncodingException {
         List<PromotionDiscountListResponse> discountList = new ArrayList<>();
-        PromotionsListResponse actResultInfos = countAct(userId, userType, goodsInfoList, cusId,scope);
+        PromotionsListResponse actResultInfos = countAct(userId, userType, goodsInfoList, cusId, scope);
         if (actResultInfos != null && actResultInfos.getPromotionDiscountList() != null) {
             discountList = actResultInfos.getPromotionDiscountList();
         }
@@ -212,7 +212,7 @@ public class AppActServiceImpl implements AppActService {
      */
     @Override
     @Transactional
-    public PromotionsListResponse countAct(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList, Long cusId,String scope) throws UnsupportedEncodingException {
+    public PromotionsListResponse countAct(Long userId, AppIdentityType userType, List<OrderGoodsSimpleResponse> goodsInfoList, Long cusId, String scope) throws UnsupportedEncodingException {
         //*****促销结果*****
         PromotionsListResponse result = new PromotionsListResponse();
         List<PromotionDiscountListResponse> proDiscountList = new ArrayList<>();
@@ -254,12 +254,12 @@ public class AppActServiceImpl implements AppActService {
             cusId = userId;
 
             /** 计算专供促销 **/
-            List<PromotionsGiftListResponse> zgGiftResponse = this.countZgPromotion(cusId, goodsIdList, goodsPool,scope);
+            List<PromotionsGiftListResponse> zgGiftResponse = this.countZgPromotion(cusId, goodsIdList, goodsPool, scope);
             if (zgGiftResponse != null && zgGiftResponse.size() > 0) {
                 proGiftList.addAll(zgGiftResponse);
             }
 
-            actList = this.getActList(customer, skus,scope);
+            actList = this.getActList(customer, skus, scope);
             customerType = customer.getCustomerType();
 
             result.setPromotionGiftList(proGiftList);
@@ -271,12 +271,12 @@ public class AppActServiceImpl implements AppActService {
             }
 
             /** 计算专供促销 **/
-            List<PromotionsGiftListResponse> zgGiftResponse = this.countZgPromotion(cusId, goodsIdList, goodsPool,scope);
+            List<PromotionsGiftListResponse> zgGiftResponse = this.countZgPromotion(cusId, goodsIdList, goodsPool, scope);
             if (zgGiftResponse != null && zgGiftResponse.size() > 0) {
                 proGiftList.addAll(zgGiftResponse);
             }
 
-            actList = this.getActList(employee, skus,scope);
+            actList = this.getActList(employee, skus, scope);
             customerType = AppCustomerType.MEMBER;
 
             result.setPromotionGiftList(proGiftList);
@@ -434,7 +434,7 @@ public class AppActServiceImpl implements AppActService {
     /*
        返回商品参与的促销 (顾客)
      */
-    private List<ActBaseDO> getActList(AppCustomer cus, List<String> skus,String scope) {
+    private List<ActBaseDO> getActList(AppCustomer cus, List<String> skus, String scope) {
         // 创建一个促销 集合
         List<ActBaseDO> actList = new ArrayList<>();
         // 当前时间
@@ -445,7 +445,7 @@ public class AppActServiceImpl implements AppActService {
         Long storeId = cus.getStoreId();
 
         // 返回用户购买商品参与的未过期的活动
-        actList = actBaseDAO.queryListBySkus(skus, now, cityId, "6", storeId ,scope);
+        actList = actBaseDAO.queryListBySkus(skus, now, cityId, "6", storeId, scope);
         return actList;
     }
 
@@ -453,7 +453,7 @@ public class AppActServiceImpl implements AppActService {
     /*
         返回商品参与的促销 (导购)
      */
-    private List<ActBaseDO> getActList(AppEmployee employee, List<String> skus,String scope) {
+    private List<ActBaseDO> getActList(AppEmployee employee, List<String> skus, String scope) {
         // 创建一个促销 集合
         List<ActBaseDO> actList = new ArrayList<>();
         // 当前时间
@@ -464,7 +464,7 @@ public class AppActServiceImpl implements AppActService {
         Long storeId = employee.getStoreId();
 
         // 返回用户购买商品参与的未过期的活动
-        actList = actBaseDAO.queryListBySkus(skus, now, cityId, "0", storeId,scope);
+        actList = actBaseDAO.queryListBySkus(skus, now, cityId, "0", storeId, scope);
         return actList;
     }
 
@@ -834,7 +834,7 @@ public class AppActServiceImpl implements AppActService {
      *
      * @return
      */
-    public List<PromotionsGiftListResponse> countZgPromotion(Long cusId, List<Long> goodsIdList, Map<String, OrderGoodsSimpleResponse> goodsPool,String scope) {
+    public List<PromotionsGiftListResponse> countZgPromotion(Long cusId, List<Long> goodsIdList, Map<String, OrderGoodsSimpleResponse> goodsPool, String scope) {
         List<PromotionsGiftListResponse> giftListResponseList = new ArrayList<>();
         Long cityId = -1L;
         Long storeId = -1L;
@@ -915,9 +915,9 @@ public class AppActServiceImpl implements AppActService {
 
             //查看是否享受过首单促销记录
             SellZgCusTimes sellZgCusTimes = statisticsSellDetailsService.getTimesByCusIdAndSku(cusId, null, ActBaseType.ZGFRIST);
-            if (sellZgCusTimes == null ) {
+            if (sellZgCusTimes == null) {
                 // 首单
-                List<ActBaseDO> zgFirstList = actBaseDAO.queryZgFirstListByRankCode(cityId, LocalDateTime.now(), storeId, skus, rankCode,scope);
+                List<ActBaseDO> zgFirstList = actBaseDAO.queryZgFirstListByRankCode(cityId, LocalDateTime.now(), storeId, skus, rankCode, scope);
 
                 if (zgFirstList != null && zgFirstList.size() > 0) {
 
@@ -929,14 +929,20 @@ public class AppActServiceImpl implements AppActService {
 
                         /** 首单促销  专供产品满足数量为fullQty个的产品，送sentQty个**/
 
+                        // 获取促销商品范围
+                        List<String> scopeSkus = actGoodsMappingDAO.querySkusByActId(actBaseDO.getId());
+
                         List<GiftListResponseGoods> enjoyActGoodsList = new ArrayList();
                         for (GiftListResponseGoods zgGoods : goodsZGList) {
-                            OrderGoodsSimpleResponse orderGoodsSimpleResponse = goodsPool.get(zgGoods.getSku());
-                            // 判断数量
-                            if (orderGoodsSimpleResponse.getGoodsQty() >= fullQty) {
+                            // 判断此专供是否在促销范围下
+                            if (scopeSkus.contains(zgGoods.getSku())) {
+                                OrderGoodsSimpleResponse orderGoodsSimpleResponse = goodsPool.get(zgGoods.getSku());
+                                // 判断数量
+                                if (orderGoodsSimpleResponse.getGoodsQty() >= fullQty) {
 
-                                zgGoods.setRetailPrice(orderGoodsSimpleResponse.getRetailPrice());
-                                enjoyActGoodsList.add(zgGoods);
+                                    zgGoods.setRetailPrice(orderGoodsSimpleResponse.getRetailPrice());
+                                    enjoyActGoodsList.add(zgGoods);
+                                }
                             }
                         }
 
@@ -952,14 +958,8 @@ public class AppActServiceImpl implements AppActService {
 
                             // 创建赠品list
                             List<GiftListResponseGoods> giftList = new ArrayList<>();
-                            // 获取促销商品范围
-                            List<String> scopeSkus = actGoodsMappingDAO.querySkusByActId(actBaseDO.getId());
-                            for (GiftListResponseGoods giftTemplate : enjoyActGoodsList) {
 
-                                // 判断此专供是否在促销范围下 不在则跳过
-                                if (!scopeSkus.contains(giftTemplate.getSku())){
-                                    continue;
-                                }
+                            for (GiftListResponseGoods giftTemplate : enjoyActGoodsList) {
 
                                 OrderGoodsSimpleResponse orderGoodsSimpleResponse = goodsPool.get(giftTemplate.getSku());
                                 Integer remainQty = orderGoodsSimpleResponse.getGoodsQty() - fullQty;
@@ -1222,7 +1222,7 @@ public class AppActServiceImpl implements AppActService {
             }
         }
 
-        if (baseDO.getBaseType().equals(ActBaseType.ZGFRIST)){
+        if (baseDO.getBaseType().equals(ActBaseType.ZGFRIST)) {
             /** 专供首单赠送产品数量设置 默认 1 **/
             baseDO.setGiftChooseNumber(1);
             baseDO.setIsGoodsOptionalQty(false);
