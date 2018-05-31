@@ -845,7 +845,10 @@ public class AppActServiceImpl implements AppActService {
         //判断会员身份
         CustomerRankInfoResponse customerRankInfoResponse = appCustomerService.findCusRankinfoByCusId(cusId);
         AppCustomer appCustomer = null;
-
+        if (customerRankInfoResponse == null) {
+            // 非专供会员 不能参与专供促销
+            return null;
+        }
         try {
             appCustomer = appCustomerService.findById(cusId);
 
@@ -857,10 +860,7 @@ public class AppActServiceImpl implements AppActService {
             logger.info("计算专供促销，顾客id:" + cusId + "找不到顾客信息");
         }
 
-        if (customerRankInfoResponse == null) {
-            // 非专供会员 不能参与专供促销
-            return null;
-        }
+
 
         /** 一部等级分专供会员不享受促销 **/
 //        String[] excludeLevel = this.ZG_EXCLUDE_LEVEL.split(",");
