@@ -600,8 +600,7 @@ public class ReturnOrderController {
                     for (ReturnOrderGoodsInfo returnOrderGoodsInfo : goodsInfos) {
                         int index = 0;
                         for (CustomerProductCoupon productCoupon : customerProductCouponList) {
-                            if (AppGoodsLineType.PRODUCT_COUPON.equals(returnOrderGoodsInfo.getGoodsLineType()) &&
-                                    productCoupon.getGoodsLineId().equals(returnOrderGoodsInfo.getOrderGoodsId())) {
+                            if (productCoupon.getGoodsLineId().equals(returnOrderGoodsInfo.getOrderGoodsId())) {
                                 if (index == returnOrderGoodsInfo.getReturnQty()) {
                                     break;
                                 }

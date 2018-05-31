@@ -684,4 +684,9 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     public void updateCustomerSellerIdStoreIdByCusId(Long cusId, Long storeId, Long salesConsultId,Date date) {
         customerDAO.updateCustomerSellerIdStoreIdByCusId(cusId, storeId, salesConsultId,date);
     }
+
+    @Override
+    public void updateCusProductCouponsStatusIsFlaseById(Long id) {
+        this.customerDAO.updateCusProductCouponsStatusIsFlaseById(id);
+    }
 }
