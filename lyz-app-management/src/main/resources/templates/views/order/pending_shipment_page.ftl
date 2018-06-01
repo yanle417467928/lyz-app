@@ -441,7 +441,7 @@
                         $('#materialsEnable').html(data.materialsEnable);
 
                         if ('LYZ' === data.companyFlag) {
-                            data.companyFlag = '乐意装';
+                            data.companyFlag = '乐易装';
                         } else if ('HR' === data.companyFlag) {
                             data.companyFlag = '华润'
                         } else if ('YR' === data.companyFlag) {

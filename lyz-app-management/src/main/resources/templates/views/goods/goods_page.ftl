@@ -43,7 +43,7 @@
                         </select>
                         <select name="companyCode" id="companyCode" class="form-control select" style="width:auto;" onchange="screenGoods()">
                             <option value="-1">选择公司</option>
-                            <option value="LYZ">乐意装</option>
+                            <option value="LYZ">乐易装</option>
                             <option value="HR">华润</option>
                             <option value="YR">莹润</option>
                         </select>
@@ -285,7 +285,7 @@
                         $('#materialsEnable').html(data.materialsEnable);
 
                         if ('LYZ' === data.companyFlag) {
-                            data.companyFlag = '乐意装';
+                            data.companyFlag = '乐易装';
                         }else if('HR' === data.companyFlag){
                             data.companyFlag ='华润'
                         } else if('YR' === data.companyFlag){
