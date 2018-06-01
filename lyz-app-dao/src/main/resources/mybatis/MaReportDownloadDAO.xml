@@ -507,7 +507,7 @@
         OR (obi.`status` = 'PENDING_RECEIVE' AND obi.delivery_type = 'SELF_TAKE') THEN '未出货' ELSE '未知'
         END)deliveryStatus,
         oli.shipping_address, og.sku sku, og.sku_name skuName, (CASE WHEN og.company_flag = 'HR' THEN '华润'
-        WHEN og.company_flag = 'LYZ' THEN '乐意装' WHEN og.company_flag = 'YR' THEN '莹润' ELSE '其他' END)companyFlag,
+        WHEN og.company_flag = 'LYZ' THEN '乐易装' WHEN og.company_flag = 'YR' THEN '莹润' ELSE '其他' END)companyFlag,
         og.goods_line_type goodsLineType, IFNULL(og.order_qty, 0) quantity,
         if(og.goods_line_type = "PRODUCT_COUPON",IFNULL((SELECT SUM(purchase_price) from ord_coupon_info where ord_no = obi.ord_no and og.sku = sku)/og.order_qty,0),
         IFNULL(og.settlement_price, 0)) settlementPrice,
@@ -557,7 +557,7 @@
         (CASE WHEN orbi.return_type = 'REFUSED_RETURN' OR orbi.return_type = 'NORMAL_RETURN' THEN '已取货'
         WHEN orbi.return_type = 'CANCEL_RETURN' THEN '订单取消' ELSE '未知' END) deliveryStatus,
         orli.return_full_address, org.sku sku, org.sku_name skuName, (CASE WHEN org.company_flag = 'HR' THEN '华润'
-        WHEN org.company_flag = 'LYZ' THEN '乐意装' WHEN org.company_flag = 'YR' THEN '莹润' ELSE '其他' END) companyFlag,
+        WHEN org.company_flag = 'LYZ' THEN '乐易装' WHEN org.company_flag = 'YR' THEN '莹润' ELSE '其他' END) companyFlag,
         org.goods_line_type goodsLineType, (-1 * IFNULL(org.return_qty,0)) quantity,
         if(org.goods_line_type = "PRODUCT_COUPON",IFNULL((SELECT SUM(purchase_price) from ord_coupon_info where ord_no = orbi.ord_no and org.sku = sku)/org.return_qty,0),
         IFNULL(org.settlement_price, 0)) settlementPrice,
@@ -2198,7 +2198,7 @@
         OR (obi.`status` = 'PENDING_RECEIVE' AND obi.delivery_type = 'SELF_TAKE') THEN '未出货' ELSE '未知'
         END)deliveryStatus,
         oli.shipping_address, og.sku sku, og.sku_name skuName, (CASE WHEN og.company_flag = 'HR' THEN '华润'
-        WHEN og.company_flag = 'LYZ' THEN '乐意装' WHEN og.company_flag = 'YR' THEN '莹润' ELSE '其他' END)companyFlag,
+        WHEN og.company_flag = 'LYZ' THEN '乐易装' WHEN og.company_flag = 'YR' THEN '莹润' ELSE '其他' END)companyFlag,
         og.goods_line_type goodsLineType, IFNULL(og.order_qty, 0) quantity,
         if(og.goods_line_type = "PRODUCT_COUPON",IFNULL((SELECT SUM(purchase_price) from ord_coupon_info where ord_no = obi.ord_no and og.sku = sku)/og.order_qty,0),
         IFNULL(og.settlement_price, 0)) settlementPrice,
@@ -2245,7 +2245,7 @@
         (CASE WHEN orbi.return_type = 'REFUSED_RETURN' OR orbi.return_type = 'NORMAL_RETURN' THEN '已取货'
         WHEN orbi.return_type = 'CANCEL_RETURN' THEN '订单取消' ELSE '未知' END) deliveryStatus,
         orli.return_full_address, org.sku sku, org.sku_name skuName, (CASE WHEN org.company_flag = 'HR' THEN '华润'
-        WHEN org.company_flag = 'LYZ' THEN '乐意装' WHEN org.company_flag = 'YR' THEN '莹润' ELSE '其他' END) companyFlag,
+        WHEN org.company_flag = 'LYZ' THEN '乐易装' WHEN org.company_flag = 'YR' THEN '莹润' ELSE '其他' END) companyFlag,
         org.goods_line_type goodsLineType, (-1 * IFNULL(org.return_qty,0)) quantity,
         if(org.goods_line_type = "PRODUCT_COUPON",IFNULL((SELECT SUM(purchase_price) from ord_coupon_info where ord_no = orbi.ord_no and org.sku = sku)/org.return_qty,0),
         IFNULL(org.settlement_price, 0)) settlementPrice,
