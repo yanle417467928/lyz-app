@@ -48,7 +48,7 @@ public class AccountGoodsItemsDO {
     //产品标识
     private String companyFlag;
     //产品类型
-    private String goodsLineType;
+    private String goodsLineType = "";
     //数量
     private Integer quantity;
     //结算单价
@@ -77,7 +77,10 @@ public class AccountGoodsItemsDO {
     private String companyName;
     //申请退货时间
     private String applyReturnTime;
-
+    //经销单价
+    private Double jxPrice = 0.00;
+    //经销总价
+    private Double totalJxPrice = 0.00;
 
     public void setGoodsLineType(AppGoodsLineType goodsLineType){
         this.goodsLineType = goodsLineType.getDescription();

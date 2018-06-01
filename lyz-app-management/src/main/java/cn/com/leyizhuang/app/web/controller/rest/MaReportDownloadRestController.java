@@ -864,11 +864,11 @@ public class MaReportDownloadRestController extends BaseRestController {
                 //设置筛选条件
                 ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
                 //列宽
-                int[] columnView = {10, 13, 10, 20,  30, 25, 15, 15, 10, 10, 20, 20, 50, 20, 20, 10, 10, 10, 15, 15, 15, 15, 15, 15};
+                int[] columnView = {10, 13, 10, 20,  30, 25, 15, 15, 10, 10, 20, 20, 50, 20, 20, 10, 10, 10, 15, 15, 15, 15,15,15, 15, 15};
                 //列标题
                 String[] titles = {"城市", "门店名称", "门店类型", "下单/反配上架时间", "订单号", "退单号", "顾客", "导购姓名", "配送/退货方式",
                         "出/退货状态", "收货/退货人", "收货/退货人电话", "送/退货地址", "产品编码", "产品名称", "产品标识", "产品类型", "数量", "结算单价", "结算总价",
-                        "成交单价", "成交总价", "单个产品经销差价", "总经销差价"};
+                        "成交单价", "成交总价","经销单价","总经销单价", "单个产品经销差价", "总经销差价"};
                 //计算标题开始行号
                 int row = 1;
                 if (null != map && map.size() > 0) {
@@ -908,6 +908,9 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Number(19, j + row, accountGoodsItemsDO.getSettlementTotlePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     ws.addCell(new Number(20, j + row, accountGoodsItemsDO.getPromotionSharePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     ws.addCell(new Number(21, j + row, accountGoodsItemsDO.getPromotionShareTotlePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Number(22, j + row, accountGoodsItemsDO.getJxPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Number(23, j + row, accountGoodsItemsDO.getTotalJxPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+
                     if (StoreType.JM == accountGoodsItemsDO.getStoreTypes() || StoreType.FX == accountGoodsItemsDO.getStoreTypes()) {
                         if (accountGoodsItemsDO.getGoodsLineType().equals("本品")){
                             String orderNumber = accountGoodsItemsDO.getOrderNumber();
@@ -919,15 +922,15 @@ public class MaReportDownloadRestController extends BaseRestController {
                             if (null == accountGoods) {
                                 accountGoods = new AccountGoodsItemsDO();
                             }
-                            ws.addCell(new Number(22, j + row, null == accountGoods.getWholesalePrice() ? 0D : accountGoods.getWholesalePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                            ws.addCell(new Number(23, j + row, null == accountGoods.getWholesalePrice() ? 0D : accountGoods.getWholesalePrice() * accountGoodsItemsDO.getQuantity(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                            ws.addCell(new Number(24, j + row, null == accountGoods.getWholesalePrice() ? 0D : accountGoods.getWholesalePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                            ws.addCell(new Number(25, j + row, null == accountGoods.getWholesalePrice() ? 0D : accountGoods.getWholesalePrice() * accountGoodsItemsDO.getQuantity(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                         }else{
-                            ws.addCell(new Number(22, j + row, 0D, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                            ws.addCell(new Number(23, j + row, 0D, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                            ws.addCell(new Number(24, j + row, 0D, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                            ws.addCell(new Number(25, j + row, 0D, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                         }
                     } else {
-                        ws.addCell(new Number(22, j + row, 0D, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                        ws.addCell(new Number(23, j + row, 0D, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                        ws.addCell(new Number(24, j + row, 0D, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                        ws.addCell(new Number(25, j + row, 0D, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     }
                 }
             }
