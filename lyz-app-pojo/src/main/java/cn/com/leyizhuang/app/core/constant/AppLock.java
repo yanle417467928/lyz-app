@@ -21,4 +21,9 @@ public class AppLock {
      */
     public static final String BACK_ORDER = "REDIS_LOCK_BACK_ORDER";
 
+    /**
+     * 订单出货封车
+     */
+    public static final String ORDER_SHIPPING = "REDIS_LOCK_ORDER_SHIPPING";
+
 }
