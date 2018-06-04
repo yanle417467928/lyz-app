@@ -175,11 +175,11 @@
         INSERT INTO ord_return_goods_info
         (roid, return_no, order_goods_id, gid, sku, sku_name, retail_price, vip_price, wholesale_price,
          settlement_price, return_price, return_qty,
-         goods_Line_type, company_flag)
+         goods_Line_type, company_flag, goods_sign)
         VALUES
             (#{roid}, #{returnNo}, #{orderGoodsId}, #{gid}, #{sku}, #{skuName}, #{retailPrice}, #{vipPrice},
                       #{wholesalePrice}, #{settlementPrice},
-                      #{returnPrice}, #{returnQty}, #{goodsLineType}, #{companyFlag})
+                      #{returnPrice}, #{returnQty}, #{goodsLineType}, #{companyFlag}, #{goodsSign})
     </insert>
 
     <insert id="saveReturnOrderLogisticsInfo"

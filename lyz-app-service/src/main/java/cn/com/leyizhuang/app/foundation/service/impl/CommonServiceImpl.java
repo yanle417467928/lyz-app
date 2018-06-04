@@ -21,6 +21,7 @@ import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleIn
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.ProductCouponSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.response.CustomerRankInfoResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderGoodsInfo;
@@ -1984,6 +1985,30 @@ public class CommonServiceImpl implements CommonService {
                 throw new OrderSaveException("订单主键生成失败!");
             }
         }
+    }
+
+    @Override
+    public List<OrderGoodsInfo> addGoodsSign(List<OrderGoodsInfo> orderGoodsInfoList, OrderBaseInfo orderBaseInfo) {
+        if (AppIdentityType.CUSTOMER == orderBaseInfo.getCreatorIdentityType()){
+            CustomerRankInfoResponse customerRankInfoResponse = this.customerService.findCusRankinfoByCusId(orderBaseInfo.getCreatorId());
+            if (null != customerRankInfoResponse) {
+                Long storeId = orderBaseInfo.getStoreId();
+                String rankCode = customerRankInfoResponse.getRankCode();
+                List<GoodsPrice> goodsPriceList = this.goodsPriceService.findGoodsPriceListByStoreIdAndPriceType(storeId, rankCode);
+                if (null != goodsPriceList && goodsPriceList.size() > 0) {
+                    for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
+//                        if (goodsInfo.getGoodsLineType() == AppGoodsLineType.PRODUCT_COUPON) {
+                            for (GoodsPrice goodsPrice : goodsPriceList) {
+                                if (goodsInfo.getGid().equals(goodsPrice.getGid())) {
+                                    goodsInfo.setGoodsSign(rankCode);
+                                }
+                            }
+//                        }
+                    }
+                }
+            }
+        }
+        return orderGoodsInfoList;
     }
 
 }

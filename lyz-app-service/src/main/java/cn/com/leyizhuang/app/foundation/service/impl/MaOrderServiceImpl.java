@@ -995,6 +995,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                                     customerProductCoupon.setStatus(Boolean.TRUE);
                                     customerProductCoupon.setDisableTime(null);
                                     customerProductCoupon.setGoodsLineId(goodsInfo.getId());
+                                    customerProductCoupon.setGoodsSign(goodsInfo.getGoodsSign());
                                     //保存产品券信息
                                     productCouponService.addCustomerProductCoupon(customerProductCoupon);
 
@@ -1246,6 +1247,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                 returnGoodsInfo.setSettlementPrice(orderGoodsInfo.getSettlementPrice());
                 returnGoodsInfo.setCompanyFlag(orderGoodsInfo.getCompanyFlag());
                 returnGoodsInfo.setGoodsLineType(orderGoodsInfo.getGoodsLineType());
+                returnGoodsInfo.setGoodsSign(orderGoodsInfo.getGoodsSign());
                 returnOrderGoodsInfos.add(returnGoodsInfo);
                 //保存退单商品信息
                 returnOrderService.saveReturnOrderGoodsInfo(returnGoodsInfo);

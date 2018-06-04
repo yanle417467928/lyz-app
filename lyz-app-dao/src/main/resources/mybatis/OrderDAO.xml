@@ -251,7 +251,8 @@
             goods_line_type         goods_line_type,
             price_item_id           priceItemId,
             company_flag            companyFlag,
-            cover_image_uri         coverImageUri
+            cover_image_uri         coverImageUri,
+            goods_sign              goodsSign
         FROM
             ord_goods_info
         WHERE
@@ -761,7 +762,7 @@
             oid, ord_no, goods_line_type, gid, sku, sku_name, retail_price, VIP_price, wholesale_price, promotion_id,
             is_price_share, promotion_share_price, lb_share_price, cash_coupon_share_price, cash_return_share_price,
             return_price, is_returnable, return_priority, order_qty, shipping_qty, return_qty, returnable_qty, settlement_price,
-            price_item_id, company_flag, cover_image_uri
+            price_item_id, company_flag, cover_image_uri,goods_sign
         )
         VALUES (#{oid}, #{orderNumber}, #{goodsLineType}, #{gid}, #{sku}, #{skuName}, #{retailPrice}, #{VIPPrice},
                         #{wholesalePrice}, #{promotionId},
@@ -770,7 +771,7 @@
                                          #{returnPrice}, #{isReturnable}, #{returnPriority}, #{orderQuantity},
                                          #{shippingQuantity},
                                          #{returnQuantity}, #{returnableQuantity}, #{settlementPrice},
-                #{priceItemId}, #{companyFlag}, #{coverImageUri})
+                #{priceItemId}, #{companyFlag}, #{coverImageUri},#{goodsSign})
 
     </insert>
 

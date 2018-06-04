@@ -347,6 +347,9 @@ public class OrderController {
             Map<Long, Integer> inventoryCheckMap = commonService.createInventoryCheckMap(orderGoodsInfoList);
             support.setInventoryCheckMap(inventoryCheckMap);
 
+            //添加商品专供标志
+            orderGoodsInfoList = this.commonService.addGoodsSign(orderGoodsInfoList, orderBaseInfo);
+
             //**************** 1、检查库存和与账单支付金额是否充足,如果充足就扣减相应的数量 ***********
             //**************** 2、持久化订单相关实体信息 ****************
             transactionalSupportService.createOrderBusiness(deliverySimpleInfo, support.getInventoryCheckMap(), orderParam.getCityId(), orderParam.getIdentityType(),
@@ -656,8 +659,14 @@ public class OrderController {
             freight = deliveryFeeRuleService.countDeliveryFee(identityType, cityId, CountUtil.add(totalOrderAmount, proCouponDiscount), goodsInfo);
 
             totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
+            ArrayList<Long> allGoods = new ArrayList<>();
+            allGoods.addAll(goodsIds);
+            allGoods.addAll(giftIds);
+            allGoods.addAll(couponIds);
 
-            goodsSettlement.put("totalQty", goodsQty + giftQty + couponQty);
+
+//            goodsSettlement.put("totalQty", goodsQty + giftQty + couponQty);
+            goodsSettlement.put("totalQty", AssertUtil.getArrayList(allGoods).size());
             goodsSettlement.put("totalPrice", CountUtil.add(totalPrice, proCouponDiscount));
             goodsSettlement.put("totalGoodsInfo", goodsInfo);
             goodsSettlement.put("orderDiscount", orderDiscount);

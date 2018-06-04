@@ -1367,6 +1367,7 @@ public class ReturnOrderController {
         returnOrderGoodsInfo.setGoodsLineType(goodsInfo.getGoodsLineType());
         returnOrderGoodsInfo.setSettlementPrice(goodsInfo.getSettlementPrice());
         returnOrderGoodsInfo.setCompanyFlag(goodsInfo.getCompanyFlag());
+        returnOrderGoodsInfo.setGoodsSign(goodsInfo.getGoodsSign());
         return returnOrderGoodsInfo;
     }
 

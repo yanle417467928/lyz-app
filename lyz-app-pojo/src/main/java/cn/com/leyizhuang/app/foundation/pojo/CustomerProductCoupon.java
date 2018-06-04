@@ -117,4 +117,8 @@ public class CustomerProductCoupon implements Serializable {
      * 产生赠送此券的原商品 sku
      */
     private String bindSku;
+    /**
+     * 商品标志（普通、专供）
+     */
+    private String goodsSign;
 }

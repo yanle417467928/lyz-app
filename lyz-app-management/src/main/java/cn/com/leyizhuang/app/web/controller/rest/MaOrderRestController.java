@@ -958,6 +958,7 @@ public class MaOrderRestController extends BaseRestController {
             for (MaActGoodsMapping goods : goodsList) {
                 goodsIdList.add(goods.getGid());
             }
+            String goodsSign = "COMMON";
             List<GiftListResponseGoods> goodsZGList = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserId(goodsIdList, customerId, AppIdentityType.CUSTOMER);
             if (goodsZGList != null && goodsZGList.size() > 0) {
                 // 校验专供会员身份
@@ -975,7 +976,7 @@ public class MaOrderRestController extends BaseRestController {
                         e.printStackTrace();
                         logger.info("购买产品券失败，到不到id：" + customerId + "顾客找不到");
                     }
-
+                    goodsSign = customerRankInfoResponse.getRankCode();
                     Long cusSellerId = appCustomer.getSalesConsultId();
 
                     if (!cusSellerId.equals(sellerId)) {
@@ -1089,6 +1090,17 @@ public class MaOrderRestController extends BaseRestController {
 
             //******** 分摊完毕 计算退货 单价 ***************************
             orderGoodsInfoList = dutchService.countReturnPrice(orderGoodsInfoList);
+
+            if (null != goodsZGList && goodsZGList.size() > 0
+                    && null != orderGoodsInfoList && orderGoodsInfoList.size() > 0){
+                for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList){
+                    for (GiftListResponseGoods goods : goodsZGList){
+                        if (orderGoodsInfo.getGid().equals(goods.getGoodsId())){
+                            orderGoodsInfo.setGoodsSign(goodsSign);
+                        }
+                    }
+                }
+            }
 
             //**************** 1、检查账单支付金额是否充足,如果充足就扣减相应的数量 ***********
             //**************** 2、持久化订单相关实体信息 ****************

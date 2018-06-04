@@ -122,5 +122,5 @@ public interface CommonService {
     void saveOrderRelevantInfo(OrderBaseInfo orderBaseInfo, OrderLogisticsInfo orderLogisticsInfo,List<OrderGoodsInfo> orderGoodsInfoList,
                                OrderBillingDetails orderBillingDetails) throws UnsupportedEncodingException;
 
-
+    List<OrderGoodsInfo> addGoodsSign(List<OrderGoodsInfo> orderGoodsInfoList, OrderBaseInfo orderBaseInfo);
 }
