@@ -1385,6 +1385,7 @@ public class CommonServiceImpl implements CommonService {
                         returnDetails.setRefundNumber(OrderUtils.getRefundNumber());
                         returnDetailsList.add(returnDetails);
                         returnOrderService.saveReturnOrderJxPriceDifferenceRefundDetails(returnDetails);
+                        break;
                     }
                 }
             }
