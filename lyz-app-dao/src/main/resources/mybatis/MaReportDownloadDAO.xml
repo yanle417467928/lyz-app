@@ -815,6 +815,7 @@
         orgi.return_qty as orderQty,
         orgi.return_price as returnPrice,
         orpc.purchase_price as purchasePrice,
+        orpc.qty as couponQty,
         orbi.return_no as referenceNumber,
         wh.wh_name as wareHouse
         from ord_return_base_info orbi
@@ -823,7 +824,8 @@
         LEFT JOIN ord_return_delivery_detail ordd ON orbi.return_no = ordd.return_no
         LEFT JOIN st_store ss ON orbi.store_id = ss.store_id
         LEFT JOIN ord_return_logistic_info orli on orli.return_no = orbi.return_no
-        LEFT JOIN ord_return_product_coupon orpc on orbi.return_no =orpc.return_no
+        LEFT JOIN (select return_no,purchase_price ,sum(qty) qty,sku from ord_return_product_coupon GROUP BY return_no,sku,purchase_price) orpc on orbi.return_no =orpc.return_no
+        AND orpc.sku = orgi.sku  AND orgi.goods_line_type='PRODUCT_COUPON'
         LEFT JOIN warehouse wh on wh.wh_no = ordd.warehouse_no
         where
         orli.delivery_type='HOUSE_PICK'
@@ -876,6 +878,7 @@
         orgi.return_qty as orderQty,
         orgi.return_price as returnPrice,
         orpc.purchase_price as purchasePrice,
+        orpc.qty as couponQty,
         orbi.return_no as referenceNumber,
         "" as wareHouse
         from ord_return_base_info orbi
@@ -884,7 +887,8 @@
         LEFT JOIN st_store ss ON orbi.store_id = ss.store_id
         LEFT JOIN ord_return_lifecycle orl ON orbi.return_no = orl.return_no
         LEFT JOIN ord_return_logistic_info orli on orli.return_no = orbi.return_no
-        LEFT JOIN ord_return_product_coupon orpc on orbi.return_no =orpc.return_no
+        LEFT JOIN (select return_no,purchase_price ,sum(qty) qty,sku from ord_return_product_coupon GROUP BY return_no,sku,purchase_price) orpc on orbi.return_no =orpc.return_no
+        AND orpc.sku = orgi.sku  AND orgi.goods_line_type='PRODUCT_COUPON'
         where
         orli.delivery_type='RETURN_STORE'
         AND
@@ -938,13 +942,15 @@
         ogi.order_qty as orderQty,
         ogi.return_price as returnPrice,
         oci.purchase_price as purchasePrice,
+        oci.qty as couponQty ,
         obi.ord_no as referenceNumber,
         wh.wh_name as wareHouse
         from ord_base_info obi
         LEFT JOIN ord_goods_info ogi ON obi.ord_no =ogi.ord_no
         LEFT JOIN ord_delivery_info_details odid ON obi.ord_no = odid.order_no
         LEFT JOIN st_store ss ON obi.store_id = ss.store_id
-        LEFT JOIN ord_coupon_info oci ON obi.ord_no= oci.ord_no
+        LEFT JOIN (select ord_no,purchase_price ,count(*) as qty,sku from ord_coupon_info GROUP BY sku,purchase_price,ord_no) oci ON obi.ord_no= oci.ord_no
+        AND oci.sku = ogi.sku  AND ogi.goods_line_type='PRODUCT_COUPON'
         LEFT JOIN warehouse wh on wh.wh_no = odid.warehouse_no
         where
         obi.delivery_type ='HOUSE_DELIVERY'
@@ -998,13 +1004,15 @@
         ogi.order_qty as orderQty,
         ogi.return_price as returnPrice,
         oci.purchase_price as purchasePrice,
+        oci.qty as couponQty,
         obi.ord_no as referenceNumber,
         "" as wareHouse
         from ord_base_info obi
         LEFT JOIN ord_goods_info ogi ON ogi.ord_no =obi.ord_no
         LEFT JOIN st_store ss ON obi.store_id = ss.store_id
         LEFT JOIN ord_lifecycle ol ON obi.ord_no = ol.ord_no
-        LEFT JOIN ord_coupon_info oci ON obi.ord_no= oci.ord_no
+        LEFT JOIN (select ord_no,purchase_price ,count(*) as qty,sku from ord_coupon_info GROUP BY sku,purchase_price,ord_no) oci ON obi.ord_no= oci.ord_no
+        AND oci.sku = ogi.sku  AND ogi.goods_line_type='PRODUCT_COUPON'
         where
         obi.delivery_type ='SELF_TAKE'
         AND
