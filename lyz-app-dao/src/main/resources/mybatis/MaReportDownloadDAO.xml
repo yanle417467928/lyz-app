@@ -1876,7 +1876,7 @@
         if(org.goods_line_type = "PRODUCT_COUPON" ,
         if(oci.purchase_price = 0,0,-ABS(if(og2.goods_line_type = "GOODS",(oci.purchase_price - (org.settlement_price - org.wholesale_price)),oci.purchase_price) * org.return_qty)) ,
         -ABS(IF(org.goods_line_type = "GOODS" , (org.wholesale_price * org.return_qty) , 0))) as 'distributionSales',
-        -ABS(if(org.goods_line_type = "GOODS", org.wholesale_price , if((org.goods_line_type = "PRESENT" OR oci.get_type = 'MANUAL_GRANT' or oci.purchase_price = 0),0,org.wholesale_price))) as 'wholesalePrice',
+        -ABS(if(org.goods_line_type = "GOODS", org.wholesale_price , if((org.goods_line_type = "PRESENT" OR ccpc.get_type = 'MANUAL_GRANT' or oci.purchase_price = 0),0,org.wholesale_price))) as 'wholesalePrice',
         0 as 'retailPrice',
         0 as 'settlementPrice',
         0 as 'memberDiscount',
@@ -1894,8 +1894,8 @@
         LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
         LEFT JOIN inter_wta_return_order_back_header wro ON wro.po_no = orb.return_no
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
-        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and org.sku = oci.sku and org.goods_line_type = 'PRODUCT_COUPON'
-        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
+        LEFT JOIN ord_return_product_coupon oci on orb.roid = oci.roid and org.sku = oci.sku and org.goods_line_type = 'PRODUCT_COUPON'
+        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.pcid
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
         where
@@ -1958,7 +1958,7 @@
         if(org.goods_line_type = "PRODUCT_COUPON" ,
         if(oci.purchase_price = 0,0,-ABS(if(og2.goods_line_type = "GOODS",(oci.purchase_price - (org.settlement_price - org.wholesale_price)),oci.purchase_price) * org.return_qty)) ,
         -ABS(IF(org.goods_line_type = "GOODS" , (org.wholesale_price * org.return_qty) , 0))) as 'distributionSales',
-        -ABS(if(org.goods_line_type = "GOODS", org.wholesale_price , if((org.goods_line_type = "PRESENT" OR oci.get_type = 'MANUAL_GRANT' or oci.purchase_price = 0),0,org.wholesale_price))) as 'wholesalePrice',
+        -ABS(if(org.goods_line_type = "GOODS", org.wholesale_price , if((org.goods_line_type = "PRESENT" OR ccpc.get_type = 'MANUAL_GRANT' or oci.purchase_price = 0),0,org.wholesale_price))) as 'wholesalePrice',
         0 as 'retailPrice',
         0 as 'settlementPrice',
         0 as 'memberDiscount',
@@ -1976,8 +1976,8 @@
         LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
 
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
-        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and org.sku = oci.sku and org.goods_line_type = 'PRODUCT_COUPON'
-        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
+        LEFT JOIN ord_return_product_coupon oci on orb.roid = oci.roid and org.sku = oci.sku and org.goods_line_type = 'PRODUCT_COUPON'
+        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.pcid
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
         where
@@ -2132,7 +2132,7 @@
         if(oci.purchase_price = 0,0,
         -ABS(if(og2.goods_line_type = "GOODS",(oci.purchase_price - (org.settlement_price - org.wholesale_price)),oci.purchase_price) * org.return_qty)) ,
         -ABS(IF(org.goods_line_type = "GOODS" , (org.wholesale_price * org.return_qty) , 0))) as 'distributionSales',
-        -ABS(if(org.goods_line_type = "GOODS", org.wholesale_price , if((org.goods_line_type = "PRESENT" OR oci.get_type = 'MANUAL_GRANT' or oci.purchase_price = 0),0,org.wholesale_price))) as 'wholesalePrice',
+        -ABS(if(org.goods_line_type = "GOODS", org.wholesale_price , if((org.goods_line_type = "PRESENT" OR ccpc.get_type = 'MANUAL_GRANT' or oci.purchase_price = 0),0,org.wholesale_price))) as 'wholesalePrice',
         0 as 'retailPrice',
         0 as 'settlementPrice',
         0 as 'memberDiscount',
@@ -2150,8 +2150,8 @@
         LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
         LEFT JOIN inter_wta_return_order_back_header wro ON wro.po_no = orb.return_no
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
-        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and org.sku = oci.sku and org.goods_line_type = 'PRODUCT_COUPON'
-        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
+        LEFT JOIN ord_return_product_coupon oci on orb.roid = oci.roid and org.sku = oci.sku and org.goods_line_type = 'PRODUCT_COUPON'
+        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.pcid
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         LEFT JOIN emp_employee e2 on e2.emp_id = s.sales_manager
         LEFT JOIN st_store st2 on st2.store_id = e2.store_id
