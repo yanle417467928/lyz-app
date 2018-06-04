@@ -864,11 +864,11 @@ public class MaReportDownloadRestController extends BaseRestController {
                 //设置筛选条件
                 ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
                 //列宽
-                int[] columnView = {10, 13, 10, 20,  30, 25, 15, 15, 10, 10, 20, 20, 50, 20, 20, 10, 10, 10, 15, 15, 15, 15,15,15, 15, 15};
+                int[] columnView = {10, 13, 10, 20,  30, 25, 15, 15, 10, 10, 20, 20, 50, 20, 20, 10, 10, 10, 15, 15, 15, 15,15,15, 15, 10 , 5 , 30,20};
                 //列标题
                 String[] titles = {"城市", "门店名称", "门店类型", "下单/反配上架时间", "订单号", "退单号", "顾客", "导购姓名", "配送/退货方式",
                         "出/退货状态", "收货/退货人", "收货/退货人电话", "送/退货地址", "产品编码", "产品名称", "产品标识", "产品类型", "数量", "结算单价", "结算总价",
-                        "成交单价", "成交总价","经销单价","总经销单价", "单个产品经销差价", "总经销差价"};
+                        "成交单价", "成交总价","经销单价","总经销价", "单个产品经销差价", "总经销差价","下单人","单位","备注","楼盘信息"};
                 //计算标题开始行号
                 int row = 1;
                 if (null != map && map.size() > 0) {
@@ -932,6 +932,10 @@ public class MaReportDownloadRestController extends BaseRestController {
                         ws.addCell(new Number(24, j + row, 0D, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                         ws.addCell(new Number(25, j + row, 0D, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     }
+                    ws.addCell(new Label(26, j + row, accountGoodsItemsDO.getCreatorName(), textFormat));
+                    ws.addCell(new Label(27, j + row, accountGoodsItemsDO.getGoodsUnit(), textFormat));
+                    ws.addCell(new Label(28, j + row, accountGoodsItemsDO.getRemark(), textFormat));
+                    ws.addCell(new Label(29, j + row, accountGoodsItemsDO.getEstateInfo(), textFormat));
                 }
             }
         } catch (Exception e) {
@@ -1422,7 +1426,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                 int[] columnView = {10, 40, 20, 20, 30, 15, 15};
                 //列标题城市
 
-                String[] titles = {"城市", "门店名称", "门店类型", "项目", "订单号", "出退货日期", "原订单日期", "客户编号", "客户电话", "客户姓名", "客户类型", "销顾姓名", "公司标识", "商品编码", "商品名称", "产品类型", "数量", "成交单价", "成交总价"};
+                String[] titles = {"城市", "门店名称", "门店类型", "项目", "订单号", "出退货日期", "原订单日期", "客户编号", "客户电话", "客户姓名", "客户类型", "销顾姓名", "公司标识", "商品编码", "商品名称", "产品类型", "数量", "成交单价", "成交总价","仓库信息"};
                 //计算标题开始行号
                 int row = 1;
                 if (null != map && map.size() > 0) {
@@ -1463,6 +1467,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                     if (null != shipmentAndReturnGoods.getAmount()) {
                         ws.addCell(new Label(18, j + row, shipmentAndReturnGoods.getAmount().toString(), textFormat));
                     }
+                    ws.addCell(new Label(19, j + row, shipmentAndReturnGoods.getWareHouse(), textFormat));
                 }
             }
         } catch (Exception e) {

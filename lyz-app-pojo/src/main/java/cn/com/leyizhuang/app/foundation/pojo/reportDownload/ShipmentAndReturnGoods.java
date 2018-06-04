@@ -60,6 +60,8 @@ public class ShipmentAndReturnGoods {
     private BigDecimal purchasePrice;
     //相关单号
     private String referenceNumber;
+    //仓库名称
+    private String wareHouse = "";
 
     public void setCustomerType(AppCustomerType appCustomerType) {
         this.customerType = appCustomerType.getDescription();

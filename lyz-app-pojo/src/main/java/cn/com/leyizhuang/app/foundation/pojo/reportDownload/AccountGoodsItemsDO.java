@@ -81,6 +81,14 @@ public class AccountGoodsItemsDO {
     private Double jxPrice = 0.00;
     //经销总价
     private Double totalJxPrice = 0.00;
+    //下单人
+    private String creatorName;
+    //单位
+    private String goodsUnit;
+    //备注
+    private String remark;
+    //楼盘信息
+    private String estateInfo;
 
     public void setGoodsLineType(AppGoodsLineType goodsLineType){
         this.goodsLineType = goodsLineType.getDescription();
