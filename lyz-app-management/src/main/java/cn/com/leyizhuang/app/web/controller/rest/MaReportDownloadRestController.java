@@ -7,7 +7,6 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.management.User;
-import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
 import cn.com.leyizhuang.app.foundation.pojo.reportDownload.*;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsVO;
@@ -40,16 +39,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.Boolean;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author GenerationRoad
@@ -1462,10 +1452,10 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Label(13, j + row, shipmentAndReturnGoods.getSku(), textFormat));
                     ws.addCell(new Label(14, j + row, shipmentAndReturnGoods.getSkuName(), textFormat));
                     ws.addCell(new Label(15, j + row, shipmentAndReturnGoods.getGoodsLineType(), textFormat));
-                    ws.addCell(new Label(16, j + row, shipmentAndReturnGoods.getOrderQty().toString(), textFormat));
-                    ws.addCell(new Label(17, j + row, shipmentAndReturnGoods.getReturnPrice().toString(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Number(16, j + row, shipmentAndReturnGoods.getOrderQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(17, j + row, shipmentAndReturnGoods.getReturnPrice().doubleValue(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     if (null != shipmentAndReturnGoods.getAmount()) {
-                        ws.addCell(new Label(18, j + row, shipmentAndReturnGoods.getAmount().toString(), textFormat));
+                        ws.addCell(new Number(18, j + row, shipmentAndReturnGoods.getAmount().doubleValue(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     }
                     ws.addCell(new Label(19, j + row, shipmentAndReturnGoods.getWareHouse(), textFormat));
                 }
