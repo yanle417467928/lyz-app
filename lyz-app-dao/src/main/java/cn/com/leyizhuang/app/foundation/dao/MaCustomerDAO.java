@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.foundation.pojo.PayhelperInfo;
 import cn.com.leyizhuang.app.foundation.pojo.RankStore;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.MaCustomerPreDeposit;
@@ -148,4 +149,10 @@ public interface MaCustomerDAO {
     List<MaCreateOrderPeopleResponse> maFindCreatePeople(@Param("keywords")String keywords,@Param("peopleType")String peopleType);
 
     List<MaCreateOrderPeopleResponse> maFindCreatePeopleByStoreId(@Param("storeId")Long storeId);
+
+    PayhelperInfo findPayhelperInfoByCusId(@Param("cusId")Long cusId);
+
+    void updatePayhelperInfoByCusId(PayhelperInfo payhelperInfo);
+
+    void addPayhelperInfo(PayhelperInfo payhelperInfo);
 }

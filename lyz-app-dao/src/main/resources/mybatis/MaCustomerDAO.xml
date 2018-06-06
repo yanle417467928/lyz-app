@@ -585,4 +585,74 @@
             AND e.identity_type = 'DECORATE_MANAGER'
             AND e.store_id = #{storeId}
     </select>
+
+    <select id="findPayhelperInfoByCusId" resultType="cn.com.leyizhuang.app.foundation.pojo.PayhelperInfo">
+        SELECT
+            id,
+            create_time,
+            lender_id,
+            lender_name,
+            lender_phone,
+            store_code,
+            loan_subject_type,
+            seller_manager_id,
+            seller_maneger_name,
+            seller_maneger_phone,
+            is_open_payhelper isOpenPayhepler
+        FROM
+            payhelper_info
+        WHERE
+            lender_id = #{cusId}
+    </select>
+
+    <update id="updatePayhelperInfoByCusId" parameterType="cn.com.leyizhuang.app.foundation.pojo.PayhelperInfo">
+        UPDATE payhelper_info
+        <set>
+            <if test="null != storeCode">
+                store_code = #{storeCode},
+            </if>
+            <if test="null != loanSubjectType">
+                loan_subject_type = #{loanSubjectType},
+            </if>
+            <if test="null != sellerManagerId">
+                seller_manager_id = #{sellerManagerId},
+            </if>
+            <if test="null != sellerManagerName">
+                seller_maneger_name = #{sellerManagerName},
+            </if>
+            <if test="null != sellerManagerPhone">
+                seller_maneger_phone = #{sellerManagerPhone},
+            </if>
+            <if test="null != isOpenPayhepler">
+                is_open_payhelper = #{isOpenPayhepler},
+            </if>
+        </set>
+        WHERE
+        lender_id = #{lenderId}
+    </update>
+
+    <insert id="addPayhelperInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.PayhelperInfo">
+        INSERT payhelper_info
+           (create_time,
+            lender_id,
+            lender_name,
+            lender_phone,
+            store_code,
+            loan_subject_type,
+            seller_manager_id,
+            seller_maneger_name,
+            seller_maneger_phone,
+            is_open_payhelper)
+         VALUES (
+             #{createTime},
+             #{lenderId},
+             #{lenderName},
+             #{lenderPhone},
+             #{storeCode},
+             #{loanSubjectType},
+             #{sellerManagerId},
+             #{sellerManagerName},
+             #{sellerManagerPhone},
+             #{isOpenPayhepler})
+    </insert>
 </mapper>
