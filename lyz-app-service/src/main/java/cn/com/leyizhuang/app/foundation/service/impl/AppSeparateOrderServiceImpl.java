@@ -12,6 +12,7 @@ import cn.com.leyizhuang.app.foundation.dao.StPreDepositWithdrawDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.StPreDepositWithdraw;
 import cn.com.leyizhuang.app.foundation.pojo.WithdrawRefundInfo;
+import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorationCompanyCreditBillingDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
@@ -76,6 +77,9 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
 
     @Resource
     private StPreDepositWithdrawDAO stPreDepositWithdrawDAO;
+
+    @Resource
+    private GoodsService goodsService;
 
     @Autowired
     private MaDecorationCompanyCreditBillingService maDecorationCompanyCreditBillingService;
@@ -314,8 +318,20 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         receiptInf.setCreateTime(new Date());
                         receiptInf.setReceiptDate(billing.getPayTime());
                         receiptInf.setReceiptType(billing.getPayType());
-                        receiptInf.setStoreOrgId(baseInfo.getStoreOrgId());
-                        receiptInf.setDiySiteCode(baseInfo.getStoreCode());
+                        //代付款导购门店预存款 --门店信息挂导购的门店
+                        if (OrderBillingPaymentType.SELLER_ST_PREPAY == billing.getPayType()
+                                && PaymentSubjectType.SELLER == billing.getPaymentSubjectType()
+                                && AppOrderSubjectType.FIT == baseInfo.getOrderSubjectType()){
+                            AppStore store = this.storeService.findStoreByUserIdAndIdentityType(baseInfo.getSalesConsultId(), AppIdentityType.SELLER.getValue());
+                            if (null != store){
+                                receiptInf.setStoreOrgId(store.getStoreId());
+                                receiptInf.setDiySiteCode(store.getStoreCode());
+                                receiptInf.setReceiptType(OrderBillingPaymentType.ST_PREPAY);
+                            }
+                        } else {
+                            receiptInf.setStoreOrgId(baseInfo.getStoreOrgId());
+                            receiptInf.setDiySiteCode(baseInfo.getStoreCode());
+                        }
                         receiptInf.setReceiptNumber(billing.getReceiptNumber());
                         receiptInf.setSobId(baseInfo.getSobId());
                         receiptInf.setUserId(null == baseInfo.getCustomerId() ? baseInfo.getCreatorId() : baseInfo.getCustomerId());
@@ -363,9 +379,71 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         (null == billingDetail.getStPreDeposit() ? 0D : billingDetail.getStPreDeposit()));
                 orderKeyInf.setDecSubvention(null == billingDetail.getStoreSubvention() ? 0D : billingDetail.getStoreSubvention());
                 orderKeyInf.setEmpCreditMoney(null == billingDetail.getEmpCreditMoney() ? 0D : billingDetail.getEmpCreditMoney());
+                //***********************************生成应收接口表信息*************************************
+                //主单应收总金额
+                Double mainTotalPrice = 0D;
+
+                //分单应收总金额
+                Double totalPriceHR = 0D;
+                Double totalPriceYR = 0D;
+                Double totalPriceLYZ = 0D;
+
+                //券金额
+                Double couponTotalPriceHR = 0D;
+                Double couponTotalPriceYR = 0D;
+                Double couponTotalPriceLYZ = 0D;
+                //分单应收List
+                List<OrderReceivablePriceInf> orderReceivablePriceInfList = new ArrayList<>();
+                for (OrderGoodsInf orderGoodsInf : orderGoodsInfList){
+                    if (orderGoodsInf.getProductType().equals(ProductType.HR)){
+                        totalPriceHR += CountUtil.mul(orderGoodsInf.getReturnPrice() , orderGoodsInf.getQuantity());
+                    }else if (orderGoodsInf.getProductType().equals(ProductType.LYZ)){
+                        totalPriceLYZ += CountUtil.mul(orderGoodsInf.getReturnPrice() , orderGoodsInf.getQuantity());
+                    }else if (orderGoodsInf.getProductType().equals(ProductType.YR)){
+                        totalPriceYR += CountUtil.mul(orderGoodsInf.getReturnPrice() , orderGoodsInf.getQuantity());
+                    }
+                }
+                for (OrderCouponInf orderCouponInf : couponInfList){
+                    if (orderCouponInf.getCouponType().equals(OrderCouponType.PRODUCT_COUPON)) {
+                        if ("HR".equals(orderCouponInf.getProductType().getValue())) {
+                            couponTotalPriceHR = CountUtil.add(couponTotalPriceHR, orderCouponInf.getBuyPrice());
+                        }else if ("YR".equals(orderCouponInf.getProductType().getValue())){
+                            couponTotalPriceYR = CountUtil.add(couponTotalPriceYR, orderCouponInf.getBuyPrice());
+                        }else if ("LYZ".equals(orderCouponInf.getProductType().getValue())){
+                            couponTotalPriceLYZ = CountUtil.add(couponTotalPriceLYZ, orderCouponInf.getBuyPrice());
+                        }
+                    }
+                }
+                mainTotalPrice = CountUtil.add(totalPriceHR,totalPriceLYZ,totalPriceYR,couponTotalPriceHR,couponTotalPriceYR,couponTotalPriceLYZ);
+                for (OrderBaseInf orderBaseInf : orderBaseInfList){
+                    OrderBaseInfo orderBaseInfo = orderService.getOrderByOrderNumber(orderBaseInf.getMainOrderNumber());
+                    OrderReceivablePriceInf orderReceivablePriceInf = new OrderReceivablePriceInf();
+                    orderReceivablePriceInf.setCreateTime(new Date());
+                    orderReceivablePriceInf.setMainOrderNumber(orderBaseInf.getMainOrderNumber());
+                    orderReceivablePriceInf.setMainTotalAmount(mainTotalPrice);
+                    orderReceivablePriceInf.setCustomer(orderBaseInfo.getCustomerName());
+                    orderReceivablePriceInf.setSeller(orderBaseInfo.getSalesConsultName());
+                    if (orderBaseInf.getOrderNumber().contains("HR")){
+                        orderReceivablePriceInf.setOrderNumber(orderBaseInf.getOrderNumber());
+                        orderReceivablePriceInf.setTotalAmount(CountUtil.add(totalPriceHR,couponTotalPriceHR));
+                        orderReceivablePriceInf.setProductType(ProductType.HR);
+                    }
+                    if (orderBaseInf.getOrderNumber().contains("YR")){
+                        orderReceivablePriceInf.setOrderNumber(orderBaseInf.getOrderNumber());
+                        orderReceivablePriceInf.setTotalAmount(CountUtil.add(totalPriceYR,couponTotalPriceYR));
+                        orderReceivablePriceInf.setProductType(ProductType.YR);
+                    }
+                    if (orderBaseInf.getOrderNumber().contains("LYZ")){
+                        orderReceivablePriceInf.setOrderNumber(orderBaseInf.getOrderNumber());
+                        orderReceivablePriceInf.setTotalAmount(CountUtil.add(totalPriceLYZ,couponTotalPriceLYZ));
+                        orderReceivablePriceInf.setProductType(ProductType.LYZ);
+                    }
+                    orderReceivablePriceInfList.add(orderReceivablePriceInf);
+                }
+
                 //循环保存分单信息,分单商品信息及订单券信息
                 supportService.saveSeparateOrderRelevantInf(orderBaseInfList, orderGoodsInfList, couponInfList,
-                        receiptInfList, jxPriceDifferenceReturnInfs, orderKeyInf);
+                        receiptInfList, jxPriceDifferenceReturnInfs, orderKeyInf,orderReceivablePriceInfList);
 
             } else {
                 //todo 记录拆单错误日志
@@ -1065,6 +1143,22 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     }
 
     @Override
+    public void saveOrderReceivableInf(OrderReceivablePriceInf orderReceivablePriceInf) {
+        if (null != orderReceivablePriceInf){
+            separateOrderDAO.saveOrderReceivableInf(orderReceivablePriceInf);
+        }
+    }
+
+    @Override
+    public List<OrderReceivablePriceInf> findOrderReceivableInfByMainOrderNumber(String mainOrderNumber) {
+        if (StringUtils.isBlank(mainOrderNumber)){
+            return null;
+        }else{
+            return separateOrderDAO.findOrderReceivableInfByMainOrderNumber(mainOrderNumber);
+        }
+    }
+
+    @Override
     public List<KdSell> getOrderKdSellByMainOrderNumber(String mainOrderNumber) {
         if (StringUtils.isNotBlank(mainOrderNumber)){
             return  separateOrderDAO.getOrderKdSellByMainOrderNumber(mainOrderNumber);
@@ -1168,9 +1262,26 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     }
 
     @Override
+    public void  sendOrderReceivableInf(String orderNumber) {
+        if (null != orderNumber) {
+            List<OrderReceivablePriceInf> orderReceivablePriceInfList = separateOrderDAO.findOrderReceivableInfByMainOrderNumber(orderNumber);
+            if (null != orderReceivablePriceInfList && orderReceivablePriceInfList.size() > 0) {
+                ebsSenderService.sendOrderReceivablePriceInfAndRecord(orderReceivablePriceInfList);
+            }
+        }
+    }
+
+    @Override
     public void updateOrderCouponFlagAndSendTimeAndErrorMsg(List<Long> couponInfIds, String msg, Date sendTime, AppWhetherFlag flag) {
         if (null != couponInfIds && couponInfIds.size() > 0) {
             separateOrderDAO.updateOrderCouponFlagAndSendTimeAndErrorMsg(couponInfIds, msg, sendTime, flag);
+        }
+    }
+
+    @Override
+    public void updateOrderReceivableFlagAndSendTimeAndErrorMsg(List<Long> couponInfIds, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (null != couponInfIds && couponInfIds.size() > 0) {
+            separateOrderDAO.updateOrderReceivableFlagAndSendTimeAndErrorMsg(couponInfIds, msg, sendTime, flag);
         }
     }
 
@@ -1519,10 +1630,8 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         ReturnOrderRefundInf refundInf = new ReturnOrderRefundInf();
                         refundInf.setAmount(billingDetail.getReturnMoney());
                         refundInf.setCreateTime(billingDetail.getCreateTime());
-                        refundInf.setDiySiteCode(orderBaseInfo.getStoreCode());
                         refundInf.setMainOrderNumber(orderBaseInfo.getOrderNumber());
                         refundInf.setMainReturnNumber(returnOrderBaseInfo.getReturnNo());
-                        refundInf.setStoreOrgCode(orderBaseInfo.getStoreStructureCode());
                         refundInf.setUserId(returnOrderBaseInfo.getCreatorIdentityType() == AppIdentityType.SELLER ?
                                 returnOrderBaseInfo.getCustomerId() : returnOrderBaseInfo.getCreatorId());
                         refundInf.setRefundDate(billingDetail.getIntoAmountTime());
@@ -1530,6 +1639,18 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                         refundInf.setRefundType(billingDetail.getReturnPayType());
                         refundInf.setSobId(orderBaseInfo.getSobId());
                         refundInf.setDescription(null != refundInf.getRefundType() ? refundInf.getRefundType().getDescription() : "");
+                        //代付款导购门店预存款 --门店信息挂导购的门店
+                        if (OrderBillingPaymentType.SELLER_ST_PREPAY == billingDetail.getReturnPayType()){
+                            AppStore store = this.storeService.findStoreByUserIdAndIdentityType(orderBaseInfo.getSalesConsultId(), AppIdentityType.SELLER.getValue());
+                            if (null != store){
+                                refundInf.setStoreOrgCode(store.getStoreStructureCode());
+                                refundInf.setDiySiteCode(store.getStoreCode());
+                                refundInf.setRefundType(OrderBillingPaymentType.ST_PREPAY);
+                            }
+                        } else {
+                            refundInf.setDiySiteCode(orderBaseInfo.getStoreCode());
+                            refundInf.setStoreOrgCode(orderBaseInfo.getStoreStructureCode());
+                        }
                         //设置分销门店编码至attribute3
                         if (StringUtils.isNotBlank(fxStoreCode)) {
                             refundInf.setAttribute3(fxStoreCode);
@@ -1564,9 +1685,83 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                 }
                 //******************************* 生成退订单退经销差价信息 end ***************************************
 
+                //******************************* 生成退单应退金额信息 begin *****************************************
+                //主单应退总金额
+                Double returnMainTotalPrice = 0D;
+
+                //分单应退总金额
+                Double returnTotalPriceHR = 0D;
+                Double returnTotalPriceYR = 0D;
+                Double returnTotalPriceLYZ = 0D;
+
+                //分单产品券应退金额
+                Double returnCouponTotalPriceHR = 0D;
+                Double returnCouponTotalPriceYR = 0D;
+                Double returnCouponTotalPriceLYZ = 0D;
+
+                for (ReturnOrderCouponInf returnOrderCouponInf : returnOrderCouponInfList){
+                    if (returnOrderCouponInf.getCouponTypeId().equals(1)) {
+                        GoodsDO goods = goodsService.findBySku(returnOrderCouponInf.getSku());
+                        if ("HR".equals(goods.getCompanyFlag())) {
+                            returnCouponTotalPriceHR = CountUtil.add(returnCouponTotalPriceHR, returnOrderCouponInf.getBuyPrice());
+                        }else if ("YR".equals(goods.getCompanyFlag())){
+                            returnCouponTotalPriceYR = CountUtil.add(returnCouponTotalPriceYR, returnOrderCouponInf.getBuyPrice());
+                        }else if ("LYZ".equals(goods.getCompanyFlag())){
+                            returnCouponTotalPriceLYZ = CountUtil.add(returnCouponTotalPriceLYZ, returnOrderCouponInf.getBuyPrice());
+                        }
+                    }
+                }
+                //分单应退List
+                List<OrderReceivablePriceInf> orderReceivablePriceInfList = new ArrayList<>();
+                if (AssertUtil.isNotEmpty(returnOrderParamMap)) {
+                    for (Map.Entry<ReturnOrderBaseInf, List<ReturnOrderGoodsInf>> entry : returnOrderParamMap.entrySet()) {
+                        ReturnOrderBaseInf returnOrderBaseInf = entry.getKey();
+
+
+                        for (ReturnOrderGoodsInf returnOrderGoodsInf : entry.getValue()) {
+                            if (returnOrderGoodsInf.getReturnNumber().contains("HR")){
+                                returnTotalPriceHR += CountUtil.mul(returnOrderGoodsInf.getReturnPrice() , returnOrderGoodsInf.getQuantity());
+                            }else if (returnOrderGoodsInf.getReturnNumber().contains("LYZ")){
+                                returnTotalPriceYR += CountUtil.mul(returnOrderGoodsInf.getReturnPrice() , returnOrderGoodsInf.getQuantity());
+                            }else if (returnOrderGoodsInf.getReturnNumber().contains("YR")){
+                                returnTotalPriceLYZ += CountUtil.mul(returnOrderGoodsInf.getReturnPrice() , returnOrderGoodsInf.getQuantity());
+                            }
+                        }
+
+                        OrderReceivablePriceInf orderReceivablePriceInf = new OrderReceivablePriceInf();
+                        orderReceivablePriceInf.setCreateTime(new Date());
+                        orderReceivablePriceInf.setMainOrderNumber(returnOrderBaseInf.getMainReturnNumber());
+                        orderReceivablePriceInf.setMainTotalAmount(CountUtil.sub(0D,returnMainTotalPrice));
+                        orderReceivablePriceInf.setCustomer(orderBaseInfo.getCustomerName());
+                        orderReceivablePriceInf.setSeller(orderBaseInfo.getSalesConsultName());
+                        if (returnOrderBaseInf.getReturnNumber().contains("HR")){
+                            orderReceivablePriceInf.setOrderNumber(returnOrderBaseInf.getReturnNumber());
+                            Double retTotalHR = CountUtil.add(returnTotalPriceHR,returnCouponTotalPriceHR);
+                            orderReceivablePriceInf.setTotalAmount(CountUtil.sub(0D,retTotalHR));
+                            orderReceivablePriceInf.setProductType(ProductType.HR);
+                        }
+                        if (returnOrderBaseInf.getReturnNumber().contains("YR")){
+                            orderReceivablePriceInf.setOrderNumber(returnOrderBaseInf.getReturnNumber());
+                            Double retTotalYR = CountUtil.add(returnTotalPriceYR,returnCouponTotalPriceYR);
+                            orderReceivablePriceInf.setTotalAmount(CountUtil.sub(0D,retTotalYR));
+                            orderReceivablePriceInf.setProductType(ProductType.YR);
+                        }
+                        if (returnOrderBaseInf.getReturnNumber().contains("LYZ")){
+                            orderReceivablePriceInf.setOrderNumber(returnOrderBaseInf.getReturnNumber());
+                            Double retTotalLYZ = CountUtil.add(returnTotalPriceLYZ,returnCouponTotalPriceLYZ);
+                            orderReceivablePriceInf.setTotalAmount(CountUtil.sub(0D,retTotalLYZ));
+                            orderReceivablePriceInf.setProductType(ProductType.LYZ);
+                        }
+                        orderReceivablePriceInfList.add(orderReceivablePriceInf);
+                    }
+                }
+
+                //******************************* 生成退单应退金额信息 end   *****************************************
+
+
                 //保存退单拆单信息
                 supportService.saveSeparateReturnOrderRelevantInf(returnOrderParamMap, returnOrderCouponInfList, returnOrderRefundInfList,
-                        jxPriceDifferenceRefundInfList);
+                        jxPriceDifferenceRefundInfList,orderReceivablePriceInfList);
             } else {
                 throw new RuntimeException("未找到原主单信息,退单拆单失败!");
             }
@@ -1663,6 +1858,16 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
             List<ReturnOrderCouponInf> returnOrderCouponInfList = separateOrderDAO.getReturnOrderCouponInf(returnNumber);
             if (AssertUtil.isNotEmpty(returnOrderCouponInfList)) {
                 ebsSenderService.sendReturnOrderCouponInfAndRecord(returnOrderCouponInfList);
+            }
+        }
+    }
+
+    @Override
+    public void sendReturnOrderReceivableInf(String returnNumber) {
+        if (null != returnNumber) {
+            List<OrderReceivablePriceInf> orderReceivablePriceInfList = separateOrderDAO.findOrderReceivableInfByMainOrderNumber(returnNumber);
+            if (AssertUtil.isNotEmpty(orderReceivablePriceInfList)) {
+                ebsSenderService.sendReturnOrderReceivableInfAndRecord(orderReceivablePriceInfList);
             }
         }
     }

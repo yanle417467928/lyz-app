@@ -56,6 +56,11 @@ public interface AppSeparateOrderDAO {
                                                      @Param(value = "sendTime") Date sendTime,
                                                      @Param(value = "flag") AppWhetherFlag flag);
 
+    void updateOrderReceivableFlagAndSendTimeAndErrorMsg(@Param(value = "couponInfIds") List<Long> couponInfIds,
+                                                     @Param(value = "msg") String msg,
+                                                     @Param(value = "sendTime") Date sendTime,
+                                                     @Param(value = "flag") AppWhetherFlag flag);
+
     void updateOrderGoodsInfByOrderNumber(@Param(value = "orderNumber") String orderNumber,
                                           @Param(value = "flag") AppWhetherFlag flag,
                                           @Param(value = "errorMsg") String message,
@@ -185,6 +190,10 @@ public interface AppSeparateOrderDAO {
     Boolean isCreditRechargeReceiptExist(String receiptNumber);
 
     List<RechargeReceiptInf> getCreditRechargeReceiptInfByReceiptNumber(String receiptNumber);
+
+    void saveOrderReceivableInf(OrderReceivablePriceInf orderReceivablePriceInf);
+
+    List<OrderReceivablePriceInf> findOrderReceivableInfByMainOrderNumber(@Param(value = "mainOrderNumber") String mainOrderNumber);
 
     List<KdSell> getOrderKdSellByMainOrderNumber(String mainOrderNumber);
 

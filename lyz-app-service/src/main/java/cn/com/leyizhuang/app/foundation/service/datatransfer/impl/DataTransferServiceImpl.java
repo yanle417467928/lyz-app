@@ -1904,8 +1904,7 @@ public class DataTransferServiceImpl implements DataTransferService {
 
 
     private ReturnOrderBilling transformReturnOrderBilling(TdReturnSmall tdReturnSmall) {
-        ReturnOrderBilling returnOrderBilling = new ReturnOrderBilling(tdReturnSmall.getReturnNumber(),
-                0D, 0D, 0D, 0D, 0D, 0D, 0D, 0D);
+        ReturnOrderBilling returnOrderBilling = new ReturnOrderBilling();
         returnOrderBilling.setOnlinePayType(OnlinePayType.NO);
         if (null == tdReturnSmall.getReturnDetail()) {
             List<TdOrder> tdOrderList = transferDAO.findOrderAllFieldBySubOrderNumber(tdReturnSmall.getOrderNumber());

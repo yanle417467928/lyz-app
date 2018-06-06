@@ -71,4 +71,8 @@ public class OrderCouponInfo {
      * 买券单号（仅当券类型是产品券时这个属性才有值）
      */
     private String getOrderNumber;
+    /**
+     * 商品标志（普通、专供）
+     */
+    private String goodsSign = "COMMON";
 }

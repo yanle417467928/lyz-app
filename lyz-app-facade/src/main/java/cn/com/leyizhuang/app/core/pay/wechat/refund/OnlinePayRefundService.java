@@ -122,6 +122,7 @@ public class OnlinePayRefundService {
                         returnOrderBillingDetail.setReplyCode(tradeNo);
                         returnOrderBillingDetail.setReturnMoney(money);
                         returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.WE_CHAT);
+                        returnOrderBillingDetail.setReturnSubjectId(dataDO.getUserId());
                         returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
 
                         //发退款到EBS
@@ -219,6 +220,7 @@ public class OnlinePayRefundService {
                 returnOrderBillingDetail.setReplyCode(response.getTradeNo());
                 returnOrderBillingDetail.setReturnMoney(Double.valueOf(response.getRefundFee()));
                 returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.ALIPAY);
+                returnOrderBillingDetail.setReturnSubjectId(dataDO.getUserId());
                 returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
 
                 //发退款到EBS

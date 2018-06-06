@@ -20,8 +20,9 @@ public enum OrderBillingPaymentType {
     OTHER("OTHER", "门店其它（对公转账）"),
     TRANSFER_ACCOUNTS("TRANSFER_ACCOUNTS", "转账"),
     STORE_CREDIT_MONEY("STORE_CREDIT_MONEY", "门店信用金"),
-    LE_BI("LE_BI", "乐币");
-
+    LE_BI("LE_BI", "乐币"),
+    EMP_CREDIT("EMP_CREDIT", "信用额度"),
+    SELLER_ST_PREPAY("SELLER_ST_PREPAY","导购门店预存款");
 
     private String value;
 

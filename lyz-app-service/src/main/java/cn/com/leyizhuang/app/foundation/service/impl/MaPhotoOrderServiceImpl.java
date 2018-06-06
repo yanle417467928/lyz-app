@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.MaOrderPhotoDAO;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.service.MaMaterialListService;
@@ -88,6 +89,11 @@ public class MaPhotoOrderServiceImpl implements MaPhotoOrderService {
         }else{
             return null;
         }
+    }
+
+    @Override
+    public void updateRemarkAndDeliveryId(String remark, Long deliveryId, Long userId, AppIdentityType identityType) {
+        maMaterialListService.updateRemarkAndDeliveryId(remark, deliveryId, userId, identityType);
     }
 
 

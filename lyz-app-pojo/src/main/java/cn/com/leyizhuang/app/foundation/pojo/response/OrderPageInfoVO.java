@@ -100,4 +100,9 @@ public class OrderPageInfoVO {
      * 订单id
      */
     private Long oid;
+
+    /**
+     *  门店名字
+     */
+    private String storeName;
 }

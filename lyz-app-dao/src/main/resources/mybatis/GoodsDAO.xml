@@ -1062,7 +1062,7 @@
         g.gid,
         g.sku,
         g.sku_name,
-        g.cover_image_uri,cd
+        g.cover_image_uri,
         gp.retail_price,
         min(gp.vip_price) vip_price,
         gp.wholesale_price,

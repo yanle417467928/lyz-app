@@ -53,4 +53,8 @@ public class ReturnOrderProductCoupon {
      * 是否已退
      */
     private Boolean isReturn;
+    /**
+     * 商品标志（普通、专供）
+     */
+    private String goodsSign = "COMMON";
 }

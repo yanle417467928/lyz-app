@@ -23,6 +23,8 @@ public interface EbsSenderService {
 
     void sendOrderCouponInfAndRecord(List<OrderCouponInf> orderCouponInfs);
 
+    void sendOrderReceivablePriceInfAndRecord(List<OrderReceivablePriceInf> orderReceivablePriceInfList);
+
     void sendRechargeReceiptInfAndRecord(RechargeReceiptInf receiptInf);
 
     /**
@@ -50,6 +52,8 @@ public interface EbsSenderService {
     void sendReturnOrderAndReturnGoodsToEbsAndRecord(ReturnOrderBaseInf baseInf, List<ReturnOrderGoodsInf> returnOrderGoodsInfList);
 
     void sendReturnOrderCouponInfAndRecord(List<ReturnOrderCouponInf> returnOrderCouponInfList);
+
+    void sendReturnOrderReceivableInfAndRecord(List<OrderReceivablePriceInf> orderReceivablePriceInfList);
 
     void sendReturnOrderRefundInfAndRecord(List<ReturnOrderRefundInf> returnOrderRefundInfList);
 

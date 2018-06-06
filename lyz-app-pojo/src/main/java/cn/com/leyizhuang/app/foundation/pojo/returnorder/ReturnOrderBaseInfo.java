@@ -117,4 +117,13 @@ public class ReturnOrderBaseInfo {
      */
     private Boolean isRecordSales = false;
 
+    /**
+     * (装饰公司）销售经理id
+     */
+    private Long salesManagerId;
+    /**
+     * (装饰公司）销售经理门店id
+     */
+    private Long salesManagerStoreId;
+
 }

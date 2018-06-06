@@ -146,6 +146,11 @@ public class OrderGoodsInfo implements Cloneable{
     private Boolean isEvaluation;
 
     /**
+     * 商品标志（普通、专供）
+     */
+    private String goodsSign = "COMMON";
+
+    /**
      * 浅克隆方法
      * @return
      */

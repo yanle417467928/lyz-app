@@ -94,4 +94,9 @@ public class GoodsPriceServiceImpl implements GoodsPriceService {
         }
         return null;
     }
+
+    @Override
+    public List<GoodsPrice> findGoodsPriceListByStoreIdAndPriceType(Long storeId, String priceType) {
+        return this.goodsPriceDAO.findGoodsPriceListByStoreIdAndPriceType(storeId, priceType);
+    }
 }

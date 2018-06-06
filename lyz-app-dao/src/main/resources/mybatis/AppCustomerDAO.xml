@@ -677,7 +677,8 @@
         effective_end_time,
         is_used,
         use_time,
-        use_ord_no
+        use_ord_no,
+        goods_sign
         FROM cus_customer_product_coupon
         WHERE cus_id = #{customerId}
         <if test="salesConsultId != null and salesConsultId.toString()!=''">

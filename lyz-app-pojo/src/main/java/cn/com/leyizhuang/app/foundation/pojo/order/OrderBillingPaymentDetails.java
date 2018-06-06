@@ -48,6 +48,10 @@ public class OrderBillingPaymentDetails {
      */
     private String orderNumber;
     /**
+     * 支付人id
+     */
+    private Long paymentSubjectId;
+    /**
      * 支付主体类型
      */
     private PaymentSubjectType paymentSubjectType;

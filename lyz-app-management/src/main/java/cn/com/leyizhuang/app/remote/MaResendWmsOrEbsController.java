@@ -334,6 +334,7 @@ public class MaResendWmsOrEbsController {
             logger.info("retransmissionToEBS OUT,EBS订单重传失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+
         if (null == orderNumber) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单号不能为空!", null);
             logger.info("retransmissionToEBS OUT,EBS订单重传失败！出参 resultDTO:{}", resultDTO);
