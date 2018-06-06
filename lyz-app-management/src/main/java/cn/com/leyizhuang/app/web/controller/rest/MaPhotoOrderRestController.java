@@ -539,9 +539,9 @@ public class MaPhotoOrderRestController extends BaseRestController {
                         }
                     }
                     if (null != photoOrderDTO.getGuideId() && -1 != photoOrderDTO.getGuideId()) {
-                        this.maPhotoOrderService.updateRemarkAndDeliveryId(photoOrderDTO.getRemark(),photoOrderDTO.getDeliveryId(),employee.getEmpId(),employee.getIdentityType());
+                        this.maPhotoOrderService.updateRemarkAndDeliveryId(photoOrderDTO.getRemark(),deliveryId,employee.getEmpId(),employee.getIdentityType());
                     } else {
-                        this.maPhotoOrderService.updateRemarkAndDeliveryId(photoOrderDTO.getRemark(),photoOrderDTO.getDeliveryId(),photoOrderVO.getUserId(),photoOrderVO.getIdentityTypeValue());
+                        this.maPhotoOrderService.updateRemarkAndDeliveryId(photoOrderDTO.getRemark(),deliveryId,photoOrderVO.getUserId(),photoOrderVO.getIdentityTypeValue());
                     }
 
                     this.maPhotoOrderGoodsService.batchSave(photoOrderGoodsDOList);
@@ -1107,7 +1107,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
 
                 this.maPhotoOrderGoodsService.batchSave(photoOrderGoodsDOList);
                 this.maPhotoOrderService.updateStatusAndsaveAndUpdateMaterialList(photoOrderDTO.getPhotoId(), PhotoOrderStatus.FINISH, materialListSave, materialListUpdate);
-                this.maPhotoOrderService.updateRemarkAndDeliveryId(photoOrderDTO.getRemark(),photoOrderDTO.getDeliveryId(),userId,appIdentityType);
+                this.maPhotoOrderService.updateRemarkAndDeliveryId(photoOrderDTO.getRemark(),deliveryId,userId,appIdentityType);
                 //短信提醒
 //                    String info = "您的拍照下单订单(" + photoOrderVO.getPhotoOrderNo() + ")已处理，请登录APP查看。";
                 String info = "您的拍照下单已完成，请到 APP 下料清单中继续完成支付！";
