@@ -1689,13 +1689,6 @@
                           ord_no = #{orderNo});
     </select>
 
-    <select id="findPayhelperOrderByOrdNo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.PayhelperOrder">
-        SELECT ord_no orderNumber, payhelper_amount payhelperAmount, payhelper_id, payhelper_type, pay_type
-        FROM payhelper_ord_relation
-        WHERE ord_no = #{ordNo} AND is_pay_over IS TRUE
-    </select>
-
-
 
     <select id="findSellerManagerPayForOrderList" resultMap="orderPageInfoListMap">
         SELECT
