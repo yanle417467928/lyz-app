@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.core.constant.OrderLifecycleType;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.PayhelperOrder;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
@@ -15,11 +16,8 @@ import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;
 
 import java.io.UnsupportedEncodingException;
-import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -201,4 +199,12 @@ public interface AppOrderService {
     String returnType(List<Long> goodsIds,Long userId,Integer identityType);
 
     Boolean existOrder(String orderNo);
+
+    PageInfo<OrderPageInfoVO> getFitOrderListPageInfoByUserIdAndIdentityType(Long userId, Integer identityType, String keywords, Integer page, Integer size);
+
+    PayhelperOrder findPayhelperOrderByOrdNo(String ordNo);
+
+    int savePayhelperOrder(PayhelperOrder payhelperOrder);
+
+    PageInfo<OrderPageInfoVO> findSellerManagerPayForOrderList(Long userId, Integer page, Integer size);
 }

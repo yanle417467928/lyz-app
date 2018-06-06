@@ -494,6 +494,76 @@
         ORDER BY ua.id DESC
     </select>
 
+    <select id="findEmployeeCreditMoneyReportDOAll"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.EmpCreditMoneyChangeReportDO">
+        SELECT
+        ac.id,
+        c.name cityName,
+        st.store_name storeName,
+        st.store_type storeType,
+        ecmcl.create_time changeTime,
+        e.name employeeName,
+        ac.credit_limit_available_change_amount changeMoney,
+        ac.credit_limit_available_after_change balance,
+        ac.change_type changeType,
+        ac.change_type_desc changeTypeDesc,
+        if(orbi.roid is not NULL ,orbi.ord_no,ecmcl.reference_number) orderNumber,
+        if(orbi.roid is not NULL , orbi.return_no,'') as returnNumber
+        FROM
+        (
+        select
+        eaccl.id,
+        -ABS(eaccl.credit_limit_available_change_amount) as credit_limit_available_change_amount,
+        eaccl.credit_limit_available_after_change,
+        eaccl.change_type,
+        eaccl.change_type_desc
+        from
+        emp_available_credit_change_log eaccl
+        where change_type in (
+        'PLACE_ORDER',
+        'TEMPORARY_CLEAR'
+        )
+        union all
+        select
+        eaccl.id,
+        eaccl.credit_limit_available_change_amount,
+        eaccl.credit_limit_available_after_change,
+        eaccl.change_type,
+        eaccl.change_type_desc
+        from
+        emp_available_credit_change_log eaccl
+        where change_type not in (
+        'PLACE_ORDER',
+        'TEMPORARY_CLEAR'
+        )
+        ) ac
+        INNER JOIN emp_credit_money_change_log ecmcl ON ac.id = ecmcl.available_credit_change_id
+        LEFT JOIN ord_return_base_info orbi on orbi.ord_no = ecmcl.reference_number
+        LEFT JOIN emp_employee e ON e.emp_id = ecmcl.emp_id
+        LEFT JOIN st_store st on st.store_id = e.store_id
+        LEFT JOIN city c ON c.city_id = st.city_id
+        WHERE TRUE
+        <if test="null != cityId and cityId != -1">
+            AND c.city_id = #{cityId}
+        </if>
+        <if test="null != storeId and storeId != -1">
+            AND st.store_id = #{storeId}
+        </if>
+        <if test="null != storeType and storeType != ''">
+            AND st.store_type = #{storeType}
+        </if>
+        <if test="null != startTime and startTime != ''">
+            AND ecmcl.create_time &gt;= #{startTime}
+        </if>
+        <if test="null != endTime and endTime != ''">
+            AND ecmcl.create_time &lt;= #{endTime}
+        </if>
+        AND st.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        ORDER BY ac.id DESC
+    </select>
     <!-- 逻辑 下单时间 和 反配时间 为节点 -->
     <select id="findAccountGoodsItemsDOAll"
             resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.AccountGoodsItemsDO">
@@ -818,6 +888,7 @@
         orgi.return_qty as orderQty,
         orgi.return_price as returnPrice,
         orpc.purchase_price as purchasePrice,
+        orpc.qty as couponQty,
         orbi.return_no as referenceNumber,
         wh.wh_name as wareHouse
         from ord_return_base_info orbi
@@ -826,7 +897,8 @@
         LEFT JOIN ord_return_delivery_detail ordd ON orbi.return_no = ordd.return_no
         LEFT JOIN st_store ss ON orbi.store_id = ss.store_id
         LEFT JOIN ord_return_logistic_info orli on orli.return_no = orbi.return_no
-        LEFT JOIN ord_return_product_coupon orpc on orbi.return_no =orpc.return_no
+        LEFT JOIN (select return_no,purchase_price ,sum(qty) qty,sku from ord_return_product_coupon GROUP BY return_no,sku,purchase_price) orpc on orbi.return_no =orpc.return_no
+        AND orpc.sku = orgi.sku  AND orgi.goods_line_type='PRODUCT_COUPON'
         LEFT JOIN warehouse wh on wh.wh_no = ordd.warehouse_no
         where
         orli.delivery_type='HOUSE_PICK'
@@ -879,6 +951,7 @@
         orgi.return_qty as orderQty,
         orgi.return_price as returnPrice,
         orpc.purchase_price as purchasePrice,
+        orpc.qty as couponQty,
         orbi.return_no as referenceNumber,
         "" as wareHouse
         from ord_return_base_info orbi
@@ -887,7 +960,8 @@
         LEFT JOIN st_store ss ON orbi.store_id = ss.store_id
         LEFT JOIN ord_return_lifecycle orl ON orbi.return_no = orl.return_no
         LEFT JOIN ord_return_logistic_info orli on orli.return_no = orbi.return_no
-        LEFT JOIN ord_return_product_coupon orpc on orbi.return_no =orpc.return_no
+        LEFT JOIN (select return_no,purchase_price ,sum(qty) qty,sku from ord_return_product_coupon GROUP BY return_no,sku,purchase_price) orpc on orbi.return_no =orpc.return_no
+        AND orpc.sku = orgi.sku  AND orgi.goods_line_type='PRODUCT_COUPON'
         where
         orli.delivery_type='RETURN_STORE'
         AND
@@ -941,13 +1015,15 @@
         ogi.order_qty as orderQty,
         ogi.return_price as returnPrice,
         oci.purchase_price as purchasePrice,
+        oci.qty as couponQty ,
         obi.ord_no as referenceNumber,
         wh.wh_name as wareHouse
         from ord_base_info obi
         LEFT JOIN ord_goods_info ogi ON obi.ord_no =ogi.ord_no
         LEFT JOIN ord_delivery_info_details odid ON obi.ord_no = odid.order_no
         LEFT JOIN st_store ss ON obi.store_id = ss.store_id
-        LEFT JOIN ord_coupon_info oci ON obi.ord_no= oci.ord_no
+        LEFT JOIN (select ord_no,purchase_price ,count(*) as qty,sku from ord_coupon_info GROUP BY sku,purchase_price,ord_no) oci ON obi.ord_no= oci.ord_no
+        AND oci.sku = ogi.sku  AND ogi.goods_line_type='PRODUCT_COUPON'
         LEFT JOIN warehouse wh on wh.wh_no = odid.warehouse_no
         where
         obi.delivery_type ='HOUSE_DELIVERY'
@@ -1001,13 +1077,15 @@
         ogi.order_qty as orderQty,
         ogi.return_price as returnPrice,
         oci.purchase_price as purchasePrice,
+        oci.qty as couponQty,
         obi.ord_no as referenceNumber,
         "" as wareHouse
         from ord_base_info obi
         LEFT JOIN ord_goods_info ogi ON ogi.ord_no =obi.ord_no
         LEFT JOIN st_store ss ON obi.store_id = ss.store_id
         LEFT JOIN ord_lifecycle ol ON obi.ord_no = ol.ord_no
-        LEFT JOIN ord_coupon_info oci ON obi.ord_no= oci.ord_no
+        LEFT JOIN (select ord_no,purchase_price ,count(*) as qty,sku from ord_coupon_info GROUP BY sku,purchase_price,ord_no) oci ON obi.ord_no= oci.ord_no
+        AND oci.sku = ogi.sku  AND ogi.goods_line_type='PRODUCT_COUPON'
         where
         obi.delivery_type ='SELF_TAKE'
         AND
@@ -2292,7 +2370,9 @@
         obi.customer_phone customerPhone, st.company_name companyName
         FROM
         ord_base_info obi
+        /*INNER JOIN st_store st ON st.store_id = obi.store_id*/
         LEFT JOIN ord_goods_info og ON og.ord_no = obi.ord_no
+        /*AND og.goods_sign != 'COMMON'*/
         INNER JOIN rank_store st ON st.store_id = obi.store_id
         INNER JOIN rank_goods rg ON rg.gid = og.gid
         LEFT JOIN (SELECT DISTINCT ord_no,post_status,operation_time from ord_lifecycle) ol ON obi.ord_no = ol.ord_no
@@ -2338,8 +2418,10 @@
         (-1 * IFNULL(org.return_qty, 0) * IFNULL(org.return_price, 0))) promotionShareTotlePrice,
         obi.customer_phone customerPhone, st.company_name companyName
         FROM ord_return_base_info orbi
+        /*LEFT JOIN st_store st ON st.store_id = orbi.store_id*/
         LEFT JOIN (SELECT DISTINCT return_no,post_status,operation_time from ord_return_lifecycle) rl ON orbi.return_no = rl.return_no
         LEFT JOIN ord_return_goods_info org ON org.return_no = orbi.return_no
+        /*AND org.goods_sign != 'COMMON'*/
         INNER JOIN rank_goods rg ON rg.sku = org.sku
         INNER JOIN rank_store st ON st.store_id = orbi.store_id
         LEFT JOIN ord_base_info obi ON obi.ord_no = orbi.ord_no

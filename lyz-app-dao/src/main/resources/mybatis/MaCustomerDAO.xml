@@ -532,20 +532,57 @@
 
     <select id="maFindCreatePeople"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.MaCreateOrderPeopleResponse">
-        SELECT
-        c.cus_id peopleId,
-        c.`name` `name`,
-        c.mobile phone,
-        s.store_name storeName,
-        s.store_code storeCode,
-        'CUSTOMER' identityType
-        FROM
-        cus_customer c LEFT JOIN st_store s ON s.store_id = c.store_id
-        WHERE
-        1=1
-        <if test="null != keywords and '' != keywords">
-            AND (c.`name` LIKE concat(concat('%',#{keywords}),'%')
-            OR c.mobile LIKE concat(concat('%',#{keywords}),'%'))
+        <if test="null != peopleType and peopleType == '会员'">
+            SELECT
+            c.cus_id peopleId,
+            c.`name` `name`,
+            c.mobile phone,
+            s.store_name storeName,
+            s.store_code storeCode,
+            'CUSTOMER' identityType
+            FROM
+            cus_customer c LEFT JOIN st_store s ON s.store_id = c.store_id
+            WHERE
+            1=1
+            <if test="null != keywords and '' != keywords">
+                AND (c.`name` LIKE concat(concat('%',#{keywords}),'%')
+                OR c.mobile LIKE concat(concat('%',#{keywords}),'%'))
+            </if>
         </if>
+        <if test="null != peopleType and peopleType == '装饰公司'">
+            SELECT
+            e.emp_id peopleId,
+            e.`name` `name`,
+            e.mobile phone,
+            s.store_name storeName,
+            s.store_code storeCode,
+            e.identity_type identityType
+            FROM
+            emp_employee e LEFT JOIN st_store s ON  s.store_id = e.store_id
+            WHERE
+            1=1
+            <if test="null != keywords and '' != keywords">
+                AND (e.`name` LIKE concat(concat('%',#{keywords}),'%')
+                OR e.mobile LIKE concat(concat('%',#{keywords}),'%'))
+            </if>
+            AND e.identity_type = 'DECORATE_MANAGER'
+        </if>
+    </select>
+
+    <select id="maFindCreatePeopleByStoreId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.MaCreateOrderPeopleResponse">
+            SELECT
+            e.emp_id peopleId,
+            e.`name` `name`,
+            e.mobile phone,
+            s.store_name storeName,
+            s.store_code storeCode,
+            e.identity_type identityType
+            FROM
+            emp_employee e LEFT JOIN st_store s ON  s.store_id = e.store_id
+            WHERE
+            1=1
+            AND e.identity_type = 'DECORATE_MANAGER'
+            AND e.store_id = #{storeId}
     </select>
 </mapper>

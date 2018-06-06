@@ -23,13 +23,18 @@ public interface TransactionalSupportService {
 
     void saveSeparateOrderRelevantInf(List<OrderBaseInf> orderBaseInfList, List<OrderGoodsInf> orderGoodsInfList,
                                       List<OrderCouponInf> couponInfList, List<OrderReceiptInf> receiptInfList,
-                                      List<OrderJxPriceDifferenceReturnInf> returnInfs,OrderKeyInf orderKeyInf);
+                                      List<OrderJxPriceDifferenceReturnInf> returnInfs,OrderKeyInf orderKeyInf,
+                                      List<OrderReceivablePriceInf> orderReceivablePriceInfList);
 
     void handleRechargeOrderRelevantInfoAfterOnlinePauUp(RechargeReceiptInfo receiptInfo, String rechargeNo);
 
    /* void handleOrderJxPriceDifferenceRefundInfoAndSendToEbs(ReturnOrderBaseInfo returnOrderBaseInfo, OrderBaseInfo orderBaseInfo, List<ReturnOrderJxPriceDifferenceRefundDetails> detailsList);*/
 
-    void saveSeparateReturnOrderRelevantInf(Map<ReturnOrderBaseInf, List<ReturnOrderGoodsInf>> returnOrderParamMap, List<ReturnOrderCouponInf> returnOrderCouponInfList, List<ReturnOrderRefundInf> returnOrderRefundInfList, List<ReturnOrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfList);
+    void saveSeparateReturnOrderRelevantInf(Map<ReturnOrderBaseInf, List<ReturnOrderGoodsInf>> returnOrderParamMap,
+                                            List<ReturnOrderCouponInf> returnOrderCouponInfList,
+                                            List<ReturnOrderRefundInf> returnOrderRefundInfList,
+                                            List<ReturnOrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfList,
+                                            List<OrderReceivablePriceInf> orderReceivablePriceInfList);
 
     void saveOrderReceiptInf(OrderReceiptInf receiptInf);
 

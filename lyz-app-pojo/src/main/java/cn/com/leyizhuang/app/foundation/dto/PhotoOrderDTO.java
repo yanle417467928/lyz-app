@@ -25,6 +25,9 @@ public class PhotoOrderDTO implements Serializable {
     //下单导购id
     private Long guideId;
 
+    //下单导购身份
+    private String peopleIdentityType;
+
     //收货人姓名
     private String receiverName;
 
@@ -61,4 +64,15 @@ public class PhotoOrderDTO implements Serializable {
     //是否填写收货地址
     private Long goAddDeliveryAddressType;
 
+    //备注
+    private String remark;
+
+    //联系人姓名
+    private String contactName;
+
+    //联系人电话
+    private String contactPhone;
+
+    //拍照下单图片
+    private String photoImgs;
 }

@@ -43,7 +43,7 @@ public class PayhelperOrder {
     /**
      * 代付人类型
      */
-    private IdentityType payhelperType;
+    private AppIdentityType payhelperType;
     /**
      * 是否已支付
      */
@@ -52,4 +52,18 @@ public class PayhelperOrder {
      * 支付类型
      */
     private OrderBillingPaymentType payType;
+
+    public static PayhelperOrder setPayhelperOrder(Long oid, String orderNumber, Double payhelperAmount, Long payhelperId, AppIdentityType payhelperType,
+                                            Boolean isPayOver, OrderBillingPaymentType payType){
+        PayhelperOrder payhelperOrder = new PayhelperOrder();
+        payhelperOrder.setCreateTime(new Date());
+        payhelperOrder.setOid(oid);
+        payhelperOrder.setOrderNumber(orderNumber);
+        payhelperOrder.setPayhelperAmount(payhelperAmount);
+        payhelperOrder.setPayhelperId(payhelperId);
+        payhelperOrder.setPayhelperType(payhelperType);
+        payhelperOrder.setIsPayOver(isPayOver);
+        payhelperOrder.setPayType(payType);
+        return payhelperOrder;
+    }
 }

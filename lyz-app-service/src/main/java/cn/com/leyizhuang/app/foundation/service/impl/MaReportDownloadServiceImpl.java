@@ -63,6 +63,13 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
     }
 
     @Override
+    public PageInfo<EmpCreditMoneyChangeReportDO> findEmployeeCreditMoneyReportDOAll(Long cityId, Long storeId, String storeType, String startTime, String endTime, List<Long> storeIds, Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        List<EmpCreditMoneyChangeReportDO> empCreditMoneyChangeReportDOS = maReportDownloadDAO.findEmployeeCreditMoneyReportDOAll(cityId, storeId, storeType, startTime, endTime, storeIds);
+        return new PageInfo<>(empCreditMoneyChangeReportDOS);
+    }
+
+    @Override
     public List<ReceiptsReportDO> downloadReceipts(Long cityId, Long storeId, String storeType, String startTime, String endTime, String payType, String keywords, List<Long> storeIds) {
         if (null != endTime && !("".equals(endTime))) {
             endTime += " 23:59:59";
@@ -94,6 +101,18 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
             endTime += " 23:59:59";
         }
         return maReportDownloadDAO.findStorePredepositReportDOAllNEW(cityId, storeId, storeType, startTime, endTime, storeIds);
+    }
+
+    @Override
+    public List<EmpCreditMoneyChangeReportDO> employeeCreditMoneyDownload(Long cityId, Long storeId, String storeType, String startTime, String endTime, List<Long> storeIds) {
+        if (StringUtils.isNotBlank(startTime)) {
+            startTime += " 00:00:00";
+        }
+        if (StringUtils.isNotBlank(endTime)) {
+            endTime += " 23:59:59";
+        }
+        return maReportDownloadDAO.findEmployeeCreditMoneyReportDOAll(cityId, storeId, storeType, startTime, endTime, storeIds);
+
     }
 
     @Override

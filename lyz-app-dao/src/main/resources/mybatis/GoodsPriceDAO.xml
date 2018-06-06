@@ -200,4 +200,13 @@
         AND (end_time IS NULL OR end_time &gt; NOW())
         AND price_type = 'COMMON'
     </select>
+
+    <select id="findGoodsPriceListByStoreIdAndPriceType" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
+        SELECT gid, store_id, sku, vip_price, retail_price, wholesale_price, price_type
+        FROM gds_goods_price WHERE store_id = #{storeId} AND price_type = #{priceType}
+        AND start_time &lt; NOW()
+        AND (end_time IS NULL OR end_time &gt; NOW())
+    </select>
+
+
 </mapper>

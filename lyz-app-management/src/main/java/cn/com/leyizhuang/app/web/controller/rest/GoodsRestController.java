@@ -210,6 +210,29 @@ public class GoodsRestController extends BaseRestController {
         }
     }
 
+    /**
+     * 新增拍照下单图片信息
+     *
+     * @param file
+     * @return
+     */
+    @PostMapping(value = "photo")
+    public ResultDTO<Object> addPhotoOrderImg(MultipartFile file) {
+        String picUrl = null;
+        if (!file.isEmpty()) {
+            picUrl = FileUploadOSSUtils.uploadProfilePhoto(file, "order/photo");
+        } else {
+            return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,
+                    "图片上传失败", null);
+        }
+            /*FileUploadOSSUtils.uploadProfilePhoto(file, "profile/photo/");*/
+        if (null != picUrl || "".equals(picUrl)) {
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, picUrl);
+        } else {
+            return new ResultDTO<>(CommonGlobal.COMMON_ERROR_PARAM_CODE,
+                    "图片上传失败", null);
+        }
+    }
 
     /**
      * 更新商品详情页

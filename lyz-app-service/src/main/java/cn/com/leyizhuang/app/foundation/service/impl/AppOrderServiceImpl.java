@@ -405,6 +405,11 @@ public class AppOrderServiceImpl implements AppOrderService {
                 tempOrder.setCreatorId(decoratorManager.getEmpId());
                 tempOrder.setCreatorName(decoratorManager.getName());
                 tempOrder.setCustomerPhone(decoratorManager.getMobile());
+                tempOrder.setSalesManagerId(userStore.getSalesManager());
+                AppEmployee appEmployee = this.appEmployeeService.findByUserId(userStore.getSalesManager());
+                if (null != appEmployee){
+                    tempOrder.setSalesManagerStoreId(appEmployee.getStoreId());
+                }
                 break;
             default:
                 break;
@@ -618,6 +623,7 @@ public class AppOrderServiceImpl implements AppOrderService {
         //根据应付金额判断订单账单是否已付清
         if (Math.abs(orderBillingDetails.getArrearage()) <= AppConstant.PAY_UP_LIMIT) {
             orderBillingDetails.setIsPayUp(true);
+            orderBillingDetails.setPayUpTime(new Date());
         } else {
             orderBillingDetails.setIsPayUp(false);
         }
@@ -800,6 +806,7 @@ public class AppOrderServiceImpl implements AppOrderService {
         orderBillingPaymentDetails.setPaymentSubjectType(PaymentSubjectType.SELLER);
         orderBillingPaymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.SELLER.getDescription());
         orderBillingPaymentDetails.setCreateTime(repaymentTime);
+        orderBillingPaymentDetails.setPaymentSubjectId(orderBaseInfo.getSalesConsultId());
         //保存还款记录
         orderDAO.savePaymentDetails(orderBillingPaymentDetails);
         //导购欠款还款后修改欠款审核表
@@ -889,6 +896,7 @@ public class AppOrderServiceImpl implements AppOrderService {
         orderBillingPaymentDetails.setPaymentSubjectType(PaymentSubjectType.SELLER);
         orderBillingPaymentDetails.setPaymentSubjectTypeDesc(PaymentSubjectType.SELLER.getDescription());
         orderBillingPaymentDetails.setCreateTime(new Date());
+        orderBillingPaymentDetails.setPaymentSubjectId(orderBaseInfo.getSalesConsultId());
         //保存还款记录
         orderDAO.savePaymentDetails(orderBillingPaymentDetails);
         //导购欠款还款后修改欠款审核表
@@ -1216,5 +1224,67 @@ public class AppOrderServiceImpl implements AppOrderService {
         return null;
     }
 
+    @Override
+    public PageInfo<OrderPageInfoVO> getFitOrderListPageInfoByUserIdAndIdentityType(Long userId, Integer identityType, String keywords, Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        List<OrderPageInfoVO> orderPageInfoVOList = orderDAO.getFitOrderListPageInfoByUserIdAndIdentityType(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), keywords);
 
+        orderPageInfoVOList.forEach(p -> {
+            List<String> goodsImgList = p.getOrderGoodsInfoList().stream().map(OrderGoodsInfo::getCoverImageUri).collect(Collectors.toList());
+            Integer count = p.getOrderGoodsInfoList().stream().mapToInt(OrderGoodsInfo::getOrderQuantity).sum();
+            p.setGoodsImgList(goodsImgList);
+            p.setCount(count);
+            p.setDeliveryType(AppDeliveryType.getAppDeliveryTypeByValue(p.getDeliveryType()).getDescription());
+            if ("UNPAID".equals(p.getStatus())) {
+                //计算剩余过期失效时间
+                Long time = ((p.getEffectiveEndTime().getTime()) - (System.currentTimeMillis()));
+                //设置
+                if (time > 0) {
+                    p.setEndTime(time);
+                }
+            }
+            p.setStatusDesc(AppOrderStatus.getAppDeliveryOrderStatusByValue(p.getStatus()).getDescription());
+            p.getOrderGoodsInfoList().clear();
+        });
+        return new PageInfo<>(orderPageInfoVOList);
+    }
+
+    @Override
+    public PayhelperOrder findPayhelperOrderByOrdNo(String ordNo) {
+        return this.orderDAO.findPayhelperOrderByOrdNo(ordNo);
+    }
+
+    @Override
+    public int savePayhelperOrder(PayhelperOrder payhelperOrder) {
+        return this.orderDAO.savePayhelperOrder(payhelperOrder);
+    }
+
+    @Override
+    public PageInfo<OrderPageInfoVO> findSellerManagerPayForOrderList(Long userId, Integer page, Integer size) {
+        if (userId != null) {
+
+            PageHelper.startPage(page, size);
+            List<OrderPageInfoVO> orderPageInfoVOList = orderDAO.findSellerManagerPayForOrderList(userId);
+
+            orderPageInfoVOList.forEach(p -> {
+                List<String> goodsImgList = p.getOrderGoodsInfoList().stream().map(OrderGoodsInfo::getCoverImageUri).collect(Collectors.toList());
+                Integer count = p.getOrderGoodsInfoList().stream().mapToInt(OrderGoodsInfo::getOrderQuantity).sum();
+                p.setGoodsImgList(goodsImgList);
+                p.setCount(count);
+                p.setDeliveryType(AppDeliveryType.getAppDeliveryTypeByValue(p.getDeliveryType()).getDescription());
+                if ("UNPAID".equals(p.getStatus())) {
+                    //计算剩余过期失效时间
+                    Long time = ((p.getEffectiveEndTime().getTime()) - (System.currentTimeMillis()));
+                    //设置
+                    if (time > 0) {
+                        p.setEndTime(time);
+                    }
+                }
+                p.setStatusDesc(AppOrderStatus.getAppDeliveryOrderStatusByValue(p.getStatus()).getDescription());
+                p.getOrderGoodsInfoList().clear();
+            });
+            return new PageInfo<>(orderPageInfoVOList);
+        }
+        return null;
+    }
 }

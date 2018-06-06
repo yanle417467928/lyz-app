@@ -58,6 +58,8 @@ public class ShipmentAndReturnGoods {
     private BigDecimal amount;
     //产品劵购买价格
     private BigDecimal purchasePrice;
+    //劵数量
+    private Integer couponQty;
     //相关单号
     private String referenceNumber;
     //仓库名称
@@ -80,7 +82,8 @@ public class ShipmentAndReturnGoods {
             for (ShipmentAndReturnGoods shipmentAndReturnGoods : shipmentAndReturnGoodsList) {
                 if ("产品券".equals(shipmentAndReturnGoods.getGoodsLineType()) && null != shipmentAndReturnGoods.getPurchasePrice() && null != shipmentAndReturnGoods.getOrderQty()) {
                     shipmentAndReturnGoods.setReturnPrice(shipmentAndReturnGoods.getPurchasePrice());
-                    shipmentAndReturnGoods.setAmount(shipmentAndReturnGoods.getPurchasePrice().multiply(BigDecimal.valueOf(shipmentAndReturnGoods.getOrderQty())));
+                    shipmentAndReturnGoods.setAmount(shipmentAndReturnGoods.getPurchasePrice().multiply(BigDecimal.valueOf(shipmentAndReturnGoods.getCouponQty())));
+                    shipmentAndReturnGoods.setOrderQty(shipmentAndReturnGoods.getCouponQty());
                 } else if ("本品".equals(shipmentAndReturnGoods.getGoodsLineType()) && null != shipmentAndReturnGoods.getReturnPrice() && null != shipmentAndReturnGoods.getOrderQty()) {
                     shipmentAndReturnGoods.setAmount(shipmentAndReturnGoods.getReturnPrice().multiply(BigDecimal.valueOf(shipmentAndReturnGoods.getOrderQty())));
                 } else if ("赠品".equals(shipmentAndReturnGoods.getGoodsLineType()) && null != shipmentAndReturnGoods.getReturnPrice() && null != shipmentAndReturnGoods.getOrderQty()) {

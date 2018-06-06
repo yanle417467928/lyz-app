@@ -186,4 +186,12 @@ public class OrderBaseInfo implements Serializable {
      * 此订单是否在出货后记录销量数据到 sell_details 表
      */
     private Boolean isRecordSales = false;
+    /**
+     * (装饰公司）销售经理id
+     */
+    private Long salesManagerId;
+    /**
+     * (装饰公司）销售经理门店id
+     */
+    private Long salesManagerStoreId;
 }

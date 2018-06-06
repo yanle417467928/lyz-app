@@ -33,6 +33,8 @@ public class MaOrderBillingPaymentDetails {
     private OrderBillingPaymentType payType;
     //支付类型说明
     private String payTypeDesc;
+    //支付人id
+    private Long paymentSubjectId;
     //付款主体类型
     private AppIdentityType paymentSubjectType;
     //付款主体类型说明

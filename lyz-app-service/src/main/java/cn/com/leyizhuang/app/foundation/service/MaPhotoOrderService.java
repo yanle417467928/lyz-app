@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.vo.management.order.PhotoOrderVO;
 import cn.com.leyizhuang.common.core.constant.PhotoOrderStatus;
@@ -28,5 +29,7 @@ public interface MaPhotoOrderService {
     int batchDelete(Long[] ids);
 
     List<String> findPhotosById(Long[] ids);
+
+    void updateRemarkAndDeliveryId(String remark,Long deliveryId,Long userId,AppIdentityType identityType);
 
 }

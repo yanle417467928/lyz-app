@@ -465,13 +465,15 @@ public class MaOrderServiceImpl implements MaOrderService {
 
         //设置订单收款信息并存入订单账款支付明细表
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
         MaOrderBillingPaymentDetails maOrderBillingPaymentDetails = new MaOrderBillingPaymentDetails();
         maOrderBillingPaymentDetails.setOrdNo(maOrderAmount.getOrderNumber());
         maOrderBillingPaymentDetails.setPayTime(sdf.format(new Date()));
         maOrderBillingPaymentDetails.setCreateTime(new Date());
-        maOrderBillingPaymentDetails.setPaymentSubjectType(maOrderTempInfo.getCreatorIdentityType());
-        maOrderBillingPaymentDetails.setPaymentSubjectTypeDesc(maOrderTempInfo.getCreatorIdentityType().getDescription());
+        maOrderBillingPaymentDetails.setPaymentSubjectType(AppIdentityType.SELLER);
+        maOrderBillingPaymentDetails.setPaymentSubjectTypeDesc(AppIdentityType.SELLER.getDescription());
         maOrderBillingPaymentDetails.setOid(maOrderTempInfo.getId());
+        maOrderBillingPaymentDetails.setPaymentSubjectId(maOrderTempInfo.getSalesConsultId());
         if (maOrderAmount.getCashAmount().compareTo(BigDecimal.ZERO) != 0) {
             String receiptNumber = OrderUtils.generateReceiptNumber(maOrderTempInfo.getCityId());
             if (maOrderAmount.getCashAmount().compareTo(BigDecimal.ZERO) > 0) {
@@ -658,7 +660,7 @@ public class MaOrderServiceImpl implements MaOrderService {
             //创建收款记录
             OrderBillingPaymentDetails paymentDetails = new OrderBillingPaymentDetails(null, Calendar.getInstance().getTime(),
                     orderTempInfo.getOrderId(), Calendar.getInstance().getTime(), OrderBillingPaymentType.getOrderBillingPaymentTypeByDescription(maOrderArrearsAudit.getPaymentMethod()),
-                    maOrderArrearsAudit.getPaymentMethod(), orderNumber, PaymentSubjectType.DELIVERY_CLERK,
+                    maOrderArrearsAudit.getPaymentMethod(), orderNumber, maOrderArrearsAudit.getUserId(), PaymentSubjectType.DELIVERY_CLERK,
                     PaymentSubjectType.DELIVERY_CLERK.getDescription(), realMoney, null, receiptNumber);
             this.appOrderServiceImpl.savePaymentDetails(paymentDetails);
             if (realMoney >= 0) {
@@ -995,6 +997,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                                     customerProductCoupon.setStatus(Boolean.TRUE);
                                     customerProductCoupon.setDisableTime(null);
                                     customerProductCoupon.setGoodsLineId(goodsInfo.getId());
+                                    customerProductCoupon.setGoodsSign(goodsInfo.getGoodsSign());
                                     //保存产品券信息
                                     productCouponService.addCustomerProductCoupon(customerProductCoupon);
 
@@ -1246,6 +1249,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                 returnGoodsInfo.setSettlementPrice(orderGoodsInfo.getSettlementPrice());
                 returnGoodsInfo.setCompanyFlag(orderGoodsInfo.getCompanyFlag());
                 returnGoodsInfo.setGoodsLineType(orderGoodsInfo.getGoodsLineType());
+                returnGoodsInfo.setGoodsSign(orderGoodsInfo.getGoodsSign());
                 returnOrderGoodsInfos.add(returnGoodsInfo);
                 //保存退单商品信息
                 returnOrderService.saveReturnOrderGoodsInfo(returnGoodsInfo);

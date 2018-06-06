@@ -712,7 +712,9 @@
             customer_id,
             sales_consult_id,
             delivery_type,
-            store_structure_code
+            store_structure_code,
+            sales_manager_id,
+            sales_manager_store_id
         FROM ord_base_info obi
         WHERE obi.ord_no = #{orderNo}
     </select>
@@ -801,11 +803,11 @@
     <insert id="saveOrderBillingPaymentDetails"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderBillingPaymentDetails">
         INSERT INTO ord_billing_payment_details (oid, ord_no, create_time, pay_time, pay_type, pay_type_desc, payment_subject_type,
-                                                 payment_subject_type_desc, amount, reply_code, receipt_number)
+                                                 payment_subject_type_desc, amount, reply_code, receipt_number, payment_subject_id)
         VALUES
             (#{oid}, #{ordNo}, #{createTime}, #{payTime}, #{payType}, #{payTypeDesc}, #{paymentSubjectType},
                          #{paymentSubjectTypeDesc},
-                         #{amount}, #{replyCode}, #{receiptNumber})
+                         #{amount}, #{replyCode}, #{receiptNumber},#{paymentSubjectId})
     </insert>
 
 
