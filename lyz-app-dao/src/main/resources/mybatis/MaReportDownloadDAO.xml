@@ -1623,7 +1623,7 @@
         og.promotion_share_price as 'promotionSharePrice',
         og.cash_coupon_share_price as 'cashCouponSharePrice',
         CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty',
-        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' ELSE '后台发放' END  as 'couponType',
+        if(og.goods_line_type = "PRODUCT_COUPON",CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品'  ELSE '后台发放' END,'')  as 'couponType',
         '' as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId
@@ -1718,7 +1718,7 @@
         og.promotion_share_price as 'promotionSharePrice',
         og.cash_coupon_share_price as 'cashCouponSharePrice',
         CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty',
-        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' ELSE '后台发放' END  as 'couponType',
+        if(og.goods_line_type = "PRODUCT_COUPON",CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品'  ELSE '后台发放' END,'')  as 'couponType',
         '' as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId
@@ -1812,7 +1812,7 @@
         og.promotion_share_price as 'promotionSharePrice',
         og.cash_coupon_share_price as 'cashCouponSharePrice',
         CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty',
-        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' ELSE '后台发放' END  as 'couponType',
+        if(og.goods_line_type = "PRODUCT_COUPON",CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品'  ELSE '后台发放' END,'')  as 'couponType',
         '' as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId
@@ -1917,7 +1917,7 @@
         og.cash_coupon_share_price as 'cashCouponSharePrice',
         CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE
         og.order_qty END as 'orderQty',
-        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' ELSE '后台发放' END  as 'couponType',
+        if(og.goods_line_type = "PRODUCT_COUPON",CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品'  ELSE '后台发放' END,'')  as 'couponType',
         '' as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId
@@ -2010,7 +2010,7 @@
         0 as 'promotionSharePrice',
         0 as 'cashCouponSharePrice',
         CASE org.goods_line_type WHEN 'PRODUCT_COUPON' THEN -1 ELSE -ABS(org.return_qty) END as 'orderQty',
-        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' ELSE '后台发放' END  as 'couponType',
+        if(org.goods_line_type = "PRODUCT_COUPON",CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品'  ELSE '后台发放' END,'')  as 'couponType',
         orb.return_no as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId
@@ -2099,7 +2099,7 @@
         0 as 'promotionSharePrice',
         0 as 'cashCouponSharePrice',
         CASE org.goods_line_type WHEN 'PRODUCT_COUPON' THEN -1 ELSE -ABS(org.return_qty) END as 'orderQty',
-        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' ELSE '后台发放' END  as 'couponType',
+        if(org.goods_line_type = "PRODUCT_COUPON",CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品'  ELSE '后台发放' END,'')  as 'couponType',
         orb.return_no as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId
@@ -2191,7 +2191,7 @@
         og.promotion_share_price as 'promotionSharePrice',
         og.cash_coupon_share_price as 'cashCouponSharePrice',
         CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty',
-        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' ELSE '后台发放' END  as 'couponType',
+        if(og.goods_line_type = "PRODUCT_COUPON",CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品'  ELSE '后台发放' END,'')  as 'couponType',
         '' as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId
@@ -2287,7 +2287,7 @@
         0 as 'promotionSharePrice',
         0 as 'cashCouponSharePrice',
         CASE org.goods_line_type WHEN 'PRODUCT_COUPON' THEN -1 ELSE -ABS(org.return_qty) END as 'orderQty',
-        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' ELSE '后台发放' END  as 'couponType',
+        if(org.goods_line_type = "PRODUCT_COUPON",CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品'  ELSE '后台发放' END,'')  as 'couponType',
         orb.return_no as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId
@@ -2343,7 +2343,6 @@
         </if>
         )
     </select>
-
 
     <select id="findAccountZGGoodsItemsDOAll"
             resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.AccountGoodsItemsDO">
