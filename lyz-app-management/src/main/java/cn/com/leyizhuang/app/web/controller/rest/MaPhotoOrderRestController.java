@@ -539,9 +539,9 @@ public class MaPhotoOrderRestController extends BaseRestController {
                         }
                     }
                     if (null != photoOrderDTO.getGuideId() && -1 != photoOrderDTO.getGuideId()) {
-                        this.maPhotoOrderService.updateRemarkAndDeliveryId(photoOrderDTO.getRemark(),photoOrderDTO.getDeliveryId(),employee.getEmpId(),employee.getIdentityType());
+                        this.maPhotoOrderService.updateRemarkAndDeliveryId(photoOrderDTO.getRemark(),deliveryId,employee.getEmpId(),employee.getIdentityType());
                     } else {
-                        this.maPhotoOrderService.updateRemarkAndDeliveryId(photoOrderDTO.getRemark(),photoOrderDTO.getDeliveryId(),photoOrderVO.getUserId(),photoOrderVO.getIdentityTypeValue());
+                        this.maPhotoOrderService.updateRemarkAndDeliveryId(photoOrderDTO.getRemark(),deliveryId,photoOrderVO.getUserId(),photoOrderVO.getIdentityTypeValue());
                     }
 
                     this.maPhotoOrderGoodsService.batchSave(photoOrderGoodsDOList);
