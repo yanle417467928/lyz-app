@@ -164,10 +164,10 @@
     <insert id="saveReturnOrderProductCoupon"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderProductCoupon">
         INSERT INTO ord_return_product_coupon
-        (ord_no, roid, return_no, pcid, gid, qty, return_qty, is_return, purchase_price, sku)
+        (ord_no, roid, return_no, pcid, gid, qty, return_qty, is_return, purchase_price, sku, goods_sign)
         VALUES
             (#{orderNo}, #{roid}, #{returnNo}, #{pcid}, #{gid}, #{qty}, #{returnQty}, #{isReturn}, #{purchasePrice},
-             #{sku})
+             #{sku}, #{goodsSign})
     </insert>
 
     <insert id="saveReturnOrderGoodsInfo"

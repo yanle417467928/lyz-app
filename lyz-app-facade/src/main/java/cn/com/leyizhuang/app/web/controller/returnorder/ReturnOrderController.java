@@ -647,6 +647,7 @@ public class ReturnOrderController {
                                 productCoupon.setReturnQty(1);
                                 productCoupon.setPurchasePrice(orderCouponInfo.getPurchasePrice());
                                 productCoupon.setReturnNo(returnNo);
+                                productCoupon.setGoodsSign(orderCouponInfo.getGoodsSign());
                                 productCouponList.add(productCoupon);
                                 index++;
                             }
@@ -824,30 +825,38 @@ public class ReturnOrderController {
                             temp = CountUtil.sub(temp, onlinePayPrice);
                             returnOrderBilling.setOnlinePay(onlinePayPrice);
                         }
+                        if (sellerStoreDeposit >= temp){
+                            returnOrderBilling.setSellerStoreDeposit(hasFreight ? CountUtil.sub(sellerStoreDeposit, temp) : sellerStoreDeposit);
+                            hasFreight = false;
+                        } else {
+                            temp = CountUtil.sub(temp, sellerStoreDeposit);
+                            returnOrderBilling.setSellerStoreDeposit(sellerStoreDeposit);
+                        }
                         if (cashPosPrice >= temp) {
                             returnOrderBilling.setCash(hasFreight ? CountUtil.sub(cashPosPrice, temp) : cashPosPrice);
                             hasFreight = false;
                         }
+
                     } else if (identityType == 2) {
                         if (storeCredit >= billingDetails.getFreight()) {
                             returnOrderBilling.setStCreditMoney(hasFreight ? CountUtil.sub(storeCredit, billingDetails.getFreight()) : storeCredit);
                         } else {
                             temp = CountUtil.sub(billingDetails.getFreight(), storeCredit);
-                            returnOrderBilling.setStCreditMoney(0D);
+                            returnOrderBilling.setStCreditMoney(storeCredit);
                         }
                         if (storePrePay >= temp) {
                             returnOrderBilling.setStPreDeposit(hasFreight ? CountUtil.sub(storePrePay, temp) : storePrePay);
                             hasFreight = false;
                         } else {
                             temp = CountUtil.sub(temp, storePrePay);
-                            returnOrderBilling.setStPreDeposit(0D);
+                            returnOrderBilling.setStPreDeposit(storePrePay);
                         }
                         if (onlinePayPrice > temp) {
                             returnOrderBilling.setOnlinePay(hasFreight ? CountUtil.sub(onlinePayPrice, temp) : onlinePayPrice);
                             hasFreight = false;
                         }else {
                             temp = CountUtil.sub(temp, onlinePayPrice);
-                            returnOrderBilling.setOnlinePay(0D);
+                            returnOrderBilling.setOnlinePay(onlinePayPrice);
                         }
                         if (sellerStoreDeposit >= temp){
                             returnOrderBilling.setSellerStoreDeposit(hasFreight ? CountUtil.sub(sellerStoreDeposit, temp) : sellerStoreDeposit);

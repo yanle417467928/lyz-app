@@ -973,8 +973,8 @@
     </select>
 
     <insert id="saveOrderCouponInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo">
-        INSERT INTO ord_coupon_info (oid, ord_no, coupon_type, coupon_id, purchase_price, cost_price, get_type, sku)
-        VALUES (#{oid}, #{orderNumber}, #{couponType}, #{couponId}, #{purchasePrice}, #{costPrice}, #{getType}, #{sku});
+        INSERT INTO ord_coupon_info (oid, ord_no, coupon_type, coupon_id, purchase_price, cost_price, get_type, sku, goods_sign)
+        VALUES (#{oid}, #{orderNumber}, #{couponType}, #{couponId}, #{purchasePrice}, #{costPrice}, #{getType}, #{sku}, {goodsSign});
     </insert>
 
     <select id="getPendingEvaluationOrderListByUserIDAndIdentityType" resultMap="pendingEvaluationOrder">

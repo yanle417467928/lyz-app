@@ -1047,6 +1047,7 @@ public class CommonServiceImpl implements CommonService {
                         couponInfo.setGoodsId(productCoupon.getGoodsId());
                         couponInfo.setGoodsLineId(productCoupon.getGoodsLineId());
                         couponInfo.setGetOrderNumber(productCoupon.getGetOrderNumber());
+                        couponInfo.setGoodsSign(productCoupon.getGoodsSign());
                         orderCouponInfoList.add(couponInfo);
                     }
                 }
@@ -2050,13 +2051,13 @@ public class CommonServiceImpl implements CommonService {
                 List<GoodsPrice> goodsPriceList = this.goodsPriceService.findGoodsPriceListByStoreIdAndPriceType(storeId, rankCode);
                 if (null != goodsPriceList && goodsPriceList.size() > 0) {
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
-//                        if (goodsInfo.getGoodsLineType() == AppGoodsLineType.PRODUCT_COUPON) {
+                        if (goodsInfo.getGoodsLineType() != AppGoodsLineType.PRODUCT_COUPON) {
                             for (GoodsPrice goodsPrice : goodsPriceList) {
                                 if (goodsInfo.getGid().equals(goodsPrice.getGid())) {
                                     goodsInfo.setGoodsSign(rankCode);
                                 }
                             }
-//                        }
+                        }
                     }
                 }
             }
