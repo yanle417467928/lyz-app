@@ -620,6 +620,11 @@ public class ReturnOrderController {
                                 index++;
                             }
                         }
+                        if (index != returnOrderGoodsInfo.getReturnQty()){
+                            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, returnOrderGoodsInfo.getSkuName() + "可退数量不足！", "");
+                            logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
+                            return resultDTO;
+                        }
                     }
                 }
             }
