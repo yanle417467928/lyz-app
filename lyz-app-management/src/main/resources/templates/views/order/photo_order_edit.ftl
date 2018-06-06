@@ -223,7 +223,7 @@
                                         收货人姓名
                                     </label>
                                     <input type="text" name="receiverName" id="receiverName" class="form-control"
-                                           onkeyup="value=value=value.replace(/[\d]/g, '只能输入汉子和字母')" maxlength="10" \>
+                                           onkeyup="value=value.replace(/[^\w\u4E00-\u9FA5]/g, '只能输入汉子和字母')" maxlength="10" \>
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-3">
@@ -298,7 +298,7 @@
                                         小区名
                                     </label>
                                     <input type="text" name="residenceName" id="residenceName" class="form-control"
-                                           onkeyup="value=value.replace(/[^\w\u4E00-\u9FA5]/g, '只能输入汉子、字母和数字')" \>
+                                           onkeyup="value=value.replace(/[^\w\u4E00-\u9FA5]/g, '只能输入汉子、字母和数字')" maxlength="25" \>
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-3">
@@ -306,7 +306,7 @@
                                     <label>
                                         楼盘信息
                                     </label>
-                                    <input type="text" name="estateInfo" id="estateInfo" class="form-control" \>
+                                    <input type="text" name="estateInfo" id="estateInfo" class="form-control" maxlength="20" \>
                                 </div>
                             </div>
                             <div class="col-xs-12 col-md-6">
@@ -315,7 +315,7 @@
                                         详细地址
                                     </label>
                                     <input type="text" name="detailedAddress" id="detailedAddress" class="form-control"
-                                           \>
+                                           maxlength="100" \>
                                 </div>
                             </div>
                         </div>

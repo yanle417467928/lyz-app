@@ -4,7 +4,7 @@
 
     <insert id="save" parameterType="AppEmployee">
         INSERT INTO emp_employee (login_name, name, password, salt, identity_type, mobile, birthday,
-                                  status, sex, pic_url, city_id, store_id, manager_id, create_time
+                                  status, sex, pic_url, city_id, store_id, manager_id, create_time,seller_type,delivery_clerk_no
         ) VALUES (
             #{loginName}, #{name}, #{password}, #{salt},
                           #{identityType,
@@ -14,7 +14,7 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
                           #{sex,
 javaType=cn.com.leyizhuang.app.core.constant.SexType,
 typeHandler=org.apache.ibatis.type.EnumTypeHandler},
-                          #{picUrl}, #{cityId}, #{storeId}, #{managerId}, #{createTime}
+                          #{picUrl}, #{cityId}, #{storeId}, #{managerId}, #{createTime},#{sellerType},#{deliveryClerkNo}
         )
     </insert>
     <select id="findByLoginName" parameterType="java.lang.String" resultType="AppEmployee">
@@ -70,6 +70,9 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
             </if>
             <if test="qrCode != null">
                 qr_code = #{qrCode}
+            </if>
+            <if test="null != delivery_clerk_no">
+                delivery_clerk_no=#{delivery_clerk_no}
             </if>
         </set>
         WHERE emp_id = #{empId}

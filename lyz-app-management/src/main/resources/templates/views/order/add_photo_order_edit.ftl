@@ -190,7 +190,7 @@
                                 <label class="col-xs-5" style="padding-right: 0px">备注</label>
                                 <div class=" col-xs-6" style="padding-left: 0px">
                                     <input type="text" name="remark" id="remark" class="form-control" value=""
-                                           style="width: 550px;"/>
+                                           style="width: 550px;" maxlength="112"/>
                                 </div>
                             </div>
                         </div>
@@ -315,7 +315,7 @@
                                             小区名
                                         </label>
                                         <input type="text" name="residenceName" id="residenceName" class="form-control"
-                                                \>
+                                                maxlength="25" \>
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-md-3">
@@ -323,7 +323,7 @@
                                         <label>
                                             楼盘信息
                                         </label>
-                                        <input type="text" name="estateInfo" id="estateInfo" class="form-control" \>
+                                        <input type="text" name="estateInfo" id="estateInfo" class="form-control" maxlength="25" \>
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-md-6">
@@ -332,8 +332,7 @@
                                             详细地址
                                         </label>
                                         <input type="text" name="detailedAddress" id="detailedAddress"
-                                               class="form-control"
-                                               \>
+                                               class="form-control" maxlength="100" \>
                                     </div>
                                 </div>
                             </div>
@@ -1316,7 +1315,7 @@
                             return false;
                         }
                         if (detailedAddressLength > 200) {
-                            $notify.danger('楼盘名称长度超长，请重新输入！');
+                            $notify.danger('详细地址名称长度超长，请重新输入！');
                             $('#form').bootstrapValidator('disableSubmitButtons', false);
                             return false;
                         }
