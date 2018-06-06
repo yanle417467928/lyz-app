@@ -87,7 +87,7 @@ public class HqAppStructureController {
                 if (null == structure) {
                     Structure maStructure = new Structure();
                     maStructure.setCreatTime(new Date());
-                    maStructure.setEnable(Boolean.TRUE);
+                    maStructure.setEnable(hqAppStructureDTO.getEnable());
                     maStructure.setNumber(hqAppStructureDTO.getNumber());
                     maStructure.setParentId(hqAppStructureDTO.getParentId());
                     maStructure.setStructureName(hqAppStructureDTO.getStructureTitle());
@@ -121,7 +121,7 @@ public class HqAppStructureController {
      */
     @PostMapping(value = "/update")
     public ResultDTO<String> updateStore(@RequestBody HqAppStructureDTO hqAppStructureDTO) {
-        logger.warn("updateStore CALLED,同步修改组织信息，入参 hqAppStoreDTO:{}", hqAppStructureDTO);
+        logger.warn("updateStore CALLED,同步修改组织信息，入参 HqAppStructureDTO:{}", hqAppStructureDTO);
         if (null != hqAppStructureDTO) {
             if (StringUtils.isBlank(hqAppStructureDTO.getModifierType())) {
                 logger.warn("updateStore OUT,同步修改组织信息失败，出参 modifierType:{}", hqAppStructureDTO.getModifierType());
@@ -133,14 +133,14 @@ public class HqAppStructureController {
             }
             try {
                 Structure maStructure = new Structure();
-                maStructure.setCreatTime(new Date());
-                maStructure.setEnable(Boolean.TRUE);
+                maStructure.setEnable(hqAppStructureDTO.getEnable());
                 maStructure.setNumber(hqAppStructureDTO.getNumber());
                 maStructure.setParentId(hqAppStructureDTO.getParentId());
                 maStructure.setStructureName(hqAppStructureDTO.getStructureTitle());
                 maStructure.setStructureNumber(hqAppStructureDTO.getStructureNumber());
                 maStructure.setTier(hqAppStructureDTO.getTier());
                 maStructure.setType(hqAppStructureDTO.getType());
+                maStructure.setEnableFalseTime(hqAppStructureDTO.getEnableFalseTime());
                 structureService.ModifyStructure(maStructure);
                 logger.warn("同步修改组织信息成功！，出参 resultDTO:{}",maStructure);
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
