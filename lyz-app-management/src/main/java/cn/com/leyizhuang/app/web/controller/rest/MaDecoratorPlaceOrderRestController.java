@@ -197,7 +197,11 @@ public class MaDecoratorPlaceOrderRestController {
             AppEmployee employee = employeeService.findById(guideId);
             if (null != employee) {
 
-                Long deliveryIds = deliveryId;
+                Long deliveryIds = null;
+                if (null != deliveryId && -1 != deliveryId) {
+                    deliveryIds = deliveryId;
+                }
+
                 if (0 == goAddDeliveryAddressType && (null == deliveryId || -1 == deliveryId)) {
                     //*************************************增加地址信息**************************************
                     String provinceName = deliveryAddressService.findAreaNameByCode(province);
@@ -272,10 +276,14 @@ public class MaDecoratorPlaceOrderRestController {
                             }
                         } else {
                             if (null != materialListDO) {
+                                materialListDO.setRemark(remark);
+                                materialListDO.setDeliveryId(deliveryIds);
                                 materialListDO.setQty(materialListDO.getQty() + goodsList.get(i).getQty());
                                 materialListUpdate.add(materialListDO);
                             }
                             if (null != materialAuditListDO) {
+                                materialAuditListDO.setRemark(remark);
+                                materialAuditListDO.setDeliveryId(deliveryIds);
                                 materialAuditListDO.setQty(materialAuditListDO.getQty() + goodsList.get(i).getQty());
                                 materialListUpdate.add(materialAuditListDO);
                             }

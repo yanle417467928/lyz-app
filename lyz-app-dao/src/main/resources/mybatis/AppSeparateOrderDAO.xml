@@ -306,6 +306,25 @@
         </foreach>
     </update>
 
+    <update id="updateOrderReceivableFlagAndSendTimeAndErrorMsg">
+        UPDATE inter_ate_order_receivable_inf
+        <set>
+            <if test="null != flag">
+                send_flag = #{flag},
+            </if>
+            <if test="null != sendTime">
+                send_time = #{sendTime},
+            </if>
+            <if test="null != msg">
+                error_msg = #{msg}
+            </if>
+        </set>
+        WHERE id in
+        <foreach collection="couponInfIds" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </update>
+
     <update id="updateOrderGoodsInfByOrderNumber">
         UPDATE inter_ate_order_goods_inf
         <set>
@@ -1204,37 +1223,72 @@
 
     <select id="isCreditRechargeReceiptExist" parameterType="java.lang.String" resultType="java.lang.Boolean">
         SELECT exists(SELECT 1
-        FROM inter_ate_recharge_receipt_inf
-        WHERE receipt_number = #{receiptNumber})
+                      FROM inter_ate_recharge_receipt_inf
+                      WHERE receipt_number = #{receiptNumber})
     </select>
 
     <select id="getCreditRechargeReceiptInfByReceiptNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.RechargeReceiptInf">
         SELECT
-        receipt_id,
-        charge_number,
-        sob_id,
-        charge_obj,
-        charge_type,
-        receiptType,
-        userid,
-        store_org_code,
-        diy_site_code,
-        receipt_date,
-        amount,
-        description,
-        attribute1,
-        attribute2,
-        attribute3,
-        attribute4,
-        attribute5,
-        create_time,
-        send_flag,
-        error_msg,
-        send_time,
-        receipt_number
+            receipt_id,
+            charge_number,
+            sob_id,
+            charge_obj,
+            charge_type,
+            receiptType,
+            userid,
+            store_org_code,
+            diy_site_code,
+            receipt_date,
+            amount,
+            description,
+            attribute1,
+            attribute2,
+            attribute3,
+            attribute4,
+            attribute5,
+            create_time,
+            send_flag,
+            error_msg,
+            send_time,
+            receipt_number
         FROM inter_ate_recharge_receipt_inf
         WHERE receipt_number = #{receiptNumber}
+    </select>
+
+    <insert id="saveOrderReceivableInf"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderReceivablePriceInf">
+        INSERT INTO inter_ate_order_receivable_inf (create_time, send_flag, error_msg, send_time, main_order_numebr, main_total_amount,
+                                                    order_number, total_amount, product_type, customer, seller, ship_date, attribute1, attribute2, attribute3, attribute4, attribute5)
+        VALUES (#{createTime}, #{sendFlag}, #{errorMsg}, #{sendTime}, #{mainOrderNumber}, #{mainTotalAmount},
+                               #{orderNumber},
+                               #{totalAmount}, #{productType}, #{customer}, #{seller}, #{shipDate}, #{attribute1},
+                #{attribute2}, #{attribute3}, #{attribute4}, #{attribute5})
+    </insert>
+
+    <select id="findOrderReceivableInfByMainOrderNumber"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderReceivablePriceInf">
+        SELECT
+            id                id,
+            create_time       createTime,
+            send_flag         sendFlag,
+            error_msg         errorMsg,
+            send_time         sendTime,
+            main_order_numebr mainOrderNumber,
+            main_total_amount mainTotalAmount,
+            order_number      orderNumber,
+            total_amount      totalAmount,
+            product_type      productType,
+            customer          customer,
+            seller            seller,
+            ship_date         shipDate,
+            attribute1        attribute1,
+            attribute2        attribute2,
+            attribute3        attribute3,
+            attribute4        attribute4,
+            attribute5        attribute5
+        FROM inter_ate_order_receivable_inf
+        WHERE main_order_numebr = #{mainOrderNumber}
     </select>
 
 

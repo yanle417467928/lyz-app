@@ -235,6 +235,92 @@ public class EbsSenderServiceImpl implements EbsSenderService {
     //************************************ 发送订单券信息 end *************************************
 
 
+
+
+
+    //************************************ 发送订单应收金额信息begin *********************************
+    /**
+     * 发送订单应收金额信息到EBS并记录返回结果
+     *
+     * @param orderReceivablePriceInfList 订单应收金额信息
+     */
+    @Override
+    public void sendOrderReceivablePriceInfAndRecord(List<OrderReceivablePriceInf> orderReceivablePriceInfList) {
+        Map<String, Object> result = sendOrderReceivableToEbs(orderReceivablePriceInfList);
+        List<Long> receivableInfIds = new ArrayList<>(10);
+        for (OrderReceivablePriceInf orderReceivablePriceInf : orderReceivablePriceInfList) {
+            receivableInfIds.add(orderReceivablePriceInf.getId());
+        }
+        if (!(Boolean) result.get("success")) {
+            updateOrderReceivableFlagAndSendTimeAndErrorMsg(receivableInfIds, (String) result.get("msg"), null, AppWhetherFlag.N);
+        } else {
+            updateOrderReceivableFlagAndSendTimeAndErrorMsg(receivableInfIds, null, new Date(), AppWhetherFlag.Y);
+        }
+    }
+
+
+    /**
+     * 发送订单应收金额信息到EBS
+     *
+     * @param orderReceivablePriceInfList 订单应收金额信息
+     * @return
+     */
+    private Map<String, Object> sendOrderReceivableToEbs(List<OrderReceivablePriceInf> orderReceivablePriceInfList) {
+        log.info("sendOrderReceivableToEbs, orderReceivablePriceInfList=" + orderReceivablePriceInfList);
+        List<OrderReceivableSecond> orderReceivableSecondList = new ArrayList<>();
+
+        if (null != orderReceivablePriceInfList && orderReceivablePriceInfList.size() > 0) {
+            for (OrderReceivablePriceInf orderReceivablePriceInf : orderReceivablePriceInfList) {
+                OrderReceivableSecond orderReceivableSecond = new OrderReceivableSecond();
+                orderReceivableSecond.setMainOrderNum(toString(orderReceivablePriceInf.getMainOrderNumber()));
+                orderReceivableSecond.setAllAmt(toString(orderReceivablePriceInf.getMainTotalAmount()));
+                orderReceivableSecond.setOrderNum(toString(orderReceivablePriceInf.getOrderNumber()));
+                orderReceivableSecond.setOrderAmt(toString(orderReceivablePriceInf.getTotalAmount()));
+                orderReceivableSecond.setYewuType(toString(orderReceivablePriceInf.getProductType()));
+                orderReceivableSecond.setCustomer(toString(orderReceivablePriceInf.getCustomer()));
+                orderReceivableSecond.setSendDate(toString(orderReceivablePriceInf.getShipDate()));
+                orderReceivableSecond.setSaleman(toString(orderReceivablePriceInf.getSeller()));
+                orderReceivableSecond.setAttribute1(toString(orderReceivablePriceInf.getAttribute1()));
+                orderReceivableSecond.setAttribute2(toString(orderReceivablePriceInf.getAttribute2()));
+                orderReceivableSecond.setAttribute3(toString(orderReceivablePriceInf.getAttribute3()));
+                orderReceivableSecond.setAttribute4(toString(orderReceivablePriceInf.getAttribute4()));
+                orderReceivableSecond.setAttribute5(toString(orderReceivablePriceInf.getAttribute5()));
+
+                orderReceivableSecondList.add(orderReceivableSecond);
+            }
+
+        }
+        String orderCouponJson = JSON.toJSONString(orderReceivableSecondList);
+        List<NameValuePair> parameters = new ArrayList<NameValuePair>();
+        parameters.add(new BasicNameValuePair("orderReceivableJson", orderCouponJson));
+        Map<String, Object> result = this.postToEbs(AppConstant.EBS_NEW_URL + "callOrderReceivableSecond", parameters);
+        if (!(Boolean) result.get("success")) {
+            JSONObject content = new JSONObject();
+            content.put("orderCouponJson", orderCouponJson);
+            result.put("content", JSON.toJSONString(content));
+        }
+        log.info("sendOrderCouponToEbs, result=" + result);
+        return result;
+    }
+
+    /**
+     * 更新订单应收金额接口发送信息
+     *
+     * @param couponInfIds 订单券行id
+     * @param msg          错误信息
+     * @param sendTime     发送成功时间
+     * @param flag         标识
+     */
+    private void updateOrderReceivableFlagAndSendTimeAndErrorMsg(List<Long> couponInfIds, String msg, Date sendTime, AppWhetherFlag flag) {
+        if (null != couponInfIds && couponInfIds.size() > 0) {
+            separateOrderService.updateOrderReceivableFlagAndSendTimeAndErrorMsg(couponInfIds, msg, sendTime, flag);
+        }
+    }
+
+
+    //************************************ 发送订单应收金额信息end *********************************
+
+
     //************************************ 发送充值收款信息begin *************************************
 
     /**
@@ -878,6 +964,24 @@ public class EbsSenderServiceImpl implements EbsSenderService {
         }
     }
 
+    /**
+     * 发送退单应退金额信息到EBS并记录发送结果
+     * @param orderReceivablePriceInfList
+     */
+    @Override
+    public void sendReturnOrderReceivableInfAndRecord(List<OrderReceivablePriceInf> orderReceivablePriceInfList) {
+        Map<String, Object> result = sendOrderReceivableToEbs(orderReceivablePriceInfList);
+        List<Long> receivableInfIds = new ArrayList<>(10);
+        for (OrderReceivablePriceInf orderReceivablePriceInf : orderReceivablePriceInfList) {
+            receivableInfIds.add(orderReceivablePriceInf.getId());
+        }
+        if (!(Boolean) result.get("success")) {
+            updateOrderReceivableFlagAndSendTimeAndErrorMsg(receivableInfIds, (String) result.get("msg"), null, AppWhetherFlag.N);
+        } else {
+            updateOrderReceivableFlagAndSendTimeAndErrorMsg(receivableInfIds, null, new Date(), AppWhetherFlag.Y);
+        }
+    }
+
 
     private Map<String, Object> sendReturnOrderCouponsToEbs(List<ReturnOrderCouponInf> returnOrderCouponInfList) {
         log.info("sendReturnOrderCouponsToEbs, returnOrderCouponInfList=" + returnOrderCouponInfList);
@@ -1221,7 +1325,6 @@ public class EbsSenderServiceImpl implements EbsSenderService {
         log.info("sendOrderKeyInfToEbs, result=" + result);
         return result;
     }
-
     private void updateOrderKeyInfFlagAndSendTimeAndErrorMsg(Long id, String msg, Date sendTime, AppWhetherFlag sendFlag) {
         if (null != id) {
             separateOrderService.updateOrderKeyInfFlagAndSendTimeAndErrorMsg(id, msg, sendTime, sendFlag);

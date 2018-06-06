@@ -15,4 +15,6 @@ public interface MaMaterialListService {
 
     void saveAndUpdateMaterialList(List<MaterialListDO> materialListSave, List<MaterialListDO> materialListUpdate);
 
+    void updateRemarkAndDeliveryId(String remark,Long deliveryId,Long userId,AppIdentityType identityType);
+
 }

@@ -19,14 +19,14 @@
         INSERT INTO material_list
         (user_id, identity_type,cus_id, gid, sku, sku_name, goods_specification, cover_image_uri, goods_unit, qty,
         audit_no,
-        material_list_type,delivery_id)
+        material_list_type,delivery_id,remark)
         VALUES
         <foreach collection="list" item="materialListDO" separator=",">
             (#{materialListDO.userId}, #{materialListDO.identityType}, #{materialListDO.cusId},#{materialListDO.gid},
             #{materialListDO.sku},#{materialListDO.skuName}, #{materialListDO.goodsSpecification},
             #{materialListDO.coverImageUri},
             #{materialListDO.goodsUnit}, #{materialListDO.qty},
-            #{materialListDO.auditNo},#{materialListDO.materialListType},#{materialListDO.deliveryId})
+            #{materialListDO.auditNo},#{materialListDO.materialListType},#{materialListDO.deliveryId},#{materialListDO.remark})
         </foreach>
     </insert>
 
@@ -35,6 +35,15 @@
         SET qty = #{qty},
             delivery_id = #{deliveryId}
         WHERE id = #{id};
+    </update>
+
+    <update id="updateRemarkAndDeliveryId">
+        UPDATE material_list
+        SET remark = #{remark},
+         delivery_id = #{deliveryId}
+        WHERE
+            user_id = #{userId}
+        AND identity_type = #{identityType}
     </update>
 
 </mapper>

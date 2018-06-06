@@ -57,7 +57,8 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
     @Transactional(rollbackFor = Exception.class)
     public void saveSeparateOrderRelevantInf(List<OrderBaseInf> orderBaseInfList, List<OrderGoodsInf> orderGoodsInfList,
                                              List<OrderCouponInf> couponInfList, List<OrderReceiptInf> receiptInfList,
-                                             List<OrderJxPriceDifferenceReturnInf> returnInfs, OrderKeyInf orderKeyInf) {
+                                             List<OrderJxPriceDifferenceReturnInf> returnInfs, OrderKeyInf orderKeyInf,
+                                             List<OrderReceivablePriceInf> orderReceivablePriceInfList) {
         //循环保存分单基础信息
         for (OrderBaseInf baseInf : orderBaseInfList) {
             separateOrderService.saveOrderBaseInf(baseInf);
@@ -91,6 +92,10 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
         //保存订单运费信息
         if (null != orderKeyInf){
             separateOrderService.saveOrderKeyInf(orderKeyInf);
+        }
+        //保存订单应收金额信息
+        for (OrderReceivablePriceInf orderReceivablePriceInf : orderReceivablePriceInfList){
+            separateOrderService.saveOrderReceivableInf(orderReceivablePriceInf);
         }
 
     }
@@ -135,7 +140,8 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
     public void saveSeparateReturnOrderRelevantInf(Map<ReturnOrderBaseInf, List<ReturnOrderGoodsInf>> returnOrderParamMap,
                                                    List<ReturnOrderCouponInf> returnOrderCouponInfList,
                                                    List<ReturnOrderRefundInf> returnOrderRefundInfList,
-                                                   List<ReturnOrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfList) {
+                                                   List<ReturnOrderJxPriceDifferenceRefundInf> jxPriceDifferenceRefundInfList,
+                                                   List<OrderReceivablePriceInf> orderReceivablePriceInfList) {
         //保存退单头及商品信息
         if (AssertUtil.isNotEmpty(returnOrderParamMap)) {
             for (Map.Entry<ReturnOrderBaseInf, List<ReturnOrderGoodsInf>> entry : returnOrderParamMap.entrySet()) {
@@ -158,6 +164,10 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
         //保存退单经销差价扣除信息
         if (AssertUtil.isNotEmpty(jxPriceDifferenceRefundInfList)) {
             jxPriceDifferenceRefundInfList.forEach(p -> separateOrderService.saveOrderJxPriceDifferenceRefundInf(p));
+        }
+        //保存退单应退金额信息
+        if (AssertUtil.isNotEmpty(orderReceivablePriceInfList)){
+            orderReceivablePriceInfList.forEach(p ->separateOrderService.saveOrderReceivableInf(p));
         }
     }
 

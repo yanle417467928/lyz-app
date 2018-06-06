@@ -33,6 +33,10 @@ public class ReturnOrderBillingDetail {
      */
     private String returnNo;
     /**
+     * 退款账号id
+     */
+    private Long returnSubjectId;
+    /**
      * 退款类型
      */
     private OrderBillingPaymentType returnPayType;

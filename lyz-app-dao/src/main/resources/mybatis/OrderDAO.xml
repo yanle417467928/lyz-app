@@ -8,7 +8,7 @@
         order_subject_type, creator_identity_type, creator_id, creator_name, creator_phone, store_id, store_code,
         store_structure_code, sales_consult_id, sales_consult_name, sales_consult_phone, customer_id, customer_name,
         customer_phone, customer_type, total_goods_price, is_evaluated, audit_no, remark, city_id, city_name, store_org_id,
-        sob_id
+        sob_id,sales_manager_id,sales_manager_store_id
     </sql>
 
     <resultMap id="orderBeseInfoList" type="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
@@ -544,6 +544,7 @@
             is_pay_up,
             pay_up_time,
             store_cash,
+            seller_store_deposit,
             store_other_money,
             store_pos_money
         FROM
@@ -653,11 +654,11 @@
             parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingPaymentDetails">
         INSERT INTO ord_billing_payment_details
         (oid, ord_no, create_time, pay_time, pay_type, amount, reply_code, receipt_number,
-         pay_type_desc, payment_subject_type, payment_subject_type_desc)
+         pay_type_desc, payment_subject_type, payment_subject_type_desc,payment_subject_id)
         VALUES
             (#{orderId}, #{orderNumber}, #{createTime}, #{payTime}, #{payType}, #{amount}, #{replyCode},
                          #{receiptNumber},
-                         #{payTypeDesc}, #{paymentSubjectType}, #{paymentSubjectTypeDesc})
+                         #{payTypeDesc}, #{paymentSubjectType}, #{paymentSubjectTypeDesc},#{paymentSubjectId})
     </insert>
 
     <update id="updateOwnMoneyByOrderNo"

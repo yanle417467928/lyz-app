@@ -125,6 +125,7 @@ public class MaOnlinePayRefundService {
                         returnOrderBillingDetail.setReplyCode(map.get("number"));
                         returnOrderBillingDetail.setReturnMoney(money);
                         returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.WE_CHAT);
+                        returnOrderBillingDetail.setReturnSubjectId(dataDO.getUserId());
                         returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
 
                         map.put("code", "SUCCESS");
@@ -216,6 +217,7 @@ public class MaOnlinePayRefundService {
                 returnOrderBillingDetail.setReplyCode(response.getTradeNo());
                 returnOrderBillingDetail.setReturnMoney(Double.valueOf(response.getRefundFee()));
                 returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.ALIPAY);
+                returnOrderBillingDetail.setReturnSubjectId(dataDO.getUserId());
                 returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
 
                 map.put("code", "SUCCESS");

@@ -40,4 +40,9 @@ public class MaMaterialListServiceImpl implements MaMaterialListService {
             }
         }
     }
+
+    @Override
+    public void updateRemarkAndDeliveryId(String remark, Long deliveryId, Long userId, AppIdentityType identityType) {
+        maMaterialListDAO.updateRemarkAndDeliveryId(remark, deliveryId, userId, identityType);
+    }
 }
