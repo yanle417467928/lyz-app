@@ -123,4 +123,5 @@ public interface CommonService {
                                OrderBillingDetails orderBillingDetails) throws UnsupportedEncodingException;
 
 
+    void cusProductCouponTransferPreDeposit() throws UnsupportedEncodingException;
 }
