@@ -19,45 +19,45 @@ import java.util.List;
 @ToString
 public class SalesReportDO {
     //城市
-    private String cityName;
+    private String cityName = "";
     //storeId
-    private Long storeId;
+    private Long storeId = 0L;
     //门店编码
-    private String storeCode;
+    private String storeCode = "";
     //门店名称
-    private String storeName;
+    private String storeName = "";
     //顾客名称
-     private String name;
-     //会员名称
-    private String customerName;
+    private String name = "";
+    //会员名称
+    private String customerName = "";
     //订单号
-    private String ordNo;
-   //订单类型
-    private String orderType;
+    private String ordNo = "";
+    //订单类型
+    private String orderType = "";
     //订单状态
-    private String orderStatus;
+    private String orderStatus = "";
     //自提提货日期
-    private String selfTakeOrderTime;
+    private String selfTakeOrderTime = "";
     //订单日期
-    private String createTime;
+    private String createTime = "";
     //出货日期
-   private String shippingDate;
+   private String shippingDate = "";
    //是否结清
-    private String isPayUp;
+    private String isPayUp = "";
     //订单还清日期
-    private String payUpTime;
+    private String payUpTime = "";
     //编号
-    private String sku;
+    private String sku = "";
     //商品名称
-    private String skuName;
+    private String skuName = "";
    //产品类型
-    private String goodsType;
+    private String goodsType = "";
     //品牌
-    private String companyFlag;
+    private String companyFlag = "";
     //财务销量
-    private String  financialSales;
+    private String  financialSales = "0";
     //经销财务销量
-    private String distributionSales;
+    private String distributionSales = "0";
     //经销单价
     private Double wholesalePrice = 0.00;
     //原单价
@@ -71,13 +71,15 @@ public class SalesReportDO {
     //现金券
     private Double cashCouponSharePrice = 0.00;
     //下单数量
-    private Double orderQty;
+    private Double orderQty = 0.00;
     //产品券类型
-    private String couponType;
+    private String couponType = "";
     //门店类型
-    private String storeType;
+    private String storeType = "";
     //退单号
-    private String returnNo;
+    private String returnNo = "";
     //分销门店编码
-    private String fxStoreCode;
+    private String fxStoreCode = "";
+    // 顾客id
+    private Long cusId = 0L;
 }

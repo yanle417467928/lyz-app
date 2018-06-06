@@ -191,7 +191,7 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
 
     @Override
     public PageInfo<SalesReportDO> findSalesList(String companyCode, String storeType,
-                                                 String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds, Integer page, Integer size) {
+                                                 String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds, Integer page, Integer size,String productType) {
         PageHelper.startPage(page, size);
         if (null != startTime && !("".equals(startTime))) {
             startTime += " 00:00:00";
@@ -202,10 +202,10 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
         List<SalesReportDO> shipmentAndReturnGoodsList = new ArrayList<>();
         if (isProductCoupon) {
             //平铺产品劵
-            shipmentAndReturnGoodsList = maReportDownloadDAO.findProductSalesList(companyCode, storeType, startTime, endTime, storeIds);
+            shipmentAndReturnGoodsList = maReportDownloadDAO.findProductSalesList(companyCode, storeType, startTime, endTime, storeIds,productType);
         } else {
             //不平铺产品劵
-            shipmentAndReturnGoodsList = maReportDownloadDAO.findNoProductSalesList(companyCode, storeType, startTime, endTime, storeIds);
+            //shipmentAndReturnGoodsList = maReportDownloadDAO.findNoProductSalesList(companyCode, storeType, startTime, endTime, storeIds);
         }
         return new PageInfo<>(shipmentAndReturnGoodsList);
     }
@@ -234,7 +234,7 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
 
     @Override
     public List<SalesReportDO> downSalesReport(String companyCode, String storeType,
-                                                 String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds) {
+                                                 String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds,String productType) {
         if (null != startTime && !("".equals(startTime))) {
             startTime += " 00:00:00";
         }
@@ -243,10 +243,9 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
         }
         List<SalesReportDO> shipmentAndReturnGoodsList = new ArrayList<>();
         if (isProductCoupon) {
-            shipmentAndReturnGoodsList = maReportDownloadDAO.findProductSalesList(companyCode, storeType, startTime, endTime, storeIds);
+            shipmentAndReturnGoodsList = maReportDownloadDAO.findProductSalesList(companyCode, storeType, startTime, endTime, storeIds,productType);
         } else {
-            shipmentAndReturnGoodsList = maReportDownloadDAO.findNoProductSalesList(companyCode, storeType, startTime, endTime, storeIds);
-
+            //shipmentAndReturnGoodsList = maReportDownloadDAO.findNoProductSalesList(companyCode, storeType, startTime, endTime, storeIds);
         }
         return shipmentAndReturnGoodsList;
     }
