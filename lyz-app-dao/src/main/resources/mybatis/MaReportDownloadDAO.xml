@@ -230,7 +230,7 @@
         obi.sales_consult_name sellerName,
         ogi.sku sku,
         ogi.sku_name skuName,
-        g.brand_name,
+        g.company_flag as brandName,
         if(ogi.goods_line_type = "PRODUCT_COUPON",1,ogi.order_qty )quantity,
         if(ogi.goods_line_type = "PRODUCT_COUPON",oci.purchase_price,ogi.return_price) buyPrice,
         IFNULL(ogi.wholesale_price,0) wholesalePrice,
@@ -281,7 +281,7 @@
         obi.sales_consult_name sellerName,
         ogi.sku sku,
         ogi.sku_name skuName,
-        g.brand_name,
+        g.company_flag as brandName,
         if(ogi.goods_line_type = "PRODUCT_COUPON",1,ogi.order_qty) quantity,
         if(ogi.goods_line_type = "PRODUCT_COUPON",oci.purchase_price,ogi.return_price) buyPrice,
         IFNULL(ogi.wholesale_price,0) wholesalePrice,
@@ -332,7 +332,7 @@
         e.name sellerName,
         g.sku sku,
         g.sku_name skuName,
-        g.brand_name brandName,
+        g.company_flag brandName,
         IFNULL(ccpc.quantity,0) quantity,
         IFNULL(ccpc.buy_price,0) buyPrice,
         IFNULL(ogi.wholesale_price, 0 ) wholesalePrice,
@@ -592,7 +592,8 @@
         obi.creator_name as creatorName,
         gg.goods_unit as goodsUnit,
         oli.estate_info as estateInfo,
-        obi.remark as remark
+        obi.remark as remark,
+        CASE obd.is_pay_up when 0 then '未结清' when 1 then '结清' end as isPayUp
         FROM
         ord_base_info obi
         INNER JOIN st_store st ON st.store_id = obi.store_id
@@ -600,6 +601,7 @@
         LEFT JOIN ord_logistics_info oli ON oli.ord_no = obi.ord_no
         LEFT JOIN ord_goods_info og ON og.ord_no = oli.ord_no
         LEFT JOIN gds_goods gg on og.gid = gg.gid
+        LEFT JOIN ord_billing_details obd on obd.oid = obi.oid
         WHERE obi.`status` != 'UNPAID' AND  obi.`status` != 'CANCELED'
         AND (ol.post_status = 'PENDING_SHIPMENT' OR (ol.post_status = 'PENDING_RECEIVE' AND obi.delivery_type =
         'SELF_TAKE'))
@@ -649,7 +651,8 @@
         orbi.creator_name as creatorName,
         gg.goods_unit as goodsUnit,
         orbi.remarks_info as remark,
-        '' as estateInfo
+        '' as estateInfo,
+        CASE obd.is_pay_up when 0 then '未结清（退）' when 1 then '结清（退）' end as isPayUp
         FROM ord_return_base_info orbi
         LEFT JOIN (SELECT DISTINCT return_no,post_status,operation_time from ord_return_lifecycle) rl ON orbi.return_no = rl.return_no
         LEFT JOIN st_store st ON st.store_id = orbi.store_id
@@ -657,6 +660,7 @@
         LEFT JOIN ord_return_logistic_info orli ON orli.return_no = orbi.return_no
         LEFT JOIN ord_return_goods_info org ON org.return_no = orbi.return_no
         LEFT JOIN gds_goods gg on gg.gid = org.gid
+        LEFT JOIN ord_billing_details obd on obd.oid = obi.oid
         WHERE orbi.return_status = 'FINISHED' AND rl.post_status = 'FINISHED' AND orbi.return_type != 'CANCEL_RETURN'
         AND (obi.delivery_type = 'HOUSE_DELIVERY' OR (obi.delivery_type = 'SELF_TAKE' AND st.store_type != 'JM'))
         <if test="null != cityId and cityId != -1">
@@ -860,7 +864,6 @@
         real_ity
         DESC
     </select>
-
 
     <select id="queryGoodsShipmentAndReturnOrder"
             resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.ShipmentAndReturnGoods">
@@ -1620,9 +1623,10 @@
         og.promotion_share_price as 'promotionSharePrice',
         og.cash_coupon_share_price as 'cashCouponSharePrice',
         CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty',
-        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END  as 'couponType',
+        if(og.goods_line_type = "PRODUCT_COUPON",CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品'  ELSE '后台发放' END,'')  as 'couponType',
         '' as 'returnNo',
-        CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode'
+        CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
+        ob.customer_id as cusId
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -1668,6 +1672,12 @@
                 </foreach>
             </otherwise>
         </choose>
+        <if test="productType != null and productType == 'HR'">
+            and og.company_flag = #{productType}
+        </if>
+        <if test="productType != null and productType == 'LYZ'">
+            and og.company_flag in ('LYZ','YR')
+        </if>
         order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
         UNION ALL
@@ -1708,9 +1718,10 @@
         og.promotion_share_price as 'promotionSharePrice',
         og.cash_coupon_share_price as 'cashCouponSharePrice',
         CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty',
-        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END  as 'couponType',
+        if(og.goods_line_type = "PRODUCT_COUPON",CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品'  ELSE '后台发放' END,'')  as 'couponType',
         '' as 'returnNo',
-        CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode'
+        CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
+        ob.customer_id as cusId
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -1753,6 +1764,13 @@
                 </foreach>
             </otherwise>
         </choose>
+
+        <if test="productType != null and productType == 'HR'">
+            and og.company_flag = #{productType}
+        </if>
+        <if test="productType != null and productType == 'LYZ'">
+            and og.company_flag in ('LYZ','YR')
+        </if>
         order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
         UNION ALL
@@ -1794,9 +1812,10 @@
         og.promotion_share_price as 'promotionSharePrice',
         og.cash_coupon_share_price as 'cashCouponSharePrice',
         CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty',
-        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END  as 'couponType',
+        if(og.goods_line_type = "PRODUCT_COUPON",CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品'  ELSE '后台发放' END,'')  as 'couponType',
         '' as 'returnNo',
-        CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode'
+        CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
+        ob.customer_id as cusId
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -1846,6 +1865,13 @@
                 </foreach>
             </otherwise>
         </choose>
+
+        <if test="productType != null and productType == 'HR'">
+            and og.company_flag = #{productType}
+        </if>
+        <if test="productType != null and productType == 'LYZ'">
+            and og.company_flag in ('LYZ','YR')
+        </if>
         order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
         UNION ALL
@@ -1891,9 +1917,10 @@
         og.cash_coupon_share_price as 'cashCouponSharePrice',
         CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE
         og.order_qty END as 'orderQty',
-        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END  as 'couponType',
+        if(og.goods_line_type = "PRODUCT_COUPON",CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品'  ELSE '后台发放' END,'')  as 'couponType',
         '' as 'returnNo',
-        CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode'
+        CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
+        ob.customer_id as cusId
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -1941,6 +1968,12 @@
                 </foreach>
             </otherwise>
         </choose>
+        <if test="productType != null and productType == 'HR'">
+            and og.company_flag = #{productType}
+        </if>
+        <if test="productType != null and productType == 'LYZ'">
+            and og.company_flag in ('LYZ','YR')
+        </if>
         order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
         UNION ALL
@@ -1977,9 +2010,10 @@
         0 as 'promotionSharePrice',
         0 as 'cashCouponSharePrice',
         CASE org.goods_line_type WHEN 'PRODUCT_COUPON' THEN -1 ELSE -ABS(org.return_qty) END as 'orderQty',
-        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END  as 'couponType',
+        if(org.goods_line_type = "PRODUCT_COUPON",CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品'  ELSE '后台发放' END,'')  as 'couponType',
         orb.return_no as 'returnNo',
-        CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode'
+        CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
+        ob.customer_id as cusId
         FROM
         ord_return_base_info orb
         LEFT JOIN ord_base_info ob on orb.oid = ob.oid
@@ -2023,6 +2057,12 @@
                 </foreach>
             </otherwise>
         </choose>
+        <if test="productType != null and productType == 'HR'">
+            and org.company_flag = #{productType}
+        </if>
+        <if test="productType != null and productType == 'LYZ'">
+            and org.company_flag in ('LYZ','YR')
+        </if>
         )
 
         UNION  ALL
@@ -2059,9 +2099,10 @@
         0 as 'promotionSharePrice',
         0 as 'cashCouponSharePrice',
         CASE org.goods_line_type WHEN 'PRODUCT_COUPON' THEN -1 ELSE -ABS(org.return_qty) END as 'orderQty',
-        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END  as 'couponType',
+        if(org.goods_line_type = "PRODUCT_COUPON",CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品'  ELSE '后台发放' END,'')  as 'couponType',
         orb.return_no as 'returnNo',
-        CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode'
+        CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
+        ob.customer_id as cusId
         FROM
         ord_return_base_info orb
         LEFT JOIN ord_base_info ob on orb.oid = ob.oid
@@ -2106,6 +2147,12 @@
                 </foreach>
             </otherwise>
         </choose>
+        <if test="productType != null and productType == 'HR'">
+            and org.company_flag = #{productType}
+        </if>
+        <if test="productType != null and productType == 'LYZ'">
+            and org.company_flag in ('LYZ','YR')
+        </if>
         )
 
         <!-- 配送 现结装饰公司销量 -->
@@ -2144,9 +2191,10 @@
         og.promotion_share_price as 'promotionSharePrice',
         og.cash_coupon_share_price as 'cashCouponSharePrice',
         CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty',
-        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END  as 'couponType',
+        if(og.goods_line_type = "PRODUCT_COUPON",CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品'  ELSE '后台发放' END,'')  as 'couponType',
         '' as 'returnNo',
-        CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode'
+        CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
+        ob.customer_id as cusId
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -2193,6 +2241,12 @@
                 </foreach>
             </otherwise>
         </choose>
+        <if test="productType != null and productType == 'HR'">
+            and og.company_flag = #{productType}
+        </if>
+        <if test="productType != null and productType == 'LYZ'">
+            and og.company_flag in ('LYZ','YR')
+        </if>
         order by ob.store_id,ob.sales_consult_id,ob.create_time
         )
 
@@ -2233,9 +2287,10 @@
         0 as 'promotionSharePrice',
         0 as 'cashCouponSharePrice',
         CASE org.goods_line_type WHEN 'PRODUCT_COUPON' THEN -1 ELSE -ABS(org.return_qty) END as 'orderQty',
-        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END  as 'couponType',
+        if(org.goods_line_type = "PRODUCT_COUPON",CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品'  ELSE '后台发放' END,'')  as 'couponType',
         orb.return_no as 'returnNo',
-        CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode'
+        CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
+        ob.customer_id as cusId
         FROM
         ord_return_base_info orb
         LEFT JOIN ord_base_info ob on orb.oid = ob.oid
@@ -2280,9 +2335,14 @@
                 </foreach>
             </otherwise>
         </choose>
+        <if test="productType != null and productType == 'HR'">
+            and org.company_flag = #{productType}
+        </if>
+        <if test="productType != null and productType == 'LYZ'">
+            and org.company_flag in ('LYZ','YR')
+        </if>
         )
     </select>
-
 
     <select id="findAccountZGGoodsItemsDOAll"
             resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.AccountGoodsItemsDO">

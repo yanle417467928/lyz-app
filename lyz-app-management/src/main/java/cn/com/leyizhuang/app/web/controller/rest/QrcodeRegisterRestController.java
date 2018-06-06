@@ -97,6 +97,14 @@ public class QrcodeRegisterRestController extends BaseRestController {
 
                 String loginName = appEmployee.getLoginName();
 
+                // 截取loginName 后四位
+                String subLoginName = "";
+                if (loginName.length() > 4){
+                    subLoginName = loginName.substring(loginName.length() - 4);
+                }else {
+                    subLoginName = loginName;
+                }
+
                 if (loginName != null){
                     String regEx="[^0-9]";
                     Pattern p = Pattern.compile(regEx);
@@ -104,7 +112,7 @@ public class QrcodeRegisterRestController extends BaseRestController {
                     System.out.println( m.replaceAll("").trim());
 
                     if (workNumber.equalsIgnoreCase(appEmployee.getLoginName())
-                            || appEmployee.getLoginName().equals(m) ) {
+                            || appEmployee.getLoginName().equals(m) || workNumber.equalsIgnoreCase(subLoginName)) {
                         // 有推荐码 设置为会员
                         newCustomer.setCustomerType(AppCustomerType.MEMBER);
                     } else {

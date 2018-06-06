@@ -81,7 +81,7 @@ public class MaReportDownloadViewController extends BaseController {
     }
 
     /**
-     * @title    对账商品明细报表
+     * @title    订单明细报表
      * @descripe
      * @param
      * @return

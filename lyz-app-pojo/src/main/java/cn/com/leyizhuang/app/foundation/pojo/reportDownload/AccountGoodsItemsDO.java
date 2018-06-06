@@ -89,6 +89,8 @@ public class AccountGoodsItemsDO {
     private String remark;
     //楼盘信息
     private String estateInfo;
+    //是否结清
+    private String isPayUp;
 
     public void setGoodsLineType(AppGoodsLineType goodsLineType){
         this.goodsLineType = goodsLineType.getDescription();

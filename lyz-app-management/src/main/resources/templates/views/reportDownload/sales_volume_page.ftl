@@ -45,11 +45,13 @@
                                 <label class="control-label col-md-2 col-xs-3" for="number" style="text-align: center">分公司:</label>
                                 <div class="col-md-2 col-xs-3" style="text-align: left;margin-left: -6%">
                                     <select id="companyCode" name="companyCode" class="form-control selectpicker">
+
                                     <#if structureList?? && structureList?size gt 0 >
                                         <#list structureList as structure>
                                             <option value="${structure.number!''}">${structure.structureName!''}</option>
                                         </#list>
                                     </#if>
+                                        <option value="ALL">所有</option>
                                     </select>
                                 </div>
                                 <label class="control-label col-md-1 col-xs-3" for="startTime" style="text-align:left;margin-left: 2%">日期:</label>
@@ -90,9 +92,32 @@
                                     <input type="radio" name="storeType" value="ZS" class="iradio_square-blue ">
                                     装饰公司(不分公司)
                                 </label>
+
                             </div>
                         </div>
                     </div>
+
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-xs-3" for="storeType"
+                                       style="text-align: center">产品类型:</label>
+                                <label class="control-label margin-6">
+                                    <input type="radio" name="productType" value="ALL" checked class="iradio_square-blue ">
+                                    全部
+                                </label>
+                                <label class="control-label margin-6" style="margin-left: 5%">
+                                    <input type="radio" name="productType" value="LYZ" class="iradio_square-blue ">
+                                    乐易装（包含莹润）
+                                </label>
+                                <label class="control-label margin-6" style="margin-left: 5%">
+                                    <input type="radio" name="productType" value="HR" class="iradio_square-blue ">
+                                    华润
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="row">
                         <div class="col-xs-12">
                             <div class="form-group">
@@ -164,7 +189,7 @@
     });
 
 
-    function initDateGird(keywords, companyCode, storeType, product, startTime, endTime) {
+    function initDateGird(keywords, companyCode, storeType, product, startTime, endTime, productType) {
         $grid.init($('#dataGrid'), $('#toolbar'), '/rest/reportDownload/salesReport/page/grid', 'get', false, function (params) {
             return {
                 offset: params.offset,
@@ -174,7 +199,8 @@
                 startTime: startTime,
                 endTime: endTime,
                 storeType: storeType,
-                isProductCoupon: product
+                isProductCoupon: product,
+                productType: productType
             }
         }, [{
             checkbox: true,
@@ -232,7 +258,8 @@
         var storeType = $('input[name="storeType"]:checked ').val()
         var isProductCoupon = $('input[name="product"]:checked ').val()
         var companyCode = $('#companyCode').val();
-        initDateGird(keywords, companyCode, storeType, isProductCoupon, startTime, endTime);
+        var productType = $('input[name="productType"]:checked').val();
+        initDateGird(keywords, companyCode, storeType, isProductCoupon, startTime, endTime, productType);
     }
 
 
@@ -243,12 +270,12 @@
         var companyCode = $('#companyCode').val();
         var isProductCoupon = $('input[name="product"]:checked ').val()
         var storeType =  $('input[name="storeType"]:checked ').val()
+        var productType = $('input[name="productType"]:checked').val();
 
         var url = "/rest/reportDownload/salesReport/download?companyCode=" + companyCode + "&startTime=" + startTime
-                + "&endTime=" + endTime + "&storeType=" + storeType + "&isProductCoupon=" + isProductCoupon;
+                + "&endTime=" + endTime + "&storeType=" + storeType + "&isProductCoupon=" + isProductCoupon+ "&productType=" + productType;
         var escapeUrl = url.replace(/\#/g, "%23");
         window.open(escapeUrl);
-
     }
 
     function clearAll() {

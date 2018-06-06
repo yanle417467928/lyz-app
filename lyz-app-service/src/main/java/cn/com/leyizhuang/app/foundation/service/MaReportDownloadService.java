@@ -55,7 +55,7 @@ public interface MaReportDownloadService {
 
                                                                      String keywords, List<Long> storeIds);
     PageInfo<SalesReportDO> findSalesList(String companyCode, String storeType,
-                                      String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds, Integer page, Integer size);
+                                      String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds, Integer page, Integer size,String productType);
 
 
     PageInfo<ArrearsReportDO> findArrearsList(String companyCode, String storeType, List<Long> storeIds, Integer page, Integer size);
@@ -65,7 +65,7 @@ public interface MaReportDownloadService {
 
 
     List<SalesReportDO> downSalesReport(String companyCode, String storeType,
-                                            String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds);
+                                            String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds,String productType);
 
     PageInfo<AccountGoodsItemsDO> findAccountZGGoodsItemsDOAll(Long cityId, Long storeId, String startTime, String endTime,
                                                              String keywords, List<Long> storeIds, Integer page, Integer size);
