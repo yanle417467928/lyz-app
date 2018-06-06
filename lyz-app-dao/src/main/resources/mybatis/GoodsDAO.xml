@@ -1007,8 +1007,6 @@
         INNER JOIN gds_goods_price p ON e.store_id = p.store_id
         LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId} AND m.identity_type = e.identity_type AND
         m.material_list_type = 'NORMAL'
-        AND p.start_time &lt; NOW()
-        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
         INNER JOIN gds_goods g ON p.gid = g.gid
         INNER JOIN gds_goods_category gc ON g.cid = gc.cid
         WHERE
@@ -1029,6 +1027,8 @@
             AND g.specification_type = #{specification}
         </if>
         AND p.price_type = 'COMMON'
+        AND p.start_time &lt; NOW()
+        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
     </select>
 
     <select id="existGoodsBrandByGoodsIdAndBrandName" resultType="java.lang.Boolean">
@@ -1062,7 +1062,7 @@
         g.gid,
         g.sku,
         g.sku_name,
-        g.cover_image_uri,
+        g.cover_image_uri,cd
         gp.retail_price,
         min(gp.vip_price) vip_price,
         gp.wholesale_price,
