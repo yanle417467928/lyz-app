@@ -494,6 +494,76 @@
         ORDER BY ua.id DESC
     </select>
 
+    <select id="findEmployeeCreditMoneyReportDOAll"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.EmpCreditMoneyChangeReportDO">
+        SELECT
+        ac.id,
+        c.name cityName,
+        st.store_name storeName,
+        st.store_type storeType,
+        ecmcl.create_time changeTime,
+        e.name employeeName,
+        ac.credit_limit_available_change_amount changeMoney,
+        ac.credit_limit_available_after_change balance,
+        ac.change_type changeType,
+        ac.change_type_desc changeTypeDesc,
+        if(orbi.roid is not NULL ,orbi.ord_no,ecmcl.reference_number) orderNumber,
+        if(orbi.roid is not NULL , orbi.return_no,'') as returnNumber
+        FROM
+        (
+        select
+        eaccl.id,
+        -ABS(eaccl.credit_limit_available_change_amount) as credit_limit_available_change_amount,
+        eaccl.credit_limit_available_after_change,
+        eaccl.change_type,
+        eaccl.change_type_desc
+        from
+        emp_available_credit_change_log eaccl
+        where change_type in (
+        'PLACE_ORDER',
+        'TEMPORARY_CLEAR'
+        )
+        union all
+        select
+        eaccl.id,
+        eaccl.credit_limit_available_change_amount,
+        eaccl.credit_limit_available_after_change,
+        eaccl.change_type,
+        eaccl.change_type_desc
+        from
+        emp_available_credit_change_log eaccl
+        where change_type not in (
+        'PLACE_ORDER',
+        'TEMPORARY_CLEAR'
+        )
+        ) ac
+        INNER JOIN emp_credit_money_change_log ecmcl ON ac.id = ecmcl.available_credit_change_id
+        LEFT JOIN ord_return_base_info orbi on orbi.ord_no = ecmcl.reference_number
+        LEFT JOIN emp_employee e ON e.emp_id = ecmcl.emp_id
+        LEFT JOIN st_store st on st.store_id = e.store_id
+        LEFT JOIN city c ON c.city_id = st.city_id
+        WHERE TRUE
+        <if test="null != cityId and cityId != -1">
+            AND c.city_id = #{cityId}
+        </if>
+        <if test="null != storeId and storeId != -1">
+            AND st.store_id = #{storeId}
+        </if>
+        <if test="null != storeType and storeType != ''">
+            AND st.store_type = #{storeType}
+        </if>
+        <if test="null != startTime and startTime != ''">
+            AND ecmcl.create_time &gt;= #{startTime}
+        </if>
+        <if test="null != endTime and endTime != ''">
+            AND ecmcl.create_time &lt;= #{endTime}
+        </if>
+        AND st.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        ORDER BY ac.id DESC
+    </select>
     <!-- 逻辑 下单时间 和 反配时间 为节点 -->
     <select id="findAccountGoodsItemsDOAll"
             resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.AccountGoodsItemsDO">
