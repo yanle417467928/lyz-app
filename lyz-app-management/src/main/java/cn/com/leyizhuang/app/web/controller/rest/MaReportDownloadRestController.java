@@ -4,9 +4,12 @@ import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.management.User;
+import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInfo;
 import cn.com.leyizhuang.app.foundation.pojo.reportDownload.*;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsVO;
@@ -240,7 +243,7 @@ public class MaReportDownloadRestController extends BaseRestController {
      */
     @GetMapping(value = "/salesReport/page/grid")
     public GridDataVO<SalesReportDO> restSalesReportPageGird(Integer offset, Integer size, String companyCode, String storeType,
-                                                             String startTime, String endTime, Boolean isProductCoupon,String productType) {
+                                                             String startTime, String endTime, Boolean isProductCoupon,String productType,Long storeId) {
         if (StringUtils.isBlank(startTime)) {
             startTime = "2017-10-01 00:00:00";
         }
@@ -256,14 +259,18 @@ public class MaReportDownloadRestController extends BaseRestController {
 
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
-        if(companyCode.equals("ALL")){
+        if("ALL".equals(companyCode)){
             // 不限分公司
         }else {
             List<Long> storeIdInCompany = maStoreService.findStoresIdByStructureCode(companyCode);
             storeIds.retainAll(storeIdInCompany);
         }
+        if(null != storeId && -1L !=storeId){
+            storeIds.clear();
+            storeIds.add(storeId);
+        }
         PageInfo<SalesReportDO> SalesList = this.maReportDownloadService.findSalesList(companyCode, storeType, startTime,
-                endTime, isProductCoupon, storeIds, page, size,productType);
+                endTime, isProductCoupon, storeIds,productType,storeId, page, size);
         return new GridDataVO<SalesReportDO>().transform(SalesList.getList(), SalesList.getTotal());
     }
 
@@ -278,32 +285,22 @@ public class MaReportDownloadRestController extends BaseRestController {
      * @date 2018/4/3
      */
     @GetMapping(value = "/arrearsReport/page/grid")
-    public GridDataVO<ArrearsReportDO> restArrearsReportPageGird(Integer offset, Integer size, String companyCode, String storeType) {
+    public GridDataVO<ArrearsReportDO> restArrearsReportPageGird(Integer offset, Integer size, String companyCode, String storeType,Long storeId) {
         size = getSize(size);
         Integer page = getPage(offset, size);
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
-        List<Long> storeIdInCompany = maStoreService.findStoresIdByStructureCode(companyCode);
-        //查询该分公司下的 关联小型装饰公司
-        List<Long> sellerId = maStoreService.findAllFitCompanySellerId();
-        List<Long> AllfitCompanyIds = new ArrayList<>();
-        for (Long id : sellerId) {
-            EmployeeDetailVO employeeDO = maEmployeeService.queryEmployeeById(id);
-            if (null != employeeDO && null != employeeDO.getStoreId()) {
-                Long storeId = employeeDO.getStoreId().getStoreId();
-                if (maStoreService.exsitStoreInCompany(storeId, companyCode, storeType)) {
-                    //找到该导购下的所有装饰公司
-                    List<Long> fitCompanyId = maStoreService.findFitCompanyIdBySellerId(id);
-                    if (null != fitCompanyId && fitCompanyId.size() > 0) {
-                        AllfitCompanyIds.addAll(fitCompanyId);
-                    }
-                }
-            }
-        }
+        List<Long> storeIdInCompany = maStoreService.findStoresIdByStructureCodeAndStoreType(companyCode,storeType);
         storeIds.retainAll(storeIdInCompany);
-        storeIds.addAll(AllfitCompanyIds);
+        if(null !=storeId && -1L !=storeId){
+            storeIds.clear();
+            storeIds.add(storeId);
+        }
+        //查询关联小型装饰公司
+        List<Long> fitId = maStoreService.findFitCompanyIdByStoreId(storeIds);
+        storeIds.addAll(fitId);
         PageInfo<ArrearsReportDO> salesList = this.maReportDownloadService.findArrearsList(companyCode, storeType
-                , storeIds, page, size);
+                , storeIds,storeId, page, size);
         return new GridDataVO<ArrearsReportDO>().transform(salesList.getList(), salesList.getTotal());
     }
 
@@ -1631,29 +1628,19 @@ public class MaReportDownloadRestController extends BaseRestController {
      * @date 2018/4/3
      */
     @GetMapping(value = "/arrearsReport/download")
-    public void downArrearsReportDown(HttpServletRequest request, HttpServletResponse response, String companyCode, String storeType) {
+    public void downArrearsReportDown(HttpServletRequest request, HttpServletResponse response, String companyCode, String storeType,Long storeId) {
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
-        List<Long> storeIdInCompany = maStoreService.findStoresIdByStructureCode(companyCode);
-        //查询该分公司下的 关联小型装饰公司
-        List<Long> sellerId = maStoreService.findAllFitCompanySellerId();
-        List<Long> AllfitCompanyIds = new ArrayList<>();
-        for (Long id : sellerId) {
-            EmployeeDetailVO employeeDO = maEmployeeService.queryEmployeeById(id);
-            if (null != employeeDO && null != employeeDO.getStoreId()) {
-                Long storeId = employeeDO.getStoreId().getStoreId();
-                if (maStoreService.exsitStoreInCompany(storeId, companyCode, storeType)) {
-                    //找到该导购下的所有装饰公司
-                    List<Long> fitCompanyId = maStoreService.findFitCompanyIdBySellerId(id);
-                    if (null != fitCompanyId && fitCompanyId.size() > 0) {
-                        AllfitCompanyIds.addAll(fitCompanyId);
-                    }
-                }
-            }
-        }
+        List<Long> storeIdInCompany = maStoreService.findStoresIdByStructureCodeAndStoreType(companyCode,storeType);
         storeIds.retainAll(storeIdInCompany);
-        storeIds.addAll(AllfitCompanyIds);
-        List<ArrearsReportDO> salesList = this.maReportDownloadService.downArrearsList(companyCode, storeType, storeIds);
+        if(null !=storeId && -1L !=storeId){
+            storeIds.clear();
+            storeIds.add(storeId);
+        }
+        //查询关联小型装饰公司
+        List<Long> fitId = maStoreService.findFitCompanyIdByStoreId(storeIds);
+        storeIds.addAll(fitId);
+        List<ArrearsReportDO> salesList = this.maReportDownloadService.downArrearsList(companyCode, storeType, storeIds,storeId);
         ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
         String shiroName = "";
         if (null != shiroUser) {
@@ -1662,8 +1649,14 @@ public class MaReportDownloadRestController extends BaseRestController {
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
         String fileurl = "欠款报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls"; //如  D:/xx/xx/xxx.xls
-
-
+       //查询筛选门店信息
+        String storeName =null;
+        if(null !=storeId && -1L !=storeId){
+            AppStore store = maStoreService.findAppStoreByStoreId(storeId);
+            if(null !=store){
+                storeName =store.getStoreName();
+            }
+        }
         WritableWorkbook wwb = null;
         try {
             //创建文件
@@ -1687,15 +1680,20 @@ public class MaReportDownloadRestController extends BaseRestController {
                 //筛选条件
                 Map<String, String> map = new HashMap<>();
 
-                if (null != companyCode && null != salesList && salesList.size() > 0) {
+                if (null != companyCode && !"-1".equals(companyCode)  && null != salesList && salesList.size() > 0) {
                     map.put("城市", salesList.get(0).getCityName());
                 } else {
                     map.put("城市", "无");
                 }
-                if (null != storeType && !("".equals(storeType)) && null != salesList && salesList.size() > 0) {
+                if (null != storeType && !"-1".equals(storeType) && !("".equals(storeType)) && null != salesList && salesList.size() > 0) {
                     map.put("门店类型", StoreType.getStoreTypeByValue(storeType).getDescription());
                 } else {
                     map.put("门店类型", "无");
+                }
+                if (null !=storeId && -1L !=storeId) {
+                    map.put("门店名称", storeName);
+                } else {
+                    map.put("门店名称", "无");
                 }
                 //设置筛选条件
                 ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
@@ -1784,7 +1782,7 @@ public class MaReportDownloadRestController extends BaseRestController {
      */
     @GetMapping(value = "/salesReport/download")
     public void downloadSalesReport(HttpServletRequest request, HttpServletResponse response, String companyCode, String storeType,
-                                    String startTime, String endTime, Boolean isProductCoupon,String productType) {
+                                    String startTime, String endTime, Boolean isProductCoupon,String productType,Long storeId) {
         if (StringUtils.isBlank(startTime)) {
             startTime = "2017-10-01 00:00:00";
         }
@@ -1793,9 +1791,15 @@ public class MaReportDownloadRestController extends BaseRestController {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS");
             endTime = format.format(now);
         }
-
+        //查询筛选门店信息
+        String storeName =null;
+        if(null !=storeId && -1L !=storeId){
+            AppStore store = maStoreService.findAppStoreByStoreId(storeId);
+            if(null !=store){
+                storeName =store.getStoreName();
+            }
+        }
         //查询登录用户门店权限的门店ID
-
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
         if(companyCode.equals("ALL")){
             // 不限分公司
@@ -1804,7 +1808,7 @@ public class MaReportDownloadRestController extends BaseRestController {
             storeIds.retainAll(storeIdInCompany);
         }
         List<SalesReportDO> salesList = this.maReportDownloadService.downSalesReport(companyCode, storeType,
-                startTime, endTime, isProductCoupon, storeIds,productType);
+                startTime, endTime, isProductCoupon, storeIds,productType,storeId);
         ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
         String shiroName = "";
         if (null != shiroUser) {
@@ -1838,12 +1842,12 @@ public class MaReportDownloadRestController extends BaseRestController {
                 //筛选条件
                 Map<String, String> map = new HashMap<>();
 
-                if (null != companyCode && null != salesList && salesList.size() > 0) {
+                if (null != companyCode && !"-1".equals(companyCode) &&  null != salesList && salesList.size() > 0) {
                     map.put("城市", salesList.get(0).getCityName());
                 } else {
                     map.put("城市", "无");
                 }
-                if (null != storeType && !("".equals(storeType)) && null != salesList && salesList.size() > 0) {
+                if (null != storeType && !"-1".equals(storeType) && !("".equals(storeType)) && null != salesList && salesList.size() > 0) {
                     map.put("门店类型", StoreType.getStoreTypeByValue(storeType).getDescription());
                 } else {
                     map.put("门店类型", "无");
@@ -1863,6 +1867,12 @@ public class MaReportDownloadRestController extends BaseRestController {
                 } else {
                     map.put("是否包含产品劵", "否");
                 }
+                if (null !=storeId && -1L !=storeId) {
+                    map.put("门店名称", storeName);
+                } else {
+                    map.put("门店名称", "无");
+                }
+
                 //设置筛选条件
                 ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
 
@@ -1878,7 +1888,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                     //计算标题开始行号
                     int row = 1;
                     if (null != map && map.size() > 0) {
-                        row = (map.size() + 1) / 2 + 4;
+                        row = map.size()  / 2 + 4;
                     }
                     String str1 = "配送单：　\n" +
                             "1： 订单还清日期 >＝ 挑选日期   并且为已出货\n" +
@@ -1898,17 +1908,17 @@ public class MaReportDownloadRestController extends BaseRestController {
                             "1. 一笔数据＝一张产品券  \n" +
                             "2. 财务销量=当时购买产品券的价格，原价及结算价＝当下此产品的单价  \n" +
                             "若退货则下单数量＝负数";
-                    ws.mergeCells(0, (map.size() + 1), 5, (map.size() + 1));
+                    ws.mergeCells(0, map.size() +1, 5, map.size()+1);
                     WritableCellFormat textFormat1 = this.setTextStyle();
                     textFormat1.setWrap(true);
-                    ws.addCell(new Label(0, (map.size() + 1), str1, textFormat1));
-                    ws.setRowView(row - 1, 3200);
+                    ws.addCell(new Label(0, map.size()+1 , str1, textFormat1));
+                    ws.setRowView(row , 3200);
 
-                    ws.mergeCells(6, (map.size() + 1), 11, (map.size() + 1));
+                    ws.mergeCells(6, map.size() +1, 11, map.size() +1);
                     WritableCellFormat textFormat2 = this.setTextStyle();
                     textFormat2.setWrap(true);
-                    ws.addCell(new Label(6, (map.size() + 1), str2, textFormat2));
-                    ws.setRowView(row - 1, 3200);
+                    ws.addCell(new Label(6, map.size()+1 , str2, textFormat2));
+                    ws.setRowView(row , 3200);
                     row += 2;
                     //设置标题
                     ws = this.setHeader(ws, titleFormat, columnView, titles, row);
@@ -1964,7 +1974,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                     // 分销
 
                     //列宽
-                    int[] columnView = {10, 20, 15, 10, 10, 30, 10, 15, 15, 15, 15, 15, 20, 15, 15, 15, 15, 15, 15, 15, 15};
+                    int[] columnView = {10, 20, 15, 10, 10, 30, 10, 15, 15, 15, 15, 15, 20, 15, 15, 15, 15, 15, 15, 15, 20};
                     //列标题城市
 
                     String[] titles = {"城市", "门店", "门店编码", "名称", "会员名称", "订单号", "退单号", "配送/自提", "订单状态", "订单日期", "出货时间", "是否结清", "订单还清日期", "编号", "商品名称", "品牌", "下单数量", "本赠品", "分销财务销量", "经销单价", "原单价", "产品券类型", "分销门店编码"
@@ -1972,7 +1982,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                     //计算标题开始行号
                     int row = 1;
                     if (null != map && map.size() > 0) {
-                        row = (map.size() + 1) / 2 + 4;
+                        row = map.size()  / 2 + 4;
                     }
                     String str1 = "配送单：　\n" +
                             "1： 订单还清日期 >＝ 挑选日期   并且为已出货\n" +
@@ -1996,13 +2006,13 @@ public class MaReportDownloadRestController extends BaseRestController {
                     WritableCellFormat textFormat1 = this.setTextStyle();
                     textFormat1.setWrap(true);
                     ws.addCell(new Label(0, (map.size() + 1), str1, textFormat1));
-                    ws.setRowView(row - 1, 3200);
+                    ws.setRowView(row , 3200);
 
                     ws.mergeCells(6, (map.size() + 1), 11, (map.size() + 1));
                     WritableCellFormat textFormat2 = this.setTextStyle();
                     textFormat2.setWrap(true);
                     ws.addCell(new Label(6, (map.size() + 1), str2, textFormat2));
-                    ws.setRowView(row - 1, 3200);
+                    ws.setRowView(row , 3200);
                     row += 2;
                     //设置标题
                     ws = this.setHeader(ws, titleFormat, columnView, titles, row);
@@ -2073,7 +2083,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                     //计算标题开始行号
                     int row = 1;
                     if (null != map && map.size() > 0) {
-                        row = (map.size() + 1) / 2 + 4;
+                        row = map.size()  / 2 + 4;
                     }
                     String str1 = "配送单：　\n" +
                             "1： 订单还清日期 >＝ 挑选日期   并且为已出货\n" +
@@ -2097,13 +2107,13 @@ public class MaReportDownloadRestController extends BaseRestController {
                     WritableCellFormat textFormat1 = this.setTextStyle();
                     textFormat1.setWrap(true);
                     ws.addCell(new Label(0, (map.size() + 1), str1, textFormat1));
-                    ws.setRowView(row - 1, 3200);
+                    ws.setRowView(row , 3200);
 
                     ws.mergeCells(6, (map.size() + 1), 11, (map.size() + 1));
                     WritableCellFormat textFormat2 = this.setTextStyle();
                     textFormat2.setWrap(true);
                     ws.addCell(new Label(6, (map.size() + 1), str2, textFormat2));
-                    ws.setRowView(row - 1, 3200);
+                    ws.setRowView(row , 3200);
                     row += 2;
                     //设置标题
                     ws = this.setHeader(ws, titleFormat, columnView, titles, row);

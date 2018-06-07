@@ -688,8 +688,8 @@ public class MaOrderServiceImpl implements MaOrderService {
                 //返还信用金后导购信用金额度
                 Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable() + realMoney);
                 //修改导购信用额度
-                Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(empCreditMoney.getEmpId(), realMoney, empCreditMoney.getLastUpdateTime());
-                if (affectLine > 0) {
+                //Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(empCreditMoney.getEmpId(), realMoney, empCreditMoney.getLastUpdateTime());
+               // if (affectLine > 0) {
                     //记录导购信用金变更日志
                     EmpCreditMoneyChangeLog empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
                     empCreditMoneyChangeLog.setEmpId(empCreditMoney.getEmpId());
@@ -701,8 +701,8 @@ public class MaOrderServiceImpl implements MaOrderService {
                     empCreditMoneyChangeLog.setChangeTypeDesc(EmpCreditMoneyChangeType.ORDER_REPAYMENT.getDescription());
                     empCreditMoneyChangeLog.setOperatorType(AppIdentityType.ADMINISTRATOR);
                     //保存日志
-                    appEmployeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
-                }
+                   // appEmployeeService.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLog);
+               // }
             }
             //生成订单物流详情
             OrderDeliveryInfoDetails orderDeliveryInfoDetails = new OrderDeliveryInfoDetails();

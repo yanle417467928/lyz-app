@@ -1658,9 +1658,15 @@
         <choose>
             <when test="'ZS'==storeType">
                 and ((s.store_type in ('ZS') and s.fit_compay_type = "MONTHLY") or (s.store_structure_code like concat("%|JZC001|%") and s.store_type = 'ZY' ) )
+                <if test="null!=storeId and ''!=storeId">
+                    and s.store_id =#{storeId}
+                </if>
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in ('FX','FXCK')
+                <if test="null!=storeId and ''!=storeId">
+                    and s.store_id =#{storeId}
+                </if>
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
@@ -1750,9 +1756,15 @@
         <choose>
             <when test="'ZS'==storeType">
                 and ((s.store_type in ('ZS') and s.fit_compay_type = "MONTHLY") or (s.store_structure_code like concat("%|JZC001|%") and s.store_type = 'ZY' ) )
+                <if test="null!=storeId and ''!=storeId">
+                    and s.store_id =#{storeId}
+                </if>
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in ('FX','FXCK')
+                <if test="null!=storeId and ''!=storeId">
+                    and s.store_id =#{storeId}
+                </if>
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
@@ -1850,10 +1862,16 @@
                 </if>-->
         <choose>
             <when test="'ZS'==storeType">
-                and ((s.store_type in ('ZS') and s.fit_compay_type = "MONTHLY") or (s.store_structure_code like concat("%|JZC001|%") and s.store_type = 'ZY' ) )
+               and ((s.store_type in ('ZS') and s.fit_compay_type = "MONTHLY") or (s.store_structure_code like concat("%|JZC001|%") and s.store_type = 'ZY' ) )
+                <if test="null!=storeId and ''!=storeId">
+                    and s.store_id =#{storeId}
+                </if>
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in  ('FX','FXCK')
+                <if test="null!=storeId and ''!=storeId">
+                    and s.store_id =#{storeId}
+                </if>
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
@@ -1954,9 +1972,15 @@
         <choose>
             <when test="'ZS'==storeType">
                 and ((s.store_type in ('ZS') and s.fit_compay_type = "MONTHLY") or (s.store_structure_code like concat("%|JZC001|%") and s.store_type = 'ZY' ) )
+                <if test="null!=storeId and ''!=storeId">
+                    and s.store_id =#{storeId}
+                </if>
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in  ('FX','FXCK')
+                <if test="null!=storeId and ''!=storeId">
+                    and s.store_id =#{storeId}
+                </if>
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
@@ -2043,9 +2067,15 @@
         <choose>
             <when test="'ZS'==storeType">
                 and ((s.store_type in ('ZS') and s.fit_compay_type = "MONTHLY") or (s.store_structure_code like concat("%|JZC001|%") and s.store_type = 'ZY' ) )
+                <if test="null!=storeId and ''!=storeId">
+                    and s.store_id =#{storeId}
+                </if>
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in ('FX','FXCK')
+                <if test="null!=storeId and ''!=storeId">
+                    and s.store_id =#{storeId}
+                </if>
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
@@ -2133,9 +2163,15 @@
         <choose>
             <when test="'ZS'==storeType">
                 and ((s.store_type in ('ZS') and s.fit_compay_type = "MONTHLY") or (s.store_structure_code like concat("%|JZC001|%") and s.store_type = 'ZY' ) )
+                <if test="null!=storeId and ''!=storeId">
+                    and s.store_id =#{storeId}
+                </if>
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in ('FX','FXCK')
+                <if test="null!=storeId and ''!=storeId">
+                    and s.store_id =#{storeId}
+                </if>
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
@@ -2233,7 +2269,6 @@
                 and s.store_type = -1
             </when>
             <otherwise>
-
                 and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
                 and st2.store_id in
                 <foreach collection="list" item="item" open="(" close=")" separator=",">
@@ -2327,7 +2362,6 @@
                 and s.store_type = -1
             </when>
             <otherwise>
-
                 and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
                 and st2.store_id in
                 <foreach collection="list" item="item" open="(" close=")" separator=",">
@@ -2493,11 +2527,10 @@
         b.is_pay_up = 0
         <choose>
             <when test="'FX'==storeType">
-                and s.store_type in ('FX','FXCK')
-                <!-- AND o.store_id IN
-                 <foreach collection="list" item="item" open="(" close=")" separator=",">
-                     #{item}
-                 </foreach>-->
+                 and s.store_type in ('FX','FXCK')
+                <if test="null!=storeId and ''!=storeId">
+                    and s.store_id =#{storeId}
+                </if>
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
@@ -2557,10 +2590,9 @@
         <choose>
             <when test="'FX'==storeType">
                 and s.store_type in ('FX','FXCK')
-                <!-- AND o.store_id IN
-                 <foreach collection="list" item="item" open="(" close=")" separator=",">
-                     #{item}
-                 </foreach>-->
+                <if test="null!=storeId and ''!=storeId">
+                    and s.store_id =#{storeId}
+                </if>
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
