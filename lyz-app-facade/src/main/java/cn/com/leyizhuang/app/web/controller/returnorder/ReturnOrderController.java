@@ -724,7 +724,9 @@ public class ReturnOrderController {
                     }
                 }
                 if (AppOrderType.COUPON.equals(order.getOrderType())) {
-                    returnOrderBilling.setPreDeposit(CountUtil.add(cashPosPrice,onlinePayPrice,customerPrePay,storePrePay));
+                    if (returnTotalGoodsPrice <= CountUtil.add(cashPosPrice,onlinePayPrice,customerPrePay,storePrePay,sellerStoreDeposit)) {
+                        returnOrderBilling.setPreDeposit(returnTotalGoodsPrice);
+                    }
                 }else {
 //                    //整单退,不退运费
 //                    if (totalGoodsQty == totalReturnQty) {
