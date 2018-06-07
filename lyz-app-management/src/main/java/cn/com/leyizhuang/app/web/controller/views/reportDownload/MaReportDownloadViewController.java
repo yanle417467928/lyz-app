@@ -74,8 +74,14 @@ public class MaReportDownloadViewController extends BaseController {
         return "/views/reportDownload/store_predeposit_page";
     }
 
+    @GetMapping(value = "/employee/creditMoney/list")
+    public String getEmployeeCreditMoney(ModelMap map) {
+        map.addAttribute("storeTypes", StoreType.getStoreTypeList());
+        return "/views/reportDownload/emp_creditMoney_page";
+    }
+
     /**
-     * @title    对账商品明细报表
+     * @title    订单明细报表
      * @descripe
      * @param
      * @return

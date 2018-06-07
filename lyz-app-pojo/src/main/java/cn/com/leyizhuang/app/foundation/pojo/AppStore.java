@@ -125,4 +125,15 @@ public class AppStore {
      */
     private FitCompayType fitCompayType;
 
+    public void setFitCompayType(String fitCompayType){
+        try {
+            if(null != fitCompayType && !"".equals(fitCompayType)){
+                this.fitCompayType = FitCompayType.getFitCompayTypeByValue(fitCompayType);
+            }
+        }catch (Exception e) {
+
+        }
+
+    }
+
 }

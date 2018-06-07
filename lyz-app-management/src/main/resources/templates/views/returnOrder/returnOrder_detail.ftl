@@ -41,6 +41,7 @@
                     <#elseif maReturnOrderDetailVO.returnStatus == 'CANCELED'>已取消
                     <#elseif maReturnOrderDetailVO.returnStatus == 'PENDING_REFUND'>待退款
                     <#elseif maReturnOrderDetailVO.returnStatus == 'FINISHED'>已完成
+                    <#elseif maReturnOrderDetailVO.returnStatus == 'RETURNING'>退货中
                     </#if>
                     </spanp>
                 </div>

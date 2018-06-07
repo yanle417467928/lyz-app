@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActStoreDO;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
+import cn.com.leyizhuang.app.foundation.pojo.user.RankClassification;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
@@ -19,7 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 促销页面控制器
@@ -43,6 +46,9 @@ public class MaActViewsController extends BaseController{
     @Autowired
     private AdminUserStoreService adminUserStoreService;
 
+    @Autowired
+    private MaCustomerService maCustomerService;
+
 
     @GetMapping("/page")
     public String acticityPage(HttpServletRequest request, ModelMap map){ return "/views/activity/activity_page";}
@@ -50,6 +56,10 @@ public class MaActViewsController extends BaseController{
     @GetMapping("/add/{id}")
     public String activityAdd(@PathVariable Long id, ModelMap map){
         if(id == 0){
+            // 获取专供类型
+            List<RankClassification> rankClassificationList = maCustomerService.findRankAll();
+            map.addAttribute("rankScopeList",rankClassificationList);
+
             return "/views/activity/activity_add";
         }else{
             appActService.getModelMapByActBaseId(map,id);
@@ -75,6 +85,11 @@ public class MaActViewsController extends BaseController{
 
             }
             map.addAttribute("stores",stores);
+
+            // 获取专供类型
+            List<RankClassification> rankClassificationList = maCustomerService.findRankAll();
+            map.addAttribute("rankScopeList",rankClassificationList);
+
 
             return "/views/activity/activity_copy";
         }
@@ -109,7 +124,9 @@ public class MaActViewsController extends BaseController{
 
         }
         map.addAttribute("stores",stores);
-
+        // 获取专供类型
+        List<RankClassification> rankClassificationList = maCustomerService.findRankAll();
+        map.addAttribute("rankScopeList",rankClassificationList);
         return "/views/activity/activity_edit";
     }
 

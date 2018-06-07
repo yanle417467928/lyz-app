@@ -33,6 +33,11 @@
         <div class="col-xs-12">
             <div class="nav-tabs-custom">
                 <div id="toolbar" class="form-inline ">
+
+                    <button id="btn_add_order" type="button" class="btn btn-default">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
+                    </button>
+
                     <button id="btn_delete" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除
                     </button>
@@ -133,6 +138,32 @@
             </div>
             <div class="modal-footer">
                 <a href="javascript:$page.information.close();" role="button" class="btn btn-primary">关闭</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="photoGoodsDetail" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="user-block">
+                    <span class="usernames" style="margin-left: 0px;">
+                        <a id="menuTitle" href="#"></a>
+                        <a href="javascript:$page.photoGoodsDetail.close();" class="pull-right btn-box-tool">
+                            <i class="fa fa-times"></i>
+                        </a>
+
+                    </span>
+                    <div class="box-body table-reponsive">
+                        <table id="photoGoodsList" class="table table-bordered table-hover">
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="javascript:$page.photoGoodsDetail.close();" role="button" class="btn btn-primary">关闭</a>
             </div>
         </div>
     </div>
@@ -268,6 +299,7 @@
                     if('PENDING' === value || 'PROCESSING' === value) {
                         return '<button class="btn btn-primary btn-xs" onclick="handle(' + row.id + ')"> 处理</button>';
                     } else {
+//                        return '<button class="btn btn-primary btn-xs" onclick="showPhotoGoodsList(' + row.photoOrderNo + ')"> 查看</button>';
                         return '-';
                     }
                 }
@@ -276,6 +308,42 @@
         $('#btn_delete').on('click', function () {
             $grid.remove($('#dataGrid'), '/rest/order/photo', 'delete');
         });
+    }
+
+    function showPhotoGoodsList(photoNo){
+        $("#photoGoodsList").bootstrapTable('destroy');
+        $grid.init($('#photoGoodsList'),'/rest/order/photo/find/photo/goods/'+photoNo, 'get', false, function (params) {
+            return {
+                offset: params.offset,
+                size: params.limit,
+                keywords: keywords,
+                cityId: cityId,
+                storeId: storeId,
+                status: status
+            }
+        }, [{
+            checkbox: true,
+            title: '选择'
+        },
+            {
+                field: 'gid',
+                title: 'gid',
+                align: 'center'
+            },{
+                field: 'skuName',
+                title: '商品名称',
+                align: 'center'
+            },{
+                field: 'goodsQty',
+                title: '数量',
+                align: 'center'
+            },
+            {
+                field: 'photoOrderNo',
+                title: '拍照下单单号',
+                align: 'center'
+            }
+        ]);
     }
     function findCusByCity() {
         initSelect("#storeCode", "选择门店");
@@ -483,5 +551,9 @@
         }
         return ids;
     }
+
+    $('#btn_add_order').on('click', function () {
+        $grid.add('/views/admin/order/photo/add');
+    });
 </script>
 </body>

@@ -5,14 +5,14 @@
     <sql id="ALL_FIELDS">
         id, create_time, title, begin_time, end_time, city_id, city_name, act_target,
     base_type, promotion_type, condition_type, is_double, gift_choose_number, full_amount,
-    full_number,is_returnable,sort_id,status,act_code,add_amount,is_gcorder,is_goods_optional_qty,is_gift_optional_qty,pic_url
+    full_number,is_returnable,sort_id,status,act_code,add_amount,is_gcorder,is_goods_optional_qty,is_gift_optional_qty,pic_url,rank_code,scope
     </sql>
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO act_base (
          create_time, title, begin_time, end_time, city_id, city_name,  act_target,
     base_type, promotion_type, condition_type, is_double, gift_choose_number, full_amount,
-    full_number,is_returnable,sort_id,status,act_code,add_amount,is_gcorder,is_goods_optional_qty,is_gift_optional_qty,pic_url
+    full_number,is_returnable,sort_id,status,act_code,add_amount,is_gcorder,is_goods_optional_qty,is_gift_optional_qty,pic_url,rank_code,scope
         )
         VALUES
         (
@@ -23,7 +23,7 @@
       #{isDouble,jdbcType=BIT}, #{giftChooseNumber,jdbcType=INTEGER}, #{fullAmount,jdbcType=DECIMAL},
       #{fullNumber,jdbcType=INTEGER},#{isReturnable,jdbcType=BIT},#{sortId,jdbcType=INTEGER},#{status,jdbcType=VARCHAR},
       #{actCode,jdbcType=VARCHAR},#{addAmount,jdbcType=DECIMAL},#{isGcOrder,jdbcType=BIT},#{isGoodsOptionalQty,jdbcType=BIT},#{isGiftOptionalQty,jdbcType=BIT}
-      ,#{picUrl}
+      ,#{picUrl},#{rankCode},#{scope}
         )
     </insert>
 
@@ -97,6 +97,12 @@
             <if test="isGiftOptionalQty != null">
                 is_gift_optional_qty = #{isGiftOptionalQty,jdbcType=BIT},
             </if>
+            <if test="rankCode != null">
+                rank_code = #{rankCode},
+            </if>
+            <if test="scope != null">
+                scope = #{scope},
+            </if>
         </set>
         WHERE
         id = #{id}
@@ -145,7 +151,7 @@
         </if>
         <if test="status == 'PUBLISH'">
             and status = #{status}
-            ORDER BY sort_id
+            ORDER BY create_time DESC
         </if>
 
 
@@ -171,6 +177,31 @@
         AND  b.act_target LIKE concat("%",#{actTarget},"%")
         AND st.act_id is NOT NULL
         AND b.status = 'PUBLISH'
+        AND (b.scope = #{scope} OR b.scope = 'ALL')
+        ORDER BY b.sort_id
+    </select>
+
+    <select id="queryZgFirstListByRankCode" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM act_base b
+        LEFT JOIN
+        (SELECT  DISTINCT s.act_id from act_stores s RIGHT JOIN
+        (SELECT DISTINCT act_id from act_goods_mapping
+        where sku in
+        <foreach collection="skus" item="sku" index="index" open="(" close=")" separator=",">
+            #{sku}
+        </foreach>
+        ) g on s.act_id = g.act_id
+        where s.store_id = #{storeId}) st
+        ON b.id = st.act_id
+        where
+        b.begin_time &lt; #{now} and b.end_time &gt; #{now}
+        and b.city_id = #{cityId}
+        AND st.act_id is NOT NULL
+        AND b.status = 'PUBLISH'
+        and b.rank_code = #{rankCode}
+        AND (b.scope = #{scope} OR b.scope = 'ALL')
         ORDER BY b.sort_id
     </select>
 

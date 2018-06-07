@@ -21,4 +21,7 @@ public interface MaMaterialListDAO {
 
     void modifyQty(@Param("id") Long id, @Param("qty") Integer qty, @Param("deliveryId")Long deliveryId);
 
+    void updateRemarkAndDeliveryId(@Param("remark")String remark,@Param("deliveryId")Long deliveryId,
+                                   @Param("userId")Long userId,@Param("identityType")AppIdentityType identityType);
+
 }

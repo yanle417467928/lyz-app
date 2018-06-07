@@ -61,7 +61,12 @@ public interface MaReportDownloadDAO {
     List<SalesReportDO> findNoProductSalesList(@Param("companyCode") String companyCode, @Param("storeType") String storeType, @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("list") List<Long> storeIds);
 
 
-    List<SalesReportDO> findProductSalesList(@Param("companyCode") String companyCode, @Param("storeType") String storeType, @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("list") List<Long> storeIds);
+    List<SalesReportDO> findProductSalesList(@Param("companyCode") String companyCode,
+                                             @Param("storeType") String storeType,
+                                             @Param("startTime") String startTime,
+                                             @Param("endTime") String endTime,
+                                             @Param("list") List<Long> storeIds,
+                                             @Param("productType") String productType);
 
     List<AccountGoodsItemsDO> findAccountZGGoodsItemsDOAll(@Param("cityId") Long cityId, @Param("storeId") Long storeId,
                                                            @Param("startTime") String startTime, @Param("endTime") String endTime,
@@ -72,5 +77,6 @@ public interface MaReportDownloadDAO {
     List<ArrearsReportDO> findArrearsList(@Param("companyCode") String companyCode, @Param("storeType") String storeType, @Param("list") List<Long> storeIds);
 
 
-
+    List<EmpCreditMoneyChangeReportDO> findEmployeeCreditMoneyReportDOAll(@Param("cityId") Long cityId, @Param("storeId") Long storeId, @Param("storeType") String storeType,
+                                                                          @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("list") List<Long> storeIds);
 }

@@ -37,7 +37,11 @@ public interface AppSeparateOrderService {
 
     void sendOrderCouponInf(String orderNumber);
 
+    void sendOrderReceivableInf(String orderNumber);
+
     void updateOrderCouponFlagAndSendTimeAndErrorMsg(List<Long> couponInfIds, String msg, Date sendTime, AppWhetherFlag flag);
+
+    void updateOrderReceivableFlagAndSendTimeAndErrorMsg(List<Long> couponInfIds, String msg, Date sendTime, AppWhetherFlag flag);
 
     void updateOrderGoodsInfByOrderNumber(String orderNumber, AppWhetherFlag flag, String message, Date sendTime);
 
@@ -86,6 +90,8 @@ public interface AppSeparateOrderService {
     void updateReturnOrderGoodsInf(String returnNumber, AppWhetherFlag flag,String errorMsg, Date sendTime);
 
     void sendReturnOrderCouponInf(String returnNumber);
+
+    void sendReturnOrderReceivableInf(String returnNumber);
 
     void updateReturnOrderCouponInf(List<Long> returnCouponInfLineId, String msg, Date sendTime, AppWhetherFlag flag);
 
@@ -144,6 +150,10 @@ public interface AppSeparateOrderService {
     void separateReturnOrderRefundInf(String returnNumber);
 
     void separateReturnOrderJxPriceInf(String returnNumber);
+
+    void saveOrderReceivableInf(OrderReceivablePriceInf orderReceivablePriceInf);
+
+    List<OrderReceivablePriceInf> findOrderReceivableInfByMainOrderNumber(String mainOrderNumber);
 
     List<KdSell> getOrderKdSellByMainOrderNumber(String mainOrderNumber);
 

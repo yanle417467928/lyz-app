@@ -145,6 +145,21 @@
 
                     <div class="row">
                         <div class="col-xs-12 col-md-2">
+                            <div class="form-group">
+                                <label for="title">
+                                    促销范围
+                                </label>
+                                <select name="scope" id="scope" class="form-control select">
+                                    <option value="ALL" <#if actBaseDO??><#if actBaseDO.scope == 'ALL' >selected</#if></#if>>全部</option>
+                                    <option value="GOODS" <#if actBaseDO??><#if actBaseDO.scope == 'GOODS' >selected</#if></#if>>买商品</option>
+                                    <option value="COUPON" <#if actBaseDO??><#if actBaseDO.scope == 'COUPON' >selected</#if></#if>>买券</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-12 col-md-2">
                             <label for="title">
                                 城市
                             </label>
@@ -215,9 +230,10 @@
                             <select name="baseType" id="baseType" class="form-control select"
                                     onchange="changeBaseType(this.value);">
                                 <option value="COMMON">普通</option>
+                                <option value="ZGFRIST">专供首单促销</option>
                             </select>
                         </div>
-                        <div class="col-xs-12 col-md-2">
+                        <div id="actConditionDiv" class="col-xs-12 col-md-2">
                             <div class="form-group">
                                 <label for="title">
                                     促销条件
@@ -231,7 +247,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-xs-12 col-md-2">
+                        <div id="actResultDiv" class="col-xs-12 col-md-2">
                             <div class="form-group">
                                 <label for="title">
                                     促销结果
@@ -243,6 +259,24 @@
                                         <option value="GOO">送商品</option>
                                         <option value="ADD">加价购买</option>
                                         <option value="PRO">送产品券</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="rankCodeDiv" class="col-xs-12 col-md-4" style="display: none;">
+                            <div class="form-group">
+                                <label for="title">
+                                    专供等级(专供促销无需选赠品!)
+                                </label>
+                                <div class="form-group">
+                                    <select name="rankCode" id="rankCode" class="form-control select">
+                                        <option value=""></option>
+                                    <#if rankScopeList??>
+                                        <#list rankScopeList as item>
+                                            <option value="${item.rankCode}">${item.rankName}</option>
+                                        </#list>
+                                    </#if>
                                     </select>
                                 </div>
                             </div>

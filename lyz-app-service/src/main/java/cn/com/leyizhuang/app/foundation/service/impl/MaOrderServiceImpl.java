@@ -980,8 +980,13 @@ public class MaOrderServiceImpl implements MaOrderService {
                                     customerProductCoupon.setQuantity(1);
                                     customerProductCoupon.setGetType(CouponGetType.BUY);
                                     customerProductCoupon.setGetTime(orderBaseInfo.getCreateTime());
-                                    customerProductCoupon.setEffectiveStartTime(orderBaseInfo.getCreateTime());
-                                    customerProductCoupon.setEffectiveEndTime(null);
+
+                                    Calendar c = Calendar.getInstance();
+                                    customerProductCoupon.setEffectiveStartTime(c.getTime());
+
+                                    c.add(Calendar.MONTH, 6);
+
+                                    customerProductCoupon.setEffectiveEndTime(c.getTime());
                                     customerProductCoupon.setIsUsed(Boolean.FALSE);
                                     customerProductCoupon.setUseTime(null);
                                     customerProductCoupon.setUseOrderNumber(null);
@@ -992,6 +997,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                                     customerProductCoupon.setStatus(Boolean.TRUE);
                                     customerProductCoupon.setDisableTime(null);
                                     customerProductCoupon.setGoodsLineId(goodsInfo.getId());
+                                    customerProductCoupon.setGoodsSign(goodsInfo.getGoodsSign());
                                     //保存产品券信息
                                     productCouponService.addCustomerProductCoupon(customerProductCoupon);
 
@@ -1243,6 +1249,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                 returnGoodsInfo.setSettlementPrice(orderGoodsInfo.getSettlementPrice());
                 returnGoodsInfo.setCompanyFlag(orderGoodsInfo.getCompanyFlag());
                 returnGoodsInfo.setGoodsLineType(orderGoodsInfo.getGoodsLineType());
+                returnGoodsInfo.setGoodsSign(orderGoodsInfo.getGoodsSign());
                 returnOrderGoodsInfos.add(returnGoodsInfo);
                 //保存退单商品信息
                 returnOrderService.saveReturnOrderGoodsInfo(returnGoodsInfo);

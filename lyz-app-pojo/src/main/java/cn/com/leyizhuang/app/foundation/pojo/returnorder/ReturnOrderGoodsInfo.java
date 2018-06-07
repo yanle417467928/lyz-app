@@ -72,4 +72,8 @@ public class ReturnOrderGoodsInfo {
      * 公司标识
      */
     private String companyFlag;
+    /**
+     * 商品标志（普通、专供）
+     */
+    private String goodsSign;
 }

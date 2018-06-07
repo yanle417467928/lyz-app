@@ -251,7 +251,8 @@
             goods_line_type         goods_line_type,
             price_item_id           priceItemId,
             company_flag            companyFlag,
-            cover_image_uri         coverImageUri
+            cover_image_uri         coverImageUri,
+            goods_sign              goodsSign
         FROM
             ord_goods_info
         WHERE
@@ -762,7 +763,7 @@
             oid, ord_no, goods_line_type, gid, sku, sku_name, retail_price, VIP_price, wholesale_price, promotion_id,
             is_price_share, promotion_share_price, lb_share_price, cash_coupon_share_price, cash_return_share_price,
             return_price, is_returnable, return_priority, order_qty, shipping_qty, return_qty, returnable_qty, settlement_price,
-            price_item_id, company_flag, cover_image_uri
+            price_item_id, company_flag, cover_image_uri,goods_sign
         )
         VALUES (#{oid}, #{orderNumber}, #{goodsLineType}, #{gid}, #{sku}, #{skuName}, #{retailPrice}, #{VIPPrice},
                         #{wholesalePrice}, #{promotionId},
@@ -771,7 +772,7 @@
                                          #{returnPrice}, #{isReturnable}, #{returnPriority}, #{orderQuantity},
                                          #{shippingQuantity},
                                          #{returnQuantity}, #{returnableQuantity}, #{settlementPrice},
-                #{priceItemId}, #{companyFlag}, #{coverImageUri})
+                #{priceItemId}, #{companyFlag}, #{coverImageUri},#{goodsSign})
 
     </insert>
 
@@ -972,8 +973,8 @@
     </select>
 
     <insert id="saveOrderCouponInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo">
-        INSERT INTO ord_coupon_info (oid, ord_no, coupon_type, coupon_id, purchase_price, cost_price, get_type, sku)
-        VALUES (#{oid}, #{orderNumber}, #{couponType}, #{couponId}, #{purchasePrice}, #{costPrice}, #{getType}, #{sku});
+        INSERT INTO ord_coupon_info (oid, ord_no, coupon_type, coupon_id, purchase_price, cost_price, get_type, sku, goods_sign)
+        VALUES (#{oid}, #{orderNumber}, #{couponType}, #{couponId}, #{purchasePrice}, #{costPrice}, #{getType}, #{sku}, #{goodsSign});
     </insert>
 
     <select id="getPendingEvaluationOrderListByUserIDAndIdentityType" resultMap="pendingEvaluationOrder">
@@ -1688,5 +1689,125 @@
                           ord_no = #{orderNo});
     </select>
 
+
+    <select id="findSellerManagerPayForOrderList" resultMap="orderPageInfoListMap">
+        SELECT
+        obi.oid,
+        obi.`status`,
+        obi.is_evaluated,
+        obi.ord_no,
+        obi.effective_end_time,
+        obi.delivery_type,
+        obd.total_goods_price price,
+        obd.amount_payable,
+        oli.estate_info,
+        CASE WHEN obi.delivery_type='HOUSE_DELIVERY'
+        THEN oli.shipping_address
+        ELSE oli.booking_store_name
+        END AS shipping_address,
+        obi.customer_id,
+        obi.customer_name,
+        obi.customer_phone,
+        (CASE obi.creator_identity_type WHEN 'DECORATE_MANAGER' THEN s.store_name WHEN 'CUSTOMER' THEN obi.creator_name END ) as store_name
+        FROM
+        ord_base_info obi
+        INNER JOIN payhelper_ord_relation por ON por.oid = obi.oid
+        LEFT JOIN ord_billing_details obd ON obi.oid = obd.oid
+        LEFT JOIN ord_logistics_info oli ON obi.oid = oli.oid
+        LEFT JOIN st_store s on s.store_id = obi.store_id
+        WHERE
+        por.payhelper_id = #{userId}
+        /*AND creator_identity_type = 'DECORATE_MANAGER'*/
+        ORDER BY obi.create_time DESC
+    </select>
+
+
+
+    <select id="getFitOrderListPageInfoByUserIdAndIdentityType" resultMap="orderPageInfoListMap">
+
+        <if test="null != identityType and identityType.toString() == 'SELLER'">
+            SELECT
+            obi.create_time,
+            obi.oid,
+            obi.`status`,
+            obi.is_evaluated,
+            obi.ord_no,
+            obi.effective_end_time,
+            obi.delivery_type,
+            obd.total_goods_price price ,
+            obd.amount_payable,
+            oli.estate_info,
+            CASE WHEN obi.delivery_type='HOUSE_DELIVERY'
+            THEN oli.shipping_address
+            ELSE oli.booking_store_name
+            END AS shipping_address,
+            pi.lender_name storeName
+            FROM
+            payhelper_info pi
+            LEFT JOIN ord_base_info obi ON pi.store_code = obi.store_code
+            LEFT JOIN ord_billing_details obd ON obi.oid = obd.oid
+            LEFT JOIN ord_logistics_info oli ON obi.oid = oli.oid
+            WHERE
+            obi.order_subject_type = 'FIT'
+            AND pi.seller_manager_id = #{userId}
+            AND pi.loan_subject_type = 'FIT'
+            AND pi.is_open_payhelper IS TRUE
+            AND obi.`status` = 'UNPAID'
+            AND obi.effective_end_time > NOW()
+            <if test="null != keywords and keywords != ''">
+                (obi.ord_no LIKE concat(concat('%',#{keywords}),'%') OR oli.shipping_address LIKE concat(concat('%',#{keywords}),'%')
+                OR oli.receiver LIKE concat(concat('%',#{keywords}),'%') OR pi.lender_name LIKE concat(concat('%',#{keywords}),'%')
+                OR oli.receiver_phone LIKE concat(concat('%',#{keywords}),'%'))
+            </if>
+            UNION
+            SELECT
+            obi.create_time,
+            obi.oid,
+            obi.`status`,
+            obi.is_evaluated,
+            obi.ord_no,
+            obi.effective_end_time,
+            obi.delivery_type,
+            obd.total_goods_price price ,
+            obd.amount_payable,
+            oli.estate_info,
+            CASE WHEN obi.delivery_type='HOUSE_DELIVERY'
+            THEN oli.shipping_address
+            ELSE oli.booking_store_name
+            END AS shipping_address,
+            pi.lender_name storeName
+            FROM
+            payhelper_info pi
+            LEFT JOIN ord_base_info obi ON pi.lender_id = obi.creator_id
+            LEFT JOIN ord_billing_details obd ON obi.oid = obd.oid
+            LEFT JOIN ord_logistics_info oli ON obi.oid = oli.oid
+            WHERE
+            obi.order_subject_type = 'STORE'
+            AND pi.seller_manager_id = #{userId}
+            AND pi.loan_subject_type = 'ZG'
+            AND pi.is_open_payhelper IS TRUE
+            AND obi.`status` = 'UNPAID'
+            AND obi.effective_end_time > NOW()
+            <if test="null != keywords and keywords != ''">
+                (obi.ord_no LIKE concat(concat('%',#{keywords}),'%') OR oli.shipping_address LIKE concat(concat('%',#{keywords}),'%')
+                OR oli.receiver LIKE concat(concat('%',#{keywords}),'%') OR pi.lender_name LIKE concat(concat('%',#{keywords}),'%')
+                OR oli.receiver_phone LIKE concat(concat('%',#{keywords}),'%'))
+            </if>
+            ORDER BY create_time DESC
+        </if>
+
+    </select>
+
+
+    <select id="findPayhelperOrderByOrdNo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.PayhelperOrder">
+        SELECT ord_no orderNumber, payhelper_amount payhelperAmount, payhelper_id, payhelper_type, pay_type
+        FROM payhelper_ord_relation
+        WHERE ord_no = #{ordNo} AND is_pay_over IS TRUE
+    </select>
+
+    <insert id="savePayhelperOrder" parameterType="cn.com.leyizhuang.app.foundation.pojo.PayhelperOrder">
+        INSERT INTO payhelper_ord_relation(create_time, oid, ord_no, payhelper_amount, payhelper_id, payhelper_type, is_pay_over, pay_type)
+        VALUES (#{createTime}, #{oid}, #{orderNumber}, #{payhelperAmount}, #{payhelperId}, #{payhelperType}, #{isPayOver}, #{payType})
+    </insert>
 
 </mapper>

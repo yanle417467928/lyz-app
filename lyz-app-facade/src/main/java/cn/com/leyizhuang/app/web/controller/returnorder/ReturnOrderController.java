@@ -602,13 +602,12 @@ public class ReturnOrderController {
                     for (ReturnOrderGoodsInfo returnOrderGoodsInfo : goodsInfos) {
                         int index = 0;
                         for (CustomerProductCoupon productCoupon : customerProductCouponList) {
-                            if (AppGoodsLineType.PRODUCT_COUPON.equals(returnOrderGoodsInfo.getGoodsLineType()) &&
-                                    productCoupon.getGoodsLineId().equals(returnOrderGoodsInfo.getOrderGoodsId())) {
+                            if (productCoupon.getGoodsLineId().equals(returnOrderGoodsInfo.getOrderGoodsId())) {
                                 if (index == returnOrderGoodsInfo.getReturnQty()) {
                                     break;
                                 }
                                 ReturnOrderProductCoupon returnOrderProductCoupon = new ReturnOrderProductCoupon();
-                                returnOrderProductCoupon.setGid(returnOrderGoodsInfo.getGid());
+                                returnOrderProductCoupon.setGid(productCoupon.getGoodsId());
                                 returnOrderProductCoupon.setIsReturn(Boolean.FALSE);
                                 returnOrderProductCoupon.setOrderNo(orderNo);
                                 returnOrderProductCoupon.setPcid(productCoupon.getId());
@@ -620,6 +619,11 @@ public class ReturnOrderController {
                                 productCouponList.add(returnOrderProductCoupon);
                                 index++;
                             }
+                        }
+                        if (index != returnOrderGoodsInfo.getReturnQty()){
+                            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, returnOrderGoodsInfo.getSkuName() + "可退数量不足！", "");
+                            logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
+                            return resultDTO;
                         }
                     }
                 }
@@ -648,6 +652,7 @@ public class ReturnOrderController {
                                 productCoupon.setReturnQty(1);
                                 productCoupon.setPurchasePrice(orderCouponInfo.getPurchasePrice());
                                 productCoupon.setReturnNo(returnNo);
+                                productCoupon.setGoodsSign(orderCouponInfo.getGoodsSign());
                                 productCouponList.add(productCoupon);
                                 index++;
                             }
@@ -718,6 +723,90 @@ public class ReturnOrderController {
                         sellerStoreDeposit = paymentDetails.getAmount();
                     }
                 }
+                if (AppOrderType.COUPON.equals(order.getOrderType())) {
+                    if (returnTotalGoodsPrice <= CountUtil.add(cashPosPrice,onlinePayPrice,customerPrePay,storePrePay,sellerStoreDeposit)) {
+                        returnOrderBilling.setPreDeposit(returnTotalGoodsPrice);
+                    }
+                }else {
+//                    //整单退,不退运费
+//                    if (totalGoodsQty == totalReturnQty) {
+//                        Double temp = 0D;
+//                        if (identityType == 6 || identityType == 0) {
+//                            if (customerPrePay >= billingDetails.getFreight()) {
+//                                returnOrderBilling.setPreDeposit(hasFreight ? CountUtil.sub(customerPrePay, billingDetails.getFreight()) : customerPrePay);
+//                                hasFreight = false;
+//                            } else {
+//                                temp = CountUtil.sub(billingDetails.getFreight(), customerPrePay);
+//                                returnOrderBilling.setPreDeposit(customerPrePay);
+//                            }
+//                            if (storePrePay >= temp) {
+//                                returnOrderBilling.setStPreDeposit(hasFreight ? CountUtil.sub(storePrePay, temp) : storePrePay);
+//                                hasFreight = false;
+//                            } else {
+//                                temp = CountUtil.sub(temp, storePrePay);
+//                                returnOrderBilling.setStPreDeposit(storePrePay);
+//                            }
+//                            if (onlinePayPrice >= temp) {
+//                                returnOrderBilling.setOnlinePay(hasFreight ? CountUtil.sub(onlinePayPrice, temp) : onlinePayPrice);
+//                                hasFreight = false;
+//                            } else {
+//                                temp = CountUtil.sub(temp, onlinePayPrice);
+//                                returnOrderBilling.setOnlinePay(onlinePayPrice);
+//                            }
+//                            if (cashPosPrice >= temp) {
+//                                returnOrderBilling.setCash(hasFreight ? CountUtil.sub(cashPosPrice, temp) : cashPosPrice);
+//                                hasFreight = false;
+//                            }
+//                        } else if (identityType == 2) {
+//                            if (storeCredit >= billingDetails.getFreight()) {
+//                                returnOrderBilling.setStCreditMoney(hasFreight ? CountUtil.sub(storeCredit, billingDetails.getFreight()) : storeCredit);
+//                            } else {
+//                                temp = CountUtil.sub(billingDetails.getFreight(), storeCredit);
+//                                returnOrderBilling.setStCreditMoney(0D);
+//                            }
+//                            if (storePrePay >= temp) {
+//                                returnOrderBilling.setStPreDeposit(hasFreight ? CountUtil.sub(storePrePay, temp) : storePrePay);
+//                                hasFreight = false;
+//                            } else {
+//                                temp = CountUtil.sub(temp, storePrePay);
+//                                returnOrderBilling.setStPreDeposit(0D);
+//                            }
+//                            if (onlinePayPrice > temp) {
+//                                returnOrderBilling.setOnlinePay(hasFreight ? CountUtil.sub(onlinePayPrice, temp) : onlinePayPrice);
+//                                hasFreight = false;
+//                            }
+//                        }
+//                        Double totalPrice = CountUtil.add(customerPrePay, storePrePay, onlinePayPrice, cashPosPrice);
+//                        returnOrderBaseInfo.setReturnPrice(CountUtil.sub(totalPrice, billingDetails.getFreight()));
+//                    } else {
+//                        //判断退款是否小于现金支付
+//                        if (returnTotalGoodsPrice <= cashPosPrice) {
+//                            returnOrderBilling.setCash(returnTotalGoodsPrice);
+//                        } else {
+//                            //大于就判断减去再判断第三方支付
+//                            returnOrderBilling.setCash(cashPosPrice);
+//                            tempPrice = CountUtil.sub(returnTotalGoodsPrice, cashPosPrice);
+//                            //如果小于第三方支付
+//                            if (tempPrice <= onlinePayPrice) {
+//                                returnOrderBilling.setOnlinePay(tempPrice);
+//                            } else {
+//                                //大于第三方再判断预存款支付
+//                                returnOrderBilling.setOnlinePay(onlinePayPrice);
+//                                tempPrice = CountUtil.sub(tempPrice, onlinePayPrice);
+//                                if (identityType == 6) {
+//                                    //小于预存款，顾客结束
+//                                    if (tempPrice <= customerPrePay) {
+//                                        returnOrderBilling.setPreDeposit(tempPrice);
+//                                    }
+//                                } else {
+//                                    //导购小于门店预存款
+//                                    if (tempPrice <= storePrePay) {
+//                                        returnOrderBilling.setStPreDeposit(tempPrice);
+//                                    } else {
+//                                        //如果大于就判断装饰公司门店信用金
+//                                        if (tempPrice <= storeCredit) {
+//                                            returnOrderBilling.setStCreditMoney(tempPrice);
+
                 //整单退,不退运费
                 if (totalGoodsQty == totalReturnQty) {
                     Double temp = 0D;
@@ -743,30 +832,38 @@ public class ReturnOrderController {
                             temp = CountUtil.sub(temp, onlinePayPrice);
                             returnOrderBilling.setOnlinePay(onlinePayPrice);
                         }
+                        if (sellerStoreDeposit >= temp){
+                            returnOrderBilling.setSellerStoreDeposit(hasFreight ? CountUtil.sub(sellerStoreDeposit, temp) : sellerStoreDeposit);
+                            hasFreight = false;
+                        } else {
+                            temp = CountUtil.sub(temp, sellerStoreDeposit);
+                            returnOrderBilling.setSellerStoreDeposit(sellerStoreDeposit);
+                        }
                         if (cashPosPrice >= temp) {
                             returnOrderBilling.setCash(hasFreight ? CountUtil.sub(cashPosPrice, temp) : cashPosPrice);
                             hasFreight = false;
                         }
+
                     } else if (identityType == 2) {
                         if (storeCredit >= billingDetails.getFreight()) {
                             returnOrderBilling.setStCreditMoney(hasFreight ? CountUtil.sub(storeCredit, billingDetails.getFreight()) : storeCredit);
                         } else {
                             temp = CountUtil.sub(billingDetails.getFreight(), storeCredit);
-                            returnOrderBilling.setStCreditMoney(0D);
+                            returnOrderBilling.setStCreditMoney(storeCredit);
                         }
                         if (storePrePay >= temp) {
                             returnOrderBilling.setStPreDeposit(hasFreight ? CountUtil.sub(storePrePay, temp) : storePrePay);
                             hasFreight = false;
                         } else {
                             temp = CountUtil.sub(temp, storePrePay);
-                            returnOrderBilling.setStPreDeposit(0D);
+                            returnOrderBilling.setStPreDeposit(storePrePay);
                         }
                         if (onlinePayPrice > temp) {
                             returnOrderBilling.setOnlinePay(hasFreight ? CountUtil.sub(onlinePayPrice, temp) : onlinePayPrice);
                             hasFreight = false;
                         }else {
                             temp = CountUtil.sub(temp, onlinePayPrice);
-                            returnOrderBilling.setOnlinePay(0D);
+                            returnOrderBilling.setOnlinePay(onlinePayPrice);
                         }
                         if (sellerStoreDeposit >= temp){
                             returnOrderBilling.setSellerStoreDeposit(hasFreight ? CountUtil.sub(sellerStoreDeposit, temp) : sellerStoreDeposit);
@@ -821,6 +918,7 @@ public class ReturnOrderController {
 //                                if (tempPrice <= billingDetails.getStoreSubvention()) {
 //                                    returnOrderBilling.setStSubvention(tempPrice);
 //                                }
+                                        }
                                             }
                                         }
                                     }
@@ -874,6 +972,7 @@ public class ReturnOrderController {
                 logger.warn("createOrder OUT,退货单创建重复提交，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
+
         } catch (Exception e) {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，用户申请退货创建退货单失败", null);
@@ -1389,6 +1488,7 @@ public class ReturnOrderController {
         returnOrderGoodsInfo.setGoodsLineType(goodsInfo.getGoodsLineType());
         returnOrderGoodsInfo.setSettlementPrice(goodsInfo.getSettlementPrice());
         returnOrderGoodsInfo.setCompanyFlag(goodsInfo.getCompanyFlag());
+        returnOrderGoodsInfo.setGoodsSign(goodsInfo.getGoodsSign());
         return returnOrderGoodsInfo;
     }
 

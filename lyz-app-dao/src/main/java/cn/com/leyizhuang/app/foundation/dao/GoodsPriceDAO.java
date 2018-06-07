@@ -47,4 +47,6 @@ public interface GoodsPriceDAO {
 
     List<GoodsPrice> findGoodsPriceListByStoreIdAndSkuList(@Param(value = "storeId") Long storeId,
                                                            @Param(value = "internalCodeList") List<String> internalCodeList);
+
+    List<GoodsPrice> findGoodsPriceListByStoreIdAndPriceType(@Param(value = "storeId")Long storeId, @Param(value = "priceType")String priceType);
 }

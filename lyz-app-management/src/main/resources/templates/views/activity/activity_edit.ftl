@@ -256,6 +256,23 @@
                                 </div>
                             </div>
                         </div>
+                        <div id="rankCodeDiv" class="col-xs-12 col-md-4" style="display: none;">
+                            <div class="form-group">
+                                <label for="title">
+                                    专供等级(专供促销无需选赠品!)
+                                </label>
+                                <div class="form-group">
+                                    <select name="rankCode" id="rankCode" class="form-control select">
+                                        <option value=""></option>
+                                    <#if rankScopeList??>
+                                        <#list rankScopeList as item>
+                                            <option value="${item.rankCode}">${item.rankName}</option>
+                                        </#list>
+                                    </#if>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- 选择本品table -->

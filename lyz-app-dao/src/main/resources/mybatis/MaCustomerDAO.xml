@@ -246,16 +246,16 @@
         UPDATE cus_customer
         <set>
             <if test="null != name">
-                 name = #{name},
+                name = #{name},
             </if>
             <if test="null != mobile">
-                 mobile = #{mobile},
+                mobile = #{mobile},
             </if>
             <if test="null != sex">
-                 sex = #{sex},
+                sex = #{sex},
             </if>
             <if test="null != birthday">
-                 birthday = #{birthday},
+                birthday = #{birthday},
             </if>
         </set>
         WHERE
@@ -408,7 +408,8 @@
         SELECT city_id FROM cus_customer WHERE cus_id = #{cusId}
     </select>
 
-    <select id="findCustomerById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.response.ManageUpdateCustomerTypeResponse">
+    <select id="findCustomerById" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.ManageUpdateCustomerTypeResponse">
            SELECT
                 cc.cus_id cusId,
                 cc. NAME `name`,
@@ -457,7 +458,8 @@
                 rank_classification
     </select>
 
-    <select id="findRankStoreByStoreId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.RankStore">
+    <select id="findRankStoreByStoreId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.RankStore">
         SELECT
         s.id id,
         s.store_id storeId,
@@ -496,7 +498,8 @@
                 (#{rankId},#{cusId},#{number},#{createTime})
     </insert>
 
-    <select id="findCusRankByCusId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.user.CusRankDO">
+    <select id="findCusRankByCusId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.user.CusRankDO">
         SELECT
             *
         FROM
@@ -507,7 +510,8 @@
             cus_id
     </select>
 
-    <select id="findRankClassificationByRankCode" resultType="cn.com.leyizhuang.app.foundation.pojo.user.RankClassification">
+    <select id="findRankClassificationByRankCode"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.user.RankClassification">
         SELECT
         rank_id rankId,
         rank_name rankName,
@@ -525,4 +529,130 @@
         DELETE FROM cus_rank
         WHERE cus_id = #{cusId}
     </delete>
+
+    <select id="maFindCreatePeople"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.MaCreateOrderPeopleResponse">
+        <if test="null != peopleType and peopleType == '会员'">
+            SELECT
+            c.cus_id peopleId,
+            c.`name` `name`,
+            c.mobile phone,
+            s.store_name storeName,
+            s.store_code storeCode,
+            'CUSTOMER' identityType
+            FROM
+            cus_customer c LEFT JOIN st_store s ON s.store_id = c.store_id
+            WHERE
+            1=1
+            <if test="null != keywords and '' != keywords">
+                AND (c.`name` LIKE concat(concat('%',#{keywords}),'%')
+                OR c.mobile LIKE concat(concat('%',#{keywords}),'%'))
+            </if>
+        </if>
+        <if test="null != peopleType and peopleType == '装饰公司'">
+            SELECT
+            e.emp_id peopleId,
+            e.`name` `name`,
+            e.mobile phone,
+            s.store_name storeName,
+            s.store_code storeCode,
+            e.identity_type identityType
+            FROM
+            emp_employee e LEFT JOIN st_store s ON  s.store_id = e.store_id
+            WHERE
+            1=1
+            <if test="null != keywords and '' != keywords">
+                AND (e.`name` LIKE concat(concat('%',#{keywords}),'%')
+                OR e.mobile LIKE concat(concat('%',#{keywords}),'%'))
+            </if>
+            AND e.identity_type = 'DECORATE_MANAGER'
+        </if>
+    </select>
+
+    <select id="maFindCreatePeopleByStoreId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.MaCreateOrderPeopleResponse">
+            SELECT
+            e.emp_id peopleId,
+            e.`name` `name`,
+            e.mobile phone,
+            s.store_name storeName,
+            s.store_code storeCode,
+            e.identity_type identityType
+            FROM
+            emp_employee e LEFT JOIN st_store s ON  s.store_id = e.store_id
+            WHERE
+            1=1
+            AND e.identity_type = 'DECORATE_MANAGER'
+            AND e.store_id = #{storeId}
+    </select>
+
+    <select id="findPayhelperInfoByCusId" resultType="cn.com.leyizhuang.app.foundation.pojo.PayhelperInfo">
+        SELECT
+            id,
+            create_time,
+            lender_id,
+            lender_name,
+            lender_phone,
+            store_code,
+            loan_subject_type,
+            seller_manager_id,
+            seller_maneger_name,
+            seller_maneger_phone,
+            is_open_payhelper isOpenPayhepler
+        FROM
+            payhelper_info
+        WHERE
+            lender_id = #{cusId}
+    </select>
+
+    <update id="updatePayhelperInfoByCusId" parameterType="cn.com.leyizhuang.app.foundation.pojo.PayhelperInfo">
+        UPDATE payhelper_info
+        <set>
+            <if test="null != storeCode">
+                store_code = #{storeCode},
+            </if>
+            <if test="null != loanSubjectType">
+                loan_subject_type = #{loanSubjectType},
+            </if>
+            <if test="null != sellerManagerId">
+                seller_manager_id = #{sellerManagerId},
+            </if>
+            <if test="null != sellerManagerName">
+                seller_maneger_name = #{sellerManagerName},
+            </if>
+            <if test="null != sellerManagerPhone">
+                seller_maneger_phone = #{sellerManagerPhone},
+            </if>
+            <if test="null != isOpenPayhepler">
+                is_open_payhelper = #{isOpenPayhepler},
+            </if>
+        </set>
+        WHERE
+        lender_id = #{lenderId}
+    </update>
+
+    <insert id="addPayhelperInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.PayhelperInfo">
+        INSERT payhelper_info
+           (create_time,
+            lender_id,
+            lender_name,
+            lender_phone,
+            store_code,
+            loan_subject_type,
+            seller_manager_id,
+            seller_maneger_name,
+            seller_maneger_phone,
+            is_open_payhelper)
+         VALUES (
+             #{createTime},
+             #{lenderId},
+             #{lenderName},
+             #{lenderPhone},
+             #{storeCode},
+             #{loanSubjectType},
+             #{sellerManagerId},
+             #{sellerManagerName},
+             #{sellerManagerPhone},
+             #{isOpenPayhepler})
+    </insert>
 </mapper>

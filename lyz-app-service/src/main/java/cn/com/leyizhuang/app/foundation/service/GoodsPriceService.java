@@ -40,4 +40,6 @@ public interface GoodsPriceService {
                                                                                      AppIdentityType identityType);
 
     List<GoodsPrice> findGoodsPriceListByStoreIdAndSkuList(Long storeId, List<String> internalCodeList);
+
+    List<GoodsPrice> findGoodsPriceListByStoreIdAndPriceType(Long storeId, String priceType);
 }

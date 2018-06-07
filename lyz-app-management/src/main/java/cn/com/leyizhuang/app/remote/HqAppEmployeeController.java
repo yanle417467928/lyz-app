@@ -64,7 +64,7 @@ public class HqAppEmployeeController {
                 logger.warn("employeeSync OUT,同步新增员工信息失败，出参 password:{}", employeeDTO.getPassword());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "密码{password} 不允许为空！", null);
             }
-            AppEmployee appEmployee = employeeService.findByLoginName(employeeDTO.getName());
+            AppEmployee appEmployee = employeeService.findByLoginName(employeeDTO.getNumber());
             if(null !=appEmployee){
                 logger.warn("employeeSync OUT,同步新增员工信息失败，出参 password:{}", employeeDTO.getPassword());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "登录名已存在", null);
@@ -113,11 +113,15 @@ public class HqAppEmployeeController {
                     employee.setSellerType(AppSellerType.MANAGER);
                 }
             }else if ("装饰公司经理".equals(employeeDTO.getPosition())){
+                employee.setSellerType(null);
                 employee.setIdentityType(AppIdentityType.DECORATE_MANAGER);
             }else if ("装饰公司员工".equals(employeeDTO.getPosition())){
+                employee.setSellerType(null);
                 employee.setIdentityType(AppIdentityType.DECORATE_EMPLOYEE);
             }else if ("配送员".equals(employeeDTO.getPosition())){
+                employee.setSellerType(null);
                 employee.setIdentityType(AppIdentityType.DELIVERY_CLERK);
+                employee.setDeliveryClerkNo(employeeDTO.getDeliveryClerkNo());
             }
             City city = cityService.findByCityNumber(employeeDTO.getCityNumber());
             if (null == city) {
@@ -143,8 +147,8 @@ public class HqAppEmployeeController {
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "员工密码生成失败！", null);
             } catch (DuplicateKeyException ex) {
                 ex.printStackTrace();
-                logger.warn("用户名已存在！");
-                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户名已存在", null);
+                logger.warn("用户名或电话已存在！");
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户名或电话已存在", null);
             }
             logger.warn("employeeSync OUT,同步新增员工信息成功，出参 name:{}", employee);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
@@ -191,10 +195,14 @@ public class HqAppEmployeeController {
                 }
             }else if ("装饰公司经理".equals(employeeDTO.getPosition())){
                 employee.setIdentityType(AppIdentityType.DECORATE_MANAGER);
+                employee.setSellerType(null);
             }else if ("装饰公司员工".equals(employeeDTO.getPosition())){
                 employee.setIdentityType(AppIdentityType.DECORATE_EMPLOYEE);
+                employee.setSellerType(null);
             }else if ("配送员".equals(employeeDTO.getPosition())){
                 employee.setIdentityType(AppIdentityType.DELIVERY_CLERK);
+                employee.setSellerType(null);
+                employee.setDeliveryClerkNo(employeeDTO.getDeliveryClerkNo());
             }
             City city = cityService.findByCityNumber(employeeDTO.getCityNumber());
             if (null == city) {
@@ -247,7 +255,6 @@ public class HqAppEmployeeController {
             e.printStackTrace();
             logger.warn("deleteEmployee EXCEPTION,同步删除员工信息失败，出参 resultDTO:{}", e);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未知异常，同步删除员工信息失败！", null);
-
         }
     }
 

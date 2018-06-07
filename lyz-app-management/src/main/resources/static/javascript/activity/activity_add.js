@@ -303,7 +303,18 @@ function clickGiftFixedQty() {
 }
 
 function changeBaseType(val) {
-
+    if(val == "COMMON"){
+        $("#actConditionDiv").fadeIn(1000);
+        $("#actResultDiv").fadeIn(1000);
+        $("#rankCodeDiv").fadeOut(1);
+    }else if (val == "ZGFRIST"){
+        $("#actConditionDiv").fadeOut(1);
+        $("#actResultDiv").fadeOut(1);
+        $("#rankCodeDiv").fadeIn(1000);
+        $("#conditionType").val("FQTY");
+        $("#resultType").val("GOO");
+        $("#subAmount_div").fadeOut(1);
+    }
 }
 
 function changeConditionType(val) {
@@ -528,6 +539,7 @@ function formValidate() {
         var isGiftOptionalQty = $("#is_gift_optional_qty").prop('checked');
 
         // 根据选择促销类型判断
+        var baseType = $("#baseType").val();
         var conditionType = $("#conditionType").val();
         var resultType = $("#resultType").val();
 
@@ -567,7 +579,7 @@ function formValidate() {
                 }
             }
         }
-        if(resultType == "SUB"){
+        if(resultType == "SUB" && baseType == "COMMON"){
             var price = $("#subAmount").val();
             if(price == null || price.trim() == ""){
 
@@ -582,21 +594,21 @@ function formValidate() {
                 return false;
             }
         }
-        else if (resultType == "GOO"){
+        else if (resultType == "GOO" && baseType == "COMMON"){
             if(giftDetails.length == 0){
                 $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
                 $notify.danger("请选择赠品");
                 return false;
             }
 
-        }else if (resultType == "PRO"){
+        }else if (resultType == "PRO" && baseType == "COMMON"){
             if(giftDetails.length == 0){
                 $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
                 $notify.danger("请选择赠品作为产品券对象");
                 return false;
             }
 
-        }else if(resultType == "ADD"){
+        }else if(resultType == "ADD" && baseType == "COMMON"){
             if(giftDetails.length == 0){
                 $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
                 $notify.danger("请选择赠品");
@@ -616,7 +628,7 @@ function formValidate() {
                 $notify.danger("加价金额有误");
                 return false;
             }
-        }else if(resultType == "DIS"){
+        }else if(resultType == "DIS" && baseType == "COMMON"){
             // 折扣
             if (conditionType == "FQTY"){
                 $('#activity_form').bootstrapValidator('disableSubmitButtons', false);

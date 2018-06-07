@@ -145,7 +145,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                 // 赠送数量
                 Integer sentQty = act.getGiftChooseNumber();
 
-                // 赠品 一般赠品只有一种
+                // 赠品
                 List<GoodsIdQtyParam> giftList = promotionSimpleInfo.getPresentInfo();
 
                 if (giftList != null && giftList.size() > 0){
@@ -202,10 +202,9 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                             }
                         }
 
-                        /** 记录该顾客参与首单促销参与次数 **/
-                        statisticsSellDetailsService.addOrUpdateSellZgCusTimes(cusId,goods.getSku(),1,orderGoodsInfo.getOrderQuantity(),ActBaseType.ZGFRIST);
                     }
-
+                    /** 记录该顾客参与首单促销参与次数 **/
+                    statisticsSellDetailsService.addOrUpdateSellZgCusTimes(cusId,"",1,sentQty,ActBaseType.ZGFRIST);
                     //计算分摊
                     finallyOrderGoodsInfo.addAll(this.countDutchPrice(newOrderGoodsInfoList, CountUtil.add(goodsTotalPrice, giftTotalPrice), giftTotalPrice, identityType, customerType));
 

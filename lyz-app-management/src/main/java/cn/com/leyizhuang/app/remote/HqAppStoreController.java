@@ -107,15 +107,15 @@ public class HqAppStoreController {
                 City city = cityService.findByCityNumber(hqAppStoreDTO.getCityCode());
                 if (null == store) {
                     AppStore appStore = new AppStore();
-                    if (hqAppStoreDTO.getStoreType().equals("直营门店")) {
+                    if ("直营门店".equals(hqAppStoreDTO.getStoreType())) {
                         appStore.setStoreType(StoreType.ZY);
-                    } else if (hqAppStoreDTO.getStoreType().equals("加盟门店")) {
+                    } else if ("加盟门店".equals(hqAppStoreDTO.getStoreType())) {
                         appStore.setStoreType(StoreType.JM);
-                    } else if (hqAppStoreDTO.getStoreType().equals("分销门店")) {
+                    } else if ("分销门店".equals(hqAppStoreDTO.getStoreType())) {
                         appStore.setStoreType(StoreType.FX);
-                    }else if (hqAppStoreDTO.getStoreType().equals("分销仓库")) {
+                    }else if ("分销仓库".equals(hqAppStoreDTO.getStoreType())) {
                         appStore.setStoreType(StoreType.FXCK);
-                    }else if (hqAppStoreDTO.getStoreType().equals("装饰公司")) {
+                    }else if ("装饰公司".equals(hqAppStoreDTO.getStoreType())) {
                         appStore.setStoreType(StoreType.ZS);
                     }
                     appStore.setCreatorType(hqAppStoreDTO.getCreatorType());
@@ -178,12 +178,16 @@ public class HqAppStoreController {
             }
             try {
                 AppStore appStore = appStoreService.findByStoreCode(hqAppStoreDTO.getStoreCode());
-                if (hqAppStoreDTO.getStoreType().equals("直营门店")) {
+                if ("直营门店".equals(hqAppStoreDTO.getStoreType())) {
                     appStore.setStoreType(StoreType.ZY);
-                } else if (hqAppStoreDTO.getStoreType().equals("加盟门店")) {
+                } else if ("加盟门店".equals(hqAppStoreDTO.getStoreType())) {
                     appStore.setStoreType(StoreType.JM);
-                } else if (hqAppStoreDTO.getStoreType().equals("分销门店")) {
+                } else if ("分销门店".equals(hqAppStoreDTO.getStoreType())) {
                     appStore.setStoreType(StoreType.FX);
+                }else if ("分销仓库".equals(hqAppStoreDTO.getStoreType())) {
+                    appStore.setStoreType(StoreType.FXCK);
+                }else if ("装饰公司".equals(hqAppStoreDTO.getStoreType())) {
+                    appStore.setStoreType(StoreType.ZS);
                 }
                 appStore.setCreatorType(hqAppStoreDTO.getCreatorType());
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

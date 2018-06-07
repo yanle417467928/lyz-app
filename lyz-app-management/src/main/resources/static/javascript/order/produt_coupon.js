@@ -1088,7 +1088,6 @@ function giftDetail(details, divId) {
             var id = $(m).find("#gid").val();
             var qty = $(m).find("#giftQty").val();
             promotionId = $(m).find("#promotionId").val();
-            $notify.warning(promotionId);
             enjoyTimes = $(m).find("#enjoyTimes").val();
             maxChooseNumber = $(n).find("#maxChooseNumber").val();
             totalQty += Number(qty);
