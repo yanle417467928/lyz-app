@@ -1716,18 +1716,16 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                 if (AssertUtil.isNotEmpty(returnOrderParamMap)) {
                     for (Map.Entry<ReturnOrderBaseInf, List<ReturnOrderGoodsInf>> entry : returnOrderParamMap.entrySet()) {
                         ReturnOrderBaseInf returnOrderBaseInf = entry.getKey();
-
-
                         for (ReturnOrderGoodsInf returnOrderGoodsInf : entry.getValue()) {
                             if (returnOrderGoodsInf.getReturnNumber().contains("HR")){
                                 returnTotalPriceHR += CountUtil.mul(returnOrderGoodsInf.getReturnPrice() , returnOrderGoodsInf.getQuantity());
-                            }else if (returnOrderGoodsInf.getReturnNumber().contains("LYZ")){
-                                returnTotalPriceYR += CountUtil.mul(returnOrderGoodsInf.getReturnPrice() , returnOrderGoodsInf.getQuantity());
                             }else if (returnOrderGoodsInf.getReturnNumber().contains("YR")){
+                                returnTotalPriceYR += CountUtil.mul(returnOrderGoodsInf.getReturnPrice() , returnOrderGoodsInf.getQuantity());
+                            }else if (returnOrderGoodsInf.getReturnNumber().contains("LYZ")){
                                 returnTotalPriceLYZ += CountUtil.mul(returnOrderGoodsInf.getReturnPrice() , returnOrderGoodsInf.getQuantity());
                             }
                         }
-
+                        returnMainTotalPrice = CountUtil.add(returnTotalPriceHR,returnTotalPriceYR,returnTotalPriceLYZ,returnCouponTotalPriceHR,returnCouponTotalPriceYR,returnCouponTotalPriceLYZ);
                         OrderReceivablePriceInf orderReceivablePriceInf = new OrderReceivablePriceInf();
                         orderReceivablePriceInf.setCreateTime(new Date());
                         orderReceivablePriceInf.setMainOrderNumber(returnOrderBaseInf.getMainReturnNumber());
