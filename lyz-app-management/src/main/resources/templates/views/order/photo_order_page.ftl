@@ -42,24 +42,27 @@
                         <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除
                     </button>
 
-                    <select name="city" id="cityCode" class="form-control selectpicker" data-width="120px" style="width:auto;"
+                    <select name="city" id="cityCode" class="form-control selectpicker" data-width="120px"
+                            style="width:auto;"
                             onchange="findCusByCity()" data-live-search="true">
                         <option value="-1">选择城市</option>
                     </select>
 
-                    <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px" style="width:auto;"
+                    <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px"
+                            style="width:auto;"
                             onchange="findCusByStoreId()" data-live-search="true">
                         <option value="-1">选择门店</option>
                     </select>
 
-                    <select name="status" id="status" class="form-control selectpicker" data-width="120px" style="width:auto;"
+                    <select name="status" id="status" class="form-control selectpicker" data-width="120px"
+                            style="width:auto;"
                             onchange="findStorePreByStatus()" data-live-search="true">
                         <option value="">选择订单状态</option>
-                        <#if photoOrderStatus??>
-                            <#list photoOrderStatus as status>
-                                <option value="${status}">${status.value}</option>
-                            </#list>
-                        </#if>
+                    <#if photoOrderStatus??>
+                        <#list photoOrderStatus as status>
+                            <option value="${status}">${status.value}</option>
+                        </#list>
+                    </#if>
                     </select>
 
                     <button id="btn_add" type="button" class="btn btn-default pull-left" onclick="downloadPhoto()">
@@ -68,7 +71,8 @@
                     </button>
 
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
-                        <input type="text" name="queryCusInfo" id="queryCusInfo" class="form-control" style="width:auto;"
+                        <input type="text" name="queryCusInfo" id="queryCusInfo" class="form-control"
+                               style="width:auto;"
                                placeholder="请输入要查找的姓名或电话、单号" onkeypress="findBykey()">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
@@ -143,38 +147,61 @@
     </div>
 </div>
 
-<div id="photoGoodsDetail" class="modal fade" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+
+
+<div id="photoGoodsDetails" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document" style="width: 60%">
         <div class="modal-content">
-            <div class="modal-body">
-                <div class="user-block">
-                    <span class="usernames" style="margin-left: 0px;">
-                        <a id="menuTitle" href="#"></a>
-                        <a href="javascript:$page.photoGoodsDetail.close();" class="pull-right btn-box-tool">
-                            <i class="fa fa-times"></i>
-                        </a>
-
-                    </span>
-                    <div class="box-body table-reponsive">
-                        <table id="photoGoodsList" class="table table-bordered table-hover">
-
-                        </table>
-                    </div>
-                </div>
+            <div class="modal-header">
+                <h4>拍照下单说所选商品</h4>
+                <button type="button" name="search" class="btn btn-default pull-left"
+                        onclick="returnGoods()" style="margin-left:700px;margin-top: -35px;">关闭
+                </button>
             </div>
-            <div class="modal-footer">
-                <a href="javascript:$page.photoGoodsDetail.close();" role="button" class="btn btn-primary">关闭</a>
+            <div class="modal-body">
+                <!--  设置这个div的大小，超出部分显示滚动条 -->
+                <div id="addressDataGridTree" class="ztree" style="height: 60%;overflow:auto; ">
+                    <section class="content">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="box box-primary">
+                                    <div id="goodsToolbar" class="form-inline">
+
+                                        <#--<div class="input-group col-md-3"-->
+                                             <#--style="margin-top:0px positon:relative">-->
+                                            <#--<input type="text" name="sellerAddressConditions"-->
+                                                   <#--id="sellerAddressConditions"-->
+                                                   <#--class="form-control" style="width:300px;height:34px;"-->
+                                                   <#--placeholder="请输入收货人姓名、电话、小区、楼盘、详细地址">-->
+                                            <#--<span class="input-group-btn">-->
+                            <#--<button type="button" name="search" id="search-btn" class="btn btn-info btn-search"-->
+                                    <#--onclick="openAddressModal('/rest/order/photo/find/address')">查找</button>-->
+                        <#--</span>-->
+                                        <#--</div>-->
+                                    </div>
+                                    <div class="box-body table-reponsive">
+                                        <table id="photoGoodsList"
+                                               class="table table-bordered table-hover">
+
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
 
 <script>
 
     $(function () {
         findCitylist();
         findStorelist();
-        showAvailableCredit(null,null,null,null);
+        showAvailableCredit(null, null, null, null);
         $('#btn_back').on('click', function () {
             window.history.back()
         });
@@ -227,9 +254,9 @@
         });
     }
 
-    function showAvailableCredit(keywords,cityId,storeId,status){
+    function showAvailableCredit(keywords, cityId, storeId, status) {
         $("#dataGrid").bootstrapTable('destroy');
-        $grid.init($('#dataGrid'), $('#toolbar'),'/rest/order/photo/page/grid', 'get', false, function (params) {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/order/photo/page/grid', 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
@@ -252,17 +279,17 @@
                     }
                 },
                 formatter: function (value) {
-                    if(null==value){
+                    if (null == value) {
                         return '<a class="scan" href="#">' + '未知' + '</a>';
-                    }else{
+                    } else {
                         return '<a class="scan" href="#">' + value + '</a>';
                     }
                 }
-            },{
+            }, {
                 field: 'username',
                 title: '下单人姓名',
                 align: 'center'
-            },{
+            }, {
                 field: 'userMobile',
                 title: '下单人手机号码',
                 align: 'center'
@@ -291,15 +318,17 @@
                 field: 'createTime',
                 title: '下单时间',
                 align: 'center'
-            },{
+            }, {
                 field: 'statusEnum',
                 title: '操作',
                 align: 'center',
-                formatter: function(value, row, index){
-                    if('PENDING' === value || 'PROCESSING' === value) {
+                formatter: function (value, row, index) {
+                    if ('PENDING' === value || 'PROCESSING' === value) {
                         return '<button class="btn btn-primary btn-xs" onclick="handle(' + row.id + ')"> 处理</button>';
-                    } else {
-//                        return '<button class="btn btn-primary btn-xs" onclick="showPhotoGoodsList(' + row.photoOrderNo + ')"> 查看</button>';
+                    } else if ('FINISH' === value){
+                        var photoNo = "'"+row.photoOrderNo+"'";
+                        return '<button class="btn btn-success btn-xs" onclick="showPhotoGoodsList(' + photoNo + ')"> 查看</button>';
+                    }else{
                         return '-';
                     }
                 }
@@ -310,30 +339,26 @@
         });
     }
 
-    function showPhotoGoodsList(photoNo){
+    function showPhotoGoodsList(photoNo) {
+        var url = '/rest/order/photo/find/photo/goods';
         $("#photoGoodsList").bootstrapTable('destroy');
-        $grid.init($('#photoGoodsList'),'/rest/order/photo/find/photo/goods/'+photoNo, 'get', false, function (params) {
+        $grid.init($('#photoGoodsList'),$('#goodsToolbar'), url, 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
-                keywords: keywords,
-                cityId: cityId,
-                storeId: storeId,
-                status: status
+                keywords: params.search,
+                photoNo: photoNo
             }
-        }, [{
-            checkbox: true,
-            title: '选择'
-        },
+        }, [
             {
                 field: 'gid',
                 title: 'gid',
                 align: 'center'
-            },{
+            }, {
                 field: 'skuName',
                 title: '商品名称',
                 align: 'center'
-            },{
+            }, {
                 field: 'goodsQty',
                 title: '数量',
                 align: 'center'
@@ -344,7 +369,13 @@
                 align: 'center'
             }
         ]);
+        $('#photoGoodsDetails').modal('show');
     }
+
+    function returnGoods() {
+        $('#photoGoodsDetails').modal('hide');
+    }
+
     function findCusByCity() {
         initSelect("#storeCode", "选择门店");
         $("#queryCusInfo").val('');
@@ -353,11 +384,12 @@
         var keywords = $('#queryCusInfo').val();
         var status = $("#status").val();
         $("#dataGrid").bootstrapTable('destroy');
-        findCusLebiLogByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId,status);
-        if(cityId==-1){
+        findCusLebiLogByCityIdOrstoreIdOrKeywords(keywords, cityId, storeId, status);
+        if (cityId == -1) {
             findStorelist();
             return false;
-        };
+        }
+        ;
         var store;
         $.ajax({
             url: '/rest/stores/findStoresListByCityIdAndStoreId/' + cityId,
@@ -380,8 +412,8 @@
         });
     }
 
-    function findCusLebiLogByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId,status){
-        showAvailableCredit(keywords,cityId,storeId,status);
+    function findCusLebiLogByCityIdOrstoreIdOrKeywords(keywords, cityId, storeId, status) {
+        showAvailableCredit(keywords, cityId, storeId, status);
     }
 
     function findCusByStoreId() {
@@ -391,7 +423,7 @@
         var status = $("#status").val();
         $("#dataGrid").bootstrapTable('destroy');
         var keywords = $('#queryCusInfo').val();
-        findCusLebiLogByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId,status);
+        findCusLebiLogByCityIdOrstoreIdOrKeywords(keywords, cityId, storeId, status);
 
     }
 
@@ -402,12 +434,12 @@
         var status = $("#status").val();
         $("#dataGrid").bootstrapTable('destroy');
         var keywords = $('#queryCusInfo').val();
-        findCusLebiLogByCityIdOrstoreIdOrKeywords(keywords,cityId,storeId,status);
+        findCusLebiLogByCityIdOrstoreIdOrKeywords(keywords, cityId, storeId, status);
 
     }
 
-    function findBykey(){
-        if(event.keyCode==13){
+    function findBykey() {
+        if (event.keyCode == 13) {
             findCusByNameOrPhone();
         }
     }
@@ -418,7 +450,7 @@
         var storeId = $("#storeCode").val();
         var cityId = $("#cityCode").val();
         var status = $("#status").val();
-        findCusLebiLogByCityIdOrstoreIdOrKeywords(queryCusInfo,cityId,storeId,status);
+        findCusLebiLogByCityIdOrstoreIdOrKeywords(queryCusInfo, cityId, storeId, status);
     }
 
 
@@ -503,11 +535,11 @@
                                     $('#photos').html('-');
                                 } else {
                                     var img = '';
-                                    for(var i = 0; i < data.photos.length; i ++){
+                                    for (var i = 0; i < data.photos.length; i++) {
                                         img += '<img  src="';
                                         img += data.photos[i];
                                         img += '" class="img-rounded" style="height: 80px;width: 80px;" >';
-                                        if (i == 6){
+                                        if (i == 6) {
                                             img += '<br/>';
                                         }
                                     }
@@ -527,8 +559,8 @@
             }
         }
     }
-    function handle(id){
-        window.location.href = '/views/admin/order/photo/edit/'+id;
+    function handle(id) {
+        window.location.href = '/views/admin/order/photo/edit/' + id;
     }
 
     function downloadPhoto() {
@@ -537,8 +569,8 @@
             $notify.warning('请在点击按钮前选中至少一条数据');
             return;
         }
-        var url = "/rest/order/photo//download/photo?photoIds="+ selected;
-        var escapeUrl=url.replace(/\#/g,"%23");
+        var url = "/rest/order/photo//download/photo?photoIds=" + selected;
+        var escapeUrl = url.replace(/\#/g, "%23");
         window.open(escapeUrl);
     }
 
