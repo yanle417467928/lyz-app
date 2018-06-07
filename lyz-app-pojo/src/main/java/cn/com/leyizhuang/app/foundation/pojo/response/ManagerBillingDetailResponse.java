@@ -48,4 +48,6 @@ public class ManagerBillingDetailResponse {
 
     //代付方式
     private String payType;
+    //代收金额
+    private Double collectionAmount;
 }
