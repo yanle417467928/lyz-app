@@ -68,9 +68,9 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public PageInfo<ResourceVO> queryPageVO(Integer page, Integer size) {
+    public PageInfo<ResourceVO> queryPageVO(Integer page, Integer size, String keywords) {
         PageHelper.startPage(page, size);
-        List<ResourceVO> resourceList = resourceDAO.queryListVO();
+        List<ResourceVO> resourceList = resourceDAO.queryListVO(keywords);
         return new PageInfo<>(resourceList);
     }
 

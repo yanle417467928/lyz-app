@@ -48,7 +48,7 @@ public class AppAdminRoleRestController extends BaseRestController {
         // 根据偏移量计算当前页数
         size = getSize(size);
         Integer page = (offset / size) + 1;
-        PageInfo<Role> rolePage = roleService.queryPage(page, size);
+        PageInfo<Role> rolePage = roleService.queryPage(page, size,keywords);
         List<Role> roleList = rolePage.getList();
         return new GridDataVO<Role>().transform(roleList, rolePage.getTotal());
     }

@@ -235,6 +235,9 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
             <if test="null != managerId">
                 manager_id = #{managerId},
             </if>
+            <if test="null != deliveryClerkNo">
+                delivery_clerk_no=#{deliveryClerkNo}
+            </if>
         </set>
         WHERE login_name = #{loginName}
     </update>

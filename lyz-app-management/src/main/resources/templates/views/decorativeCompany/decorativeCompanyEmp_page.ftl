@@ -6,6 +6,9 @@
     <link href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
+    <link href="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/i18n/defaults-zh_CN.js"></script>
 </head>
 <body>
 
@@ -29,8 +32,8 @@
         <div class="col-xs-12">
             <div class="box box-primary">
                 <div id="toolbar" class="form-inline ">
-                    <select name="diyCode" id="diyCode" class="form-control select" style="margin-left:10px width:auto;"
-                            onchange="findDecorativeEmpByCondition()">
+                    <select name="diyCode" id="diyCode" class="form-control selectpicker"  data-width="140px"
+                              onchange="findDecorativeEmpByCondition()" data-live-search="true" >
                         <option value="-1">选择公司</option>
                     </select>
                     <select name="identityType" id="identityType" class="form-control select" style="width:auto;"
