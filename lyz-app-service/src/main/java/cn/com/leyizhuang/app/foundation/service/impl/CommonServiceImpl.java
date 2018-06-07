@@ -2113,6 +2113,7 @@ public class CommonServiceImpl implements CommonService {
                     }
                 }
                 billingDetails.setEmpCreditMoney(billingDetails.getAmountPayable());
+                billingDetails.setCollectionAmount(billingDetails.getEmpCreditMoney());
             } else if (OrderBillingPaymentType.ST_PREPAY == OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)) {
                 //扣减门店预存款
                 if (identityType == AppIdentityType.SELLER.getValue()) {

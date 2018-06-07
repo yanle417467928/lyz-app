@@ -30,6 +30,11 @@
         status,
         sort_id
         FROM admin_role
+        where
+        1=1
+        <if test="null != keywords">
+            AND name like  CONCAT('%', #{keywords}, '%')
+        </if>
     </select>
 
     <insert id="save" parameterType="Role">

@@ -53,7 +53,13 @@ public class MaDecorationCompanyCreditBillingServiceImpl implements MaDecoration
     @Override
     public PageInfo<DecorationCompanyCreditBillingDetailsVO> getDecorationCompanyCreditOrder(Integer page, Integer size, Long storeId, String startTime, String endTime, String keywords) {
         PageHelper.startPage(page, size);
-        List<DecorationCompanyCreditBillingDetailsVO> decorationCompanyCreditBillingDetailsVOS = this.maDecorationCompanyCreditBillingDAO.getDecorationCompanyCreditOrder(storeId,  startTime, endTime, keywords);
+        if (null != startTime && !"".equals(startTime)) {
+            startTime += " 00:00:00";
+        }
+        if (null != endTime && !"".equals(endTime)) {
+            endTime += " 23:59:59";
+        }
+        List<DecorationCompanyCreditBillingDetailsVO> decorationCompanyCreditBillingDetailsVOS = this.maDecorationCompanyCreditBillingDAO.getDecorationCompanyCreditOrder(storeId, startTime, endTime, keywords);
         return new PageInfo<>(decorationCompanyCreditBillingDetailsVOS);
     }
 
@@ -137,14 +143,14 @@ public class MaDecorationCompanyCreditBillingServiceImpl implements MaDecoration
                 storeCreditMoneyChangeLog.setStoreId(creditBillingDO.getStoreId());
                 storeCreditMoneyChangeLog.setOperatorType(AppIdentityType.ADMINISTRATOR);
                 if (null != shiroUser) {
-                    creditBillingDO.setPayOffOperationId((null == creditBillingDO.getPayOffOperationId() ? "" :  creditBillingDO.getPayOffOperationId()) + shiroUser.getId() + ",");
+                    creditBillingDO.setPayOffOperationId((null == creditBillingDO.getPayOffOperationId() ? "" : creditBillingDO.getPayOffOperationId()) + shiroUser.getId() + ",");
                     storeCreditMoneyChangeLog.setOperatorId(shiroUser.getId());
                 }
                 storeCreditMoneyChangeLog.setOperatorIp("");
-                this.maDecorativeCompanyCreditService.updateDecorativeCompanyCredit(decorativeCompanyCreditBefore,storeCreditMoneyChangeLog);
+                this.maDecorativeCompanyCreditService.updateDecorativeCompanyCredit(decorativeCompanyCreditBefore, storeCreditMoneyChangeLog);
                 //修改账单
                 creditBillingDO.setRepaidAmount(CountUtil.add(creditBillingDO.getRepaidAmount(), amount));
-                if (creditBillingDO.getBillAmount().equals(creditBillingDO.getRepaidAmount())){
+                if (creditBillingDO.getBillAmount().equals(creditBillingDO.getRepaidAmount())) {
                     creditBillingDO.setIsPayOff(true);
                 }
                 this.maDecorationCompanyCreditBillingDAO.updateCreditBillingDetails(creditBillingDO);

@@ -465,6 +465,13 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
             status = null;
         }
 
+        if (null != startDateTime&&!"".equals(startDateTime)) {
+            startDateTime +=" 00:00:00";
+        }
+        if (null != endDateTime&&!"".equals(endDateTime)) {
+            endDateTime +=" 23:59:59";
+        }
+
         List<CusPreDepositWithdraw> cusPreDepositWithdrawList = cusPreDepositWithdrawDAO.findByKeywords(keywords, status, startDateTime, endDateTime);
         return new PageInfo<>(cusPreDepositWithdrawList);
     }
@@ -479,6 +486,13 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
 
         if (status.equals("")) {
             status = null;
+        }
+
+        if (null != startDateTime&&!"".equals(startDateTime)) {
+            startDateTime +=" 00:00:00";
+        }
+        if (null != endDateTime&&!"".equals(endDateTime)) {
+            endDateTime +=" 23:59:59";
         }
 
         List<StPreDepositWithdraw> stPreDepositWithdraws = stPreDepositWithdrawDAO.findByKeywords(keywords, status, startDateTime, endDateTime);

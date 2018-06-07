@@ -22,7 +22,7 @@ public interface ResourceService {
 
     Resource queryById(Long id);
 
-    PageInfo<ResourceVO> queryPageVO(Integer page, Integer size);
+    PageInfo<ResourceVO> queryPageVO(Integer page, Integer size, String keywords);
 
     void update(ResourceVO resourceVO);
 

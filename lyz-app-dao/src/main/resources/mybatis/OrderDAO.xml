@@ -862,6 +862,12 @@
             <if test="null != collectionAmount">
                 collection_amount = #{collectionAmount},
             </if>
+            <if test="null != empCreditMoney">
+                emp_credit_money = #{empCreditMoney},
+            </if>
+            <if test="null != sellerStoreDeposit">
+                seller_store_deposit = #{sellerStoreDeposit},
+            </if>
             <if test="null != isPayUp  ">
                 is_pay_up = #{isPayUp}
             </if>

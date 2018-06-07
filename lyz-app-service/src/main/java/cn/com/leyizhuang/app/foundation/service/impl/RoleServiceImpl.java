@@ -71,9 +71,9 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public PageInfo<Role> queryPage(Integer page, Integer size) {
+    public PageInfo<Role> queryPage(Integer page, Integer size, String keywords) {
         PageHelper.startPage(page, size);
-        List<Role> roleList = roleDAO.queryList();
+        List<Role> roleList = roleDAO.queryList(keywords);
         return new PageInfo<>(roleList);
     }
 

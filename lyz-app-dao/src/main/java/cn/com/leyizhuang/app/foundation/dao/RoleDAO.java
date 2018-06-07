@@ -22,7 +22,7 @@ public interface RoleDAO {
 
     Role selectById(Long roleId);
 
-    List<Role> queryList();
+    List<Role> queryList( @Param("keywords") String keywords);
 
     void save(Role role);
 

@@ -25,7 +25,7 @@ public interface ResourceDAO {
 
     Resource queryById(Long id);
 
-    List<ResourceVO> queryListVO();
+    List<ResourceVO> queryListVO(@Param(value = "keywords") String keywords);
 
     void updateVO(ResourceVO resourceVO);
 

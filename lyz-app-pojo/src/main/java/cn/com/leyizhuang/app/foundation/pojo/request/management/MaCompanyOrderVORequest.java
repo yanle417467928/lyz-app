@@ -52,4 +52,14 @@ public class MaCompanyOrderVORequest {
     private String receiverPhone;
 
     private List<Long> list;
+
+    public static final MaCompanyOrderVORequest transformTime (MaCompanyOrderVORequest maCompanyOrderVORequest) {
+        if(null != maCompanyOrderVORequest.getBeginTime()&&!"".equals(maCompanyOrderVORequest.getBeginTime())){
+            maCompanyOrderVORequest.setBeginTime(maCompanyOrderVORequest.getBeginTime()+" 00:00:00");
+        }
+        if(null != maCompanyOrderVORequest.getEndTime()&&!"".equals(maCompanyOrderVORequest.getEndTime())){
+            maCompanyOrderVORequest.setEndTime(maCompanyOrderVORequest.getEndTime()+" 23:59:59");
+        }
+        return maCompanyOrderVORequest;
+    }
 }
