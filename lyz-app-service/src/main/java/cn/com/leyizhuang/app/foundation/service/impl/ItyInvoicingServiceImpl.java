@@ -31,6 +31,12 @@ public class ItyInvoicingServiceImpl implements ItyInvoicingService {
 
         PageHelper.startPage(offset, size);
         List<InvoicingVO> invoicingCityVOS;
+        if (null != selectParam.getStartDateTime()&&!"".equals(selectParam.getStartDateTime())) {
+            selectParam.setStartDateTime(selectParam.getStartDateTime()+" 00:00:00");
+        }
+        if (null != selectParam.getEndDateTime()&&!"".equals(selectParam.getEndDateTime())) {
+            selectParam.setEndDateTime(selectParam.getEndDateTime()+" 23:59:59");
+        }
         if (StringUtils.isNotBlank(keywords)) {
             invoicingCityVOS = invoicingDAO.queryStoreInventoryChangeLogList(keywords, storeIds);
         } else {

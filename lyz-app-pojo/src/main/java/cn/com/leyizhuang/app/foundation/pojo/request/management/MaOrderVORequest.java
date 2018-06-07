@@ -61,4 +61,14 @@ public class MaOrderVORequest {
     private String receiverPhone;
 
     private List<Long> list;
+
+    public static final MaOrderVORequest transformTime (MaOrderVORequest maOrderVORequest) {
+        if(null != maOrderVORequest.getBeginTime()&&!"".equals(maOrderVORequest.getBeginTime())){
+            maOrderVORequest.setBeginTime(maOrderVORequest.getBeginTime()+" 00:00:00");
+        }
+        if(null != maOrderVORequest.getEndTime()&&!"".equals( maOrderVORequest.getEndTime())){
+            maOrderVORequest.setEndTime(maOrderVORequest.getEndTime()+" 23:59:59");
+        }
+        return maOrderVORequest;
+    }
 }
