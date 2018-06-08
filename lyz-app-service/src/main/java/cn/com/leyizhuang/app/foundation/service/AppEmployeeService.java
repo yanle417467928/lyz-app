@@ -95,4 +95,6 @@ public interface AppEmployeeService {
      * @return
      */
     String getSalesManagerSupportHotline(String storeCode);
+
+    AppEmployee findSellerByMobile(String mobile);
 }

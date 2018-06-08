@@ -284,4 +284,12 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     public String getSalesManagerSupportHotline(String storeCode) {
         return employeeDAO.getSalesManagerSupportHotline(storeCode);
     }
+
+    @Override
+    public AppEmployee findSellerByMobile(String mobile) {
+        if (null != mobile && !"".equalsIgnoreCase(mobile)) {
+            return employeeDAO.findByMobile(mobile);
+        }
+        return null;
+    }
 }
