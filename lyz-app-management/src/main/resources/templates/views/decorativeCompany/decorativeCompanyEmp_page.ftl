@@ -32,7 +32,7 @@
         <div class="col-xs-12">
             <div class="box box-primary">
                 <div id="toolbar" class="form-inline ">
-                    <select name="diyCode" id="diyCode" class="form-control selectpicker"  data-width="140px"
+                    <select name="diyCode" id="diyCode" class="form-control selectpicker"  data-width="140px" style="width:auto;"
                               onchange="findDecorativeEmpByCondition()" data-live-search="true" >
                         <option value="-1">选择公司</option>
                     </select>

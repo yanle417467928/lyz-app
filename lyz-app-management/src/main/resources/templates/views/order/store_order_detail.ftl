@@ -17,7 +17,6 @@
 
 
     <script type="text/javascript" src="/javascript/order/store_order_detail.js"></script>
-
     <style>
         b {
             line-height: 30px;
@@ -140,7 +139,7 @@
                     <spanp class="span">${maOrderDetail.storeName!""}</spanp>
                     <br>
                     <b>下单人id:</b>
-                    <spanp class="span">${maOrderDetail.creatorId!""}</spanp>
+                    <spanp class="span"><#if maOrderDetail?? && maOrderDetail.creatorId??>${maOrderDetail.creatorId?c}</#if></spanp>
                     <br>
                     <b>配送方式:</b>
                     <spanp class="span">
@@ -174,7 +173,7 @@
                     <spanp class="span"> ${maOrderDetail.sellerName!""}</spanp>
                     <br>
                     <b>客户id:</b>
-                    <spanp class="span">${maOrderDetail.customerId!""}</spanp>
+                    <spanp class="span"><#if maOrderDetail?? && maOrderDetail.customerId??>${maOrderDetail.customerId?c}</#if></spanp>
                     <br>
                 <#if maOrderDetail.deliveryType = 'HOUSE_DELIVERY'>
                     <b>代收金额:</b>
@@ -332,6 +331,15 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-md-10"></div>
+            <div class="col-xs-12 col-md-2">
+                <button type="button" class="btn btn-danger footer-btn btn-cancel" style="width:80%;">
+                    <i class="fa fa-close"></i>返回
+                </button>
+            </div>
+        </div>
     </section>
 </div>
 </body>

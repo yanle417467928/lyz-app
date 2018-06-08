@@ -95,7 +95,9 @@
                                     <td>
                                         <div>
                                             <span>
-                                            ${maOrderDetail.creatorId!""}
+                                                <#if maOrderDetail?? && maOrderDetail.creatorId??>
+                                                     ${maOrderDetail.creatorId?c}
+                                                </#if>
                                             </span>
                                         </div>
                                     </td>
@@ -103,7 +105,9 @@
                                     <td>
                                         <div>
                                             <span>
-                                            ${maOrderDetail.customerId!""}
+                                          <#if maOrderDetail?? && maOrderDetail.customerId??>
+                                            ${maOrderDetail.customerId?c}
+                                          </#if>
                                             </span>
                                         </div>
                                     </td>
@@ -695,7 +699,7 @@
             $.ajax({
                 url: '/rest/order/arrearsAndAgencyOrder/auditOrderStatus',
                 method: 'PUT',
-                data: {"orderNumber": orderNumber, "status": statusType,'auditId':auditId},
+                data: {"orderNumber": orderNumber, "status": statusType, 'auditId': auditId},
                 error: function () {
                     clearTimeout($global.timer);
                     $loading.close();
