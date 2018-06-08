@@ -4,6 +4,8 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.MaPhotoOrderGoodsDAO;
 import cn.com.leyizhuang.app.foundation.pojo.PhotoOrderGoodsDO;
 import cn.com.leyizhuang.app.foundation.service.MaPhotoOrderGoodsService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,11 +29,13 @@ public class MaPhotoOrderGoodsServiceImpl implements MaPhotoOrderGoodsService {
     }
 
     @Override
-    public List<PhotoOrderGoodsDO> findPhotoOrderGoodsByPhotoOrderNo(String photoOrderNo) {
+    public PageInfo<PhotoOrderGoodsDO> findPhotoOrderGoodsByPhotoOrderNo(Integer page, Integer size, String photoOrderNo) {
         if (StringUtils.isBlank(photoOrderNo)){
             return null;
         }else{
-            return this.maPhotoOrderGoodsDAO.findPhotoOrderGoodsByPhotoOrderNo(photoOrderNo);
+            PageHelper.startPage(page, size);
+            List<PhotoOrderGoodsDO> photoOrderGoodsDOList = this.maPhotoOrderGoodsDAO.findPhotoOrderGoodsByPhotoOrderNo(photoOrderNo);
+            return new PageInfo<>(photoOrderGoodsDOList);
         }
     }
 }

@@ -19,6 +19,6 @@
         FROM
             photo_order_goods
         WHERE
-            photo_order_no = #{photoOrderNo};
+            photo_order_no = #{photoOrderNo}
     </select>
 </mapper>
