@@ -71,8 +71,8 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
             <if test="qrCode != null">
                 qr_code = #{qrCode}
             </if>
-            <if test="null != delivery_clerk_no">
-                delivery_clerk_no=#{delivery_clerk_no}
+            <if test="null != deliveryClerkNo">
+                delivery_clerk_no=#{deliveryClerkNo}
             </if>
         </set>
         WHERE emp_id = #{empId}

@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.vo.management.store;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.CustomerPreDepositChangeType;
 import cn.com.leyizhuang.app.core.constant.StorePreDepositChangeType;
 import cn.com.leyizhuang.app.core.constant.StoreType;
@@ -90,5 +91,9 @@ public class StorePreDepositLogVO {
 
     public void setStoreType(StoreType storeType){
         this.storeType = storeType.getDescription();
+    }
+
+    public void setOperatorType(AppIdentityType appIdentityType){
+        this.operatorType = appIdentityType.getDescription();
     }
 }

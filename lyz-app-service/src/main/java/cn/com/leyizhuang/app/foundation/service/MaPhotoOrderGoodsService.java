@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.PhotoOrderGoodsDO;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
@@ -12,6 +13,6 @@ public interface MaPhotoOrderGoodsService {
 
     int batchSave(List<PhotoOrderGoodsDO> photoOrderGoodsDOList);
 
-    List<PhotoOrderGoodsDO> findPhotoOrderGoodsByPhotoOrderNo(String photoOrderNo);
+    PageInfo<PhotoOrderGoodsDO> findPhotoOrderGoodsByPhotoOrderNo(Integer page, Integer size, String photoOrderNo);
 
 }

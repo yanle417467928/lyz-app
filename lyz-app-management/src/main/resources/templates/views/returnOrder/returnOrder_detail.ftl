@@ -100,7 +100,9 @@
                                     <td>
                                         <div>
                                             <span>
+                                         <#if maReturnOrderDetailVO?? && maReturnOrderDetailVO.customerId??>
                                             ${maReturnOrderDetailVO.customerId!""}
+                                         </#if>
                                             </span>
                                         </div>
                                     </td>
