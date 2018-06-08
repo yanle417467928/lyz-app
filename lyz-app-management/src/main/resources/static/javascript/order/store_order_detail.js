@@ -1,3 +1,10 @@
+
+$(function () {
+    $('.btn-cancel').on('click', function () {
+        history.go(-1);
+    });
+});
+
 var $page = {
     information: {
         show: function (orderNumber) {

@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.vo.management.customer;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.CustomerPreDepositChangeType;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import lombok.*;
@@ -78,5 +79,9 @@ public class CusPreDepositLogVO {
 
     public void setTransferTime(LocalDateTime transferTime){
         this.transferTime = TimeTransformUtils.df1.format(transferTime);
+    }
+
+    public void setOperatorType(AppIdentityType appIdentityType){
+        this.operatorType = appIdentityType.getDescription();
     }
 }
