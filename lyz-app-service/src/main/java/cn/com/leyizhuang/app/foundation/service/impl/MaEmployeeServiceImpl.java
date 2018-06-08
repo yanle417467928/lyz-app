@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.AppEmployeeDAO;
 import cn.com.leyizhuang.app.foundation.dao.MaEmployeeDAO;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
@@ -287,5 +288,10 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
             return appEmployeeDAO.findSellerListByStoreId(storeId);
         }
         return null;
+    }
+
+    @Override
+    public List<EmployeeDO> findEmpployeeByCityIdAndIdentityType(Long cityId, AppIdentityType type) {
+        return this.maEmployeeDAO.findEmpployeeByCityIdAndIdentityType(cityId, type);
     }
 }

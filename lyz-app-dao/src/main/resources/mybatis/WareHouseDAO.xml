@@ -21,4 +21,15 @@
         FROM warehouse
         WHERE wh_no = #{whNo};
     </select>
+
+    <select id="findWareHouseByCityId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.WareHouseDO">
+        SELECT id,
+            wh_no     wareHouseNo,
+            wh_name   wareHouseName,
+            city_id   cityId
+        FROM warehouse
+        WHERE city_id
+    </select>
+
+
 </mapper>

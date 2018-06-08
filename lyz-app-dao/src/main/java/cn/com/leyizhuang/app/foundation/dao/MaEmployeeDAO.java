@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaEmployeeResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideVO;
@@ -64,5 +65,7 @@ public interface MaEmployeeDAO {
     List<GuideVO> queryGuideArrears();
 
     List<GuideVO> queryGuideRepayment();
+
+    List<EmployeeDO> findEmpployeeByCityIdAndIdentityType(@Param("cityId")Long cityId, @Param("type") AppIdentityType type);
 
 }

@@ -418,4 +418,12 @@
         </if>
     </select>
 
+    <select id="findEmpployeeByCityIdAndIdentityType" resultType="cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO">
+        SELECT emp_id, name,delivery_clerk_no,mobile
+        FROM emp_employee
+        WHERE city_id = #{cityId}
+        AND identity_type = #{type}
+        AND status IS TRUE
+    </select>
+
 </mapper>

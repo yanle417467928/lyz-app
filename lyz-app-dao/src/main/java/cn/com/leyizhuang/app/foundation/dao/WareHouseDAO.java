@@ -3,6 +3,8 @@ package cn.com.leyizhuang.app.foundation.dao;
 import cn.com.leyizhuang.app.foundation.pojo.WareHouseDO;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author Jerry.Ren
  * create 2018-02-22 17:06
@@ -19,4 +21,6 @@ public interface WareHouseDAO {
      * @return
      */
     WareHouseDO findByWareHouseNo(String whNo);
+
+    List<WareHouseDO> findWareHouseByCityId(Long cityId);
 }

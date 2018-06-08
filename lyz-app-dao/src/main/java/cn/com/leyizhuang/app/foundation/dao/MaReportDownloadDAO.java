@@ -79,4 +79,9 @@ public interface MaReportDownloadDAO {
 
     List<EmpCreditMoneyChangeReportDO> findEmployeeCreditMoneyReportDOAll(@Param("cityId") Long cityId, @Param("storeId") Long storeId, @Param("storeType") String storeType,
                                                                           @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("list") List<Long> storeIds);
+
+    List<DistributionDO> findDistributionDOAll(@Param("cityId") Long cityId, @Param("wareHouseNo") String wareHouseNo, @Param("deliveryClerkNo") String deliveryClerkNo,
+                                                         @Param("startTime") String startTime, @Param("endTime") String endTime,
+                                                         @Param("keywords") String keywords);
+
 }
