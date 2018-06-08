@@ -43,7 +43,7 @@ public class StatisticsSellDetailsContrller {
 
     /**
      * 导购当月 个人销量统计
-     * flag : TS ：桶数；HYS：活跃数 ; XKF :新开发高端会员数
+     * flag : TS ：桶数；HYS：活跃数 ; XKF :新开发高端会员数 ; XL ：销量
      *
      * @return
      */
@@ -51,7 +51,7 @@ public class StatisticsSellDetailsContrller {
     public ResultDTO<Object> statisticsPersonalSellDetais(Long sellerId, Long identityType, String flag) {
         /** 4月31号以前无销量 则提示功能暂未开放 **/
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime dateTime = LocalDateTime.of(2018,5,30,23,59,59);
+        LocalDateTime dateTime = LocalDateTime.of(2019,5,30,23,59,59);
 
         if (now.isBefore(dateTime)){
             ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此功能暂未开放，敬请期待", "");
@@ -106,7 +106,7 @@ public class StatisticsSellDetailsContrller {
 
         /** 4月31号以前无销量 则提示功能暂未开放 **/
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime dateTime = LocalDateTime.of(2018,5,30,23,59,59);
+        LocalDateTime dateTime = LocalDateTime.of(2019,5,30,23,59,59);
 
         if (now.isBefore(dateTime)){
             ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此功能暂未开放，敬请期待", "");
