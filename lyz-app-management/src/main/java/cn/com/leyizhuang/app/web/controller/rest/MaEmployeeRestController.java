@@ -684,4 +684,9 @@ public class MaEmployeeRestController extends BaseRestController {
         return resultDTO;
     }
 
+    @GetMapping("/re/credit")
+    public ResultDTO repaireCredit(Long empId,String flag) {
+        appEmployeeService.repairCreditMoneyChangeLog(empId,flag);
+        return null;
+    }
 }

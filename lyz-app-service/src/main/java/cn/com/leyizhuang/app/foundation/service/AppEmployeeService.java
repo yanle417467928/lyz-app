@@ -9,6 +9,7 @@ import cn.com.leyizhuang.app.foundation.pojo.SalesConsult;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;
 
 import java.sql.Timestamp;
@@ -95,4 +96,6 @@ public interface AppEmployeeService {
      * @return
      */
     String getSalesManagerSupportHotline(String storeCode);
+
+    ResultDTO repairCreditMoneyChangeLog(Long empId, String flag);
 }

@@ -2479,7 +2479,8 @@
         LEFT JOIN ord_billing_details b ON b.ord_no = o.ord_no
         LEFT JOIN (SELECT SUM(amount) amount,ord_no FROM ord_billing_payment_details GROUP BY ord_no) p ON o.ord_no = p.ord_no
         LEFT JOIN (SELECT * FROM ord_arrears_audit WHERE status = 'AUDIT_PASSED' GROUP BY ord_no) a ON a.ord_no = o.ord_no
-        LEFT JOIN st_store s ON s.store_id = o.store_id
+        LEFT JOIN emp_employee e on e.emp_id = o.sales_consult_id
+        LEFT JOIN st_store s ON s.store_id = e.store_id
         LEFT JOIN ord_shipping os on o.oid = os.oid
         LEFT JOIN inter_wta_order_shipping_header wa ON o.ord_no = wa.order_no
         LEFT JOIN  (SELECT * FROM (SELECT * FROM ord_arrears_audit  ORDER BY create_time DESC) c GROUP BY  c.ord_no) d ON  d.ord_no = o.ord_no
@@ -2542,7 +2543,8 @@
         LEFT JOIN ord_billing_details b ON b.ord_no = o.ord_no
         LEFT JOIN (SELECT SUM(amount) amount,ord_no FROM ord_billing_payment_details GROUP BY ord_no) p ON o.ord_no = p.ord_no
         LEFT JOIN (SELECT * FROM ord_arrears_audit WHERE status = 'AUDIT_PASSED' GROUP BY ord_no) a ON a.ord_no = o.ord_no
-        LEFT JOIN st_store s ON s.store_id = o.store_id
+        LEFT JOIN emp_employee e on e.emp_id = o.sales_consult_id
+        LEFT JOIN st_store s ON s.store_id = e.store_id
         LEFT JOIN ord_shipping os on o.oid = os.oid
         LEFT JOIN inter_wta_order_shipping_header wa ON o.ord_no = wa.order_no
         LEFT JOIN  (SELECT * FROM (SELECT * FROM ord_arrears_audit  ORDER BY create_time DESC) c GROUP BY  c.ord_no) d ON  d.ord_no = o.ord_no

@@ -103,4 +103,8 @@ public interface AppEmployeeDAO {
 
     String getSalesManagerSupportHotline(@Param("storeCode") String storeCode);
 
+    List<EmpAvailableCreditMoneyChangeLog> getEmpAvailableCreditMoneyChangeLogByEmpId(@Param("empId") Long empId);
+
+    void updateEmpAvailableCreditMoneyChangeLog(EmpAvailableCreditMoneyChangeLog empAvailableCreditMoneyChangeLog);
+
 }
