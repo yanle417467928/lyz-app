@@ -2114,6 +2114,7 @@
         LEFT JOIN ord_return_product_coupon oci on orb.roid = oci.roid and org.sku = oci.sku and org.goods_line_type = 'PRODUCT_COUPON'
         LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.pcid
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
+        LEFT JOIN ord_return_lifecycle orl on orl.return_no = orb.return_no and orl.operation = "NORMAL_RETURN" and orl.post_status = "FINISHED"
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
         where
         1=1
@@ -2121,11 +2122,11 @@
         and orb.return_status = 'FINISHED'
         <if test="null!=startTime and ''!=startTime">
             AND
-            orb.return_time > #{startTime}
+            orl.operation_time > #{startTime}
         </if>
         <if test="null!=endTime and ''!=endTime">
             and
-            <![CDATA[ orb.return_time <= #{endTime} ]]>
+            <![CDATA[ orl.operation_time <= #{endTime} ]]>
         </if>
         <!--   <if test="null!=companyCode and ''!=companyCode">
                and s.store_structure_code like concat('%',#{companyCode},'%')
