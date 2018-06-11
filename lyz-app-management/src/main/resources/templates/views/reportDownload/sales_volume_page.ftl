@@ -51,7 +51,7 @@
                                     data-width="120px"
                                     style="width:auto;"
                                     onchange="findStorelist()" data-live-search="true">
-                                <option value="ALL">所有</option>
+                                <option value="ALL">所有分公司</option>
                             <#if structureList?? && structureList?size gt 0 >
                                 <#list structureList as structure>
                                     <option value="${structure.number!''}">${structure.structureName!''}</option>
@@ -76,7 +76,7 @@
                             <select name="productType" id="productType" class="form-control selectpicker" data-width="120px"
                                     style="width:auto;"
                             <#--onchange="findByCondition()"--> data-live-search="true">
-                                <option value="ALL">全部</option>
+                                <option value="ALL">全部品牌</option>
                                 <option value="LYZ">乐易装（包含莹润）</option>
                                 <option value="HR">华润</option>
                             </select>
