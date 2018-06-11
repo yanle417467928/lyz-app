@@ -38,52 +38,89 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="box box-primary">
-                <div id="toolbar" class="form-inline" >
-                    <form>
-                    <#--<@shiro.hasPermission name="/views/admin/resource/add">-->
-                        <button id="btn_add" type="button" class=" btn btn-default" onclick="openBillModal()">
-                            <i class="fa fa-download"></i>
-                            下载报表
-                        </button>
-                    <#--</@shiro.hasPermission>-->
-                        <select name="company" id="companyCode" class="form-control selectpicker" data-width="120px"
-                                style="width:auto;"
-                                onchange="findStorelist()" data-live-search="true">
-                            <option value="-1">选择分公司</option>
-                        <#if structureList?? && structureList?size gt 0 >
-                            <#list structureList as structure>
-                                <option value="${structure.number!''}">${structure.structureName!''}</option>
-                            </#list>
-                        </#if>
-                        </select>
-                        <select name="storeType" id="storeType" class="form-control selectpicker" data-width="140px"
-                                style="width:auto;"
-                                onchange="findStorelist()" data-live-search="true">
-                            <option value="-1">选择门店类型</option>
-                            <option value="ZY">直营</option>
-                            <option value="JM">加盟</option>
-                            <option value="FX">分销(不分公司)</option>
-                        </select>
-                        <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px"
-                                style="width:auto;"
-                        <#--onchange="findByCondition()"--> data-live-search="true">
-                            <option value="-1">选择门店</option>
-                        </select>
-                        <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
-                                onclick="return findByCondition()">查找
-                        </button>
-                        <button type="reset" class="btn btn-default" onclick="clearAll()">重置
-                        </button>
-                    </form>
-                </div>
-                <div class="box-body table-reponsive">
-                    <table id="dataGrid" class="table table-bordered table-hover">
+                <form class="form-horizontal" id="formSearch" style="margin:10px 5px;padding-bottom: 1px;">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-xs-3" for="number" style="text-align: center">分公司:</label>
+                                <div class="col-md-2 col-xs-3" style="text-align: left;margin-left: -6%">
+                                    <select id="companyCode" name="companyCode" class="form-control selectpicker">
+                                    <#if structureList?? && structureList?size gt 0 >
+                                        <#list structureList as structure>
+                                            <option value="${structure.number!''}">${structure.structureName!''}</option>
+                                        </#list>
+                                    </#if>
+                                    </select>
+                                </div>
+                             <#--   <label class="control-label col-md-2 col-xs-3" for="number" style="text-align: center">门店:</label>
+                                <div class="col-md-2 col-xs-3" style="text-align: left;margin-left: -6%">
+                                    <select id="storeCode" name="storeCode" class="form-control selectpicker">
+                                    </select>
+                                </div>-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-xs-3" for="storeType"
+                                       style="text-align: center">门店类型:</label>
+                                <label class="control-label margin-6" style="margin-left: 0%">
+                                    <input type="radio" name="storeType" value="ZY" class="iradio_square-blue " checked>
+                                    直营
+                                </label>
+                                <label class="control-label margin-6" style="margin-left: 5%">
+                                    <input type="radio" name="storeType" value="JM" class="iradio_square-blue ">
+                                    加盟
+                                </label>
+                                <label class="control-label margin-6" style="margin-left: 5%">
+                                    <input type="radio" name="storeType" value="FX" class="iradio_square-blue ">
+                                    分销(不分公司)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <div class="col-md-2 col-xs-3" style="text-align:center;">
+                                    <button id="btn_add" type="button" class=" btn btn-default"
+                                            onclick="openBillModal()">
+                                        <i class="fa fa-download"></i>
+                                        下载报表
+                                    </button>
+                                </div>
+                                <div class="col-md-7 col-xs-3">
+                                </div>
+                                <div class="col-md-1 col-xs-3" style="text-align:center;">
+                                    <button type="button" id="btn_query"
+                                            class="btn btn-primary" onclick="return findByCondition()">
+                                        <i class="fa fa-search"></i> 查询
+                                    </button>
+                                </div>
+                                <div class="col-md-1 col-xs-3" style="text-align:left;">
+                                    <button type="reset" class="btn btn-default" onclick="clearAll()">
+                                        <i class="fa fa-print"></i> 重置
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                    </table>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box box-primary">
+                    <div class="box-body table-reponsive">
+                        <table id="dataGrid" class="table table-bordered table-hover">
+
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 </section>
 <script>
 
@@ -98,7 +135,7 @@
     });
 
 
-    function initDateGird(keywords, companyCode, storeType,storeCode) {
+    function initDateGird(keywords, companyCode, storeType) {
         $grid.init($('#dataGrid'), $('#toolbar'), '/rest/reportDownload/arrearsReport/page/grid', 'get', false, function (params) {
             return {
                 offset: params.offset,
@@ -106,7 +143,6 @@
                 keywords: keywords,
                 companyCode: companyCode,
                 storeType: storeType,
-                storeId: storeCode,
             }
         }, [{
             checkbox: true,
@@ -155,19 +191,20 @@
         $("#queryCusInfo").val('');
         $("#dataGrid").bootstrapTable('destroy');
         var keywords = $('#queryCusInfo').val();
-        var storeType = $('#storeType').val();
+        var storeType = $('input[name="storeType"]:checked ').val()
         var companyCode = $('#companyCode').val();
-        var storeCode = $('#storeCode').val();
-        initDateGird(keywords, companyCode, storeType,storeCode);
+        initDateGird(keywords, companyCode, storeType);
     }
 
 
     function openBillModal() {
+        var keywords = $("#queryCusInfo").val();
         var companyCode = $('#companyCode').val();
-        var storeType = $('#storeType').val();
-        var storeCode = $('#storeCode').val();
+        var isProductCoupon = $('input[name="product"]:checked ').val()
+        var storeType = $('input[name="storeType"]:checked ').val()
+
         var url = "/rest/reportDownload/arrearsReport/download?companyCode=" + companyCode
-                + "&storeType=" + storeType+"&storeId="+storeCode;
+             + "&storeType=" + storeType;
         var escapeUrl = url.replace(/\#/g, "%23");
         window.open(escapeUrl);
 
@@ -189,14 +226,7 @@
         initSelect("#storeCode", "选择门店");
         var store = "";
         var companyCode = $('#companyCode').val();
-        var storeType = $('#storeType').val();
-  /*      if('FX'==storeType){
-            $('#companyCode').val(-1);
-            $('#storeCode').val(-1);
-            companyCode=-1;
-            $('#companyCode').selectpicker('refresh');
-            $('#companyCode').selectpicker('render');
-        }*/
+        var storeType = $('input[name="storeType"]:checked ').val()
         $.ajax({
             url: '/rest/stores/findStoresListByCompanyCodeAndStoreType',
             method: 'GET',

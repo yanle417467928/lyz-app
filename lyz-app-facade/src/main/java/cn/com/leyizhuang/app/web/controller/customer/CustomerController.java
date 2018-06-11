@@ -1107,7 +1107,7 @@ public class CustomerController {
 
             //如果填写了推荐导购电话
             if (null != registryParam.getGuidePhone() && !"".equalsIgnoreCase(registryParam.getGuidePhone())) {
-                AppEmployee seller = employeeService.findByMobile(registryParam.getGuidePhone());
+                AppEmployee seller = employeeService.findSellerByMobile(registryParam.getGuidePhone());
                 if (seller == null) {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "注册成功！绑定导购失败，导购不存在！",
                             new CustomerRegistResponse(Boolean.FALSE, null));

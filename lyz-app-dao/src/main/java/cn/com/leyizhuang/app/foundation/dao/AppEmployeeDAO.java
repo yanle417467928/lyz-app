@@ -103,4 +103,6 @@ public interface AppEmployeeDAO {
 
     String getSalesManagerSupportHotline(@Param("storeCode") String storeCode);
 
+    AppEmployee findSellerByMobile(String mobile);
+
 }

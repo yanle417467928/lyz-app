@@ -72,7 +72,7 @@
                     <input name="startTime" <#--onchange="findByCondition()"--> type="text" class="form-control datepicker" id="startTime" style="width: 120px;" placeholder="开始时间">
                     <input name="endTime" <#--onchange="findByCondition()"--> type="text" class="form-control datepicker" id="endTime" style="width: 120px;" placeholder="结束时间">
 
-                    <div class="input-group col-md-3" style="margin-top:0px; positon:relative">
+                    <div class="input-group col-md-2" style="margin-top:0px; positon:relative">
                         <input type="text" name="queryCusInfo" id="queryCusInfo" class="form-control" style="width:auto;"
                                placeholder="请输入要查找的单号">
                         <span class="input-group-btn">
