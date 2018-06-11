@@ -2667,7 +2667,7 @@
         orb.return_no as returnNo,
         CASE orb.return_status WHEN 'FINISHED' THEN '已反配' WHEN 'PENDING_REFUND' THEN '待退款' END as status,
         orb.return_time as orderTime,
-        rd.create_time as shipmentsTime,
+        (CASE orb.return_type WHEN 'NORMAL_RETURN' THEN rd.create_time ELSE orb.return_time END) as shipmentsTime,
         '' as appShipmentsTime,
         wro.c_end_dt as finishTime,
         oli.return_full_address as shippingAddress,
