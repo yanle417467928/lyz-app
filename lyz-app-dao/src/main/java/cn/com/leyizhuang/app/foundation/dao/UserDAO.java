@@ -37,5 +37,5 @@ public interface UserDAO {
 
     User findByLoginName(@Param(value = "loginName") String loginName);
 
-    List<UserVO> queryUserVOListWithKeywords(@Param(value = "keywords") String keywords);
+    List<UserVO> queryUserVOListWithKeywords(@Param(value = "keywords") String keywords,@Param(value = "identityType") String identityType, @Param(value = "enable") String enable);
 }

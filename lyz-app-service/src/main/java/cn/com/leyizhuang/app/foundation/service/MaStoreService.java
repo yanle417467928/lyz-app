@@ -131,7 +131,9 @@ public interface MaStoreService {
 
     List<Long> findStoresIdByStructureCode(String structureCode);
 
-    List<Long> findAllFitCompanySellerId();
+    List<Long> findStoresIdByStructureCodeAndStoreType(String structureCode,String storeType);
+
+    List<Long> findFitCompanyIdByStoreId(List<Long> storeIds);
 
     Boolean exsitStoreInCompany(Long storeId,String companyCode,String storeType);
 

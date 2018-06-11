@@ -19,7 +19,7 @@ public interface UserService {
 
     PageInfo<UserVO> queryPageVO(Integer page, Integer size);
 
-    PageInfo<UserVO> queryPageVOWithKeywords(Integer page, Integer size, String keywords);
+    PageInfo<UserVO> queryPageVOWithKeywords(Integer page, Integer size, String keywords,String identityType,String enable);
 
     User queryById(Long id);
 

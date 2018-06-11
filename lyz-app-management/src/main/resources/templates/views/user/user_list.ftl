@@ -28,7 +28,7 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="box box-primary">
-                <div id="toolbar" class="btn-group">
+                <div id="toolbar" class="form-inline">
                     <button id="btn_add" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
                     </button>
@@ -38,6 +38,28 @@
                     <button id="btn_delete" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除
                     </button>
+                    <select name="identityType" id="identityType" class="form-control select" style="width:auto;"
+                            onchange="findUserByCondition()">
+                        <option value="-1">选择类型</option>
+                        <option value="1">管理员</option>
+                        <option value="2">普通用户</option>
+                    </select>
+                    <select name="enabled" id="enabled" class="form-control select" style="width:auto;"
+                            data-live-search="true"
+                            onchange="findUserByCondition()">
+                        <option value="-1">选择状态</option>
+                        <option value="1">正常</option>
+                        <option value="0">停用</option>
+                    </select>
+                    <div class="input-group col-md-3" style="margin-top:0px positon:relative">
+                        <input type="text" name="queryInfo" id="queryInfo" class="form-control"
+                               style="width:auto;"
+                               placeholder="请输入登录名或姓名.." onkeypress="findBykey()">
+                        <span class="input-group-btn">
+                            <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
+                                    onclick="return findUserByName()">查找</button>
+                        </span>
+                    </div>
                 </div>
                 <div class="box-body table-reponsive">
                     <table id="dataGrid" class="table table-bordered table-hover">
@@ -93,11 +115,29 @@
 </div>
 <script>
     $(function () {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/user/page/grid', 'get', true, function (params) {
+
+        initDateGird('/rest/user/page/grid');
+
+        $('#btn_add').on('click', function () {
+            $grid.add('/views/admin/user/add?parentMenuId=${(parentMenuId!'0')}');
+        });
+
+        $('#btn_edit').on('click', function () {
+            $grid.modify($('#dataGrid'), '/views/admin/user/edit/{id}?parentMenuId=${parentMenuId!'0'}')
+        });
+
+        $('#btn_delete').on('click', function () {
+            $grid.remove($('#dataGrid'), '/rest/user', 'delete');
+        });
+    });
+
+
+    function initDateGird(url) {
+        $grid.init($('#dataGrid'), $('#toolbar'),url, 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
-                keywords: params.search
+                keywords: params.search,
             }
         }, [{
             checkbox: true,
@@ -212,19 +252,7 @@
                 }
             }
         ]);
-
-        $('#btn_add').on('click', function () {
-            $grid.add('/views/admin/user/add?parentMenuId=${(parentMenuId!'0')}');
-        });
-
-        $('#btn_edit').on('click', function () {
-            $grid.modify($('#dataGrid'), '/views/admin/user/edit/{id}?parentMenuId=${parentMenuId!'0'}')
-        });
-
-        $('#btn_delete').on('click', function () {
-            $grid.remove($('#dataGrid'), '/rest/user', 'delete');
-        });
-    });
+    }
 
     var $page = {
         information: {
@@ -299,6 +327,31 @@
             }
         }
     }
+
+    function findBykey() {
+        if (event.keyCode == 13) {
+            findUserByName();
+        }
+    }
+    
+    function findUserByName() {
+        var keywords = $('#queryInfo').val();
+        $('#identityType').val('-1');
+        $('#enabled').val('-1');
+        var url = '/rest/user/page/grid?keywords='+keywords;
+        $("#dataGrid").bootstrapTable('destroy');
+        initDateGird(url);
+    }
+
+    function findUserByCondition(){
+        $("#dataGrid").bootstrapTable('destroy');
+        var identityType = $('#identityType').val();
+        var enable = $('#enabled').val();
+        $('#queryInfo').val('');
+        var url = '/rest/user/page/grid?identityType='+identityType+'&enable='+enable
+        initDateGird(url);
+    }
+
     var formatDateTime = function (date) {
         var dt = new Date(date);
         var y = dt.getFullYear();

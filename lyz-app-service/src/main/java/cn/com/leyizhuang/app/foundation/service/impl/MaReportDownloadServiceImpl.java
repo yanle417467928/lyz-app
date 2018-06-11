@@ -47,7 +47,7 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
         }
         if (StringUtils.isNotBlank(endTime)) {
             endTime += " 23:59:59";
-        }else {
+        } else {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             endTime = format.format(new Date());
         }
@@ -58,6 +58,12 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
     @Override
     public PageInfo<StorePredepositReportDO> findStorePredepositReportDOAll(Long cityId, Long storeId, String storeType, String startTime, String endTime, List<Long> storeIds, Integer page, Integer size) {
         PageHelper.startPage(page, size);
+        if (StringUtils.isNotBlank(startTime)) {
+            startTime += " 00:00:00";
+        }
+        if (StringUtils.isNotBlank(endTime)) {
+            endTime += " 23:59:59";
+        }
         List<StorePredepositReportDO> storePredepositReportDOS = maReportDownloadDAO.findStorePredepositReportDOAllNEW(cityId, storeId, storeType, startTime, endTime, storeIds);
         return new PageInfo<>(storePredepositReportDOS);
     }
@@ -65,6 +71,12 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
     @Override
     public PageInfo<EmpCreditMoneyChangeReportDO> findEmployeeCreditMoneyReportDOAll(Long cityId, Long storeId, String storeType, String startTime, String endTime, List<Long> storeIds, Integer page, Integer size) {
         PageHelper.startPage(page, size);
+        if (StringUtils.isNotBlank(startTime)) {
+            startTime += " 00:00:00";
+        }
+        if (StringUtils.isNotBlank(endTime)) {
+            endTime += " 23:59:59";
+        }
         List<EmpCreditMoneyChangeReportDO> empCreditMoneyChangeReportDOS = maReportDownloadDAO.findEmployeeCreditMoneyReportDOAll(cityId, storeId, storeType, startTime, endTime, storeIds);
         return new PageInfo<>(empCreditMoneyChangeReportDOS);
     }
@@ -84,7 +96,7 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
         }
         if (StringUtils.isNotBlank(effTime)) {
             effTime += " 23:59:59";
-        }else {
+        } else {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             effTime = format.format(new Date());
         }
@@ -225,10 +237,9 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
     }
 
 
-
     @Override
     public PageInfo<SalesReportDO> findSalesList(String companyCode, String storeType,
-                                                 String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds, Integer page, Integer size,String productType) {
+                                                 String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds,String productType, Long storeId, Integer page, Integer size) {
         PageHelper.startPage(page, size);
         if (null != startTime && !("".equals(startTime))) {
             startTime += " 00:00:00";
@@ -236,10 +247,16 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
         if (null != endTime && !("".equals(endTime))) {
             endTime += " 23:59:59";
         }
+        if (-1L == storeId) {
+            storeId = null;
+        }
+        if ("-1".equals(storeType) ) {
+            storeType = null;
+        }
         List<SalesReportDO> shipmentAndReturnGoodsList = new ArrayList<>();
         if (isProductCoupon) {
             //平铺产品劵
-            shipmentAndReturnGoodsList = maReportDownloadDAO.findProductSalesList(companyCode, storeType, startTime, endTime, storeIds,productType);
+            shipmentAndReturnGoodsList = maReportDownloadDAO.findProductSalesList(companyCode, storeType, startTime, endTime, storeIds,productType, storeId);
         } else {
             //不平铺产品劵
             //shipmentAndReturnGoodsList = maReportDownloadDAO.findNoProductSalesList(companyCode, storeType, startTime, endTime, storeIds);
@@ -248,39 +265,53 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
     }
 
 
-
-
     @Override
-    public PageInfo<ArrearsReportDO> findArrearsList(String companyCode, String storeType, List<Long> storeIds, Integer page, Integer size) {
+    public PageInfo<ArrearsReportDO> findArrearsList(String companyCode, String storeType, List<Long> storeIds, Long storeId, Integer page, Integer size) {
         PageHelper.startPage(page, size);
         List<ArrearsReportDO> shipmentAndReturnGoodsList = new ArrayList<>();
-        shipmentAndReturnGoodsList = maReportDownloadDAO.findArrearsList(companyCode, storeType, storeIds);
+        if ("-1".equals(storeType)) {
+            storeType = null;
+        }
+        if (-1L == storeId) {
+            storeId = null;
+        }
+        shipmentAndReturnGoodsList = maReportDownloadDAO.findArrearsList(companyCode, storeType, storeIds, storeId);
         return new PageInfo<>(shipmentAndReturnGoodsList);
     }
 
 
     @Override
-    public List<ArrearsReportDO> downArrearsList(String companyCode, String storeType, List<Long> storeIds) {
+    public List<ArrearsReportDO> downArrearsList(String companyCode, String storeType, List<Long> storeIds, Long storeId) {
         List<ArrearsReportDO> shipmentAndReturnGoodsList = new ArrayList<>();
-         shipmentAndReturnGoodsList = maReportDownloadDAO.findArrearsList(companyCode, storeType, storeIds);
+        if ("-1".equals(storeType)) {
+            storeType = null;
+        }
+        if (-1L == storeId) {
+            storeId = null;
+        }
+        shipmentAndReturnGoodsList = maReportDownloadDAO.findArrearsList(companyCode, storeType, storeIds, storeId);
         return shipmentAndReturnGoodsList;
     }
 
 
-
-
     @Override
     public List<SalesReportDO> downSalesReport(String companyCode, String storeType,
-                                                 String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds,String productType) {
+                                               String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds,String productType, Long storeId) {
         if (null != startTime && !("".equals(startTime))) {
             startTime += " 00:00:00";
         }
         if (null != endTime && !("".equals(endTime))) {
             endTime += " 23:59:59";
         }
+        if ("-1".equals(storeType)) {
+            storeType = null;
+        }
+        if (-1L == storeId) {
+            storeId = null;
+        }
         List<SalesReportDO> shipmentAndReturnGoodsList = new ArrayList<>();
         if (isProductCoupon) {
-            shipmentAndReturnGoodsList = maReportDownloadDAO.findProductSalesList(companyCode, storeType, startTime, endTime, storeIds,productType);
+            shipmentAndReturnGoodsList = maReportDownloadDAO.findProductSalesList(companyCode, storeType, startTime, endTime, storeIds,productType,storeId);
         } else {
             //shipmentAndReturnGoodsList = maReportDownloadDAO.findNoProductSalesList(companyCode, storeType, startTime, endTime, storeIds);
         }
@@ -315,12 +346,12 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
         if (null != endTime && !("".equals(endTime))) {
             endTime += " 23:59:59";
         }
-        List<AccountGoodsItemsDO> accountGoodsItemsDOS = this.maReportDownloadDAO.findAccountZGGoodsItemsDOAll(cityId, storeId,  startTime, endTime, keywords, storeIds);
+        List<AccountGoodsItemsDO> accountGoodsItemsDOS = this.maReportDownloadDAO.findAccountZGGoodsItemsDOAll(cityId, storeId, startTime, endTime, keywords, storeIds);
         return new PageInfo<>(accountGoodsItemsDOS);
     }
 
     @Override
-    public List<AccountGoodsItemsDO> downloadAccountZGGoodsItems(Long cityId, Long storeId,  String startTime, String endTime, String keywords, List<Long> storeIds) {
+    public List<AccountGoodsItemsDO> downloadAccountZGGoodsItems(Long cityId, Long storeId, String startTime, String endTime, String keywords, List<Long> storeIds) {
         if (null != endTime && !("".equals(endTime))) {
             endTime += " 23:59:59";
         }
