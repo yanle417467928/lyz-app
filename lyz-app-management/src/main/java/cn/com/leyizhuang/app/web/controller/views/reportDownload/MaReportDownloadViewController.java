@@ -192,7 +192,7 @@ public class MaReportDownloadViewController extends BaseController {
         return "/views/reportDownload/arrears_page";
     }
 
-    @GetMapping(value = "/arrears/list")
+    @GetMapping(value = "/distribution/list")
     public String getDistributionList(ModelMap map) {
         return "/views/reportDownload/distribution_page";
     }

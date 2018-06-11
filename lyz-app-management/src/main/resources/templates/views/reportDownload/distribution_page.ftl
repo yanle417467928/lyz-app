@@ -40,7 +40,7 @@
             <div class="box box-primary">
                 <div id="toolbar" class="form-inline">
                     <select name="city" id="cityCode" class="form-control selectpicker" data-width="120px" style="width:auto;"
-                            onchange="findDeliveryClerklist(),findWareHouselist()" data-live-search="true">
+                            onchange="findDeliveryClerklist();findWareHouselist()" data-live-search="true">
                         <option value="-1">选择城市</option>
                     </select>
 
@@ -182,7 +182,7 @@
     }
 
     function initDateGird(keywords,startTime,endTime,wareHouseNo,deliveryClerkNo,cityId) {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/reportDownload/accountGoodsItems/page/grid', 'get', false, function (params) {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/reportDownload/distribution/page/grid', 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
@@ -243,7 +243,7 @@
 
     function initSelect(select, optionName) {
         $(select).empty();
-        var selectOption = "<option value=-1>" + optionName + "</option>";
+        var selectOption = "<option value=''>" + optionName + "</option>";
         $(select).append(selectOption);
     }
 
@@ -255,8 +255,8 @@
         var cityId = $('#cityCode').val();
         var deliveryClerkNo = $('#deliveryClerkNo').val();
 
-        var url = "/rest/reportDownload/accountGoodsItems/download?keywords="+ keywords + "&wareHouseNo=" + wareHouseNo + "&startTime=" + startTime
-                + "&endTime=" + endTime + "&storeType=" + deliveryClerkNo + "&deliveryClerkNo=" + cityId;
+        var url = "/rest/reportDownload/distribution/download?keywords="+ keywords + "&wareHouseNo=" + wareHouseNo + "&startTime=" + startTime
+                + "&endTime=" + endTime + "&deliveryClerkNo=" + deliveryClerkNo + "&cityId=" + cityId;
         var escapeUrl=url.replace(/\#/g,"%23");
         window.open(escapeUrl);
 

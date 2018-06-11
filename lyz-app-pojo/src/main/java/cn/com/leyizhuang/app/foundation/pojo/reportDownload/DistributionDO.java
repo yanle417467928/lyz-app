@@ -1,9 +1,16 @@
 package cn.com.leyizhuang.app.foundation.pojo.reportDownload;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * @author GenerationRoad
  * @date 2018/6/8
  */
+@Getter
+@Setter
+@ToString
 public class DistributionDO {
     //仓库
     private String whName;
@@ -15,6 +22,8 @@ public class DistributionDO {
     private String city;
     //门店
     private String storeName;
+    //门店编码
+    private String storeCode;
     //导购名称
     private String sellerName;
     //会员名称
@@ -29,6 +38,8 @@ public class DistributionDO {
     private String orderTime;
     //出货时间
     private String shipmentsTime;
+    //APP处理出货时间
+    private String appShipmentsTime;
     //配送完成/拒签确认
     private String finishTime;
     //退货申请时间

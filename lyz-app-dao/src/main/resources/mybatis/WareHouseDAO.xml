@@ -28,7 +28,7 @@
             wh_name   wareHouseName,
             city_id   cityId
         FROM warehouse
-        WHERE city_id
+        WHERE city_id = #{cityId}
     </select>
 
 
