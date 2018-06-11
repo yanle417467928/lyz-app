@@ -316,12 +316,26 @@ public class MaStoreServiceImpl implements MaStoreService {
 
     @Override
     public List<Long> findStoresIdByStructureCode(String structureCode) {
+        if("-1".equals(structureCode)){
+            structureCode = null;
+        }
         return this.mastoreDAO.findStoresIdByStructureCode(structureCode);
     }
 
     @Override
-    public List<Long> findAllFitCompanySellerId() {
-        return this.mastoreDAO.findAllFitCompanySellerId();
+    public List<Long> findStoresIdByStructureCodeAndStoreType(String structureCode,String storeType) {
+        if("-1".equals(structureCode)){
+            structureCode=null;
+        }
+        if("-1".equals(storeType)){
+            storeType=null;
+        }
+        return this.mastoreDAO.findStoresIdByStructureCodeAndStoreType(structureCode,storeType);
+    }
+
+    @Override
+    public List<Long> findFitCompanyIdByStoreId(List<Long> storeIds) {
+        return this.mastoreDAO.findFitCompanyIdByStoreId(storeIds);
     }
 
 
@@ -341,6 +355,12 @@ public class MaStoreServiceImpl implements MaStoreService {
 
     @Override
     public List<SimpleStoreParam> findStoresListByCompanyCodeAndStoreType(String companyCode,String storeType,List<Long> storeIds) {
+        if("-1".equals(companyCode)){
+            companyCode =null;
+        }
+        if("-1".equals(storeType)){
+            storeType =null;
+        }
         return this.mastoreDAO.findStoresListByCompanyCodeAndStoreType(companyCode,storeType,storeIds);
     }
 

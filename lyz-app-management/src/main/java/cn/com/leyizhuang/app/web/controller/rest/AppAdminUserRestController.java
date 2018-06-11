@@ -67,11 +67,11 @@ public class AppAdminUserRestController extends BaseRestController {
      * @return
      */
     @GetMapping(value = "/page/grid")
-    public GridDataVO<UserVO> dataUserPageGridGet(Integer offset, Integer size, String keywords) {
+    public GridDataVO<UserVO> dataUserPageGridGet(Integer offset, Integer size, String keywords,String identityType,String enable) {
         // 根据偏移量计算当前页数
         size = getSize(size);
         Integer page = (offset / size) + 1;
-        PageInfo<UserVO> userPage = userService.queryPageVOWithKeywords(page, size, keywords);
+        PageInfo<UserVO> userPage = userService.queryPageVOWithKeywords(page, size, keywords,identityType,enable);
         List<UserVO> userList = userPage.getList();
         return new GridDataVO<UserVO>().transform(userList, userPage.getTotal());
     }

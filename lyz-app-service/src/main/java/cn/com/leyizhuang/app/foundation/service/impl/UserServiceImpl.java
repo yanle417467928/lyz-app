@@ -58,9 +58,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageInfo<UserVO> queryPageVOWithKeywords(Integer page, Integer size,String keywords) {
+    public PageInfo<UserVO> queryPageVOWithKeywords(Integer page, Integer size,String keywords,String identityType,String enable) {
         PageHelper.startPage(page, size);
-        List<UserVO> userList = userDAO.queryUserVOListWithKeywords(keywords);
+        List<UserVO> userList = userDAO.queryUserVOListWithKeywords(keywords,identityType,enable);
         return new PageInfo<>(userList);
     }
 
