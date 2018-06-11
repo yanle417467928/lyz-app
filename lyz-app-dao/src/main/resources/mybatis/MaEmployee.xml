@@ -421,8 +421,13 @@
     <select id="findEmpployeeByCityIdAndIdentityType" resultType="cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO">
         SELECT emp_id, name,delivery_clerk_no,mobile
         FROM emp_employee
-        WHERE city_id = #{cityId}
-        AND identity_type = #{type}
+        WHERE 1 = 1
+        <if test="null != cityId and cityId != -1">
+          AND city_id = #{cityId}
+        </if>
+        <if test="null != type and type.toString() != ''">
+          AND identity_type = #{type}
+        </if>
         AND status IS TRUE
     </select>
 
