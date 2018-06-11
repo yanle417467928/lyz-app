@@ -713,7 +713,9 @@
         IFNULL(obd.cus_pre_deposit,0) cusPreDeposit,
         (IFNULL(obd.online_pay_amount,0) + IFNULL(obd.store_cash,0) + IFNULL(obd.store_pos_money,0)
         + IFNULL(obd.delivery_cash,0) + IFNULL(obd.delivery_pos,0) + IFNULL(obd.store_other_money,0)
-        + IFNULL(obd.st_pre_deposit,0) + IFNULL(obd.cus_pre_deposit,0)) totalPay
+        + IFNULL(obd.st_pre_deposit,0) + IFNULL(obd.cus_pre_deposit,0)) totalPay,
+        IFNUll(obd.lebi_cash_discount,0) lbDiscount,
+        IF(obd.collection_amount &gt; obd.order_amount_subtotal,IFNULL(obd.collection_amount - obd.order_amount_subtotal,0),0) returnStore
         FROM
         ord_base_info obi
         INNER JOIN st_store st ON st.store_id = obi.store_id
@@ -764,7 +766,8 @@
         0 storeOtherMoney, (-1 * IFNULL(orb.st_pre_deposit,0)) stPreDeposit, (-1 * IFNULL(orb.pre_deposit,0))
         cusPreDeposit,
         (-1 * (IFNULL(orb.online_pay,0) + IFNULL(orb.cash,0) + IFNULL(orb.st_pre_deposit,0) +
-        IFNULL(orb.pre_deposit,0))) totalPay
+        IFNULL(orb.pre_deposit,0))) totalPay,
+        0 lbDiscount, 0 returnStore
         FROM ord_return_base_info orbi
         LEFT JOIN ord_return_lifecycle rl ON orbi.return_no = rl.return_no
         LEFT JOIN st_store st ON st.store_id = orbi.store_id
@@ -1626,7 +1629,8 @@
         if(og.goods_line_type = "PRODUCT_COUPON",CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品'  ELSE '后台发放' END,'')  as 'couponType',
         '' as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
-        ob.customer_id as cusId
+        ob.customer_id as cusId,
+        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' as cusType
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -1638,6 +1642,7 @@
         LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
+        left JOIN cus_customer cc on cc.cus_id = ob.customer_id
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
@@ -1721,7 +1726,8 @@
         if(og.goods_line_type = "PRODUCT_COUPON",CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品'  ELSE '后台发放' END,'')  as 'couponType',
         '' as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
-        ob.customer_id as cusId
+        ob.customer_id as cusId,
+        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' as cusType
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -1732,6 +1738,7 @@
         LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
+        left JOIN cus_customer cc on cc.cus_id = ob.customer_id
         WHERE
         ob.`status` IN (
         'FINISHED'
@@ -1815,7 +1822,8 @@
         if(og.goods_line_type = "PRODUCT_COUPON",CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品'  ELSE '后台发放' END,'')  as 'couponType',
         '' as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
-        ob.customer_id as cusId
+        ob.customer_id as cusId,
+        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' as cusType
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -1826,6 +1834,7 @@
         LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
+        left JOIN cus_customer cc on cc.cus_id = ob.customer_id
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
@@ -1920,7 +1929,8 @@
         if(og.goods_line_type = "PRODUCT_COUPON",CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品'  ELSE '后台发放' END,'')  as 'couponType',
         '' as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
-        ob.customer_id as cusId
+        ob.customer_id as cusId,
+        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' as cusType
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -1931,6 +1941,7 @@
         LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
+        left JOIN cus_customer cc on cc.cus_id = ob.customer_id
         WHERE
         ob.`status` IN (
         'FINISHED'
@@ -2013,7 +2024,8 @@
         if(org.goods_line_type = "PRODUCT_COUPON",CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品'  ELSE '后台发放' END,'')  as 'couponType',
         orb.return_no as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
-        ob.customer_id as cusId
+        ob.customer_id as cusId,
+        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' as cusType
         FROM
         ord_return_base_info orb
         LEFT JOIN ord_base_info ob on orb.oid = ob.oid
@@ -2026,6 +2038,7 @@
         LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.pcid
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
+        left JOIN cus_customer cc on cc.cus_id = ob.customer_id
         where
         1=1
         and ob.`status` IN ('FINISHED')
@@ -2102,7 +2115,8 @@
         if(org.goods_line_type = "PRODUCT_COUPON",CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品'  ELSE '后台发放' END,'')  as 'couponType',
         orb.return_no as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
-        ob.customer_id as cusId
+        ob.customer_id as cusId,
+        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' as cusType
         FROM
         ord_return_base_info orb
         LEFT JOIN ord_base_info ob on orb.oid = ob.oid
@@ -2116,6 +2130,7 @@
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         LEFT JOIN ord_return_lifecycle orl on orl.return_no = orb.return_no and orl.operation = "NORMAL_RETURN" and orl.post_status = "FINISHED"
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
+        left JOIN cus_customer cc on cc.cus_id = ob.customer_id
         where
         1=1
         AND ob.delivery_type = 'SELF_TAKE' and orb.return_type = 'NORMAL_RETURN'
@@ -2195,7 +2210,8 @@
         if(og.goods_line_type = "PRODUCT_COUPON",CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品'  ELSE '后台发放' END,'')  as 'couponType',
         '' as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
-        ob.customer_id as cusId
+        ob.customer_id as cusId,
+        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' as cusType
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -2209,6 +2225,7 @@
         LEFT JOIN emp_employee e2 on e2.emp_id = s.sales_manager
         LEFT JOIN st_store st2 on st2.store_id = e2.store_id
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
+        left JOIN cus_customer cc on cc.cus_id = ob.customer_id
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
@@ -2306,6 +2323,8 @@
         LEFT JOIN emp_employee e2 on e2.emp_id = s.sales_manager
         LEFT JOIN st_store st2 on st2.store_id = e2.store_id
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
+        left JOIN cus_customer cc on cc.cus_id = ob.customer_id
+        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' as cusType
         where
         1=1
         and ob.`status` IN ('FINISHED')
@@ -2370,14 +2389,12 @@
         obi.customer_phone customerPhone, st.company_name companyName
         FROM
         ord_base_info obi
-        /*INNER JOIN st_store st ON st.store_id = obi.store_id*/
+        INNER JOIN st_store st ON st.store_id = obi.store_id
         LEFT JOIN ord_goods_info og ON og.ord_no = obi.ord_no
-        /*AND og.goods_sign != 'COMMON'*/
-        INNER JOIN rank_store st ON st.store_id = obi.store_id
-        INNER JOIN rank_goods rg ON rg.gid = og.gid
         LEFT JOIN (SELECT DISTINCT ord_no,post_status,operation_time from ord_lifecycle) ol ON obi.ord_no = ol.ord_no
         LEFT JOIN ord_logistics_info oli ON oli.ord_no = obi.ord_no
-        WHERE obi.`status` != 'UNPAID'
+        LEFT JOIN ord_coupon_info oci on og.ord_no = oci.ord_no AND og.sku = oci.sku and og.goods_line_type = "PRODUCT_COUPON"
+        WHERE obi.`status` != 'UNPAID' AND (og.goods_sign != 'COMMON' or (og.goods_line_type = "PRODUCT_COUPON" and oci.goods_sign != 'COMMON'))
         AND (ol.post_status = 'PENDING_SHIPMENT' OR (ol.post_status = 'PENDING_RECEIVE' AND obi.delivery_type =
         'SELF_TAKE'))
         <if test="null != cityId and cityId != -1">
@@ -2418,15 +2435,14 @@
         (-1 * IFNULL(org.return_qty, 0) * IFNULL(org.return_price, 0))) promotionShareTotlePrice,
         obi.customer_phone customerPhone, st.company_name companyName
         FROM ord_return_base_info orbi
-        /*LEFT JOIN st_store st ON st.store_id = orbi.store_id*/
+        LEFT JOIN st_store st ON st.store_id = orbi.store_id
         LEFT JOIN (SELECT DISTINCT return_no,post_status,operation_time from ord_return_lifecycle) rl ON orbi.return_no = rl.return_no
         LEFT JOIN ord_return_goods_info org ON org.return_no = orbi.return_no
-        /*AND org.goods_sign != 'COMMON'*/
-        INNER JOIN rank_goods rg ON rg.sku = org.sku
-        INNER JOIN rank_store st ON st.store_id = orbi.store_id
         LEFT JOIN ord_base_info obi ON obi.ord_no = orbi.ord_no
         LEFT JOIN ord_return_logistic_info orli ON orli.return_no = orbi.return_no
+        LEFT JOIN ord_return_product_coupon orci on orci.return_no = org.return_no and orci.sku = org.sku and org.goods_line_type = "PRODUCT_COUPON"
         WHERE orbi.return_status = 'FINISHED' AND rl.post_status = 'FINISHED'
+        AND (org.goods_sign != 'COMMON' or (org.goods_line_type = "PRODUCT_COUPON" and orci.goods_sign != 'COMMON'))
         <if test="null != cityId and cityId != -1">
             AND obi.city_id = #{cityId}
         </if>

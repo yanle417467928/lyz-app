@@ -35,43 +35,48 @@ public class BillingItemsDO {
     //送/退货地址
     private String shippingAddress;
     // 商品总额
-    private Double totalGoodsPrice;
+    private Double totalGoodsPrice = 0.00;
     //会员折扣
-    private Double memberDiscount;
+    private Double memberDiscount = 0.00;
     //订单折扣
-    private Double promotionDiscount;
+    private Double promotionDiscount = 0.00;
+    //乐币折扣
+    private Double lbDiscount = 0.00;
+
     //配送费
-    private Double freight;
+    private Double freight = 0.00;
     //优惠券折扣
-    private Double cashCouponDiscount;
+    private Double cashCouponDiscount = 0.00;
     //产品券折扣
-    private Double productCouponDiscount;
+    private Double productCouponDiscount = 0.00;
     //应付总额
-    private Double amountPayable;
+    private Double amountPayable = 0.00;
     //微信
-    private Double weChat;
+    private Double weChat = 0.00;
     //支付宝
-    private Double alipay;
+    private Double alipay = 0.00;
     //银联
-    private Double unionPay;
+    private Double unionPay = 0.00;
     //门店现金
-    private Double storeCash;
+    private Double storeCash = 0.00;
     //门店POS
-    private Double storePosMoney;
+    private Double storePosMoney = 0.00;
     //配送现金
-    private Double deliveryCash;
+    private Double deliveryCash = 0.00;
     //配送POS
-    private Double deliveryPos;
+    private Double deliveryPos = 0.00;
     //其他
-    private Double storeOtherMoney;
+    private Double storeOtherMoney = 0.00;
     //门店预存款
-    private Double stPreDeposit;
+    private Double stPreDeposit = 0.00;
     //顾客预存款
-    private Double cusPreDeposit;
+    private Double cusPreDeposit = 0.00;
     //支付总额
-    private Double totalPay;
+    private Double totalPay = 0.00;
     //退单号
-    private String returnNumber;
+    private String returnNumber = "";
+    //退还门店
+    private Double returnStore = 0.00;
 
     public void setStoreType(StoreType storeType){
         this.storeType = storeType.getDescription();

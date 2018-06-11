@@ -82,4 +82,6 @@ public class SalesReportDO {
     private String fxStoreCode = "";
     // 顾客id
     private Long cusId = 0L;
+    //顾客类型
+    private String cusType;
 }
