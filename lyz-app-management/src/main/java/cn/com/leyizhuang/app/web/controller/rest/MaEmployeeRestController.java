@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.oss.exception.ImageClientException;
 import cn.com.leyizhuang.app.core.utils.oss.utils.ImageClientUtils;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
@@ -682,6 +683,30 @@ public class MaEmployeeRestController extends BaseRestController {
 
 
         return resultDTO;
+    }
+
+    /**
+     * @title   根据城市查询配送员
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/6/8
+     */
+    @GetMapping(value = "/findDeliveryClerkByCityId")
+    public List<EmployeeDO> findDeliveryClerkByCityId(Long cityId) {
+        logger.info("findDeliveryClerkByCityId 后台查询该城市下的配送员(下拉框) ,入参 storeId:{}", cityId);
+        try {
+            List<EmployeeDO> employeeList = maEmployeeService.findEmpployeeByCityIdAndIdentityType(cityId, AppIdentityType.DELIVERY_CLERK);
+            logger.info("findDeliveryClerkByCityId ,后台查询该城市下的配送员(下拉框)成功", employeeList.size());
+            return employeeList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("findDeliveryClerkByCityId EXCEPTION,发生未知错误，后台查询该城市下的配送员(下拉框)失败");
+            logger.warn("{}", e);
+            return null;
+        }
     }
 
     @GetMapping("/re/credit")

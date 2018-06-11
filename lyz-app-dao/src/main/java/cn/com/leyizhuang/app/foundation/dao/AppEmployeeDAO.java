@@ -107,4 +107,6 @@ public interface AppEmployeeDAO {
 
     void updateEmpAvailableCreditMoneyChangeLog(EmpAvailableCreditMoneyChangeLog empAvailableCreditMoneyChangeLog);
 
+    AppEmployee findSellerByMobile(String mobile);
+
 }

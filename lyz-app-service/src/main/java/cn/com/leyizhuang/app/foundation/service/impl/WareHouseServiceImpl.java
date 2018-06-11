@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.service.WareHouseService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author Jerry.Ren
@@ -26,5 +27,10 @@ public class WareHouseServiceImpl implements WareHouseService {
             return wareHouseDAO.findByWareHouseNo(whNo);
         }
         return null;
+    }
+
+    @Override
+    public List<WareHouseDO> findWareHouseByCityId(Long cityId) {
+        return this.wareHouseDAO.findWareHouseByCityId(cityId);
     }
 }

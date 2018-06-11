@@ -1,7 +1,10 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.WareHouseDO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author Jerry.Ren
@@ -19,4 +22,6 @@ public interface WareHouseDAO {
      * @return
      */
     WareHouseDO findByWareHouseNo(String whNo);
+
+    List<WareHouseDO> findWareHouseByCityId(@Param("cityId") Long cityId);
 }

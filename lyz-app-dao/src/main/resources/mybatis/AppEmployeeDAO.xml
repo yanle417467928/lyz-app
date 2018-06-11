@@ -473,4 +473,11 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
         </set>
         where id = #{id}
     </update>
+    <select id="findSellerByMobile" parameterType="java.lang.String" resultType="AppEmployee">
+        SELECT *
+        FROM emp_employee
+        WHERE mobile = #{mobile} AND identity_type = 'SELLER'
+        AND store_id NOT IN (550,551,563,585)
+    </select>
+
 </mapper>

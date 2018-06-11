@@ -2598,5 +2598,117 @@
 
     </select>
 
+    <select id="findDistributionDOAll" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.DistributionDO">
+        SELECT
+        wh.wh_name as whName,
+        oli.delivery_clerk_name as deliveryClerkName,
+        oli.delivery_clerk_phone as deliveryClerkPhone,
+        s.city as city,
+        s.store_name as storeName,
+        s.store_code as storeCode,
+        e.`name` as sellerName,
+        ob.customer_name as customerName,
+        ob.ord_no as orderNo,
+        '' as returnNo,
+        CASE ob.delivery_status WHEN 'PENDING_RECEIVE' THEN '已封车' WHEN 'SENDING' THEN '未投妥'
+        WHEN 'CONFIRM_ARRIVAL' THEN '已签收' WHEN 'REJECT' THEN '拒签' end as status,
+        ob.create_time as orderTime,
+        CASE wa.end_dt WHEN null THEN '一代数据' ELSE wa.end_dt END as shipmentsTime,
+        wa.send_time as appShipmentsTime,
+        d.create_time as finishTime,
+        oli.shipping_address as shippingAddress,
+        ob.remark as remark
+        FROM
+        ord_base_info ob LEFT JOIN ord_goods_info og ON og.oid = ob.oid
+        LEFT JOIN st_store s ON ob.store_id = s.store_id
+        LEFT JOIN emp_employee e ON ob.sales_consult_id = e.emp_id
+        LEFT JOIN inter_wta_order_shipping_header wa ON ob.ord_no = wa.order_no
+        LEFT JOIN ord_logistics_info oli ON ob.oid = oli.oid
+        LEFT JOIN warehouse wh ON wh.wh_no = oli.warehouse
+        LEFT JOIN ord_delivery_info_details d ON d.order_no = ob.ord_no AND d.logistic_status IN ('REJECTED','CONFIRM_ARRIVAL')
+        WHERE
+        ob.`status` IN (
+        'PENDING_RECEIVE','FINISHED','REJECTED','CLOSED'
+        )
+        AND ob.delivery_status IN ('PENDING_RECEIVE','SENDING','CONFIRM_ARRIVAL','REJECT')
+        AND ob.delivery_type = 'HOUSE_DELIVERY'
+        AND wa.send_flag = 1
+        AND wh.wh_no is not NULL
+        <if test="null != cityId and cityId != -1">
+            AND ob.city_id = #{cityId}
+        </if>
+        <if test="null != wareHouseNo and wareHouseNo != ''">
+            AND wh.wh_no = #{wareHouseNo}
+        </if>
+        <if test="null != deliveryClerkNo and deliveryClerkNo != ''">
+            AND oli.delivery_clerk_no = #{deliveryClerkNo}
+        </if>
+        <if test="null != startTime and startTime != ''">
+            AND wa.send_time &gt;= #{startTime}
+        </if>
+        <if test="null != endTime and endTime != ''">
+            AND wa.send_time &lt;= #{endTime}
+        </if>
+        <if test="null != keywords and keywords != ''">
+            AND ob.ord_no LIKE concat(concat('%',#{keywords}),'%')
+        </if>
+        GROUP BY orderNo,returnNo
+        UNION ALL
+        SELECT
+        wh.wh_name as whName,
+        (CASE orb.return_type WHEN 'NORMAL_RETURN' THEN oli.delivery_clerk_name ELSE ol.delivery_clerk_name END) AS deliveryClerkName,
+        (CASE orb.return_type WHEN 'NORMAL_RETURN' THEN oli.delivery_clerk_phone ELSE ol.delivery_clerk_phone END) AS deliveryClerkPhone,
+        s.city as city,
+        s.store_name as storeName,
+        s.store_code as storeCode,
+        e.`name` as sellerName,
+        ob.customer_name as customerName,
+        ob.ord_no as orderNo,
+        orb.return_no as returnNo,
+        CASE orb.return_status WHEN 'FINISHED' THEN '已反配' WHEN 'PENDING_REFUND' THEN '待退款' END as status,
+        orb.return_time as orderTime,
+        rd.create_time as shipmentsTime,
+        '' as appShipmentsTime,
+        wro.c_end_dt as finishTime,
+        oli.return_full_address as shippingAddress,
+        orb.remarks_info as remark
+        FROM
+        ord_return_base_info orb
+        LEFT JOIN ord_base_info ob ON orb.oid = ob.oid
+        LEFT JOIN st_store s ON ob.store_id = s.store_id
+        LEFT JOIN emp_employee e ON ob.sales_consult_id = e.emp_id
+        LEFT JOIN inter_wta_return_order_back_header wro ON wro.po_no = orb.return_no
+        LEFT JOIN ord_return_logistic_info oli ON orb.roid = oli.roid
+        LEFT JOIN ord_logistics_info ol ON ob.oid = ol.oid
+        LEFT JOIN warehouse wh ON wh.wh_no = wro.wh_no
+        LEFT JOIN ord_return_delivery_detail rd ON orb.return_no = rd.return_no AND rd.return_logistic_status = 'PICKUP_COMPLETE'
+        WHERE
+        orb.return_status IN ('FINISHED','PENDING_REFUND')
+        AND ob.delivery_type = 'HOUSE_DELIVERY'
+        AND orb.return_type != 'CANCEL_RETURN'
+        AND wro.po_no IS NOT NULL
+        <if test="null != cityId and cityId != -1">
+            AND ob.city_id = #{cityId}
+        </if>
+        <if test="null != wareHouseNo and wareHouseNo != ''">
+            AND wh.wh_no = #{wareHouseNo}
+        </if>
+        <if test="null != deliveryClerkNo and deliveryClerkNo != ''">
+            AND oli.delivery_clerk_no = #{deliveryClerkNo}
+        </if>
+        <if test="null != startTime and startTime != ''">
+            AND orb.return_time &gt;= #{startTime}
+        </if>
+        <if test="null != endTime and endTime != ''">
+            AND orb.return_time &lt;= #{endTime}
+        </if>
+        <if test="null != keywords and keywords != ''">
+            AND orb.return_no LIKE concat(concat('%',#{keywords}),'%')
+        </if>
+        GROUP BY orderNo,returnNo
+        -- AND oli.delivery_clerk_name IS NOT NULL
+        ORDER BY whName,deliveryClerkName,storeName,sellerName
+    </select>
+
 
 </mapper>

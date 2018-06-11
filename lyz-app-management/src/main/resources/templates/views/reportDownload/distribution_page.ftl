@@ -40,40 +40,25 @@
             <div class="box box-primary">
                 <div id="toolbar" class="form-inline">
                     <select name="city" id="cityCode" class="form-control selectpicker" data-width="120px" style="width:auto;"
-                            onchange="findStorelist()" data-live-search="true">
+                            onchange="findDeliveryClerklist();findWareHouselist()" data-live-search="true">
                         <option value="-1">选择城市</option>
                     </select>
 
-                    <select name="storeType" id="storeType" class="form-control selectpicker" data-width="120px" style="width:auto;"
-                            onchange="findStorelist()" data-live-search="true">
-                        <option value="">选择门店类型</option>
-                        <#if storeTypes??>
-                            <#list storeTypes as storeType>
-                                <option value="${storeType.value}">${storeType.description}</option>
-                            </#list>
-                        </#if>
+                    <select name="wareHouseNo" id="wareHouseNo" class="form-control selectpicker" data-width="120px" style="width:auto;"
+                            data-live-search="true">
+                        <option value="">选择仓库</option>
                     </select>
 
-                    <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px" style="width:auto;"
-                            <#--onchange="findByCondition()"--> data-live-search="true">
-                        <option value="-1">选择门店</option>
-                    </select>
-
-                    <select name="paymentType" id="paymentType" class="form-control selectpicker" data-width="120px" style="width:auto;"
-                            <#--onchange="findByCondition()"--> data-live-search="true">
-                        <option value="">选择支付方式</option>
-                        <#if paymentTypes??>
-                            <#list paymentTypes as paymentType>
-                                <option value="${paymentType.value}">${paymentType.description}</option>
-                            </#list>
-                        </#if>
+                    <select name="deliveryClerkNo" id="deliveryClerkNo" class="form-control selectpicker" data-width="120px" style="width:auto;"
+                            data-live-search="true">
+                        <option value="-1">选择配送员</option>
                     </select>
 
                     <input name="startTime" <#--onchange="findByCondition()"--> type="text" class="form-control datepicker" id="startTime" style="width: 120px;" placeholder="开始时间">
                     <input name="endTime" <#--onchange="findByCondition()"--> type="text" class="form-control datepicker" id="endTime" style="width: 120px;" placeholder="结束时间">
 
-                    <div class="input-group col-md-2" style="margin-top:0px; positon:relative">
-                        <input type="text" name="queryCusInfo" id="queryCusInfo" class="form-control" style="width:auto;"
+                    <div class="input-group col-md-3" style="margin-top:0px; positon:relative">
+                        <input type="text" name="queryInfo" id="queryInfo" class="form-control" style="width:auto;"
                                placeholder="请输入要查找的单号">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
@@ -103,10 +88,11 @@
 
     $(function () {
         findCitylist();
-        findStorelist();
+        findDeliveryClerklist();
+        findWareHouselist();
 
         //获取数据
-        /*initDateGird(null,null,null,null,null,null,null);*/
+//        initDateGird(null,null,null,null,null,null);
         //时间选择框样式
         $('.datepicker').datepicker({
             format: 'yyyy-mm-dd',
@@ -139,16 +125,14 @@
         });
     }
 
-    function findStorelist() {
-        initSelect("#storeCode", "选择门店");
-        var store = "";
+    function findDeliveryClerklist() {
+        initSelect("#deliveryClerkNo", "选择配送员");
+        var deliveryClerk = "";
         var cityId = $('#cityCode').val();
-        var storeType = $('#storeType').val();
         $.ajax({
-            url: '/rest/stores/findStoresListByCityIdAndStoreType',
+            url: '/rest/employees/findDeliveryClerkByCityId',
             method: 'GET',
             data:{
-                storeType: storeType,
                 cityId: cityId
             },
             error: function () {
@@ -160,169 +144,122 @@
             success: function (result) {
                 clearTimeout($global.timer);
                 $.each(result, function (i, item) {
-                    store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
+                    deliveryClerk += "<option value=" + item.deliveryClerkNo + ">" + item.name + "</option>";
                 });
-                $("#storeCode").append(store);
-                $('#storeCode').selectpicker('refresh');
-                $('#storeCode').selectpicker('render');
-//                findByCondition();
+                $("#deliveryClerkNo").append(deliveryClerk);
+                $('#deliveryClerkNo').selectpicker('refresh');
+                $('#deliveryClerkNo').selectpicker('render');
             }
         });
     }
 
-    function initDateGird(keywords,startTime,endTime,storeId,storeType,cityId,payType) {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/reportDownload/receipts/page/grid', 'get', false, function (params) {
+    function findWareHouselist() {
+        initSelect("#wareHouseNo", "选择仓库");
+        var wareHouse = "";
+        var cityId = $('#cityCode').val();
+        $.ajax({
+            url: '/rest/wareHouse/findWareHouseByCityId',
+            method: 'GET',
+            data:{
+                cityId: cityId
+            },
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    wareHouse += "<option value=" + item.wareHouseNo + ">" + item.wareHouseName + "</option>";
+                });
+                $("#wareHouseNo").append(wareHouse);
+                $('#wareHouseNo').selectpicker('refresh');
+                $('#wareHouseNo').selectpicker('render');
+            }
+        });
+    }
+
+    function initDateGird(keywords,startTime,endTime,wareHouseNo,deliveryClerkNo,cityId) {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/reportDownload/distribution/page/grid', 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
                 keywords: keywords,
-                storeId: storeId,
+                deliveryClerkNo: deliveryClerkNo,
                 startTime: startTime,
                 endTime: endTime,
-                storeType: storeType,
-                cityId: cityId,
-                payType: payType
+                wareHouseNo: wareHouseNo,
+                cityId: cityId
             }
         }, [{
             checkbox: true,
             title: '选择'
         }, {
-            field: 'cityName',
+            field: 'city',
             title: '城市',
             align: 'center'
         }, {
-            field: 'storeName',
-            title: '门店名称',
+            field: 'whName',
+            title: '仓库',
             align: 'center'
         }, {
-            field: 'storeType',
-            title: '门店类型',
+            field: 'deliveryClerkName',
+            title: '配送员名称',
             align: 'center'
         },  {
-            field: 'payTime',
-            title: '付款时间',
+            field: 'storeName',
+            title: '门店',
             align: 'center'
         }, {
-            field: 'returnPayTime',
-            title: '退款时间',
-            align: 'center'
-        }, {
-            field: 'payType',
-            title: '支付方式',
-            align: 'center',
-            formatter: function (value, row, index) {
-                if ('DELIVERY_CLERK' == row.paymentSubjectType) {
-                    if ('POS' == row.payTypes){
-                        return "配送POS";
-                    }
-                    if ('CASH' == row.payTypes){
-                        return "配送现金";
-                    }
-                }
-                return value;
-            }
-        }, {
-            field: 'money',
-            title: '支付金额',
-            align: 'center'
-        }, {
-            field: 'orderNumber',
+            field: 'orderNo',
             title: '订单号',
             align: 'center'
         }, {
-            field: 'returnOrderNumber',
+            field: 'returnNo',
             title: '退单号',
             align: 'center'
         }, {
-            field: 'remarks',
-            title: '备注',
+            field: 'shippingAddress',
+            title: '配送地址',
             align: 'center'
         }
         ]);
     }
 
-    function findByCondition() {
-        $("#queryCusInfo").val('');
+    function findByOrderNumber() {
+
+        var queryInfo = $("#queryInfo").val();
         $("#dataGrid").bootstrapTable('destroy');
-        var keywords = $('#queryCusInfo').val();
         var startTime = $('#startTime').val();
         var endTime = $('#endTime').val();
-        var storeId = $("#storeCode").val();
+        var wareHouseNo = $("#wareHouseNo").val();
         var cityId = $('#cityCode').val();
-        var storeType = $('#storeType').val();
-        var paymentType = $('#paymentType').val();
-        initDateGird(keywords,startTime,endTime,storeId,storeType,cityId,paymentType);
+        var deliveryClerkNo = $('#deliveryClerkNo').val();
+        initDateGird(queryInfo,startTime,endTime,wareHouseNo,deliveryClerkNo,cityId);
     }
 
-    function findByOrderNumber() {
-       /* $('#startTime').val('');
-        $('#endTime').val('');
-        $("#storeCode").val(-1);
-        $('#cityCode').val(-1);
-        $('#storeType').val('');
-        $('#paymentType').val('');
-        $('#storeCode').selectpicker('refresh');
-        $('#storeCode').selectpicker('render');
-        $('#cityCode').selectpicker('refresh');
-        $('#cityCode').selectpicker('render');
-        $('#storeType').selectpicker('refresh');
-        $('#storeType').selectpicker('render');
-        $('#paymentType').selectpicker('refresh');
-        $('#paymentType').selectpicker('render');*/
-        var queryCusInfo = $("#queryCusInfo").val();
-        $("#dataGrid").bootstrapTable('destroy');
-        var startTime = $('#startTime').val();
-        var endTime = $('#endTime').val();
-        var storeId = $("#storeCode").val();
-        var cityId = $('#cityCode').val();
-        var storeType = $('#storeType').val();
-        var paymentType = $('#paymentType').val();
-        initDateGird(queryCusInfo,startTime,endTime,storeId,storeType,cityId,paymentType);
-    }
 
     function initSelect(select, optionName) {
         $(select).empty();
-        var selectOption = "<option value=-1>" + optionName + "</option>";
+        var selectOption = "<option value=''>" + optionName + "</option>";
         $(select).append(selectOption);
     }
 
     function openBillModal() {
-        var keywords = $("#queryCusInfo").val();
+        var keywords = $("#queryInfo").val();
         var startTime = $('#startTime').val();
         var endTime = $('#endTime').val();
-        var storeId = $("#storeCode").val();
+        var wareHouseNo = $("#wareHouseNo").val();
         var cityId = $('#cityCode').val();
-        var storeType = $('#storeType').val();
-        var payType = $('#paymentType').val();
+        var deliveryClerkNo = $('#deliveryClerkNo').val();
 
-        var url = "/rest/reportDownload/receipts/download?keywords="+ keywords + "&storeId=" + storeId + "&startTime=" + startTime
-                + "&endTime=" + endTime + "&storeType=" + storeType + "&cityId=" + cityId + "&payType=" + payType;
+        var url = "/rest/reportDownload/distribution/download?keywords="+ keywords + "&wareHouseNo=" + wareHouseNo + "&startTime=" + startTime
+                + "&endTime=" + endTime + "&deliveryClerkNo=" + deliveryClerkNo + "&cityId=" + cityId;
         var escapeUrl=url.replace(/\#/g,"%23");
         window.open(escapeUrl);
 
-//        $.ajax({
-//            url: '/rest/reportDownload/receipts/download',
-//            method: 'GET',
-//            data:{
-//                keywords: keywords,
-//                storeId: storeId,
-//                startTime: startTime,
-//                endTime: endTime,
-//                storeType: storeType,
-//                cityId: cityId,
-//                payType: payType
-//            },
-//            error: function () {
-//                clearTimeout($global.timer);
-//                $loading.close();
-//                $global.timer = null;
-//                $notify.danger('网络异常，请稍后重试或联系管理员');
-//            },
-//            success: function (data, textStatus, request) {
-//                clearTimeout($global.timer);
-//                window.open(request.getResponseHeader('Content-Disposition'));
-//            }
-//        });
     }
 
 </script>

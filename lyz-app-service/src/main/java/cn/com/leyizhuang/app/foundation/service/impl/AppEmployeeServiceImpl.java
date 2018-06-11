@@ -336,4 +336,12 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
 
         return null;
     }
+
+    @Override
+    public AppEmployee findSellerByMobile(String mobile) {
+        if (null != mobile && !"".equalsIgnoreCase(mobile)) {
+            return employeeDAO.findByMobile(mobile);
+        }
+        return null;
+    }
 }

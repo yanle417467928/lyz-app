@@ -98,4 +98,6 @@ public interface AppEmployeeService {
     String getSalesManagerSupportHotline(String storeCode);
 
     ResultDTO repairCreditMoneyChangeLog(Long empId, String flag);
+
+    AppEmployee findSellerByMobile(String mobile);
 }

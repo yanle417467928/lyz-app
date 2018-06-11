@@ -264,7 +264,7 @@
         <foreach collection="maOrdReturnBillingDetailList" item="item" index="index" separator=",">
             ( #{item.createTime}, #{item.roid},#{item.returnNo}, #{item.returnPayType}, #{item.returnMoney},
             #{item.intoAmountTime},
-            #{item.replyCode}, #{item.refundNumber},#{returnSubjectId})
+            #{item.replyCode}, #{item.refundNumber},#{item.returnSubjectId})
         </foreach>
     </insert>
 </mapper>

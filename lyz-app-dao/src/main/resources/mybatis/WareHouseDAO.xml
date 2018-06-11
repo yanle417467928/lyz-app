@@ -21,4 +21,18 @@
         FROM warehouse
         WHERE wh_no = #{whNo};
     </select>
+
+    <select id="findWareHouseByCityId" resultType="cn.com.leyizhuang.app.foundation.pojo.WareHouseDO">
+        SELECT id,
+            wh_no     wareHouseNo,
+            wh_name   wareHouseName,
+            city_id   cityId
+        FROM warehouse
+        WHERE 1 = 1
+        <if test="null != cityId and cityId != -1">
+          AND city_id = #{cityId}
+        </if>
+    </select>
+
+
 </mapper>
