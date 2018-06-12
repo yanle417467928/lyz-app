@@ -629,8 +629,8 @@
             #{item}
         </foreach>
         UNION
-        SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType,orbi.return_time createTime, rl.operation_time
-        orderTime, obi.ord_no orderNumber, st.store_type storeTypes,
+        SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType,orbi.return_time as createTime, rl.operation_time as orderTime,
+        obi.ord_no orderNumber, st.store_type storeTypes,
         orbi.return_no returnNumber, orbi.cus_name customerName, obi.sales_consult_name sellerName, obi.delivery_type
         deliveryType, orli.rejecter receiver, orli.rejecter_phone receiverPhone,
         (CASE WHEN orbi.return_type = 'REFUSED_RETURN' OR orbi.return_type = 'NORMAL_RETURN' THEN '已取货'
@@ -715,7 +715,15 @@
         + IFNULL(obd.delivery_cash,0) + IFNULL(obd.delivery_pos,0) + IFNULL(obd.store_other_money,0)
         + IFNULL(obd.st_pre_deposit,0) + IFNULL(obd.cus_pre_deposit,0)) totalPay,
         IFNUll(obd.lebi_cash_discount,0) lbDiscount,
-        IF(obd.collection_amount &gt; obd.order_amount_subtotal,IFNULL(obd.collection_amount - obd.order_amount_subtotal,0),0) returnStore
+        IF(obd.collection_amount &gt; obd.order_amount_subtotal,IFNULL(obd.collection_amount - obd.order_amount_subtotal,0),0) returnStore,
+        '' as returnStatus,
+        CASE obi.`status` WHEN 'PENDING_RECEIVE' THEN '待收货' WHEN 'FINISHED' THEN '已完成'
+        WHEN 'CANCELED' THEN '已取消'
+        WHEN 'UNPAID' THEN '待付款'
+        WHEN 'PENDING_SHIPMENT' THEN '代发货'
+        WHEN 'CLOSED' THEN '已结案'
+        WHEN 'REJECTED' THEN '拒签'
+        WHEN 'CANCELING' THEN '取消中' end as orderStatus
         FROM
         ord_base_info obi
         INNER JOIN st_store st ON st.store_id = obi.store_id
@@ -757,16 +765,32 @@
         IFNULL(obd.total_goods_price,0)) ELSE (-1 * IFNULL(org.settlement_price,0)) END) totalGoodsPrice,
         (CASE WHEN orbi.return_type = 'CANCEL_RETURN' THEN IFNULL(obd.member_discount,0) ELSE IFNULL(org.settlement_price - org.vip_price,0) END) memberDiscount,
         0 promotionDiscount, 0 freight, 0 cashCouponDiscount,
-        0 productCouponDiscount, (-1 * IFNULL(orbi.return_price,0)) amountPayable,
-        (CASE WHEN orb.online_pay_type = 'WE_CHAT' THEN (-1 * IFNULL(orb.online_pay,0)) ELSE 0 END) weChat,
-        (CASE WHEN orb.online_pay_type = 'ALIPAY' THEN (-1 * IFNULL(orb.online_pay,0)) ELSE 0 END) alipay,
-        (CASE WHEN orb.online_pay_type = 'UNION_PAY' THEN (-1 * IFNULL(orb.online_pay,0)) ELSE 0 END) unionPay,
-        (-1 * IFNULL(orb.cash,0)) storeCash, 0, 0 deliveryCash, 0 deliveryPos,
-        0 storeOtherMoney, (-1 * IFNULL(orb.st_pre_deposit,0)) stPreDeposit, (-1 * IFNULL(orb.pre_deposit,0))
-        cusPreDeposit,
-        (-1 * (IFNULL(orb.online_pay,0) + IFNULL(orb.cash,0) + IFNULL(orb.st_pre_deposit,0) +
-        IFNULL(orb.pre_deposit,0))) totalPay,
-        0 lbDiscount, 0 returnStore
+        (-1 * IFNULL(org.product_price,0)) productCouponDiscount, if(orbi.return_status != 'FINISHED',0,(-1 * IFNULL(orbi.return_price,0))) amountPayable,
+        if(orbi.return_status != 'FINISHED',0,(CASE WHEN orb.online_pay_type = 'WE_CHAT' THEN (-1 * IFNULL(orb.online_pay,0)) ELSE 0 END)) weChat,
+        if(orbi.return_status != 'FINISHED',0,(CASE WHEN orb.online_pay_type = 'ALIPAY' THEN (-1 * IFNULL(orb.online_pay,0)) ELSE 0 END)) alipay,
+        if(orbi.return_status != 'FINISHED',0,(CASE WHEN orb.online_pay_type = 'UNION_PAY' THEN (-1 * IFNULL(orb.online_pay,0)) ELSE 0 END)) unionPay,
+        if(orbi.return_status != 'FINISHED',0,(-1 * IFNULL(orb.cash,0))) storeCash, 0, 0 deliveryCash, 0 deliveryPos,
+        0 storeOtherMoney,
+        if(orbi.return_status != 'FINISHED',0,(-1 * IFNULL(orb.st_pre_deposit,0))) stPreDeposit,
+        if(orbi.return_status != 'FINISHED',0,(-1 * IFNULL(orb.pre_deposit,0))) cusPreDeposit,
+        if(orbi.return_status != 'FINISHED',0,(-1 * (IFNULL(orb.online_pay,0) + IFNULL(orb.cash,0) + IFNULL(orb.st_pre_deposit,0) +
+        IFNULL(orb.pre_deposit,0)))) totalPay,
+        0 lbDiscount, 0 returnStore,
+        CASE orbi.return_status
+        WHEN 'RETURNING' then '退货中'
+        WHEN 'CANCELED' then '已取消'
+        WHEN 'PENDING_PICK_UP' then '已提交'
+        WHEN 'PENDING_REFUND' then '待退款'
+        WHEN 'FINISHED' then '已完成'
+        WHEN 'CANCELING' then '取消中'
+        end as returnStatus,
+        CASE obi.`status` WHEN 'PENDING_RECEIVE' THEN '待收货' WHEN 'FINISHED' THEN '已完成'
+        WHEN 'CANCELED' THEN '已取消'
+        WHEN 'UNPAID' THEN '待付款'
+        WHEN 'PENDING_SHIPMENT' THEN '待发货'
+        WHEN 'CLOSED' THEN '已结案'
+        WHEN 'REJECTED' THEN '拒签'
+        WHEN 'CANCELING' THEN '取消中' end as orderStatus
         FROM ord_return_base_info orbi
         LEFT JOIN ord_return_lifecycle rl ON orbi.return_no = rl.return_no
         LEFT JOIN st_store st ON st.store_id = orbi.store_id
@@ -775,7 +799,8 @@
         LEFT JOIN ord_return_logistic_info orli ON orli.return_no = orbi.return_no
         LEFT JOIN ord_return_billing orb ON orb.return_no = orbi.return_no
         LEFT JOIN
-        (SELECT sum(settlement_price * return_qty) settlement_price,sum(vip_price * return_qty) vip_price,return_no
+        (SELECT sum(settlement_price * return_qty) settlement_price,sum(vip_price * return_qty) vip_price,return_no,
+        sum(if(goods_line_type = 'PRODUCT_COUPON',settlement_price * ord_return_goods_info.return_qty,0)) product_price
         from ord_return_goods_info GROUP BY return_no) org ON org.return_no = orbi.return_no
         WHERE 1=1
         <!--orbi.return_status = 'FINISHED' AND rl.post_status = 'FINISHED' -->
