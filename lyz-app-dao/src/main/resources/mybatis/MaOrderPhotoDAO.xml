@@ -49,10 +49,12 @@
           status = #{status},
         </if>
         <if test="null != status and status.toString() == 'PROCESSING'">
-          update_time = now()
+          update_time = now(),
+          update_user_id = #{updateUserId}
         </if>
         <if test="null != status and status.toString() == 'FINISH'">
-          finish_time = now()
+          finish_time = now(),
+            operation_user_id = #{updateUserId}
         </if>
         WHERE id = #{id}
           AND status != #{status}
@@ -86,7 +88,8 @@
     <update id="batchDelete">
         UPDATE photo_order
         SET status = 'CANCEL',
-        finish_time = now()
+        finish_time = now(),
+        operation_user_id = #{batchDelete}
         WHERE
           status in ('PENDING', 'PROCESSING')
           AND id in

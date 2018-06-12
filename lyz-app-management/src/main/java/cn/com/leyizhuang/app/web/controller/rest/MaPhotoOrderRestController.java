@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
+import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.MaterialListType;
 import cn.com.leyizhuang.app.core.utils.SmsUtils;
@@ -22,12 +23,14 @@ import cn.com.leyizhuang.app.foundation.vo.management.goods.GoodsResponseVO;
 import cn.com.leyizhuang.app.foundation.vo.management.order.PhotoOrderVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.constant.PhotoOrderStatus;
+import cn.com.leyizhuang.common.core.constant.PhotoOrderType;
 import cn.com.leyizhuang.common.core.exception.data.InvalidDataException;
 import cn.com.leyizhuang.common.foundation.pojo.SmsAccount;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;
 import com.sun.jdi.LongValue;
 import org.apache.http.HttpResponse;
+import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1064,6 +1067,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
                 }
                 //*******************************************************************************************
 
+                ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
                 //******************************************保存拍照下单实体********************************
                 String orderNumber = OrderUtils.generatePhotoOrderNumber(cityId);
                 PhotoOrderDO photoOrderDO = new PhotoOrderDO();
@@ -1076,6 +1080,9 @@ public class MaPhotoOrderRestController extends BaseRestController {
                 photoOrderDO.setStatus(PhotoOrderStatus.FINISH);
                 photoOrderDO.setUserId(userId);
                 photoOrderDO.setPhotoOrderNo(orderNumber);
+                photoOrderDO.setUpdateUserId(null != shiroUser ? shiroUser.getId() : null);
+                photoOrderDO.setDeliveryId(deliveryId);
+                photoOrderDO.setOrderType(PhotoOrderType.UNDERLINE);
                 this.photoOrderServiceImpl.save(photoOrderDO);
 
                 //*****************************************************************************************

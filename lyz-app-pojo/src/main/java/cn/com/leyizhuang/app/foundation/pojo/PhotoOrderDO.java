@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.pojo;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.common.core.constant.PhotoOrderStatus;
+import cn.com.leyizhuang.common.core.constant.PhotoOrderType;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -25,7 +26,7 @@ public class PhotoOrderDO {
     //下单照片，多张照片用逗号分隔
     private String photos;
     //收货人地址
-//    private Long deliveryId;
+    private Long deliveryId;
     //是否主家收货
 //    private Boolean isOwnerReceiving;
     //联系人姓名
@@ -44,4 +45,13 @@ public class PhotoOrderDO {
     private String photoOrderNo;
     //创建时间
     private LocalDateTime updateTime;
+    //完成时间
+    private LocalDateTime finishTime;
+    //拍照订单类型
+    private PhotoOrderType orderType = PhotoOrderType.ONLINE;
+    //处理人
+    private Long updateUserId;
+    //完成操作人ID
+    private Long operationUserId;
+
 }
