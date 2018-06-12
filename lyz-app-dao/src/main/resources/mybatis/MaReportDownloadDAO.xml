@@ -689,7 +689,7 @@
     </select>
 
     <select id="findBillingItemsDOAll" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.BillingItemsDO">
-        SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, ol.operation_time
+        SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, obi.create_time
         orderTime, obi.ord_no orderNumber,
         null returnNumber, obi.customer_name customerName, obi.sales_consult_name sellerName, obi.delivery_type
         deliveryType,
@@ -719,7 +719,7 @@
         FROM
         ord_base_info obi
         INNER JOIN st_store st ON st.store_id = obi.store_id
-        LEFT JOIN ord_lifecycle ol ON obi.ord_no = ol.ord_no
+        <!--LEFT JOIN ord_lifecycle ol ON obi.ord_no = ol.ord_no-->
         LEFT JOIN ord_logistics_info oli ON oli.ord_no = obi.ord_no
         LEFT JOIN ord_billing_details obd ON obd.ord_no = obi.ord_no
         WHERE obi.`status` != 'UNPAID'
@@ -734,10 +734,10 @@
             AND st.store_type = #{storeType}
         </if>
         <if test="null != startTime and startTime != ''">
-            AND ol.operation_time &gt;= #{startTime}
+            AND obi.create_time &gt;= #{startTime}
         </if>
         <if test="null != endTime and endTime != ''">
-            AND ol.operation_time &lt;= #{endTime}
+            AND obi.create_time &lt;= #{endTime}
         </if>
         <if test="null != keywords and keywords != ''">
             AND obi.ord_no LIKE concat(concat('%',#{keywords}),'%')
@@ -747,15 +747,15 @@
             #{item}
         </foreach>
         UNION
-        SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, rl.operation_time
+        SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, orbi.return_time
         orderTime, obi.ord_no orderNumber,
         orbi.return_no returnNumber, orbi.cus_name customerName, obi.sales_consult_name sellerName, obi.delivery_type
         deliveryType,
         (CASE WHEN orbi.return_type = 'REFUSED_RETURN' OR orbi.return_type = 'NORMAL_RETURN' THEN '已取货'
         WHEN orbi.return_type = 'CANCEL_RETURN' THEN '订单取消' ELSE '未知' END) deliveryStatus,
         orli.return_full_address, (CASE WHEN orbi.return_type = 'CANCEL_RETURN' THEN (-1 *
-        IFNULL(obd.total_goods_price,0)) ELSE (-1 * IFNULL(orbi.return_price,0)) END) totalGoodsPrice,
-        (CASE WHEN orbi.return_type = 'CANCEL_RETURN' THEN IFNULL(obd.member_discount,0) ELSE 0 END) memberDiscount,
+        IFNULL(obd.total_goods_price,0)) ELSE (-1 * IFNULL(org.settlement_price,0)) END) totalGoodsPrice,
+        (CASE WHEN orbi.return_type = 'CANCEL_RETURN' THEN IFNULL(obd.member_discount,0) ELSE IFNULL(org.settlement_price - org.vip_price,0) END) memberDiscount,
         0 promotionDiscount, 0 freight, 0 cashCouponDiscount,
         0 productCouponDiscount, (-1 * IFNULL(orbi.return_price,0)) amountPayable,
         (CASE WHEN orb.online_pay_type = 'WE_CHAT' THEN (-1 * IFNULL(orb.online_pay,0)) ELSE 0 END) weChat,
@@ -774,7 +774,11 @@
         LEFT JOIN ord_billing_details obd ON obd.ord_no = obi.ord_no
         LEFT JOIN ord_return_logistic_info orli ON orli.return_no = orbi.return_no
         LEFT JOIN ord_return_billing orb ON orb.return_no = orbi.return_no
-        WHERE 1=1 <!-- orbi.return_status = 'FINISHED' AND rl.post_status = 'FINISHED' -->
+        LEFT JOIN
+        (SELECT sum(settlement_price * return_qty) settlement_price,sum(vip_price * return_qty) vip_price,return_no
+        from ord_return_goods_info GROUP BY return_no) org ON org.return_no = orbi.return_no
+        WHERE 1=1
+        <!--orbi.return_status = 'FINISHED' AND rl.post_status = 'FINISHED' -->
         <if test="null != cityId and cityId != -1">
             AND obi.city_id = #{cityId}
         </if>
@@ -785,10 +789,10 @@
             AND st.store_type = #{storeType}
         </if>
         <if test="null != startTime and startTime != ''">
-            AND rl.operation_time &gt;= #{startTime}
+            AND orbi.return_time &gt;= #{startTime}
         </if>
         <if test="null != endTime and endTime != ''">
-            AND rl.operation_time &lt;= #{endTime}
+            AND orbi.return_time &lt;= #{endTime}
         </if>
         <if test="null != keywords and keywords != ''">
             AND orbi.return_no LIKE concat(concat('%',#{keywords}),'%')
@@ -2428,7 +2432,8 @@
         LEFT JOIN (SELECT DISTINCT ord_no,post_status,operation_time from ord_lifecycle) ol ON obi.ord_no = ol.ord_no
         LEFT JOIN ord_logistics_info oli ON oli.ord_no = obi.ord_no
         LEFT JOIN ord_coupon_info oci on og.ord_no = oci.ord_no AND og.sku = oci.sku and og.goods_line_type = "PRODUCT_COUPON"
-        WHERE obi.`status` != 'UNPAID' AND (og.goods_sign != 'COMMON' or (og.goods_line_type = "PRODUCT_COUPON" and oci.goods_sign != 'COMMON'))
+        WHERE obi.`status` != 'UNPAID' AND  obi.`status` != 'CANCELED'
+        AND (og.goods_sign != 'COMMON' or (og.goods_line_type = "PRODUCT_COUPON" and oci.goods_sign != 'COMMON'))
         AND (ol.post_status = 'PENDING_SHIPMENT' OR (ol.post_status = 'PENDING_RECEIVE' AND obi.delivery_type =
         'SELF_TAKE'))
         <if test="null != cityId and cityId != -1">
@@ -2475,7 +2480,7 @@
         LEFT JOIN ord_base_info obi ON obi.ord_no = orbi.ord_no
         LEFT JOIN ord_return_logistic_info orli ON orli.return_no = orbi.return_no
         LEFT JOIN ord_return_product_coupon orci on orci.return_no = org.return_no and orci.sku = org.sku and org.goods_line_type = "PRODUCT_COUPON"
-        WHERE orbi.return_status = 'FINISHED' AND rl.post_status = 'FINISHED'
+        WHERE orbi.return_status = 'FINISHED' AND rl.post_status = 'FINISHED' AND orbi.return_type != 'CANCEL_RETURN'
         AND (org.goods_sign != 'COMMON' or (org.goods_line_type = "PRODUCT_COUPON" and orci.goods_sign != 'COMMON'))
         <if test="null != cityId and cityId != -1">
             AND obi.city_id = #{cityId}
