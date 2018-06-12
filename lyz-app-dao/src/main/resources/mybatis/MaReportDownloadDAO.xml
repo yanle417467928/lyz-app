@@ -2662,7 +2662,7 @@
         ob.`status` IN (
         'PENDING_RECEIVE','FINISHED','REJECTED','CLOSED'
         )
-        AND ob.delivery_status IN ('PENDING_RECEIVE','SENDING','CONFIRM_ARRIVAL','REJECT')
+        AND ob.delivery_status IN ('PENDING_RECEIVE','SENDING','CONFIRM_ARRIVAL','REJECT','SEALED_CAR')
         AND ob.delivery_type = 'HOUSE_DELIVERY'
         AND wa.send_flag = 1
         AND wh.wh_no is not NULL
