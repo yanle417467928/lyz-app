@@ -914,6 +914,39 @@
         </foreach>
 
     </select>
+
+
+    <select id="findGoodsListByEmployeeIdAndGoodsSkuList"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse">
+        SELECT
+        g.gid id,
+        g.sku,
+        g.sku_name goods_name,
+        g.cover_image_uri,
+        g.goods_specification,
+        g.goods_unit,
+        p.vip_price,
+        p.retail_price,
+        g.cid category_id,
+        g.brd_id brand_id,
+        g.gtid type_id,
+        g.company_flag
+        FROM
+        emp_employee e
+        INNER JOIN gds_goods_price p ON e.store_id = p.store_id
+        AND p.start_time &lt; NOW()
+        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+        AND p.price_type = 'COMMON'
+        INNER JOIN gds_goods g ON p.gid = g.gid
+        WHERE
+        e.emp_id = #{userId}
+        AND p.sku IN
+        <foreach collection="list" item="sku" index="index" open="(" close=")" separator=",">
+            #{sku}
+        </foreach>
+
+    </select>
+
     <select id="findGoodsListByCustomerIdAndGoodsIdList"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.OrderGoodsSimpleResponse">
         SELECT
