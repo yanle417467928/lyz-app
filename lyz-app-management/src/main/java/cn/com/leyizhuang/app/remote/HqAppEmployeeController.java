@@ -226,6 +226,7 @@ public class HqAppEmployeeController {
                 logger.warn("employeeSync OUT,同步修改员工信息失败，出参 store:{}", store);
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此门店,不允许为空！", null);
             }
+            employee.setLoginName(employeeDTO.getNumber());
             employee.setCityId(city.getCityId());
             employee.setStoreId(store.getStoreId());
             String salt = employee.generateSalt();
