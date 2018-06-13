@@ -579,9 +579,9 @@
         oli.shipping_address, og.sku sku, og.sku_name skuName, (CASE WHEN og.company_flag = 'HR' THEN '华润'
         WHEN og.company_flag = 'LYZ' THEN '乐易装' WHEN og.company_flag = 'YR' THEN '莹润' ELSE '其他' END)companyFlag,
         og.goods_line_type goodsLineType, IFNULL(og.order_qty, 0) quantity,
-        if(og.goods_line_type = "PRODUCT_COUPON",IFNULL((SELECT SUM(purchase_price) from ord_coupon_info where ord_no = obi.ord_no and og.sku = sku)/og.order_qty,0),
+        if(og.goods_line_type = "PRODUCT_COUPON",IFNULL((SELECT SUM(cost_price) from ord_coupon_info where ord_no = obi.ord_no and og.sku = sku)/og.order_qty,0),
         IFNULL(og.settlement_price, 0)) settlementPrice,
-        if(og.goods_line_type = "PRODUCT_COUPON",IFNULL((SELECT SUM(purchase_price) from ord_coupon_info where ord_no = obi.ord_no and og.sku = sku),0),
+        if(og.goods_line_type = "PRODUCT_COUPON",IFNULL((SELECT SUM(cost_price) from ord_coupon_info where ord_no = obi.ord_no and og.sku = sku),0),
         (IFNULL(og.order_qty, 0) * IFNULL(og.settlement_price, 0))) settlementTotlePrice,
         if(og.goods_line_type = "PRODUCT_COUPON",IFNULL((SELECT SUM(purchase_price) from ord_coupon_info where ord_no = obi.ord_no and og.sku = sku)/og.order_qty,0),
         IFNULL(og.return_price, 0)) promotionSharePrice,
@@ -638,13 +638,12 @@
         orli.return_full_address, org.sku sku, org.sku_name skuName, (CASE WHEN org.company_flag = 'HR' THEN '华润'
         WHEN org.company_flag = 'LYZ' THEN '乐易装' WHEN org.company_flag = 'YR' THEN '莹润' ELSE '其他' END) companyFlag,
         org.goods_line_type goodsLineType, (-1 * IFNULL(org.return_qty,0)) quantity,
-        if(org.goods_line_type = "PRODUCT_COUPON",IFNULL((SELECT SUM(purchase_price) from ord_coupon_info where ord_no = orbi.ord_no and org.sku = sku)/org.return_qty,0),
+        if(org.goods_line_type = "PRODUCT_COUPON",IFNULL(org.settlement_price,0),
         IFNULL(org.settlement_price, 0)) settlementPrice,
-        if(org.goods_line_type = "PRODUCT_COUPON",-1 * IFNULL((SELECT SUM(purchase_price) from ord_coupon_info where ord_no = orbi.ord_no and org.sku = sku),0),
-        (-1 * IFNULL(org.return_qty, 0) * IFNULL(org.settlement_price, 0))) settlementTotlePrice,
-        if(org.goods_line_type = "PRODUCT_COUPON",IFNULL((SELECT SUM(purchase_price) from ord_coupon_info where ord_no = orbi.ord_no and org.sku = sku)/org.return_qty,0),
+        (-1 * IFNULL(org.return_qty, 0) * IFNULL(org.settlement_price, 0)) settlementTotlePrice,
+        if(org.goods_line_type = "PRODUCT_COUPON",IFNULL((SELECT SUM(purchase_price) from ord_return_product_coupon where return_no = orbi.return_no and org.sku = sku)/org.return_qty,0),
         IFNULL(org.return_price, 0)) promotionSharePrice,
-        if(org.goods_line_type = "PRODUCT_COUPON",-1 * IFNULL((SELECT SUM(purchase_price) from ord_coupon_info where ord_no = orbi.ord_no and org.sku = sku),0),
+        if(org.goods_line_type = "PRODUCT_COUPON",-1 * IFNULL((SELECT SUM(purchase_price) from ord_return_product_coupon where return_no = orbi.return_no and org.sku = sku),0),
         (-1 * IFNULL(org.return_qty, 0) * IFNULL(org.return_price, 0))) promotionShareTotlePrice,
         org.wholesale_price as jxPrice,
         org.wholesale_price * org.return_qty as totalJxPrice,
@@ -761,10 +760,9 @@
         deliveryType,
         (CASE WHEN orbi.return_type = 'REFUSED_RETURN' OR orbi.return_type = 'NORMAL_RETURN' THEN '已取货'
         WHEN orbi.return_type = 'CANCEL_RETURN' THEN '订单取消' ELSE '未知' END) deliveryStatus,
-        orli.return_full_address, (CASE WHEN orbi.return_type = 'CANCEL_RETURN' THEN (-1 *
-        IFNULL(obd.total_goods_price,0)) ELSE (-1 * IFNULL(org.settlement_price,0)) END) totalGoodsPrice,
-        (CASE WHEN orbi.return_type = 'CANCEL_RETURN' THEN IFNULL(obd.member_discount,0) ELSE IFNULL(org.settlement_price - org.vip_price,0) END) memberDiscount,
-        0 promotionDiscount, 0 freight, 0 cashCouponDiscount,
+        orli.return_full_address, (-1 * IFNULL(org.retail_price,0)) totalGoodsPrice,
+        (-1 * IFNULL(org.retail_price - org.vip_price,0)) memberDiscount,
+        (-1 * IFNULL(org.promotion_share_price,0)) promotionDiscount, 0 freight, (-1 * IFNULL(org.cash_coupon_share_price,0)) cashCouponDiscount,
         (-1 * IFNULL(org.product_price,0)) productCouponDiscount, if(orbi.return_status != 'FINISHED',0,(-1 * IFNULL(orbi.return_price,0))) amountPayable,
         if(orbi.return_status != 'FINISHED',0,(CASE WHEN orb.online_pay_type = 'WE_CHAT' THEN (-1 * IFNULL(orb.online_pay,0)) ELSE 0 END)) weChat,
         if(orbi.return_status != 'FINISHED',0,(CASE WHEN orb.online_pay_type = 'ALIPAY' THEN (-1 * IFNULL(orb.online_pay,0)) ELSE 0 END)) alipay,
@@ -799,9 +797,13 @@
         LEFT JOIN ord_return_logistic_info orli ON orli.return_no = orbi.return_no
         LEFT JOIN ord_return_billing orb ON orb.return_no = orbi.return_no
         LEFT JOIN
-        (SELECT sum(settlement_price * return_qty) settlement_price,sum(vip_price * return_qty) vip_price,return_no,
-        sum(if(goods_line_type = 'PRODUCT_COUPON',settlement_price * ord_return_goods_info.return_qty,0)) product_price
-        from ord_return_goods_info GROUP BY return_no) org ON org.return_no = orbi.return_no
+        (SELECT sum(a.retail_price * a.return_qty) retail_price ,sum(a.settlement_price * a.return_qty) settlement_price,sum(a.vip_price * a.return_qty) vip_price,a.return_no,
+        sum(if(a.goods_line_type = 'PRODUCT_COUPON',a.settlement_price * a.return_qty,0)) product_price,sum(b.promotion_share_price * a.return_qty) promotion_share_price,
+        sum(b.cash_coupon_share_price * a.return_qty) cash_coupon_share_price,sum(b.cash_return_share_price * a.return_qty) cash_return_share_price,sum(b.lb_share_price * a.return_qty) lb_share_price
+        from ord_return_goods_info a
+        LEFT JOIN ord_goods_info b on a.order_goods_id = b.id
+        GROUP BY return_no) org ON org.return_no = orbi.return_no
+
         WHERE 1=1
         <!--orbi.return_status = 'FINISHED' AND rl.post_status = 'FINISHED' -->
         <if test="null != cityId and cityId != -1">
