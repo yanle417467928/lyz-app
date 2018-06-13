@@ -77,6 +77,10 @@ public class BillingItemsDO {
     private String returnNumber = "";
     //退还门店
     private Double returnStore = 0.00;
+    //退单状态
+    private String returnStatus = "";
+    //订单状态
+    private String orderStatus = "";
 
     public void setStoreType(StoreType storeType){
         this.storeType = storeType.getDescription();
