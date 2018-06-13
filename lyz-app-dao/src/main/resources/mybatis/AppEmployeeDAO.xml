@@ -74,6 +74,9 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
             <if test="null != deliveryClerkNo">
                 delivery_clerk_no=#{deliveryClerkNo}
             </if>
+            <if test="null != loginName">
+                login_name=#{loginName}
+            </if>
         </set>
         WHERE emp_id = #{empId}
     </update>
