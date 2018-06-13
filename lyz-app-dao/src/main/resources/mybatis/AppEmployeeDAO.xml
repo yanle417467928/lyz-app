@@ -69,10 +69,10 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
                 manager_id = #{managerId},
             </if>
             <if test="qrCode != null">
-                qr_code = #{qrCode}
+                qr_code = #{qrCode},
             </if>
             <if test="null != deliveryClerkNo">
-                delivery_clerk_no=#{deliveryClerkNo}
+                delivery_clerk_no=#{deliveryClerkNo},
             </if>
             <if test="null != loginName">
                 login_name=#{loginName}
