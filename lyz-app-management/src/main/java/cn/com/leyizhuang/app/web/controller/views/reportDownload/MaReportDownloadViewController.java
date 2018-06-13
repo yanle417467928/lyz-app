@@ -197,4 +197,9 @@ public class MaReportDownloadViewController extends BaseController {
         return "/views/reportDownload/distribution_page";
     }
 
+    @GetMapping(value = "/photoOrderCheck/list")
+    public String getPhotoOrderCheckList(ModelMap map) {
+        return "/views/reportDownload/photoOrderCheck_page";
+    }
+
 }

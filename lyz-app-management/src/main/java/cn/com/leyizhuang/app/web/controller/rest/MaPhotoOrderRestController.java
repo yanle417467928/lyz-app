@@ -1067,7 +1067,6 @@ public class MaPhotoOrderRestController extends BaseRestController {
                 }
                 //*******************************************************************************************
 
-                ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
                 //******************************************保存拍照下单实体********************************
                 String orderNumber = OrderUtils.generatePhotoOrderNumber(cityId);
                 PhotoOrderDO photoOrderDO = new PhotoOrderDO();
@@ -1077,10 +1076,9 @@ public class MaPhotoOrderRestController extends BaseRestController {
                 photoOrderDO.setContactName(photoOrderDTO.getContactName());
                 photoOrderDO.setPhotos(photoOrderDTO.getPhotoImgs());
                 photoOrderDO.setRemark(photoOrderDTO.getRemark());
-                photoOrderDO.setStatus(PhotoOrderStatus.FINISH);
+                photoOrderDO.setStatus(PhotoOrderStatus.PROCESSING);
                 photoOrderDO.setUserId(userId);
                 photoOrderDO.setPhotoOrderNo(orderNumber);
-                photoOrderDO.setUpdateUserId(null != shiroUser ? shiroUser.getId() : null);
                 photoOrderDO.setDeliveryId(deliveryId);
                 photoOrderDO.setOrderType(PhotoOrderType.UNDERLINE);
                 this.photoOrderServiceImpl.save(photoOrderDO);
@@ -1116,9 +1114,9 @@ public class MaPhotoOrderRestController extends BaseRestController {
                         photoOrderGoodsDOList.add(photoOrderGoodsDO);
                     }
                 }
-
+                PhotoOrderVO photoOrderVO = this.maPhotoOrderService.findByPhotoOrderNo(orderNumber);
                 this.maPhotoOrderGoodsService.batchSave(photoOrderGoodsDOList);
-                this.maPhotoOrderService.updateStatusAndsaveAndUpdateMaterialList(photoOrderDTO.getPhotoId(), PhotoOrderStatus.FINISH, materialListSave, materialListUpdate);
+                this.maPhotoOrderService.updateStatusAndsaveAndUpdateMaterialList(photoOrderVO.getId(), PhotoOrderStatus.FINISH, materialListSave, materialListUpdate);
                 this.maPhotoOrderService.updateRemarkAndDeliveryId(photoOrderDTO.getRemark(),deliveryId,userId,appIdentityType);
                 //短信提醒
 //                    String info = "您的拍照下单订单(" + photoOrderVO.getPhotoOrderNo() + ")已处理，请登录APP查看。";

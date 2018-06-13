@@ -32,4 +32,6 @@ public interface MaPhotoOrderService {
 
     void updateRemarkAndDeliveryId(String remark,Long deliveryId,Long userId,AppIdentityType identityType);
 
+    PhotoOrderVO findByPhotoOrderNo(String photoOrderNo);
+
 }

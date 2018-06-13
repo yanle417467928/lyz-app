@@ -2771,8 +2771,44 @@
         </if>
         GROUP BY orderNo,returnNo
         -- AND oli.delivery_clerk_name IS NOT NULL
-        ORDER BY whName,deliveryClerkName,storeName,sellerName
+        ORDER BY whName,deliveryClerkName,storeName,sellerName ASC
     </select>
 
+
+    <select id="findPhotoOrderCheckDOAll" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.PhotoOrderCheckDO">
+        SELECT ct.name as cityName, po.photo_order_no as photoOrderNo, (CASE po.identity_type WHEN 'CUSTOMER' THEN c.name ELSE e.name END) as userName,
+            (CASE po.identity_type WHEN 'CUSTOMER' THEN c.mobile ELSE e.mobile END) as mobile, po.identity_type as identityType,
+            po.`status` as status, po.order_type as orderType, s.store_name as storeName, d.receiver as receiver, d.receiver_phone as receiverPhone,
+            CONCAT(d.delivery_province,d.delivery_city,d.delivery_county,d.delivery_street,d.detailed_address) as detailedAddress,
+            po.remark as remark, po.create_time as createTime, po.update_time as updateTime, au2.`name` as updateUser,
+            po.finish_time as finishTime, au.`name` as operationUser
+        FROM photo_order po
+        LEFT JOIN admin_user au ON au.uid = po.operation_user_id
+        LEFT JOIN admin_user au2 ON au2.uid = po.update_user_id
+        LEFT JOIN emp_employee e ON e.emp_id = po.user_id AND po.identity_type != 'CUSTOMER'
+        LEFT JOIN cus_customer c ON c.cus_id = po.user_id AND po.identity_type = 'CUSTOMER'
+        LEFT JOIN st_store s ON (s.store_id = e.store_id AND po.identity_type != 'CUSTOMER')
+        OR (s.store_id = c.store_id AND po.identity_type = 'CUSTOMER')
+        LEFT JOIN delivery_address d ON d.id = po.delivery_id
+        LEFT JOIN city ct ON ct.city_id = s.city_id
+        WHERE
+        1 = 1
+        <if test="null != cityId and cityId != -1">
+            AND ct.city_id = #{cityId}
+        </if>
+        <if test="null != startTime and startTime != ''">
+            AND po.create_time &gt;= #{startTime}
+        </if>
+        <if test="null != endTime and endTime != ''">
+            AND po.create_time &lt;= #{endTime}
+        </if>
+        <if test="null != keywords and keywords != ''">
+            AND (po.photo_order_no LIKE concat(concat('%',#{keywords}),'%')
+            OR au2.name LIKE concat(concat('%',#{keywords}),'%')
+            OR au.name LIKE concat(concat('%',#{keywords}),'%'))
+        </if>
+        GROUP BY po.id
+        ORDER BY po.create_time ASC
+    </select>
 
 </mapper>

@@ -4,10 +4,10 @@
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.PhotoOrderDO">
         INSERT INTO photo_order
-        (user_id, identity_type, photos, contact_name, contact_phone, remark, status, create_time, photo_order_no, delivery_id, order_type, update_user_id)
+        (user_id, identity_type, photos, contact_name, contact_phone, remark, status, create_time, photo_order_no, delivery_id, order_type)
         VALUES
         (#{userId}, #{identityType}, #{photos}, #{contactName}, #{contactPhone},#{remark}, #{status},
-        #{createTime}, #{photoOrderNo}, #{deliveryId}, #{orderType}, #{updateUserId});
+        #{createTime}, #{photoOrderNo}, #{deliveryId}, #{orderType});
     </insert>
 
     <select id="findByUserIdAndIdentityTypeAndStatus" resultType="cn.com.leyizhuang.app.foundation.pojo.response.PhotoOrderListResponse">
@@ -38,7 +38,8 @@
 
     <update id="updateStatus">
         UPDATE photo_order
-        SET status = #{status}
+        SET status = #{status},
+        finish_time = now()
         WHERE id = #{id}
     </update>
 

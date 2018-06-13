@@ -30,4 +30,5 @@ public interface MaOrderPhotoDAO {
 
     List<String> findPhotosById(@Param("array")Long[] ids);
 
+    PhotoOrderVO findByPhotoOrderNo(String photoOrderNo);
 }

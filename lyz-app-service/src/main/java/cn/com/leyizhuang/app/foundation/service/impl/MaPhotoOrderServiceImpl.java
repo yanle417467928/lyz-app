@@ -112,5 +112,13 @@ public class MaPhotoOrderServiceImpl implements MaPhotoOrderService {
         maMaterialListService.updateRemarkAndDeliveryId(remark, deliveryId, userId, identityType);
     }
 
+    @Override
+    public PhotoOrderVO findByPhotoOrderNo(String photoOrderNo) {
+        if (null != photoOrderNo){
+            return this.maOrderPhotoDAO.findByPhotoOrderNo(photoOrderNo);
+        }
+        return null;
+    }
+
 
 }

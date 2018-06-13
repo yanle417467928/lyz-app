@@ -54,10 +54,10 @@
         </if>
         <if test="null != status and status.toString() == 'FINISH'">
           finish_time = now(),
-            operation_user_id = #{updateUserId}
+          operation_user_id = #{updateUserId}
         </if>
         WHERE id = #{id}
-          AND status != #{status}
+        AND status != #{status}
     </update>
 
     <update id="batchUpdateStatus">
@@ -89,7 +89,7 @@
         UPDATE photo_order
         SET status = 'CANCEL',
         finish_time = now(),
-        operation_user_id = #{batchDelete}
+        operation_user_id = #{userId}
         WHERE
           status in ('PENDING', 'PROCESSING')
           AND id in
@@ -110,6 +110,17 @@
         <foreach collection="array" item="id" open="(" close=")" separator=",">
             #{id}
         </foreach>
+    </select>
+
+
+    <select id="findByPhotoOrderNo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.vo.management.order.PhotoOrderVO">
+        SELECT p.id, p.user_id, p.photos, p.remark, p.`status`, p.create_time, p.photo_order_no, p.contact_name, p.contact_phone, IFNULL(e.`name`,c.`name`) username,
+        IFNULL(e.mobile,c.mobile) userMobile, IFNULL(e.identity_type,'CUSTOMER') identityType, s.store_name
+        FROM photo_order p
+        LEFT JOIN cus_customer c ON c.cus_id = p.user_id AND p.identity_type = 'CUSTOMER'
+        LEFT JOIN emp_employee e ON e.emp_id = p.user_id AND p.identity_type = e.identity_type
+        LEFT JOIN st_store s ON c.store_id = s.store_id OR e.store_id = s.store_id
+        WHERE p.photo_order_no = #{photoOrderNo}
     </select>
 
 </mapper>
