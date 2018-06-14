@@ -56,4 +56,7 @@ public interface MaterialListService {
 
     List<PhotoOrderMaterialListResponse> findByUserIdAndIdentityTypeAndMaterialListType(Long userId, AppIdentityType identityType, List<MaterialListType> materialListTypes);
 
+    List<NormalMaterialListResponse> findBuyCouponGoodsByUserIdAndIdentityType(Long userId, Integer identityType);
+
+
 }

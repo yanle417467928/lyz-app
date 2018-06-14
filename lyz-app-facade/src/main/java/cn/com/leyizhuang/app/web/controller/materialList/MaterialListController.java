@@ -678,7 +678,7 @@ public class MaterialListController {
             return resultDTO;
         }
 //        //所有用户返回自己的商品
-        List<NormalMaterialListResponse> normalMaterialListRespons = this.materialListServiceImpl.findByUserIdAndIdentityType(userId, identityType);
+        List<NormalMaterialListResponse> normalMaterialListRespons = this.materialListServiceImpl.findBuyCouponGoodsByUserIdAndIdentityType(userId, identityType);
         Map<String, Object> returnMap = new HashMap<>(4);
         returnMap.put("materialListRes", normalMaterialListRespons);
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, returnMap);

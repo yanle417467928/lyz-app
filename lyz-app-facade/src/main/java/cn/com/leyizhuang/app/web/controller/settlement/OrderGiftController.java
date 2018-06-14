@@ -59,7 +59,7 @@ public class OrderGiftController {
     private AppStoreService appStoreService;
 
     @PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO<GiftListResponse> materialListStepToGiftList(Long userId, Long cusId, Integer identityType, String goodsArray) {
+    public ResultDTO<GiftListResponse> materialListStepToGiftList(Long userId, Long cusId, Integer identityType, String goodsArray, String orderType) {
 
         logger.info("materialListStepToGiftList CALLED,下料清单跳转赠品列表,入参userId {} identityType{} goodsArray:{} cusId:{}", userId, identityType, goodsArray, cusId);
 
