@@ -251,6 +251,15 @@
         AND (material_list_type = 'NORMAL' OR material_list_type = 'AUDIT_TRANSFORM')
     </delete>
 
+    <delete id="deleteMaMaterialListByUserIdAndIdentityTypeAndGoodsSkus">
+        DELETE FROM material_list
+        WHERE user_id = #{userId} AND identity_type = #{identityType} AND sku IN
+        <foreach collection="goodsSkus" item="materialList" open="(" close=")" separator=",">
+            #{materialList}
+        </foreach>
+        AND (material_list_type = 'NORMAL' OR material_list_type = 'AUDIT_TRANSFORM')
+    </delete>
+
     <delete id="deleteMaterialListProductCouponGoodsByUserIdAndIdentityTypeAndGoodsIds">
         DELETE FROM material_list
         WHERE user_id = #{userId} AND identity_type = #{identityType} AND gid IN

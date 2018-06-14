@@ -261,8 +261,8 @@ public class UserSettingController {
      * @date 2017/9/29
      */
     @PostMapping(value = "/deliveryAddress/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getDeliveryAddress(Long userId, Integer identityType, Integer page) {
-        logger.info("getDeliveryAddress CALLED,获取收货地址，入参 userId {},identityType,page:{}", userId, identityType, page);
+    public ResultDTO<Object> getDeliveryAddress(Long userId, Integer identityType, Integer page, Integer size) {
+        logger.info("getDeliveryAddress CALLED,获取收货地址，入参 userId {},identityType,page:{},size:{}", userId, identityType, page, size);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
@@ -281,7 +281,13 @@ public class UserSettingController {
             logger.info("getDeliveryAddress OUT,获取收货地址失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        PageInfo<DeliveryAddressResponse> deliveryAddressResponseListPageInfo = this.deliveryAddressServiceImpl.queryListByUserIdAndStatusIsTrue(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), page);
+        if (null == size) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "显示条数不能为空",
+                    null);
+            logger.info("getDeliveryAddress OUT,获取收货地址失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        PageInfo<DeliveryAddressResponse> deliveryAddressResponseListPageInfo = this.deliveryAddressServiceImpl.queryListByUserIdAndStatusIsTrue(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), page, size);
         List deliveryAddressResponseList = deliveryAddressResponseListPageInfo.getList();
         deliveryAddressResponseList.sort(Comparator.comparing(DeliveryAddressResponse::getIsDefault).reversed());
         deliveryAddressResponseListPageInfo.setList(deliveryAddressResponseList);

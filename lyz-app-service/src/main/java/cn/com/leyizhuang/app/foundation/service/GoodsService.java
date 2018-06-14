@@ -62,6 +62,8 @@ public interface GoodsService {
 
     List<OrderGoodsSimpleResponse> findGoodsListByEmployeeIdAndGoodsIdList(Long userId, List<Long> goodsIds);
 
+    List<OrderGoodsSimpleResponse> findGoodsListByEmployeeIdAndGoodsSkuList(Long userId,List<String> goodsSku);
+
     List<OrderGoodsSimpleResponse> findGoodsListByCustomerIdAndGoodsIdList(Long userId, List<Long> goodsIds);
 
     GoodsPrice findGoodsPriceByProductCouponIdAndUserId(Long userId, Long pcId, Integer qty);

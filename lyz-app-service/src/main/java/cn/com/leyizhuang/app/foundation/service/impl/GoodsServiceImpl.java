@@ -277,6 +277,13 @@ public class GoodsServiceImpl implements GoodsService {
         }
         return null;
     }
+    @Override
+    public List<OrderGoodsSimpleResponse> findGoodsListByEmployeeIdAndGoodsSkuList(Long userId, List<String> goodsSku) {
+        if (null != userId && !goodsSku.isEmpty()) {
+            return goodsDAO.findGoodsListByEmployeeIdAndGoodsSkuList(userId, goodsSku);
+        }
+        return null;
+    }
 
     @Override
     public List<OrderGoodsSimpleResponse> findGoodsListByCustomerIdAndGoodsIdList(Long userId, List<Long> goodsIds) {

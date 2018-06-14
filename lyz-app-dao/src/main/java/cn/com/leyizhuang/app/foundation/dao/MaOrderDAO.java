@@ -9,12 +9,14 @@ import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest
 import cn.com.leyizhuang.app.foundation.vo.DetailFitOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.FitOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
+import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import cn.com.leyizhuang.app.foundation.vo.management.order.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author caiyu
@@ -255,4 +257,7 @@ public interface MaOrderDAO {
      * @return 订单列表
      */
     DetailFitOrderVO findFitOrderByOrderNumber(@Param("ordNumber")String ordNumber);
+
+    List<OrderGoodsVO> findMaOrderGoodsVOListByEmpIdAndGoodsSkus(@Param(value = "userId") Long userId,
+                                                              @Param(value = "goodsSkuSet") Set<String> goodsSkuSet);
 }
