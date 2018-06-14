@@ -727,7 +727,7 @@ public class OrderController {
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     goodsSettlement.size() > 0 ? goodsSettlement : null);
-            logger.info("getGoodsMoney OUT,用户确认订单计算商品价格明细成功，出参 resultDTO:{}", resultDTO);
+            logger.info("enterOrder OUT,用户确认订单计算商品价格明细成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();

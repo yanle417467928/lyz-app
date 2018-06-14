@@ -90,4 +90,8 @@ public interface MaReportDownloadService {
     List<AccountGoodsItemsDO> downloadAccountGoodsItemsHR(Long cityId, Long storeId, String storeType, String startTime, String endTime,
                                                         String keywords, List<Long> storeIds);
 
+
+    PageInfo<PhotoOrderCheckDO> findPhotoOrderCheckDOAll(Long cityId, String startTime, String endTime, String keywords, Integer page, Integer size);
+
+    List<PhotoOrderCheckDO> downloadPhotoOrderCheckDO(Long cityId, String startTime, String endTime, String keywords);
 }

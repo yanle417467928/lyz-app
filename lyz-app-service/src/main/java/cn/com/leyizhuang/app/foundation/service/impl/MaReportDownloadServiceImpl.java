@@ -146,6 +146,24 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
     }
 
     @Override
+    public PageInfo<PhotoOrderCheckDO> findPhotoOrderCheckDOAll(Long cityId, String startTime, String endTime, String keywords, Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        if (null != endTime && !("".equals(endTime))) {
+            endTime += " 23:59:59";
+        }
+        List<PhotoOrderCheckDO> photoOrderCheckDOList = this.maReportDownloadDAO.findPhotoOrderCheckDOAll(cityId, startTime, endTime, keywords);
+        return new PageInfo<>(photoOrderCheckDOList);
+    }
+
+    @Override
+    public List<PhotoOrderCheckDO> downloadPhotoOrderCheckDO(Long cityId, String startTime, String endTime, String keywords) {
+        if (null != endTime && !("".equals(endTime))) {
+            endTime += " 23:59:59";
+        }
+        return this.maReportDownloadDAO.findPhotoOrderCheckDOAll(cityId, startTime, endTime, keywords);
+    }
+
+    @Override
     public PageInfo<AccountGoodsItemsDO> findAccountGoodsItemsDOAll(Long cityId, Long storeId, String storeType, String startTime, String endTime, String keywords, List<Long> storeIds, Integer page, Integer size) {
         PageHelper.startPage(page, size);
         if (null != endTime && !("".equals(endTime))) {

@@ -88,4 +88,7 @@ public interface MaReportDownloadDAO {
                                                          @Param("startTime") String startTime, @Param("endTime") String endTime,
                                                          @Param("keywords") String keywords, @Param("list") List<Long> storeIds);
 
+    List<PhotoOrderCheckDO> findPhotoOrderCheckDOAll(@Param("cityId") Long cityId, @Param("startTime") String startTime,
+                                                     @Param("endTime") String endTime, @Param("keywords") String keywords);
+
 }
