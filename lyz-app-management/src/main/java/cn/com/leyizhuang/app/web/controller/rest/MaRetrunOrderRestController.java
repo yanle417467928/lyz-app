@@ -50,9 +50,6 @@ public class MaRetrunOrderRestController extends BaseRestController {
     @Resource
     private AdminUserStoreService adminUserStoreService;
 
-    @Resource
-
-
     /**
      * 退货单列表
      *
