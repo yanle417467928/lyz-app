@@ -91,4 +91,15 @@ public class AppConstant {
      * app 服务类商品companyFlag
      */
     public static final String FW_COMPANY_FLAG = "SRV|CVR|ART";
+
+
+    /******************************** 银联支付相关 *************************/
+
+    public static final String UNION_PAY_MERCHANT_ID ="302510189120014";
+
+    /**
+     * 银联支付编码
+     */
+    public static final String UNION_PAY_ENCODING = "UTF-8";
+
 }

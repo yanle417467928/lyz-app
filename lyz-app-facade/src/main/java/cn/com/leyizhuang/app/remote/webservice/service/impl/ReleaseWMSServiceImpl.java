@@ -147,7 +147,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         Node childNode = childNodeList.item(j);
                         header = mapping(header, childNode);
                     }
-                    if (redisLock.lock(AppLock.ORDER_SHIPPING, header.getTaskNo(), 30)){
+                    if (redisLock.lock(AppLock.ORDER_SHIPPING, header.getTaskNo(), 30)) {
                         Boolean isAppOrder = appOrderService.existOrder(header.getOrderNo());
                         if (null != isAppOrder && isAppOrder) {
                             if (StringUtils.isBlank(header.getDriver())) {
@@ -164,7 +164,7 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         }
                         WtaShippingOrderHeader finalHeader = header;
                         new Thread(() -> handleWtaShippingOrderAsync(finalHeader.getOrderNo(), finalHeader.getTaskNo())).start();
-                    }else{
+                    } else {
                         logger.warn("tbw_send_task_m OUT,出货单接口重复传输，task_no:{}", header.getTaskNo());
                         return AppXmlUtil.resultStrXml(1, "正在处理该" + header.getTaskNo() + "出货单，请勿重复传输!");
                     }
@@ -506,9 +506,9 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                     damageAndOverflow.setHandleFlag("0");
                     damageAndOverflow.setReceiveTime(new Date());
                     wmsToAppOrderDAO.saveWtaWarehouseReportDamageAndOverflow(damageAndOverflow);
-                    try{
+                    try {
                         this.handleWtaWarehouseReportDamageAndOverflowAsync(damageAndOverflow.getWasteNo(), damageAndOverflow.getWasteId());
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         return AppXmlUtil.resultStrXml(1, e.getMessage());
                     }
                 }
@@ -1770,18 +1770,13 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                                         Map<String, String> map = onlinePayRefundService.wechatReturnMoney(
                                                 returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(), returnOrderBilling.getOnlinePay(), returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo(), returnOrderBaseInfo.getRoid());
                                     } else if (OnlinePayType.UNION_PAY.equals(returnOrderBilling.getOnlinePayType())) {
-                                        //创建退单退款详情实体
-                                        ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
-                                        returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
-                                        returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
-                                        returnOrderBillingDetail.setReturnNo(returnOrderBaseInfo.getReturnNo());
-                                        returnOrderBillingDetail.setRefundNumber(returnOrderBaseInfo.getReturnNo());
-                                        //TODO 时间待定
-                                        returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
-                                        //TODO 第三方回复码
-                                        returnOrderBillingDetail.setReplyCode("");
-                                        returnOrderBillingDetail.setReturnMoney(returnOrderBilling.getOnlinePay());
-                                        returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.UNION_PAY);
+                                        //银联支付退款
+                                        Map<String, String> map = onlinePayRefundService.unionPayReturnMoney(returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(),
+                                                returnOrderBilling.getOnlinePay(), returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo(),
+                                                returnOrderBaseInfo.getRoid());
+                                        if ("FAILURE".equals(map.get("code"))) {
+                                            returnOrderService.updateReturnOrderBaseInfoByReturnNo(returnOrderBaseInfo.getReturnNo(), AppReturnOrderStatus.PENDING_REFUND);
+                                        }
                                     }
                                 }
                             }

@@ -133,6 +133,14 @@ deploy:
       url: http://119.23.149.7:9999/app/pay/wechat/return/async
     cert:
       path: ${basedir}/src/main/resources/cert/apiclient_cert.p12
+  unionpay:
+    async:
+      url:
+        front: http://119.23.149.7:9999/app/unionpay/return/async/front
+        back: http://119.23.149.7:9999/app/unionpay/return/async/back
+    refund:
+      async:
+        back: http://119.23.149.7:9999/app/unionpay/refund/async/back
   oss:
     cdnHosts: img-dev.leyizhuang.com.cn
     folder: lyz-app/images/
@@ -195,6 +203,14 @@ deploy:
       url: http://119.23.149.7:9999/app/wechatpay/return/async
     cert:
       path: /mnt/root/cert/apiclient_cert.p12
+  unionpay:
+    async:
+      url:
+        front: http://119.23.149.7:9999/app/unionpay/return/async/front
+        back: http://119.23.149.7:9999/app/unionpay/return/async/back
+    refund:
+      async:
+        back: http://119.23.149.7:9999/app/unionpay/refund/async/back
   oss:
     cdnHosts: img-dev.leyizhuang.com.cn
     folder: lyz-app/images/
@@ -256,6 +272,11 @@ deploy:
       url: http://app.leyizhuang.com.cn/app/wechatpay/return/async
     cert:
       path: /mnt/root/cert/apiclient_cert.p12
+  unionpay:
+    async:
+      url:
+        front: http://app.leyizhuang.com.cn/app/unionpay/return/async/front
+        back: http://app.leyizhuang.com.cn/app/unionpay/return/async/back
   oss:
     cdnHosts: img1.leyizhuang.com.cn,img2.leyizhuang.com.cn,img3.leyizhuang.com.cn,img4.leyizhuang.com.cn,img5.leyizhuang.com.cn
     folder: lyz-app/images/

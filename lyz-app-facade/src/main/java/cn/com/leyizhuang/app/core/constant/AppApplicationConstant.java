@@ -19,6 +19,10 @@ public class AppApplicationConstant {
     public static String ossBucket;
     public static String wmsUrl;
     public static String ebsUrl;
+    public static String unionPayAsyncUrlFront;
+    public static String unionPayAsyncUrlBack;
+    public static String unionPayRefundAsyncBack;
+
 
     public String getImagePath() {
         return imagePath;
@@ -102,16 +106,34 @@ public class AppApplicationConstant {
         InterfaceConfigure.EBS_WS_URL = ebsUrl;
     }
 
+    public String getUnionPayAsyncUrlFront() {
+        return unionPayAsyncUrlFront;
+    }
+
+    public void setUnionPayAsyncUrlFront(String unionPayAsyncUrlFront) {
+        AppApplicationConstant.unionPayAsyncUrlFront = unionPayAsyncUrlFront;
+    }
+
+    public String getUnionPayAsyncUrlBack() {
+        return unionPayAsyncUrlBack;
+    }
+
+    public void setUnionPayAsyncUrlBack(String unionPayAsyncUrlBack) {
+        AppApplicationConstant.unionPayAsyncUrlBack = unionPayAsyncUrlBack;
+    }
+
+    public String getUnionPayRefundAsyncBack() {
+        return unionPayRefundAsyncBack;
+    }
+
+    public void setUnionPayRefundAsyncBack(String unionPayRefundAsyncBack) {
+        AppApplicationConstant.unionPayRefundAsyncBack = unionPayRefundAsyncBack;
+    }
 
     /**
      * 变更导购时间（天）
      */
     public static final int CHANGE_SELLER_DATE = 60;
-
-
-
-
-
 
 
 }

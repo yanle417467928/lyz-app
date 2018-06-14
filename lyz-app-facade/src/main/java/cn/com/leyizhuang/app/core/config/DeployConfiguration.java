@@ -27,6 +27,15 @@ public class DeployConfiguration {
     @Value("${deploy.wechat.async.url}")
     private String wechatReturnUrlAsnyc;
 
+    @Value("${deploy.unionpay.async.url.front}")
+    private String unionPayAsyncUrlFront;
+
+    @Value("${deploy.unionpay.async.url.back}")
+    private String unionPayAsyncUrlBack;
+
+    @Value("${deploy.unionpay.refund.async.back}")
+    private String unionPayRefundAsyncBack;
+
     @Value("${deploy.wechat.cert.path}")
     private String wechatApiClinetCert;
 
@@ -42,6 +51,7 @@ public class DeployConfiguration {
     @Value("${deploy.wms.url}")
     private String wmsUrl;
 
+
     @Bean
     public AppApplicationConstant applicationConstant() {
         LOG.info("imagePath : {}", imagePath);
@@ -53,6 +63,9 @@ public class DeployConfiguration {
         LOG.info("ossFolder : {}", ossFolder);
         LOG.info("ossBucket : {}", ossBucket);
         LOG.info("wmsUrl : {}", wmsUrl);
+        LOG.info("unionPayAsyncUrlFront : {}", unionPayAsyncUrlFront);
+        LOG.info("unionPayAsyncUrlBack : {}", unionPayAsyncUrlBack);
+        LOG.info("unionPayRefundAsyncBack : {}", unionPayRefundAsyncBack);
 
         AppApplicationConstant constant = new AppApplicationConstant();
         constant.setImagePath(imagePath);
@@ -64,6 +77,9 @@ public class DeployConfiguration {
         constant.setOssFolder(ossFolder);
         constant.setOssBucket(ossBucket);
         constant.setWmsUrl(wmsUrl);
+        constant.setUnionPayAsyncUrlFront(unionPayAsyncUrlFront);
+        constant.setUnionPayAsyncUrlBack(unionPayAsyncUrlBack);
+        constant.setUnionPayRefundAsyncBack(unionPayRefundAsyncBack);
         return constant;
     }
 
@@ -137,5 +153,13 @@ public class DeployConfiguration {
 
     public void setWmsUrl(String wmsUrl) {
         this.wmsUrl = wmsUrl;
+    }
+
+    public String getUnionPayRefundAsyncBack() {
+        return unionPayRefundAsyncBack;
+    }
+
+    public void setUnionPayRefundAsyncBack(String unionPayRefundAsyncBack) {
+        this.unionPayRefundAsyncBack = unionPayRefundAsyncBack;
     }
 }

@@ -16,6 +16,8 @@ import cn.com.leyizhuang.app.remote.webservice.utils.AppXmlUtil;
 import cn.com.leyizhuang.common.util.AssertUtil;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.jaxws.endpoint.dynamic.JaxWsDynamicClientFactory;
+import org.apache.cxf.transport.http.HTTPConduit;
+import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -53,6 +55,12 @@ public class ICallWms {
 
     private static Client getWmsClient() {
         JaxWsDynamicClientFactory dcf = JaxWsDynamicClientFactory.newInstance();
+        //设置超时单位为毫秒
+       /* HTTPConduit http = (HTTPConduit) client.getConduit();
+        HTTPClientPolicy httpClientPolicy = new HTTPClientPolicy();
+        httpClientPolicy.setConnectionTimeout(5000);  //连接超时
+        httpClientPolicy.setReceiveTimeout(5000);     //响应超时
+        http.setClient(httpClientPolicy);*/
         return dcf.createClient(AppApplicationConstant.wmsUrl);
     }
 

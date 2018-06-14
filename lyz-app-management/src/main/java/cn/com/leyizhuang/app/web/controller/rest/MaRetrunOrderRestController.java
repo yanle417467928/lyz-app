@@ -50,6 +50,9 @@ public class MaRetrunOrderRestController extends BaseRestController {
     @Resource
     private AdminUserStoreService adminUserStoreService;
 
+    @Resource
+
+
     /**
      * 退货单列表
      *
@@ -183,6 +186,7 @@ public class MaRetrunOrderRestController extends BaseRestController {
                             maOnlinePayRefundService.wechatReturnMoney(maReturnOrderDetailInfo.getCreatorId(), maReturnOrderDetailInfo.getCreatorIdentityType().getValue(), maOrdReturnBillingList.getOnlinePay(), maReturnOrderDetailInfo.getOrderNo(), returnNumber);
                         } else if (OnlinePayType.UNION_PAY == paymentDataList.get(0).getOnlinePayType()) {
                             //TODO
+
                         }
                     /*for (MaPaymentData maPaymentData : paymentDataList) {
                         if ("ALIPAY".equals(maPaymentData.getOnlinePayType().toString())) {
