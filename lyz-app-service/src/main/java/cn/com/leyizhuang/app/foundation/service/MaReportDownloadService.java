@@ -83,4 +83,11 @@ public interface MaReportDownloadService {
 
     List<DistributionDO> downloadDistributionDO(Long cityId, String wareHouseNo, String deliveryClerkNo, String startTime, String endTime,
                                                         String keywords);
+
+    PageInfo<AccountGoodsItemsDO> findAccountGoodsItemsDOHR(Long cityId, Long storeId, String storeType, String startTime, String endTime,
+                                                             String keywords, List<Long> storeIds, Integer page, Integer size);
+
+    List<AccountGoodsItemsDO> downloadAccountGoodsItemsHR(Long cityId, Long storeId, String storeType, String startTime, String endTime,
+                                                        String keywords, List<Long> storeIds);
+
 }

@@ -357,4 +357,22 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
         }
         return this.maReportDownloadDAO.findAccountZGGoodsItemsDOAll(cityId, storeId, startTime, endTime, keywords, storeIds);
     }
+
+    @Override
+    public PageInfo<AccountGoodsItemsDO> findAccountGoodsItemsDOHR(Long cityId, Long storeId, String storeType, String startTime, String endTime, String keywords, List<Long> storeIds, Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        if (null != endTime && !("".equals(endTime))) {
+            endTime += " 23:59:59";
+        }
+        List<AccountGoodsItemsDO> accountGoodsItemsDOS = this.maReportDownloadDAO.findAccountGoodsItemsDOHR(cityId, storeId, storeType, startTime, endTime, keywords, storeIds);
+        return new PageInfo<>(accountGoodsItemsDOS);
+    }
+
+    @Override
+    public List<AccountGoodsItemsDO> downloadAccountGoodsItemsHR(Long cityId, Long storeId, String storeType, String startTime, String endTime, String keywords, List<Long> storeIds) {
+        if (null != endTime && !("".equals(endTime))) {
+            endTime += " 23:59:59";
+        }
+        return this.maReportDownloadDAO.findAccountGoodsItemsDOHR(cityId, storeId, storeType, startTime, endTime, keywords, storeIds);
+    }
 }

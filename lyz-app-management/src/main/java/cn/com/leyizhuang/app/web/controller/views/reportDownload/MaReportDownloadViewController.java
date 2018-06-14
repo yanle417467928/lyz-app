@@ -197,4 +197,18 @@ public class MaReportDownloadViewController extends BaseController {
         return "/views/reportDownload/distribution_page";
     }
 
+    /**
+     * @title    华润出货对账表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/4/2
+     */
+    @GetMapping(value = "/account/hr/list")
+    public String getAccountGoodsItemsHRList(ModelMap map) {
+        map.addAttribute("storeTypes", StoreType.getStoreTypeList());
+        return "/views/reportDownload/account_goods_items_hr_page";
+    }
 }
