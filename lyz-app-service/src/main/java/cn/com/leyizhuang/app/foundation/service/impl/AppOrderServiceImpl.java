@@ -141,6 +141,23 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
+    public List<String> existMaOrderGoodsInventory(Long cityId, List<GoodsSkuQtyParam> goodsList) {
+
+        if (null == cityId || AssertUtil.isEmpty(goodsList)) {
+            return null;
+        }
+        List<String> goodsSkus = new ArrayList<>();
+        //遍历判断库存
+            for (GoodsSkuQtyParam goods : goodsList) {
+                Boolean isHaveInventory = cityDAO.existMaGoodsCityInventory(cityId, goods.getSku(), goods.getQty());
+                if (!isHaveInventory) {
+                    goodsSkus.add(goods.getSku());
+                }
+            }
+        return goodsSkus;
+    }
+
+    @Override
     public PageInfo<OrderBaseInfo> getOrderListByUserIDAndIdentityType(Long userID, Integer identityType, Integer showStatus, Integer page, Integer size) {
         PageHelper.startPage(page, size);
         List<OrderBaseInfo> orderBaseInfoList = orderDAO.getOrderListByUserIDAndIdentityType(userID, AppIdentityType.getAppIdentityTypeByValue(identityType), showStatus);

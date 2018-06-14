@@ -76,6 +76,10 @@ public interface MaterialListDAO {
                                                               @Param(value = "identityType") AppIdentityType identityType,
                                                               @Param(value = "goodsIds") Set<Long> goodsIds);
 
+    void deleteMaMaterialListByUserIdAndIdentityTypeAndGoodsSkus(@Param(value = "userId") Long userId,
+                                                              @Param(value = "identityType") AppIdentityType identityType,
+                                                              @Param(value = "goodsSkus") Set<String> goodsSkus);
+
     void deleteMaterialListProductCouponGoodsByUserIdAndIdentityTypeAndGoodsIds(@Param(value = "userId") Long userId,
                                                                                 @Param(value = "identityType") AppIdentityType identityType,
                                                                                 @Param(value = "couponGoodsIds") Set<Long> couponGoodsIds);

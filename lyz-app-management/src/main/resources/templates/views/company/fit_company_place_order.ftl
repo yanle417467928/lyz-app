@@ -182,17 +182,17 @@
 
         function cancelAddDeliveryAddress() {
 
-            $('#receiverName').val("").attr("readOnly",false);
-            $('#receiverPhone').val("").attr("readOnly",false);
-            $('#residenceName').val("").attr("readOnly",false);
-            $('#estateInfo').val("").attr("readOnly",false);
-            $('#detailedAddress').val("").attr("readOnly",false);
+            $('#receiverName').val("").attr("readOnly", false);
+            $('#receiverPhone').val("").attr("readOnly", false);
+            $('#residenceName').val("").attr("readOnly", false);
+            $('#estateInfo').val("").attr("readOnly", false);
+            $('#detailedAddress').val("").attr("readOnly", false);
             $('#deliveryId').val(-1);
 
-            jQuery('#province').attr("disabled",false);
-            jQuery('#city').attr("disabled",false);
-            jQuery('#county').attr("disabled",false);
-            jQuery('#street').attr("disabled",false);
+            jQuery('#province').attr("disabled", false);
+            jQuery('#city').attr("disabled", false);
+            jQuery('#county').attr("disabled", false);
+            jQuery('#street').attr("disabled", false);
 
 
             $("#writeDeliveryAddress").hide();
@@ -406,8 +406,8 @@
                 "detailedAddress": detailedAddress,
                 "residenceName": residenceName,
                 "estateInfo": estateInfo,
-                "goAddDeliveryAddressType":goAddDeliveryAddressType,
-                "deliveryId":deliveryId,
+                "goAddDeliveryAddressType": goAddDeliveryAddressType,
+                "deliveryId": deliveryId,
                 "goodsDetails": JSON.stringify(goodsDetails)
             };
             var url = "/rest/admin/fit/place/order/submit/goods"
@@ -610,8 +610,6 @@
         }
 
 
-
-
         function findDeliveryAddress(url) {
             var userMobile = $('#userMobile').text();
             var identityType = $('#identityType').text();
@@ -624,22 +622,22 @@
                     offset: params.offset,
                     size: params.limit,
                     keywords: params.search,
-                    userMobile:userMobile,
-                    identityType:identityType,
-                    guideId:guideId,
-                    sellerAddressConditions:sellerAddressConditions
+                    userMobile: userMobile,
+                    identityType: identityType,
+                    guideId: guideId,
+                    sellerAddressConditions: sellerAddressConditions
                 }
-            }, [ {
+            }, [{
                 field: 'id',
                 title: 'ID',
                 align: 'center',
-                visible:false
+                visible: false
             }, {
                 field: 'deliveryName',
                 title: '收货人姓名',
                 align: 'center',
-                events:{
-                    'click .scan':function (e,value,row) {
+                events: {
+                    'click .scan': function (e, value, row) {
                         filling(row);
                     }
                 },
@@ -688,7 +686,7 @@
                 field: 'detailedAddress',
                 title: '详细地址',
                 align: 'center'
-            },{
+            }, {
                 field: 'estateInfo',
                 title: '楼盘信息',
                 align: 'center'
@@ -705,17 +703,17 @@
         }
 
         function filling(row) {
-            $('#receiverName').val(row.deliveryName).attr("readOnly","true");
-            $('#receiverPhone').val(row.deliveryPhone).attr("readOnly","true");
-            $('#residenceName').val(row.villageName).attr("readOnly","true");
-            $('#estateInfo').val(row.estateInfo).attr("readOnly","true");
-            $('#detailedAddress').val(row.detailedAddress).attr("readOnly","true");
+            $('#receiverName').val(row.deliveryName).attr("readOnly", "true");
+            $('#receiverPhone').val(row.deliveryPhone).attr("readOnly", "true");
+            $('#residenceName').val(row.villageName).attr("readOnly", "true");
+            $('#estateInfo').val(row.estateInfo).attr("readOnly", "true");
+            $('#detailedAddress').val(row.detailedAddress).attr("readOnly", "true");
             $('#deliveryId').val(row.id);
 
-            jQuery('#province').append("<option value='"+row.deliveryProvince+"'selected='selected'>"+row.deliveryProvince+"</option>").attr("disabled",true);
-            jQuery('#city').append("<option value='"+row.deliveryCity+"' selected='selected'>"+row.deliveryCity+"</option>").attr("disabled",true);
-            jQuery('#county').append("<option value='"+row.deliveryCounty+"' selected='selected'>"+row.deliveryCounty+"</option>").attr("disabled",true);
-            jQuery('#street').append("<option value='"+row.deliveryStreet+"' selected='selected'>"+row.deliveryStreet+"</option>").attr("disabled",true);
+            jQuery('#province').append("<option value='" + row.deliveryProvince + "'selected='selected'>" + row.deliveryProvince + "</option>").attr("disabled", true);
+            jQuery('#city').append("<option value='" + row.deliveryCity + "' selected='selected'>" + row.deliveryCity + "</option>").attr("disabled", true);
+            jQuery('#county').append("<option value='" + row.deliveryCounty + "' selected='selected'>" + row.deliveryCounty + "</option>").attr("disabled", true);
+            jQuery('#street').append("<option value='" + row.deliveryStreet + "' selected='selected'>" + row.deliveryStreet + "</option>").attr("disabled", true);
 
             var findBtn = document.getElementById("findDeliveryAddressButton");
             var manuallyEnterBtn = document.getElementById("manuallyEnterDeliveryAddressButton");
@@ -725,17 +723,17 @@
         }
 
         function manuallyEnterAddress() {
-            $('#receiverName').val("").attr("readOnly",false);
-            $('#receiverPhone').val("").attr("readOnly",false);
-            $('#residenceName').val("").attr("readOnly",false);
-            $('#estateInfo').val("").attr("readOnly",false);
-            $('#detailedAddress').val("").attr("readOnly",false);
+            $('#receiverName').val("").attr("readOnly", false);
+            $('#receiverPhone').val("").attr("readOnly", false);
+            $('#residenceName').val("").attr("readOnly", false);
+            $('#estateInfo').val("").attr("readOnly", false);
+            $('#detailedAddress').val("").attr("readOnly", false);
             $('#deliveryId').val(-1);
 
-            jQuery('#province').attr("disabled",false);
-            jQuery('#city').attr("disabled",false);
-            jQuery('#county').attr("disabled",false);
-            jQuery('#street').attr("disabled",false);
+            jQuery('#province').attr("disabled", false);
+            jQuery('#city').attr("disabled", false);
+            jQuery('#county').attr("disabled", false);
+            jQuery('#street').attr("disabled", false);
 
             findProvince();
             $("#deliveryId").val(-1);
@@ -747,6 +745,261 @@
 
         function returnAddress() {
             $('#selectAddressDataGrid').modal('hide');
+        }
+
+
+        //去支付
+        function goPay() {
+            goCalculatedAmount();
+            $('#gotoPay').modal('show');
+        }
+        //计算账单信息
+        function goCalculatedAmount() {
+            var goodsDetails = new Array()
+            var trs = $("#selectedGoodsTable").find("tr");
+            trs.each(function (i, n) {
+                var goodsSku = $(n).find("#internalCode").val();
+                var num = $(n).find("#qty").val();
+                goodsDetails.push({
+                    qty: num,
+                    sku: goodsSku
+                });
+            });
+            var storeId = $("#storeId").val();
+            var guideId = $("#guideId").val();
+
+            var identityType = 2;
+            var sysDeliveryType = 'HOUSE_DELIVERY';
+            var data = {
+                "storeId": storeId,
+                "userId": guideId,
+                "goodsList": JSON.stringify(goodsDetails),
+                "identityType": identityType,
+                "sysDeliveryType": sysDeliveryType
+            };
+            var url = "/rest/admin/fit/place/order/calculated/amount"
+            $.ajax({
+                url: url,
+                dataType: "json",
+                method: "POST",
+                data: data,
+                async: true,
+                error: function () {
+                    clearTimeout($global.timer);
+                    $loading.close();
+                    $global.timer = null;
+                    $notify.danger('网络异常，请稍后重试或联系管理员');
+                    $('#goods_import').bootstrapValidator('disableSubmitButtons', false);
+                },
+                success: function (result) {
+                    if (0 === result.code) {
+                        var orderAmount = result.content;
+                        document.getElementById("totalGoodsAmount").innerText = orderAmount.totalGoodsAmount;
+                        document.getElementById("memberDiscount").innerText = orderAmount.memberDiscount;
+                        document.getElementById("promotionDiscount").innerText = orderAmount.promotionDiscount;
+                        document.getElementById("stPreDeposit").innerText = orderAmount.stPreDeposit;
+                        document.getElementById("stCreditMoney").innerText = orderAmount.stCreditMoney;
+                        document.getElementById("stSubvention").innerText = orderAmount.stSubvention;
+                        document.getElementById("freight").innerText = orderAmount.freight;
+                        var amountsPayable = (orderAmount.totalGoodsAmount*100 - (orderAmount.memberDiscount*100 + orderAmount.promotionDiscount*100) + orderAmount.freight*100)/100
+                        document.getElementById("amountsPayable").innerText = amountsPayable;
+
+                        if (orderAmount.stCreditMoney > amountsPayable){
+                            $("#useCreditMoney").val(amountsPayable);
+                        }
+
+                        clearTimeout($global.timer);
+                        $loading.close();
+                    } else {
+                        $('#gotoPay').modal('hide');
+                        clearTimeout($global.timer);
+                        $loading.close();
+                        $global.timer = null;
+                        $notify.danger(result.message);
+                        $('#goods_import').bootstrapValidator('disableSubmitButtons', false);
+                    }
+                }
+            });
+            console.log(goodsDetails);
+        }
+
+
+        function maCreateOrder() {
+            var goodsDetails = new Array()
+            var trs = $("#selectedGoodsTable").find("tr");
+            trs.each(function (i, n) {
+                var goodsSku = $(n).find("#internalCode").val();
+                var num = $(n).find("#qty").val();
+                goodsDetails.push({
+                    qty: num,
+                    sku: goodsSku
+                });
+            });
+            var storeId = $("#storeId").val();
+            var guideId = $("#guideId").val();
+            var remark = $("#remark").val();
+            var receiverName = $("#receiverName").val();
+            var receiverPhone = $("#receiverPhone").val();
+            var province = $("#province").val();
+            var city = $("#city").val();
+            var county = $("#county").val();
+            var street = $("#street").val();
+            var residenceName = $("#residenceName").val();
+            var estateInfo = $("#estateInfo").val();
+            var detailedAddress = $("#detailedAddress").val();
+            var goAddDeliveryAddressType = $("#goAddDeliveryAddressType").val();
+            var deliveryId = $("#deliveryId").val();
+
+            if (0 == goAddDeliveryAddressType && (null == deliveryId || -1 == deliveryId || '' == deliveryId)) {
+                if (null == receiverName || '' == receiverName) {
+                    $notify.danger('收货人姓名不能为空！');
+                    return false;
+                }
+                if (null == receiverPhone || '' == receiverPhone) {
+                    $notify.danger('收货人电话不能为空!');
+                    return false;
+                }
+                if (receiverPhone.length != 11) {
+                    $notify.danger('请重新输入11位正确电话号码！');
+                    return false;
+                }
+                if (null == province || '' == province) {
+                    $notify.danger('省不能为空!');
+                    return false;
+                }
+                if (null == city || '' == city) {
+                    $notify.danger('市不能为空!');
+                    return false;
+                }
+                if (null == county || '' == county) {
+                    $notify.danger('区/县不能为空!');
+                    return false;
+                }
+                if (null == street || '' == street) {
+                    $notify.danger('街道不能为空!');
+                    return false;
+                }
+                if (null == detailedAddress || '' == detailedAddress) {
+                    $notify.danger('详细地址不能为空!');
+                    return false;
+                }
+                if ((null == residenceName || '' == residenceName)) {
+                    $notify.danger('小区名不能为空！');
+                    return false;
+                }
+                var estateInfoLength = getInputLength(estateInfo);
+                var residenceNameLength = getInputLength(residenceName);
+                var detailedAddressLength = getInputLength(detailedAddress);
+
+                if (estateInfoLength > 50) {
+                    $notify.danger('楼盘名称长度超长，请重新输入！');
+                    $('#form').bootstrapValidator('disableSubmitButtons', false);
+                    return false;
+                }
+                if (detailedAddressLength > 200) {
+                    $notify.danger('详细地址长度超长，请重新输入！');
+                    $('#form').bootstrapValidator('disableSubmitButtons', false);
+                    return false;
+                }
+                if (residenceNameLength > 50) {
+                    $notify.danger('小区名长度超长，请重新输入！');
+                    $('#form').bootstrapValidator('disableSubmitButtons', false);
+                    return false;
+                }
+            }
+            var usePreDeposit = $("#usePreDeposit").val();
+            var useCreditMoney = $("#useCreditMoney").val();
+            var useSubvention = $("#useSubvention").val();
+            var amountsPayable = $("#amountsPayable").text();
+            var freight = $("#freight").text();
+
+
+            var deliveryMsgString = {
+                "receiver": receiverName,
+                "receiverPhone": receiverPhone,
+                "deliveryProvince": province,
+                "deliveryCity": city,
+                "deliveryCounty": county,
+                "deliveryStreet": street,
+                "residenceName": residenceName,
+                "detailedAddress": detailedAddress,
+                "estateInfo": estateInfo,
+                "deliveryType": 'HOUSE_DELIVERY'
+            }
+            var billingMsgString = {
+                "stPreDeposit": usePreDeposit,
+                "storeCreditMoney": useCreditMoney,
+                "storeSubvention": useSubvention
+            }
+            if (null != useCreditMoney && useCreditMoney > 0){
+                var totalAmount = (usePreDeposit*100 + useCreditMoney*100 + useSubvention*100)/100;
+                if (totalAmount != amountsPayable){
+                    $notify.warning("使用信用金支付必须一次性支付完毕");
+                    return;
+                }
+            }
+
+            var identityType = 2;
+            var sysDeliveryType = 'HOUSE_DELIVERY';
+            var json = {
+                "userId": guideId,
+                "identityType": identityType,
+                "goodsList": JSON.stringify(goodsDetails),
+                "deliveryMsg":JSON.stringify(deliveryMsgString),
+                "billingMsg": JSON.stringify(billingMsgString),
+                "sysDeliveryType": sysDeliveryType,
+                "storeId": storeId,
+//                "cityId":city,
+                "remark": remark
+            };
+            var url = "/rest/admin/fit/place/order/ma/create";
+            $.ajax({
+                url: url,
+                dataType: "json",
+                method: "POST",
+                data: json,
+                async: true,
+                error: function () {
+                    clearTimeout($global.timer);
+                    $loading.close();
+                    $global.timer = null;
+                    $notify.danger('网络异常，请稍后重试或联系管理员');
+                    $('#goods_import').bootstrapValidator('disableSubmitButtons', false);
+                },
+                success: function (result) {
+                    if (0 === result.code) {
+                        document.getElementById("totalGoodsAmount").innerText = 0.00;
+                        document.getElementById("memberDiscount").innerText = 0.00;
+                        document.getElementById("promotionDiscount").innerText = 0.00;
+                        document.getElementById("stPreDeposit").innerText = 0.00;
+                        document.getElementById("stCreditMoney").innerText = 0.00;
+                        document.getElementById("stSubvention").innerText = 0.00;
+                        document.getElementById("freight").innerText = 0.00;
+                        document.getElementById("amountsPayable").innerText = 0.00;
+                        $("#usePreDeposit").val(0.00);
+                        $("#useCreditMoney").val(0.00);
+                        $("#useSubvention").val(0.00);
+                        clearTimeout($global.timer);
+                        $loading.close();
+                        $notify.info(result.message);
+                        $('#gotoPay').modal('hide');
+                        $("#selectedGoodsTable").html("");
+                        window.location.href="";
+                    } else {
+                        $('#gotoPay').modal('hide');
+                        clearTimeout($global.timer);
+                        $loading.close();
+                        $global.timer = null;
+                        $notify.danger(result.message);
+                        $('#goods_import').bootstrapValidator('disableSubmitButtons', false);
+                    }
+                }
+            });
+            console.log(goodsDetails);
+        }
+
+        function returnGoPay() {
+            $('#gotoPay').modal('hide');
         }
     </script>
 
@@ -799,7 +1052,8 @@
                                 <label for="guideId">
                                     下单员工/导购
                                 </label>
-                                <select name="guideId" id="guideId" class="form-control select" onchange="resetAddress()">
+                                <select name="guideId" id="guideId" class="form-control select"
+                                        onchange="resetAddress()">
                                 </select>
                             </div>
                         </div>
@@ -831,11 +1085,6 @@
                     <input id="goAddDeliveryAddressType" name="goAddDeliveryAddressType" type="hidden" value="1"/>
 
 
-
-
-
-
-
                     <!-- 地址选择框 -->
                     <div id="selectAddressDataGrid" class="modal fade" tabindex="-1" role="dialog">
                         <div class="modal-dialog" role="document" style="width: 60%">
@@ -855,17 +1104,18 @@
                                                     <div class="box box-primary">
                                                         <div id="addressToolbar" class="form-inline">
 
-                                                        <div class="input-group col-md-3"
-                                                     style="margin-top:0px positon:relative">
-                                                    <input type="text" name="sellerAddressConditions"
-                                                           id="sellerAddressConditions"
-                                                           class="form-control" style="width:300px;height:34px;"
-                                                           placeholder="请输入收货人姓名、电话、小区、楼盘、详细地址">
-                                                    <span class="input-group-btn">
+                                                            <div class="input-group col-md-3"
+                                                                 style="margin-top:0px positon:relative">
+                                                                <input type="text" name="sellerAddressConditions"
+                                                                       id="sellerAddressConditions"
+                                                                       class="form-control"
+                                                                       style="width:300px;height:34px;"
+                                                                       placeholder="请输入收货人姓名、电话、小区、楼盘、详细地址">
+                                                                <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
                                     onclick="openAddressModal('/rest/order/photo/find/address')">查找</button>
                         </span>
-                                                </div>
+                                                            </div>
                                                         </div>
                                                         <div class="box-body table-reponsive">
                                                             <table id="addressDataGrid"
@@ -884,9 +1134,83 @@
                     </div>
 
 
+                    <!-- 去支付弹框 -->
+                    <div id="gotoPay" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document" style="width: 60%">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h3>支付</h3>
+                                    <button type="button" name="search" class="btn btn-default pull-left"
+                                            onclick="returnGoPay()" style="margin-left:700px;margin-top: -35px;">返回
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <!--  设置这个div的大小，超出部分显示滚动条 -->
+                                    <div id="payDataGridTree" class="ztree" style="height: 60%;overflow:auto; ">
+                                        <section class="content">
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <div class="box box-primary">
+                                                        <div id="addressToolbar" class="form-inline">
 
+                                                            <div class="input-group col-md-6"
+                                                                 style="margin-top:0px positon:relative">
+                                                                <h4>账单信息</h4>
+                                                                <b>商&nbsp;品&nbsp;金&nbsp;额&nbsp;：</b>
+                                                                <span id="totalGoodsAmount"
+                                                                      name="totalGoodsAmount"></span>
+                                                                <br><br>
+                                                                <b>冲账户余额：</b>
+                                                                <span id="memberDiscount" name="memberDiscount"></span>
+                                                                <br><br>
+                                                                <b>订&nbsp;单&nbsp;折&nbsp;扣&nbsp;：</b>
+                                                                <span id="promotionDiscount"
+                                                                      name="promotionDiscount"></span>
+                                                                <br><br>
+                                                                <b>运&nbsp;费&nbsp;金&nbsp;额&nbsp;：</b>
+                                                                <span id="freight"
+                                                                      name="freight"></span>
+                                                                <br><br>
+                                                                <b>应&nbsp;付&nbsp;金&nbsp;额&nbsp;：</b>
+                                                                <span id="amountsPayable"
+                                                                      name="amountsPayable"></span>
+                                                            </div>
+                                                            <br><br>
+                                                            <div class="input-group col-md-8"
+                                                                 style="margin-top:0px positon:relative">
+                                                                <h4>支付信息</h4>
+                                                                <b>客户预存款：</b>
+                                                                <span id="stPreDeposit" name="stPreDeposit"></span>
+                                                                <input id="usePreDeposit" style="float: right"/>
+                                                                <br><br><br>
+                                                                <b>信&nbsp;&nbsp;&nbsp;&nbsp;用&nbsp;&nbsp;&nbsp;&nbsp;金：</b>
+                                                                <span id="stCreditMoney" name="stCreditMoney"></span>
+                                                                <input id="useCreditMoney" style="float: right"/>
+                                                                <br><br><br>
+                                                                <b>现&nbsp;金&nbsp;返&nbsp;利&nbsp;：</b>
+                                                                <span id="stSubvention" name="stSubvention"></span>
+                                                                <input id="useSubvention" style="float: right"/>
+                                                            </div>
+                                                        </div>
+                                                        <div class="input-group col-md-6"
+                                                             style="margin-top:0px positon:relative">
+                                                            <button type="button" class="btn btn-primary footer-btn"
+                                                                    id="submitOrder"
+                                                                    onclick="maCreateOrder()"
+                                                                    style="position:fixed;right:-100;bottom:0;width:150px;height:40px;margin-left: 600px;">
+                                                                <i class="fa fa-check"></i> 下单
+                                                            </button>
+                                                        </div>
 
-
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </section>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
 
                     <div id="writeDeliveryAddress">
@@ -1022,7 +1346,7 @@
                             <div class="form-group" id="remarkDiv">
                                 <label>备注</label>
                                 <textarea id="remark" class="form-control" rows="1" placeholder="Enter ..."
-                                          >${remark!''}</textarea>
+                                >${remark!''}</textarea>
                             </div>
                         </div>
                     </div>
@@ -1066,21 +1390,26 @@
                         <div class="col-xs-12 col-md-2">
                             <button type="button" class="btn btn-primary footer-btn" id="submitGoods"
                                     onclick="submitGoodsInfo()">
-                                <i class="fa fa-check"></i> 下一步
+                                <i class="fa fa-check"></i> 加入下料清单
                             </button>
                         </div>
                     </div>
                 </form>
                 <div class="col-xs-12 col-md-2">
                     <button type="button" class="btn btn-danger footer-btn btn-cancel"
-                            style="position:fixed;right:-100;bottom:0;width:150px;height:40px;margin-left: 500px;">
+                            style="position:fixed;right:-100;bottom:0;width:150px;height:40px;margin-left: 300px;">
                         <i class="fa fa-close"></i> 取消
                     </button>
 
                     <button type="button" class="btn btn-primary footer-btn" id="submitGoods"
                             onclick="submitGoodsInfo()"
+                            style="position:fixed;right:-100;bottom:0;width:150px;height:40px;margin-left: 500px;">
+                        <i class="fa fa-check"></i> 加入下料清单
+                    </button>
+                    <button type="button" class="btn btn-primary footer-btn" id="submitGoods"
+                            onclick="goPay()"
                             style="position:fixed;right:-100;bottom:0;width:150px;height:40px;margin-left: 700px;">
-                        <i class="fa fa-check"></i> 下一步
+                        <i class="fa fa-check"></i> 去支付
                     </button>
                 <#--</div>-->
                 <#--<div class="col-xs-12 col-md-2">-->

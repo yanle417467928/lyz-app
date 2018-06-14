@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface DeliveryAddressService {
 
-    PageInfo<DeliveryAddressResponse> queryListByUserIdAndStatusIsTrue(Long customerId, AppIdentityType identityType,Integer page);
+    PageInfo<DeliveryAddressResponse> queryListByUserIdAndStatusIsTrue(Long customerId, AppIdentityType identityType,Integer page,Integer size);
 
     DeliveryAddressRequest addDeliveryAddress(Long userId, AppIdentityType identityType, DeliveryAddressRequest deliveryAddress);
 

@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditChangeDetail;
@@ -11,11 +12,15 @@ import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaCompanyOrderVORequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.MaGoodsSimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.ProductCouponSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.vo.DetailFitOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.FitOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.MaOrderVO;
+import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import cn.com.leyizhuang.app.foundation.vo.management.goodscategory.MaOrderGoodsDetailResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.order.*;
 import com.github.pagehelper.PageInfo;
@@ -24,6 +29,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by caiyu on 2017/12/16.
@@ -432,5 +438,16 @@ public interface MaOrderService {
      * @return
      */
     DetailFitOrderVO findFitOrderByOrderNumber(String ordNumber);
+
+    CreateOrderGoodsSupport createMaOrderGoodsInfo(List<MaGoodsSimpleInfo> goodsList, Long userId, Integer identityType, Long customerId,
+                                                 List<ProductCouponSimpleInfo> productCouponList, String orderNumber) throws UnsupportedEncodingException;
+
+    List<OrderGoodsVO> findMaOrderGoodsVOListByUserIdAndIdentityTypeAndGoodsSkus(Long userId, Integer identityType, Set<String> goodsIdSet);
+
+    void clearOrderGoodsInMaterialList(Long userId, Integer identityType, List<MaGoodsSimpleInfo> goodsList, List<ProductCouponSimpleInfo> productCouponList);
+
+    void deleteMaterialListByUserIdAndIdentityTypeAndGoodsSkus(Long userId, AppIdentityType identityType, Set<String> goodsSkus);
+
+    void deleteMaterialListProductCouponGoodsByUserIdAndIdentityTypeAndGoodsIds(Long userId, AppIdentityType identityType, Set<Long> couponGoodsIds);
 
 }
