@@ -69,10 +69,13 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
                 manager_id = #{managerId},
             </if>
             <if test="qrCode != null">
-                qr_code = #{qrCode}
+                qr_code = #{qrCode},
             </if>
-            <if test="null != delivery_clerk_no">
-                delivery_clerk_no=#{delivery_clerk_no}
+            <if test="null != deliveryClerkNo">
+                delivery_clerk_no=#{deliveryClerkNo},
+            </if>
+            <if test="null != loginName">
+                login_name=#{loginName}
             </if>
         </set>
         WHERE emp_id = #{empId}
@@ -234,6 +237,9 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
             </if>
             <if test="null != managerId">
                 manager_id = #{managerId},
+            </if>
+            <if test="null != deliveryClerkNo">
+                delivery_clerk_no=#{deliveryClerkNo}
             </if>
         </set>
         WHERE login_name = #{loginName}
@@ -428,6 +434,53 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
     select mobile
     from emp_employee
     where emp_id =(select sales_manager from st_store where store_code = #{storeCode})
+    </select>
+
+    <select id="getEmpAvailableCreditMoneyChangeLogByEmpId" resultType="cn.com.leyizhuang.app.foundation.pojo.EmpAvailableCreditMoneyChangeLog">
+        SELECT
+            ac.*
+        FROM
+            (
+            SELECT
+                eaccl.id,
+                - ABS( eaccl.credit_limit_available_change_amount ) AS credit_limit_available_change_amount,
+                eaccl.credit_limit_available_after_change,
+                eaccl.change_type,
+                eaccl.change_type_desc
+            FROM
+                emp_available_credit_change_log eaccl
+            WHERE
+                change_type IN ( 'PLACE_ORDER', 'TEMPORARY_CLEAR' ) UNION ALL
+            SELECT
+                eaccl.id,
+                eaccl.credit_limit_available_change_amount,
+                eaccl.credit_limit_available_after_change,
+                eaccl.change_type,
+                eaccl.change_type_desc
+            FROM
+                emp_available_credit_change_log eaccl
+            WHERE
+                change_type NOT IN ( 'PLACE_ORDER', 'TEMPORARY_CLEAR' )
+            ) ac
+            INNER JOIN emp_credit_money_change_log ecmcl ON ac.id = ecmcl.available_credit_change_id
+          where ecmcl.emp_id = #{empId}
+            ORDER BY ecmcl.create_time
+    </select>
+
+    <update id="updateEmpAvailableCreditMoneyChangeLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.EmpAvailableCreditMoneyChangeLog">
+        UPDATE emp_available_credit_change_log
+        <set>
+            <if test="creditLimitAvailableAfterChange != null">
+                credit_limit_available_after_change = #{creditLimitAvailableAfterChange}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <select id="findSellerByMobile" parameterType="java.lang.String" resultType="AppEmployee">
+        SELECT *
+        FROM emp_employee
+        WHERE mobile = #{mobile} AND identity_type = 'SELLER'
+        AND store_id NOT IN (550,551,563,585)
     </select>
 
 </mapper>

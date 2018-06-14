@@ -150,6 +150,10 @@ public class UserSettingController {
         try {
             if (userInformation.getIdentityType() == 6) {
                 AppCustomer appCustomer = transformAppCustomer(userInformation);
+                AppCustomer customer = this.customerService.findStoreSellerByCustomerId(userInformation.getUserId());
+                if (null != customer && null != appCustomer.getSalesConsultId() && !appCustomer.getSalesConsultId().equals(customer.getSalesConsultId())){
+                    appCustomer.setBindingTime(new Date());
+                }
                 customerService.update(appCustomer);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
                 logger.info("personalInformationSet OUT,用户修改个人信息成功，出参 resultDTO:{}", resultDTO);

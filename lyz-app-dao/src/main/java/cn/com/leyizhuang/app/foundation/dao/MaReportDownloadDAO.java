@@ -4,7 +4,6 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.reportDownload.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
 
 /**
@@ -66,7 +65,8 @@ public interface MaReportDownloadDAO {
                                              @Param("startTime") String startTime,
                                              @Param("endTime") String endTime,
                                              @Param("list") List<Long> storeIds,
-                                             @Param("productType") String productType);
+                                             @Param("productType") String productType,
+                                             @Param("storeId") Long storeId);
 
     List<AccountGoodsItemsDO> findAccountZGGoodsItemsDOAll(@Param("cityId") Long cityId, @Param("storeId") Long storeId,
                                                            @Param("startTime") String startTime, @Param("endTime") String endTime,
@@ -74,9 +74,21 @@ public interface MaReportDownloadDAO {
 
 
 
-    List<ArrearsReportDO> findArrearsList(@Param("companyCode") String companyCode, @Param("storeType") String storeType, @Param("list") List<Long> storeIds);
+    List<ArrearsReportDO> findArrearsList(@Param("companyCode") String companyCode, @Param("storeType") String storeType, @Param("list") List<Long> storeIds,@Param("storeId") Long storeId);
 
 
     List<EmpCreditMoneyChangeReportDO> findEmployeeCreditMoneyReportDOAll(@Param("cityId") Long cityId, @Param("storeId") Long storeId, @Param("storeType") String storeType,
                                                                           @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("list") List<Long> storeIds);
+
+    List<DistributionDO> findDistributionDOAll(@Param("cityId") Long cityId, @Param("wareHouseNo") String wareHouseNo, @Param("deliveryClerkNo") String deliveryClerkNo,
+                                                         @Param("startTime") String startTime, @Param("endTime") String endTime,
+                                                         @Param("keywords") String keywords);
+
+    List<AccountGoodsItemsDO> findAccountGoodsItemsDOHR(@Param("cityId") Long cityId, @Param("storeId") Long storeId, @Param("storeType") String storeType,
+                                                         @Param("startTime") String startTime, @Param("endTime") String endTime,
+                                                         @Param("keywords") String keywords, @Param("list") List<Long> storeIds);
+
+    List<PhotoOrderCheckDO> findPhotoOrderCheckDOAll(@Param("cityId") Long cityId, @Param("startTime") String startTime,
+                                                     @Param("endTime") String endTime, @Param("keywords") String keywords);
+
 }

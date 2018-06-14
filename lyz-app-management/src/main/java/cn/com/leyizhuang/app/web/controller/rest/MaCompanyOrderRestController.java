@@ -108,6 +108,7 @@ public class MaCompanyOrderRestController extends BaseRestController {
         try {
             //查询登录用户门店权限的门店ID
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            maCompanyOrderVORequest =  MaCompanyOrderVORequest.transformTime(maCompanyOrderVORequest);
             size = getSize(size);
             Integer page = getPage(offset, size);
             PageHelper.startPage(page, size);

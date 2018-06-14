@@ -40,31 +40,16 @@
             <div class="box box-primary">
                 <div id="toolbar" class="form-inline">
                     <select name="city" id="cityCode" class="form-control selectpicker" data-width="120px" style="width:auto;"
-                            onchange="findStorelist()" data-live-search="true">
+                             data-live-search="true">
                         <option value="-1">选择城市</option>
-                    </select>
-
-                    <select name="storeType" id="storeType" class="form-control selectpicker" data-width="120px" style="width:auto;"
-                            onchange="findStorelist()" data-live-search="true">
-                        <option value="">选择门店类型</option>
-                    <#if storeTypes??>
-                        <#list storeTypes as storeType>
-                            <option value="${storeType.value}">${storeType.description}</option>
-                        </#list>
-                    </#if>
-                    </select>
-
-                    <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px" style="width:auto;"
-                            <#--onchange="findByCondition()"--> data-live-search="true">
-                        <option value="-1">选择门店</option>
                     </select>
 
                     <input name="startTime" <#--onchange="findByCondition()"--> type="text" class="form-control datepicker" id="startTime" style="width: 120px;" placeholder="开始时间">
                     <input name="endTime" <#--onchange="findByCondition()"--> type="text" class="form-control datepicker" id="endTime" style="width: 120px;" placeholder="结束时间">
 
-                    <div class="input-group col-md-2" style="margin-top:0px; positon:relative">
-                        <input type="text" name="queryCusInfo" id="queryCusInfo" class="form-control" style="width:auto;"
-                               placeholder="请输入要查找的单号">
+                    <div class="input-group col-md-3" style="margin-top:0px; positon:relative">
+                        <input type="text" name="queryInfo" id="queryInfo" class="form-control" style="width:auto;"
+                               placeholder="请输入要查找的单号/客服名字">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
                                     onclick="return findByOrderNumber()">查找</button>
@@ -93,7 +78,6 @@
 
     $(function () {
         findCitylist();
-        findStorelist();
 
         //获取数据
 //        initDateGird(null,null,null,null,null,null);
@@ -129,47 +113,15 @@
         });
     }
 
-    function findStorelist() {
-        initSelect("#storeCode", "选择门店");
-        var store = "";
-        var cityId = $('#cityCode').val();
-        var storeType = $('#storeType').val();
-        $.ajax({
-            url: '/rest/stores/findStoresListByCityIdAndStoreType',
-            method: 'GET',
-            data:{
-                storeType: storeType,
-                cityId: cityId
-            },
-            error: function () {
-                clearTimeout($global.timer);
-                $loading.close();
-                $global.timer = null;
-                $notify.danger('网络异常，请稍后重试或联系管理员');
-            },
-            success: function (result) {
-                clearTimeout($global.timer);
-                $.each(result, function (i, item) {
-                    store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
-                });
-                $("#storeCode").append(store);
-                $('#storeCode').selectpicker('refresh');
-                $('#storeCode').selectpicker('render');
-//                findByCondition();
-            }
-        });
-    }
 
-    function initDateGird(keywords,startTime,endTime,storeId,storeType,cityId) {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/reportDownload/agencyFund/page/grid', 'get', false, function (params) {
+    function initDateGird(keywords,startTime,endTime,cityId) {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/reportDownload/photoOrderCheck/page/grid', 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
                 keywords: keywords,
-                storeId: storeId,
                 startTime: startTime,
                 endTime: endTime,
-                storeType: storeType,
                 cityId: cityId
             }
         }, [{
@@ -180,96 +132,58 @@
             title: '城市',
             align: 'center'
         }, {
-            field: 'warehouse',
-            title: '仓库名称',
+            field: 'photoOrderNo',
+            title: '单号',
             align: 'center'
         }, {
-            field: 'storeName',
-            title: '门店名称',
-            align: 'center'
-        }, {
-            field: 'storeType',
-            title: '门店类型',
+            field: 'userName',
+            title: '下单人姓名',
             align: 'center'
         },  {
-            field: 'orderTime',
-            title: '封车时间',
+            field: 'orderType',
+            title: '订单类型',
             align: 'center'
         }, {
-            field: 'orderNumber',
-            title: '订单号',
+            field: 'createTime',
+            title: '创建时间',
             align: 'center'
         }, {
-            field: 'deliveryName',
-            title: '配送员姓名',
+            field: 'finishTime',
+            title: '完结时间',
             align: 'center'
         }, {
-            field: 'agencyMoney',
-            title: '订单代收金额',
-            align: 'center'
-        }, {
-            field: 'realMoney',
-            title: '实收金额',
-            align: 'center'
-        }, {
-            field: 'returnMoney',
-            title: '应退门店金额',
+            field: 'operationUser',
+            title: '完结人',
             align: 'center'
         }
         ]);
     }
 
-    function findByCondition() {
-        $("#queryCusInfo").val('');
-        $("#dataGrid").bootstrapTable('destroy');
-        var keywords = $('#queryCusInfo').val();
-        var startTime = $('#startTime').val();
-        var endTime = $('#endTime').val();
-        var storeId = $("#storeCode").val();
-        var cityId = $('#cityCode').val();
-        var storeType = $('#storeType').val();
-        initDateGird(keywords,startTime,endTime,storeId,storeType,cityId);
-    }
-
     function findByOrderNumber() {
-        /*$('#startTime').val('');
-        $('#endTime').val('');
-        $("#storeCode").val(-1);
-        $('#cityCode').val(-1);
-        $('#storeType').val('');
-        $('#storeCode').selectpicker('refresh');
-        $('#storeCode').selectpicker('render');
-        $('#cityCode').selectpicker('refresh');
-        $('#cityCode').selectpicker('render');
-        $('#storeType').selectpicker('refresh');
-        $('#storeType').selectpicker('render');*/
-        var queryCusInfo = $("#queryCusInfo").val();
+
+        var queryInfo = $("#queryInfo").val();
         $("#dataGrid").bootstrapTable('destroy');
         var startTime = $('#startTime').val();
         var endTime = $('#endTime').val();
-        var storeId = $("#storeCode").val();
         var cityId = $('#cityCode').val();
-        var storeType = $('#storeType').val();
-        initDateGird(queryCusInfo,startTime,endTime,storeId,storeType,cityId);
+        initDateGird(queryInfo,startTime,endTime,cityId);
     }
 
 
     function initSelect(select, optionName) {
         $(select).empty();
-        var selectOption = "<option value=-1>" + optionName + "</option>";
+        var selectOption = "<option value=''>" + optionName + "</option>";
         $(select).append(selectOption);
     }
 
     function openBillModal() {
-        var keywords = $("#queryCusInfo").val();
+        var keywords = $("#queryInfo").val();
         var startTime = $('#startTime').val();
         var endTime = $('#endTime').val();
-        var storeId = $("#storeCode").val();
         var cityId = $('#cityCode').val();
-        var storeType = $('#storeType').val();
 
-        var url = "/rest/reportDownload/agencyFund/download?keywords="+ keywords + "&storeId=" + storeId + "&startTime=" + startTime
-                + "&endTime=" + endTime + "&storeType=" + storeType + "&cityId=" + cityId;
+        var url = "/rest/reportDownload/photoOrderCheck/download?keywords="+ keywords + "&startTime=" + startTime
+                + "&endTime=" + endTime + "&cityId=" + cityId;
         var escapeUrl=url.replace(/\#/g,"%23");
         window.open(escapeUrl);
 

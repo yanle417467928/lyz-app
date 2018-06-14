@@ -64,10 +64,10 @@ public class HqAppEmployeeController {
                 logger.warn("employeeSync OUT,同步新增员工信息失败，出参 password:{}", employeeDTO.getPassword());
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "密码{password} 不允许为空！", null);
             }
-            AppEmployee appEmployee = employeeService.findByLoginName(employeeDTO.getNumber());
-            if(null !=appEmployee){
+            AppEmployee appEmployee = employeeService.findByMobile(employeeDTO.getMobile());
+            if (null != appEmployee) {
                 logger.warn("employeeSync OUT,同步新增员工信息失败，出参 password:{}", employeeDTO.getPassword());
-                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "登录名已存在", null);
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该电话号码已使用", null);
             }
             if ("导购".equals(employeeDTO.getPosition())) {
                 if (StringUtils.isBlank(employeeDTO.getPositionType())) {
@@ -95,7 +95,7 @@ public class HqAppEmployeeController {
             employee.setLoginName(employeeDTO.getNumber());
             employee.setName(employeeDTO.getName());
             employee.setMobile(employeeDTO.getMobile());
-            if(null != employeeDTO.getBirthday()){
+            if (null != employeeDTO.getBirthday()) {
                 employee.setBirthday(employeeDTO.getBirthday());
             }
             employee.setSex(employeeDTO.getSex() ? SexType.MALE : SexType.FEMALE);
@@ -103,22 +103,22 @@ public class HqAppEmployeeController {
             employee.setPicUrl(employeeDTO.getPicUrl());
             employee.setManagerId(employeeDTO.getManagerId());
             employee.setCreateTime(TimeTransformUtils.UDateToLocalDateTime(employeeDTO.getCreateTime()));
-            if("导购".equals(employeeDTO.getPosition())){
+            if ("导购".equals(employeeDTO.getPosition())) {
                 employee.setIdentityType(AppIdentityType.SELLER);
-                if ("普通导购".equals(employeeDTO.getPositionType())){
+                if ("普通导购".equals(employeeDTO.getPositionType())) {
                     employee.setSellerType(AppSellerType.SELLER);
-                }else  if ("店长".equals(employeeDTO.getPositionType())){
+                } else if ("店长".equals(employeeDTO.getPositionType())) {
                     employee.setSellerType(AppSellerType.SUPERVISOR);
-                }else if("店经理".equals(employeeDTO.getPositionType())){
+                } else if ("店经理".equals(employeeDTO.getPositionType())) {
                     employee.setSellerType(AppSellerType.MANAGER);
                 }
-            }else if ("装饰公司经理".equals(employeeDTO.getPosition())){
+            } else if ("装饰公司经理".equals(employeeDTO.getPosition())) {
                 employee.setSellerType(null);
                 employee.setIdentityType(AppIdentityType.DECORATE_MANAGER);
-            }else if ("装饰公司员工".equals(employeeDTO.getPosition())){
+            } else if ("装饰公司员工".equals(employeeDTO.getPosition())) {
                 employee.setSellerType(null);
                 employee.setIdentityType(AppIdentityType.DECORATE_EMPLOYEE);
-            }else if ("配送员".equals(employeeDTO.getPosition())){
+            } else if ("配送员".equals(employeeDTO.getPosition())) {
                 employee.setSellerType(null);
                 employee.setIdentityType(AppIdentityType.DELIVERY_CLERK);
                 employee.setDeliveryClerkNo(employeeDTO.getDeliveryClerkNo());
@@ -126,12 +126,24 @@ public class HqAppEmployeeController {
             City city = cityService.findByCityNumber(employeeDTO.getCityNumber());
             if (null == city) {
                 logger.warn("employeeSync OUT,同步新增员工信息失败，出参 city:{}", city);
-                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此城市不允许为空！", null);
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此城市,不允许为空！", null);
             }
             AppStore store = appStoreService.findByStoreCode(employeeDTO.getStoreCode());
             if (null == store) {
                 logger.warn("employeeSync OUT,同步新增员工信息失败，出参 store:{}", store);
-                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此门店不允许为空！", null);
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此门店,不允许为空！", null);
+            }
+            if ("装饰公司经理".equals(employeeDTO.getPosition()) || "装饰公司员工".equals(employeeDTO.getPosition())) {
+                if (!"ZS".equals(store.getStoreType())) {
+                    logger.warn("employeeSync OUT,同步新增员工信息失败，出参 store:{}", store);
+                    return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "职位类型与门店类型不匹配", null);
+                }
+            }
+            if ("导购".equals(employeeDTO.getPosition()) || "配送员".equals(employeeDTO.getPosition())) {
+                if ("ZS".equals(store.getStoreType())) {
+                    logger.warn("employeeSync OUT,同步新增员工信息失败，出参 store:{}", store);
+                    return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "职位类型与门店类型不匹配", null);
+                }
             }
             employee.setCityId(city.getCityId());
             employee.setStoreId(store.getStoreId());
@@ -152,7 +164,7 @@ public class HqAppEmployeeController {
             }
             logger.warn("employeeSync OUT,同步新增员工信息成功，出参 name:{}", employee);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-        }else {
+        } else {
             logger.warn("employeeSync OUT,同步新增员工信息失败，出参 name:{}", employeeDTO);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "员工信息为空！", null);
         }
@@ -169,14 +181,14 @@ public class HqAppEmployeeController {
         logger.warn("updateEmployee CALLED,同步修改员工信息，入参 employeeDTO:{}", employeeDTO);
         if (null != employeeDTO) {
             String password = Base64Utils.decode(employeeDTO.getPassword());
-            AppEmployee employee = employeeService.findByLoginName(employeeDTO.getNumber());
-            if(null ==employee){
+            AppEmployee employee = employeeService.findByMobile(employeeDTO.getMobile());
+            if (null == employee) {
                 logger.warn("employeeSync OUT,同步修改员工信息失败，出参 employee:{}", employee);
-                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "为找到该员工信息！", null);
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未找到该员工信息！", null);
             }
             employee.setName(employeeDTO.getName());
             employee.setMobile(employeeDTO.getMobile());
-            if(null != employeeDTO.getBirthday()){
+            if (null != employeeDTO.getBirthday()) {
                 employee.setBirthday(employeeDTO.getBirthday());
             }
             employee.setSex(employeeDTO.getSex() ? SexType.MALE : SexType.FEMALE);
@@ -184,22 +196,22 @@ public class HqAppEmployeeController {
             employee.setPicUrl(employeeDTO.getPicUrl());
             employee.setManagerId(employeeDTO.getManagerId());
             employee.setCreateTime(TimeTransformUtils.UDateToLocalDateTime(employeeDTO.getCreateTime()));
-            if("导购".equals(employeeDTO.getPosition())){
+            if ("导购".equals(employeeDTO.getPosition())) {
                 employee.setIdentityType(AppIdentityType.SELLER);
-                if ("普通导购".equals(employeeDTO.getPositionType())){
+                if ("普通导购".equals(employeeDTO.getPositionType())) {
                     employee.setSellerType(AppSellerType.SELLER);
-                }else  if ("店长".equals(employeeDTO.getPositionType())){
+                } else if ("店长".equals(employeeDTO.getPositionType())) {
                     employee.setSellerType(AppSellerType.SUPERVISOR);
-                }else if("店经理".equals(employeeDTO.getPositionType())){
+                } else if ("店经理".equals(employeeDTO.getPositionType())) {
                     employee.setSellerType(AppSellerType.MANAGER);
                 }
-            }else if ("装饰公司经理".equals(employeeDTO.getPosition())){
+            } else if ("装饰公司经理".equals(employeeDTO.getPosition())) {
                 employee.setIdentityType(AppIdentityType.DECORATE_MANAGER);
                 employee.setSellerType(null);
-            }else if ("装饰公司员工".equals(employeeDTO.getPosition())){
+            } else if ("装饰公司员工".equals(employeeDTO.getPosition())) {
                 employee.setIdentityType(AppIdentityType.DECORATE_EMPLOYEE);
                 employee.setSellerType(null);
-            }else if ("配送员".equals(employeeDTO.getPosition())){
+            } else if ("配送员".equals(employeeDTO.getPosition())) {
                 employee.setIdentityType(AppIdentityType.DELIVERY_CLERK);
                 employee.setSellerType(null);
                 employee.setDeliveryClerkNo(employeeDTO.getDeliveryClerkNo());
@@ -207,13 +219,14 @@ public class HqAppEmployeeController {
             City city = cityService.findByCityNumber(employeeDTO.getCityNumber());
             if (null == city) {
                 logger.warn("employeeSync OUT,同步修改员工信息失败，出参 city:{}", city);
-                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此城市不允许为空！", null);
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此城市,不允许为空！", null);
             }
             AppStore store = appStoreService.findByStoreCode(employeeDTO.getStoreCode());
             if (null == store) {
-                logger.warn("employeeSync OUT,同步新增员工信息失败，出参 store:{}", store);
-                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此门店不允许为空！", null);
+                logger.warn("employeeSync OUT,同步修改员工信息失败，出参 store:{}", store);
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此门店,不允许为空！", null);
             }
+            employee.setLoginName(employeeDTO.getNumber());
             employee.setCityId(city.getCityId());
             employee.setStoreId(store.getStoreId());
             String salt = employee.generateSalt();
@@ -221,7 +234,7 @@ public class HqAppEmployeeController {
             try {
                 String md5Password = DigestUtils.md5DigestAsHex((password + salt).getBytes("UTF-8"));
                 employee.setPassword(md5Password);
-                employeeService.updateByLoginName(employee);
+                employeeService.update(employee);
                 logger.warn("同步修改员工信息成功！");
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             } catch (Exception e) {
@@ -229,7 +242,7 @@ public class HqAppEmployeeController {
                 logger.warn("deleteEmployee EXCEPTION,同步修改员工信息失败，出参 resultDTO:{}", e);
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "同步修改员工信息失败！", null);
             }
-        }else {
+        } else {
             logger.warn("员工信息为空！");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "员工信息为空！", null);
         }

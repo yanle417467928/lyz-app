@@ -56,7 +56,13 @@ public class MaPhotoOrderServiceImpl implements MaPhotoOrderService {
 
     @Override
     public int updateStatus(Long id, PhotoOrderStatus status) {
-        return this.maOrderPhotoDAO.updateStatus(id, status);
+        //修改处理人ID
+        ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
+        Long userId = null;
+        if (null != shiroUser) {
+            userId = shiroUser.getId();
+        }
+        return this.maOrderPhotoDAO.updateStatus(id, status, userId);
     }
 
     @Override
@@ -66,20 +72,30 @@ public class MaPhotoOrderServiceImpl implements MaPhotoOrderService {
 
     @Override
     public void updateStatusAndsaveAndUpdateMaterialList(Long photoId, PhotoOrderStatus status, List<MaterialListDO> materialListSave, List<MaterialListDO> materialListUpdate) {
-        //修改拍照下单状态
-        this.maOrderPhotoDAO.updateStatus(photoId,status);
-        //加入下料清单
-        this.maMaterialListService.saveAndUpdateMaterialList(materialListSave, materialListUpdate);
         //修改处理人ID
         ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
+        Long userId = null;
         if (null != shiroUser) {
-            this.maOrderPhotoDAO.updateOperationUserId(shiroUser.getId(), photoId);
+            userId = shiroUser.getId();
         }
+        //修改拍照下单状态
+        this.maOrderPhotoDAO.updateStatus(photoId,status,userId);
+        //加入下料清单
+        this.maMaterialListService.saveAndUpdateMaterialList(materialListSave, materialListUpdate);
+
+//        if (null != shiroUser) {
+//            this.maOrderPhotoDAO.updateOperationUserId(shiroUser.getId(), photoId);
+//        }
     }
 
     @Override
     public int batchDelete(Long[] ids) {
-        return this.maOrderPhotoDAO.batchDelete(ids);
+        ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
+        Long userId = null;
+        if (null != shiroUser) {
+            userId = shiroUser.getId();
+        }
+        return this.maOrderPhotoDAO.batchDelete(ids, userId);
     }
 
     @Override
@@ -94,6 +110,14 @@ public class MaPhotoOrderServiceImpl implements MaPhotoOrderService {
     @Override
     public void updateRemarkAndDeliveryId(String remark, Long deliveryId, Long userId, AppIdentityType identityType) {
         maMaterialListService.updateRemarkAndDeliveryId(remark, deliveryId, userId, identityType);
+    }
+
+    @Override
+    public PhotoOrderVO findByPhotoOrderNo(String photoOrderNo) {
+        if (null != photoOrderNo){
+            return this.maOrderPhotoDAO.findByPhotoOrderNo(photoOrderNo);
+        }
+        return null;
     }
 
 

@@ -20,14 +20,15 @@ public interface MaOrderPhotoDAO {
 
     PhotoOrderVO findByIdAndStatus(@Param("id")Long id, @Param("list")List<PhotoOrderStatus> status);
 
-    int updateStatus(@Param("id")Long id, @Param("status")PhotoOrderStatus status);
+    int updateStatus(@Param("id")Long id, @Param("status")PhotoOrderStatus status, @Param("updateUserId") Long updateUserId);
 
     int batchUpdateStatus(@Param("list")List<Long> ids, @Param("status")PhotoOrderStatus status);
 
-    int batchDelete(@Param("array")Long[] ids);
+    int batchDelete(@Param("array")Long[] ids, @Param("userId")Long userId);
 
     int updateOperationUserId(@Param("userId") Long userId, @Param("id") Long id);
 
     List<String> findPhotosById(@Param("array")Long[] ids);
 
+    PhotoOrderVO findByPhotoOrderNo(String photoOrderNo);
 }

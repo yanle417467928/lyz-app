@@ -38,135 +38,63 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="box box-primary">
-                <form class="form-horizontal" id="formSearch" style="margin:10px 5px;padding-bottom: 1px;">
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <div class="form-group">
-                                <label class="control-label col-md-2 col-xs-3" for="number" style="text-align: center">分公司:</label>
-                                <div class="col-md-2 col-xs-3" style="text-align: left;margin-left: -6%">
-                                    <select id="companyCode" name="companyCode" class="form-control selectpicker">
+                <div class="box-body table-reponsive">
+                    <div id="toolbar" class="form-inline">
+                        <form>
+                        <#--<@shiro.hasPermission name="/views/admin/resource/add">-->
+                            <button id="btn_add" type="button" class=" btn btn-default" onclick="openBillModal()">
+                                <i class="fa fa-download"></i>
+                                下载报表
+                            </button>
+                        <#--</@shiro.hasPermission>-->
+                            <select name="company" id="companyCode" class="form-control selectpicker"
+                                    data-width="120px"
+                                    style="width:auto;"
+                                    onchange="findStorelist()" data-live-search="true">
+                                <option value="ALL">所有分公司</option>
+                            <#if structureList?? && structureList?size gt 0 >
+                                <#list structureList as structure>
+                                    <option value="${structure.number!''}">${structure.structureName!''}</option>
+                                </#list>
+                            </#if>
 
-                                    <#if structureList?? && structureList?size gt 0 >
-                                        <#list structureList as structure>
-                                            <option value="${structure.number!''}">${structure.structureName!''}</option>
-                                        </#list>
-                                    </#if>
-                                        <option value="ALL">所有</option>
-                                    </select>
-                                </div>
-                                <label class="control-label col-md-1 col-xs-3" for="startTime" style="text-align:left;margin-left: 2%">日期:</label>
-                                <div class="col-md-2 col-xs-3" style="text-align:left;margin-left: -4%">
-                                    <input name="startTime" type="text" class="form-control datepicker" id="startTime"
-                                           placeholder="开始时间"
-                                           readonly>
-                                </div>
-                                <label class="control-label col-md-1 col-xs-3" for="endTime"
-                                       style="text-align: center;margin-left: -4%">至</label>
-                                <div class="col-md-2 col-xs-3" style="text-align:left;margin-left: -4%">
-                                    <input name="endTime" type="text" class="form-control datepicker" id="endTime"
-                                           placeholder="结束时间"
-                                           readonly>
-                                </div>
-                            </div>
-                        </div>
+                            </select>
+                            <select name="storeType" id="storeType" class="form-control selectpicker"
+                                    data-width="160px"
+                                    style="width:auto;"
+                                    onchange="findStorelist()" data-live-search="true">
+                                <option value="ZY">直营</option>
+                                <option value="JM">加盟</option>
+                                <option value="FX">分销(不分公司)</option>
+                                <option value="ZS">装饰公司(不分公司)</option>
+                            </select>
+                            <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px"
+                                    style="width:auto;"
+                            <#--onchange="findByCondition()"--> data-live-search="true">
+                                <option value="-1">选择门店</option>
+                            </select>
+                            <select name="productType" id="productType" class="form-control selectpicker" data-width="120px"
+                                    style="width:auto;"
+                            <#--onchange="findByCondition()"--> data-live-search="true">
+                                <option value="ALL">全部品牌</option>
+                                <option value="LYZ">乐易装（包含莹润）</option>
+                                <option value="HR">华润</option>
+                            </select>
+                            <input name="startTime" <#--onchange="findByCondition()"--> type="text"
+                                   class="form-control datepicker" id="startTime" style="width: 140px;"
+                                   placeholder="开始时间"
+                                   readonly>
+                            <input name="endTime" <#--onchange="findByCondition()"--> type="text"
+                                   class="form-control datepicker" id="endTime" style="width: 140px;"
+                                   placeholder="结束时间"
+                                   readonly>
+                            <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
+                                    onclick="return findByCondition()">查找
+                            </button>
+                            <button type="reset" class="btn btn-default" onclick="clearAll()">重置
+                            </button>
+                        </form>
                     </div>
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <div class="form-group">
-                                <label class="control-label col-md-2 col-xs-3" for="storeType"
-                                       style="text-align: center">门店类型:</label>
-                                <label class="control-label margin-6" >
-                                    <input type="radio" name="storeType" value="ZY" class="iradio_square-blue "
-                                           checked>
-                                    直营
-                                </label>
-                                <label class="control-label margin-6" style="margin-left: 5%">
-                                    <input type="radio" name="storeType" value="JM" class="iradio_square-blue ">
-                                    加盟
-                                </label>
-                                <label class="control-label margin-6" style="margin-left: 5%">
-                                    <input type="radio" name="storeType" value="FX" class="iradio_square-blue ">
-                                    分销(不分公司)
-                                </label>
-                                <label class="control-label margin-6" style="margin-left: 5%">
-                                    <input type="radio" name="storeType" value="ZS" class="iradio_square-blue ">
-                                    装饰公司(不分公司)
-                                </label>
-
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <div class="form-group">
-                                <label class="control-label col-md-2 col-xs-3" for="storeType"
-                                       style="text-align: center">产品类型:</label>
-                                <label class="control-label margin-6">
-                                    <input type="radio" name="productType" value="ALL" checked class="iradio_square-blue ">
-                                    全部
-                                </label>
-                                <label class="control-label margin-6" style="margin-left: 5%">
-                                    <input type="radio" name="productType" value="LYZ" class="iradio_square-blue ">
-                                    乐易装（包含莹润）
-                                </label>
-                                <label class="control-label margin-6" style="margin-left: 5%">
-                                    <input type="radio" name="productType" value="HR" class="iradio_square-blue ">
-                                    华润
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <div class="form-group">
-                                <label class="control-label col-md-2 col-xs-3" for="number" style="text-align: center">是否平铺产品劵:</label>
-                                <label class="control-label margin-6" >
-                                    <input type="radio" name="product" value="1" class="iradio_square-blue "
-                                           checked>
-                                    是&nbsp;&nbsp;&nbsp;
-                                </label>
-                                <#--<label class="control-label margin-6" style="margin-left: 5%">-->
-                                    <#--<input type="radio" name="product" value="0" class="iradio_square-blue ">-->
-                                    <#--否-->
-                                <#--</label>-->
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <div class="form-group">
-                                <div class="col-md-2 col-xs-3" style="text-align:center;">
-                                    <button id="btn_add" type="button" class=" btn btn-default"
-                                            onclick="openBillModal()">
-                                        <i class="fa fa-download"></i>
-                                        下载报表
-                                    </button>
-                                </div>
-                                <div class="col-md-7 col-xs-3">
-                                </div>
-                                <div class="col-md-1 col-xs-3" style="text-align:center;">
-                                    <button type="button" id="btn_query"
-                                            class="btn btn-primary" onclick="return findByCondition()">
-                                        <i class="fa fa-search"></i> 查询
-                                    </button>
-                                </div>
-                                <div class="col-md-1 col-xs-3" style="text-align:left;">
-                                    <button type="reset" class="btn btn-default" onclick="clearAll()">
-                                        <i class="fa fa-print"></i> 重置
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </form>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12">
-                <div class="box box-primary">
                     <div class="box-body table-reponsive">
                         <table id="dataGrid" class="table table-bordered table-hover">
 
@@ -175,6 +103,7 @@
                 </div>
             </div>
         </div>
+    </div>
 </section>
 <script>
 
@@ -189,7 +118,7 @@
     });
 
 
-    function initDateGird(keywords, companyCode, storeType, product, startTime, endTime, productType) {
+    function initDateGird(keywords, companyCode, storeType, product, startTime, endTime, productType, storeId) {
         $grid.init($('#dataGrid'), $('#toolbar'), '/rest/reportDownload/salesReport/page/grid', 'get', false, function (params) {
             return {
                 offset: params.offset,
@@ -200,6 +129,7 @@
                 endTime: endTime,
                 storeType: storeType,
                 isProductCoupon: product,
+                storeId: storeId,
                 productType: productType
             }
         }, [{
@@ -255,11 +185,12 @@
         var keywords = $('#queryCusInfo').val();
         var startTime = $('#startTime').val();
         var endTime = $('#endTime').val();
-        var storeType = $('input[name="storeType"]:checked ').val()
-        var isProductCoupon = $('input[name="product"]:checked ').val()
+        var storeType = $('#storeType').val();
+        var isProductCoupon = true;
         var companyCode = $('#companyCode').val();
-        var productType = $('input[name="productType"]:checked').val();
-        initDateGird(keywords, companyCode, storeType, isProductCoupon, startTime, endTime, productType);
+        var storeCode = $('#storeCode').val();
+        var productType =  $('#productType').val();
+        initDateGird(keywords, companyCode, storeType, isProductCoupon, startTime, endTime, productType,storeCode);
     }
 
 
@@ -268,12 +199,13 @@
         var startTime = $('#startTime').val();
         var endTime = $('#endTime').val();
         var companyCode = $('#companyCode').val();
-        var isProductCoupon = $('input[name="product"]:checked ').val()
-        var storeType =  $('input[name="storeType"]:checked ').val()
-        var productType = $('input[name="productType"]:checked').val();
-
+        var isProductCoupon = true;
+        var storeType = $('#storeType').val();
+        var storeCode = $('#storeCode').val();
+        var productType =  $('#productType').val();
         var url = "/rest/reportDownload/salesReport/download?companyCode=" + companyCode + "&startTime=" + startTime
-                + "&endTime=" + endTime + "&storeType=" + storeType + "&isProductCoupon=" + isProductCoupon+ "&productType=" + productType;
+                + "&endTime=" + endTime + "&storeType=" + storeType + "&isProductCoupon=" + isProductCoupon + "&storeId=" + storeCode
+                + "&productType=" + productType;
         var escapeUrl = url.replace(/\#/g, "%23");
         window.open(escapeUrl);
     }
@@ -282,6 +214,49 @@
         $('select').prop('selectedIndex', 0);
         $("select").selectpicker('refresh');
         $("#dataGrid").bootstrapTable('destroy');
+    }
+
+    function initSelect(select, optionName) {
+        $(select).empty();
+        var selectOption = "<option value=-1>" + optionName + "</option>";
+        $(select).append(selectOption);
+    }
+
+    function findStorelist() {
+        initSelect("#storeCode", "选择门店");
+        var store = "";
+        var companyCode = $('#companyCode').val();
+        var storeType = $('#storeType').val();
+        /*    if('FX'==storeType||'ZS'==storeType){
+                $('#companyCode').val(-1);
+                $('#storeCode').val(-1);
+                companyCode=-1;
+                $('#companyCode').selectpicker('refresh');
+                $('#companyCode').selectpicker('render');
+            }*/
+        $.ajax({
+            url: '/rest/stores/findStoresListByCompanyCodeAndStoreType',
+            method: 'GET',
+            data: {
+                storeType: storeType,
+                companyCode: companyCode
+            },
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
+                });
+                $("#storeCode").append(store);
+                $('#storeCode').selectpicker('refresh');
+                $('#storeCode').selectpicker('render');
+            }
+        });
     }
 
 </script>

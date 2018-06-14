@@ -17,7 +17,7 @@ import java.util.Set;
 public interface RoleService {
     Map<String, Set<String>> selectResourceMapByUserId(Long userId);
 
-    PageInfo<Role> queryPage(Integer page, Integer size);
+    PageInfo<Role> queryPage(Integer page, Integer size, String keywords);
 
     void save(Role role);
 

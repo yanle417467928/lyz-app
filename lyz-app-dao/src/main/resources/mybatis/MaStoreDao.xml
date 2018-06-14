@@ -733,22 +733,33 @@
         s.store_id
         FROM
         st_store s
-     WHERE
-     s.store_structure_code like concat('%',#{structureCode},'%')
+        WHERE
+        1=1
+        <if test="null!=structureCode and ''!=structureCode">
+            AND s.store_structure_code like concat('%',#{structureCode},'%')
+        </if>
+
     </select>
 
 
-    <select id="findAllFitCompanySellerId"
+    <select id="findFitCompanyIdByStoreId"
             resultType="java.lang.Long">
         SELECT
         DISTINCT
-        sales_manager
+        s.store_id
         FROM
         st_store s
+        LEFT JOIN
+        emp_employee e ON s.sales_manager = e.emp_id
         WHERE
-       store_type='ZS'
-       AND
-       sales_manager is not null
+        s.store_type = 'ZS'
+        AND s.sales_manager IS NOT NULL
+        AND s.fit_compay_type ='CASH'
+        AND
+        e.store_id in
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
     </select>
 
 
@@ -782,7 +793,8 @@
     </select>
 
 
-    <select id="findStoresListByCompanyCodeAndStoreType" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
+    <select id="findStoresListByCompanyCodeAndStoreType"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
         SELECT
         s.store_id,
         s.store_name
@@ -790,16 +802,57 @@
         st_store s
         WHERE
         1=1
-        <if test="null != companyCode and companyCode != ''">
-            AND s.store_structure_code LIKE CONCAT('%',#{companyCode},'%')
-        </if>
-        <if test="null != storeType and storeType != ''">
-            AND s.store_type = #{storeType}
-        </if>
+        <choose>
+            <when test="'FX'==storeType">
+                and s.store_type in ('FX','FXCK')
+            </when>
+            <when test="'ZS'==storeType">
+                and ((s.store_type =#{storeType} AND s.fit_compay_type = "MONTHLY")
+                or
+                (s.store_structure_code like concat("%|JZC001|%") and s.store_type = 'ZY' ))
+            </when>
+            <otherwise>
+                <if test="null!=storeType and ''!=storeType">
+                    and s.store_type =#{storeType}
+                </if>
+                <if test="null != companyCode and ''!=companyCode">
+                    AND s.store_structure_code like concat('%',#{companyCode},'%')
+                </if>
+            </otherwise>
+        </choose>
         AND s.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
+    </select>
+
+
+    <select id="findStoresIdByStructureCodeAndStoreType"
+            resultType="java.lang.Long">
+        SELECT
+        s.store_id
+        FROM
+        st_store s
+        WHERE
+        1=1
+        <choose>
+            <when test="'FX'==storeType">
+                and s.store_type in ('FX','FXCK')
+            </when>
+            <when test="'ZS'==storeType">
+                and ((s.store_type =#{storeType} AND s.fit_compay_type = "MONTHLY")
+                or
+                (s.store_structure_code like concat("%|JZC001|%") and s.store_type = 'ZY' ))
+            </when>
+            <otherwise>
+                <if test="null!=storeType and ''!=storeType">
+                    and s.store_type =#{storeType}
+                </if>
+                <if test="null != structureCode and ''!=structureCode">
+                    AND s.store_structure_code like concat('%',#{structureCode},'%')
+                </if>
+            </otherwise>
+        </choose>
     </select>
 
 </mapper>

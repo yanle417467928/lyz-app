@@ -55,17 +55,17 @@ public interface MaReportDownloadService {
 
                                                                      String keywords, List<Long> storeIds);
     PageInfo<SalesReportDO> findSalesList(String companyCode, String storeType,
-                                      String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds, Integer page, Integer size,String productType);
+                                      String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds,String productType ,Long storeId, Integer page, Integer size);
 
 
-    PageInfo<ArrearsReportDO> findArrearsList(String companyCode, String storeType, List<Long> storeIds, Integer page, Integer size);
+    PageInfo<ArrearsReportDO> findArrearsList(String companyCode, String storeType, List<Long> storeIds,Long storeId, Integer page, Integer size);
 
 
-    List<ArrearsReportDO> downArrearsList(String companyCode, String storeType, List<Long> storeIds);
+    List<ArrearsReportDO> downArrearsList(String companyCode, String storeType, List<Long> storeIds,Long storeId);
 
 
     List<SalesReportDO> downSalesReport(String companyCode, String storeType,
-                                            String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds,String productType);
+                                            String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds,String productType,Long storeId);
 
     PageInfo<AccountGoodsItemsDO> findAccountZGGoodsItemsDOAll(Long cityId, Long storeId, String startTime, String endTime,
                                                              String keywords, List<Long> storeIds, Integer page, Integer size);
@@ -77,4 +77,21 @@ public interface MaReportDownloadService {
     PageInfo<EmpCreditMoneyChangeReportDO> findEmployeeCreditMoneyReportDOAll(Long cityId, Long storeId, String storeType, String startTime, String endTime, List<Long> storeIds, Integer page, Integer size);
 
     List<EmpCreditMoneyChangeReportDO> employeeCreditMoneyDownload(Long cityId, Long storeId, String storeType, String startTime, String endTime, List<Long> storeIds);
+
+    PageInfo<DistributionDO> findDistributionDOAll(Long cityId, String wareHouseNo, String deliveryClerkNo, String startTime, String endTime,
+                                                             String keywords, Integer page, Integer size);
+
+    List<DistributionDO> downloadDistributionDO(Long cityId, String wareHouseNo, String deliveryClerkNo, String startTime, String endTime,
+                                                        String keywords);
+
+    PageInfo<AccountGoodsItemsDO> findAccountGoodsItemsDOHR(Long cityId, Long storeId, String storeType, String startTime, String endTime,
+                                                             String keywords, List<Long> storeIds, Integer page, Integer size);
+
+    List<AccountGoodsItemsDO> downloadAccountGoodsItemsHR(Long cityId, Long storeId, String storeType, String startTime, String endTime,
+                                                        String keywords, List<Long> storeIds);
+
+
+    PageInfo<PhotoOrderCheckDO> findPhotoOrderCheckDOAll(Long cityId, String startTime, String endTime, String keywords, Integer page, Integer size);
+
+    List<PhotoOrderCheckDO> downloadPhotoOrderCheckDO(Long cityId, String startTime, String endTime, String keywords);
 }

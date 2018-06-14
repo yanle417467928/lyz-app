@@ -210,7 +210,7 @@ public class MaOrderRestController extends BaseRestController {
         try {
             //查询登录用户门店权限的门店ID
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
-
+            maOrderVORequest =  MaOrderVORequest.transformTime(maOrderVORequest);
             size = getSize(size);
             Integer page = getPage(offset, size);
             PageHelper.startPage(page, size);
@@ -442,6 +442,7 @@ public class MaOrderRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
+            maOrderVORequest =  MaOrderVORequest.transformTime(maOrderVORequest);
             PageInfo<MaSelfTakeOrderVO> maOrderVOList = this.maOrderService.findSelfTakeOrderByCondition(page, size, maOrderVORequest);
             List<MaSelfTakeOrderVO> orderVOList = maOrderVOList.getList();
             logger.warn("findSelfTakeOrderPageGirdByCondition ,多条件分页查询订单列表成功", orderVOList.size());
@@ -1234,6 +1235,7 @@ public class MaOrderRestController extends BaseRestController {
         try {
             //查询登录用户门店权限的门店ID
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            maCompanyOrderVORequest =  MaCompanyOrderVORequest.transformTime(maCompanyOrderVORequest);
             size = getSize(size);
             Integer page = getPage(offset, size);
             PageHelper.startPage(page, size);

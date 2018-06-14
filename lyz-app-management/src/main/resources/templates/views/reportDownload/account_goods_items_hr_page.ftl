@@ -47,26 +47,16 @@
                     <select name="storeType" id="storeType" class="form-control selectpicker" data-width="120px" style="width:auto;"
                             onchange="findStorelist()" data-live-search="true">
                         <option value="">选择门店类型</option>
-                        <#if storeTypes??>
-                            <#list storeTypes as storeType>
-                                <option value="${storeType.value}">${storeType.description}</option>
-                            </#list>
-                        </#if>
+                    <#if storeTypes??>
+                        <#list storeTypes as storeType>
+                            <option value="${storeType.value}">${storeType.description}</option>
+                        </#list>
+                    </#if>
                     </select>
 
                     <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px" style="width:auto;"
                             <#--onchange="findByCondition()"--> data-live-search="true">
                         <option value="-1">选择门店</option>
-                    </select>
-
-                    <select name="paymentType" id="paymentType" class="form-control selectpicker" data-width="120px" style="width:auto;"
-                            <#--onchange="findByCondition()"--> data-live-search="true">
-                        <option value="">选择支付方式</option>
-                        <#if paymentTypes??>
-                            <#list paymentTypes as paymentType>
-                                <option value="${paymentType.value}">${paymentType.description}</option>
-                            </#list>
-                        </#if>
                     </select>
 
                     <input name="startTime" <#--onchange="findByCondition()"--> type="text" class="form-control datepicker" id="startTime" style="width: 120px;" placeholder="开始时间">
@@ -106,7 +96,7 @@
         findStorelist();
 
         //获取数据
-        /*initDateGird(null,null,null,null,null,null,null);*/
+//        initDateGird(null,null,null,null,null,null);
         //时间选择框样式
         $('.datepicker').datepicker({
             format: 'yyyy-mm-dd',
@@ -170,8 +160,8 @@
         });
     }
 
-    function initDateGird(keywords,startTime,endTime,storeId,storeType,cityId,payType) {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/reportDownload/receipts/page/grid', 'get', false, function (params) {
+    function initDateGird(keywords,startTime,endTime,storeId,storeType,cityId) {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/reportDownload/account/hr/page/grid', 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
@@ -180,8 +170,7 @@
                 startTime: startTime,
                 endTime: endTime,
                 storeType: storeType,
-                cityId: cityId,
-                payType: payType
+                cityId: cityId
             }
         }, [{
             checkbox: true,
@@ -199,43 +188,28 @@
             title: '门店类型',
             align: 'center'
         },  {
-            field: 'payTime',
-            title: '付款时间',
-            align: 'center'
-        }, {
-            field: 'returnPayTime',
-            title: '退款时间',
-            align: 'center'
-        }, {
-            field: 'payType',
-            title: '支付方式',
-            align: 'center',
-            formatter: function (value, row, index) {
-                if ('DELIVERY_CLERK' == row.paymentSubjectType) {
-                    if ('POS' == row.payTypes){
-                        return "配送POS";
-                    }
-                    if ('CASH' == row.payTypes){
-                        return "配送现金";
-                    }
-                }
-                return value;
-            }
-        }, {
-            field: 'money',
-            title: '支付金额',
+            field: 'orderTime',
+            title: '下单/反配上架时间',
             align: 'center'
         }, {
             field: 'orderNumber',
-            title: '订单号',
+            title: '订/退单号',
             align: 'center'
         }, {
-            field: 'returnOrderNumber',
-            title: '退单号',
+            field: 'deliveryStatus',
+            title: '出/退货状态',
             align: 'center'
         }, {
-            field: 'remarks',
-            title: '备注',
+            field: 'sku',
+            title: '产品编码',
+            align: 'center'
+        }, {
+            field: 'skuName',
+            title: '产品名称',
+            align: 'center'
+        }, {
+            field: 'quantity',
+            title: '数量',
             align: 'center'
         }
         ]);
@@ -250,25 +224,21 @@
         var storeId = $("#storeCode").val();
         var cityId = $('#cityCode').val();
         var storeType = $('#storeType').val();
-        var paymentType = $('#paymentType').val();
-        initDateGird(keywords,startTime,endTime,storeId,storeType,cityId,paymentType);
+        initDateGird(keywords,startTime,endTime,storeId,storeType,cityId);
     }
 
     function findByOrderNumber() {
-       /* $('#startTime').val('');
+        /*$('#startTime').val('');
         $('#endTime').val('');
         $("#storeCode").val(-1);
         $('#cityCode').val(-1);
         $('#storeType').val('');
-        $('#paymentType').val('');
         $('#storeCode').selectpicker('refresh');
         $('#storeCode').selectpicker('render');
         $('#cityCode').selectpicker('refresh');
         $('#cityCode').selectpicker('render');
         $('#storeType').selectpicker('refresh');
-        $('#storeType').selectpicker('render');
-        $('#paymentType').selectpicker('refresh');
-        $('#paymentType').selectpicker('render');*/
+        $('#storeType').selectpicker('render');*/
         var queryCusInfo = $("#queryCusInfo").val();
         $("#dataGrid").bootstrapTable('destroy');
         var startTime = $('#startTime').val();
@@ -276,9 +246,9 @@
         var storeId = $("#storeCode").val();
         var cityId = $('#cityCode').val();
         var storeType = $('#storeType').val();
-        var paymentType = $('#paymentType').val();
-        initDateGird(queryCusInfo,startTime,endTime,storeId,storeType,cityId,paymentType);
+        initDateGird(queryCusInfo,startTime,endTime,storeId,storeType,cityId);
     }
+
 
     function initSelect(select, optionName) {
         $(select).empty();
@@ -293,36 +263,12 @@
         var storeId = $("#storeCode").val();
         var cityId = $('#cityCode').val();
         var storeType = $('#storeType').val();
-        var payType = $('#paymentType').val();
 
-        var url = "/rest/reportDownload/receipts/download?keywords="+ keywords + "&storeId=" + storeId + "&startTime=" + startTime
-                + "&endTime=" + endTime + "&storeType=" + storeType + "&cityId=" + cityId + "&payType=" + payType;
+        var url = "/rest/reportDownload/account/hr/download?keywords="+ keywords + "&storeId=" + storeId + "&startTime=" + startTime
+                + "&endTime=" + endTime + "&storeType=" + storeType + "&cityId=" + cityId;
         var escapeUrl=url.replace(/\#/g,"%23");
         window.open(escapeUrl);
 
-//        $.ajax({
-//            url: '/rest/reportDownload/receipts/download',
-//            method: 'GET',
-//            data:{
-//                keywords: keywords,
-//                storeId: storeId,
-//                startTime: startTime,
-//                endTime: endTime,
-//                storeType: storeType,
-//                cityId: cityId,
-//                payType: payType
-//            },
-//            error: function () {
-//                clearTimeout($global.timer);
-//                $loading.close();
-//                $global.timer = null;
-//                $notify.danger('网络异常，请稍后重试或联系管理员');
-//            },
-//            success: function (data, textStatus, request) {
-//                clearTimeout($global.timer);
-//                window.open(request.getResponseHeader('Content-Disposition'));
-//            }
-//        });
     }
 
 </script>

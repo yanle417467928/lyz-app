@@ -121,9 +121,11 @@ public interface MaStoreDAO {
 
     List<SimpleStoreParam> findAllStoresListByCityIdAndStoreType(@Param("cityId") Long cityId, @Param("storeType") String storeType);
 
-    List<Long> findStoresIdByStructureCode(String structureCode);
+    List<Long> findStoresIdByStructureCode(@Param("structureCode") String structureCode);
 
-    List<Long> findAllFitCompanySellerId();
+    List<Long> findStoresIdByStructureCodeAndStoreType( @Param("structureCode") String structureCode,@Param("storeType") String storeType);
+
+    List<Long> findFitCompanyIdByStoreId(List<Long> storeIds);
 
     Boolean exsitStoreInCompany(@Param("storeId")Long storeId,@Param("companyCode")String companyCode,@Param("storeType")String storeType);
 

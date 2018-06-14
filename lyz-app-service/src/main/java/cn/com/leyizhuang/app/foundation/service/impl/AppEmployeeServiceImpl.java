@@ -9,8 +9,12 @@ import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.UserSetInformationReq;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import cn.com.leyizhuang.common.util.CountUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +32,8 @@ import java.util.List;
  **/
 @Service
 public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.service.AppEmployeeService {
+
+    private static final Logger logger = LoggerFactory.getLogger(AppEmployeeServiceImpl.class);
 
     @Autowired
     private AppEmployeeDAO employeeDAO;
@@ -151,7 +157,7 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     @Transactional(rollbackFor = Exception.class)
     public int lockGuideCreditByUserIdAndCredit(Long userId, Double guideCredit, Timestamp version) {
         if (null != userId && null != guideCredit) {
-            return employeeDAO.lockGuideCreditByUserIdAndGuideCredit(userId, guideCredit,version);
+            return employeeDAO.lockGuideCreditByUserIdAndGuideCredit(userId, guideCredit, version);
         }
         return 0;
     }
@@ -196,7 +202,7 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     @Override
     @Transactional(rollbackFor = Exception.class)
     public EmpCreditMoney findEmpCreditMoneyByEmpId(Long empId) {
-        if (null != empId){
+        if (null != empId) {
             return employeeDAO.findEmpCreditMoneyByEmpId(empId);
         }
         return null;
@@ -205,10 +211,10 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void addEmpCreditMoneyChangeLog(EmpCreditMoneyChangeLog log) {
-        if (null !=log){
-            EmpCreditMoneyChangeLogDO  empCreditMoneyChangeLogDO = EmpCreditMoneyChangeLogDO.transform(log);
-            if(null!=log.getCreditLimitAvailableChangeAmount() && 0D!=log.getCreditLimitAvailableChangeAmount()){
-                EmpAvailableCreditMoneyChangeLog empAvailableCreditMoneyChangeLog =new EmpAvailableCreditMoneyChangeLog();
+        if (null != log) {
+            EmpCreditMoneyChangeLogDO empCreditMoneyChangeLogDO = EmpCreditMoneyChangeLogDO.transform(log);
+            if (null != log.getCreditLimitAvailableChangeAmount() && 0D != log.getCreditLimitAvailableChangeAmount()) {
+                EmpAvailableCreditMoneyChangeLog empAvailableCreditMoneyChangeLog = new EmpAvailableCreditMoneyChangeLog();
                 empAvailableCreditMoneyChangeLog.setChangeType(log.getChangeType());
                 empAvailableCreditMoneyChangeLog.setChangeTypeDesc(log.getChangeType().getDescription());
                 empAvailableCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(log.getCreditLimitAvailableAfterChange());
@@ -216,13 +222,13 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
                 Long id = employeeDAO.saveCreditLimitAvailableChange(empAvailableCreditMoneyChangeLog);
                 empCreditMoneyChangeLogDO.setAvailableCreditChangId(empAvailableCreditMoneyChangeLog.getId());
             }
-            if(null!=log.getTempCreditLimitChangeAmount()&& 0D!=log.getTempCreditLimitChangeAmount()){
+            if (null != log.getTempCreditLimitChangeAmount() && 0D != log.getTempCreditLimitChangeAmount()) {
                 EmpTempCreditMoneyChangeLog empTempCreditMoneyChangeLog = new EmpTempCreditMoneyChangeLog();
                 empTempCreditMoneyChangeLog.setTempCreditLimitAfterChange(log.getTempCreditLimitAfterChange());
                 empTempCreditMoneyChangeLog.setTempCreditLimitChangeAmount(log.getTempCreditLimitChangeAmount());
-                Long id  = employeeDAO.saveTempCreditLimitChange(empTempCreditMoneyChangeLog);
+                Long id = employeeDAO.saveTempCreditLimitChange(empTempCreditMoneyChangeLog);
                 empCreditMoneyChangeLogDO.setTempCreditChangeId(empTempCreditMoneyChangeLog.getId());
-           }
+            }
             employeeDAO.addEmpCreditMoneyChangeLog(empCreditMoneyChangeLogDO);
         }
     }
@@ -246,7 +252,7 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
 
     @Override
     public Integer unlockGuideCreditByUserIdAndGuideCreditAndVersion(Long userId, Double guideCredit, Date version) {
-        if (null != userId && null != guideCredit){
+        if (null != userId && null != guideCredit) {
             return employeeDAO.unlockGuideCreditByUserIdAndGuideCreditAndVersion(userId, guideCredit, version);
         }
         return null;
@@ -261,7 +267,7 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     }
 
     @Override
-    public List<AppEmployee> findQrcodeIsNull(){
+    public List<AppEmployee> findQrcodeIsNull() {
         return employeeDAO.findQrcodeIsNull();
     }
 
@@ -271,7 +277,7 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     }
 
     @Override
-    public List<SellerResponse> querySellerByStructureCode(String structureCode){
+    public List<SellerResponse> querySellerByStructureCode(String structureCode) {
         return employeeDAO.querySellerByStructureCode(structureCode);
     }
 
@@ -283,5 +289,59 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
     @Override
     public String getSalesManagerSupportHotline(String storeCode) {
         return employeeDAO.getSalesManagerSupportHotline(storeCode);
+    }
+
+    // 修复导购 可用 信用额度变更明细记录
+    public ResultDTO repairCreditMoneyChangeLog(Long empId, String flag) {
+        // 找到导购可用额度变更日期 正序
+        AppEmployee employee = employeeDAO.findById(empId);
+        if (employee == null) {
+            return null;
+        }
+
+        logger.info("导购：" + employee.getName());
+
+        List<EmpAvailableCreditMoneyChangeLog> logList = employeeDAO.getEmpAvailableCreditMoneyChangeLogByEmpId(empId);
+
+        // 第一条 取得初始值
+        EmpAvailableCreditMoneyChangeLog log = logList.get(0);
+        Double initAmount = CountUtil.sub(log.getCreditLimitAvailableAfterChange(), log.getCreditLimitAvailableChangeAmount());
+
+        logger.info("初始值：" + initAmount);
+
+        for (EmpAvailableCreditMoneyChangeLog changeLog : logList) {
+            if (changeLog != null) {
+
+                Double changeAmount = changeLog.getCreditLimitAvailableChangeAmount() == null ? 0 : changeLog.getCreditLimitAvailableChangeAmount();
+                Double afterAmount = changeLog.getCreditLimitAvailableAfterChange() == null ? 0 : changeLog.getCreditLimitAvailableAfterChange();
+
+                Double amount = CountUtil.add(initAmount, changeAmount);
+
+                if (amount.equals(afterAmount)) {
+                    initAmount = CountUtil.add(initAmount, changeAmount);
+                } else {
+                    changeLog.setCreditLimitAvailableAfterChange(amount);
+                    initAmount = CountUtil.add(initAmount, changeAmount);
+                }
+
+                logger.info("当前初始值：" + initAmount + " 改变值：" + changeAmount + " 改变后："+ amount+ " 原改变后：" + afterAmount);
+            }
+        }
+
+        if (flag.equalsIgnoreCase("go")) {
+            for (EmpAvailableCreditMoneyChangeLog changeLog : logList) {
+                employeeDAO.updateEmpAvailableCreditMoneyChangeLog(changeLog);
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public AppEmployee findSellerByMobile(String mobile) {
+        if (null != mobile && !"".equalsIgnoreCase(mobile)) {
+            return employeeDAO.findByMobile(mobile);
+        }
+        return null;
     }
 }

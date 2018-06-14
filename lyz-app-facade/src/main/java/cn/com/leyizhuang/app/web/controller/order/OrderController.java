@@ -727,7 +727,7 @@ public class OrderController {
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                     goodsSettlement.size() > 0 ? goodsSettlement : null);
-            logger.info("getGoodsMoney OUT,用户确认订单计算商品价格明细成功，出参 resultDTO:{}", resultDTO);
+            logger.info("enterOrder OUT,用户确认订单计算商品价格明细成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
@@ -2176,7 +2176,7 @@ public class OrderController {
                     managerBillingDetailResponse.setCreditMoney(orderBillingDetails.getStoreCreditMoney() == null ? 0 : orderBillingDetails.getStoreCreditMoney());
                     managerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount() == null ? 0 : orderBillingDetails.getPromotionDiscount());
                     managerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice() == null ? 0 : orderBaseInfo.getTotalGoodsPrice());
-
+                    managerBillingDetailResponse.setCollectionAmount(orderBillingDetails.getCollectionAmount() == null ? 0 : orderBillingDetails.getCollectionAmount());
                     if (null != payhelperOrder) {
                         managerBillingDetailResponse.setPayForAnotherMoney(null == payhelperOrder.getPayhelperAmount() ? 0 : payhelperOrder.getPayhelperAmount());
                         managerBillingDetailResponse.setPayType(payhelperOrder.getPayType().getDescription());
@@ -2195,6 +2195,7 @@ public class OrderController {
                     customerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount() == null ? 0 : orderBillingDetails.getProductCouponDiscount());
                     customerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount() == null ? 0 : orderBillingDetails.getPromotionDiscount());
                     customerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice() == null ? 0 : orderBaseInfo.getTotalGoodsPrice());
+                    customerBillingDetailResponse.setCollectionAmount(orderBillingDetails.getCollectionAmount() == null ? 0 : orderBillingDetails.getCollectionAmount());
                     if (null != payhelperOrder) {
                         customerBillingDetailResponse.setPayForAnotherMoney(null == payhelperOrder.getPayhelperAmount() ? 0 : payhelperOrder.getPayhelperAmount());
                         customerBillingDetailResponse.setPayType(payhelperOrder.getPayType().getDescription());

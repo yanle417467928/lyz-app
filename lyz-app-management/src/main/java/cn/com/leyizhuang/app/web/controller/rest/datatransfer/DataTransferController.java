@@ -86,9 +86,9 @@ public class DataTransferController {
     @RequestMapping(value = "/data/transfer/orderBaseInfo/one", method = RequestMethod.GET)
     public String dataTransferOne(String orderNo) throws ExecutionException, InterruptedException {
         Date startTime = new Date();
-        if (startTime.after(JOB_END_TIME)) {
-            return "当前时间不在该任务作业周期内!";
-        }
+//        if (startTime.after(JOB_END_TIME)) {
+//            return "当前时间不在该任务作业周期内!";
+//        }
         Date endTime;
         log.info("开始处理订单导入job,当前时间:{}", startTime);
         if (orderNo == null || orderNo.equals("")) {

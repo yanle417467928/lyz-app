@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeType;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaEmployeeResponse;
@@ -71,4 +72,6 @@ public interface MaEmployeeService {
     List<EmployeeVO> findEmployeeListByStoreId(Long storeId);
 
     List<EmployeeVO> findSellerListByStoreId(Long storeId);
+
+    List<EmployeeDO> findEmpployeeByCityIdAndIdentityType(Long cityId, AppIdentityType type);
 }

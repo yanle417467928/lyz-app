@@ -122,7 +122,7 @@
                     <spanp class="span">${maOrderDetail.companyCode!""}</spanp>
                     <br>
                     <b>下单人id:</b>
-                    <spanp class="span">${maOrderDetail.creatorId!""}</spanp>
+                    <spanp class="span"><#if maOrderDetail?? && maOrderDetail.creatorId??>${maOrderDetail.creatorId?c}</#if></spanp>
                     <br>
                     <b>关联料单审核单号:</b>
                     <spanp class="span">${maOrderDetail.auditNumber!""}</spanp>
@@ -254,38 +254,57 @@
                         <table class="table">
                             <tr>
                                 <th style="width:50%" class="th1">商品总额:</th>
-                                <td class="td1">¥<#if orderBillingDetail??>${orderBillingDetail.totalGoodsPrice!'0.00'}<#else>0.00</#if></td>
+                                <td class="td1">
+                                    ¥<#if orderBillingDetail??>${orderBillingDetail.totalGoodsPrice!'0.00'}<#else>
+                                    0.00</#if></td>
                             </tr>
                             <tr>
                                 <th class="th1">运费</th>
-                                <td class="td1">¥<#if orderBillingDetail??>${orderBillingDetail.freight!'0.00'}<#else>0.00</#if></td>
+                                <td class="td1">¥<#if orderBillingDetail??>${orderBillingDetail.freight!'0.00'}<#else>
+                                    0.00</#if></td>
                             </tr>
                             <tr>
                                 <th class="th1">优惠券折扣:</th>
-                                <td class="td1">- ¥<#if orderBillingDetail??>${orderBillingDetail.cashCouponDiscount!'0.00'}<#else>0.00</#if></td>
+                                <td class="td1">-
+                                    ¥<#if orderBillingDetail??>${orderBillingDetail.cashCouponDiscount!'0.00'}<#else>
+                                    0.00</#if></td>
                             </tr>
                             <tr>
                                 <th class="th1">促销折扣:</th>
-                                <td class="td1">- ¥<#if orderBillingDetail??>${orderBillingDetail.promotionDiscount!'0.00'}<#else>0.00</#if></td>
+                                <td class="td1">-
+                                    ¥<#if orderBillingDetail??>${orderBillingDetail.promotionDiscount!'0.00'}<#else>
+                                    0.00</#if></td>
                             </tr>
                             <tr>
                                 <th class="th1">会员折扣:</th>
-                                <td class="td1">- ¥<#if orderBillingDetail??>${orderBillingDetail.memberDiscount!'0.00'}<#else>0.00</#if></td>
+                                <td class="td1">-
+                                    ¥<#if orderBillingDetail??>${orderBillingDetail.memberDiscount!'0.00'}<#else>
+                                    0.00</#if></td>
                             </tr>
                             <tr>
                                 <th class="th1">现金返利折扣:</th>
-                                <td class="td1">- ¥<#if orderBillingDetail??>${orderBillingDetail.subvention!'0.00'}<#else>0.00</#if></td>
+                                <td class="td1">-
+                                    ¥<#if orderBillingDetail??>${orderBillingDetail.subvention!'0.00'}<#else>
+                                    0.00</#if></td>
                             </tr>
                             <tr>
                                 <th class="th1">应付金额:</th>
                                 <td style="color: red;font-weight:bold" class="td1">
-                                <#if orderBillingDetail??>¥${orderBillingDetail.amountPayable!'0.00'}<#else>0.00</#if></td>
+                                <#if orderBillingDetail??>¥${orderBillingDetail.amountPayable!'0.00'}<#else>
+                                    0.00</#if></td>
                             </tr>
                         </table>
                     </div>
                 </div>
             </div>
-
+            <div class="row">
+                <div class="col-xs-12 col-md-10"></div>
+                <div class="col-xs-12 col-md-2">
+                    <button type="button" class="btn btn-danger footer-btn btn-cancel" style="width:80%;">
+                        <i class="fa fa-close"></i>返回
+                    </button>
+                </div>
+            </div>
         <#--<div class="col-xs-6">-->
         <#--</div>-->
 

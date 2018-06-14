@@ -163,11 +163,22 @@
         admin_user u
         LEFT JOIN admin_user_role ur ON u.uid = ur.uid
         LEFT JOIN admin_role r ON ur.rid = r.rid
-        <where>
-            <if test="keywords != null and keywords.toString() !=''">
-                u.login_name LIKE concat ('%',#{keywords},'%')
-                OR u.name LIKE concat ('%',#{keywords},'%')
-            </if>
-        </where>
+        where
+        1=1
+        <choose>
+            <when test="keywords != null and keywords.toString() !=''">
+                AND (u.login_name LIKE concat ('%',#{keywords},'%')
+                OR u.name LIKE concat ('%',#{keywords},'%'))
+            </when>
+            <otherwise>
+                <if test=" null != identityType and identityType !=''and identityType !='-1'">
+                    AND u.USER_TYPE=#{identityType}
+                </if>
+                <if test=" null!= enable and  ''!=enable and '-1'!= enable">
+                    AND u.STATUS=#{enable}
+                </if>
+            </otherwise>
+        </choose>
+
     </select>
 </mapper>

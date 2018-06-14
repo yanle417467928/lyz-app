@@ -72,7 +72,12 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
     @Override
     public PageInfo<AllocationVO> queryPage(Integer offset, Integer size, String keywords, AllocationQuery query, Long storeId) {
         PageHelper.startPage(offset, size);
-
+        if (null != query.getStartDateTime()&&!"".equals(query.getStartDateTime())) {
+            query.setStartDateTime(query.getStartDateTime()+" 00:00:00");
+        }
+        if (null != query.getEndDateTime()&&!"".equals(query.getEndDateTime())) {
+            query.setEndDateTime(query.getEndDateTime()+" 23:59:59");
+        }
         List<AllocationVO> allocationVOList;
         if (StringUtils.isNotBlank(keywords)) {
             allocationVOList = ityAllocationDAO.queryListVO(keywords, storeId);

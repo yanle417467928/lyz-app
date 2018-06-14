@@ -38,6 +38,11 @@
         r.STATUS status,
         r.RESOURCE_TYPE resource_type
         FROM admin_resource r LEFT JOIN admin_resource pr ON r.pid = pr.rs_id
+        where
+        1=1
+        <if test="null != keywords">
+           AND r.NAME like  CONCAT('%', #{keywords}, '%')
+        </if>
     </select>
 
     <update id="updateVO" parameterType="ResourceVO">

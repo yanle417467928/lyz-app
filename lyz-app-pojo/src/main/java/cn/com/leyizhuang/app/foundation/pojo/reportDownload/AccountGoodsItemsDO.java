@@ -91,6 +91,14 @@ public class AccountGoodsItemsDO {
     private String estateInfo;
     //是否结清
     private String isPayUp;
+    //零售单价
+    private Double retailPrice;
+    //零售总价
+    private Double totalRetailPrice;
+    //会员价
+    private Double vipPrice;
+    //会员总价
+    private Double totalVipPrice;
 
     public void setGoodsLineType(AppGoodsLineType goodsLineType){
         this.goodsLineType = goodsLineType.getDescription();

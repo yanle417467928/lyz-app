@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
+import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.MaterialListType;
 import cn.com.leyizhuang.app.core.utils.SmsUtils;
@@ -22,12 +23,14 @@ import cn.com.leyizhuang.app.foundation.vo.management.goods.GoodsResponseVO;
 import cn.com.leyizhuang.app.foundation.vo.management.order.PhotoOrderVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.core.constant.PhotoOrderStatus;
+import cn.com.leyizhuang.common.core.constant.PhotoOrderType;
 import cn.com.leyizhuang.common.core.exception.data.InvalidDataException;
 import cn.com.leyizhuang.common.foundation.pojo.SmsAccount;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;
 import com.sun.jdi.LongValue;
 import org.apache.http.HttpResponse;
+import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -154,19 +157,24 @@ public class MaPhotoOrderRestController extends BaseRestController {
      * @descripe
      * @author
      */
-    @GetMapping(value = "/find/photo/goods/{photoNo}")
-    public ResultDTO<List<PhotoOrderGoodsDO>> restPhotoGoodsList(@PathVariable(value = "photoNo") String photoNo) {
+    @GetMapping(value = "/find/photo/goods")
+    public GridDataVO<PhotoOrderGoodsDO> restPhotoGoodsList(Integer offset, Integer size, String photoNo) {
         if (StringUtils.isBlank(photoNo)) {
             logger.warn("拍照下单单号为空，获取商品信息失败！");
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "拍照下单单号为空，获取商品信息失败！", null);
+            return null;
         }
-        List<PhotoOrderGoodsDO> photoOrderGoodsDOList = this.maPhotoOrderGoodsService.findPhotoOrderGoodsByPhotoOrderNo(photoNo);
+        size = getSize(size);
+        Integer page = getPage(offset, size);
+
+        PageInfo<PhotoOrderGoodsDO> photoOrderGoodsDOPageInfo = this.maPhotoOrderGoodsService.findPhotoOrderGoodsByPhotoOrderNo(page,size,photoNo);
+
+        List<PhotoOrderGoodsDO> photoOrderGoodsDOList = photoOrderGoodsDOPageInfo.getList();
+
         if (null == photoOrderGoodsDOList) {
             logger.warn("获取拍照下单商品信息失败：photoNo {}", photoNo);
-            return new ResultDTO<>(CommonGlobal.COMMON_NOT_FOUND_CODE,
-                    "为查询到改拍照下单商品信息，请联系管理员", null);
+            return null;
         } else {
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, photoOrderGoodsDOList);
+            return new GridDataVO<PhotoOrderGoodsDO>().transform(photoOrderGoodsDOList, photoOrderGoodsDOPageInfo.getTotal());
         }
     }
 
@@ -1068,9 +1076,11 @@ public class MaPhotoOrderRestController extends BaseRestController {
                 photoOrderDO.setContactName(photoOrderDTO.getContactName());
                 photoOrderDO.setPhotos(photoOrderDTO.getPhotoImgs());
                 photoOrderDO.setRemark(photoOrderDTO.getRemark());
-                photoOrderDO.setStatus(PhotoOrderStatus.FINISH);
+                photoOrderDO.setStatus(PhotoOrderStatus.PROCESSING);
                 photoOrderDO.setUserId(userId);
                 photoOrderDO.setPhotoOrderNo(orderNumber);
+                photoOrderDO.setDeliveryId(deliveryId);
+                photoOrderDO.setOrderType(PhotoOrderType.UNDERLINE);
                 this.photoOrderServiceImpl.save(photoOrderDO);
 
                 //*****************************************************************************************
@@ -1104,9 +1114,9 @@ public class MaPhotoOrderRestController extends BaseRestController {
                         photoOrderGoodsDOList.add(photoOrderGoodsDO);
                     }
                 }
-
+                PhotoOrderVO photoOrderVO = this.maPhotoOrderService.findByPhotoOrderNo(orderNumber);
                 this.maPhotoOrderGoodsService.batchSave(photoOrderGoodsDOList);
-                this.maPhotoOrderService.updateStatusAndsaveAndUpdateMaterialList(photoOrderDTO.getPhotoId(), PhotoOrderStatus.FINISH, materialListSave, materialListUpdate);
+                this.maPhotoOrderService.updateStatusAndsaveAndUpdateMaterialList(photoOrderVO.getId(), PhotoOrderStatus.FINISH, materialListSave, materialListUpdate);
                 this.maPhotoOrderService.updateRemarkAndDeliveryId(photoOrderDTO.getRemark(),deliveryId,userId,appIdentityType);
                 //短信提醒
 //                    String info = "您的拍照下单订单(" + photoOrderVO.getPhotoOrderNo() + ")已处理，请登录APP查看。";
