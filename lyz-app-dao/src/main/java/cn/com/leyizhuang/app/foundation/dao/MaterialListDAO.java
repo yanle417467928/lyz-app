@@ -83,4 +83,6 @@ public interface MaterialListDAO {
     List<PhotoOrderMaterialListResponse> findByUserIdAndIdentityTypeAndMaterialListType(@Param(value = "userId") Long userId,
                                                                                         @Param(value = "identityType") AppIdentityType identityType,
                                                                                         @Param(value = "list")List<MaterialListType> materialListTypes);
+
+    List<NormalMaterialListResponse> findBuyCouponGoodsByUserIdAndIdentityType(@Param("userId") Long userId, @Param("identityType") AppIdentityType identityType);
 }
