@@ -50,9 +50,6 @@ public class MaRetrunOrderRestController extends BaseRestController {
     @Resource
     private AdminUserStoreService adminUserStoreService;
 
-    @Resource
-
-
     /**
      * 退货单列表
      *
@@ -138,7 +135,7 @@ public class MaRetrunOrderRestController extends BaseRestController {
 
 
     /**
-     * 后台自提单收货
+     * 自提单退货
      *
      * @param returnNumber
      * @return
@@ -185,8 +182,9 @@ public class MaRetrunOrderRestController extends BaseRestController {
                         } else if (OnlinePayType.WE_CHAT == paymentDataList.get(0).getOnlinePayType()){
                             maOnlinePayRefundService.wechatReturnMoney(maReturnOrderDetailInfo.getCreatorId(), maReturnOrderDetailInfo.getCreatorIdentityType().getValue(), maOrdReturnBillingList.getOnlinePay(), maReturnOrderDetailInfo.getOrderNo(), returnNumber);
                         } else if (OnlinePayType.UNION_PAY == paymentDataList.get(0).getOnlinePayType()) {
-                            //TODO
-
+                            //银联退款
+                            maOnlinePayRefundService.unionPayReturnMoney(maReturnOrderDetailInfo.getCreatorId(),maReturnOrderDetailInfo.getCreatorIdentityType().getValue(),
+                                    maOrdReturnBillingList.getOnlinePay(),maReturnOrderDetailInfo.getOrderNo(),maReturnOrderDetailInfo.getReturnNo(),maReturnOrderDetailInfo.getRoid());
                         }
                     /*for (MaPaymentData maPaymentData : paymentDataList) {
                         if ("ALIPAY".equals(maPaymentData.getOnlinePayType().toString())) {
