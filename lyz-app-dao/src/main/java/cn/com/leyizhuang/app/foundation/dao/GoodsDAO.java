@@ -100,6 +100,8 @@ public interface GoodsDAO {
 
     List<OrderGoodsSimpleResponse> findGoodsListByEmployeeIdAndGoodsIdList(@Param("userId") Long userId, @Param("list") List<Long> goodsIds);
 
+    List<OrderGoodsSimpleResponse> findGoodsListByEmployeeIdAndGoodsSkuList(@Param("userId") Long userId, @Param("list") List<String> goodsSku);
+
     List<OrderGoodsSimpleResponse> findGoodsListByCustomerIdAndGoodsIdList(@Param("userId") Long userId, @Param("list") List<Long> goodsIds);
 
     GoodsPrice findGoodsPriceByProductCouponIdAndUserId(@Param("cusId") Long cusId, @Param("pcId") Long pcId, @Param("qty") Integer qty);

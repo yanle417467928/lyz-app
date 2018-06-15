@@ -31,9 +31,9 @@ public class DeliveryAddressServiceImpl implements DeliveryAddressService {
     }
 
     @Override
-    public PageInfo<DeliveryAddressResponse> queryListByUserIdAndStatusIsTrue(Long userId, AppIdentityType identityType, Integer page) {
+    public PageInfo<DeliveryAddressResponse> queryListByUserIdAndStatusIsTrue(Long userId, AppIdentityType identityType, Integer page, Integer size) {
         List deliveryAddressResponseList;
-        PageHelper.startPage(page, 10);
+        PageHelper.startPage(page, size);
         if (identityType.getValue() == 6) {
             deliveryAddressResponseList = this.deliveryAddressDAO.queryListByCustomerIdAndStatusIsTrue(userId);
         } else {

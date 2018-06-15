@@ -1302,4 +1302,27 @@
         </if>
     </select>
 
+    <select id="findMaOrderGoodsVOListByEmpIdAndGoodsSkus" resultType="cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO">
+        SELECT
+        g.gid,
+        g.sku,
+        g.sku_name,
+        gp.retail_price,
+        gp.vip_price,
+        gp.wholesale_price,
+        g.company_flag,
+        g.cover_image_uri,
+        gp.price_line_id price_item_id
+        FROM emp_employee e
+        INNER JOIN gds_goods_price gp ON e.store_id = gp.store_id
+        AND gp.price_type = 'COMMON'
+        INNER JOIN gds_goods g ON gp.gid = g.gid
+        where e.emp_id = #{userId}
+        AND gp.start_time &lt; NOW()
+        AND (gp.end_time IS NULL OR gp.end_time &gt; NOW())
+        AND g.sku in
+        <foreach collection="goodsSkuSet" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
 </mapper>

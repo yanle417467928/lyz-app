@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service;
 import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.core.constant.OrderLifecycleType;
+import cn.com.leyizhuang.app.foundation.pojo.GoodsSkuQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.PayhelperOrder;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
@@ -39,6 +40,7 @@ public interface AppOrderService {
 
     List<Long> existOrderGoodsInventory(Long cityId, List<GoodsIdQtyParam> goodsList, List<GoodsIdQtyParam> giftList, List<GoodsIdQtyParam> couponList);
 
+    List<String> existMaOrderGoodsInventory(Long cityId, List<GoodsSkuQtyParam> goodsList);
     //用户获取我的订单列表
     PageInfo<OrderBaseInfo> getOrderListByUserIDAndIdentityType(Long userID, Integer identityType, Integer showStatus, Integer page, Integer size);
 

@@ -46,6 +46,8 @@ public interface CityDAO {
 
     Boolean existGoodsCityInventory(@Param("cityId") Long cityId, @Param("gid") Long gid, @Param("qty") Integer qty);
 
+    Boolean existMaGoodsCityInventory(@Param("cityId") Long cityId, @Param("sku") String sku, @Param("qty") Integer qty);
+
     List<CityDeliveryTime> findCityDeliveryTimeByCityId(Long cityId);
 
     Integer updateCityInventoryByCityIdAndGoodsIdAndInventory(@Param(value = "cityId") Long cityId,

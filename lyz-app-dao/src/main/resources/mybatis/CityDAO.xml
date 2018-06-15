@@ -112,6 +112,12 @@
                       WHERE city_inventory.available_ity >= #{qty} AND city_id = #{cityId} AND gid = #{gid});
     </select>
 
+    <select id="existMaGoodsCityInventory" resultType="java.lang.Boolean">
+        SELECT EXISTS(SELECT 'X'
+        FROM city_inventory
+        WHERE city_inventory.available_ity >= #{qty} AND city_id = #{cityId} AND sku = #{sku})
+    </select>
+
     <select id="findCityDeliveryTimeByCityId" parameterType="java.lang.Long" resultType=
             "cn.com.leyizhuang.app.foundation.pojo.management.city.CityDeliveryTime">
         SELECT *
