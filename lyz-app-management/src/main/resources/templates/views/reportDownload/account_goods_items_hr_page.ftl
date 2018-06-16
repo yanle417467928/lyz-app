@@ -41,7 +41,6 @@
                 <div id="toolbar" class="form-inline">
                     <select name="city" id="cityCode" class="form-control selectpicker" data-width="120px" style="width:auto;"
                             onchange="findStorelist()" data-live-search="true">
-                        <option value="-1">选择城市</option>
                     </select>
 
                     <select name="storeType" id="storeType" class="form-control selectpicker" data-width="120px" style="width:auto;"
@@ -120,7 +119,9 @@
             success: function (result) {
                 clearTimeout($global.timer);
                 $.each(result, function (i, item) {
-                    city += "<option value=" + item.cityId + ">" + item.name + "</option>";
+                    if(item.cityId == 2){
+                        city += "<option value=" + item.cityId + ">" + item.name + "</option>";
+                    }
                 });
                 $("#cityCode").append(city);
                 $("#cityCode").selectpicker('refresh');

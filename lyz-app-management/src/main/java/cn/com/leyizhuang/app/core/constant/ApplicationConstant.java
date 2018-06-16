@@ -18,6 +18,8 @@ public class ApplicationConstant {
 
     public static String FIT_ORDER_TEMPLATE_URL;
 
+    public static String unionPayRefundAsyncBack;
+
     public String getImagePath() {
         return imagePath;
     }
@@ -106,5 +108,13 @@ public class ApplicationConstant {
 
     public void setFitOrderTemplateUrl(String fitOrderTemplateUrl) {
         FIT_ORDER_TEMPLATE_URL = fitOrderTemplateUrl;
+    }
+
+    public String getUnionPayRefundAsyncBack() {
+        return unionPayRefundAsyncBack;
+    }
+
+    public void setUnionPayRefundAsyncBack(String unionPayRefundAsyncBack) {
+        ApplicationConstant.unionPayRefundAsyncBack = unionPayRefundAsyncBack;
     }
 }
