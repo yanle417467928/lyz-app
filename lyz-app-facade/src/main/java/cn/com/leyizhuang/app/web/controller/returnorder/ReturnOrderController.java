@@ -874,12 +874,47 @@ public class ReturnOrderController {
             //如果是买券订单直接处理退款退货
             if (AppOrderType.COUPON.equals(order.getOrderType())) {
                 City city = cityService.findById(order.getCityId());
-                HashedMap map = returnOrderService.couponReturnOrderProcessing(returnNo, city.getNumber());
+                HashedMap maps = returnOrderService.couponReturnOrderProcessing(returnNo, city.getNumber());
 
-                if ("SUCCESS".equals(map.get("code"))) {
+                if ("SUCCESS".equals(maps.get("code"))) {
+                    if ((Boolean) maps.get("hasReturnOnlinePay")) {
+                        //返回第三方支付金额
+                        if (null != returnOrderBilling.getOnlinePay() && returnOrderBilling.getOnlinePay() > AppConstant.PAY_UP_LIMIT) {
+                            if (OnlinePayType.ALIPAY.equals(returnOrderBilling.getOnlinePayType())) {
+                                //支付宝退款
+                                Map<String, String> map = onlinePayRefundService.alipayRefundRequest(
+                                        returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(), returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo(), returnOrderBilling.getOnlinePay(), returnOrderBaseInfo.getRoid());
+                            } else if (OnlinePayType.WE_CHAT.equals(returnOrderBilling.getOnlinePayType())) {
+                                //微信退款方法类
+                                Map<String, String> map = onlinePayRefundService.wechatReturnMoney(
+                                        returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(), returnOrderBilling.getOnlinePay(), returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo(), returnOrderBaseInfo.getRoid());
+                            } else if (OnlinePayType.UNION_PAY.equals(returnOrderBilling.getOnlinePayType())) {
+                                //银联支付退款
+                                Map<String, String> map = onlinePayRefundService.unionPayReturnMoney(returnOrderBaseInfo.getCreatorId(), returnOrderBaseInfo.getCreatorIdentityType().getValue(),
+                                        returnOrderBilling.getOnlinePay(), returnOrderBaseInfo.getOrderNo(), returnOrderBaseInfo.getReturnNo(),
+                                        returnOrderBaseInfo.getRoid());
+                            }
+                        }
+                    }
 
-                    //修改取消订单处理状态
+                    //修改订单处理状态
                     returnOrderService.updateReturnOrderStatus(returnNo, AppReturnOrderStatus.FINISHED);
+                    //*****************************保存订单生命周期信息***************************
+                    OrderLifecycle orderLifecycle = new OrderLifecycle();
+                    orderLifecycle.setOid(order.getId());
+                    orderLifecycle.setOrderNumber(order.getOrderNumber());
+                    orderLifecycle.setOperation(OrderLifecycleType.NORMAL_RETURN);
+                    orderLifecycle.setPostStatus(AppOrderStatus.FINISHED);
+                    orderLifecycle.setOperationTime(new Date());
+                    returnOrderService.saveOrderLifecycle(orderLifecycle);
+                    //********************************保存退单生命周期信息***********************
+                    ReturnOrderLifecycle returnOrderLifecycle = new ReturnOrderLifecycle();
+                    returnOrderLifecycle.setRoid(returnOrderBaseInfo.getRoid());
+                    returnOrderLifecycle.setReturnNo(returnOrderBaseInfo.getReturnNo());
+                    returnOrderLifecycle.setOperation(OrderLifecycleType.NORMAL_RETURN);
+                    returnOrderLifecycle.setPostStatus(AppReturnOrderStatus.FINISHED);
+                    returnOrderLifecycle.setOperationTime(new Date());
+                    returnOrderService.saveReturnOrderLifecycle(returnOrderLifecycle);
                     //发送退单拆单消息到拆单消息队列
                     sinkSender.sendReturnOrder(returnNo);
                     logger.info("cancelOrderToWms OUT,买券正常退货成功");
