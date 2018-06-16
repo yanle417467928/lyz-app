@@ -665,24 +665,30 @@ public class MaterialListController {
 
     @PostMapping(value = "/buyCoupon/list", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> getProductCouponMaterialList(Long userId, Integer identityType) throws UnsupportedEncodingException {
-        logger.info("getMaterialList CALLED,获取下料清单列表，入参 userId:{} identityType:{}", userId, identityType);
+        logger.info("getProductCouponMaterialList CALLED,获取下料清单列表，入参 userId:{} identityType:{}", userId, identityType);
         ResultDTO<Object> resultDTO;
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
-            logger.info("getMaterialList OUT,获取下料清单列表失败，出参 resultDTO:{}", resultDTO);
+            logger.info("getProductCouponMaterialList OUT,获取下料清单列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型错误！", null);
-            logger.info("getMaterialList OUT,获取下料清单列表失败，出参 resultDTO:{}", resultDTO);
+            logger.info("getProductCouponMaterialList OUT,获取下料清单列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-//        //所有用户返回自己的商品
+        //判断创单人身份是否合法
+        if (!(identityType == 0 || identityType == 6)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "亲爱的用户，您暂未开通此功能！", "");
+            logger.warn("getProductCouponMaterialList OUT,获取下料清单列表失败,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        //所有用户返回自己的商品
         List<NormalMaterialListResponse> normalMaterialListRespons = this.materialListServiceImpl.findBuyCouponGoodsByUserIdAndIdentityType(userId, identityType);
         Map<String, Object> returnMap = new HashMap<>(4);
         returnMap.put("materialListRes", normalMaterialListRespons);
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, returnMap);
-        logger.info("getMaterialList OUT,获取下料清单列表成功，出参 resultDTO:{}", resultDTO);
+        logger.info("getProductCouponMaterialList OUT,获取下料清单列表成功，出参 resultDTO:{}", resultDTO);
         return resultDTO;
     }
 

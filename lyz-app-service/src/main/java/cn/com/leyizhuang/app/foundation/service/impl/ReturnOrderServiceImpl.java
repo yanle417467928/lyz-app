@@ -3298,5 +3298,11 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
     public void saveReturnOrderLifecycle(ReturnOrderLifecycle returnOrderLifecycle) {
         this.returnOrderDAO.saveReturnOrderLifecycle(returnOrderLifecycle);
     }
+
+    @Override
+    public ReturnOrderBilling getAllReturnPriceByOrderNo(String orderNo) {
+        return this.returnOrderDAO.getAllReturnPriceByOrderNo(orderNo);
+    }
+
 }
 

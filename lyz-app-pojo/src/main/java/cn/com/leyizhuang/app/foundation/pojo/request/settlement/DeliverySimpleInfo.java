@@ -36,6 +36,10 @@ public class DeliverySimpleInfo implements Serializable {
      */
     private String bookingStoreName;
     /**
+     * 预约门店名称
+     */
+    private String bookingStoreCode;
+    /**
      * 门店地址
      */
     private String bookingStoreAddress;

@@ -649,5 +649,15 @@
         where ore.is_record_sales = #{flag}
         and wro.create_time &gt; '2018-04-01 00:00:00'
     </select>
+
+    <select id="getAllReturnPriceByOrderNo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBilling">
+        SELECT SUM(orb.pre_deposit) as preDeposit,SUM(orb.credit_money) as creditMoney,SUM(orb.st_pre_deposit) as stPreDeposit,
+            SUM(orb.st_credit_money) as stCreditMoney,SUM(orb.st_subvention) as stSubvention,SUM(orb.online_pay) as onlinePay,
+            SUM(orb.cash) as cash,SUM(orb.lb_quantity) as leBiQuantity, SUM(orb.seller_store_deposit) as sellerStoreDeposit
+        FROM ord_return_base_info ori
+        LEFT JOIN ord_return_billing orb ON orb.return_no = ori.return_no
+        WHERE ori.ord_no = #{orderNo} AND ori.return_status != 'CANCELED'
+        GROUP BY ori.ord_no
+    </select>
 </mapper>
 

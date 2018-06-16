@@ -253,6 +253,7 @@ public class OrderGiftController {
                         }
                     }
                 }
+                //买卷获取买卷促销
                 if (null == orderType || !orderType.equals("COUPON")) {
                     promotionsGiftList = actService.countGift(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), goodsInfo, cusId, "GOODS");
                 } else {
@@ -279,7 +280,6 @@ public class OrderGiftController {
                     }
                 }
             }
-
 
             // 券商品集合
             List<GiftListResponseGoods> responseCouponGoodsList = new ArrayList<>();

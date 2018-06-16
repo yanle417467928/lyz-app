@@ -336,7 +336,11 @@ public class AppOrderServiceImpl implements AppOrderService {
         //设置订单物流状态
         tempOrder.setDeliveryStatus(LogisticStatus.INITIAL);
         //设置订单类型 买券、出货
-        tempOrder.setOrderType(AppOrderType.SHIPMENT);
+        if (deliveryType.equalsIgnoreCase(AppDeliveryType.PRODUCT_COUPON.getValue())) {
+            tempOrder.setOrderType(AppOrderType.COUPON);
+        } else {
+            tempOrder.setOrderType(AppOrderType.SHIPMENT);
+        }
         //设置是否已评价
         tempOrder.setIsEvaluated(Boolean.FALSE);
         //生成并设置订单号
@@ -351,6 +355,8 @@ public class AppOrderServiceImpl implements AppOrderService {
             tempOrder.setDeliveryType(AppDeliveryType.HOUSE_DELIVERY);
         } else if (deliveryType.equalsIgnoreCase(AppDeliveryType.SELF_TAKE.getValue())) {
             tempOrder.setDeliveryType(AppDeliveryType.SELF_TAKE);
+        } else if (deliveryType.equalsIgnoreCase(AppDeliveryType.PRODUCT_COUPON.getValue())) {
+            tempOrder.setDeliveryType(AppDeliveryType.PRODUCT_COUPON);
         }
         //设置下单人所在门店信息
         AppStore userStore = storeService.findStoreByUserIdAndIdentityType(userId, identityType);
@@ -463,6 +469,11 @@ public class AppOrderServiceImpl implements AppOrderService {
                     + logisticsInfo.getDeliveryCity().trim() + logisticsInfo.getDeliveryCounty().trim()
                     + logisticsInfo.getDeliveryStreet().trim()
                     + logisticsInfo.getResidenceName().trim() + logisticsInfo.getDetailedAddress().trim());
+        } else if (deliverySimpleInfo.getDeliveryType().equalsIgnoreCase(AppDeliveryType.PRODUCT_COUPON.getValue())) {
+            logisticsInfo.setDeliveryType(AppDeliveryType.PRODUCT_COUPON);
+            logisticsInfo.setBookingStoreCode(deliverySimpleInfo.getBookingStoreCode());
+            logisticsInfo.setBookingStoreName(deliverySimpleInfo.getBookingStoreName());
+            logisticsInfo.setBookingStoreAddress(deliverySimpleInfo.getBookingStoreAddress());
         }
         logisticsInfo.setIsOwnerReceiving(deliverySimpleInfo.getIsOwnerReceiving());
         return logisticsInfo;

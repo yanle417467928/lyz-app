@@ -730,6 +730,8 @@ public class CommonServiceImpl implements CommonService {
                     deliveryInfoDetailsService.addOrderDeliveryInfoDetails(deliveryInfoDetails);
                 } else if (orderBaseInfo.getDeliveryType() == AppDeliveryType.SELF_TAKE) {
                     orderBaseInfo.setStatus(AppOrderStatus.PENDING_RECEIVE);
+                } else if (orderBaseInfo.getDeliveryType() == AppDeliveryType.PRODUCT_COUPON) {
+                    orderBaseInfo.setStatus(AppOrderStatus.FINISHED);
                 }
 
                 //TODO 返还经销差价
@@ -929,6 +931,8 @@ public class CommonServiceImpl implements CommonService {
                     }
                 }
 
+            } else if (baseInfo.getDeliveryType() == AppDeliveryType.PRODUCT_COUPON) {
+                baseInfo.setStatus(AppOrderStatus.FINISHED);
             }
 
             //更新订单基础信息
