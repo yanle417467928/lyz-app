@@ -923,7 +923,9 @@
         orpc.purchase_price as purchasePrice,
         orpc.qty as couponQty,
         orbi.return_no as referenceNumber,
-        wh.wh_name as wareHouse
+        wh.wh_name as wareHouse,
+        orli.delivery_type as returnOrderDeliveryType,
+        obi.delivery_type as orderDeliveryType
         from ord_return_base_info orbi
         LEFT JOIN ord_return_goods_info orgi ON orgi.return_no =orbi.return_no
         LEFT JOIN ord_base_info obi ON orbi.ord_no=obi.ord_no
@@ -986,7 +988,9 @@
         orpc.purchase_price as purchasePrice,
         orpc.qty as couponQty,
         orbi.return_no as referenceNumber,
-        "" as wareHouse
+        "" as wareHouse,
+        orli.delivery_type as returnOrderDeliveryType,
+        obi.delivery_type as orderDeliveryType
         from ord_return_base_info orbi
         LEFT JOIN ord_return_goods_info orgi ON orgi.return_no =orbi.return_no
         LEFT JOIN ord_base_info obi ON orbi.ord_no=obi.ord_no
@@ -1050,7 +1054,9 @@
         oci.purchase_price as purchasePrice,
         oci.qty as couponQty ,
         obi.ord_no as referenceNumber,
-        wh.wh_name as wareHouse
+        wh.wh_name as wareHouse,
+        null as returnOrderDeliveryType,
+        obi.delivery_type as orderDeliveryType
         from ord_base_info obi
         LEFT JOIN ord_goods_info ogi ON obi.ord_no =ogi.ord_no
         LEFT JOIN ord_delivery_info_details odid ON obi.ord_no = odid.order_no
@@ -1112,7 +1118,9 @@
         oci.purchase_price as purchasePrice,
         oci.qty as couponQty,
         obi.ord_no as referenceNumber,
-        "" as wareHouse
+        "" as wareHouse,
+        null as returnOrderDeliveryType,
+        obi.delivery_type as orderDeliveryType
         from ord_base_info obi
         LEFT JOIN ord_goods_info ogi ON ogi.ord_no =obi.ord_no
         LEFT JOIN st_store ss ON obi.store_id = ss.store_id

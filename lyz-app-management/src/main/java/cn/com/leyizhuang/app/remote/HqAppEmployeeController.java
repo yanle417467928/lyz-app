@@ -134,24 +134,28 @@ public class HqAppEmployeeController {
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此门店,不允许为空！", null);
             }
             if ("装饰公司经理".equals(employeeDTO.getPosition()) || "装饰公司员工".equals(employeeDTO.getPosition())) {
-                if (!"ZS".equals(store.getStoreType())) {
+                if (!"ZS".equals(store.getStoreType().getValue())) {
                     logger.warn("employeeSync OUT,同步新增员工信息失败，出参 store:{}", store);
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "职位类型与门店类型不匹配", null);
                 }
             }
             if ("导购".equals(employeeDTO.getPosition()) || "配送员".equals(employeeDTO.getPosition())) {
-                if ("ZS".equals(store.getStoreType())) {
+                if ("ZS".equals(store.getStoreType().getValue())) {
                     logger.warn("employeeSync OUT,同步新增员工信息失败，出参 store:{}", store);
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "职位类型与门店类型不匹配", null);
                 }
             }
             employee.setCityId(city.getCityId());
             employee.setStoreId(store.getStoreId());
+            if (null != employeeDTO.getManagerNumber()) {
+                AppEmployee superios = employeeService.findByLoginName(employeeDTO.getManagerNumber());
+                employee.setManagerId(superios.getEmpId());
+            }
             String salt = employee.generateSalt();
-            employee.setSalt(salt);
+            employee.setSalt("26d419524d88b85a573f2de536bd63ac");
             try {
                 String md5Password = DigestUtils.md5DigestAsHex((password + salt).getBytes("UTF-8"));
-                employee.setPassword(md5Password);
+                employee.setPassword("ee1ffccda9260a1dda9318f8430877e2");
                 employeeService.save(employee);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
@@ -180,42 +184,7 @@ public class HqAppEmployeeController {
     public ResultDTO<String> updateEmployee(@RequestBody HqAppEmployeeDTO employeeDTO) {
         logger.warn("updateEmployee CALLED,同步修改员工信息，入参 employeeDTO:{}", employeeDTO);
         if (null != employeeDTO) {
-            String password = Base64Utils.decode(employeeDTO.getPassword());
-            AppEmployee employee = employeeService.findByMobile(employeeDTO.getMobile());
-            if (null == employee) {
-                logger.warn("employeeSync OUT,同步修改员工信息失败，出参 employee:{}", employee);
-                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未找到该员工信息！", null);
-            }
-            employee.setName(employeeDTO.getName());
-            employee.setMobile(employeeDTO.getMobile());
-            if (null != employeeDTO.getBirthday()) {
-                employee.setBirthday(employeeDTO.getBirthday());
-            }
-            employee.setSex(employeeDTO.getSex() ? SexType.MALE : SexType.FEMALE);
-            employee.setStatus(employeeDTO.getStatus() != 0);
-            employee.setPicUrl(employeeDTO.getPicUrl());
-            employee.setManagerId(employeeDTO.getManagerId());
-            employee.setCreateTime(TimeTransformUtils.UDateToLocalDateTime(employeeDTO.getCreateTime()));
-            if ("导购".equals(employeeDTO.getPosition())) {
-                employee.setIdentityType(AppIdentityType.SELLER);
-                if ("普通导购".equals(employeeDTO.getPositionType())) {
-                    employee.setSellerType(AppSellerType.SELLER);
-                } else if ("店长".equals(employeeDTO.getPositionType())) {
-                    employee.setSellerType(AppSellerType.SUPERVISOR);
-                } else if ("店经理".equals(employeeDTO.getPositionType())) {
-                    employee.setSellerType(AppSellerType.MANAGER);
-                }
-            } else if ("装饰公司经理".equals(employeeDTO.getPosition())) {
-                employee.setIdentityType(AppIdentityType.DECORATE_MANAGER);
-                employee.setSellerType(null);
-            } else if ("装饰公司员工".equals(employeeDTO.getPosition())) {
-                employee.setIdentityType(AppIdentityType.DECORATE_EMPLOYEE);
-                employee.setSellerType(null);
-            } else if ("配送员".equals(employeeDTO.getPosition())) {
-                employee.setIdentityType(AppIdentityType.DELIVERY_CLERK);
-                employee.setSellerType(null);
-                employee.setDeliveryClerkNo(employeeDTO.getDeliveryClerkNo());
-            }
+            Boolean isEmpty;
             City city = cityService.findByCityNumber(employeeDTO.getCityNumber());
             if (null == city) {
                 logger.warn("employeeSync OUT,同步修改员工信息失败，出参 city:{}", city);
@@ -226,15 +195,100 @@ public class HqAppEmployeeController {
                 logger.warn("employeeSync OUT,同步修改员工信息失败，出参 store:{}", store);
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此门店,不允许为空！", null);
             }
-            employee.setLoginName(employeeDTO.getNumber());
-            employee.setCityId(city.getCityId());
-            employee.setStoreId(store.getStoreId());
-            String salt = employee.generateSalt();
-            employee.setSalt(salt);
+            //String password = Base64Utils.decode(employeeDTO.getPassword());
+            AppEmployee newEmployee = new AppEmployee();
+            AppEmployee employee = employeeService.findByMobile(employeeDTO.getMobileBefore());
+            if (null == employee) {
+                isEmpty = Boolean.FALSE;
+                newEmployee.setName(employeeDTO.getName());
+                newEmployee.setMobile(employeeDTO.getMobile());
+                if (null != employeeDTO.getBirthday()) {
+                    newEmployee.setBirthday(employeeDTO.getBirthday());
+                }
+                newEmployee.setSex(employeeDTO.getSex() ? SexType.MALE : SexType.FEMALE);
+                newEmployee.setStatus(employeeDTO.getStatus() != 0);
+                newEmployee.setPicUrl(employeeDTO.getPicUrl());
+                //newEmployee.setManagerId(employeeDTO.getManagerId());
+                newEmployee.setCreateTime(TimeTransformUtils.UDateToLocalDateTime(employeeDTO.getCreateTime()));
+                if ("导购".equals(employeeDTO.getPosition())) {
+                    newEmployee.setIdentityType(AppIdentityType.SELLER);
+                    if ("普通导购".equals(employeeDTO.getPositionType())) {
+                        newEmployee.setSellerType(AppSellerType.SELLER);
+                    } else if ("店长".equals(employeeDTO.getPositionType())) {
+                        newEmployee.setSellerType(AppSellerType.SUPERVISOR);
+                    } else if ("店经理".equals(employeeDTO.getPositionType())) {
+                        newEmployee.setSellerType(AppSellerType.MANAGER);
+                    }
+                } else if ("装饰公司经理".equals(employeeDTO.getPosition())) {
+                    newEmployee.setIdentityType(AppIdentityType.DECORATE_MANAGER);
+                    newEmployee.setSellerType(null);
+                } else if ("装饰公司员工".equals(employeeDTO.getPosition())) {
+                    newEmployee.setIdentityType(AppIdentityType.DECORATE_EMPLOYEE);
+                    newEmployee.setSellerType(null);
+                } else if ("配送员".equals(employeeDTO.getPosition())) {
+                    newEmployee.setIdentityType(AppIdentityType.DELIVERY_CLERK);
+                    newEmployee.setSellerType(null);
+                    newEmployee.setDeliveryClerkNo(employeeDTO.getDeliveryClerkNo());
+                }
+                newEmployee.setLoginName(employeeDTO.getNumber());
+                newEmployee.setCityId(city.getCityId());
+                newEmployee.setStoreId(store.getStoreId());
+                if (null != employeeDTO.getManagerNumber()) {
+                    AppEmployee superios = employeeService.findByLoginName(employeeDTO.getManagerNumber());
+                    if(null !=superios){
+                        newEmployee.setManagerId(superios.getEmpId());
+                    }
+                }
+            } else {
+                isEmpty = Boolean.TRUE;
+                employee.setName(employeeDTO.getName());
+                employee.setMobile(employeeDTO.getMobile());
+                if (null != employeeDTO.getBirthday()) {
+                    employee.setBirthday(employeeDTO.getBirthday());
+                }
+                employee.setSex(employeeDTO.getSex() ? SexType.MALE : SexType.FEMALE);
+                employee.setStatus(employeeDTO.getStatus() != 0);
+                employee.setPicUrl(employeeDTO.getPicUrl());
+                employee.setManagerId(employeeDTO.getManagerId());
+                employee.setCreateTime(TimeTransformUtils.UDateToLocalDateTime(employeeDTO.getCreateTime()));
+                if ("导购".equals(employeeDTO.getPosition())) {
+                    employee.setIdentityType(AppIdentityType.SELLER);
+                    if ("普通导购".equals(employeeDTO.getPositionType())) {
+                        employee.setSellerType(AppSellerType.SELLER);
+                    } else if ("店长".equals(employeeDTO.getPositionType())) {
+                        employee.setSellerType(AppSellerType.SUPERVISOR);
+                    } else if ("店经理".equals(employeeDTO.getPositionType())) {
+                        employee.setSellerType(AppSellerType.MANAGER);
+                    }
+                } else if ("装饰公司经理".equals(employeeDTO.getPosition())) {
+                    employee.setIdentityType(AppIdentityType.DECORATE_MANAGER);
+                    employee.setSellerType(null);
+                } else if ("装饰公司员工".equals(employeeDTO.getPosition())) {
+                    employee.setIdentityType(AppIdentityType.DECORATE_EMPLOYEE);
+                    employee.setSellerType(null);
+                } else if ("配送员".equals(employeeDTO.getPosition())) {
+                    employee.setIdentityType(AppIdentityType.DELIVERY_CLERK);
+                    employee.setSellerType(null);
+                    employee.setDeliveryClerkNo(employeeDTO.getDeliveryClerkNo());
+                }
+                employee.setLoginName(employeeDTO.getNumber());
+                employee.setCityId(city.getCityId());
+                employee.setStoreId(store.getStoreId());
+                if (null != employeeDTO.getManagerNumber()) {
+                    AppEmployee superios = employeeService.findByLoginName(employeeDTO.getManagerNumber());
+                    employee.setManagerId(superios.getEmpId());
+                }
+            }
+            //String salt = employee.generateSalt();
+            //employee.setSalt(salt);
             try {
-                String md5Password = DigestUtils.md5DigestAsHex((password + salt).getBytes("UTF-8"));
-                employee.setPassword(md5Password);
-                employeeService.update(employee);
+                //String md5Password = DigestUtils.md5DigestAsHex((password + salt).getBytes("UTF-8"));
+                //employee.setPassword(md5Password);
+                if (isEmpty) {
+                    employeeService.update(employee);
+                } else {
+                    employeeService.save(newEmployee);
+                }
                 logger.warn("同步修改员工信息成功！");
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             } catch (Exception e) {
@@ -242,11 +296,48 @@ public class HqAppEmployeeController {
                 logger.warn("deleteEmployee EXCEPTION,同步修改员工信息失败，出参 resultDTO:{}", e);
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "同步修改员工信息失败！", null);
             }
+        } else
+
+        {
+            logger.warn("员工信息为空！");
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "员工信息为空！", null);
+        }
+
+    }
+
+
+    /**
+     * 同步重置员工密码
+     *
+     * @param
+     * @return
+     */
+    @PostMapping(value = "/restPassWord")
+    public ResultDTO<String> restPassWord(@RequestBody String mobile) {
+        logger.warn("restPassWord CALLED,重置员工密码，入参 mobile:{}", mobile);
+        if (null != mobile) {
+            AppEmployee employee = employeeService.findByMobile(mobile);
+            if (null == employee) {
+                logger.warn("employeeSync OUT,同步重置员工密码失败，出参 employee:{}", employee);
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未找到该员工信息！", null);
+            }
+            try {
+                employee.setSalt("26d419524d88b85a573f2de536bd63ac");
+                employee.setPassword("ee1ffccda9260a1dda9318f8430877e2");
+                employeeService.update(employee);
+                logger.warn("同步重置员工密码成功！");
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.warn("deleteEmployee EXCEPTION,同步重置员工密码失败，出参 resultDTO:{}", e);
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "同步修改员工信息失败！", null);
+            }
         } else {
             logger.warn("员工信息为空！");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "员工信息为空！", null);
         }
     }
+
 
     /**
      * 同步删除员工信息
