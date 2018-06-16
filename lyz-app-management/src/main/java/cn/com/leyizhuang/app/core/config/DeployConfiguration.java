@@ -45,6 +45,9 @@ public class DeployConfiguration {
     @Value("${deploy.fit.order.template.url}")
     private String fitOrderTemplateUrl;
 
+    @Value("${deploy.unionpay.refund.async.back}")
+    private String unionPayRefundAsyncBack;
+
     @Bean
     public ApplicationConstant applicationConstant() {
         LOG.info("imagePath : {}", imagePath);
@@ -57,6 +60,7 @@ public class DeployConfiguration {
         LOG.info("ossBucket : {}", ossBucket);
         LOG.info("wmsUrl : {}", wmsUrl);
         LOG.info("fitOrderTemplateUrl : {}", fitOrderTemplateUrl);
+        LOG.info("unionPayRefundAsyncBack : {}", unionPayRefundAsyncBack);
 
         ApplicationConstant constant = new ApplicationConstant();
         constant.setImagePath(imagePath);
@@ -69,6 +73,8 @@ public class DeployConfiguration {
         constant.setOssBucket(ossBucket);
         constant.setWmsUrl(wmsUrl);
         constant.setFitOrderTemplateUrl(fitOrderTemplateUrl);
+        constant.setUnionPayRefundAsyncBack(unionPayRefundAsyncBack);
+
         return constant;
     }
 

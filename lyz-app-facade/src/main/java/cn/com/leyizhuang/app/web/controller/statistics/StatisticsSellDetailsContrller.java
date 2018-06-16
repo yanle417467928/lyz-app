@@ -85,6 +85,9 @@ public class StatisticsSellDetailsContrller {
             } else if(flag.equals("XKF")) {
                 sellDetailsResponse = statisticsSellDetailsService.currentXKF(sellerId);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", sellDetailsResponse);
+            }else if(flag == "XL"){
+
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", sellDetailsResponse);
             }
 
         }

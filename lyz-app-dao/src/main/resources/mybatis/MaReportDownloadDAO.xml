@@ -2687,7 +2687,7 @@
         ob.create_time as orderTime,
         CASE wa.end_dt WHEN null THEN '一代数据' ELSE wa.end_dt END as shipmentsTime,
         wa.send_time as appShipmentsTime,
-        d.create_time as finishTime,
+        IFNULL(oa.create_time, d.create_time) as finishTime,
         oli.shipping_address as shippingAddress,
         ob.remark as remark
         FROM
@@ -2698,6 +2698,7 @@
         LEFT JOIN ord_logistics_info oli ON ob.oid = oli.oid
         LEFT JOIN warehouse wh ON wh.wh_no = oli.warehouse
         LEFT JOIN ord_delivery_info_details d ON d.order_no = ob.ord_no AND d.logistic_status IN ('REJECTED','CONFIRM_ARRIVAL')
+        LEFT JOIN (SELECT * FROM ord_arrears_audit GROUP BY ord_no) oa ON oa.ord_no = ob.ord_no
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE','FINISHED','REJECTED','CLOSED'
@@ -2740,7 +2741,7 @@
         CASE orb.return_status WHEN 'FINISHED' THEN '已反配' WHEN 'PENDING_REFUND' THEN '待退款' END as status,
         orb.return_time as orderTime,
         (CASE orb.return_type WHEN 'NORMAL_RETURN' THEN rd.create_time ELSE orb.return_time END) as shipmentsTime,
-        '' as appShipmentsTime,
+        ird.create_time as appShipmentsTime,
         wro.c_end_dt as finishTime,
         oli.return_full_address as shippingAddress,
         orb.remarks_info as remark
@@ -2754,6 +2755,7 @@
         LEFT JOIN ord_logistics_info ol ON ob.oid = ol.oid
         LEFT JOIN warehouse wh ON wh.wh_no = wro.wh_no
         LEFT JOIN ord_return_delivery_detail rd ON orb.return_no = rd.return_no AND rd.return_logistic_status = 'PICKUP_COMPLETE'
+        LEFT JOIN inter_wta_return_order_delivery_clerk ird ON ird.return_number = orb.return_no
         WHERE
         orb.return_status IN ('FINISHED','PENDING_REFUND')
         AND ob.delivery_type = 'HOUSE_DELIVERY'
@@ -2779,7 +2781,7 @@
         </if>
         GROUP BY orderNo,returnNo
         -- AND oli.delivery_clerk_name IS NOT NULL
-        ORDER BY whName,deliveryClerkName,storeName,sellerName ASC
+        ORDER BY whName,deliveryClerkName,storeName,sellerName,appShipmentsTime ASC
     </select>
 
     <select id="findAccountGoodsItemsDOHR"
