@@ -273,10 +273,13 @@ deploy:
     cert:
       path: /mnt/root/cert/apiclient_cert.p12
   unionpay:
-    async:
-      url:
-        front: http://app.leyizhuang.com.cn/app/unionpay/return/async/front
-        back: http://app.leyizhuang.com.cn/app/unionpay/return/async/back
+      async:
+        url:
+          front: http://app.leyizhuang.com.cn/app/unionpay/return/async/front
+          back: http://app.leyizhuang.com.cn/app/unionpay/return/async/back
+      refund:
+        async:
+          back: http://app.leyizhuang.com.cn/app/unionpay/refund/async/back
   oss:
     cdnHosts: img1.leyizhuang.com.cn,img2.leyizhuang.com.cn,img3.leyizhuang.com.cn,img4.leyizhuang.com.cn,img5.leyizhuang.com.cn
     folder: lyz-app/images/
