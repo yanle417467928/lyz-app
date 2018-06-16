@@ -1697,7 +1697,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                     }
                 }
                 //返回门店预存款
-                else if (null != returnOrderBilling.getStPreDeposit() && returnOrderBilling.getStPreDeposit() > AppConstant.PAY_UP_LIMIT) {
+                if (null != returnOrderBilling.getStPreDeposit() && returnOrderBilling.getStPreDeposit() > AppConstant.PAY_UP_LIMIT) {
                     for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                         //获取门店预存款
                         StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(orderBaseInfo.getStoreId());
@@ -1742,7 +1742,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         }
                     }
                 }//装饰公司退门店信用额度
-                else if (null != returnOrderBilling.getStCreditMoney() && returnOrderBilling.getStCreditMoney() > AppConstant.PAY_UP_LIMIT) {
+                if (null != returnOrderBilling.getStCreditMoney() && returnOrderBilling.getStCreditMoney() > AppConstant.PAY_UP_LIMIT) {
                     for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                         //查询门店信用金
                         StoreCreditMoney storeCreditMoney = storeCreditMoneyLogService.findStoreCreditMoneyByUserId(orderBaseInfo.getCreatorId());
@@ -1787,7 +1787,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                     }
                 }
                 //退代支付导购门店预存款
-                else if (null != returnOrderBilling.getSellerStoreDeposit() && returnOrderBilling.getSellerStoreDeposit() > AppConstant.PAY_UP_LIMIT) {
+                if (null != returnOrderBilling.getSellerStoreDeposit() && returnOrderBilling.getSellerStoreDeposit() > AppConstant.PAY_UP_LIMIT) {
                     for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                         //获取门店预存款
                         StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(orderBaseInfo.getSalesConsultId());
