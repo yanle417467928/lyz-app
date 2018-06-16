@@ -190,4 +190,8 @@ public interface AppCustomerDAO {
     void updateCustomerSellerIdStoreIdByCusId(@Param("cusId") Long cusId,@Param("storeId")Long storeId,@Param("salesConsultId")Long salesConsultId,@Param("date")Date date);
 
     void updateCusProductCouponsStatusIsFlaseById(Long id);
+
+    List<CustomerProductCoupon> findOverdueCustomerProductCoupon();
+
+    void saveCustomerProductCouponTransferPreDepositRecord(CustomerProductCouponTransferPreDepositRecord record);
 }

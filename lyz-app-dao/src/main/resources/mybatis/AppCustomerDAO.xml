@@ -4,29 +4,37 @@
 
     <insert id="save" parameterType="AppCustomer" useGeneratedKeys="true"
             keyColumn="cus_id" keyProperty="cusId">
-        INSERT INTO cus_customer
-        (store_id, name, mobile, birthday, status, sex, open_id,
-         pic_url, nick_name, city_id, sales_consult_id, create_time, light, is_cash_on_delivery, create_type,
-         customer_type,
-         last_sign_time, binding_time, last_consumption_time, customer_profession, customer_profession_desc
-        )
-        VALUES
-            (
-                #{storeId}, #{name}, #{mobile}, #{birthday}, #{status},
-                            #{sex,
+        INSERT INTO cus_customer (store_id, name, mobile, birthday, status, sex, open_id, pic_url, nick_name, city_id,
+                           sales_consult_id, create_time, light, is_cash_on_delivery, create_type, customer_type,
+                           last_sign_time, binding_time, last_consumption_time, customer_profession,
+                           customer_profession_desc)
+        VALUES (#{storeId},
+                #{name},
+                #{mobile},
+                #{birthday},
+                #{status},
+                #{sex,
                               javaType=cn.com.leyizhuang.app.core.constant.SexType,
                               typeHandler=org.apache.ibatis.type.EnumTypeHandler},
-                            #{openId}, #{picUrl}, #{nickName}, #{cityId}, #{salesConsultId},
-                #{createTime}, #{light,
+                #{openId},
+                #{picUrl},
+                #{nickName},
+                #{cityId},
+                #{salesConsultId},
+                #{createTime},
+                #{light,
               javaType =cn.com.leyizhuang.app.core.constant.AppCustomerLightStatus,
               typeHandler=org.apache.ibatis.type.EnumTypeHandler},
-                #{isCashOnDelivery}, #{createType,javaType =cn.com.leyizhuang.app.core.constant.AppCustomerCreateType,
+                #{isCashOnDelivery},
+                #{createType,javaType =cn.com.leyizhuang.app.core.constant.AppCustomerCreateType,
               typeHandler=org.apache.ibatis.type.EnumTypeHandler},
                 #{customerType,javaType =cn.com.leyizhuang.app.core.constant.AppCustomerType,
               typeHandler=org.apache.ibatis.type.EnumTypeHandler},
-                #{lastSignTime}, #{bindingTime}, #{lastConsumptionTime}, #{customerProfession},
-                #{customerProfessionDesc}
-            )
+                #{lastSignTime},
+                #{bindingTime},
+                #{lastConsumptionTime},
+                #{customerProfession},
+                #{customerProfessionDesc})
     </insert>
 
     <select id="findByMobile" parameterType="java.lang.String" resultType="AppCustomer">
@@ -109,29 +117,7 @@
     </update>
 
     <select id="findById" parameterType="java.lang.Long" resultType="AppCustomer">
-        SELECT
-            cus_id,
-            city_id,
-            store_id,
-            name,
-            mobile,
-            birthday,
-            status,
-            sex,
-            open_id,
-            pic_url,
-            nick_name,
-            sales_consult_id,
-            create_time,
-            light,
-            create_type,
-            customer_type,
-            last_sign_time,
-            consecutive_sign_days,
-            binding_time,
-            last_consumption_time,
-            customer_profession,
-            customer_profession_desc
+        SELECT cus_id, city_id, store_id, name, mobile, birthday, status, sex, open_id, pic_url, nick_name, sales_consult_id, create_time, light, create_type, customer_type, last_sign_time, consecutive_sign_days, binding_time, last_consumption_time, customer_profession, customer_profession_desc
         FROM cus_customer
         WHERE cus_id = #{cusId}
     </select>
@@ -144,93 +130,54 @@
 
     <select id="findCashCouponByCustomerId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse">
-        SELECT
-            cc.ccid id,
-            c.denomination,
-            c.effective_start_time,
-            c.effective_end_time,
-            c.description,
-            c.title
-        FROM
-            cus_customer_cash_coupon cc
+        SELECT cc.ccid id, c.denomination, c.effective_start_time, c.effective_end_time, c.description, c.title
+        FROM cus_customer_cash_coupon cc
             INNER JOIN cp_cash_coupon c ON cc.ccid = c.ccid
-        WHERE
-            cc.cus_id = #{userId}
-            AND cc.is_used IS FALSE
-            AND cc.`status` IS TRUE
-            AND c.effective_start_time &lt; now()
-            AND c.effective_end_time &gt; now()
+        WHERE cc.cus_id = #{userId} AND cc.is_used IS FALSE AND cc.`status` IS TRUE AND c.effective_start_time &lt;
+                now() AND c.effective_end_time &gt; now()
     </select>
 
     <select id="findProductCouponByCustomerId" parameterType="java.lang.Long" resultType="ProductCouponResponse">
-        SELECT
-            g.gid           goods_id,
-            g.sku_name      goods_name,
-            g.sku           goods_code,
-            g.goods_specification,
-            g.goods_unit    goods_unit,
-            sum(c.quantity) left_number,
-            g.cover_image_uri,
-            CASE WHEN ggp.price_type = "COMMON" OR ggp.price_type IS NULL THEN 0 ELSE 1 END AS isZG
-        FROM
-            cus_customer_product_coupon c
+        SELECT g.gid goods_id, g.sku_name goods_name, g.sku goods_code, g.goods_specification, g.goods_unit goods_unit, sum(
+                c.quantity) left_number, g.cover_image_uri, CASE WHEN
+                ggp.price_type = "COMMON" OR ggp.price_type IS NULL
+                THEN 0
+                ELSE 1 END AS isZG
+        FROM cus_customer_product_coupon c
             INNER JOIN gds_goods g ON c.gid = g.gid
             LEFT JOIN cus_customer cu on c.cus_id = cu.cus_id
             LEFT JOIN gds_goods_price ggp on (g.sku = ggp.sku AND ggp.store_id = cu.store_id) OR ggp.price_type IS NULL
             LEFT JOIN cus_rank cr on cu.cus_id = cr.cus_id
             LEFT JOIN rank_classification rc on rc.rank_id = cr.rank_id
-        WHERE
-            c.cus_id = #{userId}
-            AND c.is_used IS FALSE
-            AND effective_start_time &lt; NOW()
-            AND (effective_end_time &gt; NOW() OR effective_end_time IS NULL)
-            AND (
+        WHERE c.cus_id = #{userId} AND c.is_used IS FALSE AND effective_start_time &lt; NOW() AND (
+                effective_end_time &gt; NOW() OR effective_end_time IS NULL) AND (
                 ggp.price_type = rc.rank_code
-                OR ggp.price_type = 'common'
-            OR ggp.price_type IS NULL
-            )
-        GROUP BY
-            g.sku,ggp.price_type
+                        OR ggp.price_type = 'common'
+                        OR ggp.price_type IS NULL
+                )
+        GROUP BY g.sku,ggp.price_type
     </select>
 
     <select id="findListBySalesConsultId" parameterType="java.lang.Long"
             resultType="AppCustomer">
-        SELECT
-            c.cus_id,
-            c.name,
-            c.mobile,
-            c.pic_url,
-            c.light,
-            c.customer_type,
-            c.create_time,
-            c.last_consumption_time,
-            c.customer_profession,
-            c.customer_profession_desc
+        SELECT c.cus_id, c.name, c.mobile, c.pic_url, c.light, c.customer_type, c.create_time, c.last_consumption_time, c.customer_profession, c.customer_profession_desc
         FROM cus_customer c
         WHERE sales_consult_id = #{userId}
     </select>
 
     <select id="searchBySalesConsultIdAndKeywords" resultType="AppCustomer">
 
-        SELECT
-            c.cus_id,
-            c.name,
-            c.mobile,
-            c.pic_url,
-            c.light,
-            c.create_time,
-            c.customer_profession_desc customerProfessionDesc
+        SELECT c.cus_id, c.name, c.mobile, c.pic_url, c.light, c.create_time, c.customer_profession_desc customerProfessionDesc
         FROM cus_customer c
         WHERE (c.sales_consult_id = #{userId} OR c.store_id IN (SELECT store_id
                                                                 FROM st_store
-                                                                WHERE is_default = TRUE AND
-                                                                      city_id IN (SELECT DISTINCT city_id
-                                                                                  FROM cus_customer
-                                                                                  WHERE sales_consult_id = 1)))
-              AND (
-                  c.name LIKE concat('%', #{keywords}, '%')
-                  OR c.mobile LIKE concat('%', #{keywords}, '%')
-              )
+                                                                WHERE is_default = TRUE AND city_id IN
+                                                                        (SELECT DISTINCT city_id
+                                                                         FROM cus_customer
+                                                                         WHERE sales_consult_id = 1))) AND (
+                c.name LIKE concat('%', #{keywords}, '%')
+                        OR c.mobile LIKE concat('%', #{keywords}, '%')
+                )
     </select>
 
     <select id="findPreDepositBalanceByUserId" parameterType="java.lang.Long" resultType="java.lang.Double">
@@ -246,53 +193,30 @@
     </select>
 
     <update id="updateLeBiQuantityByUserId">
-        UPDATE
-            cus_lb
-        SET
-            quantity = quantity + #{qty}
-        WHERE
-            cus_id = #{userId}
+        UPDATE cus_lb
+        SET quantity = quantity + #{qty}
+        WHERE cus_id = #{userId}
     </update>
 
     <update id="updateLeBiQuantityByUserIdAndQty">
-        UPDATE
-            cus_lb
-        SET
-            quantity = quantity - #{qty}
-        WHERE
-            cus_id = #{userId}
-            AND last_update_time = #{version}
+        UPDATE cus_lb
+        SET quantity = quantity - #{qty}
+        WHERE cus_id = #{userId} AND last_update_time = #{version}
     </update>
 
     <update id="updateCustomerMobileByUserId">
-        UPDATE
-            cus_customer
-        SET
-            mobile = #{mobile}
-        WHERE
-            cus_id = #{userId}
+        UPDATE cus_customer
+        SET mobile = #{mobile}
+        WHERE cus_id = #{userId}
     </update>
     <select id="findCustomerInfoByUserId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.CustomerHomePageResponse">
-        SELECT
-            c.pic_url,
-            c.name,
-            c.nick_name,
-            c.mobile,
-            c.light,
-            e.name          guideName,
-            e.mobile        guideMobile,
-            pd.balance,
-            lb.quantity     lb,
-            c.last_sign_time,
-            c.city_id,
-            c.customer_type customerType
+        SELECT c.pic_url, c.name, c.nick_name, c.mobile, c.light, e.name guideName, e.mobile guideMobile, pd.balance, lb.quantity lb, c.last_sign_time, c.city_id, c.customer_type customerType
         FROM cus_customer c
             LEFT JOIN emp_employee e ON e.emp_id = c.sales_consult_id
             LEFT JOIN cus_pre_deposit pd ON pd.cus_id = c.cus_id
             LEFT JOIN cus_lb lb ON lb.cus_id = c.cus_id
-        WHERE
-            c.cus_id = #{userId}
+        WHERE c.cus_id = #{userId}
     </select>
 
     <select id="existsByCustomerId" parameterType="java.lang.Long" resultType="java.lang.Boolean">
@@ -302,16 +226,18 @@
     </select>
 
     <insert id="saveLeBi" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi">
-        INSERT INTO cus_lb (cus_id, quantity) VALUES (#{cusId}, #{quantity})
+        INSERT INTO cus_lb (cus_id, quantity)
+        VALUES (#{cusId}, #{quantity})
     </insert>
 
     <insert id="savePreDeposit" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit">
-        INSERT INTO cus_pre_deposit (cus_id, balance) VALUES (#{cusId}, #{balance})
+        INSERT INTO cus_pre_deposit (cus_id, balance)
+        VALUES (#{cusId}, #{balance})
     </insert>
 
     <update id="updateCustomerSignInfoByCustomerId">
         UPDATE cus_customer
-        SET last_sign_time        = #{date},
+        SET last_sign_time = #{date},
             consecutive_sign_days = #{consecutiveSignDays}
         WHERE cus_id = #{cusId}
     </update>
@@ -319,9 +245,7 @@
     <update id="updateDepositByUserIdAndDeposit">
         UPDATE cus_pre_deposit
         SET balance = balance - #{deposit}
-        WHERE
-            cus_id = #{userId}
-            AND last_update_time = #{version}
+        WHERE cus_id = #{userId} AND last_update_time = #{version}
     </update>
 
     <update id="updateDepositByUserId">
@@ -350,98 +274,53 @@
     <update id="updateProductCouponByUserIdAndProductCoupons">
 
         UPDATE cus_customer_product_coupon
-        SET
-            quantity = quantity - #{qty}
-        WHERE
-            quantity >= #{qty}
-            AND
-            gid = #{gid}
-            AND
-            cus_id = #{userId};
+        SET quantity = quantity - #{qty}
+        WHERE quantity >= #{qty} AND gid = #{gid} AND cus_id = #{userId};
     </update>
     <update id="updateProductCouponByUserIdAndGoodsIdAndProductCoupons">
 
         UPDATE cus_customer_product_coupon
-        SET
-            quantity = quantity + #{qty}
-        WHERE
-            gid = #{gid}
-            AND
-            cus_id = #{userId};
+        SET quantity = quantity + #{qty}
+        WHERE gid = #{gid} AND cus_id = #{userId};
     </update>
 
     <update id="updateCashCouponByUserIdAndCashCoupons">
 
         UPDATE cus_customer_cash_coupon
-        SET
-            qty = qty - #{qty}
-        WHERE
-            qty >= #{qty}
-            AND
-            ccid = #{gid}
-            AND
-            cus_id = #{userId};
+        SET qty = qty - #{qty}
+        WHERE qty >= #{qty} AND ccid = #{gid} AND cus_id = #{userId};
     </update>
 
     <update id="updateCashCouponByUserIdAndGoodsIdAndCashCoupons">
 
         UPDATE cus_customer_cash_coupon
-        SET
-            qty = qty + #{qty}
-        WHERE
-            ccid = #{ccid}
-            AND
-            cus_id = #{userId};
+        SET qty = qty + #{qty}
+        WHERE ccid = #{ccid} AND cus_id = #{userId};
     </update>
 
     <select id="findStoreSellerByCustomerId" resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer">
-        SELECT
-            store_id,
-            sales_consult_id,
-            binding_time,
-            create_time
+        SELECT store_id, sales_consult_id, binding_time, create_time
         FROM cus_customer
         WHERE cus_id = #{userId};
     </select>
 
     <select id="findCashCouponByCcIdAndUserIdAndQty"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse">
-        SELECT
-            cccc.denomination,
-            cccc.`condition`,
-            cccc.title
-        FROM
-            cus_customer_cash_coupon cccc
-        WHERE
-            cccc.id = #{ccId}
-            AND cccc.cus_id = #{cusId}
-            AND cccc.qty >= #{qty}
-            AND cccc.is_used = FALSE
-            AND cccc.effective_start_time &lt; NOW()
-            AND (
+        SELECT cccc.denomination, cccc.`condition`, cccc.title
+        FROM cus_customer_cash_coupon cccc
+        WHERE cccc.id = #{ccId} AND cccc.cus_id = #{cusId} AND cccc.qty >= #{qty} AND cccc.is_used = FALSE AND
+                cccc.effective_start_time &lt; NOW() AND (
                 cccc.effective_end_time IS NULL
-                OR cccc.effective_end_time &gt; NOW()
-            )
+                        OR cccc.effective_end_time &gt; NOW()
+                )
     </select>
 
     <select id="findCashCouponUseableByCustomerId"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.CashCouponResponse">
-        SELECT
-            ccp.id,
-            ccp.denomination,
-            ccp.effective_start_time,
-            ccp.effective_end_time,
-            ccp.descripttion,
-            ccp.title
-        FROM
-            cus_customer_cash_coupon ccp
-        WHERE
-            ccp.cus_id = #{userId}
-            AND ccp.is_used IS FALSE
-            AND ccp.`status` IS TRUE
-            AND ccp.effective_start_time &lt; now()
-            AND ccp.effective_end_time &gt; now()
-            AND ccp.`condition` &lt;= #{totalAmount}
+        SELECT ccp.id, ccp.denomination, ccp.effective_start_time, ccp.effective_end_time, ccp.descripttion, ccp.title
+        FROM cus_customer_cash_coupon ccp
+        WHERE ccp.cus_id = #{userId} AND ccp.is_used IS FALSE AND ccp.`status` IS TRUE AND ccp.effective_start_time &lt;
+                now() AND ccp.effective_end_time &gt; now() AND ccp.`condition` &lt;= #{totalAmount}
     </select>
 
     <select id="findByCusId" parameterType="java.lang.Long"
@@ -453,35 +332,24 @@
 
     <select id="findProductCouponBySellerIdAndCustomerId" resultType=
             "cn.com.leyizhuang.app.foundation.pojo.response.ProductCouponResponse">
-        SELECT
-            g.gid           goods_id,
-            g.sku_name      goods_name,
-            g.sku           goods_code,
-            g.goods_specification,
-            g.goods_unit    goods_unit,
-            sum(c.quantity) left_number,
-            g.cover_image_uri,
-            CASE WHEN ggp.price_type = "COMMON" OR ggp.price_type IS NULL THEN 0 ELSE 1 END AS isZG
-        FROM
-            cus_customer_product_coupon c
+        SELECT g.gid goods_id, g.sku_name goods_name, g.sku goods_code, g.goods_specification, g.goods_unit goods_unit, sum(
+                c.quantity) left_number, g.cover_image_uri, CASE WHEN
+                ggp.price_type = "COMMON" OR ggp.price_type IS NULL
+                THEN 0
+                ELSE 1 END AS isZG
+        FROM cus_customer_product_coupon c
             INNER JOIN gds_goods g ON c.gid = g.gid
             LEFT JOIN cus_customer cu on c.cus_id = cu.cus_id
-		    LEFT JOIN gds_goods_price ggp on (g.sku = ggp.sku AND ggp.store_id = cu.store_id) OR ggp.price_type IS NULL
-		    LEFT JOIN cus_rank cr on cu.cus_id = cr.cus_id
+            LEFT JOIN gds_goods_price ggp on (g.sku = ggp.sku AND ggp.store_id = cu.store_id) OR ggp.price_type IS NULL
+            LEFT JOIN cus_rank cr on cu.cus_id = cr.cus_id
             LEFT JOIN rank_classification rc on rc.rank_id = cr.rank_id
-        WHERE
-            c.cus_id = #{cusId}
-            AND c.seller_id = #{sellerId}
-            AND c.is_used IS FALSE
-            AND c.effective_start_time &lt; NOW()
-            AND (c.effective_end_time &gt; NOW() OR c.effective_end_time IS NULL)
-            AND (
+        WHERE c.cus_id = #{cusId} AND c.seller_id = #{sellerId} AND c.is_used IS FALSE AND c.effective_start_time &lt;
+                NOW() AND (c.effective_end_time &gt; NOW() OR c.effective_end_time IS NULL) AND (
                 ggp.price_type = rc.rank_code
-                OR ggp.price_type = 'common'
-                OR ggp.price_type IS NULL
-            )
-        GROUP BY
-            g.sku,ggp.price_type
+                        OR ggp.price_type = 'common'
+                        OR ggp.price_type IS NULL
+                )
+        GROUP BY g.sku,ggp.price_type
 
     </select>
 
@@ -504,99 +372,95 @@
 
     <select id="findCashCouponByCcid" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon">
-        SELECT
-            id,
-            cus_id,
-            ccid,
-            qty,
-            is_used,
-            use_time,
-            use_ord_no use_order_number,
-            get_time,
-            `condition`,
-            denomination,
-            effective_start_time,
-            effective_end_time,
-            descripttion,
-            title,
-            status,
-            down_time
+        SELECT id, cus_id, ccid, qty, is_used, use_time, use_ord_no use_order_number, get_time, `condition`, denomination, effective_start_time, effective_end_time, descripttion, title, status, down_time
         FROM cus_customer_cash_coupon
         WHERE id = #{id};
     </select>
 
     <update id="updateCustomerCashCouponById">
         UPDATE cus_customer_cash_coupon
-        SET is_used    = TRUE,
-            use_time   = now(),
+        SET is_used = TRUE,
+            use_time = now(),
             use_ord_no = #{orderNumber}
-        WHERE id = #{id}
-              AND status = TRUE
-              AND is_used = FALSE
-              AND now() BETWEEN effective_start_time AND effective_end_time
+        WHERE id = #{id} AND status = TRUE AND is_used =
+                FALSE AND now() BETWEEN effective_start_time AND effective_end_time
     </update>
 
     <select id="findCustomerLebiByCustomerId" parameterType="java.lang.Long" resultType=
             "cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi">
-        SELECT
-            id,
-            create_time,
-            cus_id,
-            quantity,
-            last_update_time
+        SELECT id, create_time, cus_id, quantity, last_update_time
         FROM cus_lb
         WHERE cus_id = #{customerId}
     </select>
 
     <insert id="addCustomerCashCouponChangeLog"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerCashCouponChangeLog">
-        INSERT INTO cus_cash_coupon_change_log (cus_id, use_time, coupon_id, change_type, change_type_desc,
-                                                operator_id, operator_type, operator_ip, remark)
-        VALUES (#{cusId}, #{useTime}, #{couponId},
-                #{changeType}, #{changeTypeDesc}, #{operatorId}, #{operatorType}, #{operatorIp}, #{remark})
+        INSERT INTO cus_cash_coupon_change_log (cus_id, use_time, coupon_id, change_type, change_type_desc, operator_id,
+                           operator_type, operator_ip, remark)
+        VALUES (#{cusId},
+                #{useTime},
+                #{couponId},
+                #{changeType},
+                #{changeTypeDesc},
+                #{operatorId},
+                #{operatorType},
+                #{operatorIp},
+                #{remark})
     </insert>
 
     <insert id="addCustomerLeBiVariationLog"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerLeBiVariationLog">
-        INSERT INTO cus_lb_variation_log (cus_id, variation_time, le_bi_variation_type, variation_type_desc, variation_quantity,
-                                          after_variation_quantity, order_num)
-        VALUES (#{cusId}, #{variationTime}, #{leBiVariationType}, #{variationTypeDesc},
-                #{variationQuantity}, #{afterVariationQuantity}, #{orderNum})
+        INSERT INTO cus_lb_variation_log (cus_id, variation_time, le_bi_variation_type, variation_type_desc,
+                           variation_quantity, after_variation_quantity, order_num)
+        VALUES (#{cusId},
+                #{variationTime},
+                #{leBiVariationType},
+                #{variationTypeDesc},
+                #{variationQuantity},
+                #{afterVariationQuantity},
+                #{orderNum})
     </insert>
 
     <insert id="addCusPreDepositLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.CusPreDepositLogDO">
-        INSERT INTO cus_pre_deposit_log (create_time, change_money, remarks, change_type, change_type_desc, cus_id, operator_id, operator_type, operator_ip, order_number, balance,
-                                         detail_reason, transfer_time, merchant_order_number)
-        VALUES (#{createTime}, #{changeMoney}, #{remarks}, #{changeType}, #{changeTypeDesc}, #{cusId},
-                               #{operatorId}, #{operatorType}, #{operatorIp}, #{orderNumber}, #{balance},
-                #{detailReason}, #{transferTime}, #{merchantOrderNumber})
+        INSERT INTO cus_pre_deposit_log (create_time, change_money, remarks, change_type, change_type_desc, cus_id,
+                           operator_id, operator_type, operator_ip, order_number, balance, detail_reason, transfer_time,
+                           merchant_order_number)
+        VALUES (#{createTime},
+                #{changeMoney},
+                #{remarks},
+                #{changeType},
+                #{changeTypeDesc},
+                #{cusId},
+                #{operatorId},
+                #{operatorType},
+                #{operatorIp},
+                #{orderNumber},
+                #{balance},
+                #{detailReason},
+                #{transferTime},
+                #{merchantOrderNumber})
     </insert>
 
     <select id="findCashCouponAvailQtyByCustomerId" parameterType="java.lang.Long" resultType="java.lang.Integer">
         SELECT sum(qty)
         FROM cus_customer_cash_coupon
-        WHERE cus_id = #{userId}
-              AND is_used IS FALSE
-              AND status IS TRUE
-              AND (now() BETWEEN effective_start_time AND effective_end_time)
+        WHERE cus_id = #{userId} AND is_used IS FALSE AND status IS
+                TRUE AND (now() BETWEEN effective_start_time AND effective_end_time)
         GROUP BY cus_id
     </select>
 
     <select id="findProductCouponAvailQtyByCustomerId" parameterType="java.lang.Long" resultType="java.lang.Integer">
         SELECT sum(quantity)
         FROM cus_customer_product_coupon
-        WHERE cus_id = #{userId}
-              AND is_used IS FALSE
-              AND effective_start_time &lt; NOW()
-              AND (effective_end_time &gt; NOW() OR effective_end_time IS NULL)
+        WHERE cus_id = #{userId} AND is_used IS FALSE AND effective_start_time &lt; NOW() AND (
+                effective_end_time &gt; NOW() OR effective_end_time IS NULL)
         GROUP BY cus_id
     </select>
 
     <select id="countSignDaysByCusId" resultType="java.lang.Integer">
         SELECT COUNT(id)
         FROM cus_sign_log
-        WHERE cus_id = #{cusId}
-              AND (sign_time BETWEEN #{startDate} AND #{endDate})
+        WHERE cus_id = #{cusId} AND (sign_time BETWEEN #{startDate} AND #{endDate})
     </select>
 
     <select id="countTotalSignDaysByCusId" parameterType="java.lang.Long" resultType="java.lang.Integer">
@@ -608,27 +472,17 @@
     <select id="countSignAwardLebiQtyByCusId" parameterType="java.lang.Long" resultType="java.lang.Integer">
         SELECT sum(award_lebi_qty)
         FROM cus_sign_log
-        WHERE
-            cus_id = #{cusId}
+        WHERE cus_id = #{cusId}
         GROUP BY cus_id
     </select>
 
     <select id="findCustomerSignDetailByCusId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.CustomerSignLogBrief">
         SELECT t.*
-        FROM
-            (
-                SELECT
-                    s.sign_time,
-                    s.award_lebi_qty award,
-                    s.description
-                FROM
-                    cus_sign_log s
-                WHERE
-                    s.cus_id = #{cusId}
-                ORDER BY
-                    s.sign_time DESC
-            ) t
+        FROM (SELECT s.sign_time, s.award_lebi_qty award, s.description
+              FROM cus_sign_log s
+              WHERE s.cus_id = #{cusId}
+              ORDER BY s.sign_time DESC) t
     </select>
 
     <insert id="saveSignLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.user.CusSignLog">
@@ -695,53 +549,24 @@
 
     <select id="findProductCouponsByGetOrderNumber" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon">
-        SELECT
-            cus_id        customerId,
-            seller_id,
-            store_id,
-            gid           goodsId,
-            quantity,
-            get_type,
-            get_time,
-            get_ord_no    getOrderNumber,
-            buy_price,
-            effective_start_time,
-            effective_end_time,
-            is_used,
-            use_time,
-            use_ord_no    useOrderNumber,
-            status,
-            goods_line_id goodsLineId,
-            disable_time,
-            last_update_time,
-            id
+        SELECT cus_id customerId, seller_id, store_id, gid goodsId, quantity, get_type, get_time, get_ord_no getOrderNumber, buy_price, effective_start_time, effective_end_time, is_used, use_time, use_ord_no useOrderNumber, status, goods_line_id goodsLineId, disable_time, last_update_time, id
         FROM cus_customer_product_coupon
-        WHERE get_ord_no = #{orderNumber}
-        AND (effective_end_time IS NULL OR effective_end_time &gt; NOW())
-        AND status IS TRUE
-        AND is_used IS FALSE;
+        WHERE get_ord_no = #{orderNumber} AND (effective_end_time IS NULL OR effective_end_time &gt; NOW()) AND status
+                IS TRUE AND is_used IS FALSE;
     </select>
 
     <update id="updateCustomerProductCouponById">
         UPDATE cus_customer_product_coupon
-        SET is_used    = TRUE,
-            use_time   = now(),
+        SET is_used = TRUE,
+            use_time = now(),
             use_ord_no = #{orderNumber}
-        WHERE id = #{couponId}
-              AND status = TRUE
-              AND is_used = FALSE
-              AND effective_start_time &lt; NOW()
-              AND (effective_end_time &gt; NOW() OR effective_end_time IS NULL)
+        WHERE id = #{couponId} AND status = TRUE AND is_used = FALSE AND effective_start_time &lt; NOW() AND (
+                effective_end_time &gt; NOW() OR effective_end_time IS NULL)
     </update>
 
     <select id="getCustomerProfessionListByStatus" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerProfession">
-        SELECT
-            id,
-            title,
-            description,
-            create_time,
-            status
+        SELECT id, title, description, create_time, status
         FROM cus_profession
         WHERE status = #{status}
     </select>
@@ -749,8 +574,7 @@
     <update id="updateDepositByUserIdAndVersion">
         UPDATE cus_pre_deposit
         SET balance = balance + #{deposit}
-        WHERE cus_id = #{userId}
-              AND last_update_time = #{version}
+        WHERE cus_id = #{userId} AND last_update_time = #{version}
     </update>
 
     <select id="findCashCouponsByids" resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon">
@@ -779,12 +603,7 @@
 
     <select id="findCustomerProfessionByTitle" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerProfession">
-        SELECT
-            id,
-            title,
-            description,
-            create_time,
-            status
+        SELECT id, title, description, create_time, status
         FROM cus_profession
         WHERE title = #{customerProfession}
     </select>
@@ -801,35 +620,22 @@
 
     <select id="findAllSupportHotline"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.SupportHotlineResponse">
-        SELECT
-            csh.id,
-            csh.name,
-            csh.support_hotline
+        SELECT csh.id, csh.name, csh.support_hotline
         FROM city_support_hotline csh
-        WHERE
-            1 = 1
+        WHERE 1 = 1
     </select>
 
     <update id="unbindingCustomerWeChat" parameterType="java.lang.Long">
         UPDATE cus_customer
-        SET open_id   = NULL,
-            pic_url   = NULL,
+        SET open_id = NULL,
+            pic_url = NULL,
             nick_name = NULL
         WHERE cus_id = #{userId}
     </update>
 
     <select id="findCusRankinfoByCusId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.CustomerRankInfoResponse">
-        SELECT
-            c.cus_id,
-            c.name,
-            c.mobile,
-            rc.rank_name,
-            rc.rank_code,
-            rc.city_id,
-            cr.number,
-            cr.create_time,
-            rc.rank_url
+        SELECT c.cus_id, c.name, c.mobile, rc.rank_name, rc.rank_code, rc.city_id, cr.number, cr.create_time, rc.rank_url
         FROM cus_customer c
             INNER JOIN cus_rank cr ON cr.cus_id = c.cus_id
             INNER JOIN rank_classification rc ON cr.rank_id = rc.rank_id
@@ -838,56 +644,35 @@
 
     <select id="findCustomerByCusPhone"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.FindCustomerResponse">
-        SELECT
-            cus_id cusId,
-            mobile cusPhone,
-            `name` cusName
-        FROM
-            cus_customer
-        WHERE
-            city_id = #{cityId}
-            AND mobile = #{mobile}
+        SELECT cus_id cusId, mobile cusPhone, `name` cusName
+        FROM cus_customer
+        WHERE city_id = #{cityId} AND mobile = #{mobile}
     </select>
 
     <select id="findCustomerByCusNameOrPhone"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.FindCustomerResponse">
-        SELECT
-            cus_id cusId,
-            mobile cusPhone,
-            `name` cusName
-        FROM
-            cus_customer
-        WHERE
-            store_id = #{storeId}
-            AND (`name` LIKE concat('%', #{keywords}, '%') OR mobile LIKE concat('%', #{keywords}, '%'))
+        SELECT cus_id cusId, mobile cusPhone, `name` cusName
+        FROM cus_customer
+        WHERE store_id = #{storeId} AND (
+                `name` LIKE concat('%', #{keywords}, '%') OR mobile LIKE concat('%', #{keywords}, '%'))
     </select>
 
     <update id="updateCustomerTypeByUserId">
         UPDATE cus_customer
         SET customer_type = 'MEMBER'
-        WHERE
-            cus_id = #{userId}
+        WHERE cus_id = #{userId}
     </update>
 
 
     <select id="findCustomerPreDepositByCustomerId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit">
-        SELECT
-            id,
-            last_update_time,
-            cus_id,
-            balance,
-            create_time
+        SELECT id, last_update_time, cus_id, balance, create_time
         FROM cus_pre_deposit
         WHERE cus_id = #{cusId}
     </select>
 
     <select id="findAllCustomer" resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer">
-        SELECT
-            cus_id,
-            name,
-            mobile,
-            customer_type
+        SELECT cus_id, name, mobile, customer_type
         FROM cus_customer;
     </select>
 
@@ -908,11 +693,11 @@
         uc.effective_end_time
         FROM
         (SELECT
-        g.gid           goods_id,
-        g.sku_name      goods_name,
-        g.sku           goods_code,
+        g.gid goods_id,
+        g.sku_name goods_name,
+        g.sku goods_code,
         g.goods_specification,
-        g.goods_unit    goods_unit,
+        g.goods_unit goods_unit,
         sum(c.quantity) left_number,
         g.cover_image_uri,
         CASE WHEN ggp.price_type = "COMMON" THEN 0 ELSE 1 END AS isZG,
@@ -937,7 +722,7 @@
         )
         GROUP BY
         g.sku,ggp.price_type
-          UNION ALL
+        UNION ALL
         <!-- 没有价目表的产品券 -->
         SELECT
         g.gid goods_id,
@@ -988,11 +773,11 @@
         uc.effective_end_time
         FROM
         (SELECT
-        g.gid           goods_id,
-        g.sku_name      goods_name,
-        g.sku           goods_code,
+        g.gid goods_id,
+        g.sku_name goods_name,
+        g.sku goods_code,
         g.goods_specification,
-        g.goods_unit    goods_unit,
+        g.goods_unit goods_unit,
         sum(c.quantity) left_number,
         g.cover_image_uri,
         CASE WHEN ggp.price_type = "COMMON" THEN 0 ELSE 1 END AS isZG,
@@ -1052,7 +837,7 @@
     </select>
 
 
-    <update id="updateCustomerSellerIdStoreIdByCusId" >
+    <update id="updateCustomerSellerIdStoreIdByCusId">
         UPDATE cus_customer
         <set>
             <if test="null != storeId">
@@ -1071,9 +856,32 @@
     <update id="updateCusProductCouponsStatusIsFlaseById">
         UPDATE cus_customer_product_coupon
         SET effective_end_time = NOW(),
-        status = FALSE,
-        last_update_time = NOW()
+            status = FALSE,
+            last_update_time = NOW()
         WHERE id = #{id}
     </update>
+
+    <select id="findOverdueCustomerProductCoupon"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon">
+        select c.id,c.cus_id customer_id, c.seller_id, c.store_id, c.gid goods_id, c.quantity, c.get_type, c.get_time, c.get_ord_no get_order_number, c.buy_price, c.effective_start_time, c.effective_end_time, c.is_used, c.use_time, c.use_ord_no use_order_number,c.status, c.goods_line_id, c.disable_time, c.last_update_time
+        from cus_customer_product_coupon c
+            left join cus_product_coupon_transfer_pre_deposit_record r on c.id = r.coupon_id
+        where c.effective_end_time &lt; now() and c.is_used is false and c.status is true and r.coupon_id is null;
+    </select>
+
+    <insert id="saveCustomerProductCouponTransferPreDepositRecord"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.user.CustomerProductCouponTransferPreDepositRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into cus_product_coupon_transfer_pre_deposit_record (coupon_id, cus_id, seller_id, store_id, gid, qty,
+                           single_price, total_price, transfer_date)
+        values (#{couponId},
+                #{cusId},
+                #{sellerId},
+                #{storeId},
+                #{gid},
+                #{qty},
+                #{singlePrice},
+                #{totalPrice},
+                #{transferDate})
+    </insert>
 
 </mapper>

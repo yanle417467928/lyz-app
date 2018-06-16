@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.core.utils.*;
 import cn.com.leyizhuang.app.core.utils.csrf.EncryptUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.*;
+import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
@@ -2235,6 +2236,72 @@ public class CommonServiceImpl implements CommonService {
             orderService.updateOrderBillingDetails(billingDetails);
             //增加订单生命周期信息
             orderService.addOrderLifecycle(OrderLifecycleType.PAYED, orderNumber);
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void cusProductCouponTransferPreDeposit() throws UnsupportedEncodingException {
+        //获取过期但尚未转化的产品券
+        List<CustomerProductCoupon> overdueCustomerProductCouponList = customerService.findOverdueCustomerProductCoupon();
+        if (AssertUtil.isNotEmpty(overdueCustomerProductCouponList)) {
+            //依次遍历过期产品券集合
+            for (CustomerProductCoupon p : overdueCustomerProductCouponList) {
+                //非购买途径获取的产品券不予转化预存款
+                if (p.getGetType() == CouponGetType.MANUAL_GRANT || p.getGetType() == CouponGetType.PRESENT) {
+                    continue;
+                }
+                //购买价为空或购买价不大于0，不予返还
+                if (null == p.getBuyPrice() || p.getBuyPrice() <= 0.0D) {
+                    continue;
+                }
+                for (int i = 1; i < AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                    CustomerPreDeposit preDeposit = customerService.findByCusId(p.getCustomerId());
+                    if (null != preDeposit) {
+                        Integer affectLine = customerService.lockCustomerDepositByUserIdAndDeposit(
+                                p.getCustomerId(), -p.getBuyPrice() * p.getQuantity(), preDeposit.getLastUpdateTime());
+                        if (affectLine > 0) {
+                            //生成转化记录
+                            CustomerProductCouponTransferPreDepositRecord record = new CustomerProductCouponTransferPreDepositRecord();
+                            record.setCouponId(p.getId());
+                            record.setCusId(p.getCustomerId());
+                            record.setGid(p.getGoodsId());
+                            record.setQty(p.getQuantity());
+                            record.setSellerId(p.getSellerId());
+                            record.setSinglePrice(p.getBuyPrice());
+                            record.setStoreId(p.getStoreId());
+                            record.setTotalPrice(record.getSinglePrice() * record.getQty());
+                            record.setTransferDate(new Date());
+                            customerService.saveCustomerProductCouponTransferPreDepositRecord(record);
+                            //生成预存款变更日志
+                            CusPreDepositLogDO cusPreDepositLogDO = new CusPreDepositLogDO();
+                            cusPreDepositLogDO.setCusId(p.getCustomerId());
+                            cusPreDepositLogDO.setCreateTime(LocalDateTime.now());
+                            cusPreDepositLogDO.setChangeMoney(record.getTotalPrice());
+                            cusPreDepositLogDO.setBalance(preDeposit.getBalance() + p.getBuyPrice());
+                            cusPreDepositLogDO.setOrderNumber(p.getGetOrderNumber());
+                            cusPreDepositLogDO.setChangeType(CustomerPreDepositChangeType.OVERDUE_PRODUCT_COUPON_TRANSFER);
+                            cusPreDepositLogDO.setChangeTypeDesc(CustomerPreDepositChangeType.OVERDUE_PRODUCT_COUPON_TRANSFER.getDescription());
+                            cusPreDepositLogDO.setOperatorType(AppIdentityType.ADMINISTRATOR);
+                            cusPreDepositLogDO.setOperatorId(p.getCustomerId());
+                            customerService.addCusPreDepositLog(cusPreDepositLogDO);
+                            AppCustomer customer = customerService.findById(p.getCustomerId());
+                            GoodsDO goodsDO = goodsService.findGoodsById(p.getGoodsId());
+                            //发送短信
+                            smsAccountService.commonSendSms(customer.getMobile(), "您有一张乐易装的产品券:'" + goodsDO.getSkuName() + "'因过期未使用" +
+                                    "，已自动将等值金额转化到您的预存款账户，请注意查收!");
+                            break;
+                        } else {
+                            continue;
+                        }
+                    } else {
+                        continue;
+                    }
+                }
+
+            }
+        } else {
+            logger.info("本次任务没有发现过期产品券!");
         }
     }
 

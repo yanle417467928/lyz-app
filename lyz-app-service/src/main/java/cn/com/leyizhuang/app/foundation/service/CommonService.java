@@ -125,4 +125,5 @@ public interface CommonService {
     List<OrderGoodsInfo> addGoodsSign(List<OrderGoodsInfo> orderGoodsInfoList, OrderBaseInfo orderBaseInfo);
     void handleOrderRelevantBusinessAfterPayForAnother(String orderNumber, Long userId, Integer identityType, String payType, String ipAddress) throws IOException;
 
+    void cusProductCouponTransferPreDeposit() throws UnsupportedEncodingException;
 }
