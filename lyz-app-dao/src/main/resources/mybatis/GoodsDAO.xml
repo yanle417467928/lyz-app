@@ -296,7 +296,7 @@
         <if test="null !=goodsType and ''!= goodsType ">
             AND ggt.type_name=#{goodsType}
         </if>
-        ORDER BY gc.sort_id
+        ORDER BY gc.sort_id ASC
     </select>
 
     <select id="findGoodsCategoryListByCategoryCodeAndEmployeeIdAndIdentityType"
@@ -327,7 +327,7 @@
         <if test="null !=goodsType and ''!= goodsType ">
             AND ggt.type_name=#{goodsType}
         </if>
-        ORDER BY gc.sort_id
+        ORDER BY gc.sort_id ASC
     </select>
 
     <select id="findGoodsBrandListByCategoryCodeAndCustomerIdAndIdentityType"
@@ -358,7 +358,7 @@
         <if test="null !=goodsType and ''!= goodsType ">
             AND ggt.type_name=#{goodsType}
         </if>
-        ORDER BY b.sort_id
+        ORDER BY b.sort_id ASC
     </select>
 
     <select id="findGoodsBrandListByCategoryCodeAndEmployeeIdAndIdentityType"
@@ -389,7 +389,7 @@
         <if test="null !=goodsType and ''!= goodsType ">
             AND ggt.type_name=#{goodsType}
         </if>
-        ORDER BY b.sort_id
+        ORDER BY b.sort_id ASC
     </select>
 
     <select id="findGoodsTypeListByCategoryCodeAndCustomerIdAndIdentityType"
@@ -420,7 +420,7 @@
         <if test="null !=goodsBrand and ''!= goodsBrand ">
             AND b.brand_name=#{goodsBrand}
         </if>
-        ORDER BY t.sort_id
+        ORDER BY t.sort_id ASC
     </select>
 
     <select id="findGoodsTypeListByCategoryCodeAndEmployeeIdAndIdentityType"
@@ -451,7 +451,7 @@
         <if test="null !=goodsBrand  and ''!= goodsBrand ">
             AND b.brand_name=#{goodsBrand}
         </if>
-        ORDER BY t.sort_id
+        ORDER BY t.sort_id ASC
     </select>
 
 
@@ -483,7 +483,7 @@
         <if test="null !=goodsBrand and ''!= goodsBrand ">
             AND b.brand_name=#{goodsBrand}
         </if>
-        ORDER BY g.goods_specification
+        ORDER BY g.sort_id ASC
     </select>
 
 
@@ -514,7 +514,7 @@
         <if test="null !=goodsBrand and ''!= goodsBrand">
             AND b.brand_name=#{goodsBrand}
         </if>
-        ORDER BY g.goods_specification
+        ORDER BY g.sort_id ASC
     </select>
 
 
@@ -547,6 +547,7 @@
             c.cus_id = #{userId}
             AND g.is_hot = 1
             GROUP BY p.sku
+            ORDER BY g.sort_id ASC
     </select>
 
     <select id="findGoodsListByIsHotAndEmployeeIdAndIdentityType" parameterType="java.lang.Long"
@@ -574,6 +575,7 @@
             e.emp_id = #{userId}
             AND g.is_hot = 1
             AND p.price_type = 'COMMON'
+            ORDER BY g.sort_id ASC
     </select>
 
     <select id="findGoodsCollectListByUserIdAndIdentityType" parameterType="java.lang.Long"
@@ -720,6 +722,7 @@
                 OR g.sku LIKE concat('%', #{keywords}, '%')
             )
             GROUP BY p.sku
+            ORDER BY g.sort_id ASC
     </select>
 
     <select id="searchByEmployeeIdAndKeywords" resultType="UserGoodsResponse">
@@ -749,6 +752,7 @@
                 OR g.sku LIKE concat('%', #{keywords}, '%')
             )
             AND p.price_type = 'COMMON'
+            ORDER BY g.sort_id ASC
     </select>
 
     <insert id="saveCollectGoodsByUserIdAndGoodsIdAndIdentityType">
@@ -1019,6 +1023,7 @@
             AND g.specification_type = #{specification}
         </if>
         AND p.price_type = 'COMMON'
+        ORDER BY g.sort_id ASC
     </select>
 
     <select id="filterGoodsEmployee" resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
@@ -1062,6 +1067,7 @@
         AND p.price_type = 'COMMON'
         AND p.start_time &lt; NOW()
         AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+        ORDER BY g.sort_id ASC
     </select>
 
     <select id="existGoodsBrandByGoodsIdAndBrandName" resultType="java.lang.Boolean">
