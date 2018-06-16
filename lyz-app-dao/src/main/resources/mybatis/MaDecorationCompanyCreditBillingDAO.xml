@@ -106,19 +106,19 @@
 
     <insert id="saveCreditBillingDetailsDO" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsDO">
         INSERT INTO decoration_company_credit_billing_details
-        (store_id, credit_billing_no, order_number, creator_id, creator_name, order_time, delivery_address, credit_money, receiver, goods_qty)
+        (store_id, credit_billing_no, order_number, creator_id, creator_name, order_time, delivery_address, credit_money, receiver, goods_qty,account_money,estateInfo)
         VALUES
         (#{storeId}, #{creditBillingNo}, #{orderNumber}, #{creatorId}, #{creatorName}, #{orderTime}, #{deliveryAddress}, #{creditMoney},
-        #{receiver}, #{goodsQty})
+        #{receiver}, #{goodsQty},#{accountMoney},#{estateInfo})
     </insert>
 
     <insert id="batchSaveCreditBillingDetailsDO" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsDO">
         INSERT INTO decoration_company_credit_billing_details
-        (store_id, credit_billing_no, order_number, creator_id, creator_name, order_time, delivery_address, credit_money, receiver, goods_qty,remark)
+        (store_id, credit_billing_no, order_number, creator_id, creator_name, order_time, delivery_address, credit_money, receiver, goods_qty,remark,account_money,estateInfo)
         VALUES
         <foreach collection="list" item="item" separator=",">
             (#{item.storeId}, #{item.creditBillingNo}, #{item.orderNumber}, #{item.creatorId}, #{item.creatorName}, #{item.orderTime},
-            #{item.deliveryAddress}, #{item.creditMoney}, #{item.receiver}, #{item.goodsQty}, #{item.remark})
+            #{item.deliveryAddress}, #{item.creditMoney}, #{item.receiver}, #{item.goodsQty}, #{item.remark},#{item.accountMoney},#{item.estateInfo})
         </foreach>
 
     </insert>
@@ -129,7 +129,9 @@
         SELECT ol.create_time orderTime, oi.ord_no orderNumber, od.st_credit_money creditMoney,
         oi.store_id storeId, oi.creator_name creatorName, oi.creator_id creatorId,
         IF(og.delivery_type = 'HOUSE_DELIVERY', og.shipping_address, og.booking_store_address) deliveryAddress, og.receiver,oi.remark as remark,
-        SUM(IFNULL(ogi.order_qty, 0)) goodsQty
+        SUM(IFNULL(ogi.order_qty, 0)) goodsQty,
+        SUM(IFNULL(ogi.wholesale_price * ogi.order_qty, 0)) as accountMoney,
+        og.estate_info as estateInfo
         FROM ord_base_info oi
         INNER JOIN ord_billing_details od ON oi.ord_no = od.ord_no
         INNER JOIN ord_delivery_info_details ol ON oi.ord_no = ol.order_no AND ol.logistic_status = 'SEALED_CAR'
@@ -154,7 +156,9 @@
         SELECT ord.create_time createTime, ori.return_no orderNumber, -1 * IFNULL(orb.st_credit_money,0) creditMoney,
         ori.store_id storeId, ori.creator_name creatorName, ori.creator_id creatorId,
         IF(orl.delivery_type = 'HOUSE_PICK', orl.return_full_address, orl.return_store_address) deliveryAddress, orl.rejecter,ori.reason_info as remark,
-        -1 * SUM(IFNULL(orgi.return_qty, 0)) goodsQty
+        -1 * SUM(IFNULL(orgi.return_qty, 0)) goodsQty,
+        -1 * SUM(IFNULL(orgi.wholesale_price * orgi.return_qty, 0)) as accountMoney,
+        '' as estateInfo
         FROM ord_return_base_info ori
         INNER JOIN ord_return_billing orb ON ori.return_no = orb.return_no
         INNER JOIN ord_return_delivery_detail ord ON ori.return_no = ord.return_no AND ord.return_logistic_status = 'AGAIN_ON_SALE'
@@ -215,7 +219,9 @@
             dccbd.receiver,
             IFNULL(dccbd.goods_qty, 0)    goods_qty,
             dccbd.remark,
-            s.sales_manager_name
+            s.sales_manager_name,
+            dccbd.account_money,
+            dccbd.estateInfo
         FROM decoration_company_credit_billing_details dccbd
             left join st_store s on s.store_id = dccbd.store_id
         WHERE dccbd.credit_billing_no = #{creditBillingNo}
@@ -251,7 +257,9 @@
             ogi.sku_name                                                                           skuName,
             IF(og.delivery_type = 'HOUSE_DELIVERY', og.shipping_address, og.booking_store_address) shippingAddress, og.receiver customerName,
             IFNULL(ogi.order_qty, 0)                                                               quantity, IFNULL(ogi.settlement_price, 0) settlementPrice,
-            (IFNULL(ogi.order_qty, 0) * IFNULL(ogi.settlement_price, 0))                           settlementTotlePrice
+            (IFNULL(ogi.order_qty, 0) * IFNULL(ogi.settlement_price, 0))                           settlementTotlePrice,
+            IFNULL(ogi.wholesale_price, 0)                           jxPrice,
+            (IFNULL(ogi.order_qty, 0) * IFNULL(ogi.wholesale_price, 0))                            totalJxPrice
         FROM ord_goods_info ogi
         INNER JOIN ord_delivery_info_details ol ON ogi.ord_no = ol.order_no AND ol.logistic_status = 'SEALED_CAR'
         INNER JOIN ord_logistics_info og ON og.ord_no = ogi.ord_no
@@ -267,7 +275,9 @@
             orgi.sku_name                                                                           skuName,
             IF(orl.delivery_type = 'HOUSE_PICK', orl.return_full_address, orl.return_store_address) shippingAddress, orl.rejecter customerName,
             (-1 * IFNULL(orgi.return_qty,0))                                                        quantity, IFNULL(orgi.settlement_price, 0) settlementPrice,
-            (-1 * IFNULL(orgi.return_qty, 0) * IFNULL(orgi.settlement_price, 0))                    settlementTotlePrice
+            (-1 * IFNULL(orgi.return_qty, 0) * IFNULL(orgi.settlement_price, 0))                    settlementTotlePrice,
+            IFNULL(orgi.wholesale_price, 0)                           jxPrice,
+            (IFNULL(orgi.return_qty, 0) * IFNULL(orgi.wholesale_price, 0))                            totalJxPrice
         FROM ord_return_goods_info orgi
         INNER JOIN ord_return_delivery_detail ord ON orgi.return_no = ord.return_no AND ord.return_logistic_status = 'AGAIN_ON_SALE'
         INNER JOIN ord_return_logistic_info orl ON orgi.return_no = orl.return_no

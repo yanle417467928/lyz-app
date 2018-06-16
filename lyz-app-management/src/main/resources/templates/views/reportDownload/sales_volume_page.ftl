@@ -51,13 +51,13 @@
                                     data-width="120px"
                                     style="width:auto;"
                                     onchange="findStorelist()" data-live-search="true">
-                                <option value="ALL">所有分公司</option>
+
                             <#if structureList?? && structureList?size gt 0 >
                                 <#list structureList as structure>
                                     <option value="${structure.number!''}">${structure.structureName!''}</option>
                                 </#list>
                             </#if>
-
+                                <option value="ALL">所有分公司</option>
                             </select>
                             <select name="storeType" id="storeType" class="form-control selectpicker"
                                     data-width="160px"
@@ -73,7 +73,8 @@
                             <#--onchange="findByCondition()"--> data-live-search="true">
                                 <option value="-1">选择门店</option>
                             </select>
-                            <select name="productType" id="productType" class="form-control selectpicker" data-width="120px"
+                            <select name="productType" id="productType" class="form-control selectpicker"
+                                    data-width="120px"
                                     style="width:auto;"
                             <#--onchange="findByCondition()"--> data-live-search="true">
                                 <option value="ALL">全部品牌</option>
@@ -189,8 +190,8 @@
         var isProductCoupon = true;
         var companyCode = $('#companyCode').val();
         var storeCode = $('#storeCode').val();
-        var productType =  $('#productType').val();
-        initDateGird(keywords, companyCode, storeType, isProductCoupon, startTime, endTime, productType,storeCode);
+        var productType = $('#productType').val();
+        initDateGird(keywords, companyCode, storeType, isProductCoupon, startTime, endTime, productType, storeCode);
     }
 
 
@@ -202,7 +203,7 @@
         var isProductCoupon = true;
         var storeType = $('#storeType').val();
         var storeCode = $('#storeCode').val();
-        var productType =  $('#productType').val();
+        var productType = $('#productType').val();
         var url = "/rest/reportDownload/salesReport/download?companyCode=" + companyCode + "&startTime=" + startTime
                 + "&endTime=" + endTime + "&storeType=" + storeType + "&isProductCoupon=" + isProductCoupon + "&storeId=" + storeCode
                 + "&productType=" + productType;

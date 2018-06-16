@@ -45,6 +45,8 @@ public class AgencyFundDO {
     private Double realMoney;
     //订单备注
     private String orderRemark;
+    // 是否结清
+    private String isPayUp;
 
     public void setStoreType(StoreType storeType){
         this.storeType = storeType.getDescription();
