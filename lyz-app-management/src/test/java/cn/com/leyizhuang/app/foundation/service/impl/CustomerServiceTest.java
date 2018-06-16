@@ -19,8 +19,8 @@ import java.util.List;
  * @Author Richard
  * @Date 2018/6/6 13:48
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+//@RunWith(SpringRunner.class)
+//@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CustomerServiceTest {
 
     @Resource
@@ -29,14 +29,14 @@ public class CustomerServiceTest {
     @Resource
     private CommonService commonService;
 
-    @Test
+//    @Test
     public void findOverdueCustomerProductCouponTest(){
 
        List<CustomerProductCoupon> customerProductCouponList =  customerService.findOverdueCustomerProductCoupon();
         Assert.assertNotNull(customerProductCouponList);
     }
 
-    @Test
+//    @Test
     public void cusProductCouponTransferPreDepositTest () throws UnsupportedEncodingException {
         commonService.cusProductCouponTransferPreDeposit();
     }
