@@ -1700,7 +1700,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                 if (null != returnOrderBilling.getStPreDeposit() && returnOrderBilling.getStPreDeposit() > AppConstant.PAY_UP_LIMIT) {
                     for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                         //获取门店预存款
-                        StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(orderBaseInfo.getStoreId());
+                        StorePreDeposit storePreDeposit = this.appStoreService.findStorePreDepositByStoreId(orderBaseInfo.getStoreId());
                         //返还预存款后门店预存款金额
                         Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(), returnOrderBilling.getStPreDeposit());
                         //修改门店预存款

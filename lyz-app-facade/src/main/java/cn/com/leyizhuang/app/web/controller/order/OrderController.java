@@ -150,7 +150,7 @@ public class OrderController {
             @ApiImplicitParam(name = "auditNo", value = "物料审核单号", required = false, dataType = "String"),
             @ApiImplicitParam(name = "salesNumber", value = "纸质单号", required = false, dataType = "String")
     })
-//    @PostMapping(value = "/create", produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "/create", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> createOrder(OrderCreateParam orderParam, HttpServletRequest request) {
         logger.info("createOrder CALLED,去支付生成订单,入参:{}", JSON.toJSONString(orderParam));
         System.out.println(JSON.toJSONString(orderParam));
@@ -2342,8 +2342,7 @@ public class OrderController {
             @ApiImplicitParam(name = "auditNo", value = "物料审核单号", required = false, dataType = "String"),
             @ApiImplicitParam(name = "salesNumber", value = "纸质单号", required = false, dataType = "String")
     })
-//    @PostMapping(value = "/create/BuyCouponOrder", produces = "application/json;charset=UTF-8")
-    @PostMapping(value = "/create", produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "/create/BuyCouponOrder", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> createBuyCouponOrder(OrderCreateParam orderParam, HttpServletRequest request) {
         logger.info("createBuyCouponOrder CALLED,去支付生成订单,入参:{}", JSON.toJSONString(orderParam));
         System.out.println(JSON.toJSONString(orderParam));
