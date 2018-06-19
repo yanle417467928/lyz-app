@@ -1,10 +1,14 @@
 package cn.com.leyizhuang.app.foundation.pojo.inventory.requiring;
 
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder;
+import javafx.scene.input.DataFormat;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +55,10 @@ public class RequiringVO {
         requiringVO.setCity(atwRequisitionOrder.getCity());
         requiringVO.setOrderNumber(atwRequisitionOrder.getOrderNumber());
         requiringVO.setRemarkInfo(atwRequisitionOrder.getRemarkInfo());
-        requiringVO.setOrderTime(atwRequisitionOrder.getOrderNumber());
+        if(null !=atwRequisitionOrder.getOrderTime()){
+            DateFormat bf = new SimpleDateFormat("yyyy-MM-dd E a HH:mm:ss");
+            requiringVO.setOrderTime(bf.format(atwRequisitionOrder.getOrderTime()).toString());
+        }
         requiringVO.setStoreName(atwRequisitionOrder.getDiySiteTitle());
 
         return requiringVO;

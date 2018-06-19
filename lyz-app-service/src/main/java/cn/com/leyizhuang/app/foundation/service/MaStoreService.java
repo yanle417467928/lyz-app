@@ -11,6 +11,7 @@ import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.StoreDO;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorativeCompanyDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.FitCreditMoneyChangeLogVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO;
@@ -54,6 +55,8 @@ public interface MaStoreService {
     List<SimpleDecorativeCompany> findDecorativeCompanyVOList();
 
     PageInfo<DecorativeCompanyInfo> queryDecorativeCreditPageVO(Integer page, Integer size);
+
+    PageInfo<FitCreditMoneyChangeLogVO> queryDecorativeCreditChangePage(Integer page, Integer size, String keywords, String changeType, Long storeId);
 
     DecorativeCompanyInfo  queryDecorativeCompanyCreditById(Long decorativeCompanyId);
 

@@ -41,5 +41,7 @@
         FROM user_device
         WHERE user_id = #{userId} AND
               identity_type = #{identityType}
+        ORDER BY last_login_time DESC
+        LIMIT 1
     </select>
 </mapper>

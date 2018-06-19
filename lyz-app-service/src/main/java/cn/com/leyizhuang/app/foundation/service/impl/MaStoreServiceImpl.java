@@ -15,6 +15,7 @@ import cn.com.leyizhuang.app.foundation.pojo.management.store.StoreDO;
 import cn.com.leyizhuang.app.foundation.service.MaStorePreDepositLogService;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorativeCompanyDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.FitCreditMoneyChangeLogVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO;
@@ -40,7 +41,7 @@ public class MaStoreServiceImpl implements MaStoreService {
     private MaStorePreDepositLogService maStorePreDepositLogService;
 
     @Override
-    public PageInfo<StoreVO> queryPageVO(Integer page, Integer size,List<Long> storeIds) {
+    public PageInfo<StoreVO> queryPageVO(Integer page, Integer size, List<Long> storeIds) {
         PageHelper.startPage(page, size);
         List<StoreVO> pageStoreList = this.mastoreDAO.findAllVO(storeIds);
         return new PageInfo<>(pageStoreList);
@@ -67,8 +68,8 @@ public class MaStoreServiceImpl implements MaStoreService {
     }
 
     @Override
-    public List<SimpleStoreParam> findStoresListByCityId(Long cityId,List<Long> storeIds) {
-        List<SimpleStoreParam> storeList = this.mastoreDAO.findStoresListByCityId(cityId,storeIds);
+    public List<SimpleStoreParam> findStoresListByCityId(Long cityId, List<Long> storeIds) {
+        List<SimpleStoreParam> storeList = this.mastoreDAO.findStoresListByCityId(cityId, storeIds);
         return storeList;
     }
 
@@ -85,36 +86,36 @@ public class MaStoreServiceImpl implements MaStoreService {
     }
 
     @Override
-    public PageInfo<StoreVO> queryStoreListByCityId(Integer page, Integer size, Long cityId,List<Long> storeIds) {
+    public PageInfo<StoreVO> queryStoreListByCityId(Integer page, Integer size, Long cityId, List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<StoreVO> pageStoreList = this.mastoreDAO.queryStoreListByCityId(cityId,storeIds);
+        List<StoreVO> pageStoreList = this.mastoreDAO.queryStoreListByCityId(cityId, storeIds);
         return new PageInfo<>(pageStoreList);
     }
 
     @Override
-    public PageInfo<StoreVO> findStoresListByCondition(Integer page, Integer size, String enabled, Long cityId,List<Long> storeIds) {
+    public PageInfo<StoreVO> findStoresListByCondition(Integer page, Integer size, String enabled, Long cityId, List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        if("-1".equals(enabled)){
-            enabled=null;
+        if ("-1".equals(enabled)) {
+            enabled = null;
         }
-        if(-1==cityId){
-            cityId=null;
+        if (-1 == cityId) {
+            cityId = null;
         }
-        List<StoreVO> pageStoreList = this.mastoreDAO.findStoresListByCondition(enabled, cityId,storeIds);
+        List<StoreVO> pageStoreList = this.mastoreDAO.findStoresListByCondition(enabled, cityId, storeIds);
         return new PageInfo<>(pageStoreList);
     }
 
     @Override
-    public PageInfo<StoreVO> findStoresListByStoreInfo(Integer page, Integer size, String queryStoreInfo,List<Long> storeIds) {
+    public PageInfo<StoreVO> findStoresListByStoreInfo(Integer page, Integer size, String queryStoreInfo, List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<StoreVO> pageStoreList = this.mastoreDAO.findStoresListByStoreInfo(queryStoreInfo,storeIds);
+        List<StoreVO> pageStoreList = this.mastoreDAO.findStoresListByStoreInfo(queryStoreInfo, storeIds);
         return new PageInfo<>(pageStoreList);
     }
 
     @Override
-    public void update(Long storeId,Boolean  isSelfDelivery ){
+    public void update(Long storeId, Boolean isSelfDelivery) {
         if (null != storeId && null != isSelfDelivery) {
-            mastoreDAO.update(storeId,isSelfDelivery);
+            mastoreDAO.update(storeId, isSelfDelivery);
         }
     }
 
@@ -130,11 +131,11 @@ public class MaStoreServiceImpl implements MaStoreService {
     @Override
     public PageInfo<StoreDO> findDecorativeByCondition(Integer page, Integer size, String enabled, Long cityId) {
         PageHelper.startPage(page, size);
-        if("-1".equals(enabled)){
-            enabled=null;
+        if ("-1".equals(enabled)) {
+            enabled = null;
         }
-        if(-1==cityId){
-            cityId=null;
+        if (-1 == cityId) {
+            cityId = null;
         }
         List<StoreDO> pageStoreList = this.mastoreDAO.findDecorativeByCondition(enabled, cityId);
         return new PageInfo<>(pageStoreList);
@@ -148,10 +149,10 @@ public class MaStoreServiceImpl implements MaStoreService {
         return new PageInfo<>(pageStoreList);
     }
 
-     @Override
-     public DecorativeCompanyDetailVO queryDecorativeCompanyById(Long decorativeCompanyId) {
+    @Override
+    public DecorativeCompanyDetailVO queryDecorativeCompanyById(Long decorativeCompanyId) {
         StoreDO storeDO = this.mastoreDAO.findDecorativeById(decorativeCompanyId);
-         DecorativeCompanyDetailVO decorativeCompanyVO=  DecorativeCompanyDetailVO.transform(storeDO);
+        DecorativeCompanyDetailVO decorativeCompanyVO = DecorativeCompanyDetailVO.transform(storeDO);
         return decorativeCompanyVO;
     }
 
@@ -169,6 +170,16 @@ public class MaStoreServiceImpl implements MaStoreService {
     }
 
     @Override
+    public PageInfo<FitCreditMoneyChangeLogVO> queryDecorativeCreditChangePage(Integer page, Integer size, String keywords, String changeType, Long storeId) {
+        PageHelper.startPage(page, size);
+        if (null == storeId) {
+            return null;
+        }
+        List<FitCreditMoneyChangeLogVO> pageDecorativeCompanyChangeList = this.mastoreDAO.queryDecorativeCreditChangePage(keywords, changeType, storeId);
+        return new PageInfo<>(pageDecorativeCompanyChangeList);
+    }
+
+    @Override
     public DecorativeCompanyInfo queryDecorativeCompanyCreditById(Long decorativeCompanyId) {
         DecorativeCompanyInfo decorativeCompanyVO = this.mastoreDAO.findDecorativeCreditById(decorativeCompanyId);
         return decorativeCompanyVO;
@@ -177,7 +188,7 @@ public class MaStoreServiceImpl implements MaStoreService {
     @Override
     public PageInfo<DecorativeCompanyInfo> findDecorativeCreditByInfo(Integer page, Integer size, String queryDecorativeCreditInfo) {
         PageHelper.startPage(page, size);
-        List<DecorativeCompanyInfo>  pageDecorativeCompanyList = this.mastoreDAO.findDecorativeCreditByInfo(queryDecorativeCreditInfo);
+        List<DecorativeCompanyInfo> pageDecorativeCompanyList = this.mastoreDAO.findDecorativeCreditByInfo(queryDecorativeCreditInfo);
         return new PageInfo<>(pageDecorativeCompanyList);
     }
 
@@ -185,11 +196,11 @@ public class MaStoreServiceImpl implements MaStoreService {
     @Override
     public PageInfo<DecorativeCompanyInfo> findDecorativeCreditByCondition(Integer page, Integer size, String enabled, Long cityId) {
         PageHelper.startPage(page, size);
-        if("-1".equals(enabled)){
-            enabled=null;
+        if ("-1".equals(enabled)) {
+            enabled = null;
         }
-        if(-1==cityId){
-            cityId=null;
+        if (-1 == cityId) {
+            cityId = null;
         }
         List<DecorativeCompanyInfo> pageDecorativeCompanyList = this.mastoreDAO.findDecorativeCreditByCondition(enabled, cityId);
         return new PageInfo<>(pageDecorativeCompanyList);
@@ -201,8 +212,8 @@ public class MaStoreServiceImpl implements MaStoreService {
     }
 
     @Override
-    public List<StoreVO> findCompanyStoresListByCityId(Long cityId,List<Long> storeIds) {
-        return mastoreDAO.findCompanyStoresListByCityId(cityId,storeIds);
+    public List<StoreVO> findCompanyStoresListByCityId(Long cityId, List<Long> storeIds) {
+        return mastoreDAO.findCompanyStoresListByCityId(cityId, storeIds);
     }
 
     @Override
@@ -228,7 +239,7 @@ public class MaStoreServiceImpl implements MaStoreService {
     }
 
     @Override
-    public void changeStorePredepositByStoreId(StorePreDepositDTO storePreDepositDTO) throws Exception{
+    public void changeStorePredepositByStoreId(StorePreDepositDTO storePreDepositDTO) throws Exception {
         Long storeId = storePreDepositDTO.getStoreId();
         Double money = storePreDepositDTO.getChangeMoney();
         StorePreDeposit storePreDeposit = this.mastoreDAO.findByStoreId(storeId);
@@ -249,23 +260,23 @@ public class MaStoreServiceImpl implements MaStoreService {
     }
 
     @Override
-    public MaStoreInfo findStoreByStoreCode(String code){
-       return mastoreDAO.findStoreByStoreCode(code);
+    public MaStoreInfo findStoreByStoreCode(String code) {
+        return mastoreDAO.findStoreByStoreCode(code);
     }
 
     @Override
-    public StorePreDeposit findByStoreId(Long storeId){
+    public StorePreDeposit findByStoreId(Long storeId) {
         return mastoreDAO.findByStoreId(storeId);
     }
 
     @Override
-    public Integer updateStPreDepositByUserIdAndVersion(Double money,Long userId, Date version){
+    public Integer updateStPreDepositByUserIdAndVersion(Double money, Long userId, Date version) {
         return mastoreDAO.updateStPreDepositByUserIdAndVersion(money, userId, version);
     }
 
     @Override
-    public void saveStorePreDepositLog(StPreDepositLogDO stPreDepositLogDO){
-         this.mastoreDAO.saveStorePreDepositLog(stPreDepositLogDO);
+    public void saveStorePreDepositLog(StPreDepositLogDO stPreDepositLogDO) {
+        this.mastoreDAO.saveStorePreDepositLog(stPreDepositLogDO);
     }
 
     @Override
@@ -316,21 +327,21 @@ public class MaStoreServiceImpl implements MaStoreService {
 
     @Override
     public List<Long> findStoresIdByStructureCode(String structureCode) {
-        if("-1".equals(structureCode)){
+        if ("-1".equals(structureCode)) {
             structureCode = null;
         }
         return this.mastoreDAO.findStoresIdByStructureCode(structureCode);
     }
 
     @Override
-    public List<Long> findStoresIdByStructureCodeAndStoreType(String structureCode,String storeType) {
-        if("-1".equals(structureCode)){
-            structureCode=null;
+    public List<Long> findStoresIdByStructureCodeAndStoreType(String structureCode, String storeType) {
+        if ("-1".equals(structureCode)) {
+            structureCode = null;
         }
-        if("-1".equals(storeType)){
-            storeType=null;
+        if ("-1".equals(storeType)) {
+            storeType = null;
         }
-        return this.mastoreDAO.findStoresIdByStructureCodeAndStoreType(structureCode,storeType);
+        return this.mastoreDAO.findStoresIdByStructureCodeAndStoreType(structureCode, storeType);
     }
 
     @Override
@@ -340,11 +351,11 @@ public class MaStoreServiceImpl implements MaStoreService {
 
 
     @Override
-    public Boolean exsitStoreInCompany(Long storeId,String companyCode,String storeType) {
-        if(null ==storeId|| null ==companyCode || null ==storeType){
+    public Boolean exsitStoreInCompany(Long storeId, String companyCode, String storeType) {
+        if (null == storeId || null == companyCode || null == storeType) {
             return false;
         }
-        return this.mastoreDAO.exsitStoreInCompany(storeId,companyCode,storeType);
+        return this.mastoreDAO.exsitStoreInCompany(storeId, companyCode, storeType);
     }
 
     @Override
@@ -354,14 +365,14 @@ public class MaStoreServiceImpl implements MaStoreService {
 
 
     @Override
-    public List<SimpleStoreParam> findStoresListByCompanyCodeAndStoreType(String companyCode,String storeType,List<Long> storeIds) {
-        if("-1".equals(companyCode)){
-            companyCode =null;
+    public List<SimpleStoreParam> findStoresListByCompanyCodeAndStoreType(String companyCode, String storeType, List<Long> storeIds) {
+        if ("-1".equals(companyCode)) {
+            companyCode = null;
         }
-        if("-1".equals(storeType)){
-            storeType =null;
+        if ("-1".equals(storeType)) {
+            storeType = null;
         }
-        return this.mastoreDAO.findStoresListByCompanyCodeAndStoreType(companyCode,storeType,storeIds);
+        return this.mastoreDAO.findStoresListByCompanyCodeAndStoreType(companyCode, storeType, storeIds);
     }
 
 }

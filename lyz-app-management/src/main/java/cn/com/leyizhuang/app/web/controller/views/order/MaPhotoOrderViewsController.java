@@ -1,5 +1,11 @@
 package cn.com.leyizhuang.app.web.controller.views.order;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.materialList.MaUpdateMaterialResponse;
+import cn.com.leyizhuang.app.foundation.service.MaMaterialListService;
 import cn.com.leyizhuang.app.foundation.service.MaPhotoOrderService;
 import cn.com.leyizhuang.app.foundation.vo.management.order.PhotoOrderVO;
 import cn.com.leyizhuang.app.web.controller.BaseController;
@@ -14,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +38,8 @@ public class MaPhotoOrderViewsController extends BaseController {
     @Autowired
     private MaPhotoOrderService maPhotoOrderService;
 
+    @Resource
+    private MaMaterialListService maMaterialListService;
     /**
      * @title   跳转拍照下单列表
      * @descripe
@@ -78,5 +87,18 @@ public class MaPhotoOrderViewsController extends BaseController {
         return "/views/order/photo_order_edit";
     }
 
+    /**
+     * 跳转到修改拍照下单页面
+     * @param map
+     * @return
+     */
+    @RequestMapping(value = "/update/{photoNo}")
+    public String updatePhotoOrderGoods(ModelMap map, @PathVariable(value = "photoNo")String photoNo){
+        logger.info("updatePhotoOrderGoods 入参 photoNo:{}",photoNo);
+        PhotoOrderVO photoOrderVO = this.maPhotoOrderService.findByPhotoOrderNo(photoNo);
+
+        map.addAttribute("photoOrderVO",photoOrderVO);
+        return "/views/order/photo_order_update";
+    }
 
 }

@@ -3,6 +3,9 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.MaMaterialListDAO;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.MaterialChangeDetailLog;
+import cn.com.leyizhuang.app.foundation.pojo.management.MaterialChangeHeadLog;
+import cn.com.leyizhuang.app.foundation.pojo.response.materialList.MaUpdateMaterialResponse;
 import cn.com.leyizhuang.app.foundation.service.MaMaterialListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,7 +39,7 @@ public class MaMaterialListServiceImpl implements MaMaterialListService {
         }
         if (null != materialListUpdate && materialListUpdate.size() > 0) {
             for (MaterialListDO materialListDO : materialListUpdate) {
-                maMaterialListDAO.modifyQty(materialListDO.getId(), materialListDO.getQty(),materialListDO.getDeliveryId());
+                maMaterialListDAO.modifyQty(materialListDO.getId(), materialListDO.getQty(),materialListDO.getDeliveryId(),materialListDO.getIsGenerateOrder());
             }
         }
     }
@@ -44,5 +47,35 @@ public class MaMaterialListServiceImpl implements MaMaterialListService {
     @Override
     public void updateRemarkAndDeliveryId(String remark, Long deliveryId, Long userId, AppIdentityType identityType) {
         maMaterialListDAO.updateRemarkAndDeliveryId(remark, deliveryId, userId, identityType);
+    }
+
+    @Override
+    public List<MaterialListDO> findMaPhotoOrderMaterialListByPhotoNumber(String photoNo) {
+        return maMaterialListDAO.findMaPhotoOrderMaterialListByPhotoNumber(photoNo);
+    }
+
+    @Override
+    public List<MaUpdateMaterialResponse> findMaAllMaterialListByPhotoNumber(String photoNo, String identityType) {
+        return maMaterialListDAO.findMaAllMaterialListByPhotoNumber(photoNo, identityType);
+    }
+
+    @Override
+    public void deleteMaterialListByUserIdAndIdentityTypeAndGoodsSku(Long userId, String identityType, String sku) {
+        maMaterialListDAO.deleteMaterialListByUserIdAndIdentityTypeAndGoodsSku(userId, identityType, sku);
+    }
+
+    @Override
+    public void saveMaterialChangeHeadLogAndDetailLog(MaterialChangeHeadLog materialChangeHeadLog, List<MaterialChangeDetailLog> materialChangeDetailLogList) {
+
+        if (null != materialChangeHeadLog) {
+            maMaterialListDAO.saveMaterialChangeHeadLog(materialChangeHeadLog);
+            Long updateHeadId = materialChangeHeadLog.getId();
+            if (null != materialChangeDetailLogList && materialChangeDetailLogList.size() > 0){
+                for (MaterialChangeDetailLog materialChangeDetailLog : materialChangeDetailLogList){
+                    materialChangeDetailLog.setUpdateHeadId(updateHeadId);
+                    maMaterialListDAO.saveMaterialChangeDetailLog(materialChangeDetailLog);
+                }
+            }
+        }
     }
 }
