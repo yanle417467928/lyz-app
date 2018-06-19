@@ -1429,7 +1429,9 @@ public class CommonServiceImpl implements CommonService {
                     if (goodsInfo.getSku().equals(details.getSku()) &&
                             AppGoodsLineType.GOODS.equals(goodsInfo.getGoodsLineType())) {
                         Double returnGoodsJxPriceAmount = CountUtil.mul(goodsInfo.getReturnQty(), details.getUnitPrice());
-                        jxPrice = CountUtil.add(jxPrice, returnGoodsJxPriceAmount);
+                        if (returnGoodsJxPriceAmount > AppConstant.DOUBLE_ZERO){
+                            jxPrice = CountUtil.add(jxPrice, returnGoodsJxPriceAmount);
+                        }
                         ReturnOrderJxPriceDifferenceRefundDetails returnDetails = new ReturnOrderJxPriceDifferenceRefundDetails();
                         returnDetails.setAmount(returnGoodsJxPriceAmount);
                         returnDetails.setCreateTime(new Date());

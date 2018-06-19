@@ -839,7 +839,8 @@
         IFNULL(oaf.cash_money,0) + IFNULL(obd.delivery_cash,0) cashMoney, IFNULL(oaf.pos_money,0) +
         IFNULL(obd.delivery_pos,0) posMoney,
         oaf.remarks remarks, IFNULL(oaf.return_money,0) returnMoney, IFNULL(obd.delivery_cash,0) +
-        IFNULL(obd.delivery_pos,0) realMoney, obi.remark orderRemark
+        IFNULL(obd.delivery_pos,0) realMoney, obi.remark orderRemark,
+        CASE when obd.is_pay_up when 0 then '未结清' when 1 THEN  '结清' end as isPayUp
         FROM
         ord_agency_fund oaf
         INNER JOIN ord_base_info obi ON obi.ord_no = oaf.ord_no
@@ -923,7 +924,9 @@
         orpc.purchase_price as purchasePrice,
         orpc.qty as couponQty,
         orbi.return_no as referenceNumber,
-        wh.wh_name as wareHouse
+        wh.wh_name as wareHouse,
+        orli.delivery_type as returnOrderDeliveryType,
+        obi.delivery_type as orderDeliveryType
         from ord_return_base_info orbi
         LEFT JOIN ord_return_goods_info orgi ON orgi.return_no =orbi.return_no
         LEFT JOIN ord_base_info obi ON orbi.ord_no=obi.ord_no
@@ -986,7 +989,9 @@
         orpc.purchase_price as purchasePrice,
         orpc.qty as couponQty,
         orbi.return_no as referenceNumber,
-        "" as wareHouse
+        "" as wareHouse,
+        orli.delivery_type as returnOrderDeliveryType,
+        obi.delivery_type as orderDeliveryType
         from ord_return_base_info orbi
         LEFT JOIN ord_return_goods_info orgi ON orgi.return_no =orbi.return_no
         LEFT JOIN ord_base_info obi ON orbi.ord_no=obi.ord_no
@@ -1050,7 +1055,9 @@
         oci.purchase_price as purchasePrice,
         oci.qty as couponQty ,
         obi.ord_no as referenceNumber,
-        wh.wh_name as wareHouse
+        wh.wh_name as wareHouse,
+        null as returnOrderDeliveryType,
+        obi.delivery_type as orderDeliveryType
         from ord_base_info obi
         LEFT JOIN ord_goods_info ogi ON obi.ord_no =ogi.ord_no
         LEFT JOIN ord_delivery_info_details odid ON obi.ord_no = odid.order_no
@@ -1112,7 +1119,9 @@
         oci.purchase_price as purchasePrice,
         oci.qty as couponQty,
         obi.ord_no as referenceNumber,
-        "" as wareHouse
+        "" as wareHouse,
+        null as returnOrderDeliveryType,
+        obi.delivery_type as orderDeliveryType
         from ord_base_info obi
         LEFT JOIN ord_goods_info ogi ON ogi.ord_no =obi.ord_no
         LEFT JOIN st_store ss ON obi.store_id = ss.store_id
@@ -1699,6 +1708,12 @@
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in ('FX','FXCK')
+
+                <!--AND ob.store_id IN-->
+                <!--<foreach collection="list" item="item" open="(" close=")" separator=",">-->
+                    <!--#{item}-->
+                <!--</foreach>-->
+
                 <if test="null!=storeId and ''!=storeId">
                     and s.store_id =#{storeId}
                 </if>
@@ -1802,6 +1817,12 @@
                 <if test="null!=storeId and ''!=storeId">
                     and s.store_id =#{storeId}
                 </if>
+
+                <!--AND ob.store_id IN-->
+                <!--<foreach collection="list" item="item" open="(" close=")" separator=",">-->
+                    <!--#{item}-->
+                <!--</foreach>-->
+
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
@@ -1908,6 +1929,12 @@
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in  ('FX','FXCK')
+
+                <!--AND ob.store_id IN-->
+                <!--<foreach collection="list" item="item" open="(" close=")" separator=",">-->
+                    <!--#{item}-->
+                <!--</foreach>-->
+
                 <if test="null!=storeId and ''!=storeId">
                     and s.store_id =#{storeId}
                 </if>
@@ -2019,6 +2046,12 @@
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in  ('FX','FXCK')
+
+                <!--AND ob.store_id IN-->
+                <!--<foreach collection="list" item="item" open="(" close=")" separator=",">-->
+                    <!--#{item}-->
+                <!--</foreach>-->
+
                 <if test="null!=storeId and ''!=storeId">
                     and s.store_id =#{storeId}
                 </if>
@@ -2116,6 +2149,12 @@
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in ('FX','FXCK')
+
+                <!--AND ob.store_id IN-->
+                <!--<foreach collection="list" item="item" open="(" close=")" separator=",">-->
+                    <!--#{item}-->
+                <!--</foreach>-->
+
                 <if test="null!=storeId and ''!=storeId">
                     and s.store_id =#{storeId}
                 </if>
@@ -2215,6 +2254,12 @@
             </when>
             <when test="'FX'==storeType">
                 and s.store_type in ('FX','FXCK')
+
+                <!--AND ob.store_id IN-->
+                <!--<foreach collection="list" item="item" open="(" close=")" separator=",">-->
+                    <!--#{item}-->
+                <!--</foreach>-->
+
                 <if test="null!=storeId and ''!=storeId">
                     and s.store_id =#{storeId}
                 </if>
@@ -2954,7 +2999,7 @@
         LEFT JOIN gds_goods gg on gg.gid = org.gid
         LEFT JOIN ord_billing_details obd on obd.oid = obi.oid
         WHERE orbi.return_status = 'FINISHED' AND rl.post_status = 'FINISHED' AND orbi.return_type != 'CANCEL_RETURN' and org.company_flag = 'HR'
-        AND (obi.delivery_type = 'HOUSE_DELIVERY' OR (obi.delivery_type = 'SELF_TAKE' AND st.store_type != 'JM'))
+        AND (obi.delivery_type = 'HOUSE_DELIVERY' OR obi.delivery_type = 'SELF_TAKE')
         <if test="null != cityId and cityId != -1">
             AND obi.city_id = #{cityId}
         </if>

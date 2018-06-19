@@ -210,6 +210,10 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                             etaReturnAndRequireGoodsInfLog.setMsg("门店编码为：" + diySiteCode + " 的门店不存在或者不可用");
                             return AppXmlUtil.generateResultXmlToEbs(1, "门店编码为：" + diySiteCode + " 的门店不存在或者不可用");
                         }
+                        if("JX".equals(appStore.getStoreType().getValue())){
+                            etaReturnAndRequireGoodsInfLog.setMsg("门店编码为：" + diySiteCode + " 的门店类型错误");
+                            return AppXmlUtil.generateResultXmlToEbs(1, "门店编码为：" + diySiteCode + " 的门店类型错误");
+                        }
                         //判断商品是否存在
                         GoodsDO goodsDO = goodsService.queryBySku(itemCode);
                         if (null == goodsDO) {
