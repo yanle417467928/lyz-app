@@ -419,7 +419,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                 //列宽
                 int[] columnView = {10, 13, 10, 15, 15, 20, 20, 12, 10, 30, 30, 15, 15, 15, 35, 25};
                 //列标题
-                String[] titles = {"城市", "门店名称", "门店类型", "导购姓名", "顾客姓名", "付款时间", "退款时间", "支付方式", "支付金额", "订单号", "退单号", "第三方支付流水号", "备注"};
+                String[] titles = {"城市", "门店名称", "门店类型", "导购姓名", "顾客姓名", "付款时间", "退款时间", "支付方式", "支付金额", "订单号", "退单号", "第三方支付流水号", "pos交易流水单号"};
                 //计算标题开始行号
                 int row = 1;
                 if (null != map && map.size() > 0) {
@@ -1339,10 +1339,10 @@ public class MaReportDownloadRestController extends BaseRestController {
                 //设置筛选条件
                 ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
                 //列宽
-                int[] columnView = {10, 13, 13, 10, 20, 30, 50, 10, 10, 15, 15, 15, 25, 15, 15, 25};
+                int[] columnView = {10, 13, 13, 10, 20, 30, 50, 10, 10, 15, 15, 15, 25, 15, 15, 25,10};
                 //列标题
                 String[] titles = {"城市", "仓库", "门店名称", "门店类型", "封车出库时间", "单号", "收货地址", "导购姓名", "配送员姓名",
-                        "订单代收金额", "配送员实际收款现金", "配送员实际收款POS", "配送员备注", "应退门店", "仓库应存回公司货款", "订单备注"};
+                        "订单代收金额", "配送员实际收款现金", "配送员实际收款POS", "配送员备注", "应退门店", "仓库应存回公司货款", "订单备注","是否结清"};
                 //计算标题开始行号
                 int row = 1;
                 if (null != map && map.size() > 0) {
@@ -1376,6 +1376,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Number(13, j + row, agencyFundDO.getReturnMoney(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     ws.addCell(new Number(14, j + row, agencyFundDO.getRealMoney(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     ws.addCell(new Label(15, j + row, agencyFundDO.getOrderRemark(), textFormat));
+                    ws.addCell(new Label(15, j + row, agencyFundDO.getIsPayUp(), textFormat));
                 }
             }
         } catch (Exception e) {
@@ -1916,7 +1917,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                 //设置筛选条件
                 ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
 
-                if (storeType.equals("JM")) {
+                if (storeType.equals("JM") ) {
                     // 加盟
 
                     //列宽
@@ -2114,6 +2115,108 @@ public class MaReportDownloadRestController extends BaseRestController {
                         }
                         ws.addCell(new Label(23, j + row, salesReportDO.getCusType(), textFormat));
                     }
+                }else if (storeType.equals("ZS")){
+
+                    //列宽
+                    int[] columnView = {10, 20, 15, 10, 10, 30, 15, 15, 15, 15, 15, 20, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,15,15,15};
+                    //列标题城市
+
+                    String[] titles = {"城市", "门店", "门店编码", "名称", "会员名称", "订单号", "退货单号", "配送/自提", "订单状态", "订单日期", "出货时间", "是否结清", "订单还清日期", "编号", "商品名称", "品牌", "下单数量", "本赠品", "财务销量","经销财务销量", "原单价", "结算单价", "会员折扣", "折扣或者赠品分摊", "现金券", "产品券类型"
+                            ,"顾客唯一标识","顾客类型"};
+                    //计算标题开始行号
+                    int row = 1;
+                    if (null != map && map.size() > 0) {
+                        row = map.size()  / 2 + 4;
+                    }
+                    String str1 = "配送单：　\n" +
+                            "1： 订单还清日期 >＝ 挑选日期   并且为已出货\n" +
+                            "2： 订单还清日期 <   挑选日期   并且本月出货\n" +
+                            "3:  出货定义：已完成／待收货\n" +
+                            "\n" +
+                            "自提单：　\n" +
+                            "1： 订单还清日期 >＝ 挑选日期   \n" +
+                            "并且为已出货\n" +
+                            "2： 订单还清日期 <   挑选日期   并且本月出货\n" +
+                            "3:  出货定义：已完成（按出货确认键）";
+                    String str2 = "非产品券 \n" +
+                            "1.财务销量    =[结算价－（折扣或者赠品分摊+现金券）] * 下单数量  \n" +
+                            "2.经销财务销量=[经销价 * 下单数量]  \n" +
+                            "\n" +
+                            "产品券  \n" +
+                            "1. 一笔数据＝一张产品券  \n" +
+                            "2. 财务销量=当时购买产品券的价格，原价及结算价＝当下此产品的单价  \n" +
+                            "若退货则下单数量＝负数";
+                    ws.mergeCells(0, map.size() , 5, map.size());
+                    WritableCellFormat textFormat1 = this.setTextStyle();
+                    textFormat1.setWrap(true);
+                    ws.addCell(new Label(0, map.size() , str1, textFormat1));
+                    ws.setRowView(row - 1, 3200);
+
+                    ws.mergeCells(6, map.size() , 11, map.size());
+                    WritableCellFormat textFormat2 = this.setTextStyle();
+                    textFormat2.setWrap(true);
+                    ws.addCell(new Label(6, map.size(), str2, textFormat2));
+                    ws.setRowView(row - 1, 3200);
+                    row += 2;
+                    //设置标题
+                    ws = this.setHeader(ws, titleFormat, columnView, titles, row);
+                    row += 1;
+                    WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.NO_BOLD, false,
+                            UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
+                    //填写表体数据
+                    for (int j = 0; j < maxRowNum; j++) {
+                        if (j + i * maxRowNum >= maxSize) {
+                            break;
+                        }
+                        SalesReportDO salesReportDO = salesList.get(j + i * maxRowNum);
+
+                        ws.addCell(new Label(0, j + row, salesReportDO.getCityName(), textFormat));
+                        ws.addCell(new Label(1, j + row, salesReportDO.getStoreName(), textFormat));
+                        ws.addCell(new Label(2, j + row, salesReportDO.getStoreCode(), textFormat));
+                        ws.addCell(new Label(3, j + row, salesReportDO.getName(), textFormat));
+                        ws.addCell(new Label(4, j + row, salesReportDO.getCustomerName(), textFormat));
+                        ws.addCell(new Label(5, j + row, salesReportDO.getOrdNo(), textFormat));
+                        ws.addCell(new Label(6, j + row, salesReportDO.getReturnNo(), textFormat));
+                        ws.addCell(new Label(7, j + row, salesReportDO.getOrderType(), textFormat));
+                        ws.addCell(new Label(8, j + row, salesReportDO.getOrderStatus(), textFormat));
+                        ws.addCell(new Label(9, j + row, salesReportDO.getCreateTime(), textFormat));
+                        ws.addCell(new Label(10, j + row, salesReportDO.getShippingDate(), textFormat));
+                        ws.addCell(new Label(11, j + row, salesReportDO.getIsPayUp(), textFormat));
+                        ws.addCell(new Label(12, j + row, salesReportDO.getPayUpTime(), textFormat));
+                        ws.addCell(new Label(13, j + row, salesReportDO.getSku(), textFormat));
+                        ws.addCell(new Label(14, j + row, salesReportDO.getSkuName(), textFormat));
+                        ws.addCell(new Label(15, j + row, salesReportDO.getCompanyFlag(), textFormat));
+                        if (null != salesReportDO.getOrderQty()) {
+                            ws.addCell(new Number(16, j + row, salesReportDO.getOrderQty(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                        }
+                        if (null != salesReportDO.getGoodsType()) {
+                            ws.addCell(new Label(17, j + row, salesReportDO.getGoodsType().toString(), textFormat));
+                        }
+
+                        ws.addCell(new Number(18, j + row, Double.parseDouble(salesReportDO.getFinancialSales()), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                        ws.addCell(new Number(19, j + row, Double.parseDouble(salesReportDO.getDistributionSales()), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                        if (null != salesReportDO.getRetailPrice()) {
+                            ws.addCell(new Number(20, j + row, salesReportDO.getRetailPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                        }
+                        if (null != salesReportDO.getSettlementPrice()) {
+                            ws.addCell(new Number(21, j + row, salesReportDO.getSettlementPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                        }
+                        if (null != salesReportDO.getMemberDiscount()) {
+                            ws.addCell(new Number(22, j + row, salesReportDO.getMemberDiscount(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                        }
+                        if (null != salesReportDO.getPromotionSharePrice()) {
+                            ws.addCell(new Number(23, j + row, salesReportDO.getPromotionSharePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                        }
+                        if (null != salesReportDO.getCashCouponSharePrice()) {
+                            ws.addCell(new Number(24, j + row, salesReportDO.getCashCouponSharePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                        }
+                        if (null != salesReportDO.getCouponType()) {
+                            ws.addCell(new Label(25, j + row, salesReportDO.getCouponType().toString(), textFormat));
+                        }
+                        ws.addCell(new Label(26, j + row, salesReportDO.getCusId().toString(), textFormat));
+                        ws.addCell(new Label(27, j + row, salesReportDO.getCusType(), textFormat));
+                    }
+
                 } else {
 
                     //列宽
@@ -2280,9 +2383,9 @@ public class MaReportDownloadRestController extends BaseRestController {
                 WritableSheet ws = wwb.createSheet("账单明细（第" + (i + 1) + "页）", i);
 
                 //列宽
-                int[] columnView = {30, 15, 15, 15, 15, 50, 15, 20, 15, 15, 20};
+                int[] columnView = {30, 15, 15, 15, 15, 50, 15, 20, 15, 15, 20,15,20};
                 //列标题
-                String[] titles = {"订单号", "订单日期", "出货日期", "退货日期", "收货人姓名", "收货人地址", "SKU", "商品名称", "数量", "结算单价", "结算总价"};
+                String[] titles = {"订单号", "订单日期", "出货日期", "退货日期", "收货人姓名", "收货人地址", "SKU", "商品名称", "数量", "结算单价", "结算总价","成交单价","成交总价"};
                 //计算标题开始行号
                 int row = 0;
 
@@ -2308,6 +2411,8 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Number(8, j + row, goodsItemsDO.getQuantity(), textFormat));
                     ws.addCell(new Number(9, j + row, goodsItemsDO.getSettlementPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     ws.addCell(new Number(10, j + row, goodsItemsDO.getSettlementTotlePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Number(11, j + row, goodsItemsDO.getJxPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Number(12, j + row, goodsItemsDO.getTotalJxPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                 }
             }
 
@@ -2341,9 +2446,9 @@ public class MaReportDownloadRestController extends BaseRestController {
                 ws.addCell(new Label(7, 1, user.getName(), textFormat));
 
                 //列宽
-                int[] columnView = {10, 30, 15, 15, 50, 40, 10, 15, 10};
+                int[] columnView = {10, 30, 15, 15, 50, 40,40, 10, 15,15, 10,};
                 //列标题
-                String[] titles = {"序号", "订单号", "出&退货日期", "收货人姓名", "收货人地址", "备注", "商品总数", "总金额", "装饰经理"};
+                String[] titles = {"序号", "订单号", "出&退货日期", "收货人姓名", "收货人地址","楼盘信息","备注", "商品总数", "结算总价","成交总价", "装饰经理"};
                 //计算标题开始行号
                 int row = 3;
 
@@ -2353,6 +2458,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                 WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.NO_BOLD, false,
                         UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
                 Double credit = 0D;
+                Double totalAccountMoney = 0D;
                 Integer goodsQty = 0;
                 Integer rows = row;
                 //填写表体数据
@@ -2366,17 +2472,21 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Label(2, j + row, creditBillingDetailsVO.getCreateTime(), textFormat));
                     ws.addCell(new Label(3, j + row, creditBillingDetailsVO.getReceiver(), textFormat));
                     ws.addCell(new Label(4, j + row, creditBillingDetailsVO.getDeliveryAddress(), textFormat));
-                    ws.addCell(new Label(5, j + row, creditBillingDetailsVO.getRemark(), textFormat));
-                    ws.addCell(new Number(6, j + row, creditBillingDetailsVO.getGoodsQty()));
-                    ws.addCell(new Number(7, j + row, creditBillingDetailsVO.getCreditMoney(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                    ws.addCell(new Label(8, j + row, creditBillingDetailsVO.getSalesManagerName(), textFormat));
+                    ws.addCell(new Label(5, j + row, creditBillingDetailsVO.getEstateInfo(), textFormat));
+                    ws.addCell(new Label(6, j + row, creditBillingDetailsVO.getRemark(), textFormat));
+                    ws.addCell(new Number(7, j + row, creditBillingDetailsVO.getGoodsQty()));
+                    ws.addCell(new Number(8, j + row, creditBillingDetailsVO.getCreditMoney(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Number(9, j + row, creditBillingDetailsVO.getAccountMoney(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Label(10, j + row, creditBillingDetailsVO.getSalesManagerName(), textFormat));
                     credit = CountUtil.add(credit, null == creditBillingDetailsVO.getCreditMoney() ? 0D : creditBillingDetailsVO.getCreditMoney());
+                    totalAccountMoney = CountUtil.add(totalAccountMoney, null == creditBillingDetailsVO.getAccountMoney() ? 0D : creditBillingDetailsVO.getAccountMoney());
                     goodsQty += null == creditBillingDetailsVO.getGoodsQty() ? 0 : creditBillingDetailsVO.getGoodsQty();
                     rows += 1;
                 }
-                ws.addCell(new Label(5, rows, "总计", titleFormat));
-                ws.addCell(new Number(6, rows, goodsQty, textFormat));
-                ws.addCell(new Number(7, rows, credit, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                ws.addCell(new Label(6, rows, "总计", titleFormat));
+                ws.addCell(new Number(7, rows, goodsQty, textFormat));
+                ws.addCell(new Number(8, rows, credit, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                ws.addCell(new Number(9, rows, totalAccountMoney, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
             }
 
         } catch (Exception e) {

@@ -37,4 +37,8 @@ public class DecorationCompanyCreditBillingDetailsDO implements Serializable{
     private Integer goodsQty;
     //备注
     private String remark;
+    // 与装饰工结账总价
+    private Double accountMoney;
+    //楼盘信息
+    private String estateInfo;
 }
