@@ -108,6 +108,7 @@ public class ShipmentAndReturnGoods {
                 }
                 if(shipmentAndReturnGoods.getReferenceNumber().startsWith("T")){
                     shipmentAndReturnGoods.setOrderType("退货");
+                    shipmentAndReturnGoods.setOrderQty(0-shipmentAndReturnGoods.getOrderQty());
                 }else{
                     shipmentAndReturnGoods.setOrderType("要货");
                 }
