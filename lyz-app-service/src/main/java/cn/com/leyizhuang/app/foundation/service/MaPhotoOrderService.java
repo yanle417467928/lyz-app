@@ -26,6 +26,8 @@ public interface MaPhotoOrderService {
 
     void updateStatusAndsaveAndUpdateMaterialList(Long photoId, PhotoOrderStatus status, List<MaterialListDO> materialListSave, List<MaterialListDO> materialListUpdate);
 
+    void updateStatusAndsaveAndUpdateMaterialList(List<MaterialListDO> materialListSave, List<MaterialListDO> materialListUpdate);
+
     int batchDelete(Long[] ids);
 
     List<String> findPhotosById(Long[] ids);

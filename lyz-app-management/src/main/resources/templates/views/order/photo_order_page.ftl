@@ -148,12 +148,12 @@
 </div>
 
 
-
 <div id="photoGoodsDetails" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document" style="width: 60%">
         <div class="modal-content">
             <div class="modal-header">
-                <h4>拍照下单说所选商品</h4>
+                <h4>拍照下单所选商品</h4>
+                <input type="hidden" id="photoNo">
                 <button type="button" name="search" class="btn btn-default pull-left"
                         onclick="returnGoods()" style="margin-left:700px;margin-top: -35px;">关闭
                 </button>
@@ -167,7 +167,7 @@
                                 <div class="box box-primary">
                                     <div id="goodsToolbar" class="form-inline">
 
-                                        <#--<div class="input-group col-md-3"-->
+                                    <#--<div class="input-group col-md-3"-->
                                              <#--style="margin-top:0px positon:relative">-->
                                             <#--<input type="text" name="sellerAddressConditions"-->
                                                    <#--id="sellerAddressConditions"-->
@@ -184,6 +184,13 @@
                                                class="table table-bordered table-hover">
 
                                         </table>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <div id='change' style="display: none">
+                                            <button id="update" class="btn btn-primary btn-xs" style="width: 100px;height: 40px;"
+                                                    onclick="updatePhotoOrderGoods()">
+                                                修改 </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -325,10 +332,10 @@
                 formatter: function (value, row, index) {
                     if ('PENDING' === value || 'PROCESSING' === value) {
                         return '<button class="btn btn-primary btn-xs" onclick="handle(' + row.id + ')"> 处理</button>';
-                    } else if ('FINISH' === value){
-                        var photoNo = "'"+row.photoOrderNo+"'";
+                    } else if ('FINISH' === value) {
+                        var photoNo = "'" + row.photoOrderNo + "'";
                         return '<button class="btn btn-success btn-xs" onclick="showPhotoGoodsList(' + photoNo + ')"> 查看</button>';
-                    }else{
+                    } else {
                         return '-';
                     }
                 }
@@ -342,7 +349,7 @@
     function showPhotoGoodsList(photoNo) {
         var url = '/rest/order/photo/find/photo/goods';
         $("#photoGoodsList").bootstrapTable('destroy');
-        $grid.init($('#photoGoodsList'),$('#goodsToolbar'), url, 'get', false, function (params) {
+        $grid.init($('#photoGoodsList'), $('#goodsToolbar'), url, 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
@@ -366,7 +373,24 @@
             {
                 field: 'photoOrderNo',
                 title: '拍照下单单号',
-                align: 'center'
+                align: 'center',
+                formatter: function (value, row, index) {
+                    if (row.isGenerateOrder == 'N') {
+                        $('#change').attr("style", " display: block;");
+                        $('#photoNo').val(value);
+                        return value;
+                    }else if (row.isGenerateOrder == 'Y'){
+                        $('#change').attr("style", " display: block;");
+                        $('#photoNo').val(value);
+                        return value;
+                    }
+                }
+            },
+            {
+                field: 'isGenerateOrder',
+                title: 'isGenerateOrder',
+                align: 'center',
+                visible: false
             }
         ]);
         $('#photoGoodsDetails').modal('show');
@@ -587,5 +611,14 @@
     $('#btn_add_order').on('click', function () {
         $grid.add('/views/admin/order/photo/add');
     });
+
+    function updatePhotoOrderGoods() {
+        var photoNo = $('#photoNo').val();
+        if (null == photoNo || '' == photoNo){
+            $notify.warning("订单号不能为空！");
+            return;
+        }
+        window.location.href = '/views/admin/order/photo/update/'+photoNo;
+    }
 </script>
 </body>

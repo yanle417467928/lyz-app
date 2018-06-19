@@ -23,4 +23,6 @@ public class PhotoOrderGoodsDO {
     private Integer goodsQty;
     //拍照下单单号
     private String photoOrderNo;
+    //是否生成订单
+    private String isGenerateOrder;
 }

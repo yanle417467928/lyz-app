@@ -89,6 +89,12 @@ public class MaPhotoOrderServiceImpl implements MaPhotoOrderService {
     }
 
     @Override
+    public void updateStatusAndsaveAndUpdateMaterialList(List<MaterialListDO> materialListSave, List<MaterialListDO> materialListUpdate) {
+        //加入下料清单
+        this.maMaterialListService.saveAndUpdateMaterialList(materialListSave, materialListUpdate);
+    }
+
+    @Override
     public int batchDelete(Long[] ids) {
         ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
         Long userId = null;
