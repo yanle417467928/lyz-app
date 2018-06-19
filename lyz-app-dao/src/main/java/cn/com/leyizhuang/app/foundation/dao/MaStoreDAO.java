@@ -9,6 +9,7 @@ import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.Simple
 import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.StoreDO;
+import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.FitCreditMoneyChangeLogVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO;
@@ -22,13 +23,13 @@ import java.util.List;
 @Repository
 public interface MaStoreDAO {
 
-    List<StoreVO> findAllVO( List<Long> storeIds);
+    List<StoreVO> findAllVO(List<Long> storeIds);
 
     List<SimpleStoreParam> findStoresList(@Param("list") List<Long> storeIds);
 
     List<SimpleStoreParam> findAllStorelist(@Param("list") List<Long> storeIds);
 
-    List<SimpleStoreParam> findStoresListByCityId(@Param("cityId") Long cityId,@Param("list") List<Long> storeIds);
+    List<SimpleStoreParam> findStoresListByCityId(@Param("cityId") Long cityId, @Param("list") List<Long> storeIds);
 
     List<SimpleStoreParam> findStoresListByCityIdExcludeStoreId(@Param("storeId") Long storeId);
 
@@ -38,13 +39,13 @@ public interface MaStoreDAO {
 
     StoreDetailVO findStoresVOById(Long storeId);
 
-    List<StoreVO> queryStoreListByCityId(@Param("cityId")Long cityId,@Param("list") List<Long> storeIds);
+    List<StoreVO> queryStoreListByCityId(@Param("cityId") Long cityId, @Param("list") List<Long> storeIds);
 
-    List<StoreVO> findStoresListByCondition(@Param("enabled") String enabled, @Param("cityId") Long cityId,@Param("list") List<Long> storeIds);
+    List<StoreVO> findStoresListByCondition(@Param("enabled") String enabled, @Param("cityId") Long cityId, @Param("list") List<Long> storeIds);
 
-    List<StoreVO> findStoresListByStoreInfo(@Param("queryStoreInfo")String queryStoreInfo,@Param("list") List<Long> storeIds);
+    List<StoreVO> findStoresListByStoreInfo(@Param("queryStoreInfo") String queryStoreInfo, @Param("list") List<Long> storeIds);
 
-    void update( @Param("storeId") Long storeId,@Param("isSelfDelivery") Boolean isSelfDelivery);
+    void update(@Param("storeId") Long storeId, @Param("isSelfDelivery") Boolean isSelfDelivery);
 
     List<StoreDO> queryDecorativeCompanyPageVO();
 
@@ -56,6 +57,8 @@ public interface MaStoreDAO {
 
     List<DecorativeCompanyInfo> findDecorativeCreditList();
 
+    List<FitCreditMoneyChangeLogVO> queryDecorativeCreditChangePage(@Param("keywords") String keywords, @Param("changeType") String changeType, @Param("storeId") Long storeId);
+
     DecorativeCompanyInfo findDecorativeCreditById(Long decorativeCompanyId);
 
     List<DecorativeCompanyInfo> findDecorativeCreditByInfo(String queryDecorativeCreditInfo);
@@ -64,31 +67,35 @@ public interface MaStoreDAO {
 
     /**
      * 获取装饰公司门店列表
-     * @return  门店列表
+     *
+     * @return 门店列表
      */
     List<StoreVO> findDecorativeCompanyList(@Param("list") List<Long> storeIds);
 
     /**
      * 根据城市获取装饰公司门店列表
-     * @param cityId    城市id
-     * @return  门店列表
+     *
+     * @param cityId 城市id
+     * @return 门店列表
      */
-    List<StoreVO> findCompanyStoresListByCityId(@Param("cityId") Long cityId,@Param("list") List<Long> storeIds);
+    List<StoreVO> findCompanyStoresListByCityId(@Param("cityId") Long cityId, @Param("list") List<Long> storeIds);
 
     /**
      * 根据城市获取支持门店自提门店列表
-     * @param cityId    城市id
-     * @return  门店列表
+     *
+     * @param cityId 城市id
+     * @return 门店列表
      */
     List<StoreVO> findSelfDeliveryStoresListByCityId(@Param("cityId") Long cityId);
 
     /**
      * 获取支持门店自提门店列表
-     * @return  门店列表
+     *
+     * @return 门店列表
      */
     List<StoreVO> findSelfDeliveryStoresList();
 
-    List<StorePreDepositVO> findAllStorePredeposit(@Param("cityId") Long cityId, @Param("keywords")String keywords,
+    List<StorePreDepositVO> findAllStorePredeposit(@Param("cityId") Long cityId, @Param("keywords") String keywords,
                                                    @Param("storeType") String storeType, @Param("list") List<Long> storeIds);
 
     StorePreDepositVO queryStorePredepositByStoreId(Long storeId);
@@ -97,15 +104,15 @@ public interface MaStoreDAO {
 
     void savePreDeposit(StorePreDeposit storePreDeposit);
 
-    int updateDepositByStoreId(@Param("storeId")Long storeId, @Param("money")Double money, @Param("lastUpdateTime")Timestamp lastUpdateTime, @Param("oldUpdateTime")Timestamp oldUpdateTime);
+    int updateDepositByStoreId(@Param("storeId") Long storeId, @Param("money") Double money, @Param("lastUpdateTime") Timestamp lastUpdateTime, @Param("oldUpdateTime") Timestamp oldUpdateTime);
 
     MaStoreInfo findStoreByStoreCode(String code);
 
-    Integer updateStPreDepositByUserIdAndVersion(@Param("money") Double money,@Param("userId")Long userId, @Param("version")Date version);
+    Integer updateStPreDepositByUserIdAndVersion(@Param("money") Double money, @Param("userId") Long userId, @Param("version") Date version);
 
     void saveStorePreDepositLog(StPreDepositLogDO stPreDepositLogDO);
 
-    List<StoreVO> findAllStoreVO(@Param("cityId") Long cityId, @Param("keywords")String keywords, @Param("storeType") String storeType);
+    List<StoreVO> findAllStoreVO(@Param("cityId") Long cityId, @Param("keywords") String keywords, @Param("storeType") String storeType);
 
     List<SimpleStoreParam> findStoresListByCityIdAndStoreId(@Param("cityId") Long cityId, @Param("list") List<Long> storeIds);
 
@@ -113,23 +120,23 @@ public interface MaStoreDAO {
 
     AppStore findAppStoreByStoreId(Long storeId);
 
-    List<SimpleStoreParam> findStoresListByStoreIdAndStoreType(@Param("list") List<Long> storeIds, @Param("storeTypes")List<StoreType> storeTypes);
+    List<SimpleStoreParam> findStoresListByStoreIdAndStoreType(@Param("list") List<Long> storeIds, @Param("storeTypes") List<StoreType> storeTypes);
 
     Long findCityIdByStoreId(Long storeId);
 
-    List<SimpleStoreParam> findStoresListByCityIdAndStoreType(@Param("cityId") Long cityId, @Param("storeType")String storeType, @Param("list") List<Long> storeIds);
+    List<SimpleStoreParam> findStoresListByCityIdAndStoreType(@Param("cityId") Long cityId, @Param("storeType") String storeType, @Param("list") List<Long> storeIds);
 
     List<SimpleStoreParam> findAllStoresListByCityIdAndStoreType(@Param("cityId") Long cityId, @Param("storeType") String storeType);
 
     List<Long> findStoresIdByStructureCode(@Param("structureCode") String structureCode);
 
-    List<Long> findStoresIdByStructureCodeAndStoreType( @Param("structureCode") String structureCode,@Param("storeType") String storeType);
+    List<Long> findStoresIdByStructureCodeAndStoreType(@Param("structureCode") String structureCode, @Param("storeType") String storeType);
 
     List<Long> findFitCompanyIdByStoreId(List<Long> storeIds);
 
-    Boolean exsitStoreInCompany(@Param("storeId")Long storeId,@Param("companyCode")String companyCode,@Param("storeType")String storeType);
+    Boolean exsitStoreInCompany(@Param("storeId") Long storeId, @Param("companyCode") String companyCode, @Param("storeType") String storeType);
 
     List<Long> findFitCompanyIdBySellerId(@Param("id") Long id);
 
-    List<SimpleStoreParam> findStoresListByCompanyCodeAndStoreType(@Param("companyCode") String companyCode,@Param("storeType") String storeType,@Param("list") List<Long> storeIds);
+    List<SimpleStoreParam> findStoresListByCompanyCodeAndStoreType(@Param("companyCode") String companyCode, @Param("storeType") String storeType, @Param("list") List<Long> storeIds);
 }

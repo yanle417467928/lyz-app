@@ -56,7 +56,8 @@
                         <option value="-1">选择门店</option>
                     </select>
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
-                        <input type="text" name="inventoryInfo" id="inventoryInfo" class="form-control" style="width:auto;"
+                        <input type="text" name="inventoryInfo" id="inventoryInfo" class="form-control"
+                               style="width:auto;"
                                placeholder="请输入要查找的商品或sku" onkeypress="findBykey()">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
@@ -361,31 +362,38 @@
     }
 
     function findStoreSelection() {
+        var cityId = $('#cityCode').val();
         initSelect("#storeCode", "选择门店");
         var store = "";
-        var cityId = $('#cityCode').val();
-        $.ajax({
-            url: '/rest/stores/findZYStoresListByCityId',
-            method: 'GET',
-            data: {
-                cityId: cityId
-            },
-            error: function () {
-                clearTimeout($global.timer);
-                $loading.close();
-                $global.timer = null;
-                $notify.danger('网络异常，请稍后重试或联系管理员');
-            },
-            success: function (result) {
-                clearTimeout($global.timer);
-                $.each(result, function (i, item) {
-                    store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
-                })
-                $("#storeCode").append(store);
-                $('#storeCode').selectpicker('refresh');
-                $('#storeCode').selectpicker('render');
-            }
-        });
+        if ('-1' == cityId) {
+            $('#storeCode').selectpicker('refresh');
+            $('#storeCode').selectpicker('render');
+            $("#dataGrid").bootstrapTable('destroy');
+            initDateGird('/rest/store/inventory/page/grid');
+        } else {
+            $.ajax({
+                url: '/rest/stores/findZYStoresListByCityId',
+                method: 'GET',
+                data: {
+                    cityId: cityId
+                },
+                error: function () {
+                    clearTimeout($global.timer);
+                    $loading.close();
+                    $global.timer = null;
+                    $notify.danger('网络异常，请稍后重试或联系管理员');
+                },
+                success: function (result) {
+                    clearTimeout($global.timer);
+                    $.each(result, function (i, item) {
+                        store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
+                    })
+                    $("#storeCode").append(store);
+                    $('#storeCode').selectpicker('refresh');
+                    $('#storeCode').selectpicker('render');
+                }
+            });
+        }
     }
 
     function findInventoryByCondition() {
@@ -393,6 +401,12 @@
         var storeId = $("#storeCode").val();
         $("#dataGrid").bootstrapTable('destroy');
         if (storeId == -1) {
+            $('#cityCode').val("-1");
+            $('#cityCode').selectpicker('refresh');
+            $('#cityCode').selectpicker('render');
+            initSelect("#storeCode", "选择门店");
+            $('#storeCode').selectpicker('refresh');
+            $('#storeCode').selectpicker('render');
             initDateGird('/rest/store/inventory/page/grid');
         } else if (storeId != -1) {
             initDateGird('/rest/store/inventory/storeGrid/' + storeId);
@@ -400,27 +414,27 @@
     }
 
 
-    function findBykey(){
-        if(event.keyCode==13){
+    function findBykey() {
+        if (event.keyCode == 13) {
             findInventoryByInfo();
         }
     }
 
 
-    function  findInventoryByInfo() {
-        var inventoryInfo =$("#inventoryInfo").val();
+    function findInventoryByInfo() {
+        var inventoryInfo = $("#inventoryInfo").val();
         var storeId = $("#storeCode").val();
         $("#dataGrid").bootstrapTable('destroy');
-        if (storeId == -1&& null == inventoryInfo) {
+        if (storeId == -1 && null == inventoryInfo) {
             initDateGird('/rest/store/inventory/page/grid');
         } else {
-            initDateGird('/rest/store/inventory/infoGrid?storeId=' + storeId+'&info='+inventoryInfo);
+            initDateGird('/rest/store/inventory/infoGrid?storeId=' + storeId + '&info=' + inventoryInfo);
         }
     }
 
     function openBillModal() {
         var storeId = $("#storeCode").val();
-        var url = "/rest/reportDownload/storeInventory/download?storeId=" + storeId ;
+        var url = "/rest/reportDownload/storeInventory/download?storeId=" + storeId;
         var escapeUrl = url.replace(/\#/g, "%23");
         window.open(escapeUrl);
     }

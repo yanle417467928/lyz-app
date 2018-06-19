@@ -149,7 +149,9 @@ public class HqAppEmployeeController {
             employee.setStoreId(store.getStoreId());
             if (null != employeeDTO.getManagerNumber()) {
                 AppEmployee superios = employeeService.findByLoginName(employeeDTO.getManagerNumber());
-                employee.setManagerId(superios.getEmpId());
+                if(null !=superios) {
+                    employee.setManagerId(superios.getEmpId());
+                }
             }
             String salt = employee.generateSalt();
             employee.setSalt("26d419524d88b85a573f2de536bd63ac");
@@ -276,7 +278,9 @@ public class HqAppEmployeeController {
                 employee.setStoreId(store.getStoreId());
                 if (null != employeeDTO.getManagerNumber()) {
                     AppEmployee superios = employeeService.findByLoginName(employeeDTO.getManagerNumber());
-                    employee.setManagerId(superios.getEmpId());
+                    if(null !=superios) {
+                        employee.setManagerId(superios.getEmpId());
+                    }
                 }
             }
             //String salt = employee.generateSalt();
@@ -287,6 +291,8 @@ public class HqAppEmployeeController {
                 if (isEmpty) {
                     employeeService.update(employee);
                 } else {
+                    newEmployee.setSalt("26d419524d88b85a573f2de536bd63ac");
+                    newEmployee.setPassword("ee1ffccda9260a1dda9318f8430877e2");
                     employeeService.save(newEmployee);
                 }
                 logger.warn("同步修改员工信息成功！");
