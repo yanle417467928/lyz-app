@@ -165,4 +165,6 @@ public interface ReturnOrderDAO {
     void saveReturnOrderLifecycle(ReturnOrderLifecycle returnOrderLifecycle);
 
     List<String> getNotReturnDetailsReturnNos(@Param("flag") Boolean flag);
+
+    ReturnOrderBilling getAllReturnPriceByOrderNo(String orderNo);
 }

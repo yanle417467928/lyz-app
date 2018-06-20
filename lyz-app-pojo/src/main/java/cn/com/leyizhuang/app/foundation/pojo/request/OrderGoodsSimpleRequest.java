@@ -51,5 +51,9 @@ public class OrderGoodsSimpleRequest implements Serializable {
      * 系统判定配送方式
      */
     private AppDeliveryType sysDeliveryType;
+    /**
+     * 订单类型 SHIPMENT，COUPON
+     */
+    private String orderType;
 
 }

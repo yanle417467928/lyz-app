@@ -442,6 +442,7 @@ public class OrderController {
         List<GoodsIdQtyParam> goodsList = goodsSimpleRequest.getGoodsList();
         List<PromotionSimpleInfo> giftList = goodsSimpleRequest.getGiftList();
         List<GoodsIdQtyParam> couponList = goodsSimpleRequest.getProductCouponList();
+        String orderType = goodsSimpleRequest.getOrderType();
         try {
             int goodsQty = 0;
             int giftQty = 0;
@@ -606,7 +607,13 @@ public class OrderController {
 
             //计算订单金额小计
             //********* 计算促销立减金额 *************
-            List<PromotionDiscountListResponse> discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), bGoodsList, customer.getCusId(),"GOODS");
+            List<PromotionDiscountListResponse> discountListResponseList = null;
+            //买卷获取买卷促销
+            if (null == orderType || !orderType.equals("COUPON")) {
+                discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), bGoodsList, customer.getCusId(), "GOODS");
+            } else {
+                discountListResponseList = actService.countDiscount(userId, AppIdentityType.getAppIdentityTypeByValue(identityType), bGoodsList, customer.getCusId(), "COUPON");
+            }
             for (PromotionDiscountListResponse discountResponse : discountListResponseList) {
                 orderDiscount = CountUtil.add(orderDiscount, discountResponse.getDiscountPrice());
                 PromotionSimpleInfo promotionSimpleInfo = new PromotionSimpleInfo();
@@ -655,9 +662,10 @@ public class OrderController {
 
             //由于运费不抵扣乐币及优惠券,避免分摊出现负,运费放最后计算
             // 运费计算
-            //2018-04-01 generation 产品卷金额加进运费计算
-            freight = deliveryFeeRuleService.countDeliveryFee(identityType, cityId, CountUtil.add(totalOrderAmount, proCouponDiscount), goodsInfo);
-
+            //2018-04-01 generation 产品卷金额加进运费计算 买卷不计算运费
+            if (null == orderType || !orderType.equals("COUPON")) {
+                freight = deliveryFeeRuleService.countDeliveryFee(identityType, cityId, CountUtil.add(totalOrderAmount, proCouponDiscount), goodsInfo);
+            }
             totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
             ArrayList<Long> allGoods = new ArrayList<>();
             allGoods.addAll(goodsIds);
@@ -679,43 +687,46 @@ public class OrderController {
             List<AppDeliveryType> deliveryTypeList = new ArrayList<>();
             goodsIds.addAll(giftIds);
             goodsIds.addAll(couponIds);
-            //判断商品是否有专供商品
-            List<GiftListResponseGoods> goodsZGList = this.goodsPriceService.findGoodsPriceListByGoodsIdsAndUserId(goodsIds, userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
-            //有专供商品只能选择送货上门
-            if (null != goodsZGList && goodsZGList.size() > 0) {
-                deliveryTypeList.add(AppDeliveryType.HOUSE_DELIVERY);
-            } else {
-                if (AppDeliveryType.SELF_TAKE.equals(goodsSimpleRequest.getSysDeliveryType())) {
-                    deliveryTypeList.add(AppDeliveryType.SELF_TAKE);
-                } else {
-                    deliveryTypeList.add(AppDeliveryType.SELF_TAKE);
+
+            //买卷不判断库存
+            if (null == orderType || !orderType.equals("COUPON")) {
+                //判断商品是否有专供商品
+                List<GiftListResponseGoods> goodsZGList = this.goodsPriceService.findGoodsPriceListByGoodsIdsAndUserId(goodsIds, userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
+                //有专供商品只能选择送货上门
+                if (null != goodsZGList && goodsZGList.size() > 0) {
                     deliveryTypeList.add(AppDeliveryType.HOUSE_DELIVERY);
-                }
-            }
-            goodsSettlement.put("deliveryTypeList", deliveryTypeList);
-            //非门店自提,为城市库存充足及门店库存充足
-            if (!AppDeliveryType.SELF_TAKE.equals(goodsSimpleRequest.getSysDeliveryType())) {
-
-                //2018-04-01 generation 修改 提示所有城市库存不足的商品
-                //判断库存的特殊处理
-                List<Long> goodsIdList = appOrderService.existOrderGoodsInventory(cityId, goodsList, giftsList, couponList);
-                if (goodsIdList != null && goodsIdList.size() > 0) {
-                    String message = "商品 ";
-                    for (Long gid : goodsIdList) {
-                        GoodsDO goodsDO = goodsService.queryById(gid);
-                        message += "“";
-                        message += goodsDO.getSkuName();
-                        message += "” ";
+                } else {
+                    if (AppDeliveryType.SELF_TAKE.equals(goodsSimpleRequest.getSysDeliveryType())) {
+                        deliveryTypeList.add(AppDeliveryType.SELF_TAKE);
+                    } else {
+                        deliveryTypeList.add(AppDeliveryType.SELF_TAKE);
+                        deliveryTypeList.add(AppDeliveryType.HOUSE_DELIVERY);
                     }
-                    message += "仓库库存不足，请更改购买数量!";
-                    //如果这里发现库存不足还是要返回去商品列表
+                }
+                goodsSettlement.put("deliveryTypeList", deliveryTypeList);
+                //非门店自提,为城市库存充足及门店库存充足
+                if (!AppDeliveryType.SELF_TAKE.equals(goodsSimpleRequest.getSysDeliveryType())) {
+
+                    //2018-04-01 generation 修改 提示所有城市库存不足的商品
+                    //判断库存的特殊处理
+                    List<Long> goodsIdList = appOrderService.existOrderGoodsInventory(cityId, goodsList, giftsList, couponList);
+                    if (goodsIdList != null && goodsIdList.size() > 0) {
+                        String message = "商品 ";
+                        for (Long gid : goodsIdList) {
+                            GoodsDO goodsDO = goodsService.queryById(gid);
+                            message += "“";
+                            message += goodsDO.getSkuName();
+                            message += "” ";
+                        }
+                        message += "仓库库存不足，请更改购买数量!";
+                        //如果这里发现库存不足还是要返回去商品列表
 //                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该商品:" + goodsDO.getSkuName() + "商品库存不足！", goodsSettlement);
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, message, goodsSettlement);
-                    logger.info("enterOrder OUT,用户确认订单计算商品价格明细，出参 resultDTO:{}", resultDTO);
-                    return resultDTO;
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, message, goodsSettlement);
+                        logger.info("enterOrder OUT,用户确认订单计算商品价格明细，出参 resultDTO:{}", resultDTO);
+                        return resultDTO;
+                    }
                 }
             }
-
             Boolean isSpecialSelfTake = false;
             /**************/
             //2018-04-03 generation 加盟门店自提为特殊自提单
@@ -2311,6 +2322,281 @@ public class OrderController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，代支付订单支付失败", null);
             logger.warn("handleOrderRelevantBusinessAfterPayForAnother EXCEPTION,代支付订单支付失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    @ApiOperation(value = "创建订单", notes = "创建订单信息")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "cityId", value = "下单人城市id", required = true, dataType = "Long", example = "1"),
+            @ApiImplicitParam(name = "userId", value = "下单人id", required = true, dataType = "Long"),
+            @ApiImplicitParam(name = "identityType", value = "下单人身份类型", required = true, dataType = "Integer"),
+            @ApiImplicitParam(name = "customerId", value = "顾客id", required = true, dataType = "Long"),
+            @ApiImplicitParam(name = "remark", value = "备注信息", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "goodsInfo", value = "商品信息", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "productCouponInfo", value = "产品券商品信息", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "promotionInfo", value = "促销信息", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "deliveryInfo", value = "配送信息", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "billingInfo", value = "账单信息", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "auditNo", value = "物料审核单号", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "salesNumber", value = "纸质单号", required = false, dataType = "String")
+    })
+    @PostMapping(value = "/create/BuyCouponOrder", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> createBuyCouponOrder(OrderCreateParam orderParam, HttpServletRequest request) {
+        logger.info("createBuyCouponOrder CALLED,去支付生成订单,入参:{}", JSON.toJSONString(orderParam));
+        System.out.println(JSON.toJSONString(orderParam));
+        ResultDTO<Object> resultDTO;
+        //获取客户端ip地址
+        String ipAddress = IpUtils.getIpAddress(request);
+        if (null == orderParam.getCityId()) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市id不允许为空!", "");
+            logger.warn("createBuyCouponOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        Long userId = orderParam.getUserId();
+        if (null == orderParam.getUserId()) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不允许为空!", "");
+            logger.warn("createBuyCouponOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        Integer identityType = orderParam.getIdentityType();
+        if (null == orderParam.getIdentityType()) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份类型不允许为空!", "");
+            logger.warn("createOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(orderParam.getGoodsInfo())) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品信息不允许为空!", "");
+            logger.warn("createBuyCouponOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (StringUtils.isBlank(orderParam.getDeliveryInfo())) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "配送信息不允许为空!", "");
+            logger.warn("createBuyCouponOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+
+        //判断创单人身份是否合法
+        if (!(orderParam.getIdentityType() == 0 || orderParam.getIdentityType() == 6 || orderParam.getIdentityType() == 2)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "创单人身份不合法!", "");
+            logger.warn("createBuyCouponOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+            JavaType goodsSimpleInfo = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, GoodsSimpleInfo.class);
+            JavaType cashCouponSimpleInfo = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, Long.class);
+            JavaType productCouponSimpleInfo = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, ProductCouponSimpleInfo.class);
+            JavaType promotionSimpleInfo = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, PromotionSimpleInfo.class);
+
+            //*************************** 转化前台提交过来的json类型参数 ************************
+
+            //商品信息
+            List<GoodsSimpleInfo> goodsList = objectMapper.readValue(orderParam.getGoodsInfo(), goodsSimpleInfo);
+            //配送信息
+            DeliverySimpleInfo deliverySimpleInfo = objectMapper.readValue(orderParam.getDeliveryInfo(), DeliverySimpleInfo.class);
+            AppStore store = appStoreService.findStoreByUserIdAndIdentityType(userId,identityType);
+            deliverySimpleInfo.setBookingStoreId(store.getStoreId());
+            deliverySimpleInfo.setBookingStoreCode(store.getStoreCode());
+            deliverySimpleInfo.setBookingStoreName(store.getStoreName());
+            deliverySimpleInfo.setBookingStoreAddress(store.getDetailedAddress());
+            deliverySimpleInfo.setDeliveryType(AppDeliveryType.PRODUCT_COUPON.getValue());
+            if (StringUtils.isBlank(deliverySimpleInfo.getDeliveryType())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "配送方式不允许为空!", "");
+                logger.warn("createBuyCouponOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            //优惠券信息
+            List<Long> cashCouponList = new ArrayList<>();
+            if (StringUtils.isNotBlank(orderParam.getCashCouponIds())) {
+                cashCouponList = objectMapper.readValue(orderParam.getCashCouponIds(), cashCouponSimpleInfo);
+            }
+            //产品券信息
+            List<ProductCouponSimpleInfo> productCouponList = new ArrayList<>();
+//            if (StringUtils.isNotBlank(orderParam.getProductCouponInfo())) {
+//                productCouponList = objectMapper.readValue(orderParam.getProductCouponInfo(), productCouponSimpleInfo);
+//            }
+            //促销信息
+            List<PromotionSimpleInfo> promotionSimpleInfoList = new ArrayList<>();
+            if (StringUtils.isNotBlank(orderParam.getPromotionInfo())) {
+                promotionSimpleInfoList = objectMapper.readValue(orderParam.getPromotionInfo(), promotionSimpleInfo);
+            }
+            // 检查促销是否过期
+            List<Long> promotionIds = new ArrayList<>();
+            for (PromotionSimpleInfo promotion : promotionSimpleInfoList) {
+                promotionIds.add(promotion.getPromotionId());
+            }
+            if (promotionIds.size() > 0) {
+                Boolean outTime = actService.checkActOutTime(promotionIds);
+                if (!outTime) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "存在过期促销，请重新下单！", "");
+                    logger.warn("createBuyCouponOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+            }
+
+            //账单信息
+            BillingSimpleInfo billing = objectMapper.readValue(orderParam.getBillingInfo(), BillingSimpleInfo.class);
+            if (null != billing.getEmpCreditMoney() && billing.getEmpCreditMoney() > 0) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "购买产品卷不能使用信用额度！", "");
+                logger.warn("createBuyCouponOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+
+
+            //如果是导购下单并且是四川直营门店，判断销售纸质单号是否为空
+            if (orderParam.getIdentityType() == AppIdentityType.SELLER.getValue()) {
+                AppEmployee employee = appEmployeeService.findById(orderParam.getUserId());
+                City city = cityService.findById(orderParam.getCityId());
+                AppStore appStore = appStoreService.findById(employee.getStoreId());
+                if ("ZY".equals(appStore.getStoreType().getValue()) && ("FZY009".equals(appStore.getStoreCode()) || "HLC004".equals(appStore.getStoreCode()) || "ML001".equals(appStore.getStoreCode()) || "QCMJ008".equals(appStore.getStoreCode()) ||
+                        "SB010".equals(appStore.getStoreCode()) || "YC002".equals(appStore.getStoreCode()) || "ZC002".equals(appStore.getStoreCode()) || "RC005".equals(appStore.getStoreCode()) ||
+                        "FZM007".equals(appStore.getStoreCode()) || "SH001".equals(appStore.getStoreCode()) || "YJ001".equals(appStore.getStoreCode()) || "HS001".equals(appStore.getStoreCode()) ||
+                        "XC001".equals(appStore.getStoreCode()))) {
+                    if (StringUtils.isBlank(orderParam.getSalesNumber())) {
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "四川直营门店销售纸质单号不能为空！", "");
+                        logger.warn("createBuyCouponOrder OUT,创建订单失败,出参 resultDTO:{}", resultDTO);
+                        return resultDTO;
+                    }
+                }
+            }
+
+
+            //******************* 创建订单基础信息 *****************
+            OrderBaseInfo orderBaseInfo = appOrderService.createOrderBaseInfo(orderParam.getCityId(), orderParam.getUserId(),
+                    orderParam.getIdentityType(), orderParam.getCustomerId(), deliverySimpleInfo.getDeliveryType(), orderParam.getRemark(), orderParam.getSalesNumber());
+
+            //****************** 创建订单物流信息 ******************
+            OrderLogisticsInfo orderLogisticsInfo = appOrderService.createOrderLogisticInfo(deliverySimpleInfo);
+            orderLogisticsInfo.setOrdNo(orderBaseInfo.getOrderNumber());
+
+            //****************** 创建订单商品信息 ******************
+            CreateOrderGoodsSupport support = commonService.createOrderGoodsInfo(goodsList, orderParam.getUserId(), orderParam.getIdentityType(),
+                    orderParam.getCustomerId(), productCouponList, orderBaseInfo.getOrderNumber());
+
+            //****************** 创建订单券信息 *********************
+            List<OrderCouponInfo> orderCouponInfoList = new ArrayList<>();
+
+            //****************** 创建订单优惠券信息 *****************
+            List<OrderCouponInfo> orderCashCouponInfoList = commonService.createOrderCashCouponInfo(orderBaseInfo, cashCouponList);
+            if (null != orderCashCouponInfoList && orderCashCouponInfoList.size() > 0) {
+                orderCouponInfoList.addAll(orderCashCouponInfoList);
+            }
+            //****************** 创建订单产品券信息 *****************
+            List<OrderCouponInfo> orderProductCouponInfoList = new ArrayList<>();
+
+            //****************** 处理订单账单相关信息 ***************
+            OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
+            orderBillingDetails.setOrderNumber(orderBaseInfo.getOrderNumber());
+            orderBillingDetails.setIsOwnerReceiving(orderLogisticsInfo.getIsOwnerReceiving());
+            orderBillingDetails.setTotalGoodsPrice(support.getGoodsTotalPrice());
+            orderBillingDetails.setMemberDiscount(support.getMemberDiscount());
+            orderBillingDetails.setPromotionDiscount(billing.getOrderDiscount());
+
+            orderBillingDetails = appOrderService.createOrderBillingDetails(orderBillingDetails, orderParam.getUserId(), orderParam.getIdentityType(),
+                    billing, cashCouponList, support.getProductCouponGoodsList());
+
+            orderBaseInfo.setTotalGoodsPrice(orderBillingDetails.getTotalGoodsPrice());
+
+            //****************** 处理订单账单支付明细信息 ************
+            List<OrderBillingPaymentDetails> paymentDetails = commonService.createOrderBillingPaymentDetails(orderBaseInfo, orderBillingDetails);
+
+            /********* 开始计算分摊 促销分摊可能产生新的行记录 所以优先分摊 ******************/
+            List<OrderGoodsInfo> orderGoodsInfoList;
+            orderGoodsInfoList = dutchService.addGoodsDetailsAndDutch(orderParam.getUserId(), AppIdentityType.getAppIdentityTypeByValue(orderParam.getIdentityType()), promotionSimpleInfoList, support.getPureOrderGoodsInfo(), orderParam.getCustomerId());
+
+            //******** 分摊现乐币 策略：每个商品 按单价占比 分摊 *********************
+            // 乐币暂时不分摊
+//            Integer leBiQty = billing.getLeBiQuantity();
+//            orderGoodsInfoList = leBiDutchService.LeBiDutch(leBiQty, orderGoodsInfoList);
+
+            //******** 分摊现现金返利 策略：每个商品 按单价占比 分摊 *********************
+            Double cashReturnAmount = billing.getStoreSubvention();
+            orderGoodsInfoList = cashReturnDutchService.cashReturnDutch(cashReturnAmount, orderGoodsInfoList);
+
+            //******** 分摊现金券 策略：使用范围商品 按单价占比 分摊 *********************
+            orderGoodsInfoList = cashCouponDutchService.cashCouponDutch(cashCouponList, orderGoodsInfoList);
+
+            //******** 分摊完毕 计算退货 单价 ***************************
+            orderGoodsInfoList = dutchService.countReturnPrice(orderGoodsInfoList, cashReturnAmount, CountUtil.div(billing.getLeBiQuantity(), 10D), billing.getOrderDiscount());
+            //orderGoodsInfoList = dutchService.countReturnPrice(orderGoodsInfoList);
+
+            //将产品券商品加入 分摊完毕的商品列表中
+            orderGoodsInfoList.addAll(support.getProductCouponGoodsList());
+            support.setOrderGoodsInfoList(orderGoodsInfoList);
+
+            //****************** 创建订单经销差价返还明细 ***********
+            List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetailsList = new ArrayList<>();
+//            List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetailsList = commonService.createOrderJxPriceDifferenceReturnDetails(orderBaseInfo, support.getOrderGoodsInfoList(), promotionSimpleInfoList);
+//            if (null != jxPriceDifferenceReturnDetailsList && jxPriceDifferenceReturnDetailsList.size() > 0) {
+//                orderBillingDetails.setJxPriceDifferenceAmount(jxPriceDifferenceReturnDetailsList.stream().mapToDouble(OrderJxPriceDifferenceReturnDetails::getAmount).sum());
+//            }
+
+            //添加商品专供标志
+            orderGoodsInfoList = this.commonService.addGoodsSign(orderGoodsInfoList, orderBaseInfo);
+
+            //**************** 1、检查库存和与账单支付金额是否充足,如果充足就扣减相应的数量 ***********
+            //**************** 2、持久化订单相关实体信息 ****************
+            transactionalSupportService.createOrderBusiness(deliverySimpleInfo, support.getInventoryCheckMap(), orderParam.getCityId(), orderParam.getIdentityType(),
+                    orderParam.getUserId(), orderParam.getCustomerId(), cashCouponList, orderProductCouponInfoList, orderBillingDetails, orderBaseInfo,
+                    orderLogisticsInfo, orderGoodsInfoList, orderCouponInfoList, paymentDetails, jxPriceDifferenceReturnDetailsList, ipAddress);
+
+            //****** 清空当单购物车商品 ******
+            commonService.clearOrderGoodsInMaterialList(orderParam.getUserId(), orderParam.getIdentityType(), goodsList, productCouponList);
+
+            if (orderBillingDetails.getAmountPayable() <= AppConstant.PAY_UP_LIMIT) {
+                //如果预存款或信用金已支付完成直接发送到WMS出货单
+                if (orderBaseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
+                    iCallWms.sendToWmsRequisitionOrderAndGoods(orderBaseInfo.getOrderNumber());
+                }
+                //将该订单入拆单消息队列
+                sinkSender.sendOrder(orderBaseInfo.getOrderNumber());
+                //添加订单生命周期
+                appOrderService.addOrderLifecycle(OrderLifecycleType.PAYED, orderBaseInfo.getOrderNumber());
+
+                // 激活订单赠送的产品券
+                // productCouponService.activateCusProductCoupon(orderBaseInfo.getOrderNumber());
+
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                        new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), true, false));
+                logger.info("createBuyCouponOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
+            } else {
+                //判断是否可选择货到付款
+//                Boolean isCashDelivery = this.commonService.checkCashDelivery(orderGoodsInfoList, userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
+                Boolean isCashDelivery = Boolean.FALSE;
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                        new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), false, isCashDelivery));
+                logger.info("createBuyCouponOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
+            }
+            return resultDTO;
+        } catch (LockStoreInventoryException | LockStorePreDepositException | LockCityInventoryException | LockCustomerCashCouponException |
+                LockCustomerLebiException | LockCustomerPreDepositException | LockEmpCreditMoneyException | LockStoreCreditMoneyException |
+                LockStoreSubventionException | SystemBusyException | LockCustomerProductCouponException | GoodsMultipartPriceException | GoodsNoPriceException |
+                OrderPayableAmountException | DutchException | OrderCreditMoneyException | OrderDiscountException | GoodsQtyErrorException e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, e.getMessage(), null);
+            logger.warn("createBuyCouponOrder OUT,订单创建失败,出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        } catch (IOException e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单参数转换异常!", null);
+            logger.warn("createBuyCouponOrder EXCEPTION,订单创建失败,出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        } catch (OrderSaveException e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单创建异常!", null);
+            logger.warn("createBuyCouponOrder EXCEPTION,订单创建失败,出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常,下单失败!", null);
+            logger.warn("createBuyCouponOrder EXCEPTION,订单创建失败,出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

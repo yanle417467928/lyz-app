@@ -1799,7 +1799,13 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                             ReturnOrderLifecycle returnOrderLifecycle = new ReturnOrderLifecycle();
                             returnOrderLifecycle.setRoid(returnOrderBaseInfo.getRoid());
                             returnOrderLifecycle.setReturnNo(returnOrderBaseInfo.getReturnNo());
-                            returnOrderLifecycle.setOperation(OrderLifecycleType.REJECTED);
+                            if (returnOrderBaseInfo.getReturnType().equals(ReturnOrderType.REFUSED_RETURN)) {
+                                returnOrderLifecycle.setOperation(OrderLifecycleType.REJECTED);
+                                orderLifecycle.setPostStatus(AppOrderStatus.REJECTED);
+                            } else if (returnOrderBaseInfo.getReturnType().equals(ReturnOrderType.NORMAL_RETURN)) {
+                                returnOrderLifecycle.setOperation(OrderLifecycleType.NORMAL_RETURN);
+                                orderLifecycle.setPostStatus(AppOrderStatus.FINISHED);
+                            }
                             returnOrderLifecycle.setPostStatus(AppReturnOrderStatus.FINISHED);
                             returnOrderLifecycle.setOperationTime(new Date());
                             returnOrderDAO.saveReturnOrderLifecycle(returnOrderLifecycle);

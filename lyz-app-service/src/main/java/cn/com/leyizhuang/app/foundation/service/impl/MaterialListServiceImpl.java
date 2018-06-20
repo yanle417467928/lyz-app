@@ -183,4 +183,9 @@ public class MaterialListServiceImpl implements MaterialListService {
         return null;
     }
 
+    @Override
+    public List<NormalMaterialListResponse> findBuyCouponGoodsByUserIdAndIdentityType(Long userId, Integer identityType) {
+        return this.materialListDAO.findBuyCouponGoodsByUserIdAndIdentityType(userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
+    }
+
 }
