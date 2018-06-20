@@ -332,7 +332,7 @@
             WHERE m.user_id = #{userId} AND m.identity_type = #{identityType}
                 AND m.audit_no IS NULL AND m.cus_id IS NULL
                 AND (m.material_list_type = 'NORMAL' OR m.material_list_type IS NULL )
-            AND ggc.status IS TRUE
+            AND ggc.status IS TRUE AND ggc.start_time &lt; NOW() AND ggc.end_time &gt; NOW()
             GROUP BY p.sku
             ORDER BY m.id DESC
         </if>
@@ -350,7 +350,7 @@
             AND m.audit_no IS NULL
             AND m.cus_id IS NULL
             AND (m.material_list_type = 'NORMAL' OR m.material_list_type IS NULL )
-            AND ggc.status IS TRUE
+            AND ggc.status IS TRUE AND ggc.start_time &lt; NOW() AND ggc.end_time &gt; NOW()
             ORDER BY m.id DESC
         </if>
     </select>

@@ -1440,6 +1440,21 @@
             INNER JOIN gds_goods_category gc ON g.cid = gc.cid
             WHERE
             c.cus_id = #{userId}
+            <if test="null != firstCategoryCode ">
+                AND gc.p_category_code = #{firstCategoryCode}
+            </if>
+            <if test="null != secondCategoryId ">
+                AND g.cid = #{secondCategoryId}
+            </if>
+            <if test="null != brandId ">
+                AND g.brd_id = #{brandId}
+            </if>
+            <if test="null != typeId ">
+                AND g.gtid = #{typeId}
+            </if>
+            <if test="null != specification and specification != ''">
+                AND g.specification_type = #{specification}
+            </if>
             <if test="keywords != null and keywords != ''">
                 AND (g.sku_name LIKE concat('%', #{keywords}, '%')
                 OR g.sku LIKE concat('%', #{keywords}, '%'))
@@ -1577,6 +1592,21 @@
             WHERE
             e.emp_id = #{userId}
             AND p.price_type = #{rankCode}
+            <if test="null != firstCategoryCode ">
+                AND gc.p_category_code = #{firstCategoryCode}
+            </if>
+            <if test="null != secondCategoryId ">
+                AND g.cid = #{secondCategoryId}
+            </if>
+            <if test="null != brandId ">
+                AND g.brd_id = #{brandId}
+            </if>
+            <if test="null != typeId ">
+                AND g.gtid = #{typeId}
+            </if>
+            <if test="null != specification and specification != ''">
+                AND g.specification_type = #{specification}
+            </if>
             <if test="keywords != null and keywords != ''">
                 AND (g.sku_name LIKE concat('%', #{keywords}, '%')
                 OR g.sku LIKE concat('%', #{keywords}, '%'))

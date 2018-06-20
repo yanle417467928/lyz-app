@@ -192,7 +192,9 @@ public interface GoodsDAO {
 
     List<UserGoodsResponse> findGoodsListByCustomerIdAndIdentityTypeAndUserRank(@Param(value = "userId") Long userId,
                                                                                 @Param("identityType") AppIdentityType identityType,
-                                                                                @Param("keywords") String keywords);
+                                                                                @Param("keywords") String keywords, @Param(value = "firstCategoryCode") String firstCategoryCode,
+                                                                                @Param(value = "secondCategoryId") Long secondCategoryId, @Param(value = "brandId") Long brandId,
+                                                                                @Param(value = "typeId") Long typeId, @Param(value = "specification") String specification);
 
     List<GoodsDO> getGoodsBykeywordsAndCompanyAndBrandCodeAndCategoryCodeAndStoreId(
             @Param("keywords") String keywords, @Param("companyCode") String companyCode, @Param("brandCode") Long brandCode,
@@ -209,7 +211,10 @@ public interface GoodsDAO {
 
     List<UserGoodsResponse> findGoodsListBySellerIdAndIdentityTypeAndRankCode(@Param(value = "userId") Long userId,
                                                                               @Param("identityType") AppIdentityType identityType,
-                                                                              @Param("rankCode") String rankCode, @Param("keywords") String keywords);
+                                                                              @Param("rankCode") String rankCode, @Param("keywords") String keywords,
+                                                                              @Param(value = "firstCategoryCode") String firstCategoryCode,
+                                                                              @Param(value = "secondCategoryId") Long secondCategoryId, @Param(value = "brandId") Long brandId,
+                                                                              @Param(value = "typeId") Long typeId, @Param(value = "specification") String specification);
 
     GoodsDetailResponse findSellerZGGoodsDetailByGoodsId(@Param("userId") Long userId, @Param("goodsId") Long goodsId,
                                      @Param("type") AppIdentityType appIdentityType, @Param("rankCode") String rankCode);
@@ -222,7 +227,7 @@ public interface GoodsDAO {
     List<GoodsBrandResponse> findGoodsBrandListByCategoryCodeAndEmployeeIdAndUserRank(
             @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId,
             @Param(value = "categorySecond") String categorySecond, @Param(value = "specification") String specification,
-            @Param(value = "goodsType") String goodsType);
+            @Param(value = "goodsType") String goodsType, @Param("rankCode") String rankCode);
 
 
 }
