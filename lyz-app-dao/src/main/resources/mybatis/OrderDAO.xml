@@ -1728,7 +1728,6 @@
     </select>
 
 
-
     <select id="getFitOrderListPageInfoByUserIdAndIdentityType" resultMap="orderPageInfoListMap">
 
         <if test="null != identityType and identityType.toString() == 'SELLER'">
@@ -1761,8 +1760,10 @@
             AND obi.`status` = 'UNPAID'
             AND obi.effective_end_time > NOW()
             <if test="null != keywords and keywords != ''">
-                AND (obi.ord_no LIKE concat(concat('%',#{keywords}),'%') OR oli.shipping_address LIKE concat(concat('%',#{keywords}),'%')
-                OR oli.receiver LIKE concat(concat('%',#{keywords}),'%') OR pi.lender_name LIKE concat(concat('%',#{keywords}),'%')
+                AND (obi.ord_no LIKE concat(concat('%',#{keywords}),'%') OR oli.shipping_address LIKE
+                concat(concat('%',#{keywords}),'%')
+                OR oli.receiver LIKE concat(concat('%',#{keywords}),'%') OR pi.lender_name LIKE
+                concat(concat('%',#{keywords}),'%')
                 OR oli.receiver_phone LIKE concat(concat('%',#{keywords}),'%'))
             </if>
             UNION
@@ -1795,8 +1796,10 @@
             AND obi.`status` = 'UNPAID'
             AND obi.effective_end_time > NOW()
             <if test="null != keywords and keywords != ''">
-                AND (obi.ord_no LIKE concat(concat('%',#{keywords}),'%') OR oli.shipping_address LIKE concat(concat('%',#{keywords}),'%')
-                OR oli.receiver LIKE concat(concat('%',#{keywords}),'%') OR pi.lender_name LIKE concat(concat('%',#{keywords}),'%')
+                AND (obi.ord_no LIKE concat(concat('%',#{keywords}),'%') OR oli.shipping_address LIKE
+                concat(concat('%',#{keywords}),'%')
+                OR oli.receiver LIKE concat(concat('%',#{keywords}),'%') OR pi.lender_name LIKE
+                concat(concat('%',#{keywords}),'%')
                 OR oli.receiver_phone LIKE concat(concat('%',#{keywords}),'%'))
             </if>
             ORDER BY create_time DESC
@@ -1805,7 +1808,8 @@
     </select>
 
 
-    <select id="findPayhelperOrderByOrdNo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.PayhelperOrder">
+    <select id="findPayhelperOrderByOrdNo" parameterType="java.lang.String"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.PayhelperOrder">
         SELECT ord_no orderNumber, payhelper_amount payhelperAmount, payhelper_id, payhelper_type, pay_type
         FROM payhelper_ord_relation
         WHERE ord_no = #{ordNo} AND is_pay_over IS TRUE
@@ -1816,4 +1820,13 @@
         VALUES (#{createTime}, #{oid}, #{orderNumber}, #{payhelperAmount}, #{payhelperId}, #{payhelperType}, #{isPayOver}, #{payType})
     </insert>
 
+    <select id="getOrderSendTime" resultType="java.time.LocalDateTime">
+        SELECT
+        CASE ob.delivery_type when "HOUSE_DELIVERY" THEN if(wa.end_dt = "",null,wa.end_dt)
+        WHEN "SELF_TAKE" THEN if(os.shipping_time = "",null,os.shipping_time) ELSE NULL END as send_time
+         from ord_base_info ob
+        LEFT JOIN inter_wta_order_shipping_header wa on ob.ord_no = wa.order_no
+        LEFT JOIN ord_shipping os on os.ord_no = ob.ord_no
+        where ob.ord_no = #{orderNo} LIMIT 1
+    </select>
 </mapper>

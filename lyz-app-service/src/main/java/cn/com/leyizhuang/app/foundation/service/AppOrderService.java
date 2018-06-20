@@ -209,4 +209,6 @@ public interface AppOrderService {
     int savePayhelperOrder(PayhelperOrder payhelperOrder);
 
     PageInfo<OrderPageInfoVO> findSellerManagerPayForOrderList(Long userId, Integer page, Integer size);
+
+    int checkOrderReturnCondition(String orderNumer);
 }

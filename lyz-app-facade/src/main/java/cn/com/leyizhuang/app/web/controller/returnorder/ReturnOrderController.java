@@ -490,6 +490,22 @@ public class ReturnOrderController {
                     return resultDTO;
                 }
             }
+
+            // 判断订单是否超过退货时间
+            int flag = appOrderService.checkOrderReturnCondition(orderNo);
+            if (flag != 0){
+                // 不能退货
+                if (flag == -1){
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此订单不可退货!", "");
+                    logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }else if(flag == 1){
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此订单出货超过3个月不可退货!", "");
+                    logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+            }
+
             //*******************处理上传图骗***********************
             List<String> pictureUrls = new ArrayList<>();
             String returnPic = null;
