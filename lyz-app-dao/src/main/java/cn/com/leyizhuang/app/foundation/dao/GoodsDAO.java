@@ -214,4 +214,15 @@ public interface GoodsDAO {
     GoodsDetailResponse findSellerZGGoodsDetailByGoodsId(@Param("userId") Long userId, @Param("goodsId") Long goodsId,
                                      @Param("type") AppIdentityType appIdentityType, @Param("rankCode") String rankCode);
 
+    List<GoodsBrandResponse> findGoodsBrandListByCategoryCodeAndCustomerIdAndUserRank(@Param(value = "categoryCode") String categoryCode,
+                             @Param(value = "userId") Long userId, @Param(value = "categorySecond") String categorySecond,
+                             @Param(value = "specification") String specification, @Param(value = "goodsType") String goodsType);
+
+
+    List<GoodsBrandResponse> findGoodsBrandListByCategoryCodeAndEmployeeIdAndUserRank(
+            @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId,
+            @Param(value = "categorySecond") String categorySecond, @Param(value = "specification") String specification,
+            @Param(value = "goodsType") String goodsType);
+
+
 }
