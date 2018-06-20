@@ -164,4 +164,8 @@ public interface GoodsService {
     PageInfo<UserGoodsResponse> findGoodsListBySellerIdAndIdentityTypeAndRankCode(Long userId, AppIdentityType identityType, String rankCode, String keywords, Integer page, Integer size);
 
     GoodsDetailResponse findSellerZGGoodsDetailByGoodsId(Long userId, Long goodsId, Integer identityType, String rankCode);
+
+    List<GoodsBrandResponse> findGoodsBrandListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(String categoryCode, Long userId, Integer identityType,String categorySecond,String specification,String goodType);
+
+
 }

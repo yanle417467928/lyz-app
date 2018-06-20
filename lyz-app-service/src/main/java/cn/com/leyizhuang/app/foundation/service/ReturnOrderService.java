@@ -265,4 +265,6 @@ public interface ReturnOrderService {
      */
     void saveReturnOrderLifecycle(ReturnOrderLifecycle returnOrderLifecycle);
 
+    ReturnOrderBilling getAllReturnPriceByOrderNo(String orderNo);
+
 }

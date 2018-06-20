@@ -1427,7 +1427,6 @@
             m.qty materialQty,
             g.work_area,
             g.work_cost
-
             FROM
             cus_customer c
             LEFT JOIN cus_rank cr ON cr.cus_id = c.cus_id
@@ -1600,6 +1599,70 @@
             g.id = p.gid AND e.emp_id = #{userId}
             AND p.price_type = #{rankCode}
         </if>
+    </select>
+
+    <select id="findGoodsBrandListByCategoryCodeAndCustomerIdAndUserRank"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsBrandResponse">
+        SELECT
+        DISTINCT
+        b.brd_id brand_id,
+        b.brand_name brand_name
+        FROM
+        cus_customer c
+        LEFT JOIN cus_rank cr ON cr.cus_id = c.cus_id
+        LEFT JOIN rank_classification rc ON cr.rank_id = rc.rank_id
+        INNER JOIN gds_goods_price p ON c.store_id = p.store_id
+        AND rc.rank_code = p.price_type
+        AND p.start_time &lt; NOW()
+        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+        INNER JOIN gds_goods g ON p.gid = g.gid
+        LEFT JOIN gds_goods_category gc ON g.cid = gc.cid
+        LEFT JOIN gds_goods_brand b ON g.brd_id = b.brd_id
+        LEFT JOIN gds_goods_type ggt ON ggt.gtid =g.gtid
+        WHERE
+        c.cus_id = #{userId}
+        AND gc.p_category_code = #{categoryCode}
+        <if test="null !=categorySecond and ''!= categorySecond ">
+            AND gc.category_name =#{categorySecond}
+        </if>
+        <if test="null !=specification and ''!= specification ">
+            AND g.specification_type=#{specification}
+        </if>
+        <if test="null !=goodsType and ''!= goodsType ">
+            AND ggt.type_name=#{goodsType}
+        </if>
+        ORDER BY b.sort_id ASC
+    </select>
+
+    <select id="findGoodsBrandListByCategoryCodeAndEmployeeIdAndUserRank"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
+        SELECT
+            DISTINCT
+            b.brd_id brand_id,
+            b.brand_name brand_name
+        FROM
+        emp_employee e
+        INNER JOIN gds_goods_price p ON e.store_id = p.store_id
+        AND p.start_time &lt; NOW()
+        AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+        INNER JOIN gds_goods g ON p.gid = g.gid
+        LEFT JOIN gds_goods_category gc ON g.cid = gc.cid
+        LEFT JOIN gds_goods_brand b ON g.brd_id = b.brd_id
+        LEFT JOIN gds_goods_type ggt ON ggt.gtid =g.gtid
+        WHERE
+            e.emp_id = #{userId}
+            AND gc.p_category_code = #{categoryCode}
+            AND p.price_type = #{rankCode}
+            <if test="null !=categorySecond and ''!= categorySecond ">
+                AND gc.category_name =#{categorySecond}
+            </if>
+            <if test="null !=specification and ''!= specification ">
+                AND g.specification_type=#{specification}
+            </if>
+            <if test="null !=goodsType and ''!= goodsType ">
+                AND ggt.type_name=#{goodsType}
+            </if>
+        ORDER BY b.sort_id ASC
     </select>
 
 </mapper>

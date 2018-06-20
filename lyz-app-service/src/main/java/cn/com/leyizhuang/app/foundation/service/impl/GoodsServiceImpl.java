@@ -623,5 +623,17 @@ public class GoodsServiceImpl implements GoodsService {
         return goodsDetailResponse;
     }
 
+    @Override
+    public List<GoodsBrandResponse> findGoodsBrandListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(String categoryCode, Long userId, Integer identityType, String categorySecond, String specification, String goodType) {
+        if (null != categoryCode && null != userId && null != identityType) {
+            if (identityType == 6) {
+                return goodsDAO.findGoodsBrandListByCategoryCodeAndCustomerIdAndUserRank(categoryCode, userId, categorySecond, specification, goodType);
+            } else {
+                return goodsDAO.findGoodsBrandListByCategoryCodeAndEmployeeIdAndUserRank(categoryCode, userId, categorySecond, specification, goodType);
+            }
+        }
+        return null;
+    }
+
 
 }
