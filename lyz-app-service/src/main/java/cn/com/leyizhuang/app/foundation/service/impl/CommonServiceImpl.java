@@ -804,8 +804,6 @@ public class CommonServiceImpl implements CommonService {
 
                                 }
                             }
-                        } else {
-                            throw new OrderSaveException("商品主键生成失败!");
                         }
                     }
                 }
