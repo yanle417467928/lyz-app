@@ -43,7 +43,7 @@
                             </select>
                         </div>
                         <div class="col-xs-2">
-                            <select size="5" name="store" id="store" class="form-control select"
+                            <select size="5" name="store" id="store" class="form-control selectpicker" data-width="160px" data-live-search="true"
                                     style="width:auto;" title="选择门店">
                                 <option value="-1">选择门店</option>
                             </select>

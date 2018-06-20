@@ -855,4 +855,35 @@
         </choose>
     </select>
 
+
+    <select id="queryDecorativeCreditChangePage"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.FitCreditMoneyChangeLogVO">
+        SELECT
+        l.store_id   ,
+        l.create_time  ,
+        l.change_amount  ,
+        l.credit_limit_available_after_change ,
+        l.reference_number ,
+        l.change_type ,
+        l.change_type_desc ,
+        l.operator_id ,
+        l.operator_type ,
+        l.operator_ip ,
+        l.remark,
+        s.store_name,
+        s.store_code,
+        s.fit_compay_type as storeType
+        FROM st_credit_money_change_log l
+        LEFT JOIN st_store s on l.store_id =s.store_id
+        where
+        l.store_id =#{storeId}
+        <if test="null != keywords and ''!=keywords">
+            AND reference_number=#{keywords}
+        </if>
+        <if test="null != changeType and ''!=changeType">
+            AND change_type=#{changeType}
+        </if>
+        ORDER BY l.create_time DESC
+    </select>
+
 </mapper>

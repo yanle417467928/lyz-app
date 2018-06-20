@@ -340,7 +340,7 @@ public class UnionPayController {
             }
             LogUtil.writeLog("unionPayReturnAsyncFront OUT，银联支付前台回调通知结束");
             //返回给银联服务器http 200  状态码
-            resp.getWriter().print("<center>支付成功，点击“<”返回查看订单</center>");
+            resp.getWriter().print("ok");
         } catch (Exception e) {
             e.printStackTrace();
             logger.warn("{}", e);

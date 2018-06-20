@@ -1,15 +1,18 @@
 <head>
     <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet">
-    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
-    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
-    <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/admin-lte/2.3.11/css/AdminLTE.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/i18n/defaults-zh_CN.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.zh-CN.min.js"></script>
+
 </head>
 <body>
 
@@ -54,16 +57,16 @@
                         <button id="btn_add" type="button" class="btn btn-default">
                             <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
                         </button>
-                        <select name="selectCity" id="selectCity" class="form-control select" style="width:auto;"
+                        <select name="selectCity" id="selectCity" class="form-control select"
                                 title="选择城市" onchange="findStoreListByCity(this.value)">
                             <option value="-1">选择城市</option>
                         </select>
-                        <select name="selectFromName" id="selectFromName" class="form-control select"
-                                style="width:auto;" title="调出门店">
+                        <select name="selectFromName" id="selectFromName" class="form-control selectpicker" data-width="180px"
+                                style="width:auto;" title="调出门店"  data-live-search="true" >
                             <option value="-1">选择调出门店</option>
                         </select>
-                        <select name="selectToName" id="selectToName" class="form-control select"
-                                style="width:auto;" title="调入门店">
+                        <select name="selectToName" id="selectToName" class="form-control selectpicker" data-width="180px"
+                                style="width:auto;" title="调入门店" data-live-search="true">
                             <option value="-1">选择调入门店</option>
                         </select>
                         <select name="selectStatus" id="selectStatus" class="form-control select"
@@ -264,6 +267,8 @@
                     city += "<option value=" + item.cityId + ">" + item.name + "</option>";
                 });
                 $("#selectCity").append(city);
+                //$("#selectCity").selectpicker('refresh');
+                //$("#selectCity").selectpicker('render');
             }
         });
     }
@@ -288,11 +293,11 @@
                     store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
                 });
                 fromName.append(store);
-                // fromName.selectpicker('refresh');
-                // fromName.selectpicker('render');
-                toName.append(store);
-                // toName.selectpicker('refresh');
-                // toName.selectpicker('render');
+                 fromName.selectpicker('refresh');
+                 fromName.selectpicker('render');
+                 toName.append(store);
+                 toName.selectpicker('refresh');
+                 toName.selectpicker('render');
             }
         });
     }

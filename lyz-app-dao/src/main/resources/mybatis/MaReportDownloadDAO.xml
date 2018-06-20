@@ -840,7 +840,7 @@
         IFNULL(obd.delivery_pos,0) posMoney,
         oaf.remarks remarks, IFNULL(oaf.return_money,0) returnMoney, IFNULL(obd.delivery_cash,0) +
         IFNULL(obd.delivery_pos,0) realMoney, obi.remark orderRemark,
-        CASE when obd.is_pay_up when 0 then '未结清' when 1 THEN  '结清' end as isPayUp
+        CASE obd.is_pay_up when 0 then '未结清' when 1 THEN  '结清' end as isPayUp
         FROM
         ord_agency_fund oaf
         INNER JOIN ord_base_info obi ON obi.ord_no = oaf.ord_no

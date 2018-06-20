@@ -1,6 +1,8 @@
 package cn.com.leyizhuang.app.web.controller.views.decorativeCompany;
 
 
+import cn.com.leyizhuang.app.core.constant.StoreCreditMoneyChangeType;
+import cn.com.leyizhuang.app.core.constant.StorePreDepositChangeType;
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyInfo;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
 import cn.com.leyizhuang.app.web.controller.BaseController;
@@ -26,6 +28,7 @@ public class MaDecorativeCompanyCreditViewsController extends BaseController {
 
     /**
      * 装饰公司信用列表
+     *
      * @return
      */
     @RequestMapping(value = "/list")
@@ -35,6 +38,7 @@ public class MaDecorativeCompanyCreditViewsController extends BaseController {
 
     /**
      * 装饰公司信用金编辑页面
+     *
      * @param map
      * @param id
      * @return
@@ -48,10 +52,29 @@ public class MaDecorativeCompanyCreditViewsController extends BaseController {
                 error404();
                 return "/error/404";
             } else {
-                map.addAttribute("decorativeCompanyVO",decorativeCompanyInfo);
+                map.addAttribute("decorativeCompanyVO", decorativeCompanyInfo);
             }
         }
         return "/views/decorativeCompany/decorativeCompanyCredit_edit";
+    }
+
+
+    /**
+     * 装饰公司信用金编辑页面
+     *
+     * @param map
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "/creditChangesList/{id}")
+    public String decorativeCreditChangePage(ModelMap map, @PathVariable(value = "id") Long id) {
+    /*    if (null != StoreCode) {
+            DecorativeCompanyInfo decorativeCompanyInfo = this.maStoreService.findByUserId(id);
+
+        }*/
+        map.addAttribute("storeId", id);
+        map.addAttribute("changeTypes", StoreCreditMoneyChangeType.values());
+        return "/views/decorativeCompany/fitCreditMoneyChanges_page";
     }
 }
 

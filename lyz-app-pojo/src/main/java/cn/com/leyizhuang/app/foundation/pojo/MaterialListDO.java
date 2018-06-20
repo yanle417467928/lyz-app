@@ -76,6 +76,11 @@ public class MaterialListDO {
      */
     private Long deliveryId;
 
+    /**
+     * 是否生成订单
+     */
+    private String isGenerateOrder;
+
 
     @Override
     public boolean equals(Object o) {

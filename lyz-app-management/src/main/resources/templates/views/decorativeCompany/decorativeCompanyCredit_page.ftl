@@ -200,6 +200,12 @@
                     return '<span class="label label-danger">-</span>';
                 }
             }
+        },{
+            title: '变更记录',
+            align: 'center',
+            formatter: function(value,row) {
+                return '<button class="btn btn-primary btn-sm" onclick="showDetails('+row.storeId+')"> 查看</button>';
+            }
         }]);
     }
 
@@ -376,6 +382,10 @@
             ids.push(data.storeId);
         }
         return ids;
+    }
+
+    function showDetails(id){
+        window.location.href = '/views/admin/decorativeCredit/creditChangesList/'+id;
     }
 </script>
 </body>

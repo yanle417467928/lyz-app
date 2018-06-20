@@ -19,22 +19,23 @@
         INSERT INTO material_list
         (user_id, identity_type,cus_id, gid, sku, sku_name, goods_specification, cover_image_uri, goods_unit, qty,
         audit_no,
-        material_list_type,delivery_id,remark)
+        material_list_type,delivery_id,remark,is_generate_order)
         VALUES
         <foreach collection="list" item="materialListDO" separator=",">
             (#{materialListDO.userId}, #{materialListDO.identityType}, #{materialListDO.cusId},#{materialListDO.gid},
             #{materialListDO.sku},#{materialListDO.skuName}, #{materialListDO.goodsSpecification},
             #{materialListDO.coverImageUri},
             #{materialListDO.goodsUnit}, #{materialListDO.qty},
-            #{materialListDO.auditNo},#{materialListDO.materialListType},#{materialListDO.deliveryId},#{materialListDO.remark})
+            #{materialListDO.auditNo},#{materialListDO.materialListType},#{materialListDO.deliveryId},#{materialListDO.remark},#{materialListDO.isGenerateOrder})
         </foreach>
     </insert>
 
     <update id="modifyQty">
         UPDATE material_list
         SET qty = #{qty},
-            delivery_id = #{deliveryId}
-        WHERE id = #{id};
+            delivery_id = #{deliveryId},
+            is_generate_order = #{isGenerateOrder}
+        WHERE id = #{id}
     </update>
 
     <update id="updateRemarkAndDeliveryId">
@@ -45,5 +46,87 @@
             user_id = #{userId}
         AND identity_type = #{identityType}
     </update>
+
+    <select id="findMaPhotoOrderMaterialListByPhotoNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.MaterialListDO">
+        SELECT
+            ml.*
+        FROM
+            photo_order po
+        LEFT JOIN material_list ml ON po.user_id = ml.user_id
+        AND po.identity_type = ml.identity_type
+        WHERE
+            po.photo_order_no = #{photoNo}
+        AND is_generate_order = 'N'
+    </select>
+
+    <select id="findMaAllMaterialListByPhotoNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.response.materialList.MaUpdateMaterialResponse">
+      <if test="null != identityType and 'CUSTOMER' == identityType">
+       SELECT
+            ml.user_id,
+            ml.identity_type,
+            ml.gid,
+            ml.sku,
+            ggp.retail_price,
+            gg.type_name,
+            gg.sku_name,
+            ml.material_list_type,
+            ml.qty,
+            ml.is_generate_order
+        FROM
+            photo_order po
+        LEFT JOIN material_list ml ON po.user_id = ml.user_id
+        AND po.identity_type = ml.identity_type
+        INNER JOIN cus_customer cc ON cc.cus_id = ml.user_id
+        INNER JOIN gds_goods_price ggp ON ggp.sku = ml.sku AND ggp.store_id = cc.store_id
+        INNER JOIN gds_goods gg ON gg.gid = ggp.gid
+        WHERE
+            po.photo_order_no = #{photoNo}
+      </if>
+      <if test="null != identityType and 'OTHER' == identityType">
+          SELECT
+          ml.user_id,
+          ml.identity_type,
+          ml.gid,
+          ml.sku,
+          ggp.retail_price,
+          gg.type_name,
+          gg.sku_name,
+          ml.material_list_type,
+          ml.qty,
+          ml.is_generate_order
+          FROM
+          photo_order po
+          LEFT JOIN material_list ml ON po.user_id = ml.user_id
+          AND po.identity_type = ml.identity_type
+          INNER JOIN emp_employee ee ON ee.emp_id = ml.user_id
+          INNER JOIN gds_goods_price ggp ON ggp.sku = ml.sku AND ggp.store_id = ee.store_id
+          INNER JOIN gds_goods gg ON gg.gid = ggp.gid
+          WHERE
+          po.photo_order_no = #{photoNo}
+      </if>
+    </select>
+
+    <delete id="deleteMaterialListByUserIdAndIdentityTypeAndGoodsSku">
+        DELETE FROM material_list
+        WHERE user_id = #{userId}
+        AND identity_type = #{identityType}
+        AND sku = #{sku}
+        AND material_list_type != 'COUPON_TRANSFORM'
+    </delete>
+    
+    <insert id="saveMaterialChangeHeadLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.MaterialChangeHeadLog"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO ma_material_change_head_log
+        (user_id, identity_type, create_time, update_people_id)
+        VALUES
+        (#{userId}, #{identityType}, #{createTime}, #{updatePeopleId})
+    </insert>
+
+    <insert id="saveMaterialChangeDetailLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.MaterialChangeDetailLog">
+        INSERT INTO ma_material_change_detail_log
+        (gid, sku, sku_name, qty, update_head_id)
+        VALUES
+        (#{gid}, #{sku}, #{skuName}, #{qty}, #{updateHeadId})
+    </insert>
 
 </mapper>

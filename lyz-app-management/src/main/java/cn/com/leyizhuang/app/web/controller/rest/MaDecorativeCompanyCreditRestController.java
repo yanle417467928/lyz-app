@@ -11,6 +11,7 @@ import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.Decora
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanySubvention;
 import cn.com.leyizhuang.app.foundation.service.MaDecorativeCompanyCreditService;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
+import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.FitCreditMoneyChangeLogVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;
@@ -60,6 +61,33 @@ public class MaDecorativeCompanyCreditRestController extends BaseRestController 
         } catch (Exception e) {
             e.printStackTrace();
             logger.warn("restDecorativeCompanyCreditPageGird EXCEPTION,发生未知错误，后台初始化装饰公司信用金列表失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
+
+    /**
+     * 装饰公司信用金变更列表
+     *
+     * @param offset
+     * @param size
+     * @param keywords
+     * @return
+     */
+    @GetMapping(value = "/fitCreditlog/page/grid/{storeId}")
+    public GridDataVO<FitCreditMoneyChangeLogVO> restDecorativeCompanyCreditLogPageGird(Integer offset, Integer size, String keywords, String changeType, @PathVariable Long storeId) {
+        logger.info("restDecorativeCompanyCreditLogPageGird 后台初始化装饰公司信用金变更列表 ,入参 offset:{}, size:{}, kewords:{},changType:{},storeId:{}", offset, size, keywords, changeType, storeId);
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageInfo<FitCreditMoneyChangeLogVO> fitCreditMoneyChangeLogVOPage = this.maStoreService.queryDecorativeCreditChangePage(page, size,keywords,changeType,storeId);
+            List<FitCreditMoneyChangeLogVO> fitCreditMoneyChangeLogVOList = fitCreditMoneyChangeLogVOPage.getList();
+            logger.info("restDecorativeCompanyCreditLogPageGird ,后台初始化装饰公司信用金变更列表成功", fitCreditMoneyChangeLogVOList.size());
+            return new GridDataVO<FitCreditMoneyChangeLogVO>().transform(fitCreditMoneyChangeLogVOList, fitCreditMoneyChangeLogVOPage.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("restDecorativeCompanyCreditLogPageGird EXCEPTION,发生未知错误，后台初始化装饰公司信用金变更列表失败");
             logger.warn("{}", e);
             return null;
         }
@@ -169,7 +197,7 @@ public class MaDecorativeCompanyCreditRestController extends BaseRestController 
                 storeCreditMoneyChangeLog.setChangeType(StoreCreditMoneyChangeType.ADMIN_RECHARGE);
                 storeCreditMoneyChangeLog.setChangeTypeDesc(StoreCreditMoneyChangeType.ADMIN_RECHARGE.getDescription());
                 storeCreditMoneyChangeLog.setCreateTime(date);
-                if(null !=decorativeCompanyInfo.getCredit()){
+                if (null != decorativeCompanyInfo.getCredit()) {
                     storeCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(decorativeCompanyInfo.getCredit().doubleValue());
                 }
                 storeCreditMoneyChangeLog.setStoreId(decorativeCompanyInfo.getStoreId());

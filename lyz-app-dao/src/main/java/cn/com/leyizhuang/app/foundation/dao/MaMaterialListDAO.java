@@ -2,6 +2,9 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.MaterialChangeDetailLog;
+import cn.com.leyizhuang.app.foundation.pojo.management.MaterialChangeHeadLog;
+import cn.com.leyizhuang.app.foundation.pojo.response.materialList.MaUpdateMaterialResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -19,9 +22,23 @@ public interface MaMaterialListDAO {
 
     void batchSave(List<MaterialListDO> materialLists);
 
-    void modifyQty(@Param("id") Long id, @Param("qty") Integer qty, @Param("deliveryId")Long deliveryId);
+    void modifyQty(@Param("id") Long id, @Param("qty") Integer qty, @Param("deliveryId")Long deliveryId, @Param("isGenerateOrder")String isGenerateOrder);
 
     void updateRemarkAndDeliveryId(@Param("remark")String remark,@Param("deliveryId")Long deliveryId,
                                    @Param("userId")Long userId,@Param("identityType")AppIdentityType identityType);
+
+    List<MaterialListDO> findMaPhotoOrderMaterialListByPhotoNumber(@Param("photoNo")String photoNo);
+
+    List<MaUpdateMaterialResponse> findMaAllMaterialListByPhotoNumber(@Param("photoNo")String photoNo, @Param("identityType")String identityType);
+
+    void deleteMaterialListByUserIdAndIdentityTypeAndGoodsSku(@Param(value = "userId") Long userId,
+                                                              @Param(value = "identityType") String identityType,
+                                                              @Param(value = "sku")String sku);
+
+    void saveMaterialChangeHeadLog(MaterialChangeHeadLog materialChangeHeadLog);
+
+    void saveMaterialChangeDetailLog(MaterialChangeDetailLog materialChangeDetailLog);
+
+
 
 }
