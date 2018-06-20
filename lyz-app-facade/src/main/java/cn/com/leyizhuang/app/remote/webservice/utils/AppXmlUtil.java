@@ -47,6 +47,10 @@ public class AppXmlUtil {
         if (requisitionOrder.getOrderTime() != null) {
             orderTime = DateUtil.formatDate(requisitionOrder.getOrderTime(), "yyyy-MM-dd HH:MM:ss");
         }
+        String residenceName = requisitionOrder.getResidenceName();
+        if(null != residenceName && residenceName.length() > 15){
+            requisitionOrder.setResidenceName(residenceName.substring(0,14));
+        }
         // 这里是一次临时处理，diy_site_id字面上的意义是门店ID，但因为历史原因这个标签必须传递门店编码
         String xmlStr = "<ERP><TABLE>" +
                 "<ID>" + requisitionOrder.getId() + "</ID>" +

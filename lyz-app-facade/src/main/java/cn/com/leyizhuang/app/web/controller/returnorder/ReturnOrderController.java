@@ -934,6 +934,8 @@ public class ReturnOrderController {
                     //发送退单拆单消息到拆单消息队列
                     sinkSender.sendReturnOrder(returnNo);
                     logger.info("cancelOrderToWms OUT,买券正常退货成功");
+                }else {
+                    returnOrderService.updateReturnOrderStatus(returnNo, AppReturnOrderStatus.PENDING_REFUND);
                 }
             }
             //只有配送单退货才发WMS.在返配上架后发EBS
