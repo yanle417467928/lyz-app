@@ -965,6 +965,72 @@
             #{item}
         </foreach>
 
+        UNION  ALL
+
+        select
+        DISTINCT
+        ss.city as cityName,
+        orbi.store_id as store_id,
+        ss.store_name as storeName ,
+        ss.store_type as storeType,
+        orbi.ord_no as ordNo,
+        ordd.create_time as operationTime,
+        orbi.order_time as createTime,
+        obi.customer_id as customerId,
+        obi.customer_phone as customerPhone,
+        obi.customer_name as customerName,
+        obi.customer_type as customerType,
+        obi.sales_consult_name as salesConsultName,
+        orgi.company_flag as companyFlag,
+        orgi.sku as sku,
+        orgi.sku_name as skuName,
+        orgi.goods_line_type as goodsLineType,
+        orgi.return_qty as orderQty,
+        orgi.return_price as returnPrice,
+        orpc.purchase_price as purchasePrice,
+        orpc.qty as couponQty,
+        orbi.return_no as referenceNumber,
+        wh.wh_name as wareHouse,
+        orli.delivery_type as returnOrderDeliveryType,
+        obi.delivery_type as orderDeliveryType
+        from ord_return_base_info orbi
+        LEFT JOIN ord_return_goods_info orgi ON orgi.return_no =orbi.return_no
+        LEFT JOIN ord_base_info obi ON orbi.ord_no=obi.ord_no
+        LEFT JOIN ord_return_delivery_detail ordd ON orbi.return_no = ordd.return_no
+        LEFT JOIN st_store ss ON orbi.store_id = ss.store_id
+        LEFT JOIN ord_return_logistic_info orli on orli.return_no = orbi.return_no
+        LEFT JOIN (select return_no,purchase_price ,sum(qty) qty,sku from ord_return_product_coupon GROUP BY return_no,sku,purchase_price) orpc on orbi.return_no =orpc.return_no
+        AND orpc.sku = orgi.sku  AND orgi.goods_line_type='PRODUCT_COUPON'
+        LEFT JOIN warehouse wh on wh.wh_no = ordd.warehouse_no
+        where
+        orbi.return_type='REFUSED_RETURN'
+        AND
+        ordd.return_logistic_status='AGAIN_ON_SALE'
+        <if test="null !=storeId">
+            AND
+            orbi.store_id =#{storeId}
+        </if>
+        <if test="null !=cityId">
+            AND
+            ss.city_id =#{cityId}
+        </if>
+        <if test="null !=storeType and ''!=storeType">
+            AND
+            ss.store_type =#{storeType}
+        </if>
+        <if test="null !=startTime  and ''!=startTime">
+            AND
+            ordd.create_time >= #{startTime}
+        </if>
+        <if test="null !=endTime  and ''!=endTime">
+            AND
+            <![CDATA[ordd.create_time<= #{endTime}]]>
+        </if>
+        AND orbi.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+
         UNION ALL
         select
         DISTINCT
