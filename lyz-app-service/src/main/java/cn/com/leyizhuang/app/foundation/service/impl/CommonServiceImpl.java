@@ -810,21 +810,19 @@ public class CommonServiceImpl implements CommonService {
             }
             /**/
 
-            //导购代支付装饰公司订单，导购填导购信息,代付款订单中间表
-            if (baseInfo.getOrderSubjectType() == AppOrderSubjectType.FIT) {
-                if (baseInfo.getCreatorIdentityType() == AppIdentityType.DECORATE_MANAGER
-                        && paymentData.getAppIdentityType() == AppIdentityType.SELLER) {
-                    AppEmployee employee = this.employeeService.findById(paymentData.getUserId());
-                    if (null != employee) {
-                        baseInfo.setSalesConsultId(employee.getEmpId());
-                        baseInfo.setSalesConsultName(employee.getName());
-                        baseInfo.setSalesConsultPhone(employee.getMobile());
-                    }
-                    PayhelperOrder payhelperOrder = PayhelperOrder.setPayhelperOrder(baseInfo.getId(), baseInfo.getOrderNumber(),
-                            billingDetails.getAmountPayable(), paymentData.getUserId(), paymentData.getAppIdentityType(), Boolean.TRUE,
-                            OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(onlinePayType.toString()));
-                    this.orderService.savePayhelperOrder(payhelperOrder);
+            //导购代支付订单，导购填导购信息,代付款订单中间表
+            if ((baseInfo.getCreatorIdentityType() == AppIdentityType.DECORATE_MANAGER || baseInfo.getCreatorIdentityType() == AppIdentityType.CUSTOMER)
+                    && paymentData.getAppIdentityType() == AppIdentityType.SELLER) {
+                AppEmployee employee = this.employeeService.findById(paymentData.getUserId());
+                if (null != employee) {
+                    baseInfo.setSalesConsultId(employee.getEmpId());
+                    baseInfo.setSalesConsultName(employee.getName());
+                    baseInfo.setSalesConsultPhone(employee.getMobile());
                 }
+                PayhelperOrder payhelperOrder = PayhelperOrder.setPayhelperOrder(baseInfo.getId(), baseInfo.getOrderNumber(),
+                        billingDetails.getAmountPayable(), paymentData.getUserId(), paymentData.getAppIdentityType(), Boolean.TRUE,
+                        OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(onlinePayType.toString()));
+                this.orderService.savePayhelperOrder(payhelperOrder);
             }
 
             //新增订单账单支付明细
