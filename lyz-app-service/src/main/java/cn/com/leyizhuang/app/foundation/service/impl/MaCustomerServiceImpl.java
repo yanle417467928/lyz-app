@@ -54,6 +54,8 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     @Resource
     private AppEmployeeService appEmployeeService;
 
+
+
     @Override
     public PageInfo<CustomerDO> queryPageVO(Integer page, Integer size, List<Long> storeIds) {
         PageHelper.startPage(page, size);
@@ -118,6 +120,15 @@ public class MaCustomerServiceImpl implements MaCustomerService {
             }
             CustomerDO customerDO =CustomerDO.transform(customer);
             maCustomerDAO.save(customerDO);
+
+            CustomerLeBi leBi = new CustomerLeBi();
+            CustomerPreDeposit preDeposit = new CustomerPreDeposit();
+            leBi.setCusId(customerDO.getCusId());
+            leBi.setQuantity(leBi.getQuantity() == null ? 0 : leBi.getQuantity());
+            appCustomerService.saveLeBi(leBi);
+            preDeposit.setCusId(customerDO.getCusId());
+            preDeposit.setBalance(preDeposit.getBalance() == null ? 0 : preDeposit.getBalance());
+            appCustomerService.savePreDeposit(preDeposit);
         }
     }
 
