@@ -1176,10 +1176,10 @@ public class AppActServiceImpl implements AppActService {
      * @return
      */
     @Override
-    public PageInfo<ActBaseDO> queryPageVO(Integer page, Integer size, String keywords, String status) {
+    public PageInfo<ActBaseDO> queryPageVO(Integer page, Integer size, String keywords, String status,Long cityId) {
 
         PageHelper.startPage(page, size);
-        List<ActBaseDO> actBaseDOList = actBaseDAO.queryByKeywords(keywords, status);
+        List<ActBaseDO> actBaseDOList = actBaseDAO.queryByKeywords(keywords, status,cityId);
         return new PageInfo<>(actBaseDOList);
     }
 

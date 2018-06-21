@@ -27,7 +27,7 @@ public interface AppActService {
 
     List<PromotionListViewResponse> queryValidRepListByStoreId(Long userId , AppIdentityType identityType, Long storeId);
 
-    PageInfo<ActBaseDO> queryPageVO(Integer page, Integer size ,String keywords,String status);
+    PageInfo<ActBaseDO> queryPageVO(Integer page, Integer size ,String keywords,String status,Long cityId);
 
     /**
      * 新增

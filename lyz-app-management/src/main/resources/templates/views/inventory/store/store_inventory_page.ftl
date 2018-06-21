@@ -45,9 +45,7 @@
                         <i class="fa fa-download"></i>
                         下载报表
                     </button>
-                    <select name="city" id="cityCode" class="form-control selectpicker" data-width="120px"
-                            style="width:auto;"
-                            onchange="findStoreSelection()" data-live-search="true">
+                    <select name="city" id="cityCode" class="form-control select"  data-width="120px" onchange="findStoreSelection()" >
                         <option value="-1">选择城市</option>
                     </select>
                     <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px"
@@ -138,6 +136,7 @@
 <script>
     $(function () {
         findCitylist();
+        findStorelist();
         $grid.init($('#dataGrid'), $('#toolbar'), '/rest/store/inventory/page/grid', 'get', false, function (params) {
             return {
                 offset: params.offset,
@@ -324,8 +323,8 @@
                     city += "<option value=" + item.cityId + ">" + item.name + "</option>";
                 });
                 $("#cityCode").append(city);
-                $("#cityCode").selectpicker('refresh');
-                $("#cityCode").selectpicker('render');
+                //$("#cityCode").selectpicker('refresh');
+               // $("#cityCode").selectpicker('render');
             }
         });
     }
@@ -362,14 +361,14 @@
     }
 
     function findStoreSelection() {
+        var inventoryInfo = $("#inventoryInfo").val();
         var cityId = $('#cityCode').val();
         initSelect("#storeCode", "选择门店");
         var store = "";
         if ('-1' == cityId) {
-            $('#storeCode').selectpicker('refresh');
-            $('#storeCode').selectpicker('render');
+            findStorelist();
             $("#dataGrid").bootstrapTable('destroy');
-            initDateGird('/rest/store/inventory/page/grid');
+            initDateGird('/rest/store/inventory/infoGrid?storeId=' + storeId + '&info=' + inventoryInfo+'&cityId='+cityId);
         } else {
             $.ajax({
                 url: '/rest/stores/findZYStoresListByCityId',
@@ -391,25 +390,23 @@
                     $("#storeCode").append(store);
                     $('#storeCode').selectpicker('refresh');
                     $('#storeCode').selectpicker('render');
+                    $("#dataGrid").bootstrapTable('destroy');
+                    initDateGird('/rest/store/inventory/infoGrid?storeId=' + storeId + '&info=' + inventoryInfo+'&cityId='+cityId);
                 }
             });
         }
     }
 
     function findInventoryByCondition() {
-        $("#inventoryInfo").val('');
+        var inventoryInfo = $("#inventoryInfo").val();
+        var cityId = $('#cityCode').val();
         var storeId = $("#storeCode").val();
         $("#dataGrid").bootstrapTable('destroy');
         if (storeId == -1) {
-            $('#cityCode').val("-1");
-            $('#cityCode').selectpicker('refresh');
-            $('#cityCode').selectpicker('render');
-            initSelect("#storeCode", "选择门店");
-            $('#storeCode').selectpicker('refresh');
-            $('#storeCode').selectpicker('render');
-            initDateGird('/rest/store/inventory/page/grid');
+            $("#dataGrid").bootstrapTable('destroy');
+            initDateGird('/rest/store/inventory/infoGrid?storeId=' + storeId + '&info=' + inventoryInfo+'&cityId='+cityId);
         } else if (storeId != -1) {
-            initDateGird('/rest/store/inventory/storeGrid/' + storeId);
+            initDateGird('/rest/store/inventory/infoGrid?storeId=' + storeId + '&info=' + inventoryInfo+'&cityId='+cityId);
         }
     }
 
@@ -424,11 +421,12 @@
     function findInventoryByInfo() {
         var inventoryInfo = $("#inventoryInfo").val();
         var storeId = $("#storeCode").val();
+        var cityId = $('#cityCode').val();
         $("#dataGrid").bootstrapTable('destroy');
         if (storeId == -1 && null == inventoryInfo) {
-            initDateGird('/rest/store/inventory/page/grid');
+            initDateGird('/rest/store/inventory/infoGrid?storeId=' + storeId + '&info=' + inventoryInfo+'&cityId='+cityId);
         } else {
-            initDateGird('/rest/store/inventory/infoGrid?storeId=' + storeId + '&info=' + inventoryInfo);
+            initDateGird('/rest/store/inventory/infoGrid?storeId=' + storeId + '&info=' + inventoryInfo+'&cityId='+cityId);
         }
     }
 

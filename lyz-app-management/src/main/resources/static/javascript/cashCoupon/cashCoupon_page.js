@@ -1,4 +1,9 @@
 $(function () {
+    $('.datepicker').datepicker({
+        format: 'yyyy-mm-dd',
+        language: 'zh-CN',
+        autoclose: true
+    });
 
     initDateGird('/rest/cashCoupon/grid');
 
@@ -24,7 +29,9 @@ function initDateGird(url) {
         return {
             offset: params.offset,
             size: params.limit,
-            keywords: params.search
+            keywords: $("#Info").val(),
+            startTime: $("#startTime").val(),
+            endTime: $("#endTime").val(),
         }
     }, [{
         checkbox: true,
@@ -83,6 +90,11 @@ function initDateGird(url) {
 
     ]);
 
+}
+
+function  findByInfo() {
+    $("#dataGrid").bootstrapTable('destroy');
+    initDateGird('/rest/cashCoupon/grid');
 }
 
 

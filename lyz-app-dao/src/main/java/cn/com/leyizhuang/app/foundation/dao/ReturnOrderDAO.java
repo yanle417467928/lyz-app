@@ -124,9 +124,11 @@ public interface ReturnOrderDAO {
 
     ReturnOrderBaseInfo queryReturnOrderByRoid(Long roid);
 
-    List<ReturnOrderBaseInfo> findReturnOrderListByStatus(AppReturnOrderStatus status);
+    List<ReturnOrderBaseInfo> findReturnOrderListByStatus(@Param("status") AppReturnOrderStatus status);
 
     List<ReturnOrderBaseInfo> findReturnOrderListByStroe(Long store);
+
+    List<ReturnOrderBaseInfo> findReturnOrderListByStatusAndStoreId(@Param("status") AppReturnOrderStatus status,@Param("storeId") Long storeId);
 
     void updateReturnLogisticInfo(ReturnOrderLogisticInfo returnOrderLogisticInfo);
 

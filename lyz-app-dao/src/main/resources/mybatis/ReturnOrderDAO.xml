@@ -256,7 +256,8 @@
         INNER JOIN ord_base_info obi ON obi.ord_no = orbi.ord_no
         WHERE
         <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
-            ((obi.creator_id = #{userId} or orbi.creator_id = #{userId}) AND obi.creator_identity_type = #{identityType})
+            ((obi.creator_id = #{userId} or orbi.creator_id = #{userId}) AND obi.creator_identity_type =
+            #{identityType})
             OR (obi.customer_id = #{userId} or orbi.cus_id = #{userId})
         </if>
         <if test="null != identityType and identityType.toString() == 'SELLER'">
@@ -514,7 +515,7 @@
 
     </select>
 
-    <select id="findReturnOrderListByStatus" parameterType="java.lang.String"
+    <select id="findReturnOrderListByStatus"
             resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo">
         SELECT
             roid                 roid,
@@ -527,7 +528,7 @@
             return_price         returnPrice,
             remarks_info         remarksInfo,
             creator_id           creatorId,
-        creator_name creatorName,
+            creator_name         creatorName,
             creator_identityType creatorIdentityType,
             creator_phone        creatorPhone,
             store_id             storeId,
@@ -542,7 +543,46 @@
             ord_type             orderType,
             return_status
         FROM ord_return_base_info
-        WHERE return_status = #{status};
+        WHERE return_status = #{status}
+    </select>
+
+
+    <select id="findReturnOrderListByStatusAndStoreId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo">
+        SELECT
+        roid roid,
+        oid orderId,
+        ord_no orderNo,
+        order_time orderTime,
+        return_time returnTime,
+        return_no returnNo,
+        return_type returnType,
+        return_price returnPrice,
+        remarks_info remarksInfo,
+        creator_id creatorId,
+        creator_name creatorName,
+        creator_identityType creatorIdentityType,
+        creator_phone creatorPhone,
+        store_id storeId,
+        store_code storeCode,
+        store_structure_code storeStructureCode,
+        cus_id customerId,
+        cus_name customerName,
+        cus_phone customerPhone,
+        cus_type customerType,
+        reason_info reasonInfo,
+        return_pic returnPic,
+        ord_type orderType,
+        return_status
+        FROM ord_return_base_info
+        WHERE
+        1=1
+        <if test="null !=status">
+            AND return_status = #{status}
+        </if>
+        <if test="null !=storeId">
+            AND store_id = #{storeId}
+        </if>
     </select>
 
     <select id="findReturnOrderListByStroe" parameterType="java.lang.Long"
@@ -573,7 +613,7 @@
         ord_type orderType,
         return_status
         FROM ord_return_base_info
-        WHERE store_id = #{store};
+        WHERE store_id = #{store}
     </select>
 
     <select id="getReturnOrderBillingDetailByRefundNumber" parameterType="java.lang.String"

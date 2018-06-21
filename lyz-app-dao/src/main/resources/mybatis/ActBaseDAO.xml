@@ -140,6 +140,9 @@
         <if test="keywords != null">
            AND  title LIKE concat("%",#{keywords},"%")
         </if>
+        <if test="null != cityId and -1 !=cityId">
+            and city_id = #{cityId}
+        </if>
         <if test="status == ''">
             AND status != "INVALID"
             ORDER BY create_time DESC
@@ -153,7 +156,6 @@
             and status = #{status}
             ORDER BY create_time DESC
         </if>
-
 
     </select>
 

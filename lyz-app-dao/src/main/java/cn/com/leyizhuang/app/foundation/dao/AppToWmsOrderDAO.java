@@ -114,7 +114,10 @@ public interface AppToWmsOrderDAO {
      */
     List<AtwRequisitionOrder> findRequiringOrderList(@Param("keywords") String keywords);
 
-    /**
+
+    List<AtwRequisitionOrder> maFindRequiringOrderList(@Param("keywords") String keywords,@Param("storeId") Long storeId,@Param("cityId") Long cityId);
+
+    /**,
      * 根据ID查询要货单
      *
      * @param id

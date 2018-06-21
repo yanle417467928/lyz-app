@@ -20,7 +20,9 @@ public interface AppAdminStoreInventoryDAO {
 
     List<AppAdminStoreInventoryVO> queryListVO(@Param("keywords") String keywords,@Param("list") List<Long> storeIds);
 
+    List<AppAdminStoreInventoryVO> queryPageListVO(@Param("keywords") String keywords,@Param("cityId") Long cityId,@Param("storeId") Long storeId ,@Param("list") List<Long> storeIds);
+
     List<AppAdminStoreInventoryVO> queryListByStoreId(Long storeId);
 
-    List<AppAdminStoreInventoryVO> queryStoreInventoryByInfo(@Param(value = "storeId")Long storeId,@Param(value = "info")String info);
+    List<AppAdminStoreInventoryVO> queryStoreInventoryByInfo(@Param(value = "cityId")Long cityId,@Param(value = "storeId")Long storeId,@Param(value = "info")String info);
 }

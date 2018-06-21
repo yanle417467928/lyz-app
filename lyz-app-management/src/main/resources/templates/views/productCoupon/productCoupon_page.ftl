@@ -6,11 +6,13 @@
     <link href="https://cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css" rel="stylesheet">
-
+    <link href="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.js"></script>
     <script type="text/javascript" src="/javascript/productCoupon/productCoupon_page.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.zh-CN.min.js"></script>
 </head>
 <body>
 
@@ -33,24 +35,37 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="box box-primary">
-                <div id="toolbar" class="btn-group">
-                    <button id="btn_add" type="button" class="btn btn-default">
-                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
-                    </button>
-                    <button id="btn_edit" type="button" class="btn btn-default">
-                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
-                    </button>
+                <div id="toolbar" class="form-inline">
+                    <form>
+                        <button id="btn_add" type="button" class="btn btn-default">
+                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
+                        </button>
+                        <button id="btn_edit" type="button" class="btn btn-default">
+                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
+                        </button>
 
-                    <!--
-                    <button id="btn_copy" type="button" class="btn btn-default">
-                        <span class="glyphicon glyphicon-copy" aria-hidden="true"></span> 复制
-                    </button>
-                    -->
+                        <!--
+                        <button id="btn_copy" type="button" class="btn btn-default">
+                            <span class="glyphicon glyphicon-copy" aria-hidden="true"></span> 复制
+                        </button>
+                        -->
 
-                    <button id="btn_delete" type="button" class="btn btn-default">
-                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>删除
-                    </button>
-
+                        <button id="btn_delete" type="button" class="btn btn-default">
+                            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>删除
+                        </button>
+                        <input name="startTime" <#--onchange="findByCondition()"--> type="text"
+                               class="form-control datepicker" id="startTime" style="width: 140px;" placeholder="开始时间">
+                        <input name="endTime" <#--onchange="findByCondition()"--> type="text"
+                               class="form-control datepicker" id="endTime" style="width: 140px;" placeholder="结束时间">
+                        <input type="text" name="Info" id="Info" class="form-control"
+                               style="width:auto;"
+                               placeholder="请输入要查找的标题" onkeypress="findBykey()">
+                        <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
+                                onclick="return findByInfo()">查找
+                        </button>
+                        <button type="reset" class="btn btn-default">重置
+                        </button>
+                    </form>
                 </div>
                 <div class="box-body table-reponsive">
                     <table id="dataGrid" class="table table-bordered table-hover">

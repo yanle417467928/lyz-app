@@ -43,11 +43,11 @@ public class MaCashCouponRestController extends  BaseRestController{
     private CashCouponSendService cashCouponSendService;
 
     @GetMapping("/grid")
-    public GridDataVO<CashCoupon> gridData(Integer offset, Integer size, String keywords){
+    public GridDataVO<CashCoupon> gridData(Integer offset, Integer size, String keywords,String startTime,String endTime){
         GridDataVO<CashCoupon> gridDataVO = new GridDataVO<>();
         Integer page = getPage(offset, size);
 
-        PageInfo<CashCoupon> pageInfo = cashCouponService.queryPage(page,size,keywords);
+        PageInfo<CashCoupon> pageInfo = cashCouponService.queryPage(page,size,keywords,startTime,endTime);
 
         return gridDataVO.transform(pageInfo.getList(),pageInfo.getTotal());
     }

@@ -46,11 +46,18 @@ public class ItyReturningServiceImpl implements ItyReturningService {
 
         PageHelper.startPage(offset, size);
         List<ReturnOrderBaseInfo> returnOrderBaseInfoList = new ArrayList<>();
-        if (null != status) {
+        if (null != status && -1 == status) {
+            status = null;
+        }
+        if (null != store && -1 == store) {
+            store = null;
+        }
+        returnOrderBaseInfoList = returnOrderDAO.findReturnOrderListByStatusAndStoreId(AppReturnOrderStatus.getAppOrderReturnStatusByValue(status), store);
+     /*   if (null != status) {
             returnOrderBaseInfoList = returnOrderDAO.findReturnOrderListByStatus(AppReturnOrderStatus.getAppOrderReturnStatusByValue(status));
         } else if (null != store) {
             returnOrderBaseInfoList = returnOrderDAO.findReturnOrderListByStroe(store);
-        }
+        }*/
         return new PageInfo<>(returnOrderBaseInfoList);
     }
 

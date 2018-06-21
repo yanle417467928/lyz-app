@@ -32,10 +32,15 @@ public class ItyRequiringServiceImpl implements ItyRequiringService {
     private AppToWmsOrderDAO appToWmsOrderDAO;
 
     @Override
-    public PageInfo<AtwRequisitionOrder> queryPage(Integer offset, Integer size, String keywords) {
+    public PageInfo<AtwRequisitionOrder> queryPage(Integer offset, Integer size, String keywords, Long storeId, Long cityId) {
         PageHelper.startPage(offset, size);
-
-        List<AtwRequisitionOrder> requiringOrderList = appToWmsOrderDAO.findRequiringOrderList(keywords);
+        if (null != cityId && -1L == cityId) {
+            cityId = null;
+        }
+        if (null != storeId && -1L == storeId) {
+            storeId = null;
+        }
+        List<AtwRequisitionOrder> requiringOrderList = appToWmsOrderDAO.maFindRequiringOrderList(keywords, storeId, cityId);
         return new PageInfo<>(requiringOrderList);
     }
 

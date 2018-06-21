@@ -31,7 +31,7 @@ public interface CashCouponService {
     /**
      * 现金券 gridData
      */
-    PageInfo<CashCoupon> queryPage(Integer page, Integer size, String keywords);
+    PageInfo<CashCoupon> queryPage(Integer page, Integer size, String keywords,String startTime,String endTime);
 
     /**
      * 新增现金券

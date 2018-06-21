@@ -22,7 +22,7 @@ public interface ItyRequiringService {
      * @param keywords
      * @return
      */
-    PageInfo<AtwRequisitionOrder> queryPage(Integer offset, Integer size, String keywords);
+    PageInfo<AtwRequisitionOrder> queryPage(Integer offset, Integer size, String keywords,Long storeId,Long cityId);
 
     /**
      * 根据ID查看详情

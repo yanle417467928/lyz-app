@@ -42,11 +42,9 @@ public class MaRequiringRestController {
      * @return
      */
     @GetMapping(value = "/page/grid")
-    public GridDataVO<RequiringVO> dataRequiringVOPageGridGet(Integer offset, Integer size, String keywords) {
-
-        logger.info("dataAllocationVOPageGridGet CREATE,门店库存要货管理分页查询, 入参 offset:{},size:{},keywords:{},query:{}", offset, size, keywords);
-
-        PageInfo<AtwRequisitionOrder> requisitionOrderPageInfo = ityRequiringService.queryPage(offset, size, keywords);
+    public GridDataVO<RequiringVO> dataRequiringVOPageGridGet(Integer offset, Integer size, String keywords,Long storeId,Long cityId) {
+        logger.info("dataAllocationVOPageGridGet CREATE,门店库存要货管理分页查询, 入参 offset:{},size:{},keywords:{},query:{},storeId:{},cityId:{}", offset, size, keywords,storeId,cityId);
+        PageInfo<AtwRequisitionOrder> requisitionOrderPageInfo = ityRequiringService.queryPage(offset, size, keywords,storeId,cityId);
         return new GridDataVO<RequiringVO>().transform(RequiringVO.transform(requisitionOrderPageInfo.getList()), requisitionOrderPageInfo.getTotal());
     }
 

@@ -1,12 +1,14 @@
 <head>
     <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
-    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
-    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
-    <link href="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/admin-lte/2.3.11/css/AdminLTE.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/i18n/defaults-zh_CN.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/bootstrap-table.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
 </head>
 <body>
 
@@ -48,12 +50,12 @@
                         <option value="4">待退款</option>
                         <option value="5">已完成</option>
                     </select>
-                    <select name="selectCity" id="selectCity" class="form-control select" style="width:auto;"
-                            title="选择城市">
+                    <select name="selectCity" id="selectCity" class="form-control select"
+                            onchange="findStoreSelection()" title="选择城市">
                         <option value="-1">选择城市</option>
                     </select>
-                    <select name="selectStore" id="selectStore" class="form-control select"
-                            style="width:auto;" title="选择门店">
+                    <select name="selectStore" id="selectStore" class="form-control selectpicker" data-width="140px"
+                            style="width:auto;" title="选择门店" data-live-search="true">
                         <option value="-1">选择门店</option>
                     </select>
                 </div>
@@ -145,7 +147,7 @@
 </div>
 <script>
     $(function () {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/store/returning/page/grid', 'get', true, function (params) {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/store/returning/page/grid', 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
@@ -198,43 +200,45 @@
 
         /* $('#btn_add').on('click', function () {
              $grid.add('/views/admin/menu/add?parentMenuId=${(parentMenuId!'0')}
-        ');
-                });
 
-                $('#btn_edit').on('click', function() {
-                    $grid.modify($('#dataGrid'), '/views/admin/menu/edit/{id}?parentMenuId=${parentMenuId!'0'}
-        ')
-                });
 
-                $('#btn_delete').on('click', function() {
-                    $grid.remove($('#dataGrid'), '/rest/menu', 'delete');
-                });*/
+
+
+
+                                                ');
+                                                        });
+
+                                                        $('#btn_edit').on('click', function() {
+                                                            $grid.modify($('#dataGrid'), '/views/admin/menu/edit/{id}?parentMenuId=${parentMenuId!'0'}
+
+
+
+
+
+                                                ')
+                                                        });
+
+                                                        $('#btn_delete').on('click', function() {
+                                                            $grid.remove($('#dataGrid'), '/rest/menu', 'delete');
+                                                        });*/
 
         $('#selectStatus').change(function () {
-
+            var store = $('#selectStore').val();
             var status = $('#selectStatus').val();
-            if (status === '-1') {
-                $("#dataGrid").bootstrapTable('refreshOptions', {
-                    url: '/rest/store/returning/page/grid'
-                });
-            } else {
-                $("#dataGrid").bootstrapTable('refreshOptions', {
-                    url: '/rest/store/returning/query/param?status=' + status
-                });
-            }
+            $("#dataGrid").bootstrapTable('refreshOptions', {
+                url: '/rest/store/returning/query/param?status=' + status + '&store=' + store
+            });
         });
 
         $('#selectStore').change(function () {
             var store = $('#selectStore').val();
-            if (store === '-1') {
-                $("#dataGrid").bootstrapTable('refreshOptions', {
-                    url: '/rest/store/returning/page/grid'
-                });
-            } else {
-                $("#dataGrid").bootstrapTable('refreshOptions', {
-                    url: '/rest/store/returning/query/param?store=' + store
-                });
+            var status = $('#selectStatus').val();
+            if(-1==store){
+                $("#selectCity").val('-1');
             }
+            $("#dataGrid").bootstrapTable('refreshOptions', {
+                url: '/rest/store/returning/query/param?store=' + store + '&status=' + status
+            });
         });
 
         findCityList();
@@ -280,6 +284,8 @@
                     store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
                 });
                 $("#selectStore").append(store);
+                $('#selectStore').selectpicker('refresh');
+                $('#selectStore').selectpicker('render');
                 // fromName.selectpicker('refresh');
                 // fromName.selectpicker('render');
             }
@@ -385,6 +391,103 @@
             }
         }
     }
+
+
+    function findStoreSelection() {
+        var cityId = $('#selectCity').val();
+        var status = $('#selectStatus').val();
+        initSelect("#selectStore", "选择门店");
+        var store = null;
+        if ('-1' == cityId) {
+            findStoreList();
+            $("#dataGrid").bootstrapTable('refreshOptions', {
+                url: '/rest/store/returning/query/param?status=' + status + '&store=' + store
+            });
+            return false;
+        }
+        $.ajax({
+            url: '/rest/stores/findZYStoresListByCityId',
+            method: 'GET',
+            data: {
+                cityId: cityId
+            },
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
+                })
+                $("#selectStore").append(store);
+                $('#selectStore').selectpicker('refresh');
+                $('#selectStore').selectpicker('render');
+            }
+        });
+    }
+
+    function initSelect(select, optionName) {
+        $(select).empty();
+        var selectOption = "<option value=-1>" + optionName + "</option>";
+        $(select).append(selectOption);
+    }
+
+    function initDateGird(url) {
+        $grid.init($('#dataGrid'), $('#toolbar'), url, 'get', false, function (params) {
+            return {
+                offset: params.offset,
+                size: params.limit,
+                keywords: params.search
+            }
+        }, [{
+            checkbox: true,
+            title: '选择'
+        }, {
+            field: 'id',
+            title: 'ID',
+            align: 'center'
+        }, {
+            field: 'returnNumber',
+            title: '退货单号',
+            events: {
+                'click .scan': function (e, value, row) {
+                    $page.information.show(row.id);
+                }
+            },
+            formatter: function (value) {
+                return '<a class="scan" href="#">' + value + '</a>';
+            },
+            align: 'center'
+        }, {
+            field: 'orderStatus',
+            title: '订单状态',
+            align: 'center'
+        }, {
+            field: 'creatorPhone',
+            title: '申请用户',
+            align: 'center'
+        }, {
+            field: 'customerName',
+            title: '用户名称',
+            align: 'center'
+        }, {
+            field: 'returnType',
+            title: '退货类型',
+            align: 'center'
+        }, {
+            field: 'reasonInfo',
+            title: '退货原因',
+            align: 'center'
+        }, {
+            field: 'returnTime',
+            title: '申请时间',
+            align: 'center'
+        }]);
+    }
+
 
 </script>
 </body>

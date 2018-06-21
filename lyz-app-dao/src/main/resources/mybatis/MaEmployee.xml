@@ -206,11 +206,12 @@
         from emp_employee e
         LEFT JOIN city c on e.city_id = c.city_id
         LEFT JOIN st_store s ON e.store_id = s.store_id
-        where e.name LIKE CONCAT('%' ,#{queryEmpInfo},'%')
+        where
+        (e.name LIKE CONCAT('%' ,#{queryEmpInfo},'%')
         OR
         e.mobile LIKE CONCAT('%' ,#{queryEmpInfo},'%')
         OR
-        e.login_name LIKE CONCAT('%' ,#{queryEmpInfo},'%')
+        e.login_name LIKE CONCAT('%' ,#{queryEmpInfo},'%'))
         AND
         e.identity_type!='DECORATE_MANAGER'
         AND

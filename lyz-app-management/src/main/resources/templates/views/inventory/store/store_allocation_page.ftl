@@ -12,7 +12,6 @@
     <script src="https://cdn.bootcss.com/bootstrap-table/1.11.1/locale/bootstrap-table-zh-CN.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.zh-CN.min.js"></script>
-
 </head>
 <body>
 
@@ -45,9 +44,9 @@
                         <button type="button" style="margin-left:50px" id="btn_query" class="btn btn-primary">
                             <i class="fa fa-search"></i> 查询
                         </button>
-                        <#--<button type="reset" class="btn btn-default">-->
-                            <#--<i class="fa fa-print"></i> 重置-->
-                        <#--</button>-->
+                    <#--<button type="reset" class="btn btn-default">-->
+                    <#--<i class="fa fa-print"></i> 重置-->
+                    <#--</button>-->
                         <input type="hidden" id="formName" name="formName">
                         <input type="hidden" id="toName" name="toName">
                         <input type="hidden" id="city" name="city">
@@ -61,11 +60,13 @@
                                 title="选择城市" onchange="findStoreListByCity(this.value)">
                             <option value="-1">选择城市</option>
                         </select>
-                        <select name="selectFromName" id="selectFromName" class="form-control selectpicker" data-width="180px"
-                                style="width:auto;" title="调出门店"  data-live-search="true" >
+                        <select name="selectFromName" id="selectFromName" class="form-control selectpicker"
+                                data-width="180px"
+                                style="width:auto;" title="调出门店" data-live-search="true">
                             <option value="-1">选择调出门店</option>
                         </select>
-                        <select name="selectToName" id="selectToName" class="form-control selectpicker" data-width="180px"
+                        <select name="selectToName" id="selectToName" class="form-control selectpicker"
+                                data-width="180px"
                                 style="width:auto;" title="调入门店" data-live-search="true">
                             <option value="-1">选择调入门店</option>
                         </select>
@@ -171,6 +172,12 @@
 </div>
 <script>
     $(function () {
+        $('.datepicker').datepicker({
+            format: 'yyyy-mm-dd',
+            language: 'zh-CN',
+            autoclose: true
+        });
+
         $grid.init($('#dataGrid'), $('#toolbar'), '/rest/store/allocation/page/grid', 'get', true, function (params) {
             return {
                 offset: params.offset,
@@ -241,11 +248,6 @@
             $grid.searchTable('dataGrid', 'formSearch');
         });
 
-        $('.datepicker').datepicker({
-            format: 'yyyy-mm-dd',
-            language: 'zh-CN',
-            autoclose: true
-        });
         findCityList();
         findStoreList()
     });
@@ -293,22 +295,24 @@
                     store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
                 });
                 fromName.append(store);
-                 fromName.selectpicker('refresh');
-                 fromName.selectpicker('render');
-                 toName.append(store);
-                 toName.selectpicker('refresh');
-                 toName.selectpicker('render');
+                toName.append(store);
+                fromName.selectpicker('refresh');
+                fromName.selectpicker('render');
+                toName.selectpicker('refresh');
+                toName.selectpicker('render');
             }
         });
     }
 
     function findStoreListByCity(cityId) {
-        initSelect("#storeCode", "选择门店");
+        var fromName = $("#selectFromName");
+        var toName = $("#selectToName");
+        initSelect("#selectFromName", "选择调出门店");
+        initSelect("#selectToName", "选择调入门店");
         if (cityId == -1) {
-            findStorelist();
+            findStoreList();
             return false;
-        }
-        ;
+        };
         var store;
         $.ajax({
             url: '/rest/stores/findStoresListByCityIdAndStoreId/' + cityId,
@@ -324,9 +328,12 @@
                 $.each(result, function (i, item) {
                     store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
                 });
-                $("#store").append(store);
-                $('#store').selectpicker('refresh');
-                $('#store').selectpicker('render');
+                fromName.append(store);
+                fromName.selectpicker('refresh');
+                fromName.selectpicker('render');
+                toName.append(store);
+                toName.selectpicker('refresh');
+                toName.selectpicker('render');
             }
         });
     }
@@ -461,7 +468,7 @@
     }
 
     function turnDetail(id) {
-        window.location.href = "/views/admin/inventory/allocation/detail/"+id;
+        window.location.href = "/views/admin/inventory/allocation/detail/" + id;
     }
 </script>
 </body>

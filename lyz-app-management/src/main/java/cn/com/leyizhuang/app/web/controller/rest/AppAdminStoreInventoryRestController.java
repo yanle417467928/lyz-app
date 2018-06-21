@@ -34,14 +34,14 @@ public class AppAdminStoreInventoryRestController extends BaseRestController {
     private AdminUserStoreService adminUserStoreService;
 
     @GetMapping(value = "/page/grid")
-    public GridDataVO<AppAdminStoreInventoryVO> dataMenuPageGridGet(Integer offset, Integer size, String keywords) {
+    public GridDataVO<AppAdminStoreInventoryVO> dataMenuPageGridGet(Integer offset, Integer size, String keywords,Long cityId,Long storeId) {
 
-        logger.info("dataMenuPageGridGet CREATE,门店库存可用量分页查询, 入参 offset:{},size:{},keywords:{}", offset, size, keywords);
+        logger.info("dataMenuPageGridGet CREATE,门店库存可用量分页查询, 入参 offset:{},size:{},keywords:{},cityId:{},storeId:{}", offset, size, keywords,cityId,storeId);
         List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
         // 根据偏移量计算当前页数
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<AppAdminStoreInventoryVO> storeInventoryPage = storeInventoryService.queryPage(page, size, keywords,storeIds);
+        PageInfo<AppAdminStoreInventoryVO> storeInventoryPage = storeInventoryService.queryPage(page, size, keywords,cityId,storeId,storeIds);
         return new GridDataVO<AppAdminStoreInventoryVO>().transform(storeInventoryPage.getList(), storeInventoryPage.getTotal());
     }
 
@@ -63,12 +63,12 @@ public class AppAdminStoreInventoryRestController extends BaseRestController {
      * @return
      */
     @GetMapping(value = "/infoGrid")
-    public  GridDataVO<AppAdminStoreInventoryVO> getStoreInventoryByInfo(Integer offset, Integer size, String keywords,@RequestParam(value = "storeId") Long storeId,@RequestParam(value = "info") String info) {
-        logger.info("dataMenuPageGridGetByStoreId CREATE,门店库存可用量分页查询, 入参 offset:{},size:{},keywords:{},storeId:{}", offset, size, keywords,storeId);
+    public  GridDataVO<AppAdminStoreInventoryVO> getStoreInventoryByInfo(Integer offset, Integer size, String keywords,@RequestParam(value = "cityId") Long cityId,@RequestParam(value = "storeId") Long storeId,@RequestParam(value = "info") String info) {
+        logger.info("dataMenuPageGridGetByStoreId CREATE,门店库存可用量分页查询, 入参 offset:{},size:{},keywords:{},storeId:{}", offset, size, keywords,storeId,cityId);
         // 根据偏移量计算当前页数
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<AppAdminStoreInventoryVO> storeInventoryPage = storeInventoryService.queryStoreInventoryByInfo(page, size, keywords,storeId,info);
+        PageInfo<AppAdminStoreInventoryVO> storeInventoryPage = storeInventoryService.queryStoreInventoryByInfo(page, size, keywords,cityId,storeId,info);
         return new GridDataVO<AppAdminStoreInventoryVO>().transform(storeInventoryPage.getList(), storeInventoryPage.getTotal());
     }
 

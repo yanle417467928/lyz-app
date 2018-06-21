@@ -41,12 +41,10 @@ public class MaProductCouponRestController extends BaseRestController {
     private ProductCouponSendService productCouponSendService;
 
     @GetMapping("/grid")
-    public GridDataVO<ProductCoupon> gridData(Integer offset, Integer size, String keywords) {
+    public GridDataVO<ProductCoupon> gridData(Integer offset, Integer size, String keywords,String startTime,String endTime) {
         GridDataVO<ProductCoupon> gridDataVO = new GridDataVO<ProductCoupon>();
         Integer page = getPage(offset, size);
-
-        PageInfo<ProductCoupon> pageInfo = productCouponService.queryPage(page, size, keywords);
-
+        PageInfo<ProductCoupon> pageInfo = productCouponService.queryPage(page, size, keywords,startTime,endTime);
         return gridDataVO.transform(pageInfo.getList(), pageInfo.getTotal());
     }
 
