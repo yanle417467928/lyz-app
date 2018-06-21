@@ -1665,7 +1665,7 @@
     </select>
 
     <select id="findGoodsBrandListByCategoryCodeAndEmployeeIdAndUserRank"
-            resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsBrandResponse">
         SELECT
             DISTINCT
             b.brd_id brand_id,
