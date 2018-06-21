@@ -365,7 +365,7 @@
         <if test="null != pickType and pickType != '' and pickType != 'PRODUCT_COUPON'">
             AND ccpc.get_type = "-1"
         </if>
-        AND c.store_id IN
+        AND ccpc.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
@@ -1676,7 +1676,7 @@
         LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
         -- LEFT JOIN gds_goods_grade gp on og.sku = gp.sku
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
-        LEFT JOIN inter_wta_order_shipping_header wa ON ob.ord_no = wa.order_no
+        LEFT JOIN (SELECT * from inter_wta_order_shipping_header GROUP BY order_no) wa ON ob.ord_no = wa.order_no
         LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku  and og.goods_line_type = 'PRODUCT_COUPON'
         LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
@@ -1892,7 +1892,7 @@
         LEFT JOIN st_store s on ob.store_id = s.store_id
         LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
-        LEFT JOIN inter_wta_order_shipping_header wa ON ob.ord_no = wa.order_no
+        LEFT JOIN (SELECT * from inter_wta_order_shipping_header GROUP BY order_no) wa ON ob.ord_no = wa.order_no
         LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku  and og.goods_line_type = 'PRODUCT_COUPON'
         LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
@@ -2119,7 +2119,7 @@
         LEFT JOIN ord_return_goods_info org on orb.roid = org.roid
         LEFT JOIN st_store s on ob.store_id = s.store_id
         LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
-        LEFT JOIN inter_wta_return_order_back_header wro ON wro.po_no = orb.return_no
+        LEFT JOIN (SELECT * from inter_wta_return_order_back_header GROUP  BY po_no) wro ON wro.po_no = orb.return_no
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
         LEFT JOIN ord_return_product_coupon oci on orb.roid = oci.roid and org.sku = oci.sku and org.goods_line_type = 'PRODUCT_COUPON'
         LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.pcid
@@ -2329,7 +2329,7 @@
         LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
         -- LEFT JOIN gds_goods_grade gp on og.sku = gp.sku
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
-        LEFT JOIN inter_wta_order_shipping_header wa ON ob.ord_no = wa.order_no
+        LEFT JOIN (SELECT * from inter_wta_order_shipping_header GROUP BY order_no) wa ON ob.ord_no = wa.order_no
         LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku  and og.goods_line_type = 'PRODUCT_COUPON'
         LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
@@ -2426,7 +2426,7 @@
         LEFT JOIN ord_return_goods_info org on orb.roid = org.roid
         LEFT JOIN st_store s on ob.store_id = s.store_id
         LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
-        LEFT JOIN inter_wta_return_order_back_header wro ON wro.po_no = orb.return_no
+        LEFT JOIN (SELECT * from inter_wta_return_order_back_header GROUP  BY po_no) wro ON wro.po_no = orb.return_no
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
         LEFT JOIN ord_return_product_coupon oci on orb.roid = oci.roid and org.sku = oci.sku and org.goods_line_type = 'PRODUCT_COUPON'
         LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.pcid
