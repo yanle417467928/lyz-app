@@ -646,5 +646,42 @@ public class GoodsServiceImpl implements GoodsService {
         return null;
     }
 
+    @Override
+    public List<GoodsSpecificationResponse> findGoodsSpecificationListByCategoryCodeAndUserIdAndUserRank(String categoryCode, Long userId, Integer identityType, String categorySecond, String goodsBrand, String goodType, String rankCode) {
+        if (null != categoryCode && null != userId && null != identityType) {
+            if (identityType == 6) {
+                return goodsDAO.findGoodsSpecificationListByCategoryCodeAndCustomerIdAndUserRank(categoryCode, userId, categorySecond, goodsBrand, goodType);
+            } else {
+                return goodsDAO.findGoodsSpecificationListByCategoryCodeAndEmployeeIdAndUserRank(categoryCode, userId, categorySecond, goodsBrand, goodType, rankCode);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<GoodsCategoryResponse> findGoodsCategoryListByCategoryCodeAndUserIdAndUserRank(String categoryCode, Long userId, Integer identityType,
+                                                                                               String goodsBrand, String specification, String goodsType, String rankCode) {
+        if (null != categoryCode && null != userId && null != identityType) {
+            if (identityType == 6) {
+                return goodsDAO.findGoodsCategoryListByCategoryCodeAndCustomerIdAndUserRank(categoryCode, userId, goodsBrand, specification, goodsType);
+            } else {
+                return goodsDAO.findGoodsCategoryListByCategoryCodeAndEmployeeIdAndUserRank(categoryCode, userId, goodsBrand, specification, goodsType, rankCode);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<GoodsTypeResponse> findGoodsTypeListByCategoryCodeAndUserIdAndUserRank(String categoryCode, Long userId, Integer identityType,
+                                                                                       String categorySecond, String specification, String goodsBrand, String rankCode) {
+        if (null != categoryCode && null != userId && null != identityType) {
+            if (identityType == 6) {
+                return goodsDAO.findGoodsTypeListByCategoryCodeAndCustomerIdAndUserRank(categoryCode, userId, categorySecond, specification, goodsBrand);
+            } else {
+                return goodsDAO.findGoodsTypeListByCategoryCodeAndEmployeeIdAndUserRank(categoryCode, userId, categorySecond, specification, goodsBrand, rankCode);
+            }
+        }
+        return null;
+    }
 
 }

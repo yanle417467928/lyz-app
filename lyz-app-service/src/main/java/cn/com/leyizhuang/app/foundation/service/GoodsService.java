@@ -171,5 +171,10 @@ public interface GoodsService {
 
     List<GoodsBrandResponse> findGoodsBrandListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(String categoryCode, Long userId, Integer identityType,String categorySecond,String specification,String goodType, String rankCode);
 
+    List<GoodsSpecificationResponse> findGoodsSpecificationListByCategoryCodeAndUserIdAndUserRank(String categoryCode, Long userId, Integer identityType, String categorySecond, String goodsBrand, String goodType, String rankCode);
+
+    List<GoodsCategoryResponse> findGoodsCategoryListByCategoryCodeAndUserIdAndUserRank(String categoryCode, Long userId, Integer identityType,String goodsBrand,String specification,String goodsType, String rankCode);
+
+    List<GoodsTypeResponse> findGoodsTypeListByCategoryCodeAndUserIdAndUserRank(String categoryCode, Long userId, Integer identityType, String categorySecond, String specification, String goodsBrand, String rankCode);
 
 }

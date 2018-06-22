@@ -653,4 +653,137 @@ public class GoodsController {
         }
     }
 
+
+    /**
+     * @title   获取专供商品规格列表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/6/22
+     */
+    @RequestMapping(value = "/rank/specification/list", method = RequestMethod.POST)
+    public ResultDTO<Object> getGoodsSpecificationListByUserIdAndUserRank(String categoryCode, Long userId, Integer identityType, String categorySecond,
+                                                                          String goodsBrand, String goodType, String rankCode) {
+        ResultDTO<Object> resultDTO;
+        logger.info("getGoodsSpecificationListByUserIdAndUserRank CALLED,获取专供商品规格列表，入参 categoryCode:{},userId:{},identityType:{}", categoryCode, userId, identityType);
+        if (StringUtils.isBlank(categoryCode)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "一级分类编码不能为空!", null);
+            logger.info("getGoodsSpecificationListByUserIdAndUserRank OUT,获取专供商品规格列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getGoodsSpecificationListByUserIdAndUserRank OUT,获取专供商品规格列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份不能为空", null);
+            logger.info("getGoodsSpecificationListByUserIdAndUserRank OUT,获取专供商品规格列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            List<GoodsSpecificationResponse> specificationList = goodsService.findGoodsSpecificationListByCategoryCodeAndUserIdAndUserRank(categoryCode, userId, identityType,categorySecond,goodsBrand,goodType,rankCode);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                    (specificationList != null && specificationList.size() > 0) ? specificationList : null);
+            logger.info("getGoodsSpecificationListByUserIdAndUserRank OUT,获取专供商品规格列表成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，专供商品品牌列表获取失败", null);
+            logger.warn("getGoodsSpecificationListByUserIdAndUserRank EXCEPTION,获取专供商品规格列表失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * @title   获取专供商品分类列表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/6/22
+     */
+    @RequestMapping(value = "/rank/category/list", method = RequestMethod.POST)
+    public ResultDTO<Object> getGoodsCategoryListByUserIdAndUserRank(String categoryCode, Long userId, Integer identityType,String goodsBrand,
+                                                                     String specification,String goodType, String rankCode) {
+        ResultDTO<Object> resultDTO;
+        logger.info("getGoodsCategoryListByUserIdAndUserRank CALLED,获取专供商品分类列表，入参 categoryCode:{},userId:{},identityType:{}", categoryCode, userId, identityType);
+        if (StringUtils.isBlank(categoryCode)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "一级分类编码不能为空!", null);
+            logger.info("getGoodsCategoryListByUserIdAndUserRank OUT,获取专供商品分类列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getGoodsCategoryListByUserIdAndUserRank OUT,获取专供商品分类列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份不能为空", null);
+            logger.info("getGoodsCategoryListByUserIdAndUserRank OUT,获取专供商品分类列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            List<GoodsCategoryResponse> categoryList = goodsService.findGoodsCategoryListByCategoryCodeAndUserIdAndUserRank(categoryCode, userId, identityType,goodsBrand,specification,goodType,rankCode);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, categoryList);
+            logger.info("getGoodsCategoryListByUserIdAndUserRank OUT,获取专供商品分类列表成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("{}", e);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，专供商品分类列表获取失败", null);
+            logger.warn("getGoodsCategoryListByUserIdAndUserRank EXCEPTION,获取专供商品分类列表失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * @title   获取专供商品类型列表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/6/22
+     */
+    @RequestMapping(value = "/rank/type/list", method = RequestMethod.POST)
+    public ResultDTO<Object> getGoodsTypeListByUserIdAndUserRank(String categoryCode, Long userId, Integer identityType, String categorySecond,
+                                                                 String specification, String goodsBrand, String rankCode) {
+        ResultDTO<Object> resultDTO;
+        logger.info("getGoodsTypeListByUserIdAndUserRank CALLED,获取专供商品类型列表，入参 categoryCode:{},userId:{},identityType:{}", categoryCode, userId, identityType);
+        if (StringUtils.isBlank(categoryCode)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "一级分类编码不能为空!", null);
+            logger.info("getGoodsTypeListByUserIdAndUserRank OUT,获取专供商品类型列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
+            logger.info("getGoodsTypeListByUserIdAndUserRank OUT,获取专供商品类型列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份不能为空", null);
+            logger.info("getGoodsTypeListByUserIdAndUserRank OUT,获取专供商品类型列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            List<GoodsTypeResponse> brandList = goodsService.findGoodsTypeListByCategoryCodeAndUserIdAndUserRank(categoryCode, userId, identityType,categorySecond,specification,goodsBrand, rankCode);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
+                    (brandList != null && brandList.size() > 0) ? brandList : null);
+            logger.info("getGoodsTypeListByUserIdAndUserRank OUT,获取专供商品类型列表成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，专供商品分类列表获取失败", null);
+            logger.warn("getGoodsTypeListByUserIdAndUserRank EXCEPTION,获取专供商品类型列表失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
 }
