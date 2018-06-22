@@ -229,5 +229,32 @@ public interface GoodsDAO {
             @Param(value = "categorySecond") String categorySecond, @Param(value = "specification") String specification,
             @Param(value = "goodsType") String goodsType, @Param("rankCode") String rankCode);
 
+    List<GoodsSpecificationResponse> findGoodsSpecificationListByCategoryCodeAndCustomerIdAndUserRank(
+            @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId,
+            @Param(value = "categorySecond") String categorySecond , @Param(value = "goodsBrand") String goodsBrand,
+            @Param(value = "goodsType") String goodsType );
+
+    List<GoodsSpecificationResponse> findGoodsSpecificationListByCategoryCodeAndEmployeeIdAndUserRank(
+            @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId,
+            @Param(value = "categorySecond")  String categorySecond , @Param(value = "goodsBrand") String goodsBrand,
+            @Param(value = "goodsType") String goodsType, @Param("rankCode") String rankCode);
+
+
+    List<GoodsCategoryResponse> findGoodsCategoryListByCategoryCodeAndCustomerIdAndUserRank(
+            @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId, @Param(value = "goodsBrand") String goodsBrand,
+            @Param(value = "specification") String specification, @Param(value = "goodsType") String goodsType);
+
+    List<GoodsCategoryResponse> findGoodsCategoryListByCategoryCodeAndEmployeeIdAndUserRank(
+            @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId, @Param(value = "goodsBrand") String goodsBrand,
+            @Param(value = "specification") String specification, @Param(value = "goodsType") String goodsType, @Param("rankCode") String rankCode);
+
+    List<GoodsTypeResponse> findGoodsTypeListByCategoryCodeAndCustomerIdAndUserRank(
+            @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId, @Param(value = "categorySecond") String categorySecond,
+            @Param(value = "specification") String specification, @Param(value = "goodsBrand") String goodsBrand);
+
+    List<GoodsTypeResponse> findGoodsTypeListByCategoryCodeAndEmployeeIdAndUserRank(
+            @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId, @Param(value = "categorySecond") String categorySecond,
+            @Param(value = "specification") String specification, @Param(value = "goodsBrand") String goodsBrand, @Param("rankCode") String rankCode);
+
 
 }
