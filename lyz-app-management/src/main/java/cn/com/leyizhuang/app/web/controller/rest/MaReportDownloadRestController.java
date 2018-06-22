@@ -427,6 +427,12 @@ public class MaReportDownloadRestController extends BaseRestController {
                     row = (map.size() + 1) / 2 + 4;
                 }
 
+                String str = "参数范围内 \n 包含：①变更时间内所有的收款变动情况②变动金额包含运费";
+                ws.mergeCells(0, map.size(), 5, map.size());
+                WritableCellFormat textFormat1 = this.setTextStyle();
+                textFormat1.setWrap(true);
+                ws.addCell(new Label(0, map.size(), str, textFormat1));
+                ws.setRowView(row - 1, 1000);
 
                 ws.addCell(new Label(0, row, "微信", titleFormat));
                 ws.addCell(new Label(1, row, "支付宝", titleFormat));
@@ -461,12 +467,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                 WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.NO_BOLD, false,
                         UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
 
-                String str = "参数范围内 \n 包含：①变更时间内所有的收款变动情况②变动金额包含运费";
-                ws.mergeCells(0, map.size(), 5, map.size());
-                WritableCellFormat textFormat1 = this.setTextStyle();
-                textFormat1.setWrap(true);
-                ws.addCell(new Label(0, map.size(), str, textFormat1));
-                ws.setRowView(row - 1, 1000);
+
 
                 //填写表体数据
                 for (int j = 0; j < maxRowNum; j++) {
@@ -1032,12 +1033,6 @@ public class MaReportDownloadRestController extends BaseRestController {
                     row = (map.size() + 1) / 2 + 4;
                 }
 
-                //设置标题
-                ws = this.setHeader(ws, titleFormat, columnView, titles, row);
-                row += 1;
-                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.NO_BOLD, false,
-                        UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
-
                 String str = "订单参数范围 \n " +
                         "包含：①本月已出货的订单②本月已反配上架的订单③本月下单下月出货的订单 \n " +
                         "不包含：①本月“已取消订单” ②本月待付款订单  ③订单中运费金额\n" ;
@@ -1046,6 +1041,12 @@ public class MaReportDownloadRestController extends BaseRestController {
                 textFormat1.setWrap(true);
                 ws.addCell(new Label(0, map.size(), str, textFormat1));
                 ws.setRowView(row - 1, 2000);
+
+                //设置标题
+                ws = this.setHeader(ws, titleFormat, columnView, titles, row);
+                row += 1;
+                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.NO_BOLD, false,
+                        UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
 
                 //填写表体数据
                 for (int j = 0; j < maxRowNum; j++) {
@@ -1205,11 +1206,11 @@ public class MaReportDownloadRestController extends BaseRestController {
                 //设置筛选条件
                 ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
                 //列宽
-                int[] columnView = {10, 13, 10, 20, 30, 25, 15, 15, 15, 15, 10, 10, 50, 15, 15, 15, 15, 10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15};
+                int[] columnView = {10, 13, 10, 20, 30, 25, 15, 15, 15, 15, 10, 10, 50, 15, 15, 15, 15, 10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,30,30};
                 //列标题
                 String[] titles = {"城市", "门店名称", "门店类型", "下单/退单时间", "订单号", "订单状态", "退单号", "退单状态", "顾客", "导购姓名", "配送/退货方式",
                         "出/退货状态", "送/退货地址", "商品总额", "会员折扣", "订单折扣", "配送费", "优惠券折扣", "产品券折扣", "乐币折扣", "应付总额",
-                        "微信", "支付宝", "银联", "门店现金", "门店POS", "配送现金", "配送POS", "其他", "门店预存款", "顾客预存款", "支付总额", "退回门店"};
+                        "微信", "支付宝", "银联", "门店现金", "门店POS", "配送现金", "配送POS", "其他", "门店预存款", "顾客预存款", "支付总额", "退回门店","商户订单号","第三方流水号"};
                 //计算标题开始行号
                 int row = 1;
                 if (null != map && map.size() > 0) {
@@ -1371,12 +1372,6 @@ public class MaReportDownloadRestController extends BaseRestController {
                     row = (map.size() + 1) / 2 + 4;
                 }
 
-                //设置标题
-                ws = this.setHeader(ws, titleFormat, columnView, titles, row);
-                row += 1;
-                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.NO_BOLD, false,
-                        UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
-
                 String str = "参数范围内 \n " +
                         "包含：①已出货需配送员代收的订单 \n " +
                         "订单代收金额：导购在APP上填写的需配送员代收的金额（不一定等于订单金额）\n" +
@@ -1387,6 +1382,12 @@ public class MaReportDownloadRestController extends BaseRestController {
                 textFormat1.setWrap(true);
                 ws.addCell(new Label(0, map.size(), str, textFormat1));
                 ws.setRowView(row - 1, 2000);
+
+                //设置标题
+                ws = this.setHeader(ws, titleFormat, columnView, titles, row);
+                row += 1;
+                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.NO_BOLD, false,
+                        UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
 
                 //填写表体数据
                 for (int j = 0; j < maxRowNum; j++) {

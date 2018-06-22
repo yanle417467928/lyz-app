@@ -722,13 +722,16 @@
         WHEN 'PENDING_SHIPMENT' THEN '代发货'
         WHEN 'CLOSED' THEN '已结案'
         WHEN 'REJECTED' THEN '拒签'
-        WHEN 'CANCELING' THEN '取消中' end as orderStatus
+        WHEN 'CANCELING' THEN '取消中' end as orderStatus,
+        pd.out_trade_no outTradeNo,
+        pd.trade_no tradeNo
         FROM
         ord_base_info obi
         INNER JOIN st_store st ON st.store_id = obi.store_id
         <!--LEFT JOIN ord_lifecycle ol ON obi.ord_no = ol.ord_no-->
         LEFT JOIN ord_logistics_info oli ON oli.ord_no = obi.ord_no
         LEFT JOIN ord_billing_details obd ON obd.ord_no = obi.ord_no
+        LEFT JOIN (SELECT * from payment_data where payment_type in ("ORDER","REPAYMENT") and trade_status = "TRADE_SUCCESS") pd ON obi.ord_no = pd.ord_no
         WHERE obi.`status` != 'UNPAID'
         <!-- AND (ol.post_status = 'PENDING_SHIPMENT' OR (ol.post_status = 'PENDING_RECEIVE' AND obi.delivery_type = 'SELF_TAKE')) -->
         <if test="null != cityId and cityId != -1">
@@ -788,7 +791,9 @@
         WHEN 'PENDING_SHIPMENT' THEN '待发货'
         WHEN 'CLOSED' THEN '已结案'
         WHEN 'REJECTED' THEN '拒签'
-        WHEN 'CANCELING' THEN '取消中' end as orderStatus
+        WHEN 'CANCELING' THEN '取消中' end as orderStatus,
+        '' as outTradeNo,
+        '' as tradeNo
         FROM ord_return_base_info orbi
         LEFT JOIN ord_return_lifecycle rl ON orbi.return_no = rl.return_no
         LEFT JOIN st_store st ON st.store_id = orbi.store_id

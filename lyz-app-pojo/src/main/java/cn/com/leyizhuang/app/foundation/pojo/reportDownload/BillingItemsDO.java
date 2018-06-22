@@ -81,6 +81,14 @@ public class BillingItemsDO {
     private String returnStatus = "";
     //订单状态
     private String orderStatus = "";
+    /**
+     * 商户订单号
+     */
+    private String outTradeNo;
+    /**
+     * 交易流水号
+     */
+    private String tradeNo;
 
     public void setStoreType(StoreType storeType){
         this.storeType = storeType.getDescription();
