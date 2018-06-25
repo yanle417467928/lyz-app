@@ -618,7 +618,7 @@ public class ReturnOrderController {
                                 }
                                 ReturnOrderProductCoupon returnOrderProductCoupon = new ReturnOrderProductCoupon();
                                 returnOrderProductCoupon.setGid(productCoupon.getGoodsId());
-                                returnOrderProductCoupon.setIsReturn(Boolean.FALSE);
+                                returnOrderProductCoupon.setIsReturn(Boolean.TRUE);
                                 returnOrderProductCoupon.setOrderNo(orderNo);
                                 returnOrderProductCoupon.setPcid(productCoupon.getId());
                                 returnOrderProductCoupon.setQty(1);
