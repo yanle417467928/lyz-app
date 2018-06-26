@@ -45,18 +45,14 @@ public class MaReturningRestController {
      */
     @GetMapping(value = "/page/grid")
     public GridDataVO<ReturningVO> dataReturningVOPageGridGet(Integer offset, Integer size, String keywords) {
-
         logger.info("dataAllocationVOPageGridGet CREATE,门店库存退货管理查询, 入参 offset:{},size:{},keywords:{},query:{}", offset, size, keywords);
-
         PageInfo<ReturnOrderBaseInfo> baseInfoPageInfo = ityReturningService.queryPage(offset, size, keywords);
         return new GridDataVO<ReturningVO>().transform(ReturningVO.transform(baseInfoPageInfo.getList()), baseInfoPageInfo.getTotal());
     }
 
     @GetMapping(value = "/query/param")
     public GridDataVO<ReturningVO> getReturningVOByQueryParam(Integer offset, Integer size, Integer status, Long store) {
-
         logger.info("dataAllocationVOPageGridGet CREATE,门店库存退货管理查询, 入参 offset:{},size:{},status:{},store:{}", offset, size, status, store);
-
         PageInfo<ReturnOrderBaseInfo> baseInfoPageInfo = ityReturningService.getReturningVOByQueryParam(offset, size, status, store);
         return new GridDataVO<ReturningVO>().transform(ReturningVO.transform(baseInfoPageInfo.getList()), baseInfoPageInfo.getTotal());
 

@@ -35,7 +35,7 @@ public interface ActBaseDAO{
      * @param keywords
      * @return
      */
-    List<ActBaseDO> queryByKeywords(@Param("keywords") String keywords,@Param("status") String status);
+    List<ActBaseDO> queryByKeywords(@Param("keywords") String keywords,@Param("status") String status,@Param("cityId")  Long cityId);
 
     /**
      *

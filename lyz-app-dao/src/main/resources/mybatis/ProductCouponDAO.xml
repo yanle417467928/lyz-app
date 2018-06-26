@@ -154,6 +154,12 @@
         <if test="keywords != null">
             AND  title LIKE concat("%",#{keywords},"%")
         </if>
+        <if test="startTime != null and startTime != ''">
+            AND effective_start_time >= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND  <![CDATA[effective_end_time<= #{endTime}]]>
+        </if>
         and status = 1
         ORDER by create_time DESC
     </select>

@@ -53,11 +53,11 @@ public class MaActivityRestController extends BaseRestController {
      * @return
      */
     @GetMapping(value = "/page/grid")
-    public GridDataVO<ActBaseVO> getActBaseList(Integer offset, Integer size, String keywords,String status) {
+    public GridDataVO<ActBaseVO> getActBaseList(Integer offset, Integer size, String keywords,String status,Long cityId) {
             GridDataVO<ActBaseVO> gridDataVO = new GridDataVO<>();
             Integer page = getPage(offset, size);
 
-            PageInfo<ActBaseDO> actbasePage = appActService.queryPageVO(page,size,keywords, status);
+            PageInfo<ActBaseDO> actbasePage = appActService.queryPageVO(page,size,keywords, status,cityId);
             List<ActBaseDO> actBaseDOList = actbasePage.getList();
             List<ActBaseVO> actBaseVOList = ActBaseVO.transform(actBaseDOList);
             gridDataVO.transform(actBaseVOList,actbasePage.getTotal());

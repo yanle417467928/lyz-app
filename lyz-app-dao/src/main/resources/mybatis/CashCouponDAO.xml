@@ -22,7 +22,8 @@
             id = #{cusCashCouponId}
     </select>
 
-    <select id="findCustomerCashCouponById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon">
+    <select id="findCustomerCashCouponById" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon">
         SELECT
         <include refid="ALL_FIELDS"/>
         FROM cus_customer_cash_coupon
@@ -30,7 +31,7 @@
     </select>
 
     <insert id="addCashCoupon" parameterType="cn.com.leyizhuang.app.foundation.pojo.CashCoupon" useGeneratedKeys="true"
-                     keyProperty="id">
+            keyProperty="id">
     INSERT INTO cp_cash_coupon
     (create_time, `condition`, denomination, effective_start_time, effective_end_time, description, initial_quantity, remaining_quantity,
     title, city_id , city_name , `type` ,is_specified_store,sort_id,`status`)
@@ -52,7 +53,7 @@
         INSERT INTO cp_cash_coupon_store
         (ccid,store_id,store_name)
         VALUES
-        <foreach collection="list" item="item" index="index" separator="," >
+        <foreach collection="list" item="item" index="index" separator=",">
             (#{item.ccid},#{item.storeId},#{item.storeName})
         </foreach>
     </insert>
@@ -61,7 +62,7 @@
         INSERT INTO cp_cash_coupon_company
         (ccid,company_id,company_name,company_flag)
         VALUES
-        <foreach collection="list" item="item" index="index" separator="," >
+        <foreach collection="list" item="item" index="index" separator=",">
             (#{item.ccid},#{item.companyId},#{item.companyName},#{item.companyFlag})
         </foreach>
     </insert>
@@ -70,7 +71,7 @@
         INSERT INTO cp_cash_coupon_brand
         (ccid,brand_id,brand_name)
         VALUES
-        <foreach collection="list" item="item" index="index" separator="," >
+        <foreach collection="list" item="item" index="index" separator=",">
             (#{item.ccid},#{item.brandId},#{item.brandName})
         </foreach>
     </insert>
@@ -79,12 +80,13 @@
         INSERT INTO cp_cash_coupon_goods
         (ccid,goods_id,goods_name,sku,qty)
         VALUES
-        <foreach collection="list" item="item" index="index" separator="," >
+        <foreach collection="list" item="item" index="index" separator=",">
             (#{item.ccid},#{item.goodsId},#{item.goodsName},#{item.sku},#{item.qty})
         </foreach>
     </insert>
 
-    <select id="queryCustomerCashCouponByIdList" parameterType="java.util.List" resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon">
+    <select id="queryCustomerCashCouponByIdList" parameterType="java.util.List"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon">
         SELECT
         <include refid="ALL_FIELDS"/>
         FROM cus_customer_cash_coupon where id IN
@@ -100,39 +102,50 @@
         FROM cp_cash_coupon WHERE ccid = #{id}
     </select>
 
-    <select id="queryByKeywords" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.CashCoupon">
+    <select id="queryByKeywords" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.CashCoupon">
         SELECT
         <include refid="CASH_COUPON_FIELDS"/>
         FROM cp_cash_coupon WHERE 1=1
-        <if test="keywords != null">
-            AND  title LIKE concat("%",#{keywords},"%")
+        <if test="keywords != null and keywords != ''">
+            AND title LIKE concat("%",#{keywords},"%")
+        </if>
+        <if test="startTime != null and startTime != ''">
+            AND effective_start_time >= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND  <![CDATA[effective_end_time<= #{endTime}]]>
         </if>
         and status = 1
         ORDER by create_time DESC
     </select>
 
-    <select id="queryStoreByCcid" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.CashCouponStore">
+    <select id="queryStoreByCcid" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.CashCouponStore">
         SELECT
         id,ccid,store_id,store_name
         FROM cp_cash_coupon_store
         where ccid = #{ccid}
     </select>
 
-    <select id="queryCompanyByCcid" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.CashCouponCompany">
+    <select id="queryCompanyByCcid" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.CashCouponCompany">
         SELECT
         id,ccid,company_id,company_name,company_flag
         FROM cp_cash_coupon_company
         where ccid = #{ccid}
     </select>
 
-    <select id="queryBrandByCcid" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.CashCouponBrand">
+    <select id="queryBrandByCcid" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.CashCouponBrand">
         SELECT
         id,ccid,brand_id,brand_name
         FROM cp_cash_coupon_brand
         where ccid = #{ccid}
     </select>
 
-    <select id="queryGoodsByCcid" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.CashCouponGoods">
+    <select id="queryGoodsByCcid" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.CashCouponGoods">
         SELECT
         id,ccid,goods_id,goods_name,sku,qty
         FROM cp_cash_coupon_goods
@@ -170,49 +183,49 @@
     <update id="updateCashCoupon" parameterType="cn.com.leyizhuang.app.foundation.pojo.CashCoupon">
         UPDATE cp_cash_coupon
         <set>
-            <if test="createTime != null" >
+            <if test="createTime != null">
                 create_time = #{createTime,jdbcType=TIMESTAMP},
             </if>
-            <if test="condition != null" >
+            <if test="condition != null">
                 `condition` = #{condition,jdbcType=DECIMAL},
             </if>
-            <if test="denomination != null" >
+            <if test="denomination != null">
                 denomination = #{denomination,jdbcType=DECIMAL},
             </if>
-            <if test="effectiveStartTime != null" >
+            <if test="effectiveStartTime != null">
                 effective_start_time = #{effectiveStartTime,jdbcType=TIMESTAMP},
             </if>
-            <if test="effectiveEndTime != null" >
+            <if test="effectiveEndTime != null">
                 effective_end_time = #{effectiveEndTime,jdbcType=TIMESTAMP},
             </if>
-            <if test="description != null" >
+            <if test="description != null">
                 description = #{description,jdbcType=VARCHAR},
             </if>
-            <if test="initialQuantity != null" >
+            <if test="initialQuantity != null">
                 initial_quantity = #{initialQuantity,jdbcType=INTEGER},
             </if>
-            <if test="remainingQuantity != null" >
+            <if test="remainingQuantity != null">
                 remaining_quantity = #{remainingQuantity,jdbcType=INTEGER},
             </if>
-            <if test="title != null" >
+            <if test="title != null">
                 title = #{title,jdbcType=VARCHAR},
             </if>
-            <if test="cityId != null" >
+            <if test="cityId != null">
                 city_id = #{cityId,jdbcType=BIGINT},
             </if>
-            <if test="cityName != null" >
+            <if test="cityName != null">
                 city_name = #{cityName,jdbcType=VARCHAR},
             </if>
-            <if test="type != null" >
+            <if test="type != null">
                 `type` = #{type,jdbcType=VARCHAR},
             </if>
-            <if test="isSpecifiedStore != null" >
+            <if test="isSpecifiedStore != null">
                 is_specified_store = #{isSpecifiedStore,jdbcType=BIT},
             </if>
-            <if test="sortId != null" >
+            <if test="sortId != null">
                 sort_id = #{sortId,jdbcType=INTEGER},
             </if>
-            <if test="status != null" >
+            <if test="status != null">
                 `status` = #{status,jdbcType=INTEGER},
             </if>
         </set>
@@ -300,7 +313,7 @@
             <if test="cityName != null">
                 city_name = #{cityName},
             </if>
-            <if test="type != null" >
+            <if test="type != null">
                 `type` = #{type},
             </if>
             <if test="isSpecifiedStore != null">

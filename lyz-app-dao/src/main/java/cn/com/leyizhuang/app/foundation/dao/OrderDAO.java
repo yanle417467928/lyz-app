@@ -217,4 +217,6 @@ public interface OrderDAO {
      * @return
      */
     List<OrderPageInfoVO> findSellerManagerPayForOrderList(@Param("userId") Long userId);
+
+    LocalDateTime getOrderSendTime(@Param("orderNo") String orderNo);
 }

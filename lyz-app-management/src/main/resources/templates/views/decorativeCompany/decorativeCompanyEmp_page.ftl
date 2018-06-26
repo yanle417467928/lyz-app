@@ -31,7 +31,7 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="box box-primary">
-                <div id="toolbar" class="form-inline ">
+                <div id="toolbar" class="form-inline">
                     <select name="diyCode" id="diyCode" class="form-control selectpicker"  data-width="140px" style="width:auto;"
                               onchange="findDecorativeEmpByCondition()" data-live-search="true" >
                         <option value="-1">选择公司</option>
@@ -79,7 +79,6 @@
                         <a href="javascript:$page.information.close();" class="pull-right btn-box-tool">
                             <i class="fa fa-times"></i>
                         </a>
-
                     </span>
                     <ul id="employeesDetail" class="list-group list-group-unbordered" style="margin-top:10px;">
                         <li class="list-group-item">
@@ -349,6 +348,8 @@
                     company += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
                 })
                 $("#diyCode").append(company);
+                $('#diyCode').selectpicker('refresh');
+                $('#diyCode').selectpicker('render');
             }
         });
     }

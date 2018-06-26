@@ -490,6 +490,22 @@ public class ReturnOrderController {
                     return resultDTO;
                 }
             }
+
+            // 判断订单是否超过退货时间
+            int flag = appOrderService.checkOrderReturnCondition(orderNo);
+            if (flag != 0){
+                // 不能退货
+                if (flag == -1){
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此订单不可退货!", "");
+                    logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }else if(flag == 1){
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此订单出货超过3个月不可退货!", "");
+                    logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+            }
+
             //*******************处理上传图骗***********************
             List<String> pictureUrls = new ArrayList<>();
             String returnPic = null;
@@ -854,13 +870,14 @@ public class ReturnOrderController {
                         }
                     }
                 }
-            } else {
-                if (!isReturnAllProCoupon && !jmSelfTakeOrder) {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单缺少账单支付信息!", "");
-                    logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
-                    return resultDTO;
-                }
             }
+//            else {
+//                if (!isReturnAllProCoupon && !jmSelfTakeOrder) {
+//                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单缺少账单支付信息!", "");
+//                    logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
+//                    return resultDTO;
+//                }
+//            }
             AtwReturnOrder atwReturnOrder = null;
             //只有配送单退货才发WMS.
             if (AppDeliveryType.HOUSE_DELIVERY.equals(order.getDeliveryType())) {
@@ -918,6 +935,8 @@ public class ReturnOrderController {
                     //发送退单拆单消息到拆单消息队列
                     sinkSender.sendReturnOrder(returnNo);
                     logger.info("cancelOrderToWms OUT,买券正常退货成功");
+                }else {
+                    returnOrderService.updateReturnOrderStatus(returnNo, AppReturnOrderStatus.PENDING_REFUND);
                 }
             }
             //只有配送单退货才发WMS.在返配上架后发EBS

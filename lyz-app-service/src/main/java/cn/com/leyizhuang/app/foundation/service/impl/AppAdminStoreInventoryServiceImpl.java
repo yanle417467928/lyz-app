@@ -25,9 +25,15 @@ public class AppAdminStoreInventoryServiceImpl implements AppAdminStoreInventory
 
 
     @Override
-    public PageInfo<AppAdminStoreInventoryVO> queryPage(Integer page, Integer size, String keywords, List<Long> storeIds) {
+    public PageInfo<AppAdminStoreInventoryVO> queryPage(Integer page, Integer size, String keywords,Long cityId,Long storeId ,List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<AppAdminStoreInventoryVO> storeInventoryList = storeInventoryDAO.queryListVO(keywords, storeIds);
+        if(null!=cityId && -1==cityId){
+            cityId=null;
+        }
+        if(null!=storeId && -1==storeId){
+            storeId=null;
+        }
+        List<AppAdminStoreInventoryVO> storeInventoryList = storeInventoryDAO.queryPageListVO(keywords, cityId,storeId,storeIds);
         return new PageInfo<>(storeInventoryList);
     }
 
@@ -43,12 +49,15 @@ public class AppAdminStoreInventoryServiceImpl implements AppAdminStoreInventory
     }
 
     @Override
-    public PageInfo<AppAdminStoreInventoryVO> queryStoreInventoryByInfo(Integer page, Integer size, String keywords, Long storeId, String info) {
+    public PageInfo<AppAdminStoreInventoryVO> queryStoreInventoryByInfo(Integer page, Integer size, String keywords,Long cityId, Long storeId, String info) {
         PageHelper.startPage(page, size);
-        if (-1 == storeId) {
+        if (null !=storeId &&-1 == storeId) {
             storeId = null;
         }
-        List<AppAdminStoreInventoryVO> storeInventoryList = storeInventoryDAO.queryStoreInventoryByInfo(storeId,info);
+        if (null !=cityId &&-1 == cityId) {
+            cityId = null;
+        }
+        List<AppAdminStoreInventoryVO> storeInventoryList = storeInventoryDAO.queryStoreInventoryByInfo(cityId,storeId,info);
         return new PageInfo<>(storeInventoryList);
     }
 

@@ -65,7 +65,7 @@ public interface ProductCouponService {
      * @param keywords
      * @return
      */
-    PageInfo<ProductCoupon> queryPage(Integer page, Integer size, String keywords);
+    PageInfo<ProductCoupon> queryPage(Integer page, Integer size, String keywords,String startTime,String endTime);
 
     /**
      * 根据id返回产品券模版结果

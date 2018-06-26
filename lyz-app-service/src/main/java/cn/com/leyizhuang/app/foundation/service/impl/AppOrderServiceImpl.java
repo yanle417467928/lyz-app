@@ -1315,4 +1315,51 @@ public class AppOrderServiceImpl implements AppOrderService {
         }
         return null;
     }
+
+    /**
+     * 获取出货时间
+     * @param orderNumer
+     * @return
+     */
+    public LocalDateTime getOrderSendTime(String orderNumer){
+        if (StringUtils.isBlank(orderNumer)){
+            return null;
+        }
+
+        //获取 出货时间
+        LocalDateTime sendTime = orderDAO.getOrderSendTime(orderNumer);
+        return sendTime;
+    }
+
+    /**
+     * 校验订单是否满足退货条件
+     * @param orderNumer
+     * @return flag : -1：订单号不存在；0：正确；1：超过3个月限制
+     */
+    public int checkOrderReturnCondition(String orderNumer){
+        int flag = 0;
+        if (StringUtils.isBlank(orderNumer)){
+            return -1;
+        }
+
+        // 此逻辑开始时间
+        LocalDateTime begainTime = LocalDateTime.of(2018,6,30,0,0,1);
+        if (LocalDateTime.now().isBefore(begainTime)){
+            return 0;
+        }
+
+        // 获取订单
+        OrderBaseInfo orderBaseInfo = orderDAO.findByOrderNumber(orderNumer);
+
+        // 条件1: 出货日期超过3个月 不予退货;
+        LocalDateTime sendTime = this.getOrderSendTime(orderNumer);
+        // 3个月后截至日期
+        LocalDateTime returnEndTime = sendTime.plusMonths(3);
+        if (LocalDateTime.now().isAfter(returnEndTime)){
+            flag  = 1 ;
+            log.info("》》》》》》》》》》》》》   订单："+orderNumer+"超过3个月退货期限制   》》》》》》》》》》》》》");
+        }
+
+        return flag;
+    }
 }

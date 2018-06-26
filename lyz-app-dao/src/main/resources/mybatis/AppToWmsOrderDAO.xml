@@ -312,6 +312,25 @@
         </if>
     </select>
 
+
+    <select id="maFindRequiringOrderList"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrder">
+        select *
+        from inter_atw_order_requsition a
+        LEFT JOIN  st_store c on a.diy_site_id = c.store_code
+        WHERE
+        1=1
+        <if test="null != keywords">
+            AND a.order_number LIKE concat('%',#{keywords},'%')
+        </if>
+        <if test="null != storeId">
+            AND c.store_id =#{storeId}
+        </if>
+        <if test="null != cityId">
+            AND c.city_id =#{cityId}
+        </if>
+    </select>
+
     <select id="findReturnOrderByReturnOrderNo"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder">
         SELECT *

@@ -225,7 +225,7 @@ public class OnlinePayRefundService {
                 returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
                 returnOrderBillingDetail.setIntoAmountTime(date);
                 returnOrderBillingDetail.setReplyCode(response.getTradeNo());
-                returnOrderBillingDetail.setReturnMoney(Double.valueOf(response.getRefundFee()));
+                returnOrderBillingDetail.setReturnMoney(refundAmount);
                 returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.ALIPAY);
                 returnOrderBillingDetail.setReturnSubjectId(dataDO.getUserId());
                 returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);

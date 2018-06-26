@@ -33,7 +33,7 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="box box-primary">
-                <div id="toolbar" class="btn-group">
+                <div id="toolbar" class="form-inline">
                     <button id="btn_add" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
                     </button>
@@ -44,19 +44,32 @@
                         <span class="glyphicon glyphicon-copy" aria-hidden="true"></span> 复制
                     </button>
 
-                    <button id="btn_publish" type="button" class="btn btn-default" style="margin-left: 10px;">
+                    <button id="btn_publish" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-cloud" aria-hidden="true"></span> 发布
                     </button>
                     <button id="btn_delete" type="button" class="btn btn-default">
                     <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> 失效
                     </button>
-
-                    <select name="status" id="status" class="form-control select" style="width:auto;margin-left: 10px;"
+                    <select name="city" id="cityCode" class="form-control select" data-width="120px"
+                            style="width:auto;"
+                            onchange="statusChange()" data-live-search="true">
+                        <option value="-1">选择城市</option>
+                    </select>
+                    <select name="status" id="status" class="form-control select"
                             onchange="statusChange(this.value)" >
                         <option value="">选择状态</option>
                         <option value="NEW">新建</option>
                         <option value="PUBLISH">已发布</option>
                     </select>
+                    <div class="input-group col-md-3" style="margin-top:0px positon:relative">
+                        <input type="text" name="Info" id="Info" class="form-control"
+                               style="width:auto;"
+                               placeholder="请输入要查找的标题" onkeypress="findBykey()">
+                        <span class="input-group-btn">
+                            <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
+                                    onclick="return findActByInfo()">查找</button>
+                        </span>
+                    </div>
                 </div>
                 <div class="box-body table-reponsive">
                     <table id="dataGrid" class="table table-bordered table-hover">
@@ -120,6 +133,27 @@
         </div>
     </div>
 </div>
-
+<script>
+    function findCitylist() {
+        var city = "";
+        $.ajax({
+            url: '/rest/citys/findCitylist',
+            method: 'GET',
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    city += "<option value=" + item.cityId + ">" + item.name + "</option>";
+                });
+                $("#cityCode").append(city);
+            }
+        });
+    }
+</script>
 
 </body>

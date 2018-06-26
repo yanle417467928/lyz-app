@@ -1,114 +1,116 @@
 $(function () {
 
     initDateGird('/rest/activity/page/grid');
+    findCitylist();
     $('#btn_add').on('click', function () {
         $grid.add('/view/activity/add/0');
     });
     $('#btn_edit').on('click', function () {
-        $grid.modify($('#dataGrid'),'/view/activity/edit/{id}');
+        $grid.modify($('#dataGrid'), '/view/activity/edit/{id}');
     });
 
-    $('#btn_copy').on('click',function () {
-        $grid.modify($('#dataGrid'),'/view/activity/add/{id}');
+    $('#btn_copy').on('click', function () {
+        $grid.modify($('#dataGrid'), '/view/activity/add/{id}');
     })
 
     $('#btn_publish').on('click', function () {
-        $modal.danger("发布","确认发布此促销？",publish);
+        $modal.danger("发布", "确认发布此促销？", publish);
     });
 
     $('#btn_delete').on('click', function () {
-        $modal.danger("失效","确认失效？失效后不可恢复！！！",invalid);
+        $modal.danger("失效", "确认失效？失效后不可恢复！！！", invalid);
     });
 });
 
 function initDateGird(url) {
 
-    $grid.init($('#dataGrid'), $('#toolbar'),url , 'get', false, function (params) {
+    $grid.init($('#dataGrid'), $('#toolbar'), url, 'get', false, function (params) {
         return {
             offset: params.offset,
             size: params.limit,
-            keywords: params.search,
-            status:$("#status").val()
+            keywords: $("#Info").val(),
+            status: $("#status").val(),
+            cityId: $("#cityCode").val()
         }
     }, [{
         checkbox: true,
         title: '选择'
-    },{
+    }, {
         field: 'id',
         title: 'ID',
         align: 'center',
-        visible:false
-    },{
+        visible: false
+    }, {
         field: 'cityName',
         title: '城市',
         align: 'center'
-    },{
+    }, {
         field: 'actCode',
         title: '编码',
         align: 'left',
-        visible:false
-    },{
+        visible: false
+    }, {
         field: 'title',
         title: '标题',
         align: 'left'
-    },{
+    }, {
         field: 'scope',
         title: '范围',
         align: 'left',
-        formatter: function(value) {
-            var val =  "";
+        formatter: function (value) {
+            var val = "";
 
-            if (value == "GOODS"){
+            if (value == "GOODS") {
                 val = "买商品"
-            }else if(value == "COUPON"){
+            } else if (value == "COUPON") {
                 val = "买券"
-            }else if(value == "ALL"){
+            } else if (value == "ALL") {
                 val = "买商品、买券"
             }
             return val;
         }
-    },{
+    }, {
         field: 'type',
         title: '类型',
         align: 'left'
-    },{
+    }, {
         field: 'createTime',
         title: '创建时间',
         align: 'left',
-        formatter: function(value) {
+        formatter: function (value) {
             return $localDateTime.toString(value);
         }
-    },{
+    }, {
         field: 'beginTime',
         title: '开始时间',
         align: 'left',
-        formatter: function(value) {
+        formatter: function (value) {
             return $localDateTime.toString(value);
         }
-    },{
+    }, {
         field: 'actTarget',
         title: '目标对象',
         align: 'left'
-    },{
+    }, {
         field: 'status',
         title: '状态',
         align: 'center',
-        formatter: function(value) {
+        formatter: function (value) {
             var html = "";
-            if(value == "过期"){
-                html = "<lable class='label label-danger'>"+value+"</lable>"
-            }else if(value == "新建"){
-                html = "<lable class='label label-primary'>"+value+"</lable>"
-            }else{
-                html = "<lable class='label label-success'>"+value+"</lable>"
+            if (value == "过期") {
+                html = "<lable class='label label-danger'>" + value + "</lable>"
+            } else if (value == "新建") {
+                html = "<lable class='label label-primary'>" + value + "</lable>"
+            } else {
+                html = "<lable class='label label-success'>" + value + "</lable>"
             }
             return html
         }
-    },{
+    }, {
         field: 'sortId',
         title: '排序号',
         align: 'center'
-    },{
+    }, {
         field: 'rankCode',
         title: '专供等级',
         align: 'center'
@@ -124,7 +126,7 @@ function publish() {
     $.ajax({
         url: '/rest/activity/publish',
         method: 'PUT',
-        data:{'ids':ids},
+        data: {'ids': ids},
         error: function () {
             clearTimeout($global.timer);
             $loading.close();
@@ -151,7 +153,7 @@ function invalid() {
     $.ajax({
         url: '/rest/activity/invalid',
         method: 'PUT',
-        data:{'ids':ids},
+        data: {'ids': ids},
         error: function () {
             clearTimeout($global.timer);
             $loading.close();
@@ -175,4 +177,13 @@ function statusChange(val) {
     $("#dataGrid").bootstrapTable('destroy');
     initDateGird('/rest/activity/page/grid');
 
+}
+
+function findBykey() {
+    findActByInfo()
+}
+
+function findActByInfo() {
+    $("#dataGrid").bootstrapTable('destroy');
+    initDateGird('/rest/activity/page/grid');
 }

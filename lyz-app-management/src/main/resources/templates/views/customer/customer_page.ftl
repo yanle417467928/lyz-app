@@ -528,8 +528,7 @@
         if (cityId == -1) {
             findStorelist();
             return false;
-        }
-        ;
+        };
         /*  initSelect("#guideCode", "选择导购")*/
         var store;
         $.ajax({

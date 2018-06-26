@@ -22,14 +22,12 @@ public interface AppAdminStoreInventoryService{
      * @param keywords
      * @return
      */
-    PageInfo<AppAdminStoreInventoryVO> queryPage(Integer page, Integer size, String keywords,List<Long> storeIds);
+    PageInfo<AppAdminStoreInventoryVO> queryPage(Integer page, Integer size, String keywords,Long cityId,Long storeId,List<Long> storeIds);
 
     PageInfo<AppAdminStoreInventoryVO> queryPageByStoreId(Integer page, Integer size, String keywords,Long storeId);
 
-    PageInfo<AppAdminStoreInventoryVO> queryStoreInventoryByInfo(Integer page, Integer size, String keywords,Long storeId,String info);
-
+    PageInfo<AppAdminStoreInventoryVO> queryStoreInventoryByInfo(Integer page, Integer size, String keywords,Long cityId,Long storeId,String info);
 
     StoreInventory queryStoreInventoryById(Long storeId);
-
 
 }

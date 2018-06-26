@@ -365,7 +365,7 @@
         <if test="null != pickType and pickType != '' and pickType != 'PRODUCT_COUPON'">
             AND ccpc.get_type = "-1"
         </if>
-        AND c.store_id IN
+        AND ccpc.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
@@ -722,13 +722,16 @@
         WHEN 'PENDING_SHIPMENT' THEN '代发货'
         WHEN 'CLOSED' THEN '已结案'
         WHEN 'REJECTED' THEN '拒签'
-        WHEN 'CANCELING' THEN '取消中' end as orderStatus
+        WHEN 'CANCELING' THEN '取消中' end as orderStatus,
+        pd.out_trade_no outTradeNo,
+        pd.trade_no tradeNo
         FROM
         ord_base_info obi
         INNER JOIN st_store st ON st.store_id = obi.store_id
         <!--LEFT JOIN ord_lifecycle ol ON obi.ord_no = ol.ord_no-->
         LEFT JOIN ord_logistics_info oli ON oli.ord_no = obi.ord_no
         LEFT JOIN ord_billing_details obd ON obd.ord_no = obi.ord_no
+        LEFT JOIN (SELECT * from payment_data where payment_type in ("ORDER","REPAYMENT") and trade_status = "TRADE_SUCCESS") pd ON obi.ord_no = pd.ord_no
         WHERE obi.`status` != 'UNPAID'
         <!-- AND (ol.post_status = 'PENDING_SHIPMENT' OR (ol.post_status = 'PENDING_RECEIVE' AND obi.delivery_type = 'SELF_TAKE')) -->
         <if test="null != cityId and cityId != -1">
@@ -788,7 +791,9 @@
         WHEN 'PENDING_SHIPMENT' THEN '待发货'
         WHEN 'CLOSED' THEN '已结案'
         WHEN 'REJECTED' THEN '拒签'
-        WHEN 'CANCELING' THEN '取消中' end as orderStatus
+        WHEN 'CANCELING' THEN '取消中' end as orderStatus,
+        '' as outTradeNo,
+        '' as tradeNo
         FROM ord_return_base_info orbi
         LEFT JOIN ord_return_lifecycle rl ON orbi.return_no = rl.return_no
         LEFT JOIN st_store st ON st.store_id = orbi.store_id
@@ -908,7 +913,7 @@
         ss.store_name as storeName ,
         ss.store_type as storeType,
         orbi.ord_no as ordNo,
-        ordd.create_time as operationTime,
+        iwrobh.c_end_dt as operationTime,
         orbi.order_time as createTime,
         obi.customer_id as customerId,
         obi.customer_phone as customerPhone,
@@ -931,6 +936,7 @@
         LEFT JOIN ord_return_goods_info orgi ON orgi.return_no =orbi.return_no
         LEFT JOIN ord_base_info obi ON orbi.ord_no=obi.ord_no
         LEFT JOIN ord_return_delivery_detail ordd ON orbi.return_no = ordd.return_no
+        LEFT JOIN inter_wta_return_order_back_header iwrobh ON orbi.return_no = iwrobh.po_no
         LEFT JOIN st_store ss ON orbi.store_id = ss.store_id
         LEFT JOIN ord_return_logistic_info orli on orli.return_no = orbi.return_no
         LEFT JOIN (select return_no,purchase_price ,sum(qty) qty,sku from ord_return_product_coupon GROUP BY return_no,sku,purchase_price) orpc on orbi.return_no =orpc.return_no
@@ -954,11 +960,78 @@
         </if>
         <if test="null !=startTime  and ''!=startTime">
             AND
-            ordd.create_time >= #{startTime}
+            iwrobh.c_end_dt >= #{startTime}
         </if>
         <if test="null !=endTime  and ''!=endTime">
             AND
-            <![CDATA[ordd.create_time<= #{endTime}]]>
+            <![CDATA[iwrobh.c_end_dt<= #{endTime}]]>
+        </if>
+        AND orbi.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+
+        UNION  ALL
+
+        select
+        DISTINCT
+        ss.city as cityName,
+        orbi.store_id as store_id,
+        ss.store_name as storeName ,
+        ss.store_type as storeType,
+        orbi.ord_no as ordNo,
+        iwrobh.c_end_dt as operationTime,
+        orbi.order_time as createTime,
+        obi.customer_id as customerId,
+        obi.customer_phone as customerPhone,
+        obi.customer_name as customerName,
+        obi.customer_type as customerType,
+        obi.sales_consult_name as salesConsultName,
+        orgi.company_flag as companyFlag,
+        orgi.sku as sku,
+        orgi.sku_name as skuName,
+        orgi.goods_line_type as goodsLineType,
+        orgi.return_qty as orderQty,
+        orgi.return_price as returnPrice,
+        orpc.purchase_price as purchasePrice,
+        orpc.qty as couponQty,
+        orbi.return_no as referenceNumber,
+        wh.wh_name as wareHouse,
+        orli.delivery_type as returnOrderDeliveryType,
+        obi.delivery_type as orderDeliveryType
+        from ord_return_base_info orbi
+        LEFT JOIN ord_return_goods_info orgi ON orgi.return_no =orbi.return_no
+        LEFT JOIN ord_base_info obi ON orbi.ord_no=obi.ord_no
+        LEFT JOIN ord_return_delivery_detail ordd ON orbi.return_no = ordd.return_no
+        LEFT JOIN inter_wta_return_order_back_header iwrobh ON orbi.return_no = iwrobh.po_no
+        LEFT JOIN st_store ss ON orbi.store_id = ss.store_id
+        LEFT JOIN ord_return_logistic_info orli on orli.return_no = orbi.return_no
+        LEFT JOIN (select return_no,purchase_price ,sum(qty) qty,sku from ord_return_product_coupon GROUP BY return_no,sku,purchase_price) orpc on orbi.return_no =orpc.return_no
+        AND orpc.sku = orgi.sku  AND orgi.goods_line_type='PRODUCT_COUPON'
+        LEFT JOIN warehouse wh on wh.wh_no = ordd.warehouse_no
+        where
+        orbi.return_type='REFUSED_RETURN'
+        AND
+        ordd.return_logistic_status='AGAIN_ON_SALE'
+        <if test="null !=storeId">
+            AND
+            orbi.store_id =#{storeId}
+        </if>
+        <if test="null !=cityId">
+            AND
+            ss.city_id =#{cityId}
+        </if>
+        <if test="null !=storeType and ''!=storeType">
+            AND
+            ss.store_type =#{storeType}
+        </if>
+        <if test="null !=startTime  and ''!=startTime">
+            AND
+            iwrobh.c_end_dt >= #{startTime}
+        </if>
+        <if test="null !=endTime  and ''!=endTime">
+            AND
+            <![CDATA[ iwrobh.c_end_dt <= #{endTime}]]>
         </if>
         AND orbi.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
@@ -1039,7 +1112,7 @@
         ss.store_name as storeName,
         ss.store_type as storeType,
         obi.ord_no as ordNo,
-        odid.create_time as operationTime,
+        wa.end_dt as operationTime,
         obi.create_time as createTime,
         obi.customer_id as customerId,
         obi.customer_phone as customerPhone,
@@ -1061,6 +1134,7 @@
         from ord_base_info obi
         LEFT JOIN ord_goods_info ogi ON obi.ord_no =ogi.ord_no
         LEFT JOIN ord_delivery_info_details odid ON obi.ord_no = odid.order_no
+        LEFT JOIN inter_wta_order_shipping_header wa ON obi.ord_no = wa.order_no
         LEFT JOIN st_store ss ON obi.store_id = ss.store_id
         LEFT JOIN (select ord_no,purchase_price ,count(*) as qty,sku from ord_coupon_info GROUP BY sku,purchase_price,ord_no) oci ON obi.ord_no= oci.ord_no
         AND oci.sku = ogi.sku  AND ogi.goods_line_type='PRODUCT_COUPON'
@@ -1676,7 +1750,7 @@
         LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
         -- LEFT JOIN gds_goods_grade gp on og.sku = gp.sku
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
-        LEFT JOIN inter_wta_order_shipping_header wa ON ob.ord_no = wa.order_no
+        LEFT JOIN (SELECT * from inter_wta_order_shipping_header GROUP BY order_no) wa ON ob.ord_no = wa.order_no
         LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku  and og.goods_line_type = 'PRODUCT_COUPON'
         LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
@@ -1892,7 +1966,7 @@
         LEFT JOIN st_store s on ob.store_id = s.store_id
         LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
-        LEFT JOIN inter_wta_order_shipping_header wa ON ob.ord_no = wa.order_no
+        LEFT JOIN (SELECT * from inter_wta_order_shipping_header GROUP BY order_no) wa ON ob.ord_no = wa.order_no
         LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku  and og.goods_line_type = 'PRODUCT_COUPON'
         LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
@@ -2119,7 +2193,7 @@
         LEFT JOIN ord_return_goods_info org on orb.roid = org.roid
         LEFT JOIN st_store s on ob.store_id = s.store_id
         LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
-        LEFT JOIN inter_wta_return_order_back_header wro ON wro.po_no = orb.return_no
+        LEFT JOIN (SELECT * from inter_wta_return_order_back_header GROUP  BY po_no) wro ON wro.po_no = orb.return_no
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
         LEFT JOIN ord_return_product_coupon oci on orb.roid = oci.roid and org.sku = oci.sku and org.goods_line_type = 'PRODUCT_COUPON'
         LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.pcid
@@ -2329,7 +2403,7 @@
         LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
         -- LEFT JOIN gds_goods_grade gp on og.sku = gp.sku
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
-        LEFT JOIN inter_wta_order_shipping_header wa ON ob.ord_no = wa.order_no
+        LEFT JOIN (SELECT * from inter_wta_order_shipping_header GROUP BY order_no) wa ON ob.ord_no = wa.order_no
         LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku  and og.goods_line_type = 'PRODUCT_COUPON'
         LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
@@ -2426,7 +2500,7 @@
         LEFT JOIN ord_return_goods_info org on orb.roid = org.roid
         LEFT JOIN st_store s on ob.store_id = s.store_id
         LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
-        LEFT JOIN inter_wta_return_order_back_header wro ON wro.po_no = orb.return_no
+        LEFT JOIN (SELECT * from inter_wta_return_order_back_header GROUP  BY po_no) wro ON wro.po_no = orb.return_no
         LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
         LEFT JOIN ord_return_product_coupon oci on orb.roid = oci.roid and org.sku = oci.sku and org.goods_line_type = 'PRODUCT_COUPON'
         LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.pcid

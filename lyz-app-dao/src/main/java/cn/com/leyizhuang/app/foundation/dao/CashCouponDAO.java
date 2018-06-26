@@ -13,20 +13,23 @@ import java.util.List;
 @Repository
 public interface CashCouponDAO {
     /**
-     *  获取现金券信息
+     * 获取现金券信息
+     *
      * @param cusCashCouponId
      * @return
      */
-    CustomerCashCoupon findCusCashCouponByCouponId(@Param("cusCashCouponId")Long cusCashCouponId);
+    CustomerCashCoupon findCusCashCouponByCouponId(@Param("cusCashCouponId") Long cusCashCouponId);
 
     /**
      * 添加现金券模板
-     * @param cashCoupon    现金券
+     *
+     * @param cashCoupon 现金券
      */
     void addCashCoupon(CashCoupon cashCoupon);
 
     /**
      * 给顾客添加现金券
+     *
      * @param customerCashCoupon
      */
     void addCustomerCashCoupon(CustomerCashCoupon customerCashCoupon);
@@ -42,16 +45,17 @@ public interface CashCouponDAO {
     List<CustomerCashCoupon> queryCustomerCashCouponByIdList(@Param("ids") List<Long> ids);
 
     /**
-     *  id查询
+     * id查询
      */
     CashCoupon queryById(@Param("id") Long id);
 
     /**
      * 根据关键字返回结果
+     *
      * @param keywords
      * @return
      */
-    List<CashCoupon> queryByKeywords(@Param("keywords") String keywords);
+    List<CashCoupon> queryByKeywords(@Param("keywords") String keywords, @Param("startTime") String startTime, @Param("endTime") String endTime);
 
     /**
      * 新增门店关联数据 cp_cash_coupon_store
@@ -91,6 +95,7 @@ public interface CashCouponDAO {
 
     /**
      * 更新cashCoupon
+     *
      * @param
      */
     void updateCashCoupon(CashCoupon cashCoupon);
@@ -107,6 +112,7 @@ public interface CashCouponDAO {
 
     /**
      * 取消订单修改现金券信息
+     *
      * @param customerCashCoupon
      */
     void updateCustomerCashCoupon(CustomerCashCoupon customerCashCoupon);

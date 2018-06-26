@@ -125,10 +125,15 @@ public class ProductCouponServiceImpl implements ProductCouponService {
     }
 
     @Override
-    public PageInfo<ProductCoupon> queryPage(Integer page, Integer size, String keywords) {
-
+    public PageInfo<ProductCoupon> queryPage(Integer page, Integer size, String keywords,String startTime,String endTime) {
         PageHelper.startPage(page, size);
-        List<ProductCoupon> list = productCouponDAO.queryByKeywords(keywords);
+        if(null!=startTime && !"".equals(startTime)){
+            startTime+=" 00:00:00";
+        }
+        if(null!=endTime && !"".equals(endTime)){
+            endTime+=" 23:59:59";
+        }
+        List<ProductCoupon> list = productCouponDAO.queryByKeywords(keywords,startTime,endTime);
         return new PageInfo<ProductCoupon>(list);
     }
 

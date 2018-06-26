@@ -200,7 +200,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
         // 记录日志
         StPreDepositLogDO log = new StPreDepositLogDO();
         log.setCreateTimeAndChangeMoneyAndType(LocalDateTime.now(), -subBalance, StorePreDepositChangeType.WITHDRAW);
-        log.setUserIdAndOperatorinfo(param.getId(), param.getId(), AppIdentityType.SELLER, "");
+        log.setUserIdAndOperatorinfo(preDeposit.getStoreId(), param.getId(), AppIdentityType.SELLER, "");
         log.setOrderNumber(stPreDepositWithdraw.getApplyNo());
         log.setMerchantOrderNumber("");
         log.setBalance(CountUtil.add(preDeposit.getBalance(), -subBalance));
@@ -366,7 +366,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
             // 记录日志
             StPreDepositLogDO log = new StPreDepositLogDO();
             log.setCreateTimeAndChangeMoneyAndType(LocalDateTime.now(), subBalance, StorePreDepositChangeType.RETURN_WITHDRAW);
-            log.setUserIdAndOperatorinfo(stId, stId, AppIdentityType.SELLER, "");
+            log.setUserIdAndOperatorinfo(preDeposit.getStoreId(), stId, AppIdentityType.SELLER, "");
             log.setOrderNumber(stPreDepositWithdraw.getApplyNo());
             log.setMerchantOrderNumber("");
             log.setBalance(CountUtil.add(preDeposit.getBalance(), subBalance));
@@ -779,7 +779,7 @@ public class AppPreDepositWithdrawServiceImpl implements AppPreDepositWithdrawSe
             // 记录日志
             StPreDepositLogDO log = new StPreDepositLogDO();
             log.setCreateTimeAndChangeMoneyAndType(LocalDateTime.now(), -stPreDepositWithdraw.getWithdrawAmount(), StorePreDepositChangeType.RETURN_WITHDRAW);
-            log.setUserIdAndOperatorinfo(stPreDepositWithdraw.getId(), stPreDepositWithdraw.getId(), AppIdentityType.SELLER, "");
+            log.setUserIdAndOperatorinfo(preDeposit.getStoreId(), stPreDepositWithdraw.getId(), AppIdentityType.SELLER, "");
             log.setOrderNumber(stPreDepositWithdraw.getApplyNo());
             log.setMerchantOrderNumber("");
             log.setBalance(CountUtil.add(preDeposit.getBalance(), stPreDepositWithdraw.getWithdrawAmount()));

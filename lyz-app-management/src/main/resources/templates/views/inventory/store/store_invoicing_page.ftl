@@ -42,13 +42,14 @@
                                 <option value="-1">选择城市</option>
                             </select>
                         </div>
-                        <div class="col-xs-2">
-                            <select size="5" name="store" id="store" class="form-control selectpicker" data-width="160px" data-live-search="true"
-                                    style="width:auto;" title="选择门店">
+                        <div class="col-xs-2" style="margin-left: -2%">
+                            <select size="5" name="store" id="store" class="form-control selectpicker"
+                                    data-width="160px" data-live-search="true"
+                                    style="width:auto;" title="选择门店" onchange="changeStoreSelection()">
                                 <option value="-1">选择门店</option>
                             </select>
                         </div>
-                        <div class="col-xs-8">
+                        <div class="col-xs-8" style="margin-left: -1%">
                             <input name="startDateTime" type="text" class="form-control datepicker" id="startDateTime"
                                    placeholder="开始时间">
                             至
@@ -146,6 +147,16 @@
 </div>
 <script>
     $(function () {
+
+        $('.datepicker').datepicker({
+            format: 'yyyy-mm-dd',
+            language: 'zh-CN',
+            autoclose: true
+        });
+
+        findCityList();
+        findStoreList();
+
         $grid.init($('#dataGrid'), $('#toolbar'), '/rest/inventory/log/page/grid', 'get', true, function (params) {
             return {
                 offset: params.offset,
@@ -191,29 +202,23 @@
 
         /* $('#btn_add').on('click', function () {
              $grid.add('/views/admin/menu/add?parentMenuId=${(parentMenuId!'0')}
-        ');
-                });
 
-                $('#btn_edit').on('click', function() {
-                    $grid.modify($('#dataGrid'), '/views/admin/menu/edit/{id}?parentMenuId=${parentMenuId!'0'}
-        ')
-                });
+                ');
+                        });
 
-                $('#btn_delete').on('click', function() {
-                    $grid.remove($('#dataGrid'), '/rest/menu', 'delete');
-                });*/
+                        $('#btn_edit').on('click', function() {
+                            $grid.modify($('#dataGrid'), '/views/admin/menu/edit/{id}?parentMenuId=${parentMenuId!'0'}
+
+                ')
+                        });
+
+                        $('#btn_delete').on('click', function() {
+                            $grid.remove($('#dataGrid'), '/rest/menu', 'delete');
+                        });*/
 
         $('#btn_query').on('click', function () {
             $grid.searchTable('dataGrid', 'formSearch');
         });
-
-        $('.datepicker').datepicker({
-            format: 'yyyy-mm-dd',
-            language: 'zh-CN',
-            autoclose: true
-        });
-        findCityList();
-        findStoreList()
     });
 
     function findCityList() {
@@ -265,13 +270,20 @@
         });
     }
 
+    function changeStoreSelection() {
+        if ($("#store").val() == -1) {
+            $('#city').val('-1');
+            $('#city').selectpicker('refresh');
+            //$('#city').selectpicker('render');
+        }
+    }
+
     function findStoreListByCity(cityId) {
-        initSelect("#storeCode", "选择门店");
+        initSelect("#store", "选择门店");
         if (cityId == -1) {
-            findStorelist();
+            findStoreList();
             return false;
         }
-        ;
         var store;
         $.ajax({
             url: '/rest/stores/findStoresListByCityIdAndStoreId/' + cityId,
@@ -299,6 +311,7 @@
         var selectOption = "<option value=-1>" + optionName + "</option>";
         $(select).append(selectOption);
     }
+
     var $page = {
         information: {
             show: function (id) {

@@ -45,10 +45,16 @@ public class CashCouponServiceImpl implements CashCouponService{
     }
 
     @Override
-    public PageInfo<CashCoupon> queryPage(Integer page, Integer size, String keywords) {
+    public PageInfo<CashCoupon> queryPage(Integer page, Integer size, String keywords,String startTime,String endTime) {
 
         PageHelper.startPage(page, size);
-        List<CashCoupon> list = cashCouponDAO.queryByKeywords(keywords);
+        if(null!=startTime && !"".equals(startTime)){
+            startTime+=" 00:00:00";
+        }
+        if(null!=endTime && !"".equals(endTime)){
+            endTime+=" 23:59:59";
+        }
+        List<CashCoupon> list = cashCouponDAO.queryByKeywords(keywords,startTime,endTime);
         return new PageInfo<>(list);
     }
 

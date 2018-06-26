@@ -535,9 +535,13 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public PageInfo<UserGoodsResponse> findGoodsListByCustomerIdAndIdentityTypeAndUserRank(Long userId, AppIdentityType identityType, String keywords, Integer page, Integer size) {
+    public PageInfo<UserGoodsResponse> findGoodsListByCustomerIdAndIdentityTypeAndUserRank(Long userId, AppIdentityType identityType,
+                                                                                           String firstCategoryCode, Long secondCategoryId,
+                                                                                           Long brandId, Long typeId, String specification,
+                                                                                           String keywords, Integer page, Integer size) {
         PageHelper.startPage(page, size);
-        List<UserGoodsResponse> list = goodsDAO.findGoodsListByCustomerIdAndIdentityTypeAndUserRank(userId, identityType, keywords);
+        List<UserGoodsResponse> list = goodsDAO.findGoodsListByCustomerIdAndIdentityTypeAndUserRank(userId, identityType, keywords,firstCategoryCode, secondCategoryId,
+                brandId, typeId, specification);
         return new PageInfo<>(list);
     }
 
@@ -606,9 +610,13 @@ public class GoodsServiceImpl implements GoodsService {
         return flag;
     }
     @Override
-    public PageInfo<UserGoodsResponse> findGoodsListBySellerIdAndIdentityTypeAndRankCode(Long userId, AppIdentityType identityType, String rankCode, String keywords, Integer page, Integer size) {
+    public PageInfo<UserGoodsResponse> findGoodsListBySellerIdAndIdentityTypeAndRankCode(Long userId, AppIdentityType identityType, String rankCode,
+                                                                                         String keywords, String firstCategoryCode,
+                                                                                         Long secondCategoryId, Long brandId, Long typeId,
+                                                                                         String specification,Integer page, Integer size) {
         PageHelper.startPage(page, size);
-        List<UserGoodsResponse> list = goodsDAO.findGoodsListBySellerIdAndIdentityTypeAndRankCode(userId, identityType, rankCode, keywords);
+        List<UserGoodsResponse> list = goodsDAO.findGoodsListBySellerIdAndIdentityTypeAndRankCode(userId, identityType, rankCode, keywords,firstCategoryCode,
+                secondCategoryId,brandId,typeId,specification);
         return new PageInfo<>(list);
     }
 
@@ -623,5 +631,57 @@ public class GoodsServiceImpl implements GoodsService {
         return goodsDetailResponse;
     }
 
+    @Override
+    public List<GoodsBrandResponse> findGoodsBrandListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(String categoryCode, Long userId,
+                                                                                                        Integer identityType, String categorySecond,
+                                                                                                        String specification, String goodType,
+                                                                                                        String rankCode) {
+        if (null != categoryCode && null != userId && null != identityType) {
+            if (identityType == 6) {
+                return goodsDAO.findGoodsBrandListByCategoryCodeAndCustomerIdAndUserRank(categoryCode, userId, categorySecond, specification, goodType);
+            } else {
+                return goodsDAO.findGoodsBrandListByCategoryCodeAndEmployeeIdAndUserRank(categoryCode, userId, categorySecond, specification, goodType, rankCode);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<GoodsSpecificationResponse> findGoodsSpecificationListByCategoryCodeAndUserIdAndUserRank(String categoryCode, Long userId, Integer identityType, String categorySecond, String goodsBrand, String goodType, String rankCode) {
+        if (null != categoryCode && null != userId && null != identityType) {
+            if (identityType == 6) {
+                return goodsDAO.findGoodsSpecificationListByCategoryCodeAndCustomerIdAndUserRank(categoryCode, userId, categorySecond, goodsBrand, goodType);
+            } else {
+                return goodsDAO.findGoodsSpecificationListByCategoryCodeAndEmployeeIdAndUserRank(categoryCode, userId, categorySecond, goodsBrand, goodType, rankCode);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<GoodsCategoryResponse> findGoodsCategoryListByCategoryCodeAndUserIdAndUserRank(String categoryCode, Long userId, Integer identityType,
+                                                                                               String goodsBrand, String specification, String goodsType, String rankCode) {
+        if (null != categoryCode && null != userId && null != identityType) {
+            if (identityType == 6) {
+                return goodsDAO.findGoodsCategoryListByCategoryCodeAndCustomerIdAndUserRank(categoryCode, userId, goodsBrand, specification, goodsType);
+            } else {
+                return goodsDAO.findGoodsCategoryListByCategoryCodeAndEmployeeIdAndUserRank(categoryCode, userId, goodsBrand, specification, goodsType, rankCode);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<GoodsTypeResponse> findGoodsTypeListByCategoryCodeAndUserIdAndUserRank(String categoryCode, Long userId, Integer identityType,
+                                                                                       String categorySecond, String specification, String goodsBrand, String rankCode) {
+        if (null != categoryCode && null != userId && null != identityType) {
+            if (identityType == 6) {
+                return goodsDAO.findGoodsTypeListByCategoryCodeAndCustomerIdAndUserRank(categoryCode, userId, categorySecond, specification, goodsBrand);
+            } else {
+                return goodsDAO.findGoodsTypeListByCategoryCodeAndEmployeeIdAndUserRank(categoryCode, userId, categorySecond, specification, goodsBrand, rankCode);
+            }
+        }
+        return null;
+    }
 
 }
