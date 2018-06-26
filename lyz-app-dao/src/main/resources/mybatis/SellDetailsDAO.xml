@@ -296,7 +296,7 @@
 
     </select>
 
-    <select id="countXL" resultMap="java.lang.Double">
+    <select id="countXL" resultType="java.lang.Double">
         SELECT SUM(amount) from sell_details where create_time &gt; #{startTime} and create_time &lt; #{endTime} and seller_id = #{sellerId};
     </select>
 

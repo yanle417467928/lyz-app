@@ -170,7 +170,7 @@ public class MaReportDownloadRestController extends BaseRestController {
      * @param
      * @return
      * @throws
-     * @title 账单明细报表查询
+     * @title 订单汇总明细报表查询
      * @descripe
      * @author GenerationRoad
      * @date 2018/4/3
@@ -418,9 +418,9 @@ public class MaReportDownloadRestController extends BaseRestController {
                 //设置筛选条件
                 ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
                 //列宽
-                int[] columnView = {10, 13, 10, 15, 15, 20, 20, 12, 10, 30, 30, 15, 15, 15, 35, 25};
+                int[] columnView = {10, 13, 10, 15, 15, 20, 20, 12, 10, 30, 30, 15, 15, 15, 35,35, 25};
                 //列标题
-                String[] titles = {"城市", "门店名称", "门店类型", "导购姓名", "顾客姓名", "付款时间", "退款时间", "支付方式", "支付金额", "订单号", "退单号", "第三方支付流水号", "pos交易流水单号"};
+                String[] titles = {"城市", "门店名称", "门店类型", "导购姓名", "顾客姓名", "付款时间", "退款时间", "支付方式", "支付金额", "订单号", "退单号", "第三方支付流水号","商户订单号", "pos交易流水单号"};
                 //计算标题开始行号
                 int row = 1;
                 if (null != map && map.size() > 0) {
@@ -495,7 +495,8 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Label(9, j + row, receiptsReportDO.getOrderNumber(), textFormat));
                     ws.addCell(new Label(10, j + row, receiptsReportDO.getReturnOrderNumber(), textFormat));
                     ws.addCell(new Label(11, j + row, receiptsReportDO.getTradeNo() == null ? "" : receiptsReportDO.getTradeNo(), textFormat));
-                    ws.addCell(new Label(12, j + row, receiptsReportDO.getRemarks(), textFormat));
+                    ws.addCell(new Label(12, j + row, receiptsReportDO.getOutTradeNo(), textFormat));
+                    ws.addCell(new Label(13, j + row, receiptsReportDO.getRemarks(), textFormat));
 
                     if ("CUS_PREPAY".equals(receiptsReportDO.getPayTypes())) {
                         cusPrepay = CountUtil.add(cusPrepay, null == receiptsReportDO.getMoney() ? 0D : receiptsReportDO.getMoney());
@@ -1126,7 +1127,7 @@ public class MaReportDownloadRestController extends BaseRestController {
      * @param
      * @return
      * @throws
-     * @title 账单明细报表下载
+     * @title 订单汇总明细报表下载
      * @descripe
      * @author GenerationRoad
      * @date 2018/4/3
@@ -1146,7 +1147,7 @@ public class MaReportDownloadRestController extends BaseRestController {
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "账单明细报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
+        String fileurl = "订单汇总明细报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
@@ -1263,6 +1264,9 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Number(30, j + row, billingItemsDO.getCusPreDeposit(), numberFormat));
                     ws.addCell(new Number(31, j + row, billingItemsDO.getTotalPay(), numberFormat));
                     ws.addCell(new Number(32, j + row, billingItemsDO.getReturnStore(), numberFormat));
+                    ws.addCell(new Label(33, j + row, billingItemsDO.getOutTradeNo(), textFormat));
+                    ws.addCell(new Label(34, j + row, billingItemsDO.getTradeNo(), textFormat));
+
                 }
             }
         } catch (Exception e) {

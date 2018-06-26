@@ -562,8 +562,8 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
                             detailsDO.setSellDetalsFlag(0);
                             detailsDO.setCompanyFlag(goodsInfo.getCompanyFlag());
                             detailsDO.setGoodsLineType(goodsInfo.getGoodsLineType());
-                            Integer valid = sellDetailsDAO.getGDTSByOrdernumber(orderNumber,goodsInfo.getSku());
-                            detailsDO.setValidCouponQty(valid);
+//                            Integer valid = sellDetailsDAO.getGDTSByOrdernumber(orderNumber,goodsInfo.getSku());
+//                            detailsDO.setValidCouponQty(valid);
                             sellDetailsDAO.addOneDetail(detailsDO);
 
                         }
@@ -648,8 +648,8 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
                         detailsDO.setSellDetalsFlag(1);
                         detailsDO.setCompanyFlag(goodsInfo.getCompanyFlag());
                         detailsDO.setGoodsLineType(goodsInfo.getGoodsLineType());
-                        Integer valid = sellDetailsDAO.getGDTSByReturnNo(returnOrderNumber,goodsInfo.getSku());
-                        detailsDO.setValidCouponQty(-valid);
+//                        Integer valid = sellDetailsDAO.getGDTSByReturnNo(returnOrderNumber,goodsInfo.getSku());
+//                        detailsDO.setValidCouponQty(-valid);
                         sellDetailsDAO.addOneDetail(detailsDO);
                     }
                 }
