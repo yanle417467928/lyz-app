@@ -2578,7 +2578,9 @@
         LEFT JOIN (SELECT DISTINCT ord_no,post_status,operation_time from ord_lifecycle) ol ON obi.ord_no = ol.ord_no
         LEFT JOIN ord_logistics_info oli ON oli.ord_no = obi.ord_no
         LEFT JOIN ord_coupon_info oci on og.ord_no = oci.ord_no AND og.sku = oci.sku and og.goods_line_type = "PRODUCT_COUPON"
-        WHERE obi.`status` != 'UNPAID' AND  obi.`status` != 'CANCELED'
+        WHERE obi.`status` != 'UNPAID'
+
+        and obi.delivery_type in ('SELF_TAKE','HOUSE_DELIVERY')
         AND (og.goods_sign != 'COMMON' or (og.goods_line_type = "PRODUCT_COUPON" and oci.goods_sign != 'COMMON'))
         AND (ol.post_status = 'PENDING_SHIPMENT' OR (ol.post_status = 'PENDING_RECEIVE' AND obi.delivery_type =
         'SELF_TAKE'))
@@ -2626,7 +2628,9 @@
         LEFT JOIN ord_base_info obi ON obi.ord_no = orbi.ord_no
         LEFT JOIN ord_return_logistic_info orli ON orli.return_no = orbi.return_no
         LEFT JOIN ord_return_product_coupon orci on orci.return_no = org.return_no and orci.sku = org.sku and org.goods_line_type = "PRODUCT_COUPON"
-        WHERE orbi.return_status = 'FINISHED' AND rl.post_status = 'FINISHED' AND orbi.return_type != 'CANCEL_RETURN'
+        WHERE orbi.return_status = 'FINISHED' AND rl.post_status = 'FINISHED'
+
+        and obi.delivery_type in ('SELF_TAKE','HOUSE_DELIVERY')
         AND (org.goods_sign != 'COMMON' or (org.goods_line_type = "PRODUCT_COUPON" and orci.goods_sign != 'COMMON'))
         <if test="null != cityId and cityId != -1">
             AND obi.city_id = #{cityId}
