@@ -33,6 +33,10 @@ public interface SellDetailsDAO {
     Long isExitSellDetailsSingle(@Param("year") Integer year,@Param("month") Integer month,@Param("sellerId") Long sellerId,@Param("flag") String flag);
 
     Long isExitSellDetailsWeek(@Param("headId") Long headId , @Param("week") Integer week);
+
+    Integer getGDTSByOrdernumber(@Param("ordNo") String ordNo,@Param("sku") String sku);
+
+    Integer getGDTSByReturnNo(@Param("returnNo") String returnNo,@Param("sku") String sku);
     /**
      * 查询某年某月销售明细
      *
@@ -135,6 +139,9 @@ public interface SellDetailsDAO {
     List<SellDetailsResponse> getJtRank(@Param("year") Integer year ,@Param("month") Integer month,@Param("flag") String flag);
 
     List<Long> cusIdFiltration(@Param("list") List<Long> ids,@Param("empId") Long empId);
+
+    Double countXL(@Param("startTime") LocalDateTime startTime,@Param("endTime") LocalDateTime endTime,@Param("sellerId") Long sellerId);
+
     /******              专供销量                *******/
 
     /**

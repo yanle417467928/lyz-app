@@ -156,5 +156,5 @@ public class SellDetailsDO {
     /**
      * 有效的产品券数量，排除后台发放，赠送的券数量
      */
-    private String validCouponQty;
+    private Integer validCouponQty;
 }

@@ -70,5 +70,19 @@ public class SellDetailsSingleDO {
      */
     private String structureName;
 
+    /**
+     * 标志:‘TS’ 桶数；‘HYS’:活跃数 ; 'XKF' ： 新开发会员数 ；"XL" ： 销量
+     */
     private String flag;
+
+    /**
+     * 目标销量
+     */
+    private Double targetSales;
+
+    /**
+     * 完成销量
+     */
+    private Double finishSales;
+
 }

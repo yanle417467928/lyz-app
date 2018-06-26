@@ -8,26 +8,26 @@
       customer_phone, customer_name, number,
       goods_grade, sku, quantity,
       amount, single_rewards ,city_id,goods_line_id,create_time,customer_id,order_subject_type,creator_identity_type,
-      creator_id,creator_name,company_flag,goods_line_type,sell_detals_flag,real_time)
+      creator_id,creator_name,company_flag,goods_line_type,sell_detals_flag,real_time,valid_coupon_qty)
     values ( #{companyId,jdbcType=BIGINT}, #{year,jdbcType=VARCHAR},
       #{month,jdbcType=VARCHAR}, #{storeId,jdbcType=BIGINT}, #{sellerId,jdbcType=BIGINT},#{sellerName},
       #{customerPhone,jdbcType=VARCHAR}, #{customerName,jdbcType=VARCHAR}, #{number,jdbcType=VARCHAR},
       #{goodsGrade,jdbcType=VARCHAR}, #{sku,jdbcType=VARCHAR}, #{quantity,jdbcType=INTEGER},
       #{amount,jdbcType=DECIMAL}, #{singleRewards,jdbcType=DECIMAL},#{cityId},#{goodsLineId},#{createTime},#{customerId},
-      #{orderSubjectType},#{creatorIdentityType},#{creatorId},#{creatorName},#{companyFlag},#{goodsLineType},#{sellDetalsFlag},#{realTime})
+      #{orderSubjectType},#{creatorIdentityType},#{creatorId},#{creatorName},#{companyFlag},#{goodsLineType},#{sellDetalsFlag},#{realTime},#{validCouponQty})
     </insert>
 
     <insert id="addSellDetailsSingle" parameterType="cn.com.leyizhuang.app.foundation.pojo.SellDetailsSingleDO" useGeneratedKeys="true" keyProperty="id">
         insert into sell_details_single (id, create_time, updata_time,
         seller_id, seller_name, target_qty,
         finish_qty, finish_chance, flag,
-        structure_id, structure_code, structure_name,
+        structure_id, structure_code, structure_name,target_sales,finish_sales
         year, month)
         values (#{id,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
         #{sellerId,jdbcType=BIGINT}, #{sellerName,jdbcType=VARCHAR}, #{targetQty,jdbcType=INTEGER},
         #{finishQty,jdbcType=INTEGER}, #{finishChance,jdbcType=DECIMAL}, #{flag,jdbcType=VARCHAR},
         #{structureId,jdbcType=BIGINT}, #{structureCode,jdbcType=VARCHAR}, #{structureName,jdbcType=VARCHAR},
-        #{year,jdbcType=INTEGER}, #{month,jdbcType=INTEGER})
+        #{year,jdbcType=INTEGER}, #{month,jdbcType=INTEGER},#{targetSales},#{finishSales})
     </insert>
 
     <insert id="addSellDetailsWeekFinish" parameterType="cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsWeekFinishResponse" >
@@ -146,6 +146,9 @@
             <if test="finishQty != null" >
                 finish_qty = #{finishQty,jdbcType=INTEGER},
             </if>
+            <if test="finishSales != null">
+                finish_sales = #{finishSales},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -241,7 +244,9 @@
         target_qty targetQty,
         finish_qty finishQty,
         finish_chance finishChance,
-        flag flag
+        flag flag,
+        target_sales,
+        finish_sales
         from sell_details_single
         where `year` = #{year} and `month` = #{month} and flag = #{flag} and seller_id = #{sellerId}
     </select>
@@ -289,6 +294,10 @@
         where sd.customer_id is NULL
         GROUP BY cid.customer_id
 
+    </select>
+
+    <select id="countXL" resultMap="java.lang.Double">
+        SELECT SUM(amount) from sell_details where create_time &gt; #{startTime} and create_time &lt; #{endTime} and seller_id = #{sellerId};
     </select>
 
     <select id="cusIdFiltration" resultType="java.lang.Long">
@@ -358,4 +367,20 @@
         ) a on a.number = ob.ord_no
         SET ob.is_record_sales = 0 where a.number is not NULL
     </update>
+
+    <select id="getGDTSByOrdernumber" resultType="java.lang.Integer">
+      SELECT count(oci.id) from ord_coupon_info oci
+        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
+        LEFT JOIN ord_goods_info og on og.id = ccpc.goods_line_id
+        where  oci.ord_no = #{ordNo} and oci.sku = #{sku}
+        and((ccpc.get_type = "BUY" and og.goods_line_type = "GOODS") or (oci.purchase_price > 0 and oci.get_type != "MANUAL_GRANT"));
+    </select>
+
+    <select id="getGDTSByReturnNo" resultType="java.lang.Integer">
+        SELECT count(orpc.id) from ord_return_product_coupon orpc
+        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = orpc.pcid
+        left JOIN ord_goods_info og on og.id = ccpc.goods_line_id
+        where  orpc.return_no = #{returnNo} and orpc.sku = #{sku}
+        and((ccpc.get_type = "BUY" and og.goods_line_type = "GOODS") or (orpc.purchase_price > 0 and ccpc.get_type != "MANUAL_GRANT"));
+    </select>
 </mapper>

@@ -52,4 +52,14 @@ public class SellDetailsResponse {
 
     private String flag;
 
+    /**
+     * 目标销量
+     */
+    private Double targetSales;
+
+    /**
+     * 完成销量
+     */
+    private Double finishSales;
+
 }
