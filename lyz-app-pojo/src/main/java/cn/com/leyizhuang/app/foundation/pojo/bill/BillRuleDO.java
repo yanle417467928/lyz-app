@@ -20,7 +20,7 @@ public class BillRuleDO {
     private Integer billDate;
     //还款截至日
     private Integer repaymentDeadlineDate;
-    //利率
+    //利率(单位：万分之一 )
     private Double interestRate;
     //门店id
     private Long storeId;
