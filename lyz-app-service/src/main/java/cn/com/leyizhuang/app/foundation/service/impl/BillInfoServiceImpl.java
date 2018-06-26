@@ -1,9 +1,12 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.constant.AppConstant;
+import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRuleDO;
 import cn.com.leyizhuang.app.foundation.service.BillInfoService;
 import cn.com.leyizhuang.app.foundation.service.BillRuleService;
+import cn.com.leyizhuang.common.util.CountUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,11 +37,23 @@ public class BillInfoServiceImpl implements BillInfoService {
         if (null == billRuleDO || null == billRuleDO.getInterestRate() || billRuleDO.getInterestRate().equals(0D)){
             return goodsDetailsDOList;
         }
-        for (BillRepaymentGoodsDetailsDO goodsDetailsDO: goodsDetailsDOList) {
-
+        //利息
+        Double interestRate = billRuleDO.getInterestRate();
+        //还款截至日
+        Integer repaymentDeadlineDate = billRuleDO.getRepaymentDeadlineDate();
+        if (null == repaymentDeadlineDate || repaymentDeadlineDate == 0) {
+            repaymentDeadlineDate = 1;
         }
 
+        //逾期天数
+        Integer overdueDays = DateUtil.getDifferenceFatalism(repaymentDeadlineDate);
 
-        return null;
+        //计算利息（欠款金额 * 利息 * 逾期天数 * 利息单位）
+        for (BillRepaymentGoodsDetailsDO goodsDetailsDO: goodsDetailsDOList) {
+            goodsDetailsDO.setInterestAmount(CountUtil.mul(goodsDetailsDO.getOrderCreditMoney(), interestRate, overdueDays, AppConstant.INTEREST_RATE_UNIT));
+        }
+
+        return goodsDetailsDOList;
     }
+
 }
