@@ -107,6 +107,8 @@ public interface MaCustomerService {
 
     PageInfo<MaCreateOrderPeopleResponse> maFindCreatePeople(Integer page, Integer size,String keywords,String peopleType);
 
+    PageInfo<MaCreateOrderPeopleResponse> maFindProxyCreatePeople(Integer page, Integer size,String keywords);
+
     PageInfo<MaCreateOrderPeopleResponse> maFindCreatePeopleByStoreId(Integer page, Integer size,Long storeId);
 
 

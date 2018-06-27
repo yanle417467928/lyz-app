@@ -90,6 +90,7 @@ public class MaDecorationCompanyCreditBillingViewController extends BaseControll
             paymentTypes.add(OrderBillingPaymentType.WE_CHAT);
             paymentTypes.add(OrderBillingPaymentType.CASH);
             paymentTypes.add(OrderBillingPaymentType.POS);
+            paymentTypes.add(OrderBillingPaymentType.BANK_TRANSFER);
             map.addAttribute("paymentTypes", paymentTypes);
             List<BankVO> bankVOS = this.bankService.findBankByIsEnable();
             map.addAttribute("bankVOS", bankVOS);

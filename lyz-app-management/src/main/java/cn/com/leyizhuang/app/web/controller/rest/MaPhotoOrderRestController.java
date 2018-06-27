@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
+import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.MaterialListType;
 import cn.com.leyizhuang.app.core.utils.SmsUtils;
@@ -15,6 +16,9 @@ import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.MaterialChangeDetailLog;
 import cn.com.leyizhuang.app.foundation.pojo.management.MaterialChangeHeadLog;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsCategoryDO;
+import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet;
+import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.MaUpdateMaterialResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
@@ -30,6 +34,8 @@ import cn.com.leyizhuang.common.core.constant.PhotoOrderType;
 import cn.com.leyizhuang.common.core.exception.data.InvalidDataException;
 import cn.com.leyizhuang.common.foundation.pojo.SmsAccount;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageInfo;
 import com.sun.jdi.LongValue;
 import org.apache.http.HttpResponse;
@@ -52,6 +58,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.zip.ZipEntry;
@@ -109,6 +116,9 @@ public class MaPhotoOrderRestController extends BaseRestController {
     @Resource
     private PhotoOrderService photoOrderServiceImpl;
 
+    @Resource
+    private GoodsPriceService goodsPriceService;
+
     /**
      * @param
      * @return
@@ -159,7 +169,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
      * @author
      */
     @GetMapping(value = "/find/photo/goods")
-    public GridDataVO<PhotoOrderGoodsDO> restPhotoGoodsList(ModelMap map , Integer offset, Integer size, String photoNo) {
+    public GridDataVO<PhotoOrderGoodsDO> restPhotoGoodsList(ModelMap map, Integer offset, Integer size, String photoNo) {
         if (StringUtils.isBlank(photoNo)) {
             logger.warn("拍照下单单号为空，获取商品信息失败！");
             return null;
@@ -168,15 +178,15 @@ public class MaPhotoOrderRestController extends BaseRestController {
         Integer page = getPage(offset, size);
 
 
-        PageInfo<PhotoOrderGoodsDO> photoOrderGoodsDOPageInfo = this.maPhotoOrderGoodsService.findPhotoOrderGoodsByPhotoOrderNo(page,size,photoNo);
+        PageInfo<PhotoOrderGoodsDO> photoOrderGoodsDOPageInfo = this.maPhotoOrderGoodsService.findPhotoOrderGoodsByPhotoOrderNo(page, size, photoNo);
         List<MaterialListDO> materialListDOList = this.maMaterialListService.findMaPhotoOrderMaterialListByPhotoNumber(photoNo);
         List<PhotoOrderGoodsDO> photoOrderGoodsDOList = photoOrderGoodsDOPageInfo.getList();
-        if (null != materialListDOList && materialListDOList.size() > 0){
-            for (PhotoOrderGoodsDO photoOrderGoodsDO : photoOrderGoodsDOList ){
+        if (null != materialListDOList && materialListDOList.size() > 0) {
+            for (PhotoOrderGoodsDO photoOrderGoodsDO : photoOrderGoodsDOList) {
                 photoOrderGoodsDO.setIsGenerateOrder("N");
             }
-        }else{
-            for (PhotoOrderGoodsDO photoOrderGoodsDO : photoOrderGoodsDOList ){
+        } else {
+            for (PhotoOrderGoodsDO photoOrderGoodsDO : photoOrderGoodsDOList) {
                 photoOrderGoodsDO.setIsGenerateOrder("Y");
             }
         }
@@ -475,6 +485,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
                 status.add(PhotoOrderStatus.PROCESSING);
                 PhotoOrderVO photoOrderVO = this.maPhotoOrderService.findByIdAndStatus(photoOrderDTO.getPhotoId(), status);
                 AppEmployee employee = null;
+                AppEmployee proxyEmployee = null;
                 if (null != photoOrderDTO.getGuideId() && -1 != photoOrderDTO.getGuideId()) {
                     employee = employeeService.findById(photoOrderDTO.getGuideId());
                     if (null == employee) {
@@ -483,7 +494,96 @@ public class MaPhotoOrderRestController extends BaseRestController {
                         return resultDTO;
                     }
                 }
+                if (null != photoOrderDTO.getProxyId() && -1 != photoOrderDTO.getProxyId()) {
+                    proxyEmployee = employeeService.findById(photoOrderDTO.getProxyId());
+                    if (null == proxyEmployee) {
+                        ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此代下单人信息，代下单id：" + photoOrderDTO.getProxyId() + "，保存新拍照下单失败！", null);
+                        logger.info("saveNewPhotoOrder EXCEPTION，未查询到此代下单人信息，代下单id：" + photoOrderDTO.getProxyId() + "，保存拍照下单失败！出参 ResultDTO:{}", resultDTO);
+                        return resultDTO;
+                    }
+                }
                 if (null != photoOrderVO) {
+
+
+                    if (AppIdentityType.DECORATE_EMPLOYEE == photoOrderVO.getIdentityTypeValue()) {
+                        String provinceName = deliveryAddressService.findAreaNameByCode(photoOrderDTO.getProvince());
+                        String cityName = deliveryAddressService.findAreaNameByCode(photoOrderDTO.getCity());
+                        String countyName = deliveryAddressService.findAreaNameByCode(photoOrderDTO.getCounty());
+                        AppEmployee decorateEmployee = employeeService.findById(photoOrderVO.getUserId());
+                        List<MaterialListDO> combList = photoOrderDTO.getCombList();
+                        MaterialAuditSheet materialAuditSheet = new MaterialAuditSheet();
+                        if (0 == photoOrderDTO.getGoAddDeliveryAddressType()) {
+                            materialAuditSheet.setEmployeeID(decorateEmployee.getEmpId());
+                            materialAuditSheet.setReceiver(photoOrderDTO.getReceiverName());
+                            materialAuditSheet.setReceiverPhone(photoOrderDTO.getReceiverPhone());
+                            materialAuditSheet.setDeliveryCity(cityName);
+                            materialAuditSheet.setDeliveryCounty(countyName);
+                            materialAuditSheet.setDeliveryStreet(photoOrderDTO.getStreet());
+                            materialAuditSheet.setResidenceName(photoOrderDTO.getResidenceName());
+                            materialAuditSheet.setDetailedAddress(photoOrderDTO.getDetailedAddress());
+                            materialAuditSheet.setRemark(photoOrderDTO.getRemark());
+
+                            DeliveryAddressDO deliveryAddressDO = new DeliveryAddressDO();
+                            deliveryAddressDO.setReceiver(photoOrderDTO.getReceiverName());
+                            deliveryAddressDO.setReceiverPhone(photoOrderDTO.getReceiverPhone());
+                            deliveryAddressDO.setDeliveryProvince(provinceName);
+                            deliveryAddressDO.setDeliveryCity(cityName);
+                            deliveryAddressDO.setDeliveryCounty(countyName);
+                            deliveryAddressDO.setDeliveryStreet(photoOrderDTO.getStreet());
+                            deliveryAddressDO.setDetailedAddress(photoOrderDTO.getDetailedAddress());
+                            deliveryAddressDO.setResidenceName(photoOrderDTO.getResidenceName());
+                            deliveryAddressDO.setUserId(decorateEmployee.getManagerId());
+                            deliveryAddressDO.setIdentityType(AppIdentityType.DECORATE_MANAGER);
+                            deliveryAddressDO.setStatus(Boolean.TRUE);
+                            deliveryAddressDO.setIsDefault(Boolean.FALSE);
+                            deliveryAddressDO.setEstateInfo(photoOrderDTO.getEstateInfo());
+
+                            deliveryAddressService.maAddDeliveryAddress(deliveryAddressDO);
+                            //地址id
+                            Long deliveryId = deliveryAddressDO.getId();
+                            materialAuditSheet.setDeliveryId(deliveryId);
+                        }
+
+                        materialAuditSheet.setEmployeeName(decorateEmployee.getName());
+                        materialAuditSheet.setDeliveryType(AppDeliveryType.HOUSE_DELIVERY);
+                        materialAuditSheet.setStoreID(decorateEmployee.getStoreId());
+                        materialAuditSheet.setStatus(1);
+                        materialAuditSheet.setIsAudited(false);
+                        String auditNumber = this.createNumber();
+                        materialAuditSheet.setAuditNo(auditNumber);
+                        materialAuditSheet.setCreateTime(LocalDateTime.now());
+                        List<MaterialAuditGoodsInfo> materialAuditGoodsInfoList = new ArrayList<>();
+                        for (MaterialListDO materialListDO : combList) {
+                            //根据商品id查找对应的商品
+                            GoodsDO goodsDO = goodsService.queryById(materialListDO.getGid());
+                            MaterialAuditGoodsInfo materialAuditGoodsInfo = new MaterialAuditGoodsInfo();
+                            //对物料审核单商品详情请进行赋值
+                            materialAuditGoodsInfo.setGid(materialListDO.getGid());
+                            materialAuditGoodsInfo.setCoverImageUri(goodsDO.getCoverImageUri());
+                            materialAuditGoodsInfo.setQty(materialListDO.getQty());
+                            materialAuditGoodsInfo.setGoodsSpecification(goodsDO.getGoodsSpecification());
+                            materialAuditGoodsInfo.setGoodsUnit(goodsDO.getGoodsUnit());
+                            materialAuditGoodsInfo.setSku(goodsDO.getSku());
+                            materialAuditGoodsInfo.setSkuName(goodsDO.getSkuName());
+                            //获取商品零售价
+                            Double goodsPrice = goodsPriceService.findGoodsRetailPriceByGoodsIDAndStoreID(materialListDO.getGid(), decorateEmployee.getStoreId());
+                            materialAuditGoodsInfo.setRetailPrice(goodsPrice);
+                            materialAuditGoodsInfoList.add(materialAuditGoodsInfo);
+                        }
+                        Boolean b = maPhotoOrderService.saveMaterialAuditSheet(materialAuditSheet, materialAuditGoodsInfoList);
+                        if (b) {
+                            this.maPhotoOrderService.updateStatusAndsaveAndUpdateMaterialStatus(photoOrderDTO.getPhotoId(), PhotoOrderStatus.FINISH);
+
+                            ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "保存新拍照下单成功！", null);
+                            logger.info("保存新拍照下单成功!");
+                            return resultDTO;
+                        } else {
+                            ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "信息缺失，保存新拍照下单失败！", null);
+                            logger.info("saveNewPhotoOrder EXCEPTION，未知异常，保存新拍照下单失败！出参 ResultDTO:{}", resultDTO);
+                            return resultDTO;
+                        }
+                    }
+
                     List<MaterialListDO> combList = photoOrderDTO.getCombList();
                     List<MaterialListDO> materialListSave = new ArrayList<>();
                     List<MaterialListDO> materialListUpdate = new ArrayList<>();
@@ -507,7 +607,10 @@ public class MaPhotoOrderRestController extends BaseRestController {
                         deliveryAddressDO.setDeliveryStreet(photoOrderDTO.getStreet());
                         deliveryAddressDO.setDetailedAddress(photoOrderDTO.getDetailedAddress());
                         deliveryAddressDO.setResidenceName(photoOrderDTO.getResidenceName());
-                        if (-1 != photoOrderDTO.getGuideId()) {
+                        if (null != proxyEmployee) {
+                            deliveryAddressDO.setUserId(proxyEmployee.getEmpId());
+                            deliveryAddressDO.setIdentityType(proxyEmployee.getIdentityType());
+                        } else if (-1 != photoOrderDTO.getGuideId()) {
                             deliveryAddressDO.setUserId(employee.getEmpId());
                             deliveryAddressDO.setIdentityType(employee.getIdentityType());
                         } else {
@@ -532,7 +635,10 @@ public class MaPhotoOrderRestController extends BaseRestController {
                                     photoOrderVO.getIdentityTypeValue(), materialListDO.getGid());
                             if (null == materialList) {
                                 MaterialListDO materialListDOTemp = transformRepeat(goodsDO);
-                                if (null != photoOrderDTO.getGuideId() && -1 != photoOrderDTO.getGuideId()) {
+                                if (null != proxyEmployee) {
+                                    materialListDOTemp.setUserId(proxyEmployee.getEmpId());
+                                    materialListDOTemp.setIdentityType(proxyEmployee.getIdentityType());
+                                } else if (null != photoOrderDTO.getGuideId() && -1 != photoOrderDTO.getGuideId()) {
                                     materialListDOTemp.setUserId(employee.getEmpId());
                                     materialListDOTemp.setIdentityType(employee.getIdentityType());
                                 } else {
@@ -545,6 +651,10 @@ public class MaPhotoOrderRestController extends BaseRestController {
                                 materialListDOTemp.setMaterialListType(MaterialListType.NORMAL);
                                 materialListSave.add(materialListDOTemp);
                             } else {
+                                if (null != proxyEmployee) {
+                                    materialList.setUserId(proxyEmployee.getEmpId());
+                                    materialList.setIdentityType(proxyEmployee.getIdentityType());
+                                }
                                 materialList.setIsGenerateOrder("N");
                                 materialList.setDeliveryId(deliveryId);
                                 materialList.setQty(materialList.getQty() + materialListDO.getQty());
@@ -560,9 +670,13 @@ public class MaPhotoOrderRestController extends BaseRestController {
                         }
                     }
                     if (null != photoOrderDTO.getGuideId() && -1 != photoOrderDTO.getGuideId()) {
-                        this.maPhotoOrderService.updateRemarkAndDeliveryId(photoOrderDTO.getRemark(),deliveryId,employee.getEmpId(),employee.getIdentityType());
+                        this.maPhotoOrderService.updateRemarkAndDeliveryId(photoOrderDTO.getRemark(), deliveryId, employee.getEmpId(), employee.getIdentityType());
                     } else {
-                        this.maPhotoOrderService.updateRemarkAndDeliveryId(photoOrderDTO.getRemark(),deliveryId,photoOrderVO.getUserId(),photoOrderVO.getIdentityTypeValue());
+                        this.maPhotoOrderService.updateRemarkAndDeliveryId(photoOrderDTO.getRemark(), deliveryId, photoOrderVO.getUserId(), photoOrderVO.getIdentityTypeValue());
+                    }
+
+                    if (null != photoOrderDTO.getProxyId() && -1 != photoOrderDTO.getProxyId()) {
+                        this.maPhotoOrderService.updatePhotoOrderProxyId(photoOrderDTO.getProxyId(), photoOrderVO.getPhotoOrderNo());
                     }
 
                     this.maPhotoOrderGoodsService.batchSave(photoOrderGoodsDOList);
@@ -801,7 +915,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
                     AppCustomer customer = customerService.findById(guideId);
                     deliveryAddressResponseList = deliveryAddressService.getDefaultDeliveryAddressListByUserIdAndIdentityType(page, size, customer.getCusId(), AppIdentityType.CUSTOMER, sellerAddressConditions);
                     deliveryAddressResponses = deliveryAddressResponseList.getList();
-                }else {
+                } else {
                     AppEmployee employee = employeeService.findById(guideId);
                     deliveryAddressResponseList = deliveryAddressService.getDefaultDeliveryAddressListByUserIdAndIdentityType(page, size, employee.getEmpId(), employee.getIdentityType(), sellerAddressConditions);
                     deliveryAddressResponses = deliveryAddressResponseList.getList();
@@ -846,7 +960,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
                                                                          String peopleType, String selectCreateOrderPeopleConditions) {
         logger.info("findCreateOrderPeople 获取下单人列表,入参 offset:{},size:{},keywords:{},peopleType:{}," +
                 "selectCreateOrderPeopleConditions:{}", offset, size, keywords, peopleType, selectCreateOrderPeopleConditions);
-        if (StringUtils.isBlank(peopleType) || "-1".equals(peopleType)){
+        if (StringUtils.isBlank(peopleType) || "-1".equals(peopleType)) {
             logger.warn("findCreateOrderPeople OUT,未选择下单人类型，获取下单人列表失败");
             return null;
         }
@@ -906,10 +1020,10 @@ public class MaPhotoOrderRestController extends BaseRestController {
      * @descripe
      */
     @GetMapping(value = "/find/people/storeId")
-    public GridDataVO<MaCreateOrderPeopleResponse> findCreateOrderPeopleByStoreId(Integer offset, Integer size, String peopleType,Long storeId) {
+    public GridDataVO<MaCreateOrderPeopleResponse> findCreateOrderPeopleByStoreId(Integer offset, Integer size, String peopleType, Long storeId) {
         logger.info("findCreateOrderPeople 获取下单人列表,入参 offset:{},size:{},peopleType:{}," +
-                "storeId:{}", offset, size, peopleType,storeId);
-        if (StringUtils.isBlank(peopleType) || "-1".equals(peopleType)){
+                "storeId:{}", offset, size, peopleType, storeId);
+        if (StringUtils.isBlank(peopleType) || "-1".equals(peopleType)) {
             logger.warn("findCreateOrderPeople OUT,未选择下单人类型，获取下单人列表失败");
             return null;
         }
@@ -920,7 +1034,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
             PageInfo<MaCreateOrderPeopleResponse> maCreateOrderPeopleResponsePageInfo = null;
             List<MaCreateOrderPeopleResponse> maCreateOrderPeopleResponseList = null;
 
-            maCreateOrderPeopleResponsePageInfo = maCustomerService.maFindCreatePeopleByStoreId(page, size,storeId);
+            maCreateOrderPeopleResponsePageInfo = maCustomerService.maFindCreatePeopleByStoreId(page, size, storeId);
             maCreateOrderPeopleResponseList = maCreateOrderPeopleResponsePageInfo.getList();
 
             logger.warn("findCreateOrderPeople ,获取下单人列表成功", maCreateOrderPeopleResponseList.size());
@@ -1006,7 +1120,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
                 return resultDTO;
             }
             if (null != photoOrderDTO && null != photoOrderDTO.getPhotoId() && null != photoOrderDTO.getCombList() && photoOrderDTO.getCombList().size() > 0) {
-
+                List<PhotoOrderGoodsDO> photoOrderGoodsDOList = new ArrayList<>();
                 List<PhotoOrderStatus> status = new ArrayList<>();
                 status.add(PhotoOrderStatus.PENDING);
                 status.add(PhotoOrderStatus.PROCESSING);
@@ -1015,6 +1129,124 @@ public class MaPhotoOrderRestController extends BaseRestController {
                 AppIdentityType appIdentityType = null;
                 String mobile = null;
                 Long cityId = 1L;
+                AppEmployee proxyEmployee = null;
+                if (null != photoOrderDTO.getProxyId() && -1 != photoOrderDTO.getProxyId()) {
+                    proxyEmployee = employeeService.findById(photoOrderDTO.getProxyId());
+                    if (null == proxyEmployee) {
+                        ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此代下单人信息，代下单id：" + photoOrderDTO.getProxyId() + "，保存新拍照下单失败！", null);
+                        logger.info("saveNewPhotoOrder EXCEPTION，未查询到此代下单人信息，代下单id：" + photoOrderDTO.getProxyId() + "，保存新拍照下单失败！出参 ResultDTO:{}", resultDTO);
+                        return resultDTO;
+                    }
+                }
+
+                if ("装饰公司员工".equals(photoOrderDTO.getPeopleIdentityType())) {
+                    String provinceName = deliveryAddressService.findAreaNameByCode(photoOrderDTO.getProvince());
+                    String cityName = deliveryAddressService.findAreaNameByCode(photoOrderDTO.getCity());
+                    String countyName = deliveryAddressService.findAreaNameByCode(photoOrderDTO.getCounty());
+                    AppEmployee decorateEmployee = employeeService.findById(photoOrderDTO.getGuideId());
+                    List<MaterialListDO> combList = photoOrderDTO.getCombList();
+                    MaterialAuditSheet materialAuditSheet = new MaterialAuditSheet();
+                    Long deliveryId = null;
+                    if (0 == photoOrderDTO.getGoAddDeliveryAddressType()) {
+                        materialAuditSheet.setEmployeeID(decorateEmployee.getEmpId());
+                        materialAuditSheet.setReceiver(photoOrderDTO.getReceiverName());
+                        materialAuditSheet.setReceiverPhone(photoOrderDTO.getReceiverPhone());
+                        materialAuditSheet.setDeliveryCity(cityName);
+                        materialAuditSheet.setDeliveryCounty(countyName);
+                        materialAuditSheet.setDeliveryStreet(photoOrderDTO.getStreet());
+                        materialAuditSheet.setResidenceName(photoOrderDTO.getResidenceName());
+                        materialAuditSheet.setDetailedAddress(photoOrderDTO.getDetailedAddress());
+                        materialAuditSheet.setRemark(photoOrderDTO.getRemark());
+
+
+                    DeliveryAddressDO deliveryAddressDO = new DeliveryAddressDO();
+                    deliveryAddressDO.setReceiver(photoOrderDTO.getReceiverName());
+                    deliveryAddressDO.setReceiverPhone(photoOrderDTO.getReceiverPhone());
+                    deliveryAddressDO.setDeliveryProvince(provinceName);
+                    deliveryAddressDO.setDeliveryCity(cityName);
+                    deliveryAddressDO.setDeliveryCounty(countyName);
+                    deliveryAddressDO.setDeliveryStreet(photoOrderDTO.getStreet());
+                    deliveryAddressDO.setDetailedAddress(photoOrderDTO.getDetailedAddress());
+                    deliveryAddressDO.setResidenceName(photoOrderDTO.getResidenceName());
+                    deliveryAddressDO.setUserId(decorateEmployee.getManagerId());
+                    deliveryAddressDO.setIdentityType(AppIdentityType.DECORATE_MANAGER);
+                    deliveryAddressDO.setStatus(Boolean.TRUE);
+                    deliveryAddressDO.setIsDefault(Boolean.FALSE);
+                    deliveryAddressDO.setEstateInfo(photoOrderDTO.getEstateInfo());
+
+                    deliveryAddressService.maAddDeliveryAddress(deliveryAddressDO);
+                    //地址id
+                    deliveryId = deliveryAddressDO.getId();
+                     materialAuditSheet.setDeliveryId(deliveryId);
+                    }
+                    materialAuditSheet.setEmployeeName(decorateEmployee.getName());
+                    materialAuditSheet.setDeliveryType(AppDeliveryType.HOUSE_DELIVERY);
+                    materialAuditSheet.setStoreID(decorateEmployee.getStoreId());
+                    materialAuditSheet.setStatus(1);
+                    materialAuditSheet.setIsAudited(false);
+                    String auditNumber = this.createNumber();
+                    materialAuditSheet.setAuditNo(auditNumber);
+                    materialAuditSheet.setCreateTime(LocalDateTime.now());
+                    List<MaterialAuditGoodsInfo> materialAuditGoodsInfoList = new ArrayList<>();
+                    for (MaterialListDO materialListDO : combList) {
+                        //根据商品id查找对应的商品
+                        GoodsDO goodsDO = goodsService.queryById(materialListDO.getGid());
+                        MaterialAuditGoodsInfo materialAuditGoodsInfo = new MaterialAuditGoodsInfo();
+                        //对物料审核单商品详情请进行赋值
+                        materialAuditGoodsInfo.setGid(materialListDO.getGid());
+                        materialAuditGoodsInfo.setCoverImageUri(goodsDO.getCoverImageUri());
+                        materialAuditGoodsInfo.setQty(materialListDO.getQty());
+                        materialAuditGoodsInfo.setGoodsSpecification(goodsDO.getGoodsSpecification());
+                        materialAuditGoodsInfo.setGoodsUnit(goodsDO.getGoodsUnit());
+                        materialAuditGoodsInfo.setSku(goodsDO.getSku());
+                        materialAuditGoodsInfo.setSkuName(goodsDO.getSkuName());
+                        //获取商品零售价
+                        Double goodsPrice = goodsPriceService.findGoodsRetailPriceByGoodsIDAndStoreID(materialListDO.getGid(), decorateEmployee.getStoreId());
+                        materialAuditGoodsInfo.setRetailPrice(goodsPrice);
+                        materialAuditGoodsInfoList.add(materialAuditGoodsInfo);
+                    }
+
+                    //******************************************保存拍照下单实体********************************
+                    String orderNumber = OrderUtils.generatePhotoOrderNumber(cityId);
+                    PhotoOrderDO photoOrderDO = new PhotoOrderDO();
+                    photoOrderDO.setCreateTime(LocalDateTime.now());
+                    photoOrderDO.setIdentityType(decorateEmployee.getIdentityType());
+                    photoOrderDO.setContactPhone(photoOrderDTO.getContactPhone());
+                    photoOrderDO.setContactName(photoOrderDTO.getContactName());
+                    photoOrderDO.setPhotos(photoOrderDTO.getPhotoImgs());
+                    photoOrderDO.setRemark(photoOrderDTO.getRemark());
+                    photoOrderDO.setStatus(PhotoOrderStatus.FINISH);
+                    photoOrderDO.setUserId(decorateEmployee.getEmpId());
+                    photoOrderDO.setPhotoOrderNo(orderNumber);
+                    photoOrderDO.setDeliveryId(deliveryId);
+                    photoOrderDO.setOrderType(PhotoOrderType.UNDERLINE);
+                    photoOrderDO.setProxyId(photoOrderDTO.getProxyId());
+                    this.photoOrderServiceImpl.save(photoOrderDO);
+
+                    for (MaterialListDO materialListDO : combList) {
+                        GoodsDO goodsDO = maGoodsService.findGoodsById(materialListDO.getGid());
+                        if (null != goodsDO) {
+                            PhotoOrderGoodsDO photoOrderGoodsDO = new PhotoOrderGoodsDO();
+                            photoOrderGoodsDO.setGid(goodsDO.getGid());
+                            photoOrderGoodsDO.setSkuName(goodsDO.getSkuName());
+                            photoOrderGoodsDO.setGoodsQty(materialListDO.getQty());
+                            photoOrderGoodsDO.setPhotoOrderNo(orderNumber);
+                            photoOrderGoodsDOList.add(photoOrderGoodsDO);
+                        }
+                    }
+                    this.maPhotoOrderGoodsService.batchSave(photoOrderGoodsDOList);
+                    Boolean b = maPhotoOrderService.saveMaterialAuditSheet(materialAuditSheet, materialAuditGoodsInfoList);
+                    if (b) {
+                        ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "保存新拍照下单成功！", null);
+                        logger.info("保存新拍照下单成功!");
+                        return resultDTO;
+                    } else {
+                        ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "信息缺失，保存新拍照下单失败！", null);
+                        logger.info("saveNewPhotoOrder EXCEPTION，未知异常，保存新拍照下单失败！出参 ResultDTO:{}", resultDTO);
+                        return resultDTO;
+                    }
+                }
+
                 if ("顾客".equals(photoOrderDTO.getPeopleIdentityType())) {
                     try {
                         AppCustomer customer = customerService.findById(photoOrderDTO.getGuideId());
@@ -1048,7 +1280,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
                 List<MaterialListDO> combList = photoOrderDTO.getCombList();
                 List<MaterialListDO> materialListSave = new ArrayList<>();
                 List<MaterialListDO> materialListUpdate = new ArrayList<>();
-                List<PhotoOrderGoodsDO> photoOrderGoodsDOList = new ArrayList<>();
+
                 Long deliveryId = null;
                 if (null != photoOrderDTO.getDeliveryId() && -1 != photoOrderDTO.getDeliveryId()) {
                     deliveryId = photoOrderDTO.getDeliveryId();
@@ -1068,8 +1300,13 @@ public class MaPhotoOrderRestController extends BaseRestController {
                     deliveryAddressDO.setDeliveryStreet(photoOrderDTO.getStreet());
                     deliveryAddressDO.setDetailedAddress(photoOrderDTO.getDetailedAddress());
                     deliveryAddressDO.setResidenceName(photoOrderDTO.getResidenceName());
-                    deliveryAddressDO.setUserId(userId);
-                    deliveryAddressDO.setIdentityType(appIdentityType);
+                    if (null != proxyEmployee) {
+                        deliveryAddressDO.setUserId(proxyEmployee.getEmpId());
+                        deliveryAddressDO.setIdentityType(proxyEmployee.getIdentityType());
+                    } else {
+                        deliveryAddressDO.setUserId(userId);
+                        deliveryAddressDO.setIdentityType(appIdentityType);
+                    }
                     deliveryAddressDO.setStatus(Boolean.TRUE);
                     deliveryAddressDO.setIsDefault(Boolean.FALSE);
                     deliveryAddressDO.setEstateInfo(photoOrderDTO.getEstateInfo());
@@ -1094,6 +1331,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
                 photoOrderDO.setPhotoOrderNo(orderNumber);
                 photoOrderDO.setDeliveryId(deliveryId);
                 photoOrderDO.setOrderType(PhotoOrderType.UNDERLINE);
+                photoOrderDO.setProxyId(photoOrderDTO.getProxyId());
                 this.photoOrderServiceImpl.save(photoOrderDO);
 
                 //*****************************************************************************************
@@ -1101,12 +1339,23 @@ public class MaPhotoOrderRestController extends BaseRestController {
                 for (MaterialListDO materialListDO : combList) {
                     GoodsDO goodsDO = maGoodsService.findGoodsById(materialListDO.getGid());
                     if (null != goodsDO) {
-                        MaterialListDO materialList = maMaterialListService.findByUserIdAndIdentityTypeAndGoodsId(userId,
-                                appIdentityType, materialListDO.getGid());
+                        MaterialListDO materialList = null;
+                        if (null != proxyEmployee) {
+                            materialList = maMaterialListService.findByUserIdAndIdentityTypeAndGoodsId(proxyEmployee.getEmpId(),
+                                    proxyEmployee.getIdentityType(), materialListDO.getGid());
+                        } else {
+                            materialList = maMaterialListService.findByUserIdAndIdentityTypeAndGoodsId(userId,
+                                    appIdentityType, materialListDO.getGid());
+                        }
                         if (null == materialList) {
                             MaterialListDO materialListDOTemp = transformRepeat(goodsDO);
-                            materialListDOTemp.setUserId(userId);
-                            materialListDOTemp.setIdentityType(appIdentityType);
+                            if (null != proxyEmployee) {
+                                materialListDOTemp.setUserId(proxyEmployee.getEmpId());
+                                materialListDOTemp.setIdentityType(proxyEmployee.getIdentityType());
+                            } else {
+                                materialListDOTemp.setUserId(userId);
+                                materialListDOTemp.setIdentityType(appIdentityType);
+                            }
                             materialListDOTemp.setDeliveryId(deliveryId);
                             materialListDOTemp.setQty(materialListDO.getQty());
                             materialListDOTemp.setRemark(photoOrderDTO.getRemark());
@@ -1114,6 +1363,10 @@ public class MaPhotoOrderRestController extends BaseRestController {
                             materialListDOTemp.setMaterialListType(MaterialListType.NORMAL);
                             materialListSave.add(materialListDOTemp);
                         } else {
+                            if (null != proxyEmployee) {
+                                materialList.setUserId(proxyEmployee.getEmpId());
+                                materialList.setIdentityType(proxyEmployee.getIdentityType());
+                            }
                             materialList.setDeliveryId(deliveryId);
                             materialList.setRemark(photoOrderDTO.getRemark());
                             materialList.setIsGenerateOrder("N");
@@ -1132,7 +1385,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
                 PhotoOrderVO photoOrderVO = this.maPhotoOrderService.findByPhotoOrderNo(orderNumber);
                 this.maPhotoOrderGoodsService.batchSave(photoOrderGoodsDOList);
                 this.maPhotoOrderService.updateStatusAndsaveAndUpdateMaterialList(photoOrderVO.getId(), PhotoOrderStatus.FINISH, materialListSave, materialListUpdate);
-                this.maPhotoOrderService.updateRemarkAndDeliveryId(photoOrderDTO.getRemark(),deliveryId,userId,appIdentityType);
+                this.maPhotoOrderService.updateRemarkAndDeliveryId(photoOrderDTO.getRemark(), deliveryId, userId, appIdentityType);
                 //短信提醒
 //                    String info = "您的拍照下单订单(" + photoOrderVO.getPhotoOrderNo() + ")已处理，请登录APP查看。";
                 String info = "您的拍照下单已完成，请到 APP 下料清单中继续完成支付！";
@@ -1182,33 +1435,54 @@ public class MaPhotoOrderRestController extends BaseRestController {
      */
     @GetMapping(value = "/material/goods")
     public ResultDTO<Object> findMaterialGoodsList(Long userId, String identityTypeValue, String updatePhotoOrderNo) {
-        logger.info("findMaterialGoodsList,获取下料清单商品，入参 userId:{} identityTypeValue:{} updatePhotoOrderNo:{}",userId, identityTypeValue,updatePhotoOrderNo);
+        logger.info("findMaterialGoodsList,获取下料清单商品，入参 userId:{} identityTypeValue:{} updatePhotoOrderNo:{}", userId, identityTypeValue, updatePhotoOrderNo);
 
-        if (null == userId){
-            logger.info("findMaterialGoodsList,获取下料清单商品，未获取到下单人ID，获取下料清单商品失败！userId：{}",userId);
+        if (null == userId) {
+            logger.info("findMaterialGoodsList,获取下料清单商品，未获取到下单人ID，获取下料清单商品失败！userId：{}", userId);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未获取到下单人ID", null);
         }
 
-        if (StringUtils.isBlank(identityTypeValue)){
-            logger.info("findMaterialGoodsList,获取下料清单商品，未获取到下单人身份类型，获取下料清单商品失败！identityTypeValue：{}",identityTypeValue);
+        if (StringUtils.isBlank(identityTypeValue)) {
+            logger.info("findMaterialGoodsList,获取下料清单商品，未获取到下单人身份类型，获取下料清单商品失败！identityTypeValue：{}", identityTypeValue);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未获取到下单人身份类型，修改下料清单失败！", null);
         }
 
-        if (StringUtils.isBlank(updatePhotoOrderNo)){
-            logger.info("findMaterialGoodsList,获取下料清单商品，未获取到下单单号，获取下料清单商品失败！updatePhotoOrderNo：{}",updatePhotoOrderNo);
+        if (StringUtils.isBlank(updatePhotoOrderNo)) {
+            logger.info("findMaterialGoodsList,获取下料清单商品，未获取到下单单号，获取下料清单商品失败！updatePhotoOrderNo：{}", updatePhotoOrderNo);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未获取到下单单号，修改下料清单失败！", null);
         }
 
-        if (!"CUSTOMER".equals(identityTypeValue)){
-            identityTypeValue = "OTHER";
-        }
-        List<MaUpdateMaterialResponse> materialListDOList = this.maMaterialListService.findMaAllMaterialListByPhotoNumber(updatePhotoOrderNo,identityTypeValue);
+        List<MaUpdateMaterialResponse> materialListDOList = null;
+        PhotoOrderVO photoOrderVO = this.maPhotoOrderService.findByPhotoOrderNo(updatePhotoOrderNo);
+        if (null != photoOrderVO) {
 
-        if (null == materialListDOList || materialListDOList.size() <= 0) {
-            logger.warn("下料清单中未查询到商品信息！materialListDOList：{}" , materialListDOList);
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"下料清单中未查询到商品信息", null);
+            if (null != photoOrderVO.getProxyId() && -1 != photoOrderVO.getProxyId()) {
+                AppEmployee proxyEmployee = employeeService.findById(photoOrderVO.getProxyId());
+                if (null == proxyEmployee) {
+                    logger.warn("未查询到代下单人信息！带下单人id：{}", photoOrderVO.getProxyId());
+                    return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到代下单人信息", null);
+                }
+                materialListDOList = maMaterialListService.findProxyMaterialListByPhotoNumber(proxyEmployee.getEmpId(), proxyEmployee.getIdentityType());
+                if (null != materialListDOList && materialListDOList.size() > 0){
+                    for (MaUpdateMaterialResponse maUpdateMaterialResponse : materialListDOList){
+                        maUpdateMaterialResponse.setProxyId(photoOrderVO.getProxyId());
+                    }
+                }
+            } else {
+                if (!"CUSTOMER".equals(identityTypeValue)) {
+                    identityTypeValue = "OTHER";
+                }
+                materialListDOList = this.maMaterialListService.findMaAllMaterialListByPhotoNumber(updatePhotoOrderNo, identityTypeValue);
+            }
+            if (null == materialListDOList || materialListDOList.size() <= 0) {
+                logger.warn("下料清单中未查询到商品信息！materialListDOList：{}", materialListDOList);
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "下料清单中未查询到商品信息", null);
+            } else {
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, materialListDOList);
+            }
         } else {
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, materialListDOList);
+            logger.warn("未查询到该拍照下单信息！拍照单号：{}", updatePhotoOrderNo);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到该拍照下单信息！", null);
         }
     }
 
@@ -1229,49 +1503,49 @@ public class MaPhotoOrderRestController extends BaseRestController {
             if (0 == photoOrderDTO.getGoAddDeliveryAddressType() && (null == photoOrderDTO.getDeliveryId() || -1 == photoOrderDTO.getDeliveryId())) {
                 if (StringUtils.isBlank(photoOrderDTO.getReceiverName())) {
                     ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "收货人姓名不能为空，保存拍照下单失败！", null);
-                    logger.info("savePhotoOrder EXCEPTION，收货人姓名不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
+                    logger.info("saveUpdatePhotoOrder EXCEPTION，收货人姓名不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
                     return resultDTO;
                 }
                 if (StringUtils.isBlank(photoOrderDTO.getReceiverPhone())) {
                     ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "收货人电话号码不能为空，保存拍照下单失败！", null);
-                    logger.info("savePhotoOrder EXCEPTION，收货人姓名不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
+                    logger.info("saveUpdatePhotoOrder EXCEPTION，收货人姓名不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
                     return resultDTO;
                 }
                 if (StringUtils.isBlank(photoOrderDTO.getProvince())) {
                     ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "省不能为空，保存拍照下单失败！", null);
-                    logger.info("savePhotoOrder EXCEPTION，省不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
+                    logger.info("saveUpdatePhotoOrder EXCEPTION，省不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
                     return resultDTO;
                 }
                 if (StringUtils.isBlank(photoOrderDTO.getCity())) {
                     ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "市不能为空，保存拍照下单失败！", null);
-                    logger.info("savePhotoOrder EXCEPTION，市不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
+                    logger.info("saveUpdatePhotoOrder EXCEPTION，市不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
                     return resultDTO;
                 }
                 if (StringUtils.isBlank(photoOrderDTO.getCounty())) {
                     ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "区不能为空，保存拍照下单失败！", null);
-                    logger.info("savePhotoOrder EXCEPTION，区不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
+                    logger.info("saveUpdatePhotoOrder EXCEPTION，区不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
                     return resultDTO;
                 }
                 if (StringUtils.isBlank(photoOrderDTO.getStreet())) {
                     ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "街道不能为空，保存拍照下单失败！", null);
-                    logger.info("savePhotoOrder EXCEPTION，街道不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
+                    logger.info("saveUpdatePhotoOrder EXCEPTION，街道不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
                     return resultDTO;
                 }
                 if (StringUtils.isBlank(photoOrderDTO.getResidenceName())) {
                     ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "小区名不能为空，保存拍照下单失败！", null);
-                    logger.info("savePhotoOrder EXCEPTION，小区名不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
+                    logger.info("saveUpdatePhotoOrder EXCEPTION，小区名不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
                     return resultDTO;
                 }
                 if (StringUtils.isBlank(photoOrderDTO.getDetailedAddress())) {
                     ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "详细地址不能为空，保存拍照下单失败！", null);
-                    logger.info("savePhotoOrder EXCEPTION，详细地址不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
+                    logger.info("saveUpdatePhotoOrder EXCEPTION，详细地址不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
                     return resultDTO;
                 }
             }
 
             if (null == photoOrderDTO.getCombList() || photoOrderDTO.getCombList().size() <= 0) {
                 ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品信息不能为空，请选择商品！", null);
-                logger.info("savePhotoOrder EXCEPTION，商品信息不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
+                logger.info("saveUpdatePhotoOrder EXCEPTION，商品信息不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
                 return resultDTO;
             }
             if (null != photoOrderDTO && null != photoOrderDTO.getPhotoId() && null != photoOrderDTO.getCombList() && photoOrderDTO.getCombList().size() > 0) {
@@ -1288,11 +1562,21 @@ public class MaPhotoOrderRestController extends BaseRestController {
                     employee = employeeService.findById(photoOrderDTO.getGuideId());
                     if (null == employee) {
                         ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此导购或员工信息，导购id：" + photoOrderDTO.getGuideId() + "，保存拍照下单失败！", null);
-                        logger.info("savePhotoOrder EXCEPTION，未查询到此导购或员工信息，导购id：" + photoOrderDTO.getGuideId() + "，保存修改拍照下单失败！出参 ResultDTO:{}", resultDTO);
+                        logger.info("saveUpdatePhotoOrder EXCEPTION，未查询到此导购或员工信息，导购id：" + photoOrderDTO.getGuideId() + "，保存修改拍照下单失败！出参 ResultDTO:{}", resultDTO);
                         return resultDTO;
                     }
                 }
                 if (null != photoOrderVO) {
+                    AppEmployee proxyEmployee = null;
+                    if (null != photoOrderVO.getProxyId() && photoOrderVO.getProxyId() != -1) {
+                        proxyEmployee = employeeService.findById(photoOrderVO.getProxyId());
+                        if (null == proxyEmployee) {
+                            ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此代下单人信息，代下单id：" + photoOrderDTO.getProxyId() + "，保存新拍照下单失败！", null);
+                            logger.info("saveUpdatePhotoOrder EXCEPTION，未查询到此代下单人信息，代下单id：" + photoOrderDTO.getProxyId() + "，保存新拍照下单失败！出参 ResultDTO:{}", resultDTO);
+                            return resultDTO;
+                        }
+                    }
+
                     List<MaterialListDO> combList = photoOrderDTO.getCombList();
                     List<MaterialListDO> materialListSave = new ArrayList<>();
                     List<MaterialListDO> materialListUpdate = new ArrayList<>();
@@ -1316,7 +1600,10 @@ public class MaPhotoOrderRestController extends BaseRestController {
                         deliveryAddressDO.setDeliveryStreet(photoOrderDTO.getStreet());
                         deliveryAddressDO.setDetailedAddress(photoOrderDTO.getDetailedAddress());
                         deliveryAddressDO.setResidenceName(photoOrderDTO.getResidenceName());
-                        if (-1 != photoOrderDTO.getGuideId()) {
+                        if (null != proxyEmployee) {
+                            deliveryAddressDO.setUserId(proxyEmployee.getEmpId());
+                            deliveryAddressDO.setIdentityType(proxyEmployee.getIdentityType());
+                        } else if (-1 != photoOrderDTO.getGuideId()) {
                             deliveryAddressDO.setUserId(employee.getEmpId());
                             deliveryAddressDO.setIdentityType(employee.getIdentityType());
                         } else {
@@ -1337,11 +1624,20 @@ public class MaPhotoOrderRestController extends BaseRestController {
                     for (MaterialListDO materialListDO : combList) {
                         GoodsDO goodsDO = maGoodsService.findGoodsById(materialListDO.getGid());
                         if (null != goodsDO) {
-                            MaterialListDO materialList = maMaterialListService.findByUserIdAndIdentityTypeAndGoodsId(photoOrderVO.getUserId(),
-                                    photoOrderVO.getIdentityTypeValue(), materialListDO.getGid());
+                            MaterialListDO materialList = null;
+                            if (null != proxyEmployee) {
+                                materialList = maMaterialListService.findByUserIdAndIdentityTypeAndGoodsId(proxyEmployee.getEmpId(),
+                                        proxyEmployee.getIdentityType(), materialListDO.getGid());
+                            } else {
+                                materialList = maMaterialListService.findByUserIdAndIdentityTypeAndGoodsId(photoOrderVO.getUserId(),
+                                        photoOrderVO.getIdentityTypeValue(), materialListDO.getGid());
+                            }
                             if (null == materialList) {
                                 MaterialListDO materialListDOTemp = transformRepeat(goodsDO);
-                                if (null != photoOrderDTO.getGuideId() && -1 != photoOrderDTO.getGuideId()) {
+                                if (null != proxyEmployee) {
+                                    materialListDOTemp.setUserId(proxyEmployee.getEmpId());
+                                    materialListDOTemp.setIdentityType(proxyEmployee.getIdentityType());
+                                } else if (null != photoOrderDTO.getGuideId() && -1 != photoOrderDTO.getGuideId()) {
                                     materialListDOTemp.setUserId(employee.getEmpId());
                                     materialListDOTemp.setIdentityType(employee.getIdentityType());
                                 } else {
@@ -1354,6 +1650,10 @@ public class MaPhotoOrderRestController extends BaseRestController {
                                 materialListDOTemp.setMaterialListType(MaterialListType.NORMAL);
                                 materialListSave.add(materialListDOTemp);
                             } else {
+                                if (null != proxyEmployee) {
+                                    materialList.setUserId(proxyEmployee.getEmpId());
+                                    materialList.setIdentityType(proxyEmployee.getIdentityType());
+                                }
                                 materialList.setIsGenerateOrder("N");
                                 materialList.setDeliveryId(deliveryId);
                                 materialList.setQty(materialListDO.getQty());
@@ -1382,11 +1682,11 @@ public class MaPhotoOrderRestController extends BaseRestController {
                     materialChangeHeadLog.setUpdatePeopleId(userId);
 
                     if (null != photoOrderDTO.getGuideId() && -1 != photoOrderDTO.getGuideId()) {
-                        this.maPhotoOrderService.updateRemarkAndDeliveryId(photoOrderDTO.getRemark(),deliveryId,employee.getEmpId(),employee.getIdentityType());
+                        this.maPhotoOrderService.updateRemarkAndDeliveryId(photoOrderDTO.getRemark(), deliveryId, employee.getEmpId(), employee.getIdentityType());
                     } else {
-                        this.maPhotoOrderService.updateRemarkAndDeliveryId(photoOrderDTO.getRemark(),deliveryId,photoOrderVO.getUserId(),photoOrderVO.getIdentityTypeValue());
+                        this.maPhotoOrderService.updateRemarkAndDeliveryId(photoOrderDTO.getRemark(), deliveryId, photoOrderVO.getUserId(), photoOrderVO.getIdentityTypeValue());
                     }
-                    this.maMaterialListService.saveMaterialChangeHeadLogAndDetailLog(materialChangeHeadLog,materialChangeDetailLogList);
+                    this.maMaterialListService.saveMaterialChangeHeadLogAndDetailLog(materialChangeHeadLog, materialChangeDetailLogList);
 
                     this.maPhotoOrderService.updateStatusAndsaveAndUpdateMaterialList(materialListSave, materialListUpdate);
 
@@ -1400,7 +1700,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
                     } catch (Exception e) {
                         e.printStackTrace();
                         ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知错误，短信验证码发送失败！", null);
-                        logger.info("savePhotoOrder EXCEPTION，提醒短信发送失败，出参 ResultDTO:{}", resultDTO);
+                        logger.info("saveUpdatePhotoOrder EXCEPTION，提醒短信发送失败，出参 ResultDTO:{}", resultDTO);
                         logger.warn("{}", e);
                         return resultDTO;
                     }
@@ -1410,11 +1710,11 @@ public class MaPhotoOrderRestController extends BaseRestController {
                         returnCode = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(), photoOrderVO.getUserMobile(), content);
                     } catch (IOException e) {
                         ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "网络故障，提醒短信发送失败！", null);
-                        logger.info("savePhotoOrder EXCEPTION，提醒短信发送失败，出参 ResultDTO:{}", resultDTO);
+                        logger.info("saveUpdatePhotoOrder EXCEPTION，提醒短信发送失败，出参 ResultDTO:{}", resultDTO);
                         logger.warn("{}", e);
                     } catch (Exception e) {
                         ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知错误，短信验证码发送失败！", null);
-                        logger.info("savePhotoOrder EXCEPTION，提醒短信发送失败，出参 ResultDTO:{}", resultDTO);
+                        logger.info("saveUpdatePhotoOrder EXCEPTION，提醒短信发送失败，出参 ResultDTO:{}", resultDTO);
                         logger.warn("{}", e);
                     }
 
@@ -1432,30 +1732,101 @@ public class MaPhotoOrderRestController extends BaseRestController {
 
     /**
      * 删除下料清单商品
+     *
      * @param userId
      * @param identityTypeValue
      * @param sku
      * @return
      */
     @GetMapping(value = "/delete/material/goods")
-    public ResultDTO<Object> deleteMaterialGoods(Long userId, String identityTypeValue, String sku){
-        logger.info("deleteMaterialGoods 删除下料清单商品入参，userId:{},identityType:{},sku:{}",userId,identityTypeValue,sku);
-        if (null == userId){
+    public ResultDTO<Object> deleteMaterialGoods(Long userId, String identityTypeValue, String sku, Long proxyId) {
+        logger.info("deleteMaterialGoods 删除下料清单商品入参，userId:{},identityType:{},sku:{}", userId, identityTypeValue, sku);
+        if (null == userId) {
             ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空，删除下料清单商品失败！", null);
             logger.info("deleteMaterialGoods EXCEPTION，userId不能为空，删除下料清单商品失败，出参 ResultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (StringUtils.isBlank(sku)){
+        if (StringUtils.isBlank(sku)) {
             ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "sku不能为空，删除下料清单商品失败！", null);
             logger.info("deleteMaterialGoods EXCEPTION，sku不能为空，删除下料清单商品失败，出参 ResultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (StringUtils.isBlank(identityTypeValue)){
+        if (StringUtils.isBlank(identityTypeValue)) {
             ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "identityTypeValue不能为空，删除下料清单商品失败！", null);
             logger.info("deleteMaterialGoods EXCEPTION，identityTypeValue不能为空，删除下料清单商品失败，出参 ResultDTO:{}", resultDTO);
             return resultDTO;
         }
-        maMaterialListService.deleteMaterialListByUserIdAndIdentityTypeAndGoodsSku(userId,identityTypeValue,sku);
-        return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,null,null);
+        if (null != proxyId && -1 != proxyId) {
+            AppEmployee proxyEmployee = employeeService.findById(proxyId);
+            if (null == proxyEmployee) {
+                ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到代下单人信息，删除下料清单商品失败！", null);
+                logger.info("deleteMaterialGoods EXCEPTION，未查询到代下单人信息，删除下料清单商品失败，出参 ResultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (proxyEmployee.getIdentityType() == AppIdentityType.SELLER) {
+                identityTypeValue = "SELLER";
+            } else if (proxyEmployee.getIdentityType() == AppIdentityType.DECORATE_MANAGER) {
+                identityTypeValue = "DECORATE_MANAGER";
+            }
+            maMaterialListService.deleteMaterialListByUserIdAndIdentityTypeAndGoodsSku(proxyId, identityTypeValue, sku);
+        } else {
+            maMaterialListService.deleteMaterialListByUserIdAndIdentityTypeAndGoodsSku(userId, identityTypeValue, sku);
+        }
+        return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
     }
+
+    /**
+     * @param
+     * @return
+     * @throws
+     * @title 获取代下单人列表
+     * @descripe
+     */
+    @GetMapping(value = "/find/proxy")
+    public GridDataVO<MaCreateOrderPeopleResponse> findProxyCreateOrderPeople(Integer offset, Integer size,
+                                                                              String keywords, String selectProxyCreateOrderPeopleConditions) {
+        logger.info("findProxyCreateOrderPeople 获取代下单人列表,入参 offset:{},size:{},keywords:{},peopleType:{}," +
+                "selectProxyCreateOrderPeopleConditions:{}", offset, size, keywords, selectProxyCreateOrderPeopleConditions);
+        try {
+
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            PageInfo<MaCreateOrderPeopleResponse> maCreateOrderPeopleResponsePageInfo = null;
+            List<MaCreateOrderPeopleResponse> maCreateOrderPeopleResponseList = null;
+
+            if (StringUtils.isBlank(selectProxyCreateOrderPeopleConditions)) {
+                selectProxyCreateOrderPeopleConditions = null;
+            }
+            maCreateOrderPeopleResponsePageInfo = maCustomerService.maFindProxyCreatePeople(page, size, selectProxyCreateOrderPeopleConditions);
+            maCreateOrderPeopleResponseList = maCreateOrderPeopleResponsePageInfo.getList();
+
+            logger.warn("findCreateOrderPeople ,获取下单人列表成功", maCreateOrderPeopleResponseList.size());
+            return new GridDataVO<MaCreateOrderPeopleResponse>().transform(maCreateOrderPeopleResponseList, maCreateOrderPeopleResponsePageInfo.getTotal());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("findCreateOrderPeople EXCEPTION,发生未知错误，获取下单人列表失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
+
+    /**
+     * 生成物料审核单编号
+     *
+     * @return 返回编号
+     */
+    public String createNumber() {
+        //定义时间格式
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+        //获取当前时间
+        Date d = new Date();
+        //转换为String
+        String str = sdf.format(d);
+        //获取6位随机数并转换为String
+        String st = String.valueOf((int) ((Math.random() * 9 + 1) * 1000));
+        return "SH" + str + st;
+    }
+
 }

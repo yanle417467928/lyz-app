@@ -28,4 +28,7 @@ public interface MaMaterialListService {
 
     void saveMaterialChangeHeadLogAndDetailLog(MaterialChangeHeadLog materialChangeHeadLog,List<MaterialChangeDetailLog> materialChangeDetailLog);
 
+    List<MaUpdateMaterialResponse> findProxyMaterialListByPhotoNumber(Long userid, AppIdentityType identityType);
+
+
 }

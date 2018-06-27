@@ -75,4 +75,7 @@ public class PhotoOrderDTO implements Serializable {
 
     //拍照下单图片
     private String photoImgs;
+
+    //代下单人id
+    private Long proxyId;
 }
