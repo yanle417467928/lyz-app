@@ -53,5 +53,7 @@ public class PhotoOrderDO {
     private Long updateUserId;
     //完成操作人ID
     private Long operationUserId;
+    //代下单人id
+    private Long proxyId;
 
 }

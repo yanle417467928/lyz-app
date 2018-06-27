@@ -39,7 +39,7 @@ public class MaMaterialListServiceImpl implements MaMaterialListService {
         }
         if (null != materialListUpdate && materialListUpdate.size() > 0) {
             for (MaterialListDO materialListDO : materialListUpdate) {
-                maMaterialListDAO.modifyQty(materialListDO.getId(), materialListDO.getQty(),materialListDO.getDeliveryId(),materialListDO.getIsGenerateOrder());
+                maMaterialListDAO.modifyQty(materialListDO.getId(), materialListDO.getQty(),materialListDO.getDeliveryId(),materialListDO.getIsGenerateOrder(),materialListDO.getUserId(),materialListDO.getIdentityType());
             }
         }
     }
@@ -77,5 +77,13 @@ public class MaMaterialListServiceImpl implements MaMaterialListService {
                 }
             }
         }
+    }
+
+    @Override
+    public List<MaUpdateMaterialResponse> findProxyMaterialListByPhotoNumber(Long userid, AppIdentityType identityType) {
+        if (null != userid && null != identityType){
+            return maMaterialListDAO.findProxyMaterialListByPhotoNumber(userid, identityType);
+        }
+        return null;
     }
 }

@@ -31,4 +31,6 @@ public interface MaOrderPhotoDAO {
     List<String> findPhotosById(@Param("array")Long[] ids);
 
     PhotoOrderVO findByPhotoOrderNo(String photoOrderNo);
+
+    void updatePhotoOrderProxyId(@Param("proxyId")Long proxyId,@Param("photoOrderNo")String photoOrderNo);
 }

@@ -607,7 +607,7 @@ public class MaterialAuditSheetController {
                     MaterialListDO material = materialListService.findByUserIdAndIdentityTypeAndGoodsId(userID,
                             appIdentityType, materialAuditGoodsInfo.getGid());
                     //转化料单到经理的下料清单中
-                    MaterialListDO materialListDO = transform(materialAuditGoodsInfo, userID, auditNo);
+                    MaterialListDO materialListDO = transform(materialAuditGoodsInfo, userID, auditNo, materialAuditSheet.getDeliveryId());
                     //有相同商品直接和料单的商品合并
                     if (material != null) {
                         materialListDO.setQty(materialListDO.getQty() + material.getQty());
@@ -757,7 +757,7 @@ public class MaterialAuditSheetController {
     }
 
 
-    private MaterialListDO transform(MaterialAuditGoodsInfo materialAuditGoodsInfo, Long userID, String auditNo) {
+    private MaterialListDO transform(MaterialAuditGoodsInfo materialAuditGoodsInfo, Long userID, String auditNo, Long deliveryId) {
 
         MaterialListDO materialListDO = new MaterialListDO();
 
@@ -772,6 +772,7 @@ public class MaterialAuditSheetController {
         materialListDO.setSkuName(materialAuditGoodsInfo.getSkuName());
         materialListDO.setAuditNo(auditNo);
         materialListDO.setMaterialListType(MaterialListType.AUDIT_TRANSFORM);
+        materialListDO.setDeliveryId(deliveryId);
 
         return materialListDO;
 

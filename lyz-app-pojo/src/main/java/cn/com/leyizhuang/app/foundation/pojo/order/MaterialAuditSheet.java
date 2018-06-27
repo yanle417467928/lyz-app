@@ -57,6 +57,8 @@ public class MaterialAuditSheet {
     private Long auditorID;
     //审核是否通过
     private Boolean isAudited;
+    //地址id
+    private Long deliveryId;
 
     /**
      * 转换为返回值类型

@@ -392,6 +392,13 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     }
 
     @Override
+    public PageInfo<MaCreateOrderPeopleResponse> maFindProxyCreatePeople(Integer page, Integer size,String keywords) {
+        PageHelper.startPage(page, size);
+        List<MaCreateOrderPeopleResponse> maCreateOrderPeopleResponseList =maCustomerDAO.maFindProxyCreatePeople(keywords);
+        return new PageInfo<>(maCreateOrderPeopleResponseList);
+    }
+
+    @Override
     public PageInfo<MaCreateOrderPeopleResponse> maFindCreatePeopleByStoreId(Integer page, Integer size,Long storeId) {
         PageHelper.startPage(page, size);
         List<MaCreateOrderPeopleResponse> maCreateOrderPeopleResponseList =maCustomerDAO.maFindCreatePeopleByStoreId(storeId);

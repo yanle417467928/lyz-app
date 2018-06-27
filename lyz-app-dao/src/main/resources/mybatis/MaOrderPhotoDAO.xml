@@ -73,7 +73,7 @@
 
     <select id="findByIdAndStatus" resultType="cn.com.leyizhuang.app.foundation.vo.management.order.PhotoOrderVO">
         SELECT p.id, p.user_id, p.photos, p.remark, p.`status`, p.create_time, p.photo_order_no, p.contact_name, p.contact_phone, IFNULL(e.`name`,c.`name`) username,
-        IFNULL(e.mobile,c.mobile) userMobile, IFNULL(e.identity_type,'CUSTOMER') identityType, s.store_name
+        IFNULL(e.mobile,c.mobile) userMobile, IFNULL(e.identity_type,'CUSTOMER') identityType, s.store_name, p.proxy_id
         FROM photo_order p
         LEFT JOIN cus_customer c ON c.cus_id = p.user_id AND p.identity_type = 'CUSTOMER'
         LEFT JOIN emp_employee e ON e.emp_id = p.user_id AND p.identity_type = e.identity_type
@@ -115,7 +115,7 @@
 
     <select id="findByPhotoOrderNo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.vo.management.order.PhotoOrderVO">
         SELECT p.id, p.user_id, p.photos, p.remark, p.`status`, p.create_time, p.photo_order_no, p.contact_name, p.contact_phone, IFNULL(e.`name`,c.`name`) username,
-        IFNULL(e.mobile,c.mobile) userMobile, IFNULL(e.identity_type,'CUSTOMER') identityType, s.store_name
+        IFNULL(e.mobile,c.mobile) userMobile, IFNULL(e.identity_type,'CUSTOMER') identityType, s.store_name, p.proxy_id
         FROM photo_order p
         LEFT JOIN cus_customer c ON c.cus_id = p.user_id AND p.identity_type = 'CUSTOMER'
         LEFT JOIN emp_employee e ON e.emp_id = p.user_id AND p.identity_type = e.identity_type
@@ -132,5 +132,9 @@
         LEFT JOIN st_store s ON c.store_id = s.store_id OR e.store_id = s.store_id
         WHERE p.photo_order_no = #{photoOrderNo}
     </select>
+
+    <update id="updatePhotoOrderProxyId">
+        UPDATE photo_order SET  proxy_id = #{proxyId} WHERE photo_order_no = #{photoOrderNo}
+    </update>
 
 </mapper>

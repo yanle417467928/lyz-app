@@ -3,9 +3,13 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.MaOrderPhotoDAO;
+import cn.com.leyizhuang.app.foundation.dao.MaterialAuditSheetDAO;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet;
 import cn.com.leyizhuang.app.foundation.service.MaMaterialListService;
 import cn.com.leyizhuang.app.foundation.service.MaPhotoOrderService;
+import cn.com.leyizhuang.app.foundation.service.MaterialAuditGoodsInfoService;
 import cn.com.leyizhuang.app.foundation.vo.management.order.PhotoOrderVO;
 import cn.com.leyizhuang.common.core.constant.PhotoOrderStatus;
 import com.github.pagehelper.PageHelper;
@@ -15,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -30,6 +35,12 @@ public class MaPhotoOrderServiceImpl implements MaPhotoOrderService {
 
     @Autowired
     private MaMaterialListService maMaterialListService;
+
+    @Resource
+    private MaterialAuditGoodsInfoService materialAuditGoodsInfoService;
+
+    @Autowired
+    private MaterialAuditSheetDAO materialAuditSheetDAO;
 
     @Override
     public PageInfo<PhotoOrderVO> findAllByCityIdAndStoreId(Integer page, Integer size, Long cityId, Long storeId, String keywords, String status, List<Long> storeIds) {
@@ -126,5 +137,40 @@ public class MaPhotoOrderServiceImpl implements MaPhotoOrderService {
         return null;
     }
 
+    @Override
+    public void updatePhotoOrderProxyId(Long proxyId, String photoOrderNo) {
+        this.maOrderPhotoDAO.updatePhotoOrderProxyId(proxyId, photoOrderNo);
+    }
+
+    @Override
+    @Transactional
+    public Boolean saveMaterialAuditSheet(MaterialAuditSheet materialAuditSheet, List<MaterialAuditGoodsInfo> materialAuditGoodsInfoList) {
+        if (null != materialAuditSheet && null != materialAuditGoodsInfoList && materialAuditGoodsInfoList.size() > 0){
+            //保存物料审核单头
+            materialAuditSheetDAO.addMaterialAuditSheet(materialAuditSheet);
+            //获取物料审核单id
+            Long auditHeaderID = materialAuditSheet.getAuditHeaderID();
+
+            for (MaterialAuditGoodsInfo materialAuditGoodsInfo : materialAuditGoodsInfoList) {
+                //对物料审核单商品详情请进行赋值
+                materialAuditGoodsInfo.setAuditHeaderID(auditHeaderID);
+                materialAuditGoodsInfoService.addMaterialAuditGoodsInfo(materialAuditGoodsInfo);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void updateStatusAndsaveAndUpdateMaterialStatus(Long photoId, PhotoOrderStatus status) {
+        //修改处理人ID
+        ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
+        Long userId = null;
+        if (null != shiroUser) {
+            userId = shiroUser.getId();
+        }
+        //修改拍照下单状态
+        this.maOrderPhotoDAO.updateStatus(photoId,status,userId);
+    }
 
 }

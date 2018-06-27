@@ -161,34 +161,78 @@
         <form id="form">
             <div class="row">
                 <div class="col-xs-12 table-responsive">
+                        <#--<button type="button" class="btn btn-primary btn-xs"-->
+                                <#--onclick="findProxyPeople()" style="width:200px;height:30px">-->
+                            <#--选择代下单人-->
+                        <#--</button>-->
+                    <#--<b style="margin-left: 150px;">代下单人</b>:<input id="proxyName" name="proxyName" value="" readonly>-->
+                    <#--<input type="hidden" id="proxyId" name="proxyId" value="-1">-->
+                            <div class="col-xs-12 col-md-4">
+                                <div class="form-group">
+                                    <label for="storeId">
+                                        下单装饰公司/门店
+                                    </label>
+                                    <select name="storeId" id="storeId"
+                                            class="form-control selectpicker"
+                                            data-live-search="true" onchange="findOrderCreator()">
+                                        <option value="-1">选择下单装饰公司/门店</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-md-4">
+                                <div class="form-group">
+                                    <label for="guideId">
+                                        下单员工/导购
+                                    </label>
+                                    <select name="guideId" id="guideId" class="form-control select"
+                                            onchange="resetAddress()">
+                                        <option value="-1">选择下单员工/导购</option>
+                                    </select>
+                                </div>
+                            </div>
 
-
+                </div>
+                <div class="col-xs-12 table-responsive" style="margin-bottom:10px;">
                     <input type="hidden" id="guideName" name="guideName" value="">
                     <div class="row">
-                        <div class="col-xs-12 col-md-6">
-                            <div class="form-group">
-                                <label for="storeId">
-                                    下单装饰公司/门店
-                                </label>
-                                <select name="storeId" id="storeId"
-                                        class="form-control selectpicker"
-                                        data-live-search="true" onchange="findOrderCreator()">
-                                    <option value="-1">选择下单装饰公司/门店</option>
-                                </select>
-                            </div>
+
+                        <div class="col-xs-12 table-responsive">
+                            <button type="button" class="btn btn-primary btn-xs"
+                                    onclick="findProxyPeople()" style="width:200px;height:30px">
+                                选择代下单人
+                            </button>
+                            <b style="margin-left: 150px;">代下单人</b>:<input id="proxyName" name="proxyName" value="" readonly>
+                            <input type="hidden" id="proxyId" name="proxyId" value="-1">
+
                         </div>
-                        <div class="col-xs-12 col-md-6">
-                            <div class="form-group">
-                                <label for="guideId">
-                                    下单员工/导购
-                                </label>
-                                <select name="guideId" id="guideId" class="form-control select"
-                                        onchange="resetAddress()">
-                                    <option value="-1">选择下单员工/导购</option>
-                                </select>
-                            </div>
-                        </div>
+
+
+                        <#--<div class="col-xs-12 col-md-4">-->
+                            <#--<div class="form-group">-->
+                                <#--<label for="storeId">-->
+                                    <#--下单装饰公司/门店-->
+                                <#--</label>-->
+                                <#--<select name="storeId" id="storeId"-->
+                                        <#--class="form-control selectpicker"-->
+                                        <#--data-live-search="true" onchange="findOrderCreator()">-->
+                                    <#--<option value="-1">选择下单装饰公司/门店</option>-->
+                                <#--</select>-->
+                            <#--</div>-->
+                        <#--</div>-->
+                        <#--<div class="col-xs-12 col-md-4">-->
+                            <#--<div class="form-group">-->
+                                <#--<label for="guideId">-->
+                                    <#--下单员工/导购-->
+                                <#--</label>-->
+                                <#--<select name="guideId" id="guideId" class="form-control select"-->
+                                        <#--onchange="resetAddress()">-->
+                                    <#--<option value="-1">选择下单员工/导购</option>-->
+                                <#--</select>-->
+                            <#--</div>-->
+                        <#--</div>-->
                     </div>
+
+                    <div style="margin-top: 10px"></div>
                     <button type="button" id="addDeliveryAddressButton" class="btn btn-primary btn-xs"
                             style="width:200px;height:50px;"
                             onclick="addDeliveryAddress()">
@@ -412,6 +456,55 @@
                                             </div>
                                             <div class="box-body table-reponsive">
                                                 <table id="addressDataGrid"
+                                                       class="table table-bordered table-hover">
+
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- 代下单人选择框 -->
+        <div id="selectProxyCreateOrderPeopleGrid" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document" style="width: 60%">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4>选择代下单人</h4>
+                        <button type="button" name="search" class="btn btn-default pull-left"
+                                onclick="returnProxy()" style="margin-left:700px;margin-top: -35px;">返回
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!--  设置这个div的大小，超出部分显示滚动条 -->
+                        <div id="proxyCreateOrderPeopleDataGridTree" class="ztree" style="height: 60%;overflow:auto; ">
+                            <section class="content">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="box box-primary">
+                                            <div id="proxyToolbar" class="form-inline">
+
+                                                <div class="input-group col-md-3"
+                                                     style="margin-top:0px positon:relative">
+                                                    <input type="text" name="selectProxyCreateOrderPeopleConditions"
+                                                           id="selectProxyCreateOrderPeopleConditions"
+                                                           class="form-control" style="width:auto;"
+                                                           placeholder="请输入导购姓名或电话">
+                                                    <span class="input-group-btn">
+                            <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
+                                    onclick="findProxyPeople()">查找</button>
+                        </span>
+                                                </div>
+                                            </div>
+                                            <div class="box-body table-reponsive">
+                                                <table id="proxyCreateOrderPeopleDataGrid"
                                                        class="table table-bordered table-hover">
 
                                                 </table>
@@ -1539,6 +1632,67 @@
                 var manuallyEnterBtn = document.getElementById("manuallyEnterDeliveryAddressButton");
                 findBtn.style.display = "block"; //style中的display属性
                 manuallyEnterBtn.style.display = "none"; //style中的display属性
+            }
+
+            function returnProxy() {
+                $('#selectProxyCreateOrderPeopleGrid').modal('hide');
+            }
+            function findProxyPeople() {
+                $('#selectProxyCreateOrderPeopleGrid').modal('show');
+                var selectProxyCreateOrderPeopleConditions = $('#selectProxyCreateOrderPeopleConditions').val();
+
+                var url = '/rest/order/photo/find/proxy';
+                $("#proxyCreateOrderPeopleDataGrid").bootstrapTable('destroy');
+                $grid.init($('#proxyCreateOrderPeopleDataGrid'), $('#proxyToolbar'), url, 'get', false, function (params) {
+                    return {
+                        offset: params.offset,
+                        size: params.limit,
+                        keywords: params.search,
+                        selectProxyCreateOrderPeopleConditions: selectProxyCreateOrderPeopleConditions
+                    }
+                }, [{
+                    field: 'peopleId',
+                    title: 'ID',
+                    align: 'center'
+//                    visible:false
+                }, {
+                    field: 'name',
+                    title: '代下单人姓名',
+                    align: 'center',
+                    events: {
+                        'click .scan': function (e, value, row) {
+                            fillingProxy(row);
+                        }
+                    },
+                    formatter: function (value) {
+                        return '<a class="scan" href="#' + value + '">' + value + '</a>';
+                    }
+                }, {
+                    field: 'phone',
+                    title: '代下单人电话',
+                    align: 'center'
+                }, {
+                    field: 'identityType',
+                    title: '身份类型',
+                    align: 'center'
+                }, {
+                    field: 'storeName',
+                    title: '代下单人归属门店名',
+                    align: 'center'
+                }, {
+                    field: 'storeCode',
+                    title: '代下单人归属门店code',
+                    align: 'center',
+                    visible: false
+                }
+                ]);
+
+                $('#selectProxyCreateOrderPeopleGrid').modal('show');
+            }
+            function fillingProxy(row) {
+                $('#proxyId').val(row.peopleId);
+                $('#proxyName').val(row.name);
+                $('#selectProxyCreateOrderPeopleGrid').modal('hide');
             }
         </script>
     </section>

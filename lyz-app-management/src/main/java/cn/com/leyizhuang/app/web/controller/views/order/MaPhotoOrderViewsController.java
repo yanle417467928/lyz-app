@@ -95,6 +95,7 @@ public class MaPhotoOrderViewsController extends BaseController {
     @RequestMapping(value = "/update/{photoNo}")
     public String updatePhotoOrderGoods(ModelMap map, @PathVariable(value = "photoNo")String photoNo){
         logger.info("updatePhotoOrderGoods 入参 photoNo:{}",photoNo);
+
         PhotoOrderVO photoOrderVO = this.maPhotoOrderService.findByPhotoOrderNo(photoNo);
 
         map.addAttribute("photoOrderVO",photoOrderVO);
