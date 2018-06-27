@@ -19,6 +19,8 @@ public interface GoodsPriceDAO {
 
     void modify(GoodsPrice goodsPrice);
 
+    void update(GoodsPrice goodsPrice);
+
     void delete(Long priceLineId);
 
     GoodsPrice findByPriceLineId(Long priceLineId);
@@ -41,6 +43,8 @@ public interface GoodsPriceDAO {
      * @return
      */
     GoodsPrice findGoodsPriceByGoodsIDAndStoreID(@Param("goodsID") Long goodsID, @Param("storeID") Long storeID,@Param("cusId") Long cusId);
+
+    GoodsPrice findGoodsPriceByTypeAndStoreIDAndSku(@Param("priceType") String priceType, @Param("storeID") Long storeID,@Param("sku") String sku);
 
     List<GiftListResponseGoods> findCustomerGoodsPriceListByGoodsIdsAndUserId(@Param(value = "list") List<Long> goodsIdList,
                                                                               @Param(value = "userId") Long userId);

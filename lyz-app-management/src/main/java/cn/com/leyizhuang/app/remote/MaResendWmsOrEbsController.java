@@ -211,7 +211,7 @@ public class MaResendWmsOrEbsController {
                 if (orderGoodsSize > 0) {
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                         AtwRequisitionOrderGoods requisitionOrderGoods = null;
-                        if ("ZS-002".equals(baseInfo.getStoreCode()) || "MR004".equals(baseInfo.getStoreCode())){
+                        if ("ZS-002".equals(baseInfo.getStoreCode()) || "MR004".equals(baseInfo.getStoreCode())) {
                             requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
                                     goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getSettlementPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
                         } else {
@@ -247,7 +247,7 @@ public class MaResendWmsOrEbsController {
                 if (size > 0) {
                     for (ReturnOrderGoodsInfo returnOrderGoodsInfo : returnOrderGoodsInfoList) {
                         AtwRequisitionOrderGoods requisitionOrderGoods = null;
-                        if ("ZS-002".equals(orderBaseInfo.getStoreCode()) || "MR004".equals(orderBaseInfo.getStoreCode())){
+                        if ("ZS-002".equals(orderBaseInfo.getStoreCode()) || "MR004".equals(orderBaseInfo.getStoreCode())) {
                             requisitionOrderGoods = AtwRequisitionOrderGoods.transform(returnOrderGoodsInfo.getReturnNo(),
                                     returnOrderGoodsInfo.getSku(), returnOrderGoodsInfo.getSkuName(), returnOrderGoodsInfo.getSettlementPrice(), returnOrderGoodsInfo.getReturnQty(), returnOrderGoodsInfo.getCompanyFlag());
                         } else {
@@ -1290,6 +1290,50 @@ public class MaResendWmsOrEbsController {
         } catch (Exception e) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "传输失败!发生未知异常!", null);
             logger.info("retransmissionReturnOrderJxPriceInfoToEBS OUT,EBS生成退货单经销差价信息失败，出参 resultDTO:{}", resultDTO);
+            logger.debug("Exception:{}", e);
+            return resultDTO;
+        }
+    }
+
+
+    /**
+     * 拆单重传ebs
+     *
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "/EBS/separateOrder/all", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public ResultDTO retransmissionSeparateOrderInfoToEBS() {
+        ResultDTO<Object> resultDTO;
+        logger.info("retransmissionSeparateOrderInfoToEBS CALLED,EBS生成退货单退款信息");
+        try {
+            List<String> orderNumberList = separateOrderService.separateAllNotSplitOrder();
+            for (String orderNumber : orderNumberList) {
+                Boolean isExist = separateOrderService.isOrderExist(orderNumber);
+                if (isExist) {
+                    continue;
+                } else {
+                    //拆单
+                    separateOrderService.separateOrder(orderNumber);
+                    //拆单完成之后发送订单和订单商品信息到EBS
+                    separateOrderService.sendOrderBaseInfAndOrderNotXQGoodsInf(orderNumber);
+                    //发送订单券儿信息到EBS
+                    separateOrderService.sendOrderCouponInf(orderNumber);
+                    //发送订单收款信息到EBS
+                    separateOrderService.sendOrderReceiptInf(orderNumber);
+                    //发送经销差价返还信息到EBS
+                    separateOrderService.sendOrderJxPriceDifferenceReturnInf(orderNumber);
+                    //发送订单关键信息到EBS
+                    separateOrderService.sendOrderKeyInf(orderNumber);
+                }
+            }
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "重传成功!", null);
+            logger.info("retransmissionSeparateOrderInfoToEBS OUT,EBS生成退货单退款信息失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "传输失败!发生未知异常!", null);
+            logger.info("retransmissionSeparateOrderInfoToEBS OUT,EBS生成退货单退款信息失败，出参 resultDTO:{}", resultDTO);
             logger.debug("Exception:{}", e);
             return resultDTO;
         }

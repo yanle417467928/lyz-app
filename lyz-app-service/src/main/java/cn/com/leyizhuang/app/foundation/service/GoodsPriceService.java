@@ -17,6 +17,8 @@ public interface GoodsPriceService {
 
     void modify(GoodsPrice goodsPrice);
 
+    void update(GoodsPrice goodsPrice);
+
     void delete(GoodsPrice goodsPrice);
 
     GoodsPrice findGoodsPrice(Long priceLineId);
@@ -35,6 +37,7 @@ public interface GoodsPriceService {
      */
     GoodsPrice findGoodsPriceByGoodsIDAndStoreID(Long goodsID,Long storeID,Long cusId);
 
+    GoodsPrice findGoodsPriceByTypeAndStoreIDAndSku(String priceType,Long storeID,String sku);
 
     List<GiftListResponseGoods> findGoodsPriceListByGoodsIdsAndUserId(List<Long> goodsIdList, Long userId,
                                                                                      AppIdentityType identityType);

@@ -94,7 +94,7 @@ public class HqAppGoodsPriceController {
                 return resultDTO;
             }
             try {
-                GoodsPrice goodsPrice = this.GoodsPriceServiceImpl.findGoodsPrice(goodsPriceDTO.getPriceLineId());
+                GoodsPrice goodsPrice = this.GoodsPriceServiceImpl.findGoodsPriceByTypeAndStoreIDAndSku(goodsPriceDTO.getPriceType(),goodsPriceDTO.getStoreId(),goodsPriceDTO.getSku());
                 GoodsDO goodsDO = goodsService.queryBySku(goodsPriceDTO.getSku());
                 AppStore store = storeService.findByStoreCode(goodsPriceDTO.getStoreCode());
                 if (null == store){
@@ -126,8 +126,25 @@ public class HqAppGoodsPriceController {
                     logger.info("addGoodsPrice OUT,同步新增商品价目表行成功，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 } else {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该商品价格已存在！", null);
-                    logger.info("addGoodsPrice OUT,同步新增商品价目表行失败，出参 resultDTO:{}", resultDTO);
+                    if (null != goodsDO){
+                        goodsPrice.setGid(goodsDO.getGid());
+                    }
+                    goodsPrice.setStoreId(store.getStoreId());
+                    goodsPrice.setSku(goodsPriceDTO.getSku());
+                    goodsPrice.setPriceLineId(goodsPriceDTO.getPriceLineId());
+                    goodsPrice.setRetailPrice(goodsPriceDTO.getRetailPrice());
+                    goodsPrice.setStartTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getStartTime()));
+                    if (null != goodsPriceDTO.getWholesalePrice()) {
+                        goodsPrice.setWholesalePrice(goodsPriceDTO.getWholesalePrice());
+                    }
+                    goodsPrice.setVIPPrice(goodsPriceDTO.getVIPPrice());
+                    goodsPrice.setPriceType(goodsPriceDTO.getPriceType());
+                    if (null != goodsPriceDTO.getEndTime() && !"".equals(goodsPriceDTO.getEndTime())) {
+                        goodsPrice.setEndTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getEndTime()));
+                    }
+                    this.GoodsPriceServiceImpl.update(goodsPrice);
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+                    logger.info("addGoodsPrice OUT,同步新增商品价目表行成功，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
             } catch (Exception e) {
@@ -162,16 +179,16 @@ public class HqAppGoodsPriceController {
 //                logger.info("modifyGoodsPrice OUT,同步修改商品价目表行失败，出参 resultDTO:{}", resultDTO);
 //                return resultDTO;
 //            }
-//            if (null == goodsPriceDTO.getStoreId()) {
-//                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店id不能为空！", null);
-//                logger.info("modifyGoodsPrice OUT,同步修改商品价目表行失败，出参 resultDTO:{}", resultDTO);
-//                return resultDTO;
-//            }
-//            if (StringUtils.isBlank(goodsPriceDTO.getSku())) {
-//                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品编码不能为空！", null);
-//                logger.info("modifyGoodsPrice OUT,同步修改商品价目表行失败，出参 resultDTO:{}", resultDTO);
-//                return resultDTO;
-//            }
+            if (null == goodsPriceDTO.getStoreId()) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店id不能为空！", null);
+                logger.info("modifyGoodsPrice OUT,同步修改商品价目表行失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (StringUtils.isBlank(goodsPriceDTO.getSku())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品编码不能为空！", null);
+                logger.info("modifyGoodsPrice OUT,同步修改商品价目表行失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
             if (null == goodsPriceDTO.getPriceLineId()) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "价目表行id不能为空！", null);
                 logger.info("modifyGoodsPrice OUT,同步修改商品价目表行失败，出参 resultDTO:{}", resultDTO);
@@ -193,7 +210,7 @@ public class HqAppGoodsPriceController {
 //                return resultDTO;
 //            }
             try {
-                GoodsPrice goodsPrice = this.GoodsPriceServiceImpl.findGoodsPrice(goodsPriceDTO.getPriceLineId());
+                GoodsPrice goodsPrice = this.GoodsPriceServiceImpl.findGoodsPriceByTypeAndStoreIDAndSku(goodsPriceDTO.getPriceType(),goodsPriceDTO.getStoreId(),goodsPriceDTO.getSku());
                 if (null != goodsPrice) {
 //                    goodsPrice.setRetailPrice(goodsPriceDTO.getRetailPrice());
 //                    goodsPrice.setStartTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getStartTime()));
@@ -208,14 +225,33 @@ public class HqAppGoodsPriceController {
                     if (null != goodsPriceDTO.getEndTime() && !"".equals(goodsPriceDTO.getEndTime())) {
                         goodsPrice.setEndTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getEndTime()));
                     }
-
                     this.GoodsPriceServiceImpl.modify(goodsPrice);
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
                     logger.info("modifyGoodsPrice OUT,同步修改商品价目表行成功，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 } else {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该商品价格不存在！", null);
-                    logger.info("modifyGoodsPrice OUT,同步修改商品价目表行失败，出参 resultDTO:{}", resultDTO);
+                    GoodsDO goodsDO = goodsService.queryBySku(goodsPriceDTO.getSku());
+                    AppStore store = storeService.findByStoreCode(goodsPriceDTO.getStoreCode());
+                    goodsPrice = new GoodsPrice();
+                    if (null != goodsDO){
+                        goodsPrice.setGid(goodsDO.getGid());
+                    }
+                    goodsPrice.setStoreId(store.getStoreId());
+                    goodsPrice.setSku(goodsPriceDTO.getSku());
+                    goodsPrice.setPriceLineId(goodsPriceDTO.getPriceLineId());
+                    goodsPrice.setRetailPrice(goodsPriceDTO.getRetailPrice());
+                    goodsPrice.setStartTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getStartTime()));
+                    if (null != goodsPriceDTO.getWholesalePrice()) {
+                        goodsPrice.setWholesalePrice(goodsPriceDTO.getWholesalePrice());
+                    }
+                    goodsPrice.setVIPPrice(goodsPriceDTO.getVIPPrice());
+                    goodsPrice.setPriceType(goodsPriceDTO.getPriceType());
+                    if (null != goodsPriceDTO.getEndTime() && !"".equals(goodsPriceDTO.getEndTime())) {
+                        goodsPrice.setEndTime(TimeTransformUtils.stringToLocalDateTime(goodsPriceDTO.getEndTime()));
+                    }
+                    this.GoodsPriceServiceImpl.save(goodsPrice);
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+                    logger.info("modifyGoodsPrice OUT,同步修改商品价目表行成功，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
             } catch (Exception e) {

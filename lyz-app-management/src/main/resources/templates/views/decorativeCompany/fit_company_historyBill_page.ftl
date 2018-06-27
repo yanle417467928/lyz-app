@@ -35,25 +35,16 @@
         <div class=" col-xs-12">
             <div class="box box-primary">
                 <div id="toolbar" class="form-inline">
-                    <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px"
-                            onchange="findOrderByCondition()" data-live-search="true">
-                        <option value="-1">选择门店</option>
-                    </select>
-                    <select name="status" id="status" class="form-control" style="width:auto;"
-                            onchange="findOrderByCondition()" data-live-search="true">
-                        <option value="-1">退单状态</option>
-                        <option value="PENDING_PICK_UP">已提交</option>
-                        <option value="CANCELING">取消中</option>
-                        <option value="CANCELED">已取消</option>
-                        <option value="PENDING_REFUND">待退款</option>
-                        <option value="FINISHED">已完成</option>
+                    <select name="store" id="storeCode" class="form-control selectpicker" data-width="140px"
+                            onchange="findBillByCondition()" data-live-search="true">
+                        <option value="-1">选择装饰公司</option>
                     </select>
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
-                        <input type="text" name="queryOrderInfo" id="queryOrderInfo" class="form-control "
-                               style="width:auto;" placeholder="请输入退单号或原单号" onkeypress="findBykey()">
+                        <input type="text" name="info" id="info" class="form-control "
+                               style="width:auto;" placeholder="请输入账单单号或名称" onkeypress="findBykey()">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
-                                    onclick="findOrderByInfo()">查找</button>
+                                    onclick="findBillByCondition()">查找</button>
                         </span>
                     </div>
                 </div>
@@ -69,7 +60,7 @@
 
 
     $(function () {
-        initDateGird('/rest/returnOrder/page/grid');
+        initDateGird('/rest/fitBill/history/page/grid');
         findStoreSelection();
         $('.datepicker').datepicker({
             format: 'yyyy-mm-dd',
@@ -82,7 +73,7 @@
     function findStoreSelection() {
         var store = "";
         $.ajax({
-            url: '/rest/stores/findStoresListByStoreId',
+            url: '/rest/stores/findSmallFitStoresListByStoreId',
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);
@@ -107,125 +98,72 @@
             return {
                 offset: params.offset,
                 size: params.limit,
-                keywords: params.search
+                keywords: $("#info").val(),
+                storeId: $("#storeCode").val()
             }
         }, [{
             checkbox: true,
             title: '选择'
-        }, {
-            field: 'storeName',
-            title: '门店名称',
+        },{
+            field: 'billName',
+            title: '账单名称',
             align: 'center'
         }, {
-            field: 'returnNo',
-            title: '退货单号',
+            field: 'billNo',
+            title: '账单单号',
             align: 'center',
             formatter: function (value, row, index) {
                 if (null == value) {
                     return '<a class="scan" href="#">' + '未知' + '</a>';
                 } else {
-                    return '<a class="scan" href="/views/admin/returnOrder/detail/' + value + '" target="_blank">' + value + '</a>';
+                    return '<a class="scan" href="/views/admin/fit/bill/historyDetail/'+ value+'" target="_blank">' + value + '</a>';
                 }
             }
         }, {
-            field: 'returnTime',
-            title: '退货时间',
-            align: 'center',
-            formatter: function (value, row, index) {
-                if (null == value) {
-                    return '<span class="label label-danger">-</span>';
-                } else {
-                    return formatDateTime(value);
-                }
-            }
+            field: 'storeName',
+            title: '装饰公司名称',
+            align: 'center'
         }, {
-            field: 'creatorName',
-            title: '建单人姓名',
-            align: 'center',
+            field: 'billStartDate',
+            title: '账单开始日期',
+            align: 'center'
         }, {
-            field: 'returnStatus',
-            title: '退单状态',
-            align: 'center',
-            formatter: function (value, row, index) {
-                if ('PENDING_PICK_UP' === value) {
-                    return '已提交';
-                } else if ('RETURNING' === value) {
-                    return '退货中';
-                } else if ('CANCELING' === value) {
-                    return '取消中';
-                } else if ('CANCELED' === value) {
-                    return '已取消';
-                } else if ('PENDING_REFUND' === value) {
-                    return '待退款';
-                } else if ('FINISHED' === value) {
-                    return '已完成';
-                }
-            }
+            field: 'billEndDate',
+            title: '账单结束日期',
+            align: 'center'
         }, {
-            field: 'returnType',
-            title: '退货类型',
-            align: 'center',
-            formatter: function (value, row, index) {
-                if ('CANCEL_RETURN' == value) {
-                    return '取消退货';
-                } else if ('REFUSED_RETURN' == value) {
-                    return '拒签退货';
-                } else if ('NORMAL_RETURN' == value) {
-                    return '正常退货';
-                } else {
-                    return '-';
-                }
-            }
+            field: 'repaymentDeadlineDate',
+            title: '账单还款截止日',
+            align: 'center'
         }, {
-            field: 'orderType',
-            title: '退货方式',
-            align: 'center',
-            formatter: function (value, row, index) {
-                if ('SHIPMENT' == value) {
-                    return '出货';
-                } else if ('COUPON' == value) {
-                    return '买券';
-                } else {
-                    return '-';
-                }
-            }
-        }]);
-    }
-
-    function shipShop(orderNumber, creatorIdentityType) {
-        if ('SELLER' == creatorIdentityType) {
-            $('#confirmShip').modal();
-            $("#confirmShipId").val(orderNumber);
-        } else if ('CUSTOMER' == creatorIdentityType) {
-            $('#PickUpCode').modal();
-            $("#codeOrderId").val(orderNumber);
+            field: 'billTotalAmount',
+            title: '账单总额',
+            align: 'center'
+        }, {
+            field: 'currentPaidAmount',
+            title: '已还金额',
+            align: 'center'
+        }, {
+            field: 'currentUnpaidAmount',
+            title: '未还金额',
+            align: 'center'
         }
+
+        ]);
     }
 
 
-    function findOrderByCondition() {
-        $("#queryOrderInfo").val('');
+
+    function findBillByCondition() {
         $("#dataGrid").bootstrapTable('destroy');
-        var storeId = $("#storeCode").val();
-        var status = $("#status").val();
-        initDateGird('/rest/returnOrder/page/screenGrid?storeId=' + storeId + '&status=' + status);
+        initDateGird('/rest/fitBill/notOut/page/grid');
     }
 
 
-    function findOrderByInfo() {
-        var queryOrderInfo = $("#queryOrderInfo").val();
-        $('#storeCode').val("-1");
-        $('#status').val("-1");
-        $("#dataGrid").bootstrapTable('destroy');
-        if (null == queryOrderInfo || "" == queryOrderInfo) {
-            initDateGird('/rest/returnOrder/page/grid');
-        } else {
-            initDateGird('/rest/returnOrder/page/infoGrid?info=' + queryOrderInfo);
-        }
-    }
+
     function findBykey(){
         if(event.keyCode==13){
-            findOrderByInfo();
+            findBillByCondition();
         }
     }
 
