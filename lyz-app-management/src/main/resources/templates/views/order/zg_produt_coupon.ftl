@@ -351,7 +351,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-xs-12">
+                                            <div class="col-xs-12" style="display: none">
                                                 <div class="col-xs-11" style="margin-top: 10px">
                                                     <label class="col-xs-3" style="padding-right: 0px;text-align:right">微信
                                                         &ensp;</label>
@@ -362,7 +362,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-xs-12">
+                                            <div class="col-xs-12" style="display: none">
                                                 <div class="col-xs-11" style="margin-top: 10px">
                                                     <label class="col-xs-3" style="padding-right: 0px;text-align:right">支付宝
                                                         &ensp;</label>
