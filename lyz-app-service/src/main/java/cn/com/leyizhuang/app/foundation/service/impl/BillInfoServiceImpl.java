@@ -66,4 +66,9 @@ public class BillInfoServiceImpl implements BillInfoService {
         return this.billInfoDAO.findBillRepaymentInfoByRepaymentNo(repaymentNo);
     }
 
+    @Override
+    public void handleBillRepaymentAfterOnlinePayUp() {
+
+    }
+
 }
