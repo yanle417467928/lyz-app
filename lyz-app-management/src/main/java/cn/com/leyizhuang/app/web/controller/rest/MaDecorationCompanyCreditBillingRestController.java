@@ -11,8 +11,10 @@ import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.WithdrawRefundInfo;
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorationCompanyCreditBillingDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsDO;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
+import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.RechargeService;
 import cn.com.leyizhuang.app.foundation.service.WithdrawService;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsVO;
@@ -57,6 +59,9 @@ public class MaDecorationCompanyCreditBillingRestController extends BaseRestCont
 
     @Autowired
     private MaSinkSender sinkSender;
+
+    @Autowired
+    private AppOrderService appOrderService;
 
     /**
      * @title   获取装饰公司账单
@@ -129,7 +134,17 @@ public class MaDecorationCompanyCreditBillingRestController extends BaseRestCont
         if (!result.hasErrors()) {
             try {
                 if (null != creditBillingDTO && creditBillingDTO.getBillAmount() != null && creditBillingDTO.getBillAmount() != 0D){
-                    this.maDecorationCompanyCreditBillingService.createCreditBilling(orderNumbers, creditBillingDTO);
+                    this.maDecorationCompanyCreditBillingService.createCreditBilling(orderNumbers, creditBillingDTO);//
+                    //更改订单为已付清
+                    if (null != orderNumbers && orderNumbers.length > 0) {
+                        for (int i = 0; i < orderNumbers.length; i++) {
+                            String orderNumber = orderNumbers[i];
+                            OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderNumber);
+                            orderBillingDetails.setIsPayUp(Boolean.TRUE);
+                            orderBillingDetails.setPayUpTime(new Date());
+                            appOrderService.updateOrderBillingDetails(orderBillingDetails);
+                        }
+                    }
                 } else {
                     logger.info("创建装饰公司信用金账单 createCreditBilling");
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "变更金额不能为零！", null);

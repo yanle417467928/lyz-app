@@ -37,6 +37,33 @@
         price_line_id = #{priceLineId}
     </update>
 
+
+    <update id="update" parameterType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
+        UPDATE gds_goods_price
+        <set>
+            <if test="null != VIPPrice">
+                vip_price = #{VIPPrice},
+            </if>
+            <if test="null != retailPrice">
+                retail_price = #{retailPrice},
+            </if>
+            <if test="null != wholesalePrice">
+                wholesale_price = #{wholesalePrice},
+            </if>
+            <if test="null != startTime">
+                start_time = #{startTime},
+            </if>
+            <if test="null != endTime">
+                end_time = #{endTime},
+            </if>
+            <if test="null != priceType">
+                price_type = #{priceType},
+            </if>
+        </set>
+        WHERE
+        gpid = #{gpid}
+    </update>
+
     <delete id="delete" parameterType="java.lang.Long">
         DELETE FROM gds_goods_price
         WHERE price_line_id = #{priceLineId}
@@ -204,6 +231,14 @@
     <select id="findGoodsPriceListByStoreIdAndPriceType" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
         SELECT gid, store_id, sku, vip_price, retail_price, wholesale_price, price_type
         FROM gds_goods_price WHERE store_id = #{storeId} AND price_type = #{priceType}
+        AND start_time &lt; NOW()
+        AND (end_time IS NULL OR end_time &gt; NOW())
+    </select>
+
+
+    <select id="findGoodsPriceByTypeAndStoreIDAndSku" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
+        SELECT *
+        FROM gds_goods_price WHERE store_id = #{storeId} AND price_type = #{priceType} AND sku=#{sku}
         AND start_time &lt; NOW()
         AND (end_time IS NULL OR end_time &gt; NOW())
     </select>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaFitBillDAO">
+
+    <select id="getFitNotOutBill"
+                         resultType="cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.MaFitBillVO">
+    select
+        b.bill_name,
+        b.bill_no,
+        a.store_name,
+        b.bill_start_date,
+        b.bill_end_date,
+        b.repayment_deadline_date,
+        b.bill_total_amount,
+        b.current_paid_amount,
+        b.current_unpaid_amount,
+        b.status
+    from bill_info b
+    LEFT JOIN st_store a on b.store_id = a.store_id
+    WHERE
+        (b.status = 'NOT_OUT' OR  b.status = 'ALREADY_OUT')
+    <if test="null!=keywords and ''!=keywords">
+        AND
+        (
+        b.bill_no LIKE CONCAT('%',#{keywords},'%')
+        OR
+        bill_name LIKE CONCAT('%',#{keywords},'%')
+        )
+    </if>
+    AND
+    b.store_id IN
+    <foreach collection="list" item="item" open="(" close=")" separator=",">
+        #{item}
+    </foreach>
+    order by b.create_time DESC
+</select>
+
+
+
+    <select id="getHistoryFitBill"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.MaFitBillVO">
+        select
+        b.bill_name,
+        b.bill_no,
+        a.store_name,
+        b.bill_start_date,
+        b.bill_end_date,
+        b.repayment_deadline_date,
+        b.bill_total_amount,
+        b.current_paid_amount,
+        b.current_unpaid_amount
+        from bill_info b
+        LEFT JOIN st_store a on b.store_id = a.store_id
+        WHERE
+        b.status= 'HISTORY'
+        <if test="null!=keywords and ''!=keywords">
+            AND
+            (
+            b.bill_no LIKE CONCAT('%',#{keywords},'%')
+            OR
+            bill_name LIKE CONCAT('%',#{keywords},'%')
+            )
+        </if>
+        AND
+        b.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        order by b.create_time DESC
+    </select>
+
+
+    <select id="getFitBillByBillNo" resultType="cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO">
+        select
+        *
+        from bill_info b
+        LEFT JOIN st_store a on b.store_id = a.store_id
+        WHERE
+        b.bill_no = #{billNo}
+    </select>
+
+    <select id="getUnPaidBillByBillNo"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO">
+        select
+        *
+        from bill_repayment_info  b LEFT JOIN  bill_repayment_goods_details  a  on b.id =a.repayment_id
+        where a.is_paid = 0
+    </select>
+
+    <select id="getPaidBillByBillNo"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO">
+        select
+        *
+        from bill_repayment_info  b LEFT JOIN  bill_repayment_goods_details  a  on b.id =a.repayment_id
+        where a.is_paid = 1
+    </select>
+
+
+
+</mapper>

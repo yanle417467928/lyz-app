@@ -396,4 +396,49 @@ public class OrderUtils {
         orderNumberTemp.append(random.nextInt(900000) + 100000);
         return orderNumberTemp.toString();
     }
+
+    /**
+     * @title   生成账单还款单号
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/6/27
+     */
+    public static String generateRepaymentNo() {
+        StringBuilder orderNumberTemp = new StringBuilder();
+        orderNumberTemp.append("BL_RC");
+        Calendar calendar = Calendar.getInstance();
+        Date date = calendar.getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+        String timeStamp = sdf.format(date);
+        orderNumberTemp.append(timeStamp);
+        Random random = new Random();
+        orderNumberTemp.append(random.nextInt(900000) + 100000);
+        return orderNumberTemp.toString();
+    }
+
+    /**
+     * @title   生成账单单号
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/6/27
+     */
+    public static String generateBillNo(String storeCode) {
+        StringBuilder orderNumberTemp = new StringBuilder();
+        orderNumberTemp.append("B_");
+        orderNumberTemp.append(storeCode);
+        Calendar calendar = Calendar.getInstance();
+        Date date = calendar.getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+        String timeStamp = sdf.format(date);
+        orderNumberTemp.append(timeStamp);
+        Random random = new Random();
+        orderNumberTemp.append(random.nextInt(900000) + 100000);
+        return orderNumberTemp.toString();
+    }
 }

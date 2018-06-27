@@ -9,7 +9,8 @@ public enum PaymentDataType {
     CUS_PRE_DEPOSIT("CUS_PRE_DEPOSIT","客户预存款充值"),
     DEC_PRE_DEPOSIT("DEC_PRE_DEPOSIT","装饰公司预存款充值"),
     ORDER("ORDER","订单支付"),
-    REPAYMENT("REPAYMENT","欠款还款");
+    REPAYMENT("REPAYMENT","欠款还款"),
+    BILLPAY("BILLPAY","账单还款");
 
 
     private final String value;

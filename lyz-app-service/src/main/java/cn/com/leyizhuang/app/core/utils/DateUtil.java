@@ -548,4 +548,39 @@ public class DateUtil {
         cal.set(Calendar.DAY_OF_MONTH, cal.getActualMinimum(Calendar.DAY_OF_MONTH));
         return cal.getTime();
     }
+
+    /**
+     *  获取当前日期
+     * @return
+     */
+    public static Integer getDate() {
+        Calendar calendar = Calendar.getInstance();
+        int date = calendar.get(Calendar.DAY_OF_MONTH);
+        return date;
+    }
+
+    /**
+     *  获取当前日期与指定日期相差天数
+     * @return
+     */
+    public static Integer getDifferenceFatalism (Integer date) {
+        if (null == date){
+            return 0;
+        }
+        Calendar calendar = Calendar.getInstance();
+
+        int days = calendar.get(Calendar.DAY_OF_MONTH);
+        if (days > date){
+            return days - date;
+        } else {
+            calendar.set(Calendar.DAY_OF_MONTH, 0);
+            Integer inDays = calendar.get(Calendar.DAY_OF_MONTH);
+            return (inDays - date) + days;
+        }
+    }
+
+    public static void main(String[] args) {
+
+        System.out.println(DateUtil.getDifferenceFatalism(25));
+    }
 }

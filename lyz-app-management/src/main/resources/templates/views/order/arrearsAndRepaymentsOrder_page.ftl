@@ -160,7 +160,7 @@
                 if (null == value) {
                     return '<a class="scan" href="#">' + '未知' + '</a>';
                 } else {
-                    return '<a class="scan" href="/views/admin/order/arrearsAndRepaymentsOrderDetail?id=' + row.id +'&orderNumber='+ value+'" target="_blank">' + value + '</a>';
+                    return '<a class="scan" href="/views/admin/order/arrearsAndRepaymentsOrderDetail?id=' + row.id +'&orderNumber='+ value+'">' + value + '</a>';
                 }
             }
         }, {

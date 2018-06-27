@@ -530,6 +530,33 @@ public class MaStoreRestController extends BaseRestController {
         }
     }
 
+
+    /**
+     * @param
+     * @return
+     * @throws
+     * @title 后台查询小型装饰公司列表(下拉框)
+     * @descripe
+     * @author GenerationRoad
+     * @date 2018/3/16
+     */
+    @GetMapping(value = "/findSmallFitStoresListByStoreId")
+    public List<SimpleStoreParam> findSmallFitStoresListByStoreId() {
+        logger.info("findZSStoresListByStoreId 后台查询小型装饰公司列表(下拉框)");
+        try {
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            List<SimpleStoreParam> storesList = this.maStoreService.findSmallFitStoresListByStoreId(storeIds);
+            logger.info("findZSStoresListByStoreId ,后台查询装饰公司列表(下拉框)成功", storesList.size());
+            return storesList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("findZSStoresListByStoreId EXCEPTION,发生未知错误，后台查询装饰公司列表(下拉框)失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
     /**
      * @param
      * @return

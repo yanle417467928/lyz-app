@@ -18,6 +18,8 @@ import java.util.Date;
 public class BillRepaymentInfoDO {
 
     private Long id;
+    //还款单号（BL_RC开头）
+    private String repaymentNo;
     //账单头id
     private Long BillId;
     //账单单号
@@ -40,7 +42,7 @@ public class BillRepaymentInfoDO {
     private Double totalRepaymentAmount;
     //是否支付
     private Boolean isPaid;
-    //利率
+    //利率(单位：万分之一/天 )
     private Double interestRate;
     //总滞纳金
     private Double totalInterestAmount;

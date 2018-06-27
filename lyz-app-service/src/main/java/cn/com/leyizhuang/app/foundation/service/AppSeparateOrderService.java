@@ -30,8 +30,9 @@ public interface AppSeparateOrderService {
 
     void updateOrderBaseInfSendFlagAndErrorMessageAndSendTime(String orderNumber, AppWhetherFlag flag, String errorMsg, Date sendTime);
 
-
     void sendOrderBaseInfAndOrderGoodsInf(String orderNumber);
+
+    void sendOrderBaseInfAndOrderNotXQGoodsInf(String orderNumber);
 
     void sendOrderReceiptInf(String orderNumber);
 
@@ -164,4 +165,6 @@ public interface AppSeparateOrderService {
     void sendKdSell(String mainOrderNumber);
 
     void updateKdSellFlagAndSendTimeAndErrorMsg(List<Long> kdSellIds, String msg, Date sendTime, AppWhetherFlag flag);
+
+    List<String> separateAllNotSplitOrder();
 }
