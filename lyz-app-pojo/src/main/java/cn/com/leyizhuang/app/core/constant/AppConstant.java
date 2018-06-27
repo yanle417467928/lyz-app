@@ -102,4 +102,9 @@ public class AppConstant {
      */
     public static final String UNION_PAY_ENCODING = "UTF-8";
 
+
+    /**
+     * 利息利率单位
+     */
+    public static final Double INTEREST_RATE_UNIT = 0.0001;
 }

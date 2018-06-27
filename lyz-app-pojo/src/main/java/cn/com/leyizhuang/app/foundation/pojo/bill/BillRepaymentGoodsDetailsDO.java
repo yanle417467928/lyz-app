@@ -31,5 +31,5 @@ public class BillRepaymentGoodsDetailsDO {
     //订单类型（order、return）
     private String orderType;
     //滞纳金
-    private Double interestTmount;
+    private Double interestAmount;
 }

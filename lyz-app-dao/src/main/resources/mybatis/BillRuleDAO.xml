@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.BillRuleDAO">
+
+    <select id="getBillRuleByStoreId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.bill.BillRuleDO">
+        SELECT bill_date,repayment_deadline_date,interest_rate,store_id,create_time,
+        FROM bill_rule
+        WHERE store_id = #{storeId}
+    </select>
+
+
+
+</mapper>
