@@ -753,7 +753,7 @@ public class CommonServiceImpl implements CommonService {
                         goodsInfo.setOid(orderBaseInfo.getId());
                         orderService.saveOrderGoodsInfo(goodsInfo);
 
-                        if (null != goodsInfo.getId() && orderBaseInfo.getOrderType() == AppOrderType.COUPON) {
+                        if (null != goodsInfo.getId() && orderBaseInfo.getOrderType() == AppOrderType.COUPON && orderBillingDetails.getIsPayUp()) {
                             if (null != goodsInfo.getOrderQuantity() && goodsInfo.getOrderQuantity() > 0) {
                                 for (int i = 1; i <= goodsInfo.getOrderQuantity(); i++) {
                                     //创建产品券信息
@@ -943,7 +943,7 @@ public class CommonServiceImpl implements CommonService {
 
             //更新顾客归属门店及导购
             updateCustomerAttachedStoreAndSeller(baseInfo, customer);
-
+            List<OrderGoodsInfo> orderGoodsInfoList = orderService.getOrderGoodsInfoByOrderNumber(orderNumber);
             //更新订单状态及物流状态
             if (baseInfo.getDeliveryType() == AppDeliveryType.SELF_TAKE) {
                 baseInfo.setStatus(AppOrderStatus.PENDING_RECEIVE);
@@ -961,7 +961,6 @@ public class CommonServiceImpl implements CommonService {
                 //保存传wms配送单头档
                 AppStore store = storeService.findStoreByUserIdAndIdentityType(baseInfo.getCreatorId(),
                         baseInfo.getCreatorIdentityType().getValue());
-                List<OrderGoodsInfo> orderGoodsInfoList = orderService.getOrderGoodsInfoByOrderNumber(orderNumber);
                 int orderGoodsSize = orderGoodsInfoList.size();
                 OrderLogisticsInfo orderLogisticsInfo = orderService.getOrderLogistice(orderNumber);
                 AtwRequisitionOrder requisitionOrder = AtwRequisitionOrder.transform(baseInfo, orderLogisticsInfo,
@@ -984,6 +983,63 @@ public class CommonServiceImpl implements CommonService {
 
             } else if (baseInfo.getDeliveryType() == AppDeliveryType.PRODUCT_COUPON) {
                 baseInfo.setStatus(AppOrderStatus.FINISHED);
+                //保存订单商品信息
+                if (null != orderGoodsInfoList && orderGoodsInfoList.size() > 0) {
+                    for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
+                        if (null != goodsInfo.getId() && baseInfo.getOrderType() == AppOrderType.COUPON && billingDetails.getIsPayUp()) {
+                            if (null != goodsInfo.getOrderQuantity() && goodsInfo.getOrderQuantity() > 0) {
+                                for (int i = 1; i <= goodsInfo.getOrderQuantity(); i++) {
+                                    //创建产品券信息
+                                    CustomerProductCoupon customerProductCoupon = new CustomerProductCoupon();
+                                    customerProductCoupon.setCustomerId(baseInfo.getCustomerId());
+                                    customerProductCoupon.setGoodsId(goodsInfo.getGid());
+                                    customerProductCoupon.setQuantity(1);
+                                    customerProductCoupon.setGetType(CouponGetType.BUY);
+                                    customerProductCoupon.setGetTime(baseInfo.getCreateTime());
+
+                                    Calendar c = Calendar.getInstance();
+                                    customerProductCoupon.setEffectiveStartTime(c.getTime());
+
+                                    c.add(Calendar.MONTH, 6);
+
+                                    customerProductCoupon.setEffectiveEndTime(c.getTime());
+                                    customerProductCoupon.setIsUsed(Boolean.FALSE);
+                                    customerProductCoupon.setUseTime(null);
+                                    customerProductCoupon.setUseOrderNumber(null);
+                                    customerProductCoupon.setGetOrderNumber(baseInfo.getOrderNumber());
+                                    customerProductCoupon.setBuyPrice(goodsInfo.getReturnPrice());
+                                    customerProductCoupon.setStoreId(baseInfo.getStoreId());
+                                    customerProductCoupon.setSellerId(baseInfo.getSalesConsultId());
+                                    customerProductCoupon.setStatus(Boolean.TRUE);
+                                    customerProductCoupon.setDisableTime(null);
+                                    customerProductCoupon.setGoodsLineId(goodsInfo.getId());
+                                    customerProductCoupon.setGoodsSign(goodsInfo.getGoodsSign());
+                                    //保存产品券信息
+                                    productCouponService.addCustomerProductCoupon(customerProductCoupon);
+
+                                    if (null != customerProductCoupon.getId()) {
+                                        //保存顾客产品券变更日志
+                                        CustomerProductCouponChangeLog customerProductCouponChangeLog = new CustomerProductCouponChangeLog();
+                                        customerProductCouponChangeLog.setCusId(baseInfo.getCustomerId());
+                                        customerProductCouponChangeLog.setUseTime(baseInfo.getCreateTime());
+                                        customerProductCouponChangeLog.setCouponId(customerProductCoupon.getId());
+                                        customerProductCouponChangeLog.setReferenceNumber(baseInfo.getOrderNumber());
+                                        customerProductCouponChangeLog.setChangeType(CustomerProductCouponChangeType.BUY_COUPON);
+                                        customerProductCouponChangeLog.setChangeTypeDesc(CustomerProductCouponChangeType.BUY_COUPON.getDescription());
+                                        customerProductCouponChangeLog.setOperatorId(null);
+                                        customerProductCouponChangeLog.setOperatorIp(null);
+                                        customerProductCouponChangeLog.setRemark(null);
+
+                                        productCouponService.addCustomerProductCouponChangeLog(customerProductCouponChangeLog);
+                                    } else {
+                                        throw new OrderSaveException("顾客产品券主键生成失败!");
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             //更新订单基础信息
