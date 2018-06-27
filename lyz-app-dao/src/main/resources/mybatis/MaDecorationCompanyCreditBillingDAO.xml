@@ -188,22 +188,22 @@
       INNER JOIN st_store s ON s.store_id = a.store_id
       WHERE 1=1
         <if test="null != storeId and -1 != storeId">
-          AND store_id = #{storeId}
+          AND a.store_id = #{storeId}
         </if>
         <if test="null != startTime and '' != startTime">
-            AND create_time &gt; #{startTime}
+            AND a.create_time &gt; #{startTime}
         </if>
         <if test="null != endTime and '' != endTime">
-            AND create_time &lt; #{endTime}
+            AND a.create_time &lt; #{endTime}
         </if>
         <if test="null != isPayOff and '' != isPayOff">
-            AND is_pay_off = #{isPayOff}
+            AND a.is_pay_off = #{isPayOff}
         </if>
         <if test="null != keywords and '' != keywords">
-            AND credit_billing_no LIKE concat(concat('%',#{keywords}),'%')
+            AND a.credit_billing_no LIKE concat(concat('%',#{keywords}),'%')
         </if>
         AND s.fit_compay_type !='CASH'
-        ORDER BY create_time DESC
+        ORDER BY a.create_time DESC
     </select>
 
     <select id="getDecorationCompanyCreditBillingById"  parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingVO">
