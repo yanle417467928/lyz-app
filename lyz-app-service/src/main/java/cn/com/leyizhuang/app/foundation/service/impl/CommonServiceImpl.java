@@ -781,6 +781,8 @@ public class CommonServiceImpl implements CommonService {
                                     customerProductCoupon.setDisableTime(null);
                                     customerProductCoupon.setGoodsLineId(goodsInfo.getId());
                                     customerProductCoupon.setGoodsSign(goodsInfo.getGoodsSign());
+                                    customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
+                                    customerProductCoupon.setWholesalePrice(goodsInfo.getWholesalePrice());
                                     //保存产品券信息
                                     productCouponService.addCustomerProductCoupon(customerProductCoupon);
 
@@ -1480,7 +1482,7 @@ public class CommonServiceImpl implements CommonService {
                     List<OrderJxPriceDifferenceReturnDetails> detailsList = new ArrayList<>(20);
                     for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
 
-                        if (orderGoodsInfo.getGoodsLineType() == AppGoodsLineType.GOODS) {
+                        if (orderGoodsInfo.getGoodsLineType() == AppGoodsLineType.GOODS || orderGoodsInfo.getGoodsLineType() == AppGoodsLineType.PRODUCT_COUPON) {
                             OrderJxPriceDifferenceReturnDetails details = new OrderJxPriceDifferenceReturnDetails();
                             if (null != orderGoodsInfo.getPromotionId()) {
                                 Long actId = Long.valueOf(orderGoodsInfo.getPromotionId());
@@ -1503,6 +1505,11 @@ public class CommonServiceImpl implements CommonService {
                             details.setSku(orderGoodsInfo.getSku());
                             details.setStoreId(orderBaseInfo.getStoreId());
                             details.setStoreCode(orderBaseInfo.getStoreCode());
+                            if (AppGoodsLineType.GOODS == orderGoodsInfo.getGoodsLineType()){
+                                details.setGoodsLineType(AppGoodsLineType.GOODS);
+                            }else if (AppGoodsLineType.PRODUCT_COUPON == orderGoodsInfo.getGoodsLineType()){
+                                details.setGoodsLineType(AppGoodsLineType.PRODUCT_COUPON);
+                            }
                             detailsList.add(details);
                         }
                     }
@@ -1534,7 +1541,7 @@ public class CommonServiceImpl implements CommonService {
             for (ReturnOrderGoodsInfo goodsInfo : goodsInfos) {
                 for (OrderJxPriceDifferenceReturnDetails details : detailsList) {
                     if (goodsInfo.getSku().equals(details.getSku()) &&
-                            AppGoodsLineType.GOODS.equals(goodsInfo.getGoodsLineType())) {
+                            (AppGoodsLineType.GOODS.equals(goodsInfo.getGoodsLineType()) || AppGoodsLineType.PRODUCT_COUPON.equals(goodsInfo.getGoodsLineType()))) {
                         Double returnGoodsJxPriceAmount = CountUtil.mul(goodsInfo.getReturnQty(), details.getUnitPrice());
                         if (returnGoodsJxPriceAmount > AppConstant.DOUBLE_ZERO){
                             jxPrice = CountUtil.add(jxPrice, returnGoodsJxPriceAmount);
@@ -1551,6 +1558,11 @@ public class CommonServiceImpl implements CommonService {
                         returnDetails.setStoreId(details.getStoreId());
                         returnDetails.setUnitPrice(details.getUnitPrice());
                         returnDetails.setRefundNumber(OrderUtils.getRefundNumber());
+                        if (goodsInfo.getGoodsLineType() == AppGoodsLineType.GOODS){
+                            returnDetails.setGoodsLineType(AppGoodsLineType.GOODS);
+                        }else if (goodsInfo.getGoodsLineType() == AppGoodsLineType.PRODUCT_COUPON){
+                            returnDetails.setGoodsLineType(AppGoodsLineType.PRODUCT_COUPON);
+                        }
                         returnDetailsList.add(returnDetails);
                         returnOrderService.saveReturnOrderJxPriceDifferenceRefundDetails(returnDetails);
                         break;

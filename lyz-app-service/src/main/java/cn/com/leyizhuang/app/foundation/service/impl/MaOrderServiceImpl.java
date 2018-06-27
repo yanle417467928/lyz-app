@@ -1003,6 +1003,8 @@ public class MaOrderServiceImpl implements MaOrderService {
                                     customerProductCoupon.setDisableTime(null);
                                     customerProductCoupon.setGoodsLineId(goodsInfo.getId());
                                     customerProductCoupon.setGoodsSign(goodsInfo.getGoodsSign());
+                                    customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
+                                    customerProductCoupon.setWholesalePrice(goodsInfo.getWholesalePrice());
                                     //保存产品券信息
                                     productCouponService.addCustomerProductCoupon(customerProductCoupon);
 
