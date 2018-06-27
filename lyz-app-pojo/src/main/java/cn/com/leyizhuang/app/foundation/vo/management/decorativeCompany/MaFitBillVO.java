@@ -65,5 +65,6 @@ public class MaFitBillVO {
      */
     private Double currentUnpaidAmount;
 
+    private String status;
 
 }

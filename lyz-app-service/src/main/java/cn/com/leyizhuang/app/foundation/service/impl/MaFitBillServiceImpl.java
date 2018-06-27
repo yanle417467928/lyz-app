@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,6 +31,17 @@ public class MaFitBillServiceImpl implements MaFitBillService {
     public PageInfo<MaFitBillVO> getFitNotOutBill(Integer page, Integer size, List<Long> storeIds, String keywords) {
         PageHelper.startPage(page, size);
         List<MaFitBillVO> fitBillVOList = this.maFitBillDAO.getFitNotOutBill(storeIds, keywords);
+        List<String> billNoList = new ArrayList<>();
+        for (MaFitBillVO maFitBillVO : fitBillVOList) {
+            if ("ALREADY_OUT".equals(maFitBillVO.getStatus())) {
+                billNoList.add(maFitBillVO.getBillNo());
+            }
+        }
+        for (MaFitBillVO maFitBillVO : fitBillVOList) {
+            if ("NOT_OUT".equals(maFitBillVO.getStatus()) && billNoList.contains(maFitBillVO.getBillNo())) {
+                fitBillVOList.remove(maFitBillVO);
+            }
+        }
         return new PageInfo<>(fitBillVOList);
     }
 
@@ -41,13 +53,13 @@ public class MaFitBillServiceImpl implements MaFitBillService {
     }
 
     @Override
-    public PageInfo<MaFitBillVO> getNoPayOrderBillByBillNo(Integer page, Integer size, List<Long> storeIds, String billNo,String startTime,String endTime,String orderNo) {
+    public PageInfo<MaFitBillVO> getNoPayOrderBillByBillNo(Integer page, Integer size, List<Long> storeIds, String billNo, String startTime, String endTime, String orderNo) {
         PageHelper.startPage(page, size);
         return null;
     }
 
     @Override
-    public PageInfo<MaFitBillVO> getPayOrderBillByBillNo(Integer page, Integer size, List<Long> storeIds, String billNo,String startTime,String endTime,String orderNo) {
+    public PageInfo<MaFitBillVO> getPayOrderBillByBillNo(Integer page, Integer size, List<Long> storeIds, String billNo, String startTime, String endTime, String orderNo) {
         PageHelper.startPage(page, size);
         return null;
     }
