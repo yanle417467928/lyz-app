@@ -18,6 +18,8 @@ public class BillRepaymentGoodsDetailsDO {
     private Long id;
     //还款头id
     private Long repaymentId;
+    //还款单号（BL_RC开头）
+    private String repayment_No;
     //订单号
     private String orderNo;
     //退单号

@@ -18,6 +18,8 @@ import java.util.Date;
 public class BillRepaymentInfoDO {
 
     private Long id;
+    //还款单号（BL_RC开头）
+    private String repaymentNo;
     //账单头id
     private Long BillId;
     //账单单号

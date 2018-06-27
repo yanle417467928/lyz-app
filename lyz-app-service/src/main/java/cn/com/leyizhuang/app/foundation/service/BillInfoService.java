@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
+import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
 
 import java.util.List;
 
@@ -12,5 +13,7 @@ public interface BillInfoService {
 
 
     List<BillRepaymentGoodsDetailsDO> computeInterestAmount(Long storeId, List<BillRepaymentGoodsDetailsDO> goodsDetailsDOList);
+
+    BillRepaymentInfoDO findBillRepaymentInfoByRepaymentNo(String repaymentNo);
 
 }

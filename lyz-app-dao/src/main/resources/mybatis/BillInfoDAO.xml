@@ -2,7 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.BillInfoDAO">
 
-
+    <select id="findBillRepaymentInfoByRepaymentNo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO">
+        SELECT repaymentNo, bill_id, bill_no, repayment_user_id, repayment_user_name,
+        repayment_time, online_pay_type, online_pay_amount, pre_deposit, total_repayment_amount,
+        is_paid, interest_rate, total_interest_amount, create_time
+        FROM bill_repayment_info
+        WHERE repayment_no = #{repaymentNo}
+    </select>
 
 
 </mapper>
