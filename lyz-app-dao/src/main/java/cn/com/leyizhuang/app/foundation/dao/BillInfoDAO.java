@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -8,4 +9,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface BillInfoDAO {
+
+    BillRepaymentInfoDO findBillRepaymentInfoByRepaymentNo(String repaymentNo);
+
 }

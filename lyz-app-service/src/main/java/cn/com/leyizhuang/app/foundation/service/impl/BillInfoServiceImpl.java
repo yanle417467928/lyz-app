@@ -2,7 +2,9 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppConstant;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
+import cn.com.leyizhuang.app.foundation.dao.BillInfoDAO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
+import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRuleDO;
 import cn.com.leyizhuang.app.foundation.service.BillInfoService;
 import cn.com.leyizhuang.app.foundation.service.BillRuleService;
@@ -21,6 +23,9 @@ public class BillInfoServiceImpl implements BillInfoService {
 
     @Autowired
     private BillRuleService billRuleService;
+
+    @Autowired
+    private BillInfoDAO billInfoDAO;
 
     @Override
     public List<BillRepaymentGoodsDetailsDO> computeInterestAmount(Long storeId, List<BillRepaymentGoodsDetailsDO> goodsDetailsDOList) {
@@ -54,6 +59,11 @@ public class BillInfoServiceImpl implements BillInfoService {
         }
 
         return goodsDetailsDOList;
+    }
+
+    @Override
+    public BillRepaymentInfoDO findBillRepaymentInfoByRepaymentNo(String repaymentNo) {
+        return this.billInfoDAO.findBillRepaymentInfoByRepaymentNo(repaymentNo);
     }
 
 }
