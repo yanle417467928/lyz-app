@@ -84,9 +84,7 @@ public class BillInfoServiceImpl implements BillInfoService {
 
     @Override
     @Transactional
-    public void handleBillRepaymentAfterOnlinePayUp(String repaymentNo, String tradeNo, String tradeStatus, OnlinePayType onlinePayType) {
-        List<PaymentDataDO> paymentDataList = paymentDataService.findByOrderNoAndTradeStatus(repaymentNo, PaymentDataStatus.TRADE_SUCCESS);
-        PaymentDataDO paymentData = paymentDataList.get(0);
+    public void handleBillRepaymentAfterOnlinePayUp(String repaymentNo, OnlinePayType onlinePayType) {
 
         //更改账单收款信息
         BillRepaymentInfoDO billRepaymentInfoDO = this.billInfoDAO.findBillRepaymentInfoByRepaymentNo(repaymentNo);

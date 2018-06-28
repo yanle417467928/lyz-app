@@ -6,7 +6,9 @@ import cn.com.leyizhuang.app.core.pay.unionpay.sdk.LogUtil;
 import cn.com.leyizhuang.app.core.pay.unionpay.sdk.SDKConfig;
 import cn.com.leyizhuang.app.core.pay.unionpay.sdk.SDKConstants;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
+import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.service.*;
@@ -17,6 +19,7 @@ import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.CountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -67,6 +70,9 @@ public class UnionPayController {
 
     @Resource
     private ICallWms iCallWms;
+
+    @Autowired
+    private BillInfoService billInfoService;
 
     /**
      * 订单银联支付
@@ -272,6 +278,21 @@ public class UnionPayController {
                             if (baseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
                                 iCallWms.sendToWmsRequisitionOrderAndGoods(orderNumber);
                             }
+                        }
+                    } else if (paymentDataDO.getPaymentType() == PaymentDataType.BILLPAY) {
+                        if (null != paymentDataDO.getId() && new Double(paymentDataDO.getTotalFee() * 100).intValue() == settleAmt) {
+                            String orderNumber = paymentDataDO.getOrderNumber();
+                            paymentDataDO.setTradeNo(queryId);
+                            paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
+                            paymentDataDO.setNotifyTime(new Date());
+                            this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
+                            logger.info("alipayReturnAsync ,银联支付回调接口，支付数据记录信息 paymentDataDO:{}",
+                                    paymentDataDO);
+                            //处理第三方支付成功之后订单相关事务
+                            billInfoService.handleBillRepaymentAfterOnlinePayUp(orderNumber, OnlinePayType.UNION_PAY);
+                            //将收款记录入拆单消息队列
+                            sinkSender.sendRechargeReceipt(orderNumber);
+                            logger.warn("alipayReturnAsync OUT,银联支付回调接口处理成功，出参 result:{}", "success");
                         }
                     }
                     LogUtil.writeLog("unionPayReturnAsyncBack接收后台通知结束");
@@ -494,6 +515,86 @@ public class UnionPayController {
             e.printStackTrace();
         }
     }
+
+
+    /**
+     * @title   银联支付账单还款
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/6/28
+     */
+    @PostMapping(value = "/bill/pay/html", produces = "application/json")
+    public ResultDTO billUnionPayHtml(Long userId, Integer identityType, String repaymentNo, HttpServletResponse response) {
+
+        logger.info("billUnionPayHtml CALLED,银联支付账单还款信息提交,入参 userId:{}, identityType:{}, repaymentNo:{}",
+                userId, identityType, repaymentNo);
+        ResultDTO<String> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+            logger.info("billUnionPayHtml OUT,银联支付账单还款信息提交失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("billUnionPayHtml OUT,银联支付账单还款信息提交失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == repaymentNo) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单号不能为空！", null);
+            logger.info("billUnionPayHtml OUT,银联支付账单还款信息提交失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            BillRepaymentInfoDO billRepaymentInfoDO = this.billInfoService.findBillRepaymentInfoByRepaymentNo(repaymentNo);
+
+            if (null == billRepaymentInfoDO || null == billRepaymentInfoDO.getBillNo() || null == billRepaymentInfoDO.getOnlinePayAmount() ||
+                    billRepaymentInfoDO.getOnlinePayAmount() < AppConstant.PAY_UP_LIMIT) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "支付金额错误！", null);
+                logger.info("billUnionPayHtml OUT,银联支付账单还款信息提交失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null != billRepaymentInfoDO.getIsPaid() && billRepaymentInfoDO.getIsPaid()) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "已支付，请勿重复提交！", null);
+                logger.info("billUnionPayHtml OUT,银联支付账单还款信息提交失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+
+            String outTradeNo = OrderUtils.generatePayNumber();
+            PaymentDataDO paymentData = new PaymentDataDO();
+            paymentData.setUserId(userId);
+            paymentData.setOnlinePayType(OnlinePayType.UNION_PAY);
+            paymentData.setPaymentType(PaymentDataType.ORDER);
+            paymentData.setPaymentTypeDesc(PaymentDataType.ORDER.getDescription());
+            paymentData.setAppIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+            paymentData.setCreateTime(LocalDateTime.now());
+            paymentData.setOutTradeNo(outTradeNo);
+            paymentData.setOrderNumber(repaymentNo);
+            paymentData.setTotalFee(billRepaymentInfoDO.getOnlinePayAmount());
+            paymentData.setTradeStatus(PaymentDataStatus.WAIT_PAY);
+            paymentData.setNotifyUrl(AppApplicationConstant.unionPayAsyncUrlBack);
+            paymentData.setRemarks("账单还款");
+            paymentDataService.save(paymentData);
+
+            //生成银联支付请求html
+            String html = this.generatePaymentHtml(billRepaymentInfoDO.getOnlinePayAmount(), outTradeNo);
+
+            LogUtil.writeLog("打印请求HTML，此为请求报文，为联调排查问题的依据：" + html);
+
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, html);
+            response.getWriter().write(resultDTO.getContent());
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.info("银联支付账单还款信息提交发生异常:" + e);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "银联支付账单还款信息提交异常", null);
+            return resultDTO;
+        }
+    }
+
+
 
 
 }

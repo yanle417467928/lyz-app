@@ -377,7 +377,7 @@ public class AliPayController {
                             logger.info("alipayReturnAsync ,支付宝支付回调接口，支付数据记录信息 paymentDataDO:{}",
                                     paymentDataDO);
                             //处理第三方支付成功之后订单相关事务
-                            commonService.handleOrderRelevantBusinessAfterOnlinePayUp(orderNumber, tradeNo, tradeStatus, OnlinePayType.ALIPAY);
+                            billInfoService.handleBillRepaymentAfterOnlinePayUp(orderNumber, OnlinePayType.ALIPAY);
                             //将收款记录入拆单消息队列
                             sinkSender.sendRechargeReceipt(orderNumber);
                             logger.warn("alipayReturnAsync OUT,支付宝支付回调接口处理成功，出参 result:{}", "success");
@@ -543,7 +543,7 @@ public class AliPayController {
         }
         BillRepaymentInfoDO billRepaymentInfoDO = this.billInfoService.findBillRepaymentInfoByRepaymentNo(repaymentNo);
 
-        if (null == billRepaymentInfoDO || null == billRepaymentInfoDO.getBillingNo() || null == billRepaymentInfoDO.getOnlinePayAmount() ||
+        if (null == billRepaymentInfoDO || null == billRepaymentInfoDO.getBillNo() || null == billRepaymentInfoDO.getOnlinePayAmount() ||
             billRepaymentInfoDO.getOnlinePayAmount() < AppConstant.PAY_UP_LIMIT) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "支付金额错误！", null);
             logger.info("billAlipay OUT,支付宝账单还款信息提交失败，出参 resultDTO:{}", resultDTO);
@@ -568,6 +568,7 @@ public class AliPayController {
         paymentData.setTotalFee(billRepaymentInfoDO.getOnlinePayAmount());
         paymentData.setTradeStatus(PaymentDataStatus.WAIT_PAY);
         paymentData.setNotifyUrl(AppApplicationConstant.alipayReturnUrlAsync);
+        paymentData.setRemarks("账单还款");
         this.paymentDataService.save(paymentData);
         String totalFee = CountUtil.retainTwoDecimalPlaces(billRepaymentInfoDO.getOnlinePayAmount());
         //serverUrl 非空，请求服务器地址（调试：http://openapi.alipaydev.com/gateway.do 线上：https://openapi.alipay.com/gateway.do ）
