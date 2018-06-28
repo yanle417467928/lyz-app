@@ -699,5 +699,37 @@
         WHERE ori.ord_no = #{orderNo} AND ori.return_status != 'CANCELED'
         GROUP BY ori.ord_no
     </select>
+
+    <select id="getReturnBaseinfoByOrderNo" resultType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo">
+        SELECT
+        roid,
+        oid orderId,
+        ord_no orderNo,
+        order_time,
+        return_time,
+        return_no,
+        return_type,
+        return_price,
+        remarks_info,
+        creator_id,
+        creator_name,
+        creator_identityType,
+        creator_phone,
+        store_id storeId,
+        store_code storeCode,
+        store_structure_code storeStructureCode,
+        cus_id customerId,
+        cus_name customerName,
+        cus_phone customerPhone,
+        cus_type customerType,
+        reason_info,
+            return_pic,
+        ord_type orderType,
+        return_status,
+        is_record_sales isRecordSales
+        FROM ord_return_base_info
+        WHERE
+        ord_no = #{orderNo}
+    </select>
 </mapper>
 
