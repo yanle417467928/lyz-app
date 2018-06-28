@@ -21,7 +21,7 @@ public class BillInfoDO {
     //门店ID
     private Long storeId;
     //账单单号
-    private String billingNo;
+    private String billNo;
     //账单名称
     private String billName;
     //记账周期开始时间

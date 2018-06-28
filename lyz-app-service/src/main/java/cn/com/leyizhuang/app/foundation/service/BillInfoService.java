@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.core.constant.OnlinePayType;
+import cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
 
@@ -18,5 +19,13 @@ public interface BillInfoService {
     BillRepaymentInfoDO findBillRepaymentInfoByRepaymentNo(String repaymentNo);
 
     void handleBillRepaymentAfterOnlinePayUp(String repaymentNo, String tradeNo, String tradeStatus, OnlinePayType onlinePayType);
+
+    void updateBillRepaymentInfo(BillRepaymentInfoDO billRepaymentInfoDO);
+
+    List<BillRepaymentGoodsDetailsDO> findRepaymentGoodsDetailsByRepaymentNo(String repaymentNo);
+
+    BillInfoDO findBillInfoByBillNo(String billNo);
+
+    void updateBillInfo(BillInfoDO billInfoDO);
 
 }

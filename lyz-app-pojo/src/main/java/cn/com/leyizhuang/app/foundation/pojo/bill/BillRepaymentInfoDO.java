@@ -21,9 +21,9 @@ public class BillRepaymentInfoDO {
     //还款单号（BL_RC开头）
     private String repaymentNo;
     //账单头id
-    private Long BillId;
+    private Long billId;
     //账单单号
-    private String billingNo;
+    private String billNo;
     //还款人id
     private Long repaymentUserId;
     //还款人姓名
