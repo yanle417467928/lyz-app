@@ -38,6 +38,14 @@ public class BillRepaymentInfoDO {
     private Double onlinePayAmount;
     //预存款支付金额
     private Double preDeposit;
+    //现金金额
+    private Double cashMoney;
+    //其他金额
+    private Double otherMoney;
+    //POS金额
+    private Double posMoney;
+    //pos流水号
+    private String posNumber;
     //还款总金额
     private Double totalRepaymentAmount;
     //是否支付

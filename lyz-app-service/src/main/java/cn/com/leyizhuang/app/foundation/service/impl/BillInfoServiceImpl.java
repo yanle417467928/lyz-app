@@ -1,13 +1,17 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppConstant;
+import cn.com.leyizhuang.app.core.constant.OnlinePayType;
+import cn.com.leyizhuang.app.core.constant.PaymentDataStatus;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.foundation.dao.BillInfoDAO;
+import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRuleDO;
 import cn.com.leyizhuang.app.foundation.service.BillInfoService;
 import cn.com.leyizhuang.app.foundation.service.BillRuleService;
+import cn.com.leyizhuang.app.foundation.service.PaymentDataService;
 import cn.com.leyizhuang.common.util.CountUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +30,9 @@ public class BillInfoServiceImpl implements BillInfoService {
 
     @Autowired
     private BillInfoDAO billInfoDAO;
+
+    @Autowired
+    private PaymentDataService paymentDataService;
 
     @Override
     public List<BillRepaymentGoodsDetailsDO> computeInterestAmount(Long storeId, List<BillRepaymentGoodsDetailsDO> goodsDetailsDOList) {
@@ -67,7 +74,12 @@ public class BillInfoServiceImpl implements BillInfoService {
     }
 
     @Override
-    public void handleBillRepaymentAfterOnlinePayUp() {
+    public void handleBillRepaymentAfterOnlinePayUp(String repaymentNo, String tradeNo, String tradeStatus, OnlinePayType onlinePayType) {
+        List<PaymentDataDO> paymentDataList = paymentDataService.findByOrderNoAndTradeStatus(repaymentNo, PaymentDataStatus.TRADE_SUCCESS);
+        PaymentDataDO paymentData = paymentDataList.get(0);
+
+        BillRepaymentInfoDO billRepaymentInfoDO = this.billInfoDAO.findBillRepaymentInfoByRepaymentNo(repaymentNo);
+
 
     }
 
