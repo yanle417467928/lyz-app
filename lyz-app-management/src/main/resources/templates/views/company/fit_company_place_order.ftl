@@ -224,7 +224,7 @@
             $("#storeId").empty()
             var store;
             $.ajax({
-                url: '/rest/stores/findStoresListByLoginAdministrator',
+                url: '/rest/stores/findZSStoresListByStoreId',
                 method: 'GET',
                 error: function () {
                     clearTimeout($global.timer);

@@ -1,10 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
-import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
-import cn.com.leyizhuang.app.core.constant.AppIdentityType;
-import cn.com.leyizhuang.app.core.constant.AppLock;
-import cn.com.leyizhuang.app.core.constant.EmpCreditMoneyChangeType;
+import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.exception.*;
 import cn.com.leyizhuang.app.core.lock.RedisLock;
 import cn.com.leyizhuang.app.core.utils.IpUtil;
@@ -210,7 +207,7 @@ public class MaOrderRestController extends BaseRestController {
         try {
             //查询登录用户门店权限的门店ID
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
-            maOrderVORequest =  MaOrderVORequest.transformTime(maOrderVORequest);
+            maOrderVORequest = MaOrderVORequest.transformTime(maOrderVORequest);
             size = getSize(size);
             Integer page = getPage(offset, size);
             PageHelper.startPage(page, size);
@@ -442,7 +439,7 @@ public class MaOrderRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            maOrderVORequest =  MaOrderVORequest.transformTime(maOrderVORequest);
+            maOrderVORequest = MaOrderVORequest.transformTime(maOrderVORequest);
             PageInfo<MaSelfTakeOrderVO> maOrderVOList = this.maOrderService.findSelfTakeOrderByCondition(page, size, maOrderVORequest);
             List<MaSelfTakeOrderVO> orderVOList = maOrderVOList.getList();
             logger.warn("findSelfTakeOrderPageGirdByCondition ,多条件分页查询订单列表成功", orderVOList.size());
@@ -479,7 +476,7 @@ public class MaOrderRestController extends BaseRestController {
                 logger.warn("orderShipping OUT,后台自提单发货失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (!code.equals(maOrderTempInfo.getPickUpCode())&&!"9999".equals(code)) {
+            if (!code.equals(maOrderTempInfo.getPickUpCode()) && !"9999".equals(code)) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "验证码错误", null);
                 logger.warn("orderShipping OUT,后台自提单发货失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -542,7 +539,7 @@ public class MaOrderRestController extends BaseRestController {
             return resultDTO;
         }
         try {
-            if("9999".equals(code)){
+            if ("9999".equals(code)) {
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS,
                         "后台验证发货验证码成功,验证码正确", null);
             }
@@ -768,7 +765,7 @@ public class MaOrderRestController extends BaseRestController {
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
                     "审核订单失败", null);
         }
-        if (null==auditId) {
+        if (null == auditId) {
             logger.warn("审核单号为空,审核订单失败");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,
                     "审核订单失败", null);
@@ -792,7 +789,7 @@ public class MaOrderRestController extends BaseRestController {
                     null);
         }
         try {
-            String receiptNumber = this.maOrderService.auditOrderStatus(orderNumber, status,auditId);
+            String receiptNumber = this.maOrderService.auditOrderStatus(orderNumber, status, auditId);
             if (null != receiptNumber) {
                 //将收款记录录入拆单消息队列
                 this.maSinkSender.sendOrderReceipt(receiptNumber);
@@ -911,10 +908,10 @@ public class MaOrderRestController extends BaseRestController {
      */
     @PostMapping(value = "/save/productCoupon")
     public ResultDTO<?> saveMaProductCoupon(HttpServletRequest request, Long sellerId, Long customerId, String goodsDetails, String giftDetails,
-                                            Double cashMoney, Double posMoney, Double otherMoney, String posNumber, Double totalMoney,
+                                            Double cashMoney, Double posMoney, Double otherMoney, Double aliyMoney, Double weMoney, String posNumber, Double totalMoney,
                                             String collectMoneyTime, String remarks, String salesNumber, Double preDepositMoney, String preDepositCollectMoneyTime, String preDepositRemarks,
                                             Double memberDiscount, Double promotionDiscount) throws IOException {
-        logger.info("saveMaProductCoupon 保存买券信息，创建买券订单,入参 sellerId:{},customerId:{},goodsDetails:{},giftDateils:{},cashMoney:{},posMoney:{},otherMoney:{}," +
+        logger.info("saveMaProductCoupon 保存买券信息，创建买券订单,入参 sellerId:{},customerId:{},goodsDetails:{},giftDateils:{},cashMoney:{},posMoney:{},otherMoney:{},weMoney:{},aliyMoney:{}," +
                         "posNumber:{},collectMoneyTime:{},remarks:{},preDepositMoney:{},preDepositCollectMoneyTime:{},preDepositRemarks:{},preDepositRemarks:{},salesNumber:{}", sellerId, customerId, goodsDetails, giftDetails,
                 cashMoney, posMoney, otherMoney, posNumber, collectMoneyTime, remarks, preDepositMoney, preDepositCollectMoneyTime, preDepositRemarks, totalMoney, salesNumber);
         if (null == sellerId) {
@@ -1054,8 +1051,15 @@ public class MaOrderRestController extends BaseRestController {
             OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
             orderBillingDetails.setOrderNumber(orderBaseInfo.getOrderNumber());
             orderBillingDetails.setTotalGoodsPrice(support.getGoodsTotalPrice());
-            orderBillingDetails.setMemberDiscount(CountUtil.sub(0D,memberDiscount));
-            orderBillingDetails.setPromotionDiscount(CountUtil.sub(0D,promotionDiscount));
+            orderBillingDetails.setMemberDiscount(CountUtil.sub(0D, memberDiscount));
+            orderBillingDetails.setPromotionDiscount(CountUtil.sub(0D, promotionDiscount));
+            if (null != aliyMoney && aliyMoney > 0) {
+                orderBillingDetails.setOnlinePayAmount(aliyMoney);
+                orderBillingDetails.setOnlinePayType(OnlinePayType.ALIPAY);
+            } else if (null != weMoney && weMoney > 0) {
+                orderBillingDetails.setOnlinePayAmount(weMoney);
+                orderBillingDetails.setOnlinePayType(OnlinePayType.WE_CHAT);
+            }
             orderBillingDetails.setFreight(0D);
             String payTime = "";
             if (null != preDepositMoney) {
@@ -1082,6 +1086,18 @@ public class MaOrderRestController extends BaseRestController {
             //****************** 处理订单账单支付明细信息 ************
             Map<Object, Object> map = maOrderService.createMaOrderBillingPaymentDetails(orderBaseInfo, orderBillingDetails, appStore, appCustomer, user.getUid());
             List<OrderBillingPaymentDetails> paymentDetails = (List<OrderBillingPaymentDetails>) map.get("billingPaymentDetails");
+            if (null != aliyMoney && aliyMoney > 0) {
+                OrderBillingPaymentDetails orderBillingPaymentDetails = new OrderBillingPaymentDetails();
+                orderBillingPaymentDetails.generateOrderBillingPaymentDetails(OrderBillingPaymentType.ALIPAY, orderBillingDetails.getOnlinePayAmount(),
+                        PaymentSubjectType.SELLER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+                paymentDetails.add(orderBillingPaymentDetails);
+            } else if (null != weMoney && weMoney > 0) {
+                OrderBillingPaymentDetails orderBillingPaymentDetails = new OrderBillingPaymentDetails();
+                orderBillingPaymentDetails.generateOrderBillingPaymentDetails(OrderBillingPaymentType.WE_CHAT, orderBillingDetails.getOnlinePayAmount(),
+                        PaymentSubjectType.SELLER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+                paymentDetails.add(orderBillingPaymentDetails);
+            }
+
             List<RechargeReceiptInfo> rechargeReceiptInfoList = (List<RechargeReceiptInfo>) map.get("rechargeReceiptInfoList");
             List<RechargeOrder> rechargeOrderList = (List<RechargeOrder>) map.get("rechargeOrderList");
 
@@ -1093,10 +1109,10 @@ public class MaOrderRestController extends BaseRestController {
             orderGoodsInfoList = dutchService.countReturnPrice(orderGoodsInfoList);
 
             if (null != goodsZGList && goodsZGList.size() > 0
-                    && null != orderGoodsInfoList && orderGoodsInfoList.size() > 0){
-                for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList){
-                    for (GiftListResponseGoods goods : goodsZGList){
-                        if (orderGoodsInfo.getGid().equals(goods.getGoodsId())){
+                    && null != orderGoodsInfoList && orderGoodsInfoList.size() > 0) {
+                for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
+                    for (GiftListResponseGoods goods : goodsZGList) {
+                        if (orderGoodsInfo.getGid().equals(goods.getGoodsId())) {
                             orderGoodsInfo.setGoodsSign(goodsSign);
                         }
                     }
@@ -1223,19 +1239,19 @@ public class MaOrderRestController extends BaseRestController {
     /**
      * 多条件分页查询装饰公司订单列表
      *
-     * @param offset       当前页
-     * @param size         每页条数
-     * @param keywords     不知
-     * @param maCompanyOrderVORequest  多条件查询请求参数类
+     * @param offset                  当前页
+     * @param size                    每页条数
+     * @param keywords                不知
+     * @param maCompanyOrderVORequest 多条件查询请求参数类
      * @return 订单列表
      */
     @GetMapping(value = "/fitOrder/page/conditionGrid")
     public GridDataVO<FitOrderVO> findOrderByCondition(Integer offset, Integer size, String keywords, MaCompanyOrderVORequest maCompanyOrderVORequest) {
-        logger.info("findOrderByCondition 多条件分页查询装饰公司订单列表 ,入参 offsetL:{}, size:{}, kewords:{}, maOrderVORequest:{}",offset, size, keywords, maCompanyOrderVORequest);
+        logger.info("findOrderByCondition 多条件分页查询装饰公司订单列表 ,入参 offsetL:{}, size:{}, kewords:{}, maOrderVORequest:{}", offset, size, keywords, maCompanyOrderVORequest);
         try {
             //查询登录用户门店权限的门店ID
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
-            maCompanyOrderVORequest =  MaCompanyOrderVORequest.transformTime(maCompanyOrderVORequest);
+            maCompanyOrderVORequest = MaCompanyOrderVORequest.transformTime(maCompanyOrderVORequest);
             size = getSize(size);
             Integer page = getPage(offset, size);
             PageHelper.startPage(page, size);

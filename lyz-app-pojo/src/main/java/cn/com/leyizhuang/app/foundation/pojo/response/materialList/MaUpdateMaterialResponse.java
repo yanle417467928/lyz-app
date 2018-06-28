@@ -33,4 +33,6 @@ public class MaUpdateMaterialResponse {
     private MaterialListType materialListType;
 
     private String isGenerateOrder;
+
+    private Long proxyId;
 }

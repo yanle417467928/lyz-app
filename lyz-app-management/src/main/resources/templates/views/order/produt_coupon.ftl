@@ -349,6 +349,28 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="col-xs-12" style="display: none">
+                                                <div class="col-xs-11" style="margin-top: 10px">
+                                                    <label class="col-xs-3" style="padding-right: 0px;text-align:right">微信
+                                                        &ensp;</label>
+                                                    <div class=" col-xs-8" style="padding-left: 0px">
+                                                        <input type="number" name="weMoney" id="weMoney"
+                                                               class="form-control" placeholder="微信金额"
+                                                               onblur="priceBlur('weMoney')" \>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12" style="display: none">
+                                                <div class="col-xs-11" style="margin-top: 10px">
+                                                    <label class="col-xs-3" style="padding-right: 0px;text-align:right">支付宝
+                                                        &ensp;</label>
+                                                    <div class=" col-xs-8" style="padding-left: 0px">
+                                                        <input type="number" name="aliyMoney" id="aliyMoney"
+                                                               class="form-control" placeholder="支付宝金额"
+                                                               onblur="priceBlur('aliyMoney')" \>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <div class="col-xs-12">
                                                 <div class="col-xs-11" style="margin-top: 10px">
                                                     <label class="col-xs-3" style="padding-right: 0px;text-align:right">其他

@@ -793,6 +793,8 @@ function save() {
     var selectPaymnet = $('#selectPaymnet').val();
     var vipDiscount = $('#vipDiscount').text();
     var promotionsDiscount = $('#promotionsDiscount').text();
+    var aliyMoney = $('#aliyMoney').val();
+    var weMoney = $('#weMoney').val();
 
     var salesNumber = $('#salesNumber').val();
     if ('' == sellerId || null == sellerId) {
@@ -836,7 +838,7 @@ function save() {
 
     }
 
-    var totalMoneys = (Number(cashMoney) * 100 + Number(posMoney) * 100 + Number(otherMoney) * 100) / 100;
+    var totalMoneys = (Number(cashMoney) * 100 + Number(posMoney) * 100 + Number(otherMoney) * 100+ Number(aliyMoney) * 100+ Number(weMoney) * 100) / 100;
 
     var availableMoney = $('#availableMoney').val();
     var preDepositMoney = $('#preDepositMoney').val();
@@ -879,9 +881,14 @@ function save() {
                 return;
             }
         }
+        if (null != aliyMoney && aliyMoney> 0&&null != weMoney && weMoney> 0) {
+                $loading.close();
+                $notify.warning("支付宝和微信只能选择一种支付！");
+                return;
+        }
         if (Number(totalMoney) != Number(totalMoneys)) {
             $loading.close();
-            $notify.warning("现金、POS、其他收款总和与收款金额不相等，请检查！");
+            $notify.warning("现金、POS、微信、支付宝、其他收款总和与收款金额不相等，请检查！");
             return;
         }
     } else {
@@ -937,6 +944,8 @@ function save() {
     datas["giftDetails"] = JSON.stringify(giftDetails);
     datas["sellerId"] = sellerId;
     datas["customerId"] = customerId;
+    datas["aliyMoney"] = aliyMoney;
+    datas["weMoney"] = weMoney;
 
     $.ajax({
         url: '/rest/order/save/productCoupon',
@@ -1161,7 +1170,7 @@ function priceBlur(id) {
 
     var price = document.getElementById(id).value;
 
-    if ('posMoney' == id || 'otherMoney' == id || 'totalMoney' == id || 'preDepositMoney' == id) {
+    if ('posMoney' == id || 'otherMoney' == id || 'totalMoney' == id || 'preDepositMoney' == id|| 'weMoney' == id|| 'aliyMoney' == id) {
         if (price < 0) {
             $notify.warning("此处金额不能为负数，请正确填写！");
             document.getElementById(id).value = 0.00;
@@ -1178,8 +1187,10 @@ function priceBlur(id) {
         var posMoney = $("#posMoney").val();
         var otherMoney = $("#otherMoney").val();
         var cashMoney = $("#cashMoney").val();
+        var weMoney = $("#weMoney").val();
+        var aliyMoney = $("#aliyMoney").val();
 
-        var totalMoney = (Number(posMoney) * 100 + Number(otherMoney) * 100 + Number(cashMoney) * 100) / 100;
+        var totalMoney = (Number(posMoney) * 100 + Number(otherMoney) * 100 + Number(cashMoney) * 100+Number(aliyMoney) * 100+Number(weMoney) * 100) / 100;
         document.getElementById("totalMoney").value = totalMoney.toFixed(2);
     }
 

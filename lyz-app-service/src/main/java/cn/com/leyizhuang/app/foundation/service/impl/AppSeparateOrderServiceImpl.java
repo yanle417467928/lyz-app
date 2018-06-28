@@ -1242,6 +1242,22 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
     }
 
     @Override
+    public void sendOrderBaseInfAndOrderNotXQGoodsInf(String orderNumber) {
+        if (null != orderNumber) {
+            //发送订单头、商品行
+            List<OrderBaseInf> pendingSendOrderBaseInfs = separateOrderDAO.getPendingSendOrderBaseInf(orderNumber);
+            for (OrderBaseInf baseInf : pendingSendOrderBaseInfs) {
+                String orderNo = baseInf.getOrderNumber();
+                if( orderNo.contains("XQ")){
+                    continue;
+                }
+                List<OrderGoodsInf> orderGoodsInfList = separateOrderDAO.getOrderGoodsInfByOrderNumber(baseInf.getOrderNumber());
+                ebsSenderService.sendOrderAndGoodsToEbsAndRecord(baseInf, orderGoodsInfList);
+            }
+        }
+    }
+
+    @Override
     public void sendOrderReceiptInf(String orderNumber) {
         if (null != orderNumber) {
             List<OrderReceiptInf> receiptInfList = separateOrderDAO.getOrderReceiptInf(orderNumber);
@@ -2268,6 +2284,14 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                 }
             }
         }
+    }
+
+
+    @Override
+    public  List<String> separateAllNotSplitOrder() {
+        //查询未拆单订单
+        List<String> orderNumberList= separateOrderDAO.queryNotSendOrder();
+        return orderNumberList;
     }
 
 }

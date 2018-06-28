@@ -47,6 +47,8 @@ public class PhotoOrderVO {
     private String contactPhone;
     //下单人身份类型
     private AppIdentityType identityTypeValue;
+    //代下单人id
+    private Long proxyId;
 
     public void setStatus(PhotoOrderStatus status){
         this.status = status.getValue();

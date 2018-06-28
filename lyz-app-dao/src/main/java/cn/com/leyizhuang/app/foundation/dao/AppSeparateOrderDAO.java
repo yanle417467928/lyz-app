@@ -207,4 +207,6 @@ public interface AppSeparateOrderDAO {
                                                 @Param(value = "errorMsg") String msg,
                                                 @Param(value = "sendTime") Date sendTime,
                                                 @Param(value = "sendFlag") AppWhetherFlag flag);
+
+    List<String> queryNotSendOrder();
 }

@@ -37,6 +37,11 @@ public class GoodsPriceServiceImpl implements GoodsPriceService {
     }
 
     @Override
+    public void update(GoodsPrice goodsPrice) {
+        this.goodsPriceDAO.update(goodsPrice);
+    }
+
+    @Override
     public void delete(GoodsPrice goodsPrice) {
         this.goodsPriceDAO.delete(goodsPrice.getPriceLineId());
     }
@@ -74,6 +79,11 @@ public class GoodsPriceServiceImpl implements GoodsPriceService {
     @Override
     public GoodsPrice findGoodsPriceByGoodsIDAndStoreID(Long goodsID, Long storeID,Long cusId) {
         return goodsPriceDAO.findGoodsPriceByGoodsIDAndStoreID(goodsID, storeID,cusId);
+    }
+
+    @Override
+    public GoodsPrice findGoodsPriceByTypeAndStoreIDAndSku(String  priceType, Long storeID,String sku) {
+        return goodsPriceDAO.findGoodsPriceByTypeAndStoreIDAndSku(priceType, storeID,sku);
     }
 
     @Override

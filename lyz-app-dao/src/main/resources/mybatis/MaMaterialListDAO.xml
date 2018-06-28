@@ -34,7 +34,9 @@
         UPDATE material_list
         SET qty = #{qty},
             delivery_id = #{deliveryId},
-            is_generate_order = #{isGenerateOrder}
+            is_generate_order = #{isGenerateOrder},
+            user_id = #{userId},
+            identity_type = #{identityType}
         WHERE id = #{id}
     </update>
 
@@ -71,7 +73,8 @@
             gg.sku_name,
             ml.material_list_type,
             ml.qty,
-            ml.is_generate_order
+            ml.is_generate_order,
+            po.proxy_id
         FROM
             photo_order po
         LEFT JOIN material_list ml ON po.user_id = ml.user_id
@@ -93,7 +96,8 @@
           gg.sku_name,
           ml.material_list_type,
           ml.qty,
-          ml.is_generate_order
+          ml.is_generate_order,
+          po.proxy_id
           FROM
           photo_order po
           LEFT JOIN material_list ml ON po.user_id = ml.user_id
@@ -104,6 +108,28 @@
           WHERE
           po.photo_order_no = #{photoNo}
       </if>
+    </select>
+
+    <select id="findProxyMaterialListByPhotoNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.response.materialList.MaUpdateMaterialResponse">
+        SELECT
+            ml.user_id,
+            ml.identity_type,
+            ml.gid,
+            ml.sku,
+            ggp.retail_price,
+            gg.type_name,
+            gg.sku_name,
+            ml.material_list_type,
+            ml.qty,
+            ml.is_generate_order
+        FROM
+            material_list ml
+            INNER JOIN emp_employee ee ON ee.emp_id = ml.user_id
+            INNER JOIN gds_goods_price ggp ON ggp.sku = ml.sku AND ggp.store_id = ee.store_id
+            INNER JOIN gds_goods gg ON gg.gid = ggp.gid
+        WHERE
+            ml.user_id = #{userid}
+            AND ml.identity_type = #{identityType}
     </select>
 
     <delete id="deleteMaterialListByUserIdAndIdentityTypeAndGoodsSku">

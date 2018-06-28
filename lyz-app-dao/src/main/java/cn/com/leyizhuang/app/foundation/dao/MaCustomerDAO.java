@@ -148,6 +148,13 @@ public interface MaCustomerDAO {
      */
     List<MaCreateOrderPeopleResponse> maFindCreatePeople(@Param("keywords")String keywords,@Param("peopleType")String peopleType);
 
+    /**
+     * 后台查询代下单人
+     * @param keywords 关键字
+     * @return
+     */
+    List<MaCreateOrderPeopleResponse> maFindProxyCreatePeople(@Param("keywords")String keywords);
+
     List<MaCreateOrderPeopleResponse> maFindCreatePeopleByStoreId(@Param("storeId")Long storeId);
 
     PayhelperInfo findPayhelperInfoByCusId(@Param("cusId")Long cusId);

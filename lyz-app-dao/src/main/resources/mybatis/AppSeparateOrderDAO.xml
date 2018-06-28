@@ -1545,4 +1545,25 @@
     </update>
 
 
+    <select id="queryNotSendOrder" resultType="java.lang.String">
+        SELECT
+            a.ord_no
+        FROM
+            ord_base_info a
+        LEFT JOIN inter_ate_order_base_inf b ON a.ord_no = b.main_order_number
+        LEFT JOIN st_store c ON a.store_code = c.store_code
+        WHERE
+            a.create_time > '2018-04-01 00:00:00'
+        AND b.main_order_number IS NULL
+        AND a.`status` ='FINISHED'
+        AND a.delivery_type !='PRODUCT_COUPON'
+        AND ((
+                c.store_type = 'JM'
+                AND a.delivery_type != 'self_take'
+            )
+            OR (
+                c.store_type != 'JM'
+            ))
+    </select>
+
 </mapper>

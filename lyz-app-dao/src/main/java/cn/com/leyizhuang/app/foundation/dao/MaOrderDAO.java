@@ -33,6 +33,13 @@ public interface MaOrderDAO {
     List<MaOrderVO> findMaOrderVOAll(@Param("list") List<Long> storeIds);
 
     /**
+     * 后台查看门店及小型装饰公司订单
+     *
+     * @return 订单列表
+     */
+    List<MaOrderVO> findStoreAndSmallFitOrderVO(@Param("list") List<Long> storeIds);
+
+    /**
      * 分页查看城市门店订单
      *
      * @param cityId 城市id

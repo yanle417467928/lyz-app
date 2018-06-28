@@ -266,7 +266,7 @@
                 if (null == value) {
                     return '<a class="scan" href="#">' + '未知' + '</a>';
                 } else {
-                    return '<a class="scan" href="/views/admin/order/selfTakeOrderDetail/' + value + '" target="_blank">' + value + '</a>';
+                    return '<a class="scan" href="/views/admin/order/selfTakeOrderDetail/' + value + '">' + value + '</a>';
                 }
             }
         }, {

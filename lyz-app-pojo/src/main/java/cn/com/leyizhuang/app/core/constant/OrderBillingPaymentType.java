@@ -22,6 +22,7 @@ public enum OrderBillingPaymentType {
     STORE_CREDIT_MONEY("STORE_CREDIT_MONEY", "门店信用金"),
     LE_BI("LE_BI", "乐币"),
     EMP_CREDIT("EMP_CREDIT", "信用额度"),
+    BANK_TRANSFER("BANK_TRANSFER","银行转账"),
     SELLER_ST_PREPAY("SELLER_ST_PREPAY","导购门店预存款");
 
     private String value;

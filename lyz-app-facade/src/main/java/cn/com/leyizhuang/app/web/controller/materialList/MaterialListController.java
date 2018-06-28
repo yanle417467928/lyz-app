@@ -298,6 +298,7 @@ public class MaterialListController {
                 materialWorkerAuditResponse.setResidenceName(materialAuditSheet.getResidenceName());
                 materialWorkerAuditResponse.setDetailedAddress(materialAuditSheet.getDetailedAddress());
 
+                deliveryId = materialAuditSheet.getDeliveryId();
             }
         }
         if (identityType == 6 || identityType == 0) {

@@ -4,10 +4,10 @@
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.PhotoOrderDO">
         INSERT INTO photo_order
-        (user_id, identity_type, photos, contact_name, contact_phone, remark, status, create_time, photo_order_no, delivery_id, order_type)
+        (user_id, identity_type, photos, contact_name, contact_phone, remark, status, create_time, photo_order_no, delivery_id, order_type, proxy_id)
         VALUES
         (#{userId}, #{identityType}, #{photos}, #{contactName}, #{contactPhone},#{remark}, #{status},
-        #{createTime}, #{photoOrderNo}, #{deliveryId}, #{orderType});
+        #{createTime}, #{photoOrderNo}, #{deliveryId}, #{orderType}, #{proxyId});
     </insert>
 
     <select id="findByUserIdAndIdentityTypeAndStatus" resultType="cn.com.leyizhuang.app.foundation.pojo.response.PhotoOrderListResponse">

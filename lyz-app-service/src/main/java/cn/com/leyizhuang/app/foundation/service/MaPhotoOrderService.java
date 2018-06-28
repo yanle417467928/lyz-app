@@ -2,6 +2,8 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.MaterialAuditSheet;
 import cn.com.leyizhuang.app.foundation.vo.management.order.PhotoOrderVO;
 import cn.com.leyizhuang.common.core.constant.PhotoOrderStatus;
 import com.github.pagehelper.PageInfo;
@@ -36,4 +38,9 @@ public interface MaPhotoOrderService {
 
     PhotoOrderVO findByPhotoOrderNo(String photoOrderNo);
 
+    void updatePhotoOrderProxyId(Long proxyId,String photoOrderNo);
+
+    Boolean saveMaterialAuditSheet(MaterialAuditSheet materialAuditSheet, List<MaterialAuditGoodsInfo> materialAuditGoodsInfoList);
+
+    void updateStatusAndsaveAndUpdateMaterialStatus(Long photoId, PhotoOrderStatus status);
 }

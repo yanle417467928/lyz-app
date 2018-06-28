@@ -439,7 +439,7 @@ public class MaOrderServiceImpl implements MaOrderService {
     public PageInfo<MaOrderVO> findMaOrderVOPageInfo(Integer page, Integer size, List<Long> storeIds) {
         if (null != page && null != size && AssertUtil.isNotEmpty(storeIds)) {
             PageHelper.startPage(page, size);
-            List<MaOrderVO> maOrderVOList = maOrderDAO.findMaOrderVOAll(storeIds);
+            List<MaOrderVO> maOrderVOList = maOrderDAO.findStoreAndSmallFitOrderVO(storeIds);
             return new PageInfo<>(maOrderVOList);
         }
         return null;

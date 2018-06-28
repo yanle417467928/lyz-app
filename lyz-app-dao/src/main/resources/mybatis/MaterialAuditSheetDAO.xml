@@ -87,7 +87,7 @@
         INSERT INTO material_audit_sheet
         (EMPLOYEE_ID, EMPLOYEE_NAME, DELIVERY_TYPE, STORE_ID, RECEIVER, RECEIVER_PHONE,
         DELIVERY_CITY, DELIVERY_COUNTY, DELIVERY_STREET, RESIDENCE_NAME, DETAILED_ADDRESS,
-        IS_OWNER_RECEIVING, REMARK, STATUS, RESERVATION_DELIVERY_TIME, CREATE_TIME, AUDIT_NO, AUDITOR_ID, IS_AUDITED)
+        IS_OWNER_RECEIVING, REMARK, STATUS, RESERVATION_DELIVERY_TIME, CREATE_TIME, AUDIT_NO, AUDITOR_ID, IS_AUDITED, DELIVERY_ID)
         VALUES
         (
         #{employeeID}, #{employeeName},
@@ -97,7 +97,7 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
         #{deliveryCity}, #{deliveryCounty}, #{deliveryStreet}, #{residenceName},
         #{detailedAddress},
         #{isOwnerReceiving}, #{remark}, #{status}, #{reservationDeliveryTime}, #{createTime}, #{auditNo},
-        #{auditorID}, #{isAudited})
+        #{auditorID}, #{isAudited}, #{deliveryId})
     </insert>
 
     <update id="modifyMaterialAuditSheet"
@@ -195,7 +195,8 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
         CREATE_TIME,
         AUDIT_NO,
         AUDITOR_ID,
-        IS_AUDITED
+        IS_AUDITED,
+        DELIVERY_ID
         FROM material_audit_sheet
         WHERE
         AUDIT_NO = #{auditNumber}

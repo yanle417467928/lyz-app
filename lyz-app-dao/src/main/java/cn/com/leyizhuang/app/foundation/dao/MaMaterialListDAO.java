@@ -22,7 +22,8 @@ public interface MaMaterialListDAO {
 
     void batchSave(List<MaterialListDO> materialLists);
 
-    void modifyQty(@Param("id") Long id, @Param("qty") Integer qty, @Param("deliveryId")Long deliveryId, @Param("isGenerateOrder")String isGenerateOrder);
+    void modifyQty(@Param("id") Long id, @Param("qty") Integer qty, @Param("deliveryId")Long deliveryId,
+                   @Param("isGenerateOrder")String isGenerateOrder,@Param("userId")Long userId,@Param("identityType")AppIdentityType identityType);
 
     void updateRemarkAndDeliveryId(@Param("remark")String remark,@Param("deliveryId")Long deliveryId,
                                    @Param("userId")Long userId,@Param("identityType")AppIdentityType identityType);
@@ -38,6 +39,8 @@ public interface MaMaterialListDAO {
     void saveMaterialChangeHeadLog(MaterialChangeHeadLog materialChangeHeadLog);
 
     void saveMaterialChangeDetailLog(MaterialChangeDetailLog materialChangeDetailLog);
+
+    List<MaUpdateMaterialResponse> findProxyMaterialListByPhotoNumber(@Param("userid")Long userid, @Param("identityType")AppIdentityType identityType);
 
 
 

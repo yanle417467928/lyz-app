@@ -565,8 +565,27 @@
                 AND (e.`name` LIKE concat(concat('%',#{keywords}),'%')
                 OR e.mobile LIKE concat(concat('%',#{keywords}),'%'))
             </if>
-            AND e.identity_type = 'DECORATE_MANAGER'
+            AND (e.identity_type = 'DECORATE_MANAGER' OR  e.identity_type = 'DECORATE_EMPLOYEE')
         </if>
+    </select>
+
+    <select id="maFindProxyCreatePeople"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.MaCreateOrderPeopleResponse">
+            SELECT
+            e.emp_id peopleId,
+            e.`name` `name`,
+            e.mobile phone,
+            s.store_name storeName,
+            s.store_code storeCode,
+            e.identity_type identityType
+            FROM
+            emp_employee e LEFT JOIN st_store s ON  s.store_id = e.store_id
+            WHERE
+            1=1
+            <if test="null != keywords and '' != keywords">
+                AND (e.`name` LIKE concat(concat('%',#{keywords}),'%')
+                OR e.mobile LIKE concat(concat('%',#{keywords}),'%'))
+            </if>
     </select>
 
     <select id="maFindCreatePeopleByStoreId"
@@ -582,7 +601,7 @@
             emp_employee e LEFT JOIN st_store s ON  s.store_id = e.store_id
             WHERE
             1=1
-            AND e.identity_type = 'DECORATE_MANAGER'
+            AND (e.identity_type = 'DECORATE_MANAGER' OR e.identity_type = 'DECORATE_EMPLOYEE')
             AND e.store_id = #{storeId}
     </select>
 

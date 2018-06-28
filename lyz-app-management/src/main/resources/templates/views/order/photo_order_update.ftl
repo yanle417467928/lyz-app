@@ -516,6 +516,7 @@
                     <input id="brandString" name="brandString" type="hidden" value=""/>
                     <input id="specificationString" name="specificationString" type="hidden" value=""/>
                     <input id="goodsTypeString" name="goodsTypeString" type="hidden" value=""/>
+                    <input id="proxyId" name="proxyId" type="hidden" value="-1"/>
                     <div class="col-sm-12 invoice-col" style="height: 10px"></div>
                     <div class="col-sm-12 invoice-col">
                         <div class="col-sm-2 invoice-col">
@@ -1637,6 +1638,7 @@
                             }
                             if (null != item.isGenerateOrder && 'N'== item.isGenerateOrder){
                             params += '<td>后台添加</td>';
+                            $('#proxyId').val(item.proxyId);
                             }else{
                             params += '<td>顾客添加</td>';
                             }
@@ -1652,6 +1654,7 @@
             
             function delecteMaterialGoods(sku) {
                 var identityTypeValue = $('#identityTypeValue').val();
+                var proxyId = $('#proxyId').val();
                 var userId = $('#userId').val();
                 $.ajax({
                     url: '/rest/order/photo/delete/material/goods',
@@ -1659,7 +1662,8 @@
                     data: {
                         userId: userId,
                         identityTypeValue: identityTypeValue,
-                        sku: sku
+                        sku: sku,
+                        proxyId:proxyId
                     },
                     error: function () {
                         clearTimeout($global.timer);
