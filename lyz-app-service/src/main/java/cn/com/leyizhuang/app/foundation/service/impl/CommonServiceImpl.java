@@ -2264,9 +2264,9 @@ public class CommonServiceImpl implements CommonService {
                         }
                         billingDetails.setSellerStoreDeposit(billingDetails.getAmountPayable());
                         billingDetails.setArrearage(CountUtil.sub(billingDetails.getArrearage(), billingDetails.getAmountPayable()));
-                        if (null != billingDetails.getStPreDeposit() && billingDetails.getStPreDeposit() > AppConstant.DOUBLE_ZERO) {
+                        if (null != billingDetails.getSellerStoreDeposit() && billingDetails.getSellerStoreDeposit() > AppConstant.DOUBLE_ZERO) {
                             OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
-                            details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.SELLER_ST_PREPAY, billingDetails.getStPreDeposit(),
+                            details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.SELLER_ST_PREPAY, billingDetails.getSellerStoreDeposit(),
                                     PaymentSubjectType.SELLER, billingDetails.getOrderNumber(), OrderUtils.generateReceiptNumber(baseInfo.getCityId()));
                             details.setOrderId(baseInfo.getId());
                             details.setPaymentSubjectId(baseInfo.getSalesManagerStoreId());
@@ -2301,6 +2301,7 @@ public class CommonServiceImpl implements CommonService {
                 this.orderService.savePayhelperOrder(payhelperOrder);
             }
 
+            List<OrderGoodsInfo> orderGoodsInfoList = orderService.getOrderGoodsInfoByOrderNumber(orderNumber);
             //更新订单状态及物流状态
             if (baseInfo.getDeliveryType() == AppDeliveryType.SELF_TAKE) {
                 baseInfo.setStatus(AppOrderStatus.PENDING_RECEIVE);
@@ -2319,7 +2320,6 @@ public class CommonServiceImpl implements CommonService {
 //                //保存传wms配送单头档
                 AppStore store = storeService.findStoreByUserIdAndIdentityType(baseInfo.getCreatorId(),
                         baseInfo.getCreatorIdentityType().getValue());
-                List<OrderGoodsInfo> orderGoodsInfoList = orderService.getOrderGoodsInfoByOrderNumber(orderNumber);
                 int orderGoodsSize = orderGoodsInfoList.size();
                 OrderLogisticsInfo orderLogisticsInfo = orderService.getOrderLogistice(orderNumber);
                 AtwRequisitionOrder requisitionOrder = AtwRequisitionOrder.transform(baseInfo, orderLogisticsInfo,
@@ -2340,6 +2340,279 @@ public class CommonServiceImpl implements CommonService {
                     }
                 }
 
+            } else if (baseInfo.getDeliveryType() == AppDeliveryType.PRODUCT_COUPON) {
+                baseInfo.setStatus(AppOrderStatus.FINISHED);
+                //保存订单商品信息
+                if (null != orderGoodsInfoList && orderGoodsInfoList.size() > 0) {
+                    for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
+                        if (null != goodsInfo.getId() && baseInfo.getOrderType() == AppOrderType.COUPON && billingDetails.getIsPayUp()) {
+                            if (null != goodsInfo.getOrderQuantity() && goodsInfo.getOrderQuantity() > 0) {
+                                for (int i = 1; i <= goodsInfo.getOrderQuantity(); i++) {
+                                    //创建产品券信息
+                                    CustomerProductCoupon customerProductCoupon = new CustomerProductCoupon();
+                                    customerProductCoupon.setCustomerId(baseInfo.getCustomerId());
+                                    customerProductCoupon.setGoodsId(goodsInfo.getGid());
+                                    customerProductCoupon.setQuantity(1);
+                                    customerProductCoupon.setGetType(CouponGetType.BUY);
+                                    customerProductCoupon.setGetTime(baseInfo.getCreateTime());
+
+                                    Calendar c = Calendar.getInstance();
+                                    customerProductCoupon.setEffectiveStartTime(c.getTime());
+
+                                    c.add(Calendar.MONTH, 6);
+
+                                    customerProductCoupon.setEffectiveEndTime(c.getTime());
+                                    customerProductCoupon.setIsUsed(Boolean.FALSE);
+                                    customerProductCoupon.setUseTime(null);
+                                    customerProductCoupon.setUseOrderNumber(null);
+                                    customerProductCoupon.setGetOrderNumber(baseInfo.getOrderNumber());
+                                    customerProductCoupon.setBuyPrice(goodsInfo.getReturnPrice());
+                                    customerProductCoupon.setStoreId(baseInfo.getStoreId());
+                                    customerProductCoupon.setSellerId(baseInfo.getSalesConsultId());
+                                    customerProductCoupon.setStatus(Boolean.TRUE);
+                                    customerProductCoupon.setDisableTime(null);
+                                    customerProductCoupon.setGoodsLineId(goodsInfo.getId());
+                                    customerProductCoupon.setGoodsSign(goodsInfo.getGoodsSign());
+                                    //保存产品券信息
+                                    productCouponService.addCustomerProductCoupon(customerProductCoupon);
+
+                                    if (null != customerProductCoupon.getId()) {
+                                        //保存顾客产品券变更日志
+                                        CustomerProductCouponChangeLog customerProductCouponChangeLog = new CustomerProductCouponChangeLog();
+                                        customerProductCouponChangeLog.setCusId(baseInfo.getCustomerId());
+                                        customerProductCouponChangeLog.setUseTime(baseInfo.getCreateTime());
+                                        customerProductCouponChangeLog.setCouponId(customerProductCoupon.getId());
+                                        customerProductCouponChangeLog.setReferenceNumber(baseInfo.getOrderNumber());
+                                        customerProductCouponChangeLog.setChangeType(CustomerProductCouponChangeType.BUY_COUPON);
+                                        customerProductCouponChangeLog.setChangeTypeDesc(CustomerProductCouponChangeType.BUY_COUPON.getDescription());
+                                        customerProductCouponChangeLog.setOperatorId(null);
+                                        customerProductCouponChangeLog.setOperatorIp(null);
+                                        customerProductCouponChangeLog.setRemark(null);
+
+                                        productCouponService.addCustomerProductCouponChangeLog(customerProductCouponChangeLog);
+                                    } else {
+                                        throw new OrderSaveException("顾客产品券主键生成失败!");
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            //更新订单基础信息
+            orderService.updateOrderBaseInfo(baseInfo);
+            //更新订单账单信息
+            orderService.updateOrderBillingDetails(billingDetails);
+            //增加订单生命周期信息
+            orderService.addOrderLifecycle(OrderLifecycleType.PAYED, orderNumber);
+        }
+    }
+
+    @Override
+    public void handleOrderRelevantBusinessAfterPayCredit(String orderNumber, Long userId, Integer identityType, String payType, String ipAddress) throws IOException {
+        if (StringUtils.isNotBlank(orderNumber)) {
+            OrderBaseInfo baseInfo = orderService.getOrderByOrderNumber(orderNumber);
+
+            //更新订单账单信息
+            OrderBillingDetails billingDetails = orderService.getOrderBillingDetail(orderNumber);
+
+            if (OrderBillingPaymentType.EMP_CREDIT == OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)) {
+                //扣减导购信用额度
+                if (identityType == AppIdentityType.SELLER.getValue()) {
+                    if (null != billingDetails.getAmountPayable() && billingDetails.getAmountPayable() > 0) {
+                        for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                            EmpCreditMoney empCreditMoney = employeeService.findEmpCreditMoneyByEmpId(userId);
+                            if (null != empCreditMoney) {
+                                if (empCreditMoney.getCreditLimitAvailable() < billingDetails.getAmountPayable()) {
+                                    throw new LockEmpCreditMoneyException("导购信用额度不足!");
+                                }
+                                int affectLine = employeeService.lockGuideCreditByUserIdAndCredit(
+                                        userId, billingDetails.getAmountPayable(), empCreditMoney.getLastUpdateTime());
+                                if (affectLine > 0) {
+                                    EmpCreditMoneyChangeLog log = new EmpCreditMoneyChangeLog();
+                                    log.setEmpId(userId);
+                                    log.setTempCreditLimitChangeAmount(0D);
+                                    log.setTempCreditLimitAfterChange(empCreditMoney.getTempCreditLimit());
+                                    log.setCreditLimitAvailableChangeAmount(billingDetails.getAmountPayable());
+                                    log.setCreditLimitAvailableAfterChange(empCreditMoney.getCreditLimitAvailable() - billingDetails.getAmountPayable());
+                                    log.setChangeType(EmpCreditMoneyChangeType.PLACE_ORDER);
+                                    log.setChangeTypeDesc(EmpCreditMoneyChangeType.PLACE_ORDER.getDescription());
+                                    log.setCreateTime(Calendar.getInstance().getTime());
+                                    log.setOperatorId(userId);
+                                    log.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                                    log.setOperatorIp(ipAddress);
+                                    log.setReferenceNumber(orderNumber);
+                                    employeeService.addEmpCreditMoneyChangeLog(log);
+                                    break;
+                                } else {
+                                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                        throw new SystemBusyException("系统繁忙，请稍后再试!");
+                                    }
+                                }
+                            } else {
+                                throw new LockEmpCreditMoneyException("没有找到该导购信用额度信息!");
+                            }
+                        }
+                    }
+                }
+                billingDetails.setEmpCreditMoney(billingDetails.getAmountPayable());
+//                billingDetails.setCollectionAmount(billingDetails.getEmpCreditMoney());
+            } else if (OrderBillingPaymentType.STORE_CREDIT_MONEY == OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)) {
+                //扣减门店预存款
+                if (identityType == AppIdentityType.DECORATE_MANAGER.getValue()) {
+                    if (null != billingDetails.getAmountPayable() && billingDetails.getAmountPayable() > 0) {
+                        for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                            StoreCreditMoney storeCreditMoney = this.storeService.findStoreCreditMoneyByEmpId(userId);
+                            if (null != storeCreditMoney) {
+                                if (storeCreditMoney.getCreditLimitAvailable() < billingDetails.getAmountPayable()) {
+                                    throw new LockStorePreDepositException("信用金余额不足!");
+                                }
+                                int affectLine = storeService.updateStoreCreditByUserIdAndVersion(
+                                        userId, billingDetails.getAmountPayable(), storeCreditMoney.getLastUpdateTime());
+                                if (affectLine > 0) {
+                                    StoreCreditMoneyChangeLog log = new StoreCreditMoneyChangeLog();
+                                    log.setStoreId(storeCreditMoney.getStoreId());
+                                    log.setChangeAmount(billingDetails.getAmountPayable());
+                                    log.setCreditLimitAvailableAfterChange(storeCreditMoney.getCreditLimitAvailable() - billingDetails.getAmountPayable());
+                                    log.setCreateTime(Calendar.getInstance().getTime());
+                                    log.setChangeType(StoreCreditMoneyChangeType.PLACE_ORDER);
+                                    log.setChangeTypeDesc(StoreCreditMoneyChangeType.PLACE_ORDER.getDescription());
+                                    log.setOperatorId(userId);
+                                    log.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                                    log.setOperatorIp(ipAddress);
+                                    log.setReferenceNumber(orderNumber);
+                                    storeService.addStoreCreditMoneyChangeLog(log);
+                                    break;
+                                } else {
+                                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                        throw new SystemBusyException("系统繁忙，请稍后再试!");
+                                    }
+                                }
+                            } else {
+                                throw new LockStorePreDepositException("没有找到该导购所在门店的预存款信息!");
+                            }
+                        }
+                        billingDetails.setStoreCreditMoney(billingDetails.getAmountPayable());
+                        if (null != billingDetails.getStoreCreditMoney() && billingDetails.getStoreCreditMoney() > AppConstant.DOUBLE_ZERO) {
+                            OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
+                            details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.STORE_CREDIT_MONEY, billingDetails.getStoreCreditMoney(),
+                                    PaymentSubjectType.SELLER, billingDetails.getOrderNumber(), OrderUtils.generateReceiptNumber(baseInfo.getCityId()));
+                            details.setOrderId(baseInfo.getId());
+                            details.setPaymentSubjectId(userId);
+                            orderService.saveOrderBillingPaymentDetail(details);
+                        }
+                    }
+                }
+            }
+
+            if (null != billingDetails.getArrearage() && billingDetails.getArrearage() <= 0) {
+                billingDetails.setIsPayUp(true);
+                billingDetails.setPayUpTime(new Date());
+            }
+            //发送提货码给顾客,及提示导购顾客下单信息
+            String pickUpCode = this.sendPickUpCodeAndRemindMessageAfterPayUp(baseInfo);
+            baseInfo.setPickUpCode(pickUpCode);
+
+            List<OrderGoodsInfo> orderGoodsInfoList = orderService.getOrderGoodsInfoByOrderNumber(orderNumber);
+            //更新订单状态及物流状态
+            if (baseInfo.getDeliveryType() == AppDeliveryType.SELF_TAKE) {
+                baseInfo.setStatus(AppOrderStatus.PENDING_RECEIVE);
+            } else if (baseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
+                baseInfo.setStatus(AppOrderStatus.PENDING_SHIPMENT);
+                baseInfo.setDeliveryStatus(LogisticStatus.INITIAL);
+
+                //物流信息初始化
+                OrderDeliveryInfoDetails deliveryInfoDetails = new OrderDeliveryInfoDetails();
+                deliveryInfoDetails.setDeliveryInfo(baseInfo.getOrderNumber(), LogisticStatus.INITIAL, LogisticStatus.INITIAL.getDescription(),
+                        null, null, null, null, null);
+                deliveryInfoDetailsService.addOrderDeliveryInfoDetails(deliveryInfoDetails);
+
+                // ***********************发送WMS 在微信和支付宝完成支付回调方法中已发送***************************
+                // 2018-04-07 generation 传wms重复，创建订单已传wms，支付时不用再传，   注释代码
+//                //保存传wms配送单头档
+                AppStore store = storeService.findStoreByUserIdAndIdentityType(baseInfo.getCreatorId(),
+                        baseInfo.getCreatorIdentityType().getValue());
+                int orderGoodsSize = orderGoodsInfoList.size();
+                OrderLogisticsInfo orderLogisticsInfo = orderService.getOrderLogistice(orderNumber);
+                AtwRequisitionOrder requisitionOrder = AtwRequisitionOrder.transform(baseInfo, orderLogisticsInfo,
+                        store, billingDetails, orderGoodsSize);
+                appToWmsOrderService.saveAtwRequisitionOrder(requisitionOrder);
+//                //保存传wms配送单商品信息
+                if (orderGoodsSize > 0) {
+                    for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
+                        AtwRequisitionOrderGoods requisitionOrderGoods = null;
+                        if ("ZS-002".equals(baseInfo.getStoreCode()) || "MR004".equals(baseInfo.getStoreCode())) {
+                            requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
+                                    goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getSettlementPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
+                        } else {
+                            requisitionOrderGoods = AtwRequisitionOrderGoods.transform(goodsInfo.getOrderNumber(),
+                                    goodsInfo.getSku(), goodsInfo.getSkuName(), goodsInfo.getRetailPrice(), goodsInfo.getOrderQuantity(), goodsInfo.getCompanyFlag());
+                        }
+                        appToWmsOrderService.saveAtwRequisitionOrderGoods(requisitionOrderGoods);
+                    }
+                }
+
+            } else if (baseInfo.getDeliveryType() == AppDeliveryType.PRODUCT_COUPON) {
+                baseInfo.setStatus(AppOrderStatus.FINISHED);
+                //保存订单商品信息
+                if (null != orderGoodsInfoList && orderGoodsInfoList.size() > 0) {
+                    for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
+                        if (null != goodsInfo.getId() && baseInfo.getOrderType() == AppOrderType.COUPON && billingDetails.getIsPayUp()) {
+                            if (null != goodsInfo.getOrderQuantity() && goodsInfo.getOrderQuantity() > 0) {
+                                for (int i = 1; i <= goodsInfo.getOrderQuantity(); i++) {
+                                    //创建产品券信息
+                                    CustomerProductCoupon customerProductCoupon = new CustomerProductCoupon();
+                                    customerProductCoupon.setCustomerId(baseInfo.getCustomerId());
+                                    customerProductCoupon.setGoodsId(goodsInfo.getGid());
+                                    customerProductCoupon.setQuantity(1);
+                                    customerProductCoupon.setGetType(CouponGetType.BUY);
+                                    customerProductCoupon.setGetTime(baseInfo.getCreateTime());
+
+                                    Calendar c = Calendar.getInstance();
+                                    customerProductCoupon.setEffectiveStartTime(c.getTime());
+
+                                    c.add(Calendar.MONTH, 6);
+
+                                    customerProductCoupon.setEffectiveEndTime(c.getTime());
+                                    customerProductCoupon.setIsUsed(Boolean.FALSE);
+                                    customerProductCoupon.setUseTime(null);
+                                    customerProductCoupon.setUseOrderNumber(null);
+                                    customerProductCoupon.setGetOrderNumber(baseInfo.getOrderNumber());
+                                    customerProductCoupon.setBuyPrice(goodsInfo.getReturnPrice());
+                                    customerProductCoupon.setStoreId(baseInfo.getStoreId());
+                                    customerProductCoupon.setSellerId(baseInfo.getSalesConsultId());
+                                    customerProductCoupon.setStatus(Boolean.TRUE);
+                                    customerProductCoupon.setDisableTime(null);
+                                    customerProductCoupon.setGoodsLineId(goodsInfo.getId());
+                                    customerProductCoupon.setGoodsSign(goodsInfo.getGoodsSign());
+                                    //保存产品券信息
+                                    productCouponService.addCustomerProductCoupon(customerProductCoupon);
+
+                                    if (null != customerProductCoupon.getId()) {
+                                        //保存顾客产品券变更日志
+                                        CustomerProductCouponChangeLog customerProductCouponChangeLog = new CustomerProductCouponChangeLog();
+                                        customerProductCouponChangeLog.setCusId(baseInfo.getCustomerId());
+                                        customerProductCouponChangeLog.setUseTime(baseInfo.getCreateTime());
+                                        customerProductCouponChangeLog.setCouponId(customerProductCoupon.getId());
+                                        customerProductCouponChangeLog.setReferenceNumber(baseInfo.getOrderNumber());
+                                        customerProductCouponChangeLog.setChangeType(CustomerProductCouponChangeType.BUY_COUPON);
+                                        customerProductCouponChangeLog.setChangeTypeDesc(CustomerProductCouponChangeType.BUY_COUPON.getDescription());
+                                        customerProductCouponChangeLog.setOperatorId(null);
+                                        customerProductCouponChangeLog.setOperatorIp(null);
+                                        customerProductCouponChangeLog.setRemark(null);
+
+                                        productCouponService.addCustomerProductCouponChangeLog(customerProductCouponChangeLog);
+                                    } else {
+                                        throw new OrderSaveException("顾客产品券主键生成失败!");
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             //更新订单基础信息

@@ -169,4 +169,6 @@ public interface ReturnOrderDAO {
     List<String> getNotReturnDetailsReturnNos(@Param("flag") Boolean flag);
 
     ReturnOrderBilling getAllReturnPriceByOrderNo(String orderNo);
+
+    List<ReturnOrderBaseInfo> getReturnBaseinfoByOrderNo(String orderNo);
 }

@@ -267,4 +267,5 @@ public interface ReturnOrderService {
 
     ReturnOrderBilling getAllReturnPriceByOrderNo(String orderNo);
 
+    List<ReturnOrderBaseInfo> getReturnBaseinfoByOrderNo(String ordNo);
 }
