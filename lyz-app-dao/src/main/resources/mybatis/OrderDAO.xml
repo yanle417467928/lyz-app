@@ -1823,7 +1823,9 @@
     <select id="getOrderSendTime" resultType="java.time.LocalDateTime">
         SELECT
         CASE ob.delivery_type when "HOUSE_DELIVERY" THEN if(wa.end_dt = "",null,wa.end_dt)
-        WHEN "SELF_TAKE" THEN if(os.shipping_time = "",null,os.shipping_time) ELSE NULL END as send_time
+        WHEN "SELF_TAKE" THEN if(os.shipping_time = "",null,os.shipping_time)
+        when "PRODUCT_COUPON" then if(ob.create_time = "",null,ob.create_time)
+        ELSE NULL END as send_time
          from ord_base_info ob
         LEFT JOIN inter_wta_order_shipping_header wa on ob.ord_no = wa.order_no
         LEFT JOIN ord_shipping os on os.ord_no = ob.ord_no
@@ -1841,12 +1843,6 @@
         and ob.`status` = 'FINISHED';
     </select>
 
-
-
-    <select id="getOrderCouponInfoByOrderNo">
-
-    </select>
-
     <select id="getBpProductByOrderNo" resultType="java.lang.Integer">
         SELECT COUNT(oci.id) from ord_coupon_info oci
         INNER JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
@@ -1859,7 +1855,7 @@
         inner JOIN ord_return_product_coupon orp on orp.return_no = orb.return_no
         INNER JOIN cus_customer_product_coupon ccpc on ccpc.id = orp.pcid
         INNER JOIN ord_goods_info og on og.id = ccpc.goods_line_id
-        where orb.return_no = #{} and orp.sku = #{}
+        where orb.return_no = #{returnNo} and orp.sku = #{sku}
         and og.goods_line_type = 'GOODS' and orb.return_status = "FINISHED"
     </select>
 
