@@ -1343,7 +1343,7 @@ public class AppOrderServiceImpl implements AppOrderService {
         }
 
         // 此逻辑开始时间
-        LocalDateTime begainTime = LocalDateTime.of(2018,6,30,0,0,1);
+        LocalDateTime begainTime = LocalDateTime.of(2018,7,1,0,0,1);
         if (LocalDateTime.now().isBefore(begainTime)){
             return 0;
         }
