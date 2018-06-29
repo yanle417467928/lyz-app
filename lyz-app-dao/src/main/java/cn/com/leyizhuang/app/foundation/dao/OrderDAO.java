@@ -219,4 +219,16 @@ public interface OrderDAO {
     List<OrderPageInfoVO> findSellerManagerPayForOrderList(@Param("userId") Long userId);
 
     LocalDateTime getOrderSendTime(@Param("orderNo") String orderNo);
+
+    List<String> getOrderJmProduct();
+
+    List<OrderCouponInfo>  getOrderCouponInfoByOrderNo(@Param("String") String ordNo);
+
+    Integer getBpProductByOrderNo(@Param("ordNo") String ordNo ,@Param("sku") String sku);
+
+    Integer getBpProductByReturnNo(@Param("returnNo") String returnNo ,@Param("sku") String sku);
+
+    Boolean isReturnJxSubPrice(@Param("orderNo") String orderNo,@Param("sku") String sku,@Param("goodsLineType") String goodsLineType);
+
+    Boolean isBuckleJxSubPrice(@Param("returnNo") String returnNo,@Param("sku") String sku,@Param("goodsLineType") String goodsLineType);
 }

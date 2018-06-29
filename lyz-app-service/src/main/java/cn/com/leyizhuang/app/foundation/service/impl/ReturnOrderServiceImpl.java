@@ -3379,5 +3379,10 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
         return this.returnOrderDAO.getAllReturnPriceByOrderNo(orderNo);
     }
 
+    @Override
+    public List<ReturnOrderBaseInfo> getReturnBaseinfoByOrderNo(String ordNo){
+        return returnOrderDAO.getReturnBaseinfoByOrderNo(ordNo);
+    }
+
 }
 
