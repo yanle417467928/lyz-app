@@ -12,6 +12,7 @@ import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRuleDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
+import cn.com.leyizhuang.app.foundation.pojo.response.BillInfoResponse;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.BillInfoService;
 import cn.com.leyizhuang.app.foundation.service.BillRuleService;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -42,6 +44,10 @@ public class BillInfoServiceImpl implements BillInfoService {
 
     @Autowired
     private AppOrderService orderService;
+
+    public void lookBillRepayment(){
+
+    }
 
     @Override
     public List<BillRepaymentGoodsDetailsDO> computeInterestAmount(Long storeId, List<BillRepaymentGoodsDetailsDO> goodsDetailsDOList) {
@@ -144,4 +150,8 @@ public class BillInfoServiceImpl implements BillInfoService {
         this.billInfoDAO.updateBillInfo(billInfoDO);
     }
 
+    public BillInfoResponse lookBill(String starTime, String endTime, Long storeid,Integer page,Integer size){
+
+        return null;
+    }
 }

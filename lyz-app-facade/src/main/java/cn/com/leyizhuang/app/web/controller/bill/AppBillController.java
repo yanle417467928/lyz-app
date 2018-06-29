@@ -1,0 +1,123 @@
+package cn.com.leyizhuang.app.web.controller.bill;
+
+import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.response.BillInfoResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.CustomerLoginResponse;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
+import cn.com.leyizhuang.app.foundation.service.AppStoreService;
+import cn.com.leyizhuang.app.foundation.service.BillInfoService;
+import cn.com.leyizhuang.app.web.controller.order.OrderController;
+import cn.com.leyizhuang.common.core.constant.CommonGlobal;
+import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
+import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
+
+/**
+ * Created by 12421 on 2018/6/29.
+ */
+@RestController
+@RequestMapping(value = "/app/bill")
+public class AppBillController {
+
+    private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
+
+    @Resource
+    private BillInfoService billInfoService;
+
+    @Resource
+    private AppStoreService appStoreService;
+
+    @Resource
+    private AppEmployeeService appEmployeeService;
+
+    /**
+     * 查看账单接口
+     * @param userId 账号id
+     * @param identityType 账号类型
+     * @param startTimeStr 开始时间
+     * @param endTimeStr 结束时间
+     * @param page 页数
+     * @param size 长度
+     * @return
+     */
+    @PostMapping(value = "/look", produces = "application/json;charset=UTF-8")
+    public ResultDTO<BillInfoResponse> lookBill(Long userId,
+                                                Integer identityType,
+                                                String startTimeStr,
+                                                String endTimeStr,
+                                                Integer page, Integer size){
+        ResultDTO<BillInfoResponse> resultDTO;
+        try{
+
+            if (userId == null){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId为空！", null);
+                logger.info("lookBill OUT,查看账单失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+
+            if (identityType == null){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "identityType为空！", null);
+                logger.info("lookBill OUT,查看账单失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+
+            if (identityType != 2){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "身份类型不正确！", null);
+                logger.info("lookBill OUT,查看账单失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+
+            AppEmployee appEmployee = appEmployeeService.findById(userId);
+
+            if (appEmployee == null){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "账号id不存在！", null);
+                logger.info("lookBill OUT,查看账单失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+
+            Long storeId = appEmployee.getStoreId();
+
+            AppStore store = appStoreService.findById(storeId);
+
+            if (store == null){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "账号门店信息有误！", null);
+                logger.info("lookBill OUT,查看账单失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+
+            if (StringUtils.isNotBlank(startTimeStr)){
+                startTimeStr = startTimeStr.trim();
+            }
+            if (StringUtils.isNotBlank(endTimeStr)){
+                endTimeStr = endTimeStr.trim();
+                endTimeStr = endTimeStr + "23:59:59";
+            }
+            if (page == null){
+                page = 1;
+            }
+            if (size == null){
+                size = 100;
+            }
+
+            BillInfoResponse response = billInfoService.lookBill(startTimeStr,endTimeStr,storeId,page,size);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "查询成功", response);
+            return resultDTO;
+        }catch (Exception e){
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常", null);
+            logger.warn("lookBill EXCEPTION,查看装饰公司订单出现异常，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+
+    }
+}
