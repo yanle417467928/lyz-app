@@ -59,4 +59,7 @@
     </update>
 
 
+    <select id="getCurrentOrderDetails" resultType="cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentGoodsInfoResponse">
+
+    </select>
 </mapper>

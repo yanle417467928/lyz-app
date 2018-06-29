@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
+import cn.com.leyizhuang.app.core.constant.BillStatusEnum;
 import lombok.*;
 
 import java.util.Date;
@@ -43,6 +44,8 @@ public class BillInfoResponse {
     private Double priorNotPaidInterestAmount;
     //出账时间
     private Date billTime;
+    //账单状态(0：未出帐；1：出帐；2 ：历史账单)
+    private String status;
     // 未还订单明细
     List<BillRepaymentGoodsInfoResponse> notPayOrderDetails;
     // 已支付订单那明细

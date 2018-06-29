@@ -3,16 +3,15 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.core.constant.AppConstant;
 import cn.com.leyizhuang.app.core.constant.BillStatusEnum;
 import cn.com.leyizhuang.app.core.constant.OnlinePayType;
-import cn.com.leyizhuang.app.core.constant.PaymentDataStatus;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.foundation.dao.BillInfoDAO;
-import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRuleDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillInfoResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentGoodsInfoResponse;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.BillInfoService;
 import cn.com.leyizhuang.app.foundation.service.BillRuleService;
@@ -25,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -48,10 +48,6 @@ public class BillInfoServiceImpl implements BillInfoService {
 
     @Autowired
     private AppOrderService orderService;
-
-    public void lookBillRepayment(){
-
-    }
 
     @Override
     public List<BillRepaymentGoodsDetailsDO> computeInterestAmount(Long storeId, List<BillRepaymentGoodsDetailsDO> goodsDetailsDOList) {
@@ -153,6 +149,7 @@ public class BillInfoServiceImpl implements BillInfoService {
     }
 
     public BillInfoResponse lookBill(String starTime, String endTime, Long storeid,Integer page,Integer size) throws Exception {
+        BillInfoResponse response = new BillInfoResponse(); // 返回结果
         LocalDateTime billDateTime = null; // 账单日
         LocalDateTime paymentTime = null; // 还款日
         LocalDateTime billStartTime = null; // 账单开始时间
@@ -171,10 +168,44 @@ public class BillInfoServiceImpl implements BillInfoService {
             if (billInfoDO == null){
                 // 初始化
                 billInfoDO = new BillInfoDO();
+                response = billInfoDO.transfer(billInfoDO);
+                response.setBillTotalAmount(0D);
+                response.setCurrentBillAmount(0D);
+                response.setCurrentUnpaidAmount(0D);
+                response.setCurrentPaidAmount(0D);
+                response.setCurrentAdjustmentAmount(0D);
+                response.setPriorNotPaidInterestAmount(0D);
+                response.setPriorNotPaidBillAmount(0D);
 
+                List<BillRepaymentGoodsInfoResponse> list = new ArrayList<>();
+
+                response.setNotPayOrderDetails(list);
+                response.setPaidOrderDetails(list);
+
+                return response;
             }
+
         }
 
+        // 获取本期未还订单，本期已还订单，上期未还订单
+        List<BillRepaymentGoodsInfoResponse> currentPaidOrderDetails = new ArrayList<>();
+        List<BillRepaymentGoodsInfoResponse> currentNotPayOrderDetails = new ArrayList<>();
+        List<BillRepaymentGoodsInfoResponse> beforNotPayOrderDetails = new ArrayList<>();
+
+
         return null;
+    }
+
+    public Double AddAllCreditMoney(List<BillRepaymentGoodsInfoResponse> list){
+        Double totalCreditMoney = 0D;
+        if (list == null){
+            return totalCreditMoney;
+        }
+
+        for (BillRepaymentGoodsInfoResponse response : list){
+            totalCreditMoney = CountUtil.add(totalCreditMoney,response.getOrderCreditMoney());
+        }
+
+        return totalCreditMoney;
     }
 }
