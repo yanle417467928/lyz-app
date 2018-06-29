@@ -30,6 +30,6 @@ public interface BillInfoService {
 
     void updateBillInfo(BillInfoDO billInfoDO);
 
-    BillInfoResponse lookBill(String starTime, String endTime, Long storeid ,Integer page,Integer size);
+    BillInfoResponse lookBill(String starTime, String endTime, Long storeid ,Integer page,Integer size) throws Exception;
 
 }

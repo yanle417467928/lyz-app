@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo.bill;
 
 import cn.com.leyizhuang.app.core.constant.BillStatusEnum;
+import cn.com.leyizhuang.app.foundation.pojo.response.BillInfoResponse;
 import lombok.*;
 
 import java.util.Date;
@@ -54,4 +55,12 @@ public class BillInfoDO {
     private Long createUserId;
     //创建者
     private String createUserName;
+
+    public BillInfoResponse transfer(BillInfoDO DO){
+        BillInfoResponse response =  new BillInfoResponse();
+
+
+
+        return null;
+    }
 }

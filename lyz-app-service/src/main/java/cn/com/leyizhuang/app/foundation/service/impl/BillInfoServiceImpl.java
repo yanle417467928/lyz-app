@@ -18,6 +18,8 @@ import cn.com.leyizhuang.app.foundation.service.BillInfoService;
 import cn.com.leyizhuang.app.foundation.service.BillRuleService;
 import cn.com.leyizhuang.app.foundation.service.PaymentDataService;
 import cn.com.leyizhuang.common.util.CountUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +34,8 @@ import java.util.List;
  */
 @Service
 public class BillInfoServiceImpl implements BillInfoService {
+
+    private static final Logger logger = LoggerFactory.getLogger(BillInfoServiceImpl.class);
 
     @Autowired
     private BillRuleService billRuleService;
@@ -148,7 +152,28 @@ public class BillInfoServiceImpl implements BillInfoService {
         this.billInfoDAO.updateBillInfo(billInfoDO);
     }
 
-    public BillInfoResponse lookBill(String starTime, String endTime, Long storeid,Integer page,Integer size){
+    public BillInfoResponse lookBill(String starTime, String endTime, Long storeid,Integer page,Integer size) throws Exception {
+        LocalDateTime billDateTime = null; // 账单日
+        LocalDateTime paymentTime = null; // 还款日
+        LocalDateTime billStartTime = null; // 账单开始时间
+        LocalDateTime billEndTime = null;   // 账单结束时间
+
+        LocalDateTime now = LocalDateTime.now(); //当前时间
+
+        // 查询已出账单
+        BillInfoDO billInfoDO = billInfoDAO.findBillByStatus(BillStatusEnum.ALREADY_OUT);
+
+        if (billInfoDO == null ){
+            // 已出账单不存在 处理未出账单
+
+            billInfoDO = billInfoDAO.findBillByStatus(BillStatusEnum.NOT_OUT);
+
+            if (billInfoDO == null){
+                // 初始化
+                billInfoDO = new BillInfoDO();
+
+            }
+        }
 
         return null;
     }

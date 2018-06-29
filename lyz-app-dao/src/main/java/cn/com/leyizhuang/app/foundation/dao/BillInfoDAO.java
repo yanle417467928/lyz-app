@@ -1,8 +1,10 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.core.constant.BillStatusEnum;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,5 +25,7 @@ public interface BillInfoDAO {
     BillInfoDO findBillInfoByBillNo(String billNo);
 
     void updateBillInfo(BillInfoDO billInfoDO);
+
+    BillInfoDO findBillByStatus(@Param("BillStatusEnum") BillStatusEnum status);
 
 }

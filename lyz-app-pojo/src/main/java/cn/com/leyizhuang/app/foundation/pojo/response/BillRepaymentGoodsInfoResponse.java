@@ -1,11 +1,18 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
+import lombok.*;
+
 import java.util.Date;
 
 /**
  * 账单明细响应类
  * Created by 12421 on 2018/6/28.
  */
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class BillRepaymentGoodsInfoResponse {
 
     private Long bill_id;

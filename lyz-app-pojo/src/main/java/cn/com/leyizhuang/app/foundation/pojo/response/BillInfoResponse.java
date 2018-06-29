@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
+import lombok.*;
+
 import java.util.Date;
 import java.util.List;
 
@@ -7,8 +9,12 @@ import java.util.List;
  * 账单响应类
  * Created by 12421 on 2018/6/28.
  */
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class BillInfoResponse {
-
     //门店ID
     private Long storeId;
     //账单单号
@@ -35,14 +41,10 @@ public class BillInfoResponse {
     private Double priorNotPaidBillAmount;
     //上期未还滞纳金
     private Double priorNotPaidInterestAmount;
-
     //出账时间
     private Date billTime;
-
-    // w未还订单明细
+    // 未还订单明细
     List<BillRepaymentGoodsInfoResponse> notPayOrderDetails;
     // 已支付订单那明细
     List<BillRepaymentGoodsInfoResponse> paidOrderDetails;
-
-
 }
