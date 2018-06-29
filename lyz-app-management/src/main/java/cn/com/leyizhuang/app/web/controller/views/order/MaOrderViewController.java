@@ -94,14 +94,18 @@ public class MaOrderViewController {
                 String time = maOrderService.getShippingTime(orderaNumber);
                 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Date shippingDate = null;
-                try {
-                    shippingDate = formatter.parse(time);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (null != time) {
+                    try {
+                        shippingDate = formatter.parse(time);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
                 OrderLogisticsInfo orderLogisticsInfo = orderService.getOrderLogistice(orderaNumber);
                 maOrderDetailResponse.setShipTime(shippingDate);
-                maOrderDetailResponse.setShipStore(orderLogisticsInfo.getBookingStoreName());
+                if (null != orderLogisticsInfo && null != orderLogisticsInfo.getBookingStoreName()) {
+                    maOrderDetailResponse.setShipStore(orderLogisticsInfo.getBookingStoreName());
+                }
                 //查询订单商品
                 List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderaNumber);
                 //创建商品返回list
@@ -166,14 +170,18 @@ public class MaOrderViewController {
                 String time = maOrderService.getShippingTime(orderaNumber);
                 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 Date shippingDate = null;
-                try {
-                    shippingDate = formatter.parse(time);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (null != time) {
+                    try {
+                        shippingDate = formatter.parse(time);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
                 OrderLogisticsInfo orderLogisticsInfo = orderService.getOrderLogistice(orderaNumber);
                 maOrderDetailResponse.setShipTime(shippingDate);
-                maOrderDetailResponse.setShipStore(orderLogisticsInfo.getBookingStoreName());
+                if (null != orderLogisticsInfo && null != orderLogisticsInfo.getBookingStoreName()) {
+                    maOrderDetailResponse.setShipStore(orderLogisticsInfo.getBookingStoreName());
+                }
                 List<MaOrderGoodsDetailResponse> maOrderGoodsDetailResponseList = new ArrayList<>();
                 for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
                     //创建商品返回对象
