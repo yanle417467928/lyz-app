@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderArrearsAudit;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
+import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.DetailFitOrderVO;
 import cn.com.leyizhuang.app.foundation.vo.management.goodscategory.MaOrderGoodsDetailResponse;
@@ -19,7 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,6 +45,8 @@ public class MaOrderViewController {
     private MaStoreInventoryService maStoreInventoryService;
     @Resource
     private MaStoreService maStoreService;
+    @Resource
+    private AppOrderService orderService;
 
     /**
      * 返回门店订单列表页
@@ -86,6 +91,17 @@ public class MaOrderViewController {
             if (orderBaseInfo != null && "门店".equals(orderBaseInfo.getOrderSubjectType().getDescription())) {
                 //查询订单基本信息
                 MaOrderDetailResponse maOrderDetailResponse = maOrderService.findMaOrderDetailByOrderNumber(orderaNumber);
+                String time = maOrderService.getShippingTime(orderaNumber);
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date shippingDate = null;
+                try {
+                    shippingDate = formatter.parse(time);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                OrderLogisticsInfo orderLogisticsInfo = orderService.getOrderLogistice(orderaNumber);
+                maOrderDetailResponse.setShipTime(shippingDate);
+                maOrderDetailResponse.setShipStore(orderLogisticsInfo.getBookingStoreName());
                 //查询订单商品
                 List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderaNumber);
                 //创建商品返回list
@@ -131,7 +147,7 @@ public class MaOrderViewController {
                 Double totailDiscountPrice = CountUtil.add(cashCouponDiscount, productCouponDiscount, promotionDiscount,
                         memberDiscount, lebiCashDiscount);
 
-                maOrderBillingDetailResponse.setAmountPayable(CountUtil.sub(totailPrice,totailDiscountPrice));
+                maOrderBillingDetailResponse.setAmountPayable(CountUtil.sub(totailPrice, totailDiscountPrice));
 
                 //获取订单支付明细列表
                 List<MaOrderBillingPaymentDetailResponse> maOrderBillingPaymentDetailResponseList = maOrderService.getMaOrderBillingPaymentDetailByOrderNumber(orderaNumber);
@@ -147,6 +163,17 @@ public class MaOrderViewController {
                 MaOrderDetailResponse maOrderDetailResponse = maOrderService.findMaOrderDetailByOrderNumber(orderaNumber);
                 List<OrderGoodsInfo> orderGoodsInfoList = appOrderService.getOrderGoodsInfoByOrderNumber(orderaNumber);
                 //创建商品返回list
+                String time = maOrderService.getShippingTime(orderaNumber);
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date shippingDate = null;
+                try {
+                    shippingDate = formatter.parse(time);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                OrderLogisticsInfo orderLogisticsInfo = orderService.getOrderLogistice(orderaNumber);
+                maOrderDetailResponse.setShipTime(shippingDate);
+                maOrderDetailResponse.setShipStore(orderLogisticsInfo.getBookingStoreName());
                 List<MaOrderGoodsDetailResponse> maOrderGoodsDetailResponseList = new ArrayList<>();
                 for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
                     //创建商品返回对象
@@ -231,7 +258,7 @@ public class MaOrderViewController {
                 //计算所有折扣
                 Double totailDiscountPrice = CountUtil.add(cashCounponDiscount, promotionDiscount, memberDiscount, subvention);
 
-                maOrderBillingDetailResponse.setAmountPayable(CountUtil.sub(totailPrice,totailDiscountPrice));
+                maOrderBillingDetailResponse.setAmountPayable(CountUtil.sub(totailPrice, totailDiscountPrice));
 
                 //获取订单支付明细列表
                 List<MaOrderBillingPaymentDetailResponse> maOrderBillingPaymentDetailResponseList = maOrderService.getMaOrderBillingPaymentDetailByOrderNumber(orderaNumber);
@@ -390,7 +417,6 @@ public class MaOrderViewController {
     }
 
 
-
     /**
      * 装饰公司订单详情
      *
@@ -405,34 +431,34 @@ public class MaOrderViewController {
             //装饰公司订单代付信息
             DetailFitOrderVO detailFitOrderVO = maOrderService.findFitOrderByOrderNumber(orderNumber);
             map.addAttribute("detailFitOrderVO", detailFitOrderVO);
-           //物流信息
+            //物流信息
             MaOrderDeliveryInfoResponse maOrderDeliveryInfoResponse = maOrderService.getDeliveryInfoByOrderNumber(orderNumber);
             map.addAttribute("delivertInfo", maOrderDeliveryInfoResponse);
             //查询出货时间
             String time = maOrderService.getShippingTime(orderNumber);
             map.addAttribute("shippingTime", time);
-                //查询订单详细信息
-                MaOrderDetailResponse maOrderDetailResponse = maOrderService.findMaOrderDetailByOrderNumber(orderNumber);
-                maOrderDetailResponse.setCreatorIdentityType(orderBaseInfo.getCreatorIdentityType());
-                //查询订单商品信息
-                List<MaOrderGoodsDetailResponse> maOrderGoodsDetailResponseList = maOrderService.getOrderGoodsDetailResponseList(orderNumber);
-                //创建商品返回list
-                maOrderDetailResponse.setMaOrderGoodsDetailResponseList(maOrderGoodsDetailResponseList);
-                //获取订单账目明细
-                MaOrderBillingDetailResponse maOrderBillingDetailResponse = maOrderService.getMaOrderBillingDetailByOrderNumber(orderNumber);
-                //获取订单支付明细列表
-                List<MaOrderBillingPaymentDetailResponse> maOrderBillingPaymentDetailResponseList = maOrderService.getMaOrderBillingPaymentDetailByOrderNumber(orderNumber);
-                if (null != maOrderBillingDetailResponse) {
-                    map.addAttribute("orderBillingDetail", maOrderBillingDetailResponse);
-                }
-                if (null != maOrderBillingPaymentDetailResponseList) {
-                    map.addAttribute("paymentDetailList", maOrderBillingPaymentDetailResponseList);
-                }
-                map.addAttribute("maOrderDetail", maOrderDetailResponse);
-                Boolean isPayUp = maOrderService.isPayUp(orderNumber);
-                map.addAttribute("isPayUp", isPayUp);
-                logger.info("selfTakeOrderDetail CALLED,门店订单详情成功");
-                return "/views/decorativeCompany/fitOrder_detail";
+            //查询订单详细信息
+            MaOrderDetailResponse maOrderDetailResponse = maOrderService.findMaOrderDetailByOrderNumber(orderNumber);
+            maOrderDetailResponse.setCreatorIdentityType(orderBaseInfo.getCreatorIdentityType());
+            //查询订单商品信息
+            List<MaOrderGoodsDetailResponse> maOrderGoodsDetailResponseList = maOrderService.getOrderGoodsDetailResponseList(orderNumber);
+            //创建商品返回list
+            maOrderDetailResponse.setMaOrderGoodsDetailResponseList(maOrderGoodsDetailResponseList);
+            //获取订单账目明细
+            MaOrderBillingDetailResponse maOrderBillingDetailResponse = maOrderService.getMaOrderBillingDetailByOrderNumber(orderNumber);
+            //获取订单支付明细列表
+            List<MaOrderBillingPaymentDetailResponse> maOrderBillingPaymentDetailResponseList = maOrderService.getMaOrderBillingPaymentDetailByOrderNumber(orderNumber);
+            if (null != maOrderBillingDetailResponse) {
+                map.addAttribute("orderBillingDetail", maOrderBillingDetailResponse);
+            }
+            if (null != maOrderBillingPaymentDetailResponseList) {
+                map.addAttribute("paymentDetailList", maOrderBillingPaymentDetailResponseList);
+            }
+            map.addAttribute("maOrderDetail", maOrderDetailResponse);
+            Boolean isPayUp = maOrderService.isPayUp(orderNumber);
+            map.addAttribute("isPayUp", isPayUp);
+            logger.info("selfTakeOrderDetail CALLED,门店订单详情成功");
+            return "/views/decorativeCompany/fitOrder_detail";
         } else {
             logger.warn("orderNumber为空");
         }
