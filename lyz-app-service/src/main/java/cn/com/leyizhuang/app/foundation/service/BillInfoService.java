@@ -20,7 +20,7 @@ public interface BillInfoService {
 
     BillRepaymentInfoDO findBillRepaymentInfoByRepaymentNo(String repaymentNo);
 
-    void handleBillRepaymentAfterOnlinePayUp(String repaymentNo, String tradeNo, String tradeStatus, OnlinePayType onlinePayType);
+    void handleBillRepaymentAfterOnlinePayUp(String repaymentNo, OnlinePayType onlinePayType);
 
     void updateBillRepaymentInfo(BillRepaymentInfoDO billRepaymentInfoDO);
 
