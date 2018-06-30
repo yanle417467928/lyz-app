@@ -97,4 +97,6 @@ public interface ProductCouponDAO {
      * 根据订单号激活产品券
      */
     void activateCusProductCoupon(@Param("ordNo") String ordNo, @Param("effectiveEndTime")LocalDateTime effectiveEndTime);
+
+    CustomerProductCoupon findCustomerProductCouponByOrdNoAndSku(@Param("couponId")Long couponId);
 }

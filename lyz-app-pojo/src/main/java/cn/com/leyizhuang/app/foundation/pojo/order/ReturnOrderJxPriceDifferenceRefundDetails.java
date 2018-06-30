@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.order;
 
+import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
 import lombok.*;
 
 import java.util.Date;
@@ -73,5 +74,11 @@ public class ReturnOrderJxPriceDifferenceRefundDetails {
      * 退款单号
      */
     private String refundNumber;
+
+    /**
+     * 商品类型
+     */
+    private AppGoodsLineType goodsLineType;
+
 
 }

@@ -445,7 +445,7 @@
 
         INSERT INTO ord_return_jx_price_difference_return_details (roid, ord_no, return_no, create_time, store_id,
         store_code,
-                                                                   sku, unit_price, return_qty, amount, refund_number)
+                                                                   sku, unit_price, return_qty, amount, refund_number, goods_line_type)
             SELECT
                 #{roid},
                 #{orderNumber},
@@ -457,7 +457,8 @@
                 #{unitPrice},
                 #{returnQty},
                 #{amount},
-                #{refundNumber}
+                #{refundNumber},
+                #{goodsLineType}
             FROM dual
             WHERE NOT exists(SELECT 1
         FROM ord_return_jx_price_difference_return_details
@@ -731,5 +732,13 @@
         WHERE
         ord_no = #{orderNo}
     </select>
+
+    <update id="updateProductOrderReturnNableQty">
+        UPDATE ord_goods_info ogi
+            LEFT JOIN cus_customer_product_coupon ccpc ON ogi.id = ccpc.goods_line_id
+        SET ogi.returnable_qty = ogi.returnable_qty + 1
+        WHERE
+                ccpc.id = #{couponId}
+    </update>
 </mapper>
 
