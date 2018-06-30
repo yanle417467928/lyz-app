@@ -652,6 +652,13 @@ public class MaReportDownloadRestController extends BaseRestController {
                     row = (map.size() + 1) / 2 + 4;
                 }
 
+                String str = "订单参数范围内\n包含：①截止日期前未出货的订单和未提产品劵\n不包含： ①截止日期前已取消订单②截止日期前已拒签的订单③金额不包含运费";
+                ws.mergeCells(0, map.size(), 5, map.size());
+                WritableCellFormat textFormat1 = this.setTextStyle();
+                textFormat1.setWrap(true);
+                ws.addCell(new Label(0, map.size(), str, textFormat1));
+                ws.setRowView(row - 1, 1000);
+
                 int collectRow = row + 1;
 //
                 row += 5;
@@ -780,6 +787,12 @@ public class MaReportDownloadRestController extends BaseRestController {
                 if (null != map && map.size() > 0) {
                     row = (map.size() + 1) / 2 + 4;
                 }
+                String str = "参数范围内\n包含：①变更时间内所有的预存款变动情况②变动金额包含运费";
+                ws.mergeCells(0, map.size(), 5, map.size());
+                WritableCellFormat textFormat1 = this.setTextStyle();
+                textFormat1.setWrap(true);
+                ws.addCell(new Label(0, map.size(), str, textFormat1));
+                ws.setRowView(row -2, 1000);
 
                 int collectRow = row + 1;
 //
@@ -1218,6 +1231,14 @@ public class MaReportDownloadRestController extends BaseRestController {
                     row = (map.size() + 1) / 2 + 4;
                 }
 
+                String str = "订单参数范围内\n包含：①本月已出货的订单②本月已反配上架的订单③本月下单下月出货的订单④本月“已取消订单“⑤本月待付款订单⑥订单中运费金额   ";
+                ws.mergeCells(0, map.size(), 5, map.size());
+                WritableCellFormat textFormat1 = this.setTextStyle();
+                textFormat1.setWrap(true);
+                ws.addCell(new Label(0, map.size(), str, textFormat1));
+                ws.setRowView(row - 1, 1000);
+
+
                 //设置标题
                 ws = this.setHeader(ws, titleFormat, columnView, titles, row);
                 row += 1;
@@ -1625,6 +1646,12 @@ public class MaReportDownloadRestController extends BaseRestController {
                 if (null != map && map.size() > 0) {
                     row = (map.size() + 1) / 2 + 4;
                 }
+                String str = "订单参数范围内\n包含：①本月已配送出货的订单②本月已门店提货的订单③本月已反配上架的订单④本月已门店确认收货的订单";
+                ws.mergeCells(0, map.size(), 5, map.size());
+                WritableCellFormat textFormat1 = this.setTextStyle();
+                textFormat1.setWrap(true);
+                ws.addCell(new Label(0, map.size(), str, textFormat1));
+                ws.setRowView(row - 1, 1000);
 
                 //设置标题
                 ws = this.setHeader(ws, titleFormat, columnView, titles, row);
@@ -1787,6 +1814,12 @@ public class MaReportDownloadRestController extends BaseRestController {
                     row = (map.size() + 1) / 2 + 4;
                 }
 
+                String str = "订单参数范围内\n包含：订单状态为“待发货”“待收货”“拒签”“已取消”“已完成”的单据";
+                ws.mergeCells(0, map.size(), 5, map.size());
+                WritableCellFormat textFormat1 = this.setTextStyle();
+                textFormat1.setWrap(true);
+                ws.addCell(new Label(0, map.size(), str, textFormat1));
+                ws.setRowView(row - 3, 1000);
                 //计算标题开始行号
 
                 //设置标题
@@ -2855,6 +2888,12 @@ public class MaReportDownloadRestController extends BaseRestController {
                     row = (map.size() + 1) / 2 + 4;
                 }
 
+                String str = " 订单参数范围内\n包含：①本月已出货的订单②本月已反配上架的订单③本月下单下月出货的订单④本月“已取消订单” \n不包含： ①本月待付款订单  ②订单中运费金额";
+                ws.mergeCells(0, map.size(), 5, map.size());
+                WritableCellFormat textFormat1 = this.setTextStyle();
+                textFormat1.setWrap(true);
+                ws.addCell(new Label(0, map.size(), str, textFormat1));
+                ws.setRowView(row - 2, 1000);
                 //设置标题
                 ws = this.setHeader(ws, titleFormat, columnView, titles, row);
                 row += 1;

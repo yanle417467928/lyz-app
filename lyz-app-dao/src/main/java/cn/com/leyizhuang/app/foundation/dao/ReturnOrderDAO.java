@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.AppReturnOrderStatus;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderLifecycle;
@@ -171,4 +172,6 @@ public interface ReturnOrderDAO {
     ReturnOrderBilling getAllReturnPriceByOrderNo(String orderNo);
 
     List<ReturnOrderBaseInfo> getReturnBaseinfoByOrderNo(String orderNo);
+
+    void updateProductOrderReturnNableQty(@Param("couponId")Long couponId);
 }

@@ -732,5 +732,13 @@
         WHERE
         ord_no = #{orderNo}
     </select>
+
+    <update id="updateProductOrderReturnNableQty">
+        UPDATE ord_goods_info ogi
+        SET ogi.returnable_qty = ogi.returnable_qty + 1,
+            ogi.return_qty = ogi.return_qty - 1
+        WHERE
+                ogi.id = #{couponId}
+    </update>
 </mapper>
 

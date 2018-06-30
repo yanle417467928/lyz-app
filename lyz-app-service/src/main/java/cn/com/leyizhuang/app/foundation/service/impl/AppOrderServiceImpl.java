@@ -25,6 +25,7 @@ import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.AssertUtil;
+import cn.com.leyizhuang.common.util.CountUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -575,6 +576,7 @@ public class AppOrderServiceImpl implements AppOrderService {
         } else {
             orderBillingDetails.setStoreSubvention(0D);
         }
+        AppStore store = this.storeService.findStoreByUserIdAndIdentityType(userId, identityType);
 
         //计算订单金额小计以及应付款
         Double orderAmountSubtotal;
@@ -632,7 +634,11 @@ public class AppOrderServiceImpl implements AppOrderService {
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getStoreCreditMoney())
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getStoreSubvention());
                 orderBillingDetails.setAmountPayable(amountPayable);
-                orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable());
+                if (FitCompayType.CASH == store.getFitCompayType()) {
+                    orderBillingDetails.setArrearage(CountUtil.add(orderBillingDetails.getAmountPayable(), orderBillingDetails.getStoreCreditMoney()));
+                } else {
+                    orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable());
+                }
                 break;
             default:
                 break;
