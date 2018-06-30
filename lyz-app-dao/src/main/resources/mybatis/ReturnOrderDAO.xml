@@ -735,10 +735,10 @@
 
     <update id="updateProductOrderReturnNableQty">
         UPDATE ord_goods_info ogi
-            LEFT JOIN cus_customer_product_coupon ccpc ON ogi.id = ccpc.goods_line_id
-        SET ogi.returnable_qty = ogi.returnable_qty + 1
+        SET ogi.returnable_qty = ogi.returnable_qty + 1,
+            ogi.return_qty = ogi.return_qty - 1
         WHERE
-                ccpc.id = #{couponId}
+                ogi.id = #{couponId}
     </update>
 </mapper>
 

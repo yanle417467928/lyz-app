@@ -1774,6 +1774,11 @@ public class MaOrderServiceImpl implements MaOrderService {
                     returnOrderProductCoupon.setIsReturn(Boolean.TRUE);
 
                     returnOrderService.saveReturnOrderProductCoupon(returnOrderProductCoupon);
+
+                    //修改买券订单可退数量
+                    if (StringUtils.isNotBlank(customerProductCoupon.getGetOrderNumber()) && (orderProductCoupon.getGetType() == CouponGetType.BUY || orderProductCoupon.getGetType() == CouponGetType.PRESENT)){
+                        returnOrderDAO.updateProductOrderReturnNableQty(customerProductCoupon.getGoodsLineId());
+                    }
                 }
             }
             //获取订单使用现金券

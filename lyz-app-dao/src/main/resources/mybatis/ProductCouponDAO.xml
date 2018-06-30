@@ -61,11 +61,31 @@
     <select id="findCusProductCouponByCouponId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon">
         SELECT
-            *
+            ccpc.cus_id customerId,
+            ccpc.seller_id sellerId,
+            ccpc.store_id storeId,
+            ccpc.gid goodsId,
+            ccpc.quantity quantity,
+            ccpc.get_type getType,
+            ccpc.get_time getTime,
+            ccpc.get_ord_no getOrderNumber,
+            ccpc.buy_price buyPrice,
+            ccpc.effective_start_time effectiveStartTime,
+            ccpc.effective_end_time effectiveEndTime,
+            ccpc.is_used isUsed,
+            ccpc.use_time useTime,
+            ccpc.use_ord_no useOrderNumber,
+            ccpc.`status` `status`,
+            ccpc.goods_line_id goodsLineId,
+            ccpc.disable_time disableTime,
+            ccpc.last_update_time lastUpdateTime,
+            ccpc.goods_sign goodsSign,
+            ccpc.settlement_price settlementPrice,
+            ccpc.wholesale_price wholesalePrice
         FROM
-            cus_customer_product_coupon
+            cus_customer_product_coupon ccpc
         WHERE
-            id = #{cusProductCouponId}
+            ccpc.id = #{cusProductCouponId}
     </select>
 
     <insert id="addCustomerProductCoupon" parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon"

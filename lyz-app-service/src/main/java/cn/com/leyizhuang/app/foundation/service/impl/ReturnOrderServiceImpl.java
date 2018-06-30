@@ -849,8 +849,8 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                     returnOrderService.saveReturnOrderProductCoupon(returnOrderProductCoupon);
 
                     //修改买券订单可退数量
-                    if (StringUtils.isNotBlank(orderProductCoupon.getGetOrderNumber()) && (orderProductCoupon.getGetType() == CouponGetType.BUY || orderProductCoupon.getGetType() == CouponGetType.PRESENT)){
-                        returnOrderDAO.updateProductOrderReturnNableQty(orderProductCoupon.getCouponId());
+                    if (StringUtils.isNotBlank(customerProductCoupon.getGetOrderNumber()) && (orderProductCoupon.getGetType() == CouponGetType.BUY || orderProductCoupon.getGetType() == CouponGetType.PRESENT)){
+                        returnOrderDAO.updateProductOrderReturnNableQty(customerProductCoupon.getGoodsLineId());
                     }
                 }
             }
@@ -2759,8 +2759,8 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                     returnOrderService.saveReturnOrderProductCoupon(returnOrderProductCoupon);
 
                     //修改买券订单可退数量
-                    if (StringUtils.isNotBlank(orderProductCoupon.getGetOrderNumber()) && (orderProductCoupon.getGetType() == CouponGetType.BUY || orderProductCoupon.getGetType() == CouponGetType.PRESENT)){
-                        returnOrderDAO.updateProductOrderReturnNableQty(orderProductCoupon.getCouponId());
+                    if (StringUtils.isNotBlank(customerProductCoupon.getGetOrderNumber()) && (orderProductCoupon.getGetType() == CouponGetType.BUY || orderProductCoupon.getGetType() == CouponGetType.PRESENT)){
+                        returnOrderDAO.updateProductOrderReturnNableQty(customerProductCoupon.getGoodsLineId());
                     }
                 }
             }
@@ -3016,7 +3016,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
 
                     //修改买券订单可退数量
                     if (StringUtils.isNotBlank(customerProductCoupon.getGetOrderNumber()) && (customerProductCoupon.getGetType() == CouponGetType.BUY || customerProductCoupon.getGetType() == CouponGetType.PRESENT)){
-                        returnOrderDAO.updateProductOrderReturnNableQty(customerProductCoupon.getId());
+                        returnOrderDAO.updateProductOrderReturnNableQty(customerProductCoupon.getGoodsLineId());
                     }
                 }
             }
