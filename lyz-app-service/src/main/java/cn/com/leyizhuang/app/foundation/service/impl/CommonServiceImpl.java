@@ -1425,12 +1425,12 @@ public class CommonServiceImpl implements CommonService {
                 if (AppOrderSubjectType.FIT.equals(orderBaseInfo.getOrderSubjectType())){
                     details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.ST_PREPAY, orderBillingDetails.getStPreDeposit(),
                             PaymentSubjectType.DECORATE_MANAGER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
-                    details.setPaymentSubjectId(orderBaseInfo.getStoreId());
+                    details.setPaymentSubjectId(orderBaseInfo.getCreatorId());
                     billingPaymentDetails.add(details);
                 }else {
                     details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.ST_PREPAY, orderBillingDetails.getStPreDeposit(),
                             PaymentSubjectType.SELLER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
-                    details.setPaymentSubjectId(orderBaseInfo.getStoreId());
+                    details.setPaymentSubjectId(orderBaseInfo.getCreatorId());
                     billingPaymentDetails.add(details);
                 }
             }
@@ -1438,7 +1438,7 @@ public class CommonServiceImpl implements CommonService {
                 OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
                 details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.STORE_CREDIT_MONEY, orderBillingDetails.getStoreCreditMoney(),
                         PaymentSubjectType.DECORATE_MANAGER, orderBaseInfo.getOrderNumber(), OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
-                details.setPaymentSubjectId(orderBaseInfo.getStoreId());
+                details.setPaymentSubjectId(orderBaseInfo.getCreatorId());
                 billingPaymentDetails.add(details);
             }
             if (null != orderBillingDetails.getLebiCashDiscount() && orderBillingDetails.getLebiCashDiscount() > AppConstant.DOUBLE_ZERO) {
