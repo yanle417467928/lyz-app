@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.core.pay.wechat.util.WechatUtil;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
+import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderArrearsAuditDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
@@ -19,6 +20,7 @@ import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.CountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -82,6 +84,9 @@ public class WeChatPayController {
 
     @Resource
     private ProductCouponService productCouponService;
+
+    @Autowired
+    private BillInfoService billInfoService;
 
     /**
      * 微信支付订单
@@ -496,6 +501,21 @@ public class WeChatPayController {
                                     // 激活订单赠送的产品券
                                     // productCouponService.activateCusProductCoupon(outTradeNo);
                                 }
+                            } else if (paymentDataDO.getPaymentType() == PaymentDataType.BILLPAY) {
+                                if (null != paymentDataDO.getId() && paymentDataDO.getTotalFee().equals(Double.parseDouble(totalFee))) {
+                                    String orderNumber = paymentDataDO.getOrderNumber();
+                                    paymentDataDO.setTradeNo(tradeNo);
+                                    paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
+                                    paymentDataDO.setNotifyTime(new Date());
+                                    this.paymentDataService.updateByTradeStatusIsWaitPay(paymentDataDO);
+                                    logger.info("weChatReturnSync ,微信支付异步回调接口，支付数据记录信息 paymentDataDO:{}",
+                                            paymentDataDO);
+                                    //处理第三方支付成功之后订单相关事务
+                                    billInfoService.handleBillRepaymentAfterOnlinePayUp(orderNumber, OnlinePayType.WE_CHAT);
+                                    //将收款记录入拆单消息队列
+                                    sinkSender.sendRechargeReceipt(orderNumber);
+                                    logger.warn("weChatReturnSync OUT,微信支付异步回调接口处理成功，出参 result:{}", "success");
+                                }
                             }
                             //返回响应成功的讯息
                             response.getWriter().write(WechatUtil.setXML("SUCCESS", null));
@@ -517,5 +537,72 @@ public class WeChatPayController {
             e.printStackTrace();
             logger.warn("{}", e);
         }
+    }
+
+    /**
+     * @title   微信支付账单还款
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/6/28
+     */
+    @RequestMapping(value = "/bill/pay", method = RequestMethod.POST)
+    public ResultDTO<Object> billWeChatPay(HttpServletRequest req, Long userId, Integer identityType, String repaymentNo) {
+
+        logger.info("billWeChatPay CALLED,微信支付账单还款信息提交,入参 userId:{}, identityType:{}, repaymentNo:{}",
+                userId, identityType, repaymentNo);
+
+        ResultDTO<Object> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+            logger.info("billWeChatPay OUT,微信支付账单还款信息提交失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("billWeChatPay OUT,微信支付账单还款信息提交失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == repaymentNo) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "收款单号不能为空！", null);
+            logger.info("billWeChatPay OUT,微信支付账单还款信息提交失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        BillRepaymentInfoDO billRepaymentInfoDO = this.billInfoService.findBillRepaymentInfoByRepaymentNo(repaymentNo);
+
+        if (null == billRepaymentInfoDO || null == billRepaymentInfoDO.getBillNo() || null == billRepaymentInfoDO.getOnlinePayAmount() ||
+                billRepaymentInfoDO.getOnlinePayAmount() < AppConstant.PAY_UP_LIMIT) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "支付金额错误！", null);
+            logger.info("billWeChatPay OUT,微信支付账单还款信息提交失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null != billRepaymentInfoDO.getIsPaid() && billRepaymentInfoDO.getIsPaid()) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "已支付，请勿重复提交！", null);
+            logger.info("billWeChatPay OUT,微信支付账单还款信息提交失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        Double totalFeeParse = billRepaymentInfoDO.getOnlinePayAmount();
+        String outTradeNo = OrderUtils.generatePayNumber();
+
+        PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo, repaymentNo, identityType, AppApplicationConstant.wechatReturnUrlAsnyc,
+                totalFeeParse, PaymentDataStatus.WAIT_PAY, OnlinePayType.WE_CHAT, "账单还款");
+        this.paymentDataService.save(paymentDataDO);
+
+        try {
+            SortedMap<String, Object> secondSignMap = (SortedMap<String, Object>) WechatPrePay.wechatSign(outTradeNo, paymentDataDO.getPaymentTypeDesc(),
+                    new BigDecimal(totalFeeParse), req);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, secondSignMap);
+            logger.info("billWeChatPay OUT,微信支付账单还款信息提交成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,微信支付账单还款信息提交失败!", null);
+            logger.warn("billWeChatPay EXCEPTION,微信支付账单还款信息提交失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+
     }
 }

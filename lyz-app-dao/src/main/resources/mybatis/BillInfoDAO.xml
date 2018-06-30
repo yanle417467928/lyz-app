@@ -3,12 +3,60 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.BillInfoDAO">
 
     <select id="findBillRepaymentInfoByRepaymentNo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO">
-        SELECT repaymentNo, bill_id, bill_no, repayment_user_id, repayment_user_name,
-        repayment_time, online_pay_type, online_pay_amount, pre_deposit, total_repayment_amount,
-        is_paid, interest_rate, total_interest_amount, create_time
+        SELECT repayment_no, bill_id, bill_no, repayment_user_id, repayment_user_name,
+        repayment_time, online_pay_type, IFNULL(online_pay_amount, 0) online_pay_amount, IFNULL(pre_deposit, 0) pre_deposit,
+        IFNULL(total_repayment_amount, 0) total_repayment_amount,
+        IFNULL(cash_money, 0) cash_money, IFNULL(other_money, 0) other_money, IFNULL(pos_money, 0) pos_money, pos_number
+        is_paid, IFNULL(interest_rate, 0) interest_rate, IFNULL(total_interest_amount, 0) total_interest_amount, create_time
         FROM bill_repayment_info
         WHERE repayment_no = #{repaymentNo}
     </select>
+
+
+    <update id="updateBillRepaymentInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO">
+        UPDATE bill_repayment_info
+        <set>
+            <if test="null != onlinePayType and onlinePayType != ''">
+                online_pay_type = #{onlinePayType},
+            </if>
+            <if test="null != isPaid">
+                is_paid = #{isPaid},
+            </if>
+            <if test="null != repaymentTime and repaymentTime != ''">
+                repayment_time = #{repaymentTime},
+            </if>
+        </set>
+        WHERE repayment_no = #{repaymentNo}
+    </update>
+
+
+    <select id="findBillInfoByBillNo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO">
+        SELECT bill_no,bill_name,store_id,bill_start_date,bill_end_date,repayment_deadline_date,
+        IFNULL(bill_total_amount, 0) bill_total_amount, IFNULL(current_bill_amount, 0) current_bill_amount, IFNULL(current_adjustment_amount, 0) current_adjustment_amount,
+        IFNULL(current_paid_amount, 0) current_paid_amount, IFNULL(current_unpaid_amount, 0) current_unpaid_amount,
+        IFNULL(prior_paid_bill_amount, 0) prior_paid_bill_amount, IFNULL(prior_paid_interest_amount, 0) prior_paid_interest_amount,status,bill_time,create_time
+        FROM bill_info
+        WHERE bill_no = #{billNo}
+    </select>
+
+    <update id="updateBillInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO">
+        UPDATE bill_info
+        <set>
+            <if test="null != currentPaidAmount">
+                current_paid_amount = #{currentPaidAmount},
+            </if>
+            <if test="null != priorPaidInterestAmount">
+                prior_paid_interest_amount = #{priorPaidInterestAmount},
+            </if>
+            <if test="null != currentUnpaidAmount">
+                current_unpaid_amount = #{currentUnpaidAmount},
+            </if>
+            <if test="null != status">
+                status = #{status},
+            </if>
+        </set>
+        WHERE bill_no = #{billNo}
+    </update>
 
 
 </mapper>

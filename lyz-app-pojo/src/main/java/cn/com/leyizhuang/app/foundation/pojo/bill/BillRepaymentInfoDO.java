@@ -21,9 +21,9 @@ public class BillRepaymentInfoDO {
     //还款单号（BL_RC开头）
     private String repaymentNo;
     //账单头id
-    private Long BillId;
+    private Long billId;
     //账单单号
-    private String billingNo;
+    private String billNo;
     //还款人id
     private Long repaymentUserId;
     //还款人姓名
@@ -38,6 +38,14 @@ public class BillRepaymentInfoDO {
     private Double onlinePayAmount;
     //预存款支付金额
     private Double preDeposit;
+    //现金金额
+    private Double cashMoney;
+    //其他金额
+    private Double otherMoney;
+    //POS金额
+    private Double posMoney;
+    //pos流水号
+    private String posNumber;
     //还款总金额
     private Double totalRepaymentAmount;
     //是否支付
