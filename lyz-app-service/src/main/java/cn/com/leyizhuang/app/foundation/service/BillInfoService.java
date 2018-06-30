@@ -35,4 +35,11 @@ public interface BillInfoService {
     BillInfoResponse lookBill(String starTime, String endTime, Long storeid ,Integer page,Integer size) throws Exception;
 
     PageInfo<BillHistoryListResponse> findBillHistoryListByEmpId(Long empId, Integer identityType, Integer page, Integer size);
+
+    BillInfoResponse findBillHistoryDetail(String billNo);
+
+    List<BillRepaymentInfoDO> findBillRepaymentInfoByBillNo(String billNo);
+
+    List<BillRepaymentGoodsDetailsDO> findRepaymentGoodsDetailsByBillNo(String billNo);
+
 }

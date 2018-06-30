@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
+import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
 import lombok.*;
 
 import java.util.Date;
@@ -16,8 +17,10 @@ import java.util.Date;
 public class BillRepaymentGoodsInfoResponse {
 
     private Long bill_id;
-    //单号
-    private String number;
+    //订单号
+    private String orderNo;
+    //退单号
+    private String returnNo;
     //信用金使用金额
     private Double orderCreditMoney;
     //订单创建时间
@@ -28,4 +31,17 @@ public class BillRepaymentGoodsInfoResponse {
     private String orderType;
     //滞纳金
     private Double interestAmount;
+
+    public static BillRepaymentGoodsInfoResponse transform(BillRepaymentGoodsDetailsDO goodsDetailsDO){
+        if (null != goodsDetailsDO) {
+            BillRepaymentGoodsInfoResponse goodsInfoResponse = new BillRepaymentGoodsInfoResponse();
+            goodsInfoResponse.setOrderNo(goodsDetailsDO.getOrderNo());
+            goodsInfoResponse.setReturnNo(goodsDetailsDO.getReturnNo());
+            goodsInfoResponse.setShipmentTime(goodsDetailsDO.getShipmentTime());
+            goodsInfoResponse.setOrderCreditMoney(goodsDetailsDO.getOrderCreditMoney());
+            goodsInfoResponse.setInterestAmount(goodsDetailsDO.getInterestAmount());
+
+        }
+        return null;
+    }
 }

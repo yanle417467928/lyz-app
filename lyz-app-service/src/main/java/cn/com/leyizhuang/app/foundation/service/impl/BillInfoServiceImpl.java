@@ -13,6 +13,7 @@ import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillHistoryListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillInfoResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentGoodsInfoResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentResponse;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
 import cn.com.leyizhuang.app.foundation.service.BillInfoService;
 import cn.com.leyizhuang.app.foundation.service.BillRuleService;
@@ -110,8 +111,28 @@ public class BillInfoServiceImpl implements BillInfoService {
         billRepaymentInfoDO.setRepaymentTime(new Date());
         this.billInfoDAO.updateBillRepaymentInfo(billRepaymentInfoDO);
 
+        BillInfoDO billInfoDO = this.billInfoDAO.findBillInfoByBillNo(billRepaymentInfoDO.getBillNo());
+
+        //根据门店ID查询账单规则
+        BillRuleDO billRuleDO = this.billRuleService.getBillRuleByStoreId(billInfoDO.getStoreId());
+        if (null == billRuleDO){
+            billRuleDO = new BillRuleDO();
+        }
+        //还款截至日
+        Integer repaymentDeadlineDate = billRuleDO.getRepaymentDeadlineDate();
+        if (null == repaymentDeadlineDate || repaymentDeadlineDate == 0) {
+            repaymentDeadlineDate = 1;
+        }
+        //还款截至日
+        Integer billDate = billRuleDO.getBillDate();
+        if (null == billDate || billDate == 0) {
+            billDate = 1;
+        }
+
+
         //订单账单更新是否已付清、付清时间
         List<BillRepaymentGoodsDetailsDO> goodsDetailsDOS = this.billInfoDAO.findRepaymentGoodsDetailsByRepaymentNo(repaymentNo);
+        Double priorPaidBillAmount = 0D;
         if (null != goodsDetailsDOS && goodsDetailsDOS.size() > 0){
             for (BillRepaymentGoodsDetailsDO goodsDetails : goodsDetailsDOS) {
                 if ("order".equals(goodsDetails.getOrderType())) {
@@ -121,13 +142,19 @@ public class BillInfoServiceImpl implements BillInfoService {
                     orderBillingDetails.setPayUpTime(new Date());
                     orderService.updateOrderBillingDetails(orderBillingDetails);
                 }
+                //逾期天数
+                Integer overdueDays = DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(billDate, repaymentDeadlineDate, goodsDetails.getShipmentTime()), new Date());
+
+                if (overdueDays > 0){
+                    priorPaidBillAmount = CountUtil.add(priorPaidBillAmount, goodsDetails.getOrderCreditMoney());
+                }
             }
         }
 
         //更新账单信息
-        BillInfoDO billInfoDO = this.billInfoDAO.findBillInfoByBillNo(billRepaymentInfoDO.getBillNo());
         billInfoDO.setCurrentPaidAmount(CountUtil.add(billInfoDO.getCurrentPaidAmount(), billRepaymentInfoDO.getOnlinePayAmount()));
         billInfoDO.setPriorPaidInterestAmount(CountUtil.add(billInfoDO.getPriorPaidInterestAmount(), billRepaymentInfoDO.getTotalInterestAmount()));
+        billInfoDO.setPriorPaidBillAmount(priorPaidBillAmount);
         if (billInfoDO.getStatus() == BillStatusEnum.ALREADY_OUT){
             billInfoDO.setCurrentUnpaidAmount(CountUtil.sub(billInfoDO.getCurrentUnpaidAmount(), billRepaymentInfoDO.getOnlinePayAmount()));
             if (billInfoDO.getCurrentUnpaidAmount() < AppConstant.PAY_UP_LIMIT){
@@ -215,6 +242,40 @@ public class BillInfoServiceImpl implements BillInfoService {
             return new PageInfo<>(billHistoryList);
         }
         return null;
+    }
+
+    @Override
+    public BillInfoResponse findBillHistoryDetail(String billNo) {
+        BillInfoDO billInfoDO = this.billInfoDAO.findBillInfoByBillNo(billNo);
+        BillInfoResponse billInfoResponse = BillInfoDO.transfer(billInfoDO);
+        if (null != billInfoResponse) {
+            List<BillRepaymentInfoDO> billRepaymentInfoDOList = this.billInfoDAO.findBillRepaymentInfoByBillNo(billNo);
+            for (BillRepaymentInfoDO repaymentInfoDO : billRepaymentInfoDOList) {
+                BillRepaymentResponse billRepaymentResponse = new BillRepaymentResponse();
+                billRepaymentResponse.setRepaymentTime(repaymentInfoDO.getRepaymentTime());
+                billRepaymentResponse.setTotalRepaymentAmount(repaymentInfoDO.getTotalRepaymentAmount());
+                List<BillRepaymentGoodsDetailsDO> goodsDetailsDOList = this.billInfoDAO.findRepaymentGoodsDetailsByRepaymentNo(repaymentInfoDO.getRepaymentNo());
+                if (null != goodsDetailsDOList && goodsDetailsDOList.size() > 0) {
+                    List<BillRepaymentGoodsInfoResponse> billRepaymentDetails = new ArrayList<>();
+                    goodsDetailsDOList.forEach(goodsDetailsDO -> {
+                        billRepaymentDetails.add(BillRepaymentGoodsInfoResponse.transform(goodsDetailsDO));
+                    });
+                    billRepaymentResponse.setBillRepaymentDetails(billRepaymentDetails);
+                }
+            }
+        return billInfoResponse;
+        }
+        return null;
+    }
+
+    @Override
+    public List<BillRepaymentInfoDO> findBillRepaymentInfoByBillNo(String billNo) {
+        return this.billInfoDAO.findBillRepaymentInfoByBillNo(billNo);
+    }
+
+    @Override
+    public List<BillRepaymentGoodsDetailsDO> findRepaymentGoodsDetailsByBillNo(String billNo) {
+        return this.billInfoDAO.findRepaymentGoodsDetailsByBillNo(billNo);
     }
 
     public Double AddAllCreditMoney(List<BillRepaymentGoodsInfoResponse> list){

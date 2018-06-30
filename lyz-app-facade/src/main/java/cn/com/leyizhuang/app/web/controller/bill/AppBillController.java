@@ -137,7 +137,7 @@ public class AppBillController {
     @PostMapping(value = "/history/list", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> getBillHistoryList(Long userId, Integer identityType, Integer page, Integer size) {
         ResultDTO<Object> resultDTO;
-        logger.info("getBillHistoryList CALLED,获取历史账单列表，入参 userID:{}, identityType:{}", userId, identityType);
+        logger.info("getBillHistoryList CALLED,获取历史账单列表，入参 userID:{}, identityType:{}, page:{}, size:{}", userId, identityType, page, size);
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
             logger.info("getBillHistoryList OUT,获取历史账单列表失败，出参 resultDTO:{}", resultDTO);
@@ -175,6 +175,55 @@ public class AppBillController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取历史账单列表失败", null);
             logger.warn("getBillHistoryList EXCEPTION,获取历史账单列表失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * @title   获取历史账单详情
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/6/30
+     */
+    @PostMapping(value = "/history/detail", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> findBillHistoryDetail(Long userId, Integer identityType, String billNo) {
+        ResultDTO<Object> resultDTO;
+        logger.info("findBillHistoryDetail CALLED,获取历史账单详情，入参 userID:{}, identityType:{}, billNo:{}", userId, identityType, billNo);
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
+            logger.info("findBillHistoryDetail OUT,获取历史账单详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("findBillHistoryDetail OUT,获取历史账单详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == billNo) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "账单编号不能为空！",
+                    null);
+            logger.info("findBillHistoryDetail OUT,获取历史账单详情失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            //获取用户待评价订单列表
+            if (identityType != AppIdentityType.DECORATE_MANAGER.getValue()) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该用户没有权限!", null);
+                logger.info("findBillHistoryDetail OUT,获取历史账单详情失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            BillInfoResponse billInfoResponse = this.billInfoService.findBillHistoryDetail(billNo);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, billInfoResponse);
+            logger.info("findBillHistoryDetail OUT,获取历史账单详情成功，出参 resultDTO:{}", billInfoResponse);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，获取历史账单详情失败", null);
+            logger.warn("findBillHistoryDetail EXCEPTION,获取历史账单详情失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

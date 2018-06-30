@@ -31,6 +31,8 @@ public interface BillInfoDAO {
 
     List<BillHistoryListResponse> findBillHistoryListByEmpId(Long empId);
 
+    List<BillRepaymentInfoDO> findBillRepaymentInfoByBillNo(String billNo);
 
+    List<BillRepaymentGoodsDetailsDO> findRepaymentGoodsDetailsByBillNo(String billNo);
 
 }

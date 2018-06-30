@@ -56,25 +56,27 @@ public class BillInfoDO {
     //创建者
     private String createUserName;
 
-    public BillInfoResponse transfer(BillInfoDO DO){
-        BillInfoResponse response =  new BillInfoResponse();
-
-        response.setStoreId(DO.getStoreId());
-        response.setBillNo(DO.getBillNo());
-        response.setBillName(DO.getBillName());
-        response.setBillStartDate(DO.getBillStartDate());
-        response.setBillEndDate(DO.getBillEndDate());
-        response.setRepaymentDeadlineDate(DO.getRepaymentDeadlineDate());
-        response.setBillTotalAmount(DO.getBillTotalAmount());
-        response.setCurrentBillAmount(DO.getCurrentBillAmount());
-        response.setCurrentAdjustmentAmount(DO.getCurrentAdjustmentAmount());
-        response.setCurrentPaidAmount(DO.getCurrentPaidAmount());
-        response.setCurrentUnpaidAmount(DO.getCurrentUnpaidAmount());
-        response.setPriorNotPaidBillAmount(0D);
-        response.setPriorNotPaidInterestAmount(0D);
-        response.setStatus(DO.getStatus().getDesccription());
-        response.setBillName(DO.billName);
-
-        return response;
+    public static BillInfoResponse transfer(BillInfoDO DO){
+        if (null != DO) {
+            BillInfoResponse response =  new BillInfoResponse();
+            response.setStoreId(DO.getStoreId());
+            response.setBillNo(DO.getBillNo());
+            response.setBillName(DO.getBillName());
+            response.setBillStartDate(DO.getBillStartDate());
+            response.setBillEndDate(DO.getBillEndDate());
+            response.setRepaymentDeadlineDate(DO.getRepaymentDeadlineDate());
+            response.setBillTotalAmount(DO.getBillTotalAmount());
+            response.setCurrentBillAmount(DO.getCurrentBillAmount());
+            response.setCurrentAdjustmentAmount(DO.getCurrentAdjustmentAmount());
+            response.setCurrentPaidAmount(DO.getCurrentPaidAmount());
+            response.setCurrentUnpaidAmount(DO.getCurrentUnpaidAmount());
+            response.setPriorNotPaidBillAmount(0D);
+            response.setPriorNotPaidInterestAmount(0D);
+            response.setPriorPaidBillAmount(DO.getPriorPaidBillAmount());
+            response.setPriorPaidInterestAmount(DO.getPriorPaidInterestAmount());
+            response.setStatus(DO.getStatus().getDesccription());
+            return response;
+        }
+        return null;
     }
 }
