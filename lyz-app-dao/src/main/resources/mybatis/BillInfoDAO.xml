@@ -63,10 +63,11 @@
 
     </select>
 
-    <select id="findBillHistoryListByStoreId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.response.BillHistoryListResponse">
-        SELECT bill_name, bill_start_date, bill_end_date
-        FROM bill_info
-        WHERE store_id = #{storeId}
+    <select id="findBillHistoryListByEmpId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.response.BillHistoryListResponse">
+        SELECT DATE_FORMAT(b.bill_start_date,'%Y') years, b.bill_name, b.bill_start_date, b.bill_end_date, b.current_paid_amount
+        FROM bill_info b
+        LEFT JOIN emp_employee e ON e.store_id = b.store_id
+        WHERE e.emp_id = #{empId}
     </select>
 
 

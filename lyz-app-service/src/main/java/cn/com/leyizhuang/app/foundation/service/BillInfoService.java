@@ -4,7 +4,9 @@ import cn.com.leyizhuang.app.core.constant.OnlinePayType;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.BillHistoryListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillInfoResponse;
+import com.github.pagehelper.Page;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,4 +34,5 @@ public interface BillInfoService {
 
     BillInfoResponse lookBill(String starTime, String endTime, Long storeid ,Integer page,Integer size) throws Exception;
 
+    Page<BillHistoryListResponse> findBillHistoryListByEmpId(Long empId,Integer page, Integer size);
 }

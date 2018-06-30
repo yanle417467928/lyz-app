@@ -29,6 +29,6 @@ public interface BillInfoDAO {
 
     BillInfoDO findBillByStatus(@Param("BillStatusEnum") BillStatusEnum status);
 
-    BillHistoryListResponse findBillHistoryListByStoreId(Long storeId);
+    List<BillHistoryListResponse> findBillHistoryListByEmpId(Long empId);
 
 }

@@ -10,6 +10,7 @@ import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRuleDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
+import cn.com.leyizhuang.app.foundation.pojo.response.BillHistoryListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillInfoResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentGoodsInfoResponse;
 import cn.com.leyizhuang.app.foundation.service.AppOrderService;
@@ -17,6 +18,8 @@ import cn.com.leyizhuang.app.foundation.service.BillInfoService;
 import cn.com.leyizhuang.app.foundation.service.BillRuleService;
 import cn.com.leyizhuang.app.foundation.service.PaymentDataService;
 import cn.com.leyizhuang.common.util.CountUtil;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -201,6 +204,12 @@ public class BillInfoServiceImpl implements BillInfoService {
         List<BillRepaymentGoodsInfoResponse> beforNotPayOrderDetails = new ArrayList<>();
 
 
+        return null;
+    }
+
+    @Override
+    public Page<BillHistoryListResponse> findBillHistoryListByEmpId(Long empId, Integer page, Integer size) {
+//        PageHelper pageHelper = PageHelper.offsetPage(page, size);
         return null;
     }
 
