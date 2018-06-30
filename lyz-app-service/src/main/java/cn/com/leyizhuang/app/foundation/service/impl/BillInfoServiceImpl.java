@@ -18,8 +18,8 @@ import cn.com.leyizhuang.app.foundation.service.BillInfoService;
 import cn.com.leyizhuang.app.foundation.service.BillRuleService;
 import cn.com.leyizhuang.app.foundation.service.PaymentDataService;
 import cn.com.leyizhuang.common.util.CountUtil;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -208,8 +208,12 @@ public class BillInfoServiceImpl implements BillInfoService {
     }
 
     @Override
-    public Page<BillHistoryListResponse> findBillHistoryListByEmpId(Long empId, Integer page, Integer size) {
-//        PageHelper pageHelper = PageHelper.offsetPage(page, size);
+    public PageInfo<BillHistoryListResponse> findBillHistoryListByEmpId(Long empId, Integer identityType, Integer page, Integer size) {
+        if (empId != null) {
+            PageHelper.startPage(page, size);
+            List<BillHistoryListResponse> billHistoryList = this.billInfoDAO.findBillHistoryListByEmpId(empId);
+            return new PageInfo<>(billHistoryList);
+        }
         return null;
     }
 

@@ -68,6 +68,7 @@
         FROM bill_info b
         LEFT JOIN emp_employee e ON e.store_id = b.store_id
         WHERE e.emp_id = #{empId}
+        ORDER b.bill_start_date DESC
     </select>
 
 
