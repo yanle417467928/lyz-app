@@ -847,6 +847,11 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                     returnOrderProductCoupon.setIsReturn(Boolean.TRUE);
 
                     returnOrderService.saveReturnOrderProductCoupon(returnOrderProductCoupon);
+
+                    //修改买券订单可退数量
+                    if (StringUtils.isNotBlank(orderProductCoupon.getGetOrderNumber()) && (orderProductCoupon.getGetType() == CouponGetType.BUY || orderProductCoupon.getGetType() == CouponGetType.PRESENT)){
+                        returnOrderDAO.updateProductOrderReturnNableQty(orderProductCoupon.getCouponId());
+                    }
                 }
             }
             //获取订单使用现金券
@@ -2752,6 +2757,11 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                     returnOrderProductCoupon.setIsReturn(Boolean.TRUE);
 
                     returnOrderService.saveReturnOrderProductCoupon(returnOrderProductCoupon);
+
+                    //修改买券订单可退数量
+                    if (StringUtils.isNotBlank(orderProductCoupon.getGetOrderNumber()) && (orderProductCoupon.getGetType() == CouponGetType.BUY || orderProductCoupon.getGetType() == CouponGetType.PRESENT)){
+                        returnOrderDAO.updateProductOrderReturnNableQty(orderProductCoupon.getCouponId());
+                    }
                 }
             }
             //获取订单使用现金券
@@ -3003,6 +3013,11 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                     changeLog.setUseTime(Calendar.getInstance().getTime());
                     // 日志变更保存
                     productCouponService.addCustomerProductCouponChangeLog(changeLog);
+
+                    //修改买券订单可退数量
+                    if (StringUtils.isNotBlank(customerProductCoupon.getGetOrderNumber()) && (customerProductCoupon.getGetType() == CouponGetType.BUY || customerProductCoupon.getGetType() == CouponGetType.PRESENT)){
+                        returnOrderDAO.updateProductOrderReturnNableQty(customerProductCoupon.getId());
+                    }
                 }
             }
             //*******************************退金额款项*********************************
