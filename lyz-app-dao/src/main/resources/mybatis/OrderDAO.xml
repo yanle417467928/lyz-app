@@ -1847,16 +1847,16 @@
         SELECT COUNT(oci.id) from ord_coupon_info oci
         INNER JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
         INNER JOIN ord_goods_info og on og.id = ccpc.goods_line_id
-        where oci.ord_no = #{ordNo} and oci.sku = #{sku} and og.goods_line_type = "GOODS";
+        where oci.ord_no = #{ordNo} and oci.sku = #{sku} and og.goods_line_type = "GOODS" and ccpc.get_time > '2018-05-01 00:00:00'
     </select>
 
     <select id="getBpProductByReturnNo" resultType="java.lang.Integer">
-        SELECT orp.id,ccpc.goods_line_id from ord_return_base_info orb
+        SELECT count(orp.id) from ord_return_base_info orb
         inner JOIN ord_return_product_coupon orp on orp.return_no = orb.return_no
         INNER JOIN cus_customer_product_coupon ccpc on ccpc.id = orp.pcid
         INNER JOIN ord_goods_info og on og.id = ccpc.goods_line_id
         where orb.return_no = #{returnNo} and orp.sku = #{sku}
-        and og.goods_line_type = 'GOODS' and orb.return_status = "FINISHED"
+        and og.goods_line_type = 'GOODS' and orb.return_status = "FINISHED" and ccpc.get_time > '2018-05-01 00:00:00'
     </select>
 
     <select id="isReturnJxSubPrice" resultType="java.lang.Boolean">

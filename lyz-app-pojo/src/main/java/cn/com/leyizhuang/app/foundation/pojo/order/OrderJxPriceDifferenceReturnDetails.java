@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.order;
 
+import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
 import lombok.*;
 
 import java.util.Date;
@@ -69,4 +70,5 @@ public class OrderJxPriceDifferenceReturnDetails {
      */
     private String receiptNumber;
 
+    private AppGoodsLineType goodsLineType;
 }
