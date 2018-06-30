@@ -2476,7 +2476,7 @@ public class CommonServiceImpl implements CommonService {
 
             //更新订单账单信息
             OrderBillingDetails billingDetails = orderService.getOrderBillingDetail(orderNumber);
-
+            AppStore store = storeService.findStoreByUserIdAndIdentityType(baseInfo.getCreatorId(), baseInfo.getCreatorIdentityType().getValue());
             if (OrderBillingPaymentType.EMP_CREDIT == OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)) {
                 //扣减导购信用额度
                 if (identityType == AppIdentityType.SELLER.getValue()) {
@@ -2553,7 +2553,12 @@ public class CommonServiceImpl implements CommonService {
                                 throw new LockStorePreDepositException("没有找到该导购所在门店的预存款信息!");
                             }
                         }
-                        billingDetails.setStoreCreditMoney(billingDetails.getAmountPayable());
+                        if (FitCompayType.CASH == store.getFitCompayType()) {
+                            billingDetails.setStoreCreditMoney(billingDetails.getAmountPayable());
+                        } else {
+                            billingDetails.setStoreCreditMoney(billingDetails.getAmountPayable());
+                            billingDetails.setArrearage(CountUtil.sub(billingDetails.getArrearage(), billingDetails.getAmountPayable()));
+                        }
                         if (null != billingDetails.getStoreCreditMoney() && billingDetails.getStoreCreditMoney() > AppConstant.DOUBLE_ZERO) {
                             OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
                             details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.STORE_CREDIT_MONEY, billingDetails.getStoreCreditMoney(),
@@ -2591,8 +2596,6 @@ public class CommonServiceImpl implements CommonService {
                 // ***********************发送WMS 在微信和支付宝完成支付回调方法中已发送***************************
                 // 2018-04-07 generation 传wms重复，创建订单已传wms，支付时不用再传，   注释代码
 //                //保存传wms配送单头档
-                AppStore store = storeService.findStoreByUserIdAndIdentityType(baseInfo.getCreatorId(),
-                        baseInfo.getCreatorIdentityType().getValue());
                 int orderGoodsSize = orderGoodsInfoList.size();
                 OrderLogisticsInfo orderLogisticsInfo = orderService.getOrderLogistice(orderNumber);
                 AtwRequisitionOrder requisitionOrder = AtwRequisitionOrder.transform(baseInfo, orderLogisticsInfo,
