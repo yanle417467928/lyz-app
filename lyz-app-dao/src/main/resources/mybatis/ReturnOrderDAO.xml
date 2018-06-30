@@ -445,7 +445,7 @@
 
         INSERT INTO ord_return_jx_price_difference_return_details (roid, ord_no, return_no, create_time, store_id,
         store_code,
-                                                                   sku, unit_price, return_qty, amount, refund_number)
+                                                                   sku, unit_price, return_qty, amount, refund_number, goods_line_type)
             SELECT
                 #{roid},
                 #{orderNumber},
@@ -457,7 +457,8 @@
                 #{unitPrice},
                 #{returnQty},
                 #{amount},
-                #{refundNumber}
+                #{refundNumber},
+                #{goodsLineType}
             FROM dual
             WHERE NOT exists(SELECT 1
         FROM ord_return_jx_price_difference_return_details

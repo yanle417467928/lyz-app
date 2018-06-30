@@ -31,6 +31,7 @@ import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.MaGoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.ProductCouponSimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
@@ -49,6 +50,7 @@ import cn.com.leyizhuang.common.util.CountUtil;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -134,6 +136,9 @@ public class MaOrderServiceImpl implements MaOrderService {
     private MaterialListDAO materialListDAO;
     @Resource
     private AppSeparateOrderService separateOrderService;
+
+    @Autowired
+    private AppActService actService;
 
     @Override
     public List<MaOrderVO> findMaOrderVOAll(List<Long> storeIds) {
@@ -896,11 +901,12 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Transactional(rollbackFor = Exception.class)
     public void createMaOrderBusiness(Integer identityType, Long userId, OrderBillingDetails orderBillingDetails, OrderBaseInfo orderBaseInfo,
                                       List<OrderGoodsInfo> orderGoodsInfoList, List<OrderBillingPaymentDetails> paymentDetails, String ipAddress,
-                                      OrderLogisticsInfo orderLogisticsInfo, Long operatorId, List<RechargeReceiptInfo> rechargeReceiptInfoList, List<RechargeOrder> rechargeOrderList) throws UnsupportedEncodingException {
+                                      OrderLogisticsInfo orderLogisticsInfo, Long operatorId, List<RechargeReceiptInfo> rechargeReceiptInfoList,
+                                      List<RechargeOrder> rechargeOrderList, List<PromotionSimpleInfo> promotionSimpleInfoList) throws UnsupportedEncodingException {
         //******* 检查库存和与账单支付金额是否充足,如果充足就扣减相应的数量
         this.deductionsStPreDeposit(identityType, userId, orderBillingDetails, orderBaseInfo.getOrderNumber(), ipAddress);
         //******* 持久化订单相关实体信息  *******
-        this.saveAndHandleMaOrderRelevantInfo(orderBaseInfo, orderGoodsInfoList, orderBillingDetails, paymentDetails, orderLogisticsInfo, operatorId, rechargeReceiptInfoList, rechargeOrderList);
+        this.saveAndHandleMaOrderRelevantInfo(orderBaseInfo, orderGoodsInfoList, orderBillingDetails, paymentDetails, orderLogisticsInfo, operatorId, rechargeReceiptInfoList, rechargeOrderList, promotionSimpleInfoList);
     }
 
     @Override
@@ -946,8 +952,11 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Transactional(rollbackFor = Exception.class)
     public void saveAndHandleMaOrderRelevantInfo(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList,
                                                  OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails,
-                                                 OrderLogisticsInfo orderLogisticsInfo, Long operatorId, List<RechargeReceiptInfo> rechargeReceiptInfoList, List<RechargeOrder> rechargeOrderList) throws UnsupportedEncodingException {
+                                                 OrderLogisticsInfo orderLogisticsInfo, Long operatorId, List<RechargeReceiptInfo> rechargeReceiptInfoList,
+                                                 List<RechargeOrder> rechargeOrderList ,List<PromotionSimpleInfo> promotionSimpleInfos) throws UnsupportedEncodingException {
         if (null != orderBaseInfo) {
+            Map<Long, Double> map = actService.returnGcActIdAndJXDiscunt(promotionSimpleInfos);
+
             AppCustomer customer = new AppCustomer();
             Long cusId = orderBaseInfo.getCustomerId();
             customer = customerService.findById(cusId);
@@ -1003,6 +1012,19 @@ public class MaOrderServiceImpl implements MaOrderService {
                                     customerProductCoupon.setDisableTime(null);
                                     customerProductCoupon.setGoodsLineId(goodsInfo.getId());
                                     customerProductCoupon.setGoodsSign(goodsInfo.getGoodsSign());
+                                    if (null == goodsInfo.getPromotionId()){
+                                        customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
+                                    }else {
+                                        Long actId = Long.valueOf(goodsInfo.getPromotionId());
+                                        if (map.containsKey(actId)) {
+                                            Double gcDiscount = map.get(actId);
+                                            customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice() - gcDiscount);
+                                        } else {
+                                            customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
+                                        }
+                                    }
+                                    customerProductCoupon.setWholesalePrice(goodsInfo.getWholesalePrice());
+
                                     //保存产品券信息
                                     productCouponService.addCustomerProductCoupon(customerProductCoupon);
 

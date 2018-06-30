@@ -15,6 +15,7 @@ import cn.com.leyizhuang.app.foundation.pojo.request.management.MaOrderVORequest
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.MaGoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.ProductCouponSimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.vo.DetailFitOrderVO;
@@ -327,7 +328,8 @@ public interface MaOrderService {
      */
     void saveAndHandleMaOrderRelevantInfo(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList,
                                           OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails,
-                                          OrderLogisticsInfo orderLogisticsInfo,Long operatorId, List<RechargeReceiptInfo> rechargeReceiptInfoList, List<RechargeOrder> rechargeOrderList) throws UnsupportedEncodingException;
+                                          OrderLogisticsInfo orderLogisticsInfo,Long operatorId, List<RechargeReceiptInfo> rechargeReceiptInfoList,
+                                          List<RechargeOrder> rechargeOrderList,List<PromotionSimpleInfo> promotionSimpleInfos) throws UnsupportedEncodingException;
 
     /**
      * 后台买券订单持久化调用方法
@@ -342,7 +344,8 @@ public interface MaOrderService {
      */
     void createMaOrderBusiness(Integer identityType, Long userId, OrderBillingDetails orderBillingDetails, OrderBaseInfo orderBaseInfo,
                                List<OrderGoodsInfo> orderGoodsInfoList, List<OrderBillingPaymentDetails> paymentDetails, String ipAddress,
-                               OrderLogisticsInfo orderLogisticsInfo, Long operatorId, List<RechargeReceiptInfo> rechargeReceiptInfoList, List<RechargeOrder> rechargeOrderList) throws UnsupportedEncodingException;
+                               OrderLogisticsInfo orderLogisticsInfo, Long operatorId, List<RechargeReceiptInfo> rechargeReceiptInfoList,
+                               List<RechargeOrder> rechargeOrderList, List<PromotionSimpleInfo> promotionSimpleInfoList) throws UnsupportedEncodingException;
 
     /**
      * 后台买券订单创建订单基础信息

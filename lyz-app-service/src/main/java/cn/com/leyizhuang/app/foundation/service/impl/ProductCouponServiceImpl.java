@@ -188,4 +188,12 @@ public class ProductCouponServiceImpl implements ProductCouponService {
 //        }
 
     }
+
+    @Override
+    public CustomerProductCoupon findCustomerProductCouponByOrdNoAndSku(Long couponId) {
+        if (null != couponId){
+            return  productCouponDAO.findCustomerProductCouponByOrdNoAndSku(couponId);
+        }
+        return null;
+    }
 }

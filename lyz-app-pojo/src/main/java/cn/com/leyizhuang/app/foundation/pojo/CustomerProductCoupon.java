@@ -121,4 +121,14 @@ public class CustomerProductCoupon implements Serializable {
      * 商品标志（普通、专供）
      */
     private String goodsSign;
+
+    /**
+     * 结算价
+     */
+    private Double settlementPrice;
+
+    /**
+     * 经销价
+     */
+    private Double wholesalePrice;
 }

@@ -70,5 +70,9 @@ public class OrderJxPriceDifferenceReturnDetails {
      */
     private String receiptNumber;
 
+    /**
+     * 商品类型
+     */
     private AppGoodsLineType goodsLineType;
+
 }

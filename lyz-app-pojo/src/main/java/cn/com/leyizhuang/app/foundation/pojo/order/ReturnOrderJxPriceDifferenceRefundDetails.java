@@ -75,6 +75,10 @@ public class ReturnOrderJxPriceDifferenceRefundDetails {
      */
     private String refundNumber;
 
+    /**
+     * 商品类型
+     */
     private AppGoodsLineType goodsLineType;
+
 
 }
