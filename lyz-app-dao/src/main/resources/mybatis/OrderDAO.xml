@@ -1172,7 +1172,8 @@
             unit_price,
             quantity,
             amount,
-            receipt_number
+            receipt_number,
+            goods_line_type
         FROM ord_jx_price_difference_return_details
         WHERE ord_no = #{orderNumber}
     </select>

@@ -1121,7 +1121,7 @@ public class MaOrderRestController extends BaseRestController {
 
             //**************** 1、检查账单支付金额是否充足,如果充足就扣减相应的数量 ***********
             //**************** 2、持久化订单相关实体信息 ****************
-            maOrderService.createMaOrderBusiness(0, sellerId, orderBillingDetails, orderBaseInfo, orderGoodsInfoList, paymentDetails, null, orderLogisticsInfo, user.getUid(), rechargeReceiptInfoList, rechargeOrderList);
+            maOrderService.createMaOrderBusiness(0, sellerId, orderBillingDetails, orderBaseInfo, orderGoodsInfoList, paymentDetails, null, orderLogisticsInfo, user.getUid(), rechargeReceiptInfoList, rechargeOrderList,giftList);
 
             //将该订单入拆单消息队列
             maSinkSender.sendRechargeReceipt(orderBaseInfo.getOrderNumber());

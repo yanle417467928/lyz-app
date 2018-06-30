@@ -55,7 +55,7 @@ public interface CommonService {
 
     void saveAndHandleOrderRelevantInfo(OrderBaseInfo orderBaseInfo, OrderLogisticsInfo orderLogisticsInfo, List<OrderGoodsInfo> orderGoodsInfoList,
                                         List<OrderCouponInfo> orderCouponInfoList, OrderBillingDetails orderBillingDetails,
-                                        List<OrderBillingPaymentDetails> paymentDetails, List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetails)
+                                        List<OrderBillingPaymentDetails> paymentDetails, List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetails, List<PromotionSimpleInfo> promotionSimpleInfoList)
             throws OrderSaveException, UnsupportedEncodingException;
 
     /**
@@ -76,9 +76,9 @@ public interface CommonService {
 
     List<OrderBillingPaymentDetails> createOrderBillingPaymentDetails(OrderBaseInfo orderBaseInfo, OrderBillingDetails orderBillingDetails);
 
-    List<OrderJxPriceDifferenceReturnDetails> createOrderJxPriceDifferenceReturnDetails(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList);
+    List<OrderJxPriceDifferenceReturnDetails> createOrderJxPriceDifferenceReturnDetails(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList,  List<PromotionSimpleInfo> promotionSimpleInfoList);
 
-    List<OrderJxPriceDifferenceReturnDetails> createOrderJxPriceDifferenceReturnDetails(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList, List<PromotionSimpleInfo> promotionSimpleInfos);
+    List<OrderJxPriceDifferenceReturnDetails> createOrderJxPriceDifferenceReturnDetails(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList, List<PromotionSimpleInfo> promotionSimpleInfos, List<OrderCouponInfo> orderProductCouponInfoList );
 
     void deductionOrderJxPriceDifferenceRefund(ReturnOrderBaseInfo returnOrderBaseInfo, OrderBaseInfo orderBaseInfo, List<ReturnOrderGoodsInfo> goodsInfos);
 

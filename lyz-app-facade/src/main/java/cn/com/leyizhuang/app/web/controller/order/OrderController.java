@@ -338,7 +338,7 @@ public class OrderController {
             support.setOrderGoodsInfoList(orderGoodsInfoList);
 
             //****************** 创建订单经销差价返还明细 ***********
-            List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetailsList = commonService.createOrderJxPriceDifferenceReturnDetails(orderBaseInfo, support.getOrderGoodsInfoList(), promotionSimpleInfoList);
+            List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetailsList = commonService.createOrderJxPriceDifferenceReturnDetails(orderBaseInfo, support.getOrderGoodsInfoList(), promotionSimpleInfoList, orderProductCouponInfoList );
             if (null != jxPriceDifferenceReturnDetailsList && jxPriceDifferenceReturnDetailsList.size() > 0) {
                 orderBillingDetails.setJxPriceDifferenceAmount(jxPriceDifferenceReturnDetailsList.stream().mapToDouble(OrderJxPriceDifferenceReturnDetails::getAmount).sum());
             }
@@ -354,7 +354,7 @@ public class OrderController {
             //**************** 2、持久化订单相关实体信息 ****************
             transactionalSupportService.createOrderBusiness(deliverySimpleInfo, support.getInventoryCheckMap(), orderParam.getCityId(), orderParam.getIdentityType(),
                     orderParam.getUserId(), orderParam.getCustomerId(), cashCouponList, orderProductCouponInfoList, orderBillingDetails, orderBaseInfo,
-                    orderLogisticsInfo, orderGoodsInfoList, orderCouponInfoList, paymentDetails, jxPriceDifferenceReturnDetailsList, ipAddress);
+                    orderLogisticsInfo, orderGoodsInfoList, orderCouponInfoList, paymentDetails, jxPriceDifferenceReturnDetailsList, ipAddress, promotionSimpleInfoList);
 
             //****** 清空当单购物车商品 ******
             commonService.clearOrderGoodsInMaterialList(orderParam.getUserId(), orderParam.getIdentityType(), goodsList, productCouponList);
@@ -2547,7 +2547,7 @@ public class OrderController {
             //**************** 2、持久化订单相关实体信息 ****************
             transactionalSupportService.createOrderBusiness(deliverySimpleInfo, support.getInventoryCheckMap(), orderParam.getCityId(), orderParam.getIdentityType(),
                     orderParam.getUserId(), orderParam.getCustomerId(), cashCouponList, orderProductCouponInfoList, orderBillingDetails, orderBaseInfo,
-                    orderLogisticsInfo, orderGoodsInfoList, orderCouponInfoList, paymentDetails, jxPriceDifferenceReturnDetailsList, ipAddress);
+                    orderLogisticsInfo, orderGoodsInfoList, orderCouponInfoList, paymentDetails, jxPriceDifferenceReturnDetailsList, ipAddress, promotionSimpleInfoList);
 
             //****** 清空当单购物车商品 ******
             commonService.clearOrderGoodsInMaterialList(orderParam.getUserId(), orderParam.getIdentityType(), goodsList, productCouponList);

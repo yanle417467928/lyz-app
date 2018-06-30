@@ -1015,7 +1015,7 @@ public class MaDecoratorPlaceOrderRestController {
             //**************** 2、持久化订单相关实体信息 ****************
             transactionalSupportService.createOrderBusiness(deliverySimpleInfo, support.getInventoryCheckMap(), employee.getCityId(), orderParam.getIdentityType(),
                     orderParam.getUserId(), orderParam.getCustomerId(), cashCouponList, orderProductCouponInfoList, orderBillingDetails, orderBaseInfo,
-                    orderLogisticsInfo, orderGoodsInfoList, orderCouponInfoList, paymentDetails, jxPriceDifferenceReturnDetailsList, null);
+                    orderLogisticsInfo, orderGoodsInfoList, orderCouponInfoList, paymentDetails, jxPriceDifferenceReturnDetailsList, null,promotionSimpleInfoList);
 
             //****** 清空当单购物车商品 ******
             maOrderService.clearOrderGoodsInMaterialList(orderParam.getUserId(), orderParam.getIdentityType(), goodsList, productCouponList);

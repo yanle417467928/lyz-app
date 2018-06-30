@@ -668,9 +668,10 @@ public class CommonServiceImpl implements CommonService {
     public void saveAndHandleOrderRelevantInfo(OrderBaseInfo orderBaseInfo, OrderLogisticsInfo orderLogisticsInfo,
                                                List<OrderGoodsInfo> orderGoodsInfoList, List<OrderCouponInfo> orderCouponInfoList,
                                                OrderBillingDetails orderBillingDetails, List<OrderBillingPaymentDetails> paymentDetails,
-                                               List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetails) throws UnsupportedEncodingException {
+                                               List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetails, List<PromotionSimpleInfo> promotionSimpleInfoList) throws UnsupportedEncodingException {
 
         if (null != orderBaseInfo) {
+            Map<Long, Double> map = actService.returnGcActIdAndJXDiscunt(promotionSimpleInfoList);
             if (null != orderBillingDetails && orderBillingDetails.getAmountPayable() <= AppConstant.PAY_UP_LIMIT) {
 
                 //发送提货码给顾客,及提示导购顾客下单信息
@@ -781,7 +782,17 @@ public class CommonServiceImpl implements CommonService {
                                     customerProductCoupon.setDisableTime(null);
                                     customerProductCoupon.setGoodsLineId(goodsInfo.getId());
                                     customerProductCoupon.setGoodsSign(goodsInfo.getGoodsSign());
-                                    customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
+                                    if (null == goodsInfo.getPromotionId()){
+                                        customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
+                                    }else {
+                                        Long actId = Long.valueOf(goodsInfo.getPromotionId());
+                                        if (map.containsKey(actId)) {
+                                            Double gcDiscount = map.get(actId);
+                                            customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice() - gcDiscount);
+                                        } else {
+                                            customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
+                                        }
+                                    }
                                     customerProductCoupon.setWholesalePrice(goodsInfo.getWholesalePrice());
                                     //保存产品券信息
                                     productCouponService.addCustomerProductCoupon(customerProductCoupon);
@@ -1443,7 +1454,8 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public List<OrderJxPriceDifferenceReturnDetails> createOrderJxPriceDifferenceReturnDetails(OrderBaseInfo orderBaseInfo,
-                                                                                               List<OrderGoodsInfo> orderGoodsInfoList) {
+                                                                                               List<OrderGoodsInfo> orderGoodsInfoList,
+                                                                                               List<PromotionSimpleInfo> promotionSimpleInfoList) {
         AppStore store = storeService.findById(orderBaseInfo.getStoreId());
         if (null != store && null != store.getStoreType()) {
             if (store.getStoreType() == StoreType.FX || store.getStoreType() == StoreType.JM) {
@@ -1472,7 +1484,7 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public List<OrderJxPriceDifferenceReturnDetails> createOrderJxPriceDifferenceReturnDetails(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList, List<PromotionSimpleInfo> promotionSimpleInfos) {
+    public List<OrderJxPriceDifferenceReturnDetails> createOrderJxPriceDifferenceReturnDetails(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList, List<PromotionSimpleInfo> promotionSimpleInfos, List<OrderCouponInfo> orderProductCouponInfoList ) {
         Map<Long, Double> map = actService.returnGcActIdAndJXDiscunt(promotionSimpleInfos);
 
         AppStore store = storeService.findById(orderBaseInfo.getStoreId());
@@ -1481,8 +1493,7 @@ public class CommonServiceImpl implements CommonService {
                 if (null != orderGoodsInfoList && orderGoodsInfoList.size() > 0) {
                     List<OrderJxPriceDifferenceReturnDetails> detailsList = new ArrayList<>(20);
                     for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
-
-                        if (orderGoodsInfo.getGoodsLineType() == AppGoodsLineType.GOODS || orderGoodsInfo.getGoodsLineType() == AppGoodsLineType.PRODUCT_COUPON) {
+                        if (orderGoodsInfo.getGoodsLineType() == AppGoodsLineType.GOODS) {
                             OrderJxPriceDifferenceReturnDetails details = new OrderJxPriceDifferenceReturnDetails();
                             if (null != orderGoodsInfo.getPromotionId()) {
                                 Long actId = Long.valueOf(orderGoodsInfo.getPromotionId());
@@ -1505,12 +1516,30 @@ public class CommonServiceImpl implements CommonService {
                             details.setSku(orderGoodsInfo.getSku());
                             details.setStoreId(orderBaseInfo.getStoreId());
                             details.setStoreCode(orderBaseInfo.getStoreCode());
-                            if (AppGoodsLineType.GOODS == orderGoodsInfo.getGoodsLineType()){
-                                details.setGoodsLineType(AppGoodsLineType.GOODS);
-                            }else if (AppGoodsLineType.PRODUCT_COUPON == orderGoodsInfo.getGoodsLineType()){
-                                details.setGoodsLineType(AppGoodsLineType.PRODUCT_COUPON);
-                            }
+                            details.setGoodsLineType(AppGoodsLineType.GOODS);
                             detailsList.add(details);
+                        }
+                    }
+                    if (null != orderProductCouponInfoList && orderProductCouponInfoList.size() > 0){
+
+                        for (OrderCouponInfo orderCouponInfo : orderProductCouponInfoList){
+                            OrderJxPriceDifferenceReturnDetails details = new OrderJxPriceDifferenceReturnDetails();
+                            CustomerProductCoupon customerProductCoupon = productCouponService.findCustomerProductCouponByOrdNoAndSku(orderCouponInfo.getCouponId());
+
+                            if (null != customerProductCoupon && null != customerProductCoupon.getSettlementPrice() && null != customerProductCoupon.getWholesalePrice()){
+                                details.setAmount((customerProductCoupon.getSettlementPrice() - customerProductCoupon.getWholesalePrice()) * 1);
+                                details.setUnitPrice(customerProductCoupon.getSettlementPrice() - customerProductCoupon.getWholesalePrice());
+
+                                details.setCreateTime(new Date());
+                                details.setOrderNumber(orderBaseInfo.getOrderNumber());
+                                details.setQuantity(1);
+                                details.setReceiptNumber(OrderUtils.generateReceiptNumber(orderBaseInfo.getCityId()));
+                                details.setSku(orderCouponInfo.getSku());
+                                details.setStoreId(orderBaseInfo.getStoreId());
+                                details.setStoreCode(orderBaseInfo.getStoreCode());
+                                details.setGoodsLineType(AppGoodsLineType.PRODUCT_COUPON);
+                                detailsList.add(details);
+                            }
                         }
                     }
                     return detailsList;
@@ -1540,8 +1569,8 @@ public class CommonServiceImpl implements CommonService {
         if (AssertUtil.isNotEmpty(detailsList)) {
             for (ReturnOrderGoodsInfo goodsInfo : goodsInfos) {
                 for (OrderJxPriceDifferenceReturnDetails details : detailsList) {
-                    if (goodsInfo.getSku().equals(details.getSku()) &&
-                            (AppGoodsLineType.GOODS.equals(goodsInfo.getGoodsLineType()) || AppGoodsLineType.PRODUCT_COUPON.equals(goodsInfo.getGoodsLineType()))) {
+                    if (goodsInfo.getSku().equals(details.getSku()) && AppGoodsLineType.GOODS.equals(goodsInfo.getGoodsLineType())
+                            && AppGoodsLineType.GOODS.equals(details.getGoodsLineType())) {
                         Double returnGoodsJxPriceAmount = CountUtil.mul(goodsInfo.getReturnQty(), details.getUnitPrice());
                         if (returnGoodsJxPriceAmount > AppConstant.DOUBLE_ZERO){
                             jxPrice = CountUtil.add(jxPrice, returnGoodsJxPriceAmount);
@@ -1558,11 +1587,29 @@ public class CommonServiceImpl implements CommonService {
                         returnDetails.setStoreId(details.getStoreId());
                         returnDetails.setUnitPrice(details.getUnitPrice());
                         returnDetails.setRefundNumber(OrderUtils.getRefundNumber());
-                        if (goodsInfo.getGoodsLineType() == AppGoodsLineType.GOODS){
-                            returnDetails.setGoodsLineType(AppGoodsLineType.GOODS);
-                        }else if (goodsInfo.getGoodsLineType() == AppGoodsLineType.PRODUCT_COUPON){
-                            returnDetails.setGoodsLineType(AppGoodsLineType.PRODUCT_COUPON);
+                        returnDetails.setGoodsLineType(AppGoodsLineType.GOODS);
+                        returnDetailsList.add(returnDetails);
+                        returnOrderService.saveReturnOrderJxPriceDifferenceRefundDetails(returnDetails);
+                        break;
+                    }else if (goodsInfo.getSku().equals(details.getSku()) && AppGoodsLineType.PRODUCT_COUPON.equals(goodsInfo.getGoodsLineType())
+                            && AppGoodsLineType.PRODUCT_COUPON.equals(details.getGoodsLineType())){
+                        Double returnGoodsJxPriceAmount = CountUtil.mul(goodsInfo.getReturnQty(), details.getUnitPrice());
+                        if (returnGoodsJxPriceAmount > AppConstant.DOUBLE_ZERO){
+                            jxPrice = CountUtil.add(jxPrice, returnGoodsJxPriceAmount);
                         }
+                        ReturnOrderJxPriceDifferenceRefundDetails returnDetails = new ReturnOrderJxPriceDifferenceRefundDetails();
+                        returnDetails.setAmount(returnGoodsJxPriceAmount);
+                        returnDetails.setCreateTime(new Date());
+                        returnDetails.setRoid(returnOrderBaseInfo.getRoid());
+                        returnDetails.setOrderNumber(returnOrderBaseInfo.getOrderNo());
+                        returnDetails.setReturnNumber(returnOrderBaseInfo.getReturnNo());
+                        returnDetails.setReturnQty(goodsInfo.getReturnQty());
+                        returnDetails.setSku(details.getSku());
+                        returnDetails.setStoreCode(details.getStoreCode());
+                        returnDetails.setStoreId(details.getStoreId());
+                        returnDetails.setUnitPrice(details.getUnitPrice());
+                        returnDetails.setRefundNumber(OrderUtils.getRefundNumber());
+                        returnDetails.setGoodsLineType(AppGoodsLineType.PRODUCT_COUPON);
                         returnDetailsList.add(returnDetails);
                         returnOrderService.saveReturnOrderJxPriceDifferenceRefundDetails(returnDetails);
                         break;
