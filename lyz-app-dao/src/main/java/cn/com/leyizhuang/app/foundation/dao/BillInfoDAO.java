@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.constant.BillStatusEnum;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.BillHistoryListResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -27,5 +28,7 @@ public interface BillInfoDAO {
     void updateBillInfo(BillInfoDO billInfoDO);
 
     BillInfoDO findBillByStatus(@Param("BillStatusEnum") BillStatusEnum status);
+
+    BillHistoryListResponse findBillHistoryListByStoreId(Long storeId);
 
 }

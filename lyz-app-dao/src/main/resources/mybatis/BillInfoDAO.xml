@@ -62,4 +62,12 @@
     <select id="getCurrentOrderDetails" resultType="cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentGoodsInfoResponse">
 
     </select>
+
+    <select id="findBillHistoryListByStoreId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.response.BillHistoryListResponse">
+        SELECT bill_name, bill_start_date, bill_end_date
+        FROM bill_info
+        WHERE store_id = #{storeId}
+    </select>
+
+
 </mapper>
