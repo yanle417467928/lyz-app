@@ -162,7 +162,7 @@
                 </#if>
                 <#if maOrderDetail.deliveryType = 'SELF_TAKE'>
                     <b>发货时间:</b>
-                    <spanp class="span">${maOrderDetail.shipTime!""}</spanp>
+                    <spanp class="span"><#if maOrderDetail?? && maOrderDetail.shipTime??>${maOrderDetail.shipTime?string("yyyy-MM-dd HH:mm:ss")}</#if></spanp>
                     <br>
                 </#if>
                     <b>订单备注:</b>

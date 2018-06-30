@@ -40,7 +40,7 @@
         obi.`status` 'status',
         obi.delivery_type deliveryType,
         s.store_name storeName,
-        obd.amount_payable orderPrice,
+        obd.total_goods_price orderPrice,
         s.store_id storeId,
         obi.customer_name customerName,
         obi.customer_phone customerPhone
@@ -68,7 +68,7 @@
         obi.`status` 'status',
         obi.delivery_type deliveryType,
         s.store_name storeName,
-        obd.amount_payable orderPrice
+        obd.total_goods_price orderPrice
         FROM
         ord_base_info AS obi
         LEFT JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
@@ -147,7 +147,7 @@
         obi.`status` 'status',
         obi.delivery_type deliveryType,
         s.store_name storeName,
-        obd.amount_payable orderPrice,
+        obd.total_goods_price orderPrice,
         s.store_id storeId,
         obi.customer_name customerName,
         obi.customer_phone customerPhone
@@ -174,7 +174,7 @@
         obi.`status` 'status',
         obi.delivery_type deliveryType,
         s.store_name storeName,
-        obd.amount_payable orderPrice,
+        obd.total_goods_price orderPrice,
         s.store_id storeId,
         obi.customer_name customerName,
         obi.customer_phone customerPhone
