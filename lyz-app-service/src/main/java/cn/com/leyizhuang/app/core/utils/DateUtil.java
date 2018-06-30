@@ -560,27 +560,38 @@ public class DateUtil {
     }
 
     /**
-     *  获取当前日期与指定日期相差天数
+     *  获取指定日期的还款截止日
      * @return
      */
-    public static Integer getDifferenceFatalism (Integer date) {
-        if (null == date){
-            return 0;
+    public static Date getDifferenceFatalism (Integer billDate,Integer repaymentDeadlineDate, Date startDate) {
+        if (null == repaymentDeadlineDate || null == billDate){
+            return startDate;
         }
         Calendar calendar = Calendar.getInstance();
-
+        calendar.setTime(startDate);
         int days = calendar.get(Calendar.DAY_OF_MONTH);
-        if (days > date){
-            return days - date;
+        if (days > repaymentDeadlineDate){
+            if (days >= billDate){
+                calendar.set(Calendar.DATE, repaymentDeadlineDate);
+                calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) + 2);
+            } else {
+                calendar.set(Calendar.DATE, repaymentDeadlineDate);
+                calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) + 1);
+            }
         } else {
-            calendar.set(Calendar.DAY_OF_MONTH, 0);
-            Integer inDays = calendar.get(Calendar.DAY_OF_MONTH);
-            return (inDays - date) + days;
+            if (days >= billDate){
+                calendar.set(Calendar.DATE, repaymentDeadlineDate);
+                calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) + 1);
+            } else {
+                calendar.set(Calendar.DATE, repaymentDeadlineDate);
+            }
         }
+        return calendar.getTime();
     }
 
     public static void main(String[] args) {
 
-        System.out.println(DateUtil.getDifferenceFatalism(25));
+        System.out.println(getDateTimeStr(DateUtil.getDifferenceFatalism(20, 30, DateUtil.dateFromString("2016/02/05 00:00:01"))));
+        System.out.println(DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(20, 30, DateUtil.dateFromString("2016/02/05 00:00:01")), DateUtil.dateFromString("2016/03/25 00:00:01")));
     }
 }

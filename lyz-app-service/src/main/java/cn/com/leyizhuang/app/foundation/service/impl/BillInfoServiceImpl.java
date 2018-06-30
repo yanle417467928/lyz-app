@@ -71,12 +71,20 @@ public class BillInfoServiceImpl implements BillInfoService {
         if (null == repaymentDeadlineDate || repaymentDeadlineDate == 0) {
             repaymentDeadlineDate = 1;
         }
+        //还款截至日
+        Integer billDate = billRuleDO.getBillDate();
+        if (null == billDate || billDate == 0) {
+            billDate = 1;
+        }
 
-        //逾期天数
-        Integer overdueDays = DateUtil.getDifferenceFatalism(repaymentDeadlineDate);
 
         //计算利息（欠款金额 * 利息 * 逾期天数 * 利息单位）
         for (BillRepaymentGoodsDetailsDO goodsDetailsDO: goodsDetailsDOList) {
+            //逾期天数
+            Integer overdueDays = DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(billDate, repaymentDeadlineDate, goodsDetailsDO.getShipmentTime()), new Date());
+            if (overdueDays < 0){
+                overdueDays = 0;
+            }
             goodsDetailsDO.setInterestAmount(CountUtil.mul(goodsDetailsDO.getOrderCreditMoney(), interestRate, overdueDays, AppConstant.INTEREST_RATE_UNIT));
         }
 
