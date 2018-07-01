@@ -37,4 +37,30 @@ public class repairDataController {
         return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "修复完成", null);
     }
 
+    /**
+     * 根据规则 调整某导购信用及余额
+     * @param empId
+     * @param flag
+     * @return
+     */
+    @GetMapping(value =  "/emp/credit/change/one")
+    public ResultDTO repairCreditOne(Long empId,String flag){
+
+        repairDataService.repairEmpCredit(empId,flag);
+
+        return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "修复完成", null);
+    }
+
+    /**
+     * 调整规则下 所有导购信用金余额
+     * @param flag
+     * @return
+     */
+    @GetMapping(value =  "/emp/credit/change/all")
+    public ResultDTO repairCreditOne(String flag){
+
+        repairDataService.repairAllRuleScope(flag);
+
+        return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "修复完成", null);
+    }
 }

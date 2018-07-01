@@ -520,8 +520,7 @@
         from
         emp_available_credit_change_log eaccl
         where change_type in (
-        'PLACE_ORDER',
-        'TEMPORARY_CLEAR'
+        'PLACE_ORDER'
         )
         union all
         select
@@ -533,8 +532,7 @@
         from
         emp_available_credit_change_log eaccl
         where change_type not in (
-        'PLACE_ORDER',
-        'TEMPORARY_CLEAR'
+        'PLACE_ORDER'
         )
         ) ac
         INNER JOIN emp_credit_money_change_log ecmcl ON ac.id = ecmcl.available_credit_change_id
@@ -3048,11 +3046,18 @@
         <if test="null != storeType and storeType != ''">
             AND st.store_type = #{storeType}
         </if>
-        <if test="null != startTime and startTime != ''">
+
+        <if test="null != startTime and startTime != '' and storeType != 'JM'">
             AND os.shipping_time &gt;= #{startTime}
         </if>
-        <if test="null != endTime and endTime != ''">
+        <if test="null != endTime and endTime != '' and storeType != 'JM' ">
             AND os.shipping_time &lt;= #{endTime}
+        </if>
+        <if test="null != startTime and startTime != '' and storeType == 'JM'">
+            AND obi.create_time &gt;= #{startTime}
+        </if>
+        <if test="null != endTime and endTime != '' and storeType == 'JM' ">
+            AND obi.create_time &lt;= #{endTime}
         </if>
         <if test="null != keywords and keywords != ''">
             AND obi.ord_no LIKE concat(concat('%',#{keywords}),'%')

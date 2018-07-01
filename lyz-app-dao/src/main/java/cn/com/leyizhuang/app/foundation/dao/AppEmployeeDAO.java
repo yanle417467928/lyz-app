@@ -9,6 +9,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoneyResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellerResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.StoreRankClassification;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.user.EmpCreditChangeRule;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -105,8 +106,13 @@ public interface AppEmployeeDAO {
 
     List<EmpAvailableCreditMoneyChangeLog> getEmpAvailableCreditMoneyChangeLogByEmpId(@Param("empId") Long empId);
 
+    List<EmpAvailableCreditMoneyChangeLog> getEmpAvailableCreditMoneyChangeLogByEmpIdOrderByCreateTimeDesc(@Param("empId") Long empId);
+
     void updateEmpAvailableCreditMoneyChangeLog(EmpAvailableCreditMoneyChangeLog empAvailableCreditMoneyChangeLog);
 
     AppEmployee findSellerByMobile(String mobile);
 
+    EmpCreditChangeRule findChangeRuleByempId(Long empId);
+
+    List<EmpCreditChangeRule> findAllRule();
 }

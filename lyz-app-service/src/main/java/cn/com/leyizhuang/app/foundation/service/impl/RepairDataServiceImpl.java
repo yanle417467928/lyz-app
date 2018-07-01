@@ -1,37 +1,33 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
-import cn.com.leyizhuang.app.core.constant.AppConstant;
-import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
-import cn.com.leyizhuang.app.core.constant.AppIdentityType;
-import cn.com.leyizhuang.app.core.constant.StorePreDepositChangeType;
+import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.exception.LockStorePreDepositException;
 import cn.com.leyizhuang.app.core.exception.SystemBusyException;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
+import cn.com.leyizhuang.app.foundation.dao.AppEmployeeDAO;
 import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
-import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
-import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderJxPriceDifferenceReturnDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.ReturnOrderJxPriceDifferenceRefundDetails;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoneyResponse;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.service.AppOrderService;
-import cn.com.leyizhuang.app.foundation.service.AppStoreService;
-import cn.com.leyizhuang.app.foundation.service.ReturnOrderService;
-import cn.com.leyizhuang.app.foundation.service.RepairDataService;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.user.EmpCreditChangeRule;
+import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.CountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by 12421 on 2018/6/27.
@@ -55,6 +51,12 @@ public class RepairDataServiceImpl implements RepairDataService {
 
     @Resource
     private AppStoreService storeService;
+
+    @Autowired
+    private AppEmployeeDAO employeeDAO;
+
+    @Resource
+    private AppEmployeeService employeeService;
 
     /**
      * 未返还经销差价的 买券订单经销差价返还 以及扣除
@@ -191,7 +193,7 @@ public class RepairDataServiceImpl implements RepairDataService {
 
         for (OrderJxPriceDifferenceReturnDetails details: list1){
             //判断 是否已经返还
-            Boolean flag = orderDAO.isReturnJxSubPrice(orderBaseInfo.getOrderNumber(),details.getSku(),AppGoodsLineType.PRODUCT_COUPON.getDescription());
+            Boolean flag = orderDAO.isReturnJxSubPrice(orderBaseInfo.getOrderNumber(),details.getSku(),AppGoodsLineType.PRODUCT_COUPON.getValue());
 
             if (!flag){
                 // 保存记录
@@ -235,7 +237,7 @@ public class RepairDataServiceImpl implements RepairDataService {
         for (ReturnOrderJxPriceDifferenceRefundDetails details:list2){
 
             // 扣除
-            Boolean flag = orderDAO.isBuckleJxSubPrice(details.getReturnNumber(),details.getSku(),AppGoodsLineType.PRODUCT_COUPON.getDescription());
+            Boolean flag = orderDAO.isBuckleJxSubPrice(details.getReturnNumber(),details.getSku(),AppGoodsLineType.PRODUCT_COUPON.getValue());
 
             if (!flag){
                 //保存记录
@@ -273,4 +275,97 @@ public class RepairDataServiceImpl implements RepairDataService {
         }
     }
 
+    /**
+     * 刷新规则下所以的导购信用额度 及变更日志
+     * @param flag
+     */
+    public void repairAllRuleScope(String flag){
+        List<EmpCreditChangeRule> list = employeeDAO.findAllRule();
+
+        for (EmpCreditChangeRule rule :list){
+            this.repairEmpCredit(rule.getEmpId(),flag);
+        }
+    }
+
+    public ResultDTO repairEmpCredit(Long empId, String flag){
+
+        AppEmployee employee = employeeDAO.findById(empId);
+        if (employee == null) {
+            return null;
+        }
+
+        //读取变更规则
+        EmpCreditChangeRule rule = employeeDAO.findChangeRuleByempId(empId);
+
+        if (rule == null){
+            logger.info("没有规则，不能调整导购余额及日志");
+            return null;
+        }
+
+        logger.info("导购：" + employee.getName());
+
+        // 找到导购可用额度变更日期 倒序
+        List<EmpAvailableCreditMoneyChangeLog> logList = employeeDAO.getEmpAvailableCreditMoneyChangeLogByEmpIdOrderByCreateTimeDesc(empId);
+
+        // 导购当前额度
+        SellerCreditMoneyResponse creditMoneyResponse = employeeDAO.findCreditMoneyBalanceByUserId(empId);
+        Double balance = creditMoneyResponse.getAvailableBalance() == null ? 0D : creditMoneyResponse.getAvailableBalance();
+
+        // 第一条 取得日志余额
+        EmpAvailableCreditMoneyChangeLog log = logList.get(0);
+        Double logBlance = log.getCreditLimitAvailableAfterChange();
+        Double ruleBalance = rule.getChangeMoney();
+
+        if (ruleBalance == null){
+            logger.info("改变规则为null empId:"+empId);
+            return null;
+        }
+        logger.info("日志余额：" + logBlance + "真实余额："+ balance +" 待变更为："+ruleBalance);
+
+        for (int i = 0 ; i< logList.size() ; i++){
+            EmpAvailableCreditMoneyChangeLog changeLog = logList.get(i);
+            if (changeLog != null) {
+
+                Double changeAmount = changeLog.getCreditLimitAvailableChangeAmount() == null ? 0 : changeLog.getCreditLimitAvailableChangeAmount();
+                Double afterAmount = changeLog.getCreditLimitAvailableAfterChange() == null ? 0 : changeLog.getCreditLimitAvailableAfterChange();
+                Double amount =  CountUtil.sub(ruleBalance, changeAmount);
+
+                logger.info(" 规则余额"+ ruleBalance +" 改变值：" + changeAmount + " 改变后："+ ruleBalance+ " 原改变后：" + afterAmount);
+
+                if (i == 0){
+                    changeLog.setCreditLimitAvailableAfterChange(ruleBalance);
+                    ruleBalance = amount;
+                }else {
+                    changeLog.setCreditLimitAvailableAfterChange(ruleBalance);
+                    ruleBalance = amount;
+                }
+            }
+        }
+
+        if (flag.equalsIgnoreCase("go")) {
+            //改变额度
+            Double ruleChangeMoney = rule.getChangeMoney();
+            Double changeMoney = CountUtil.sub(ruleChangeMoney,balance);
+
+            EmpCreditMoney empCreditMoney = employeeService.findEmpCreditMoneyByEmpId(empId);
+
+            if (empCreditMoney == null){
+                logger.info("empId:"+empId +"导购账户为空");
+                return null;
+            }
+
+            int affectLine = employeeService.lockGuideCreditByUserIdAndCredit(
+                    empId, changeMoney, empCreditMoney.getLastUpdateTime());
+
+            if (affectLine > 0) {
+                logger.info("修改余额成功！empId:"+empId);
+                //改变日志
+                for (EmpAvailableCreditMoneyChangeLog changeLog : logList) {
+                    employeeDAO.updateEmpAvailableCreditMoneyChangeLog(changeLog);
+                }
+            }
+        }
+
+        return null;
+    }
 }
