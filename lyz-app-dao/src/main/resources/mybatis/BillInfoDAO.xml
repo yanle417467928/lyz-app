@@ -58,8 +58,96 @@
         WHERE bill_no = #{billNo}
     </update>
 
-
+    <!-- 本期已还 -->
     <select id="getCurrentOrderDetails" resultType="cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentGoodsInfoResponse">
+        <!-- 配送 -->
+        (SELECT
+        ob.ord_no orderNo,
+        '' returnNo,
+        obd.st_credit_money orderCreditMoney,
+        ob.create_time orderTime,
+        wa.send_time shipmentTime,
+        'order' orderType
+        from ord_base_info ob
+        INNER JOIN ord_billing_details obd on ob.oid = obd.oid
+        LEFT JOIN bill_repayment_goods_details brgd on brgd.order_no = ob.ord_no
+        left JOIN bill_repayment_info bpi on bpi.id = brgd.repayment_id
+        LEFT  JOIN (SELECT * from inter_wta_order_shipping_header where send_flag = 1 GROUP BY order_no) wa on wa.order_no = ob.ord_no
+        where ob.delivery_type = "HOUSE_DELIVERY" and obd.st_credit_money > 0
+        <if test="startTime != null">
+           AND wa.send_time &gt; #{startTime}
+        </if>
+        <if test="endTime != null">
+          and wa.send_time &lt; #{endTime}
+        </if>
+        <if test="is_paid != null and isPaid == true">
+            and bpi.is_paid = 1
+        </if>
+        <if test="is_paid != null and isPaid == false">
+            and (bpi.is_paid = 0 OR bpi.is_paid is null)
+        </if>
+        )
+
+        UNION ALL
+
+        <!-- 自提 -->
+        (SELECT
+        ob.ord_no orderNo,
+        '' returnNo,
+        obd.st_credit_money orderCreditMoney,
+        ob.create_time orderTime,
+        os.shipping_time shipmentTime,
+        'order' orderType
+        from ord_base_info ob
+        INNER JOIN ord_billing_details obd on ob.oid = obd.oid
+        LEFT JOIN bill_repayment_goods_details brgd on brgd.order_no = ob.ord_no
+        left JOIN bill_repayment_info bpi on bpi.id = brgd.repayment_id
+        LEFT  JOIN (SELECT * from ord_shipping GROUP BY ord_no) os on os.ord_no = ob.ord_no
+        where ob.delivery_type = "SELF_TAKE" and obd.st_credit_money > 0 and obd.is_pay_up = 1
+        <if test="startTime != null">
+            AND wa.send_time &gt; #{startTime}
+        </if>
+        <if test="endTime != null">
+            and wa.send_time &lt; #{endTime}
+        </if>
+        <if test="is_paid != null and isPaid == true">
+            and bpi.is_paid = 1
+        </if>
+        <if test="is_paid != null and isPaid == false">
+            and (bpi.is_paid = 0 OR bpi.is_paid is null)
+        </if>
+        )
+
+        <!-- 退货 -->
+        UNION ALL
+
+        (SELECT
+        ob.ord_no orderNo,
+        '' returnNo,
+        -ABS(orbd.st_credit_money) orderCreditMoney,
+        ob.create_time orderTime,
+        orl.operation_time shipmentTime,
+        'return' orderType
+        from ord_return_base_info orb
+        INNER JOIN ord_base_info ob on orb.ord_no = ob.ord_no
+        INNER JOIN ord_return_billing orbd on orb.return_no = orbd.return_no
+        LEFT JOIN bill_repayment_goods_details brgd on brgd.order_no = orb.return_no
+        left JOIN bill_repayment_info bpi on bpi.id = brgd.repayment_id
+        LEFT JOIN ord_return_lifecycle orl on orl.return_no = orb.return_no
+        where ob.delivery_type in ("SELF_TAKE","HOUSE_DELIVERY") and orl.operation in ('REJECTED','NORMAL_RETURN') and post_status = "FINISHED" and orbd.st_credit_money > 0
+        <if test="startTime != null">
+            AND wa.send_time &gt; #{startTime}
+        </if>
+        <if test="endTime != null">
+            and wa.send_time &lt; #{endTime}
+        </if>
+        <if test="is_paid != null and isPaid == true">
+            and bpi.is_paid = 1
+        </if>
+        <if test="is_paid != null and isPaid == false">
+            and (bpi.is_paid = 0 OR bpi.is_paid is null)
+        </if>
+        )
 
     </select>
 </mapper>

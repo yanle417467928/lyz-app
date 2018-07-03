@@ -32,7 +32,7 @@ public class BillInfoResponse {
     private Double billTotalAmount;
     //本期账单金额(账单日内出货订单正向金额求和)
     private Double currentBillAmount;
-    //本期调整金额(账单日内退货订单（包含退货、取消、拒签）负向金额求和)
+    //本期调整金额(账单日内退货订单（包含退货、拒签）负向金额求和)
     private Double currentAdjustmentAmount;
     //本期已还金额
     private Double currentPaidAmount;

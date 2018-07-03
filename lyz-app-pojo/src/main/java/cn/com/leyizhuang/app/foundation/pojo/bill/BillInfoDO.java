@@ -2,9 +2,12 @@ package cn.com.leyizhuang.app.foundation.pojo.bill;
 
 import cn.com.leyizhuang.app.core.constant.BillStatusEnum;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillInfoResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentResponse;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 账单表
@@ -56,7 +59,7 @@ public class BillInfoDO {
     //创建者
     private String createUserName;
 
-    public BillInfoResponse transfer(BillInfoDO DO){
+    public static BillInfoResponse transfer(BillInfoDO DO){
         BillInfoResponse response =  new BillInfoResponse();
 
         response.setStoreId(DO.getStoreId());
@@ -73,8 +76,17 @@ public class BillInfoDO {
         response.setPriorNotPaidBillAmount(0D);
         response.setPriorNotPaidInterestAmount(0D);
         response.setStatus(DO.getStatus().getDesccription());
-        response.setBillName(DO.billName);
+        response.setBillName(DO.getBillName());
 
         return response;
+    }
+
+    public static List<BillInfoResponse> transfer(List<BillInfoDO> list){
+        List<BillInfoResponse> responseList = new ArrayList<>();
+        for (BillInfoDO billInfoDO : list){
+            BillInfoResponse response =  BillInfoDO.transfer(billInfoDO);
+            responseList.add(response);
+        }
+        return responseList;
     }
 }
