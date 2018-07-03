@@ -233,7 +233,17 @@ public class BillInfoServiceImpl implements BillInfoService {
         this.billInfoDAO.updateBillInfo(billInfoDO);
     }
 
-    public BillInfoResponse lookBill(String starTime, String endTime, Long storeid,Integer page,Integer size) throws Exception {
+    /**
+     * 查看账单
+     * @param starTime 开始时间
+     * @param endTime 结束时间
+     * @param storeid 门店id
+     * @param page 预留
+     * @param size 预留
+     * @return
+     * @throws Exception
+     */
+    public BillInfoResponse lookBill(LocalDateTime starTime, LocalDateTime endTime, Long storeid,Integer page,Integer size) throws Exception {
         BillInfoResponse response = new BillInfoResponse(); // 返回结果
         // 初始化
         response.setBillTotalAmount(0D);
@@ -276,6 +286,14 @@ public class BillInfoServiceImpl implements BillInfoService {
         Instant instant2 = billInfoDO.getBillEndDate().toInstant();
         billEndTime = instant2.atZone(zone).toLocalDateTime();
 
+        // 设置客户选择时间范围
+        if (starTime != null && starTime.isAfter(billStartTime) && starTime.isBefore(billEndTime)){
+            billStartTime = starTime;
+        }
+        if (endTime != null && endTime.isAfter(billStartTime) && endTime.isBefore(billEndTime)){
+            billEndTime = endTime;
+        }
+
         // 获取本期未还订单，本期已还订单，上期未还订单
         List<BillRepaymentGoodsInfoResponse> currentPaidOrderDetails = new ArrayList<>();
         List<BillRepaymentGoodsInfoResponse> currentNotPayOrderDetails = new ArrayList<>();
@@ -305,9 +323,8 @@ public class BillInfoServiceImpl implements BillInfoService {
         currentAdjustmentAmount = this.AddAllNegativeCreditMoney(currentPaidOrderDetails);
 
         // 计算滞纳金
-        List<BillRepaymentGoodsDetailsDO> goodsDetailsDOList = BillRepaymentGoodsInfoResponse.transfer(beforNotPayOrderDetails);
-        this.computeInterestAmount(storeid,goodsDetailsDOList);
-
+        beforNotPayOrderDetails = this.computeInterestAmount2(storeid,beforNotPayOrderDetails);
+        fees = this.AddAllInterestAmount(beforNotPayOrderDetails);
 
         // 账单总金额
         billTotalAmount = CountUtil.add(currentBillAmount,currentAdjustmentAmount,beforNotPay,fees);
@@ -319,7 +336,6 @@ public class BillInfoServiceImpl implements BillInfoService {
         response.setCurrentUnpaidAmount(currentNotPay);
         response.setPriorNotPaidBillAmount(beforNotPay);
         response.setPriorNotPaidInterestAmount(fees);
-
 
         return response;
     }
@@ -489,7 +505,7 @@ public class BillInfoServiceImpl implements BillInfoService {
      * @param list
      * @return
      */
-    public Double AddAllNegative(List<BillRepaymentGoodsInfoResponse> list){
+    public Double AddAllInterestAmount(List<BillRepaymentGoodsInfoResponse> list){
         Double interestAmount = 0D;
         if (list == null){
             return interestAmount;

@@ -126,7 +126,7 @@
 
         (SELECT
         ob.ord_no orderNo,
-        '' returnNo,
+        orb.return_no returnNo,
         -ABS(orbd.st_credit_money) orderCreditMoney,
         ob.create_time orderTime,
         orl.operation_time shipmentTime,
@@ -199,8 +199,9 @@
         #{priorPaidBillAmount}, #{priorPaidInterestAmount}, #{status}, #{createTime}, #{createUserId}, #{createUserName})
     </insert>
 
-    <insert id="" parameterType="java.lang.Long">
 
-    </insert>
+
+
+
 
 </mapper>

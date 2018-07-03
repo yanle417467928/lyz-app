@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillHistoryListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillInfoResponse;
+import com.github.pagehelper.PageInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentGoodsInfoResponse;
 import com.github.pagehelper.PageInfo;
 
@@ -35,7 +36,7 @@ public interface BillInfoService {
 
     void updateBillInfo(BillInfoDO billInfoDO);
 
-    BillInfoResponse lookBill(String starTime, String endTime, Long storeid ,Integer page,Integer size) throws Exception;
+    BillInfoResponse lookBill(LocalDateTime starTime, LocalDateTime endTime, Long storeid ,Integer page,Integer size) throws Exception;
 
     PageInfo<BillHistoryListResponse> findBillHistoryListByEmpId(Long empId, Integer identityType, Integer page, Integer size);
 

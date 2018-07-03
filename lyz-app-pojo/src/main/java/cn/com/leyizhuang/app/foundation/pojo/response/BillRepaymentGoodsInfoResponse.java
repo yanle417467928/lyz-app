@@ -51,11 +51,8 @@ public class BillRepaymentGoodsInfoResponse {
         BillRepaymentGoodsDetailsDO detailsDO = new BillRepaymentGoodsDetailsDO();
 
         detailsDO.setId(response.getBill_id());
-        if (response.getNumber().contains("T")){
-            detailsDO.setReturnNo(response.getNumber());
-        }else {
-            detailsDO.setOrderNo(response.getNumber());
-        }
+        detailsDO.setReturnNo(response.getReturnNo());
+        detailsDO.setOrderNo(response.getOrderNo());
         detailsDO.setOrderCreditMoney(response.getOrderCreditMoney());
         detailsDO.setOrderTime(response.getOrderTime());
         detailsDO.setShipmentTime(response.getShipmentTime());

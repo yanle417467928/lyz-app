@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Created by 12421 on 2018/6/29.
@@ -98,13 +99,23 @@ public class AppBillController {
                 return resultDTO;
             }
 
+            DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime startTime = null;
+            LocalDateTime endTime = null;
             if (StringUtils.isNotBlank(startTimeStr)){
                 startTimeStr = startTimeStr.trim();
+                startTimeStr = startTimeStr + "00:00:00";
+
+                startTime = LocalDateTime.parse(startTimeStr,df);
             }
+
             if (StringUtils.isNotBlank(endTimeStr)){
                 endTimeStr = endTimeStr.trim();
                 endTimeStr = endTimeStr + "23:59:59";
+
+                endTime = LocalDateTime.parse(endTimeStr,df);
             }
+
             if (page == null){
                 page = 1;
             }
@@ -112,7 +123,7 @@ public class AppBillController {
                 size = 100;
             }
 
-            BillInfoResponse response = billInfoService.lookBill(startTimeStr,endTimeStr,storeId,page,size);
+            BillInfoResponse response = billInfoService.lookBill(startTime,endTime,storeId,page,size);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "查询成功", response);
             return resultDTO;
         }catch (Exception e){
