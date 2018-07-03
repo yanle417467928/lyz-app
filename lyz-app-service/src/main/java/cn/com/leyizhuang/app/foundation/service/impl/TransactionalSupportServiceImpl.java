@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
 import cn.com.leyizhuang.app.foundation.service.AppSeparateOrderService;
 import cn.com.leyizhuang.app.foundation.service.CommonService;
 import cn.com.leyizhuang.app.foundation.service.RechargeService;
@@ -44,13 +45,13 @@ public class TransactionalSupportServiceImpl implements TransactionalSupportServ
                                     OrderBillingDetails orderBillingDetails, OrderBaseInfo orderBaseInfo, OrderLogisticsInfo orderLogisticsInfo,
                                     List<OrderGoodsInfo> orderGoodsInfoList, List<OrderCouponInfo> orderCouponInfoList,
                                     List<OrderBillingPaymentDetails> paymentDetails, List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetails,
-                                    String ipAddress) throws UnsupportedEncodingException {
+                                    String ipAddress, List<PromotionSimpleInfo> promotionSimpleInfoList) throws UnsupportedEncodingException {
         //******* 检查库存和与账单支付金额是否充足,如果充足就扣减相应的数量
         commonService.reduceInventoryAndMoney(deliverySimpleInfo, inventoryCheckMap, cityId, identityType,
                 userId, customerId, cashCouponList, orderProductCouponInfoList, orderBillingDetails, orderBaseInfo.getOrderNumber(), ipAddress);
         //******* 持久化订单相关实体信息  *******
         commonService.saveAndHandleOrderRelevantInfo(orderBaseInfo, orderLogisticsInfo, orderGoodsInfoList, orderCouponInfoList, orderBillingDetails,
-                paymentDetails, jxPriceDifferenceReturnDetails);
+                paymentDetails, jxPriceDifferenceReturnDetails, promotionSimpleInfoList);
     }
 
     @Override

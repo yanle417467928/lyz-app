@@ -90,4 +90,6 @@ public interface ProductCouponService {
      * @param ordNo
      */
     void activateCusProductCoupon(String ordNo);
+
+    CustomerProductCoupon findCustomerProductCouponByOrdNoAndSku(Long couponId);
 }

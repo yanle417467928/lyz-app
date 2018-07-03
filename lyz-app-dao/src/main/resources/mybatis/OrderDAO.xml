@@ -1139,7 +1139,7 @@
 
     <insert id="saveOrderJxPriceDifferenceReturnDetails"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderJxPriceDifferenceReturnDetails">
-        INSERT INTO ord_jx_price_difference_return_details (oid, ord_no, create_time, store_id, store_code, sku, unit_price, quantity, amount, receipt_number)
+        INSERT INTO ord_jx_price_difference_return_details (oid, ord_no, create_time, store_id, store_code, sku, unit_price, quantity, amount, receipt_number, goods_line_type)
             SELECT
                 #{oid},
                 #{orderNumber},
@@ -1150,7 +1150,8 @@
                 #{unitPrice},
                 #{quantity},
                 #{amount},
-                #{receiptNumber}
+                #{receiptNumber},
+                #{goodsLineType}
             FROM dual
             WHERE NOT exists(SELECT 1
                              FROM ord_jx_price_difference_return_details
@@ -1171,7 +1172,8 @@
             unit_price,
             quantity,
             amount,
-            receipt_number
+            receipt_number,
+            goods_line_type
         FROM ord_jx_price_difference_return_details
         WHERE ord_no = #{orderNumber}
     </select>
@@ -1823,10 +1825,53 @@
     <select id="getOrderSendTime" resultType="java.time.LocalDateTime">
         SELECT
         CASE ob.delivery_type when "HOUSE_DELIVERY" THEN if(wa.end_dt = "",null,wa.end_dt)
-        WHEN "SELF_TAKE" THEN if(os.shipping_time = "",null,os.shipping_time) ELSE NULL END as send_time
+        WHEN "SELF_TAKE" THEN if(os.shipping_time = "",null,os.shipping_time)
+        when "PRODUCT_COUPON" then if(ob.create_time = "",null,ob.create_time)
+        ELSE NULL END as send_time
          from ord_base_info ob
         LEFT JOIN inter_wta_order_shipping_header wa on ob.ord_no = wa.order_no
         LEFT JOIN ord_shipping os on os.ord_no = ob.ord_no
         where ob.ord_no = #{orderNo} LIMIT 1
+    </select>
+
+    <select id="getOrderJmProduct" resultType="java.lang.String">
+        SELECT DISTINCT ob.ord_no from ord_base_info ob
+        LEFT JOIN st_store s on s.store_id = ob.store_id
+        INNER JOIN ord_coupon_info oci on oci.ord_no = ob.ord_no
+        where
+        ob.delivery_type != "PRODUCT_COUPON"
+         and s.store_type = 'JM'
+        and ob.create_time > '2018-05-01 00:00:00'
+        and ob.`status` = 'FINISHED';
+    </select>
+
+    <select id="getBpProductByOrderNo" resultType="java.lang.Integer">
+        SELECT COUNT(oci.id) from ord_coupon_info oci
+        INNER JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
+        INNER JOIN ord_goods_info og on og.id = ccpc.goods_line_id
+        where oci.ord_no = #{ordNo} and oci.sku = #{sku} and og.goods_line_type = "GOODS" and ccpc.get_time > '2018-05-01 00:00:00'
+    </select>
+
+    <select id="getBpProductByReturnNo" resultType="java.lang.Integer">
+        SELECT count(orp.id) from ord_return_base_info orb
+        inner JOIN ord_return_product_coupon orp on orp.return_no = orb.return_no
+        INNER JOIN cus_customer_product_coupon ccpc on ccpc.id = orp.pcid
+        INNER JOIN ord_goods_info og on og.id = ccpc.goods_line_id
+        where orb.return_no = #{returnNo} and orp.sku = #{sku}
+        and og.goods_line_type = 'GOODS' and orb.return_status = "FINISHED" and ccpc.get_time > '2018-05-01 00:00:00'
+    </select>
+
+    <select id="isReturnJxSubPrice" resultType="java.lang.Boolean">
+        SELECT EXISTS(SELECT 1
+                      FROM ord_jx_price_difference_return_details
+                      WHERE
+                      ord_no = #{orderNo} and sku = #{sku} and goods_line_type = #{goodsLineType} );
+    </select>
+
+    <select id="isBuckleJxSubPrice" resultType="java.lang.Boolean">
+        SELECT EXISTS(SELECT 1
+        FROM ord_return_jx_price_difference_return_details
+        WHERE
+        return_no = #{returnNo} and sku = #{sku} and goods_line_type = #{goodsLineType} );
     </select>
 </mapper>

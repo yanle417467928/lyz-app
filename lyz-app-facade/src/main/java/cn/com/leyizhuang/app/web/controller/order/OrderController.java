@@ -338,7 +338,7 @@ public class OrderController {
             support.setOrderGoodsInfoList(orderGoodsInfoList);
 
             //****************** 创建订单经销差价返还明细 ***********
-            List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetailsList = commonService.createOrderJxPriceDifferenceReturnDetails(orderBaseInfo, support.getOrderGoodsInfoList(), promotionSimpleInfoList);
+            List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetailsList = commonService.createOrderJxPriceDifferenceReturnDetails(orderBaseInfo, support.getOrderGoodsInfoList(), promotionSimpleInfoList, orderProductCouponInfoList );
             if (null != jxPriceDifferenceReturnDetailsList && jxPriceDifferenceReturnDetailsList.size() > 0) {
                 orderBillingDetails.setJxPriceDifferenceAmount(jxPriceDifferenceReturnDetailsList.stream().mapToDouble(OrderJxPriceDifferenceReturnDetails::getAmount).sum());
             }
@@ -354,7 +354,7 @@ public class OrderController {
             //**************** 2、持久化订单相关实体信息 ****************
             transactionalSupportService.createOrderBusiness(deliverySimpleInfo, support.getInventoryCheckMap(), orderParam.getCityId(), orderParam.getIdentityType(),
                     orderParam.getUserId(), orderParam.getCustomerId(), cashCouponList, orderProductCouponInfoList, orderBillingDetails, orderBaseInfo,
-                    orderLogisticsInfo, orderGoodsInfoList, orderCouponInfoList, paymentDetails, jxPriceDifferenceReturnDetailsList, ipAddress);
+                    orderLogisticsInfo, orderGoodsInfoList, orderCouponInfoList, paymentDetails, jxPriceDifferenceReturnDetailsList, ipAddress, promotionSimpleInfoList);
 
             //****** 清空当单购物车商品 ******
             commonService.clearOrderGoodsInMaterialList(orderParam.getUserId(), orderParam.getIdentityType(), goodsList, productCouponList);
@@ -2286,6 +2286,11 @@ public class OrderController {
                 return resultDTO;
             }
             if (OrderBillingPaymentType.EMP_CREDIT == OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)) {
+                if (baseInfo.getDeliveryType() == AppDeliveryType.PRODUCT_COUPON){
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "买卷订单不能使用信用额度！", null);
+                    logger.info("handleOrderRelevantBusinessAfterPayForAnother OUT,代支付订单支付失败，订单状态错误，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
                 EmpCreditMoney empCreditMoney = employeeService.findEmpCreditMoneyByEmpId(userId);
                 OrderBillingDetails billingDetails = appOrderService.getOrderBillingDetail(orderNumber);
                 if (null == empCreditMoney || null == billingDetails || empCreditMoney.getCreditLimitAvailable() < billingDetails.getAmountPayable()) {
@@ -2542,7 +2547,7 @@ public class OrderController {
             //**************** 2、持久化订单相关实体信息 ****************
             transactionalSupportService.createOrderBusiness(deliverySimpleInfo, support.getInventoryCheckMap(), orderParam.getCityId(), orderParam.getIdentityType(),
                     orderParam.getUserId(), orderParam.getCustomerId(), cashCouponList, orderProductCouponInfoList, orderBillingDetails, orderBaseInfo,
-                    orderLogisticsInfo, orderGoodsInfoList, orderCouponInfoList, paymentDetails, jxPriceDifferenceReturnDetailsList, ipAddress);
+                    orderLogisticsInfo, orderGoodsInfoList, orderCouponInfoList, paymentDetails, jxPriceDifferenceReturnDetailsList, ipAddress, promotionSimpleInfoList);
 
             //****** 清空当单购物车商品 ******
             commonService.clearOrderGoodsInMaterialList(orderParam.getUserId(), orderParam.getIdentityType(), goodsList, productCouponList);
@@ -2597,6 +2602,97 @@ public class OrderController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常,下单失败!", null);
             logger.warn("createBuyCouponOrder EXCEPTION,订单创建失败,出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * @title   处理信用额度支付的订单业务
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/6/28
+     */
+    @PostMapping(value = "/handle/payCredit", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> handleOrderRelevantBusinessAfterPayCredit(Long userId, Integer identityType, String orderNumber,
+                                                                           String payType, HttpServletRequest request) {
+        ResultDTO<Object> resultDTO;
+        logger.info("handleOrderRelevantBusinessAfterPayCredit CALLED,处理信用额度支付的订单业务，入参 userID:{}, identityType:{}, orderNumber{},payType{}",
+                userId, identityType, orderNumber, payType);
+        //获取客户端ip地址
+        String ipAddress = IpUtils.getIpAddress(request);
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
+            logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理信用额度支付的订单业务失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理信用额度支付的订单业务失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (!StringUtils.isNotBlank(orderNumber)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单信息不允许为空！", null);
+            logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理信用额度支付的订单业务失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (!StringUtils.isNotBlank(payType) && (OrderBillingPaymentType.EMP_CREDIT != OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)
+                || OrderBillingPaymentType.STORE_CREDIT_MONEY != OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType))) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "支付方式不允许为空！", null);
+            logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理信用额度支付的订单业务失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            OrderBaseInfo baseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
+            if (AppOrderStatus.UNPAID != baseInfo.getStatus()){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单操作错误！", null);
+                logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理信用额度支付的订单业务失败，订单状态错误，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (baseInfo.getDeliveryType() == AppDeliveryType.PRODUCT_COUPON){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "买卷订单不能使用信用额度！", null);
+                logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理信用额度支付的订单业务失败，订单状态错误，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            OrderBillingDetails billingDetails = appOrderService.getOrderBillingDetail(orderNumber);
+            if (OrderBillingPaymentType.EMP_CREDIT == OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)) {
+                EmpCreditMoney empCreditMoney = employeeService.findEmpCreditMoneyByEmpId(userId);
+                if (null == empCreditMoney || null == billingDetails || empCreditMoney.getCreditLimitAvailable() < billingDetails.getAmountPayable()) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "信用额度不足，请更换支付方式！", null);
+                    logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理信用额度支付的订单业务失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+            }
+            if (OrderBillingPaymentType.STORE_CREDIT_MONEY == OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)) {
+                StoreCreditMoney storeCreditMoney = this.appStoreService.findStoreCreditMoneyByEmpId(userId);
+                if (null == storeCreditMoney || null == billingDetails || storeCreditMoney.getCreditLimitAvailable() < billingDetails.getAmountPayable()) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "信用金余额不足，请更换支付方式！", null);
+                    logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理信用额度支付的订单业务失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+            }
+            this.commonService.handleOrderRelevantBusinessAfterPayCredit(orderNumber, userId, identityType, payType, ipAddress);
+            //发送订单到拆单消息队列
+            sinkSender.sendOrder(orderNumber);
+
+            //发送订单到WMS
+            if (baseInfo.getDeliveryType() == AppDeliveryType.HOUSE_DELIVERY) {
+                iCallWms.sendToWmsRequisitionOrderAndGoods(orderNumber);
+            }
+
+            // 激活订单赠送的产品券
+            productCouponService.activateCusProductCoupon(orderNumber);
+
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
+            logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理信用额度支付的订单业务成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，处理信用额度支付的订单业务失败", null);
+            logger.warn("handleOrderRelevantBusinessAfterPayCredit EXCEPTION,处理信用额度支付的订单业务失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

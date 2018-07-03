@@ -560,27 +560,89 @@ public class DateUtil {
     }
 
     /**
-     *  获取当前日期与指定日期相差天数
+     *  获取指定日期的还款截止日
      * @return
      */
-    public static Integer getDifferenceFatalism (Integer date) {
-        if (null == date){
-            return 0;
+    public static Date getDifferenceFatalism (Integer billDate,Integer repaymentDeadlineDate, Date startDate) {
+        if (null == repaymentDeadlineDate || null == billDate){
+            return startDate;
         }
         Calendar calendar = Calendar.getInstance();
-
+        calendar.setTime(startDate);
         int days = calendar.get(Calendar.DAY_OF_MONTH);
-        if (days > date){
-            return days - date;
+        if (days > repaymentDeadlineDate){
+            if (days >= billDate){
+                calendar.set(Calendar.DATE, repaymentDeadlineDate);
+                calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) + 2);
+            } else {
+                calendar.set(Calendar.DATE, repaymentDeadlineDate);
+                calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) + 1);
+            }
         } else {
-            calendar.set(Calendar.DAY_OF_MONTH, 0);
-            Integer inDays = calendar.get(Calendar.DAY_OF_MONTH);
-            return (inDays - date) + days;
+            if (days >= billDate){
+                calendar.set(Calendar.DATE, repaymentDeadlineDate);
+                calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) + 1);
+            } else {
+                calendar.set(Calendar.DATE, repaymentDeadlineDate);
+            }
         }
+        return calendar.getTime();
     }
 
-    public static void main(String[] args) {
+    /**
+     * @title   获取指定时间月份
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/7/3
+     */
+    public static Integer getMonthByDate(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return cal.get(Calendar.MONTH) + 1;
+    }
 
-        System.out.println(DateUtil.getDifferenceFatalism(25));
+    /**
+     * @title   获取下月的今天的前一天
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/7/3
+     */
+    public static Date getNextMonthByDateBeforOne(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) + 1);
+        cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
+        return cal.getTime();
+    }
+
+    /**
+     * @title   获取账期
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/7/3
+     */
+    public static Date getBillDate(Date date, Integer month, Integer billDay) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) + month);
+        cal.set(Calendar.DAY_OF_MONTH, billDay);
+        return cal.getTime();
+    }
+
+
+    public static void main(String[] args) {
+        System.out.println(getDate());
+        System.out.println(getMonthByDate(DateUtil.dateFromString("2018/1/05 00:00:01")));
+        System.out.println(getDateStr(getBillDate(new Date(), -1, 5)));
+        System.out.println(DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(20, 30, DateUtil.dateFromString("2016/02/05 00:00:01")), DateUtil.dateFromString("2016/03/25 00:00:01")));
     }
 }

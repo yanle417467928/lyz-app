@@ -61,21 +61,41 @@
     <select id="findCusProductCouponByCouponId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon">
         SELECT
-            *
+            ccpc.cus_id customerId,
+            ccpc.seller_id sellerId,
+            ccpc.store_id storeId,
+            ccpc.gid goodsId,
+            ccpc.quantity quantity,
+            ccpc.get_type getType,
+            ccpc.get_time getTime,
+            ccpc.get_ord_no getOrderNumber,
+            ccpc.buy_price buyPrice,
+            ccpc.effective_start_time effectiveStartTime,
+            ccpc.effective_end_time effectiveEndTime,
+            ccpc.is_used isUsed,
+            ccpc.use_time useTime,
+            ccpc.use_ord_no useOrderNumber,
+            ccpc.`status` `status`,
+            ccpc.goods_line_id goodsLineId,
+            ccpc.disable_time disableTime,
+            ccpc.last_update_time lastUpdateTime,
+            ccpc.goods_sign goodsSign,
+            ccpc.settlement_price settlementPrice,
+            ccpc.wholesale_price wholesalePrice
         FROM
-            cus_customer_product_coupon
+            cus_customer_product_coupon ccpc
         WHERE
-            id = #{cusProductCouponId}
+            ccpc.id = #{cusProductCouponId}
     </select>
 
     <insert id="addCustomerProductCoupon" parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon"
             useGeneratedKeys="true" keyProperty="id">
         INSERT INTO cus_customer_product_coupon
         (cus_id, seller_id, store_id, gid, quantity, get_type, get_time, get_ord_no, buy_price, effective_start_time, effective_end_time,is_used,
-        use_time, use_ord_no, goods_line_id,disable_time,status,last_update_time,goods_sign)
+        use_time, use_ord_no, goods_line_id,disable_time,status,last_update_time,goods_sign,settlement_price,wholesale_price)
         VALUES
         (#{customerId}, #{sellerId}, #{storeId}, #{goodsId}, #{quantity}, #{getType},#{getTime}, #{getOrderNumber}, #{buyPrice}, #{effectiveStartTime},
-         #{effectiveEndTime},#{isUsed}, #{useTime}, #{useOrderNumber}, #{goodsLineId}, #{disableTime}, #{status}, #{lastUpdateTime},#{goodsSign})
+         #{effectiveEndTime},#{isUsed}, #{useTime}, #{useOrderNumber}, #{goodsLineId}, #{disableTime}, #{status}, #{lastUpdateTime},#{goodsSign},#{settlementPrice},#{wholesalePrice})
     </insert>
 
     <insert id="addProductCoupon" parameterType="cn.com.leyizhuang.app.foundation.pojo.ProductCoupon">
@@ -270,4 +290,32 @@
         (#{cusId}, #{useTime}, #{couponId}, #{referenceNumber}, #{changeType}, #{changeTypeDesc},#{operatorId}, #{operatorType}, #{operatorIp}, #{remark})
     </insert>
 
+    <select id="findCustomerProductCouponByOrdNoAndSku" resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon">
+         SELECT
+            ccpc.cus_id customerId,
+            ccpc.seller_id sellerId,
+            ccpc.store_id storeId,
+            ccpc.gid goodsId,
+            ccpc.quantity quantity,
+            ccpc.get_type getType,
+            ccpc.get_time getTime,
+            ccpc.get_ord_no getOrderNumber,
+            ccpc.buy_price buyPrice,
+            ccpc.effective_start_time effectiveStartTime,
+            ccpc.effective_end_time effectiveEndTime,
+            ccpc.is_used isUsed,
+            ccpc.use_time useTime,
+            ccpc.use_ord_no useOrderNumber,
+            ccpc.`status` `status`,
+            ccpc.goods_line_id goodsLineId,
+            ccpc.disable_time disableTime,
+            ccpc.last_update_time lastUpdateTime,
+            ccpc.goods_sign goodsSign,
+            ccpc.settlement_price settlementPrice,
+            ccpc.wholesale_price wholesalePrice
+        FROM
+            cus_customer_product_coupon ccpc
+        WHERE
+            ccpc.id = #{couponId}
+    </select>
 </mapper>

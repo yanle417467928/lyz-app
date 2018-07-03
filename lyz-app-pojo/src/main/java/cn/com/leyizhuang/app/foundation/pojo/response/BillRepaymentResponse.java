@@ -1,6 +1,8 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
 import cn.com.leyizhuang.app.core.constant.OnlinePayType;
+import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
+import lombok.*;
 
 import java.util.Date;
 import java.util.List;
@@ -9,6 +11,11 @@ import java.util.List;
  * 还款头响应类
  * Created by 12421 on 2018/6/28.
  */
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class BillRepaymentResponse {
 
     //还款单号（BL_RC开头）
@@ -50,4 +57,5 @@ public class BillRepaymentResponse {
 
     //账单明细
     List<BillRepaymentGoodsInfoResponse> billRepaymentDetails;
+
 }

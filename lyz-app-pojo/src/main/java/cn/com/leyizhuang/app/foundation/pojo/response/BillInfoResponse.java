@@ -42,6 +42,10 @@ public class BillInfoResponse {
     private Double priorNotPaidBillAmount;
     //上期未还滞纳金
     private Double priorNotPaidInterestAmount;
+    //已还上期账单金额
+    private Double priorPaidBillAmount;
+    //已还上期滞纳金
+    private Double priorPaidInterestAmount;
     //出账时间
     private Date billTime;
     //账单状态(0：未出帐；1：出帐；2 ：历史账单)

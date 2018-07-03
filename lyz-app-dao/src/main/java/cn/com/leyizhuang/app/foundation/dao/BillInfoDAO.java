@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentGoodsInfoResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.BillHistoryListResponse;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -33,5 +34,13 @@ public interface BillInfoDAO {
     List<BillRepaymentGoodsInfoResponse> getCurrentOrderDetails(@Param("startTime") LocalDateTime startTime,
                                                           @Param("endTime") LocalDateTime endTime,
                                                           @Param("isPaid") Boolean is_paid);
+
+    List<BillHistoryListResponse> findBillHistoryListByEmpId(Long empId);
+
+    List<BillRepaymentInfoDO> findBillRepaymentInfoByBillNo(String billNo);
+
+    List<BillRepaymentGoodsDetailsDO> findRepaymentGoodsDetailsByBillNo(String billNo);
+
+    void saveBillInfo(BillInfoDO billInfo);
 
 }

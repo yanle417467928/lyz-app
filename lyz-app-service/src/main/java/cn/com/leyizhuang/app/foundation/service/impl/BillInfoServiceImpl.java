@@ -4,19 +4,22 @@ import cn.com.leyizhuang.app.core.constant.AppConstant;
 import cn.com.leyizhuang.app.core.constant.BillStatusEnum;
 import cn.com.leyizhuang.app.core.constant.OnlinePayType;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
+import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.BillInfoDAO;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRuleDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
+import cn.com.leyizhuang.app.foundation.pojo.response.BillHistoryListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillInfoResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentGoodsInfoResponse;
-import cn.com.leyizhuang.app.foundation.service.AppOrderService;
-import cn.com.leyizhuang.app.foundation.service.BillInfoService;
-import cn.com.leyizhuang.app.foundation.service.BillRuleService;
-import cn.com.leyizhuang.app.foundation.service.PaymentDataService;
+import cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentResponse;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.util.CountUtil;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +54,10 @@ public class BillInfoServiceImpl implements BillInfoService {
     @Autowired
     private AppOrderService orderService;
 
+    @Autowired
+    private AppStoreService appStoreService;
+
+
     @Override
     public List<BillRepaymentGoodsDetailsDO> computeInterestAmount(Long storeId, List<BillRepaymentGoodsDetailsDO> goodsDetailsDOList) {
 
@@ -73,16 +80,66 @@ public class BillInfoServiceImpl implements BillInfoService {
         if (null == repaymentDeadlineDate || repaymentDeadlineDate == 0) {
             repaymentDeadlineDate = 1;
         }
+        //还款截至日
+        Integer billDate = billRuleDO.getBillDate();
+        if (null == billDate || billDate == 0) {
+            billDate = 1;
+        }
 
-        //逾期天数
-        Integer overdueDays = DateUtil.getDifferenceFatalism(repaymentDeadlineDate);
 
         //计算利息（欠款金额 * 利息 * 逾期天数 * 利息单位）
         for (BillRepaymentGoodsDetailsDO goodsDetailsDO: goodsDetailsDOList) {
+            //逾期天数
+            Integer overdueDays = DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(billDate, repaymentDeadlineDate, goodsDetailsDO.getShipmentTime()), new Date());
+            if (overdueDays < 0){
+                overdueDays = 0;
+            }
             goodsDetailsDO.setInterestAmount(CountUtil.mul(goodsDetailsDO.getOrderCreditMoney(), interestRate, overdueDays, AppConstant.INTEREST_RATE_UNIT));
         }
 
         return goodsDetailsDOList;
+    }
+
+    @Override
+    public List<BillRepaymentGoodsInfoResponse> computeInterestAmount2(Long storeId, List<BillRepaymentGoodsInfoResponse> goodsDetailsList) {
+
+        if (null == goodsDetailsList || goodsDetailsList.size() == 0) {
+            return goodsDetailsList;
+        }
+
+        if (null == storeId){
+            return goodsDetailsList;
+        }
+        //根据门店ID查询账单规则
+        BillRuleDO billRuleDO = this.billRuleService.getBillRuleByStoreId(storeId);
+        if (null == billRuleDO || null == billRuleDO.getInterestRate() || billRuleDO.getInterestRate().equals(0D)){
+            return goodsDetailsList;
+        }
+        //利息
+        Double interestRate = billRuleDO.getInterestRate();
+        //还款截至日
+        Integer repaymentDeadlineDate = billRuleDO.getRepaymentDeadlineDate();
+        if (null == repaymentDeadlineDate || repaymentDeadlineDate == 0) {
+            repaymentDeadlineDate = 1;
+        }
+        //还款截至日
+        Integer billDate = billRuleDO.getBillDate();
+        if (null == billDate || billDate == 0) {
+            billDate = 1;
+        }
+
+
+        //计算利息（欠款金额 * 利息 * 逾期天数 * 利息单位）
+        for (BillRepaymentGoodsInfoResponse goodsDetails: goodsDetailsList) {
+            //逾期天数
+            Integer overdueDays = DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(billDate, repaymentDeadlineDate, goodsDetails.getShipmentTime()), new Date());
+            if (overdueDays < 0){
+                overdueDays = 0;
+            }
+            goodsDetails.setInterestAmount(CountUtil.mul(goodsDetails.getOrderCreditMoney(), interestRate, overdueDays, AppConstant.INTEREST_RATE_UNIT));
+        }
+
+        return goodsDetailsList;
     }
 
     @Override
@@ -101,8 +158,28 @@ public class BillInfoServiceImpl implements BillInfoService {
         billRepaymentInfoDO.setRepaymentTime(new Date());
         this.billInfoDAO.updateBillRepaymentInfo(billRepaymentInfoDO);
 
+        BillInfoDO billInfoDO = this.billInfoDAO.findBillInfoByBillNo(billRepaymentInfoDO.getBillNo());
+
+        //根据门店ID查询账单规则
+        BillRuleDO billRuleDO = this.billRuleService.getBillRuleByStoreId(billInfoDO.getStoreId());
+        if (null == billRuleDO){
+            billRuleDO = new BillRuleDO();
+        }
+        //还款截至日
+        Integer repaymentDeadlineDate = billRuleDO.getRepaymentDeadlineDate();
+        if (null == repaymentDeadlineDate || repaymentDeadlineDate == 0) {
+            repaymentDeadlineDate = 1;
+        }
+        //账期日
+        Integer billDate = billRuleDO.getBillDate();
+        if (null == billDate || billDate == 0) {
+            billDate = 1;
+        }
+
+
         //订单账单更新是否已付清、付清时间
         List<BillRepaymentGoodsDetailsDO> goodsDetailsDOS = this.billInfoDAO.findRepaymentGoodsDetailsByRepaymentNo(repaymentNo);
+        Double priorPaidBillAmount = 0D;
         if (null != goodsDetailsDOS && goodsDetailsDOS.size() > 0){
             for (BillRepaymentGoodsDetailsDO goodsDetails : goodsDetailsDOS) {
                 if ("order".equals(goodsDetails.getOrderType())) {
@@ -112,13 +189,19 @@ public class BillInfoServiceImpl implements BillInfoService {
                     orderBillingDetails.setPayUpTime(new Date());
                     orderService.updateOrderBillingDetails(orderBillingDetails);
                 }
+                //逾期天数
+                Integer overdueDays = DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(billDate, repaymentDeadlineDate, goodsDetails.getShipmentTime()), new Date());
+
+                if (overdueDays > 0){
+                    priorPaidBillAmount = CountUtil.add(priorPaidBillAmount, goodsDetails.getOrderCreditMoney());
+                }
             }
         }
 
         //更新账单信息
-        BillInfoDO billInfoDO = this.billInfoDAO.findBillInfoByBillNo(billRepaymentInfoDO.getBillNo());
         billInfoDO.setCurrentPaidAmount(CountUtil.add(billInfoDO.getCurrentPaidAmount(), billRepaymentInfoDO.getOnlinePayAmount()));
         billInfoDO.setPriorPaidInterestAmount(CountUtil.add(billInfoDO.getPriorPaidInterestAmount(), billRepaymentInfoDO.getTotalInterestAmount()));
+        billInfoDO.setPriorPaidBillAmount(priorPaidBillAmount);
         if (billInfoDO.getStatus() == BillStatusEnum.ALREADY_OUT){
             billInfoDO.setCurrentUnpaidAmount(CountUtil.sub(billInfoDO.getCurrentUnpaidAmount(), billRepaymentInfoDO.getOnlinePayAmount()));
             if (billInfoDO.getCurrentUnpaidAmount() < AppConstant.PAY_UP_LIMIT){
@@ -239,6 +322,108 @@ public class BillInfoServiceImpl implements BillInfoService {
 
 
         return response;
+    }
+
+    @Override
+    public PageInfo<BillHistoryListResponse> findBillHistoryListByEmpId(Long empId, Integer identityType, Integer page, Integer size) {
+        if (empId != null) {
+            PageHelper.startPage(page, size);
+            List<BillHistoryListResponse> billHistoryList = this.billInfoDAO.findBillHistoryListByEmpId(empId);
+            return new PageInfo<>(billHistoryList);
+        }
+        return null;
+    }
+
+    @Override
+    public BillInfoResponse findBillHistoryDetail(String billNo) {
+        BillInfoDO billInfoDO = this.billInfoDAO.findBillInfoByBillNo(billNo);
+        BillInfoResponse billInfoResponse = BillInfoDO.transfer(billInfoDO);
+        if (null != billInfoResponse) {
+            List<BillRepaymentInfoDO> billRepaymentInfoDOList = this.billInfoDAO.findBillRepaymentInfoByBillNo(billNo);
+            for (BillRepaymentInfoDO repaymentInfoDO : billRepaymentInfoDOList) {
+                BillRepaymentResponse billRepaymentResponse = new BillRepaymentResponse();
+                billRepaymentResponse.setRepaymentTime(repaymentInfoDO.getRepaymentTime());
+                billRepaymentResponse.setTotalRepaymentAmount(repaymentInfoDO.getTotalRepaymentAmount());
+                List<BillRepaymentGoodsDetailsDO> goodsDetailsDOList = this.billInfoDAO.findRepaymentGoodsDetailsByRepaymentNo(repaymentInfoDO.getRepaymentNo());
+                if (null != goodsDetailsDOList && goodsDetailsDOList.size() > 0) {
+                    List<BillRepaymentGoodsInfoResponse> billRepaymentDetails = new ArrayList<>();
+                    goodsDetailsDOList.forEach(goodsDetailsDO -> {
+                        billRepaymentDetails.add(BillRepaymentGoodsInfoResponse.transform(goodsDetailsDO));
+                    });
+                    billRepaymentResponse.setBillRepaymentDetails(billRepaymentDetails);
+                }
+            }
+        return billInfoResponse;
+        }
+        return null;
+    }
+
+    @Override
+    public List<BillRepaymentInfoDO> findBillRepaymentInfoByBillNo(String billNo) {
+        return this.billInfoDAO.findBillRepaymentInfoByBillNo(billNo);
+    }
+
+    @Override
+    public List<BillRepaymentGoodsDetailsDO> findRepaymentGoodsDetailsByBillNo(String billNo) {
+        return this.billInfoDAO.findRepaymentGoodsDetailsByBillNo(billNo);
+    }
+
+    @Override
+    public BillInfoDO createBillInfo(Long storeId) {
+        AppStore store = this.appStoreService.findById(storeId);
+        if (null == store) {
+            return null;
+        }
+        //根据门店ID查询账单规则
+        BillRuleDO billRuleDO = this.billRuleService.getBillRuleByStoreId(storeId);
+        //还款截至日
+        Integer repaymentDeadlineDate = billRuleDO.getRepaymentDeadlineDate();
+        if (null == repaymentDeadlineDate || repaymentDeadlineDate == 0) {
+            repaymentDeadlineDate = 1;
+        }
+        //账期日
+        Integer billDate = billRuleDO.getBillDate();
+        if (null == billDate || billDate == 0) {
+            billDate = 1;
+        }
+        Integer nowDay = DateUtil.getDate();
+        Date billStartDate = new Date();
+        if (nowDay < billDate) {
+            billStartDate = DateUtil.getBillDate(billStartDate, -1, billDate);
+        } else {
+            billStartDate = DateUtil.getBillDate(billStartDate, 0, billDate);
+        }
+
+        BillInfoDO billInfo = new BillInfoDO();
+        billInfo.setBillNo(OrderUtils.generateBillNo(store.getStoreCode()));
+        billInfo.setBillName(store.getStoreName() + DateUtil.getMonthByDate(billStartDate) + "月账单");
+        billInfo.setStoreId(storeId);
+        billInfo.setBillStartDate(billStartDate);
+        billInfo.setBillEndDate(DateUtil.getNextMonthByDateBeforOne(billStartDate));
+        billInfo.setRepaymentDeadlineDate(DateUtil.getDifferenceFatalism(billDate, repaymentDeadlineDate, new Date()));
+        billInfo.setBillTotalAmount(0D);
+        billInfo.setCurrentBillAmount(0D);
+        billInfo.setCurrentAdjustmentAmount(0D);
+        billInfo.setCurrentPaidAmount(0D);
+        billInfo.setCurrentUnpaidAmount(0D);
+        billInfo.setPriorPaidBillAmount(0D);
+        billInfo.setPriorPaidInterestAmount(0D);
+        billInfo.setStatus(BillStatusEnum.NOT_OUT);
+        billInfo.setCreateTime(new Date());
+        billInfo.setCreateUserId(0L);
+        billInfo.setCreateUserName("系统");
+        this.billInfoDAO.saveBillInfo(billInfo);
+        return billInfo;
+    }
+
+    @Override
+    public void saveBillInfo(BillInfoDO billInfo) {
+        this.billInfoDAO.saveBillInfo(billInfo);
+    }
+
+    @Override
+    public void handleHistoryBill(Long storeId) {
+
     }
 
     /**
