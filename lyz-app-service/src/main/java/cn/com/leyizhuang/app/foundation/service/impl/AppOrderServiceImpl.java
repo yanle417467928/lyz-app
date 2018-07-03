@@ -598,11 +598,7 @@ public class AppOrderServiceImpl implements AppOrderService {
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getCusPreDeposit())
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getLebiCashDiscount());
                 orderBillingDetails.setAmountPayable(amountPayable);
-                if (FitCompayType.CASH == store.getFitCompayType()) {
-                    orderBillingDetails.setArrearage(CountUtil.add(orderBillingDetails.getAmountPayable(), orderBillingDetails.getStoreCreditMoney()));
-                } else {
-                    orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable());
-                }
+                orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable());
                 break;
             case 0:
                 log.info("订单会员折扣:{}", orderBillingDetails.getMemberDiscount());
@@ -638,7 +634,11 @@ public class AppOrderServiceImpl implements AppOrderService {
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getStoreCreditMoney())
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getStoreSubvention());
                 orderBillingDetails.setAmountPayable(amountPayable);
-                orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable());
+                if (FitCompayType.CASH == store.getFitCompayType()) {
+                    orderBillingDetails.setArrearage(CountUtil.add(orderBillingDetails.getAmountPayable(), orderBillingDetails.getStoreCreditMoney()));
+                } else {
+                    orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable());
+                }
                 break;
             default:
                 break;

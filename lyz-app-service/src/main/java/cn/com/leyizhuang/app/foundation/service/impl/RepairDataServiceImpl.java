@@ -1,45 +1,41 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
-import cn.com.leyizhuang.app.core.constant.AppConstant;
-import cn.com.leyizhuang.app.core.constant.AppGoodsLineType;
-import cn.com.leyizhuang.app.core.constant.AppIdentityType;
-import cn.com.leyizhuang.app.core.constant.StorePreDepositChangeType;
+import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.exception.LockStorePreDepositException;
 import cn.com.leyizhuang.app.core.exception.SystemBusyException;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
+import cn.com.leyizhuang.app.foundation.dao.AppEmployeeDAO;
 import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
-import cn.com.leyizhuang.app.foundation.pojo.StPreDepositLogDO;
-import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderJxPriceDifferenceReturnDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.ReturnOrderJxPriceDifferenceRefundDetails;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoneyResponse;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
-import cn.com.leyizhuang.app.foundation.service.AppOrderService;
-import cn.com.leyizhuang.app.foundation.service.AppStoreService;
-import cn.com.leyizhuang.app.foundation.service.ReturnOrderService;
-import cn.com.leyizhuang.app.foundation.service.repairDataService;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.user.EmpCreditChangeRule;
+import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.CountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by 12421 on 2018/6/27.
  */
 @Service
-public class repairDataServiceImpl implements repairDataService {
+public class RepairDataServiceImpl implements RepairDataService {
 
-    private static final Logger logger = LoggerFactory.getLogger(repairDataServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(RepairDataServiceImpl.class);
 
     @Resource
     private OrderDAO orderDAO;
@@ -55,6 +51,12 @@ public class repairDataServiceImpl implements repairDataService {
 
     @Resource
     private AppStoreService storeService;
+
+    @Autowired
+    private AppEmployeeDAO employeeDAO;
+
+    @Resource
+    private AppEmployeeService employeeService;
 
     /**
      * 未返还经销差价的 买券订单经销差价返还 以及扣除
@@ -86,7 +88,7 @@ public class repairDataServiceImpl implements repairDataService {
 
             // 产品券 返/扣除 经销差价
             if (goodsInfo.getGoodsLineType().equals(AppGoodsLineType.PRODUCT_COUPON)){
-                logger.info("产品券："+goodsInfo.getSku());
+                logger.info("产品券："+goodsInfo.getSku() +" 门店id:"+ orderBaseInfo.getStoreId());
                 // 结算价
                 Double settlementPrice = goodsInfo.getSettlementPrice() == null ? 0.00 : goodsInfo.getSettlementPrice();
                 // 经销价
@@ -96,8 +98,11 @@ public class repairDataServiceImpl implements repairDataService {
 
                 // 取本品券数量
                 Integer bpQty = orderDAO.getBpProductByOrderNo(goodsInfo.getOrderNumber(),goodsInfo.getSku());
+                Long proId = null;
+                if (goodsInfo.getPromotionId() != null){
+                    proId = Long.valueOf(goodsInfo.getPromotionId());
+                }
 
-                Long proId = Long.valueOf(goodsInfo.getPromotionId());
                 List<PromotionSimpleInfo> promotionSimpleInfoList = new ArrayList<>();
                 if (proId != null){
                     PromotionSimpleInfo promotionSimpleInfo = new PromotionSimpleInfo();
@@ -105,9 +110,10 @@ public class repairDataServiceImpl implements repairDataService {
                 }
                 Map<Long, Double> map = appActService.returnGcActIdAndJXDiscunt(promotionSimpleInfoList);
 
+                logger.info("本品数量："+bpQty + " 购买数量："+ goodsInfo.getOrderQuantity());
                 if (bpQty > goodsInfo.getOrderQuantity()){
                     throw new Exception("本品券数量 大于 使用数量");
-                }else {
+                }else if (bpQty > 0){
                     // 返还经销差价
 
                     OrderJxPriceDifferenceReturnDetails details = new OrderJxPriceDifferenceReturnDetails();
@@ -115,14 +121,16 @@ public class repairDataServiceImpl implements repairDataService {
                         Long actId = Long.valueOf(goodsInfo.getPromotionId());
                         if (map.containsKey(actId)) {
                             Double gcDiscount = map.get(actId);
-                            details.setAmount((goodsInfo.getSettlementPrice() - goodsInfo.getWholesalePrice() - gcDiscount) * goodsInfo.getOrderQuantity());
+                            subPrice = CountUtil.sub(subPrice,gcDiscount);
+
+                            details.setAmount((goodsInfo.getSettlementPrice() - goodsInfo.getWholesalePrice() - gcDiscount) * bpQty);
                             details.setUnitPrice(goodsInfo.getSettlementPrice() - goodsInfo.getWholesalePrice() - gcDiscount);
                         } else {
-                            details.setAmount((goodsInfo.getSettlementPrice() - goodsInfo.getWholesalePrice()) * goodsInfo.getOrderQuantity());
+                            details.setAmount((goodsInfo.getSettlementPrice() - goodsInfo.getWholesalePrice()) * bpQty);
                             details.setUnitPrice(goodsInfo.getSettlementPrice() - goodsInfo.getWholesalePrice());
                         }
                     } else {
-                        details.setAmount((goodsInfo.getSettlementPrice() - goodsInfo.getWholesalePrice()) * goodsInfo.getOrderQuantity());
+                        details.setAmount((goodsInfo.getSettlementPrice() - goodsInfo.getWholesalePrice()) * bpQty);
                         details.setUnitPrice(goodsInfo.getSettlementPrice() - goodsInfo.getWholesalePrice());
                     }
                     details.setCreateTime(new Date());
@@ -133,6 +141,7 @@ public class repairDataServiceImpl implements repairDataService {
                     details.setStoreId(orderBaseInfo.getStoreId());
                     details.setStoreCode(orderBaseInfo.getStoreCode());
                     // TODO 保存券类型
+                    details.setGoodsLineType(AppGoodsLineType.PRODUCT_COUPON);
                     detailsList.add(details);
                     logger.info("返 ：结算价："+ settlementPrice + " 经销价: "+ jxPrice + " 差价："+ details.getUnitPrice()+ "数量："+bpQty +" 返差价总额："+ details.getAmount() );
 
@@ -145,7 +154,7 @@ public class repairDataServiceImpl implements repairDataService {
                         //取退货数量
                         Integer returnBpQty = orderDAO.getBpProductByReturnNo(returnOrderBaseInfo.getReturnNo(),goodsInfo.getSku());
 
-                        if (jxPrice > AppConstant.DOUBLE_ZERO){
+                        if (subPrice > AppConstant.DOUBLE_ZERO && returnBpQty > 0){
                             ReturnOrderJxPriceDifferenceRefundDetails returnDetails = new ReturnOrderJxPriceDifferenceRefundDetails();
                             returnDetails.setAmount(CountUtil.mul(subPrice,returnBpQty));
                             returnDetails.setCreateTime(new Date());
@@ -158,10 +167,10 @@ public class repairDataServiceImpl implements repairDataService {
                             returnDetails.setStoreId(returnOrderBaseInfo.getStoreId());
                             returnDetails.setUnitPrice(subPrice);
                             returnDetails.setRefundNumber(OrderUtils.getRefundNumber());
-                            // TODO 保存券类型
+                            returnDetails.setGoodsLineType(AppGoodsLineType.PRODUCT_COUPON);
                             returnDetailsList.add(returnDetails);
                             logger.info("退单："+returnOrderBaseInfo.getReturnNo() + " 产品："+ goodsInfo.getSku());
-                            logger.info("扣除：结算价："+ settlementPrice + " 经销价: "+ jxPrice + " 差价："+ subPrice+ "数量："+returnBpQty +" 返差价总额："+ returnDetails.getAmount() );
+                            logger.info("扣除：结算价："+ settlementPrice + " 经销价: "+ jxPrice + " 差价："+ subPrice+ "本品数量："+returnBpQty +" 返差价总额："+ returnDetails.getAmount() );
                         }
 
                     }
@@ -184,9 +193,9 @@ public class repairDataServiceImpl implements repairDataService {
 
         for (OrderJxPriceDifferenceReturnDetails details: list1){
             //判断 是否已经返还
-            Boolean flag = orderDAO.isReturnJxSubPrice(orderBaseInfo.getOrderNumber(),details.getSku(),AppGoodsLineType.PRODUCT_COUPON.getDescription());
+            Boolean flag = orderDAO.isReturnJxSubPrice(orderBaseInfo.getOrderNumber(),details.getSku(),AppGoodsLineType.PRODUCT_COUPON.getValue());
 
-            if (flag){
+            if (!flag){
                 // 保存记录
                 appOrderService.saveOrderJxPriceDifferenceReturnDetails(details);
 
@@ -228,9 +237,12 @@ public class repairDataServiceImpl implements repairDataService {
         for (ReturnOrderJxPriceDifferenceRefundDetails details:list2){
 
             // 扣除
-            Boolean flag = orderDAO.isBuckleJxSubPrice(details.getReturnNumber(),details.getSku(),AppGoodsLineType.PRODUCT_COUPON.getDescription());
+            Boolean flag = orderDAO.isBuckleJxSubPrice(details.getReturnNumber(),details.getSku(),AppGoodsLineType.PRODUCT_COUPON.getValue());
 
-            if (flag){
+            if (!flag){
+                //保存记录
+                returnOrderService.saveReturnOrderJxPriceDifferenceRefundDetails(details);
+
                 StorePreDeposit preDeposit = storeService.findStorePreDepositByStoreId(orderBaseInfo.getStoreId());
                 Double totalSubPrice = details.getAmount() == null ? 0D : details.getAmount();
                 if (null != preDeposit) {
@@ -263,4 +275,97 @@ public class repairDataServiceImpl implements repairDataService {
         }
     }
 
+    /**
+     * 刷新规则下所以的导购信用额度 及变更日志
+     * @param flag
+     */
+    public void repairAllRuleScope(String flag){
+        List<EmpCreditChangeRule> list = employeeDAO.findAllRule();
+
+        for (EmpCreditChangeRule rule :list){
+            this.repairEmpCredit(rule.getEmpId(),flag);
+        }
+    }
+
+    public ResultDTO repairEmpCredit(Long empId, String flag){
+
+        AppEmployee employee = employeeDAO.findById(empId);
+        if (employee == null) {
+            return null;
+        }
+
+        //读取变更规则
+        EmpCreditChangeRule rule = employeeDAO.findChangeRuleByempId(empId);
+
+        if (rule == null){
+            logger.info("没有规则，不能调整导购余额及日志");
+            return null;
+        }
+
+        logger.info("导购：" + employee.getName());
+
+        // 找到导购可用额度变更日期 倒序
+        List<EmpAvailableCreditMoneyChangeLog> logList = employeeDAO.getEmpAvailableCreditMoneyChangeLogByEmpIdOrderByCreateTimeDesc(empId);
+
+        // 导购当前额度
+        SellerCreditMoneyResponse creditMoneyResponse = employeeDAO.findCreditMoneyBalanceByUserId(empId);
+        Double balance = creditMoneyResponse.getAvailableBalance() == null ? 0D : creditMoneyResponse.getAvailableBalance();
+
+        // 第一条 取得日志余额
+        EmpAvailableCreditMoneyChangeLog log = logList.get(0);
+        Double logBlance = log.getCreditLimitAvailableAfterChange();
+        Double ruleBalance = rule.getChangeMoney();
+
+        if (ruleBalance == null){
+            logger.info("改变规则为null empId:"+empId);
+            return null;
+        }
+        logger.info("日志余额：" + logBlance + "真实余额："+ balance +" 待变更为："+ruleBalance);
+
+        for (int i = 0 ; i< logList.size() ; i++){
+            EmpAvailableCreditMoneyChangeLog changeLog = logList.get(i);
+            if (changeLog != null) {
+
+                Double changeAmount = changeLog.getCreditLimitAvailableChangeAmount() == null ? 0 : changeLog.getCreditLimitAvailableChangeAmount();
+                Double afterAmount = changeLog.getCreditLimitAvailableAfterChange() == null ? 0 : changeLog.getCreditLimitAvailableAfterChange();
+                Double amount =  CountUtil.sub(ruleBalance, changeAmount);
+
+                logger.info(" 规则余额"+ ruleBalance +" 改变值：" + changeAmount + " 改变后："+ ruleBalance+ " 原改变后：" + afterAmount);
+
+                if (i == 0){
+                    changeLog.setCreditLimitAvailableAfterChange(ruleBalance);
+                    ruleBalance = amount;
+                }else {
+                    changeLog.setCreditLimitAvailableAfterChange(ruleBalance);
+                    ruleBalance = amount;
+                }
+            }
+        }
+
+        if (flag.equalsIgnoreCase("go")) {
+            //改变额度
+            Double ruleChangeMoney = rule.getChangeMoney();
+            Double changeMoney = CountUtil.sub(ruleChangeMoney,balance);
+
+            EmpCreditMoney empCreditMoney = employeeService.findEmpCreditMoneyByEmpId(empId);
+
+            if (empCreditMoney == null){
+                logger.info("empId:"+empId +"导购账户为空");
+                return null;
+            }
+
+            int affectLine = employeeService.lockGuideCreditByUserIdAndCredit(
+                    empId, changeMoney, empCreditMoney.getLastUpdateTime());
+
+            if (affectLine > 0) {
+                logger.info("修改余额成功！empId:"+empId);
+                //改变日志
+                for (EmpAvailableCreditMoneyChangeLog changeLog : logList) {
+                    employeeDAO.updateEmpAvailableCreditMoneyChangeLog(changeLog);
+                }
+            }
+        }
+
+        return null;
+    }
 }
