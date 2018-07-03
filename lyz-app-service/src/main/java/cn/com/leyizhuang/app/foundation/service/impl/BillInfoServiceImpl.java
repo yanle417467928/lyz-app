@@ -394,6 +394,9 @@ public class BillInfoServiceImpl implements BillInfoService {
         }
         //根据门店ID查询账单规则
         BillRuleDO billRuleDO = this.billRuleService.getBillRuleByStoreId(storeId);
+        if (null == billRuleDO){
+            return null;
+        }
         //还款截至日
         Integer repaymentDeadlineDate = billRuleDO.getRepaymentDeadlineDate();
         if (null == repaymentDeadlineDate || repaymentDeadlineDate == 0) {
