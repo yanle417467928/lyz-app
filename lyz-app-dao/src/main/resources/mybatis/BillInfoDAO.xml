@@ -83,10 +83,10 @@
         <if test="endTime != null">
           and wa.send_time &lt; #{endTime}
         </if>
-        <if test="is_paid != null and isPaid == true">
+        <if test="isPaid != null and isPaid == true">
             and bpi.is_paid = 1
         </if>
-        <if test="is_paid != null and isPaid == false">
+        <if test="isPaid != null and isPaid == false">
             and (bpi.is_paid = 0 OR bpi.is_paid is null)
         </if>
         )
@@ -108,15 +108,15 @@
         LEFT  JOIN (SELECT * from ord_shipping GROUP BY ord_no) os on os.ord_no = ob.ord_no
         where ob.delivery_type = "SELF_TAKE" and obd.st_credit_money > 0 and obd.is_pay_up = 1
         <if test="startTime != null">
-            AND wa.send_time &gt; #{startTime}
+            AND os.shipping_time &gt; #{startTime}
         </if>
         <if test="endTime != null">
-            and wa.send_time &lt; #{endTime}
+            and os.shipping_time &lt; #{endTime}
         </if>
-        <if test="is_paid != null and isPaid == true">
+        <if test="isPaid != null and isPaid == true">
             and bpi.is_paid = 1
         </if>
-        <if test="is_paid != null and isPaid == false">
+        <if test="isPaid != null and isPaid == false">
             and (bpi.is_paid = 0 OR bpi.is_paid is null)
         </if>
         )
@@ -139,15 +139,15 @@
         LEFT JOIN ord_return_lifecycle orl on orl.return_no = orb.return_no
         where ob.delivery_type in ("SELF_TAKE","HOUSE_DELIVERY") and orl.operation in ('REJECTED','NORMAL_RETURN') and post_status = "FINISHED" and orbd.st_credit_money > 0
         <if test="startTime != null">
-            AND wa.send_time &gt; #{startTime}
+            AND orl.operation_time &gt; #{startTime}
         </if>
         <if test="endTime != null">
-            and wa.send_time &lt; #{endTime}
+            and orl.operation_time &lt; #{endTime}
         </if>
-        <if test="is_paid != null and isPaid == true">
+        <if test="isPaid != null and isPaid == true">
             and bpi.is_paid = 1
         </if>
-        <if test="is_paid != null and isPaid == false">
+        <if test="isPaid != null and isPaid == false">
             and (bpi.is_paid = 0 OR bpi.is_paid is null)
         </if>
         )
@@ -199,7 +199,9 @@
         #{priorPaidBillAmount}, #{priorPaidInterestAmount}, #{status}, #{createTime}, #{createUserId}, #{createUserName})
     </insert>
 
-
+    <select id="findBillByStatus" resultType="cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO">
+        SELECT  * from bill_info where `status` = #{status} and store_id = #{storeId}
+    </select>
 
 
 

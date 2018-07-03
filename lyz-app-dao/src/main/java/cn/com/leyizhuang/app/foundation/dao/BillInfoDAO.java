@@ -30,11 +30,11 @@ public interface BillInfoDAO {
 
     void updateBillInfo(BillInfoDO billInfoDO);
 
-    BillInfoDO findBillByStatus(@Param("BillStatusEnum") BillStatusEnum status);
+    BillInfoDO findBillByStatus(@Param("status") BillStatusEnum status,@Param("storeId") Long storeId);
 
     List<BillRepaymentGoodsInfoResponse> getCurrentOrderDetails(@Param("startTime") LocalDateTime startTime,
                                                           @Param("endTime") LocalDateTime endTime,
-                                                          @Param("isPaid") Boolean is_paid);
+                                                          @Param("isPaid") Boolean isPaid);
 
     List<BillHistoryListResponse> findBillHistoryListByEmpId(Long empId);
 

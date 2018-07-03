@@ -104,14 +104,14 @@ public class AppBillController {
             LocalDateTime endTime = null;
             if (StringUtils.isNotBlank(startTimeStr)){
                 startTimeStr = startTimeStr.trim();
-                startTimeStr = startTimeStr + "00:00:00";
+                startTimeStr = startTimeStr + " 00:00:00";
 
                 startTime = LocalDateTime.parse(startTimeStr,df);
             }
 
             if (StringUtils.isNotBlank(endTimeStr)){
                 endTimeStr = endTimeStr.trim();
-                endTimeStr = endTimeStr + "23:59:59";
+                endTimeStr = endTimeStr + " 23:59:59";
 
                 endTime = LocalDateTime.parse(endTimeStr,df);
             }

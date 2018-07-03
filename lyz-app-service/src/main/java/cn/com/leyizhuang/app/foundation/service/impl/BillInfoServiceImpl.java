@@ -259,16 +259,18 @@ public class BillInfoServiceImpl implements BillInfoService {
 
         LocalDateTime now = LocalDateTime.now(); //当前时间
         // 查询已出账单
-        BillInfoDO billInfoDO = billInfoDAO.findBillByStatus(BillStatusEnum.ALREADY_OUT);
+        BillInfoDO billInfoDO = billInfoDAO.findBillByStatus(BillStatusEnum.ALREADY_OUT,storeid);
 
         if (billInfoDO == null ){
             // 已出账单不存在 处理未出账单
-            billInfoDO = billInfoDAO.findBillByStatus(BillStatusEnum.NOT_OUT);
+            billInfoDO = billInfoDAO.findBillByStatus(BillStatusEnum.NOT_OUT,storeid);
 
             if (billInfoDO == null){
-                return response;
+                billInfoDO = this.createBillInfo(storeid);
             }
         }
+
+        response = BillInfoDO.transfer(billInfoDO);
 
         if (billInfoDO.getBillStartDate() == null){
             return response;
