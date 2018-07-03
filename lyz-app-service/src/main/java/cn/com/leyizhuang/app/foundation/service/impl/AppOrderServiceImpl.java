@@ -1359,6 +1359,11 @@ public class AppOrderServiceImpl implements AppOrderService {
 
         // 条件1: 出货日期超过3个月 不予退货;
         LocalDateTime sendTime = this.getOrderSendTime(orderNumer);
+        if (sendTime == null){
+            flag  = 1 ;
+            log.info("》》》》》》》》》》》》》   订单："+orderNumer+"超过3个月退货期限制   》》》》》》》》》》》》》");
+        }
+
         // 3个月后截至日期
         LocalDateTime returnEndTime = sendTime.plusMonths(3);
         if (LocalDateTime.now().isAfter(returnEndTime)){
