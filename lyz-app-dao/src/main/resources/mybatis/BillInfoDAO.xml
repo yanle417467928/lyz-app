@@ -54,6 +54,18 @@
             <if test="null != priorPaidBillAmount">
                 prior_paid_bill_amount = #{priorPaidBillAmount},
             </if>
+            <if test="null != billTotalAmount">
+                bill_total_amount = #{billTotalAmount},
+            </if>
+            <if test="null != currentBillAmount">
+                current_bill_amount = #{currentBillAmount},
+            </if>
+            <if test="null != currentAdjustmentAmount">
+                current_adjustment_amount = #{currentAdjustmentAmount},
+            </if>
+            <if test="null != currentUnpaidAmount">
+                current_unpaid_amount = #{currentUnpaidAmount},
+            </if>
             <if test="null != status">
                 status = #{status},
             </if>
@@ -203,6 +215,18 @@
         SELECT  * from bill_info where `status` = #{status} and store_id = #{storeId}
     </select>
 
+
+    <update id="updateBillStatus" >
+      UPDATE bill_info SET
+      `status` = {afterStatus}
+      WHERE store_id = #{storeId} AND `status` = #{beforeStatus}
+    </update>
+
+    <select id="findBillInfoByBillEndDateAndStoreIdAndStatus" resultType="cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO">
+        SELECT bill_no, bill_start_date, bill_end_date, repayment_deadline_date, status
+        FROM bill_info
+        WHERE store_id = #{storeId} AND `status` = #{status} AND bill_end_date = #{billEndDate}
+    </select>
 
 
 
