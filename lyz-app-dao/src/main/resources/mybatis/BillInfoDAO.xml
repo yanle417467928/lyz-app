@@ -111,4 +111,8 @@
         #{priorPaidBillAmount}, #{priorPaidInterestAmount}, #{status}, #{createTime}, #{createUserId}, #{createUserName})
     </insert>
 
+    <insert id="" parameterType="java.lang.Long">
+
+    </insert>
+
 </mapper>

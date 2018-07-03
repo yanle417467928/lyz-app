@@ -99,6 +99,48 @@ public class BillInfoServiceImpl implements BillInfoService {
     }
 
     @Override
+    public List<BillRepaymentGoodsInfoResponse> computeInterestAmount2(Long storeId, List<BillRepaymentGoodsInfoResponse> goodsDetailsList) {
+
+        if (null == goodsDetailsList || goodsDetailsList.size() == 0) {
+            return goodsDetailsList;
+        }
+
+        if (null == storeId){
+            return goodsDetailsList;
+        }
+        //根据门店ID查询账单规则
+        BillRuleDO billRuleDO = this.billRuleService.getBillRuleByStoreId(storeId);
+        if (null == billRuleDO || null == billRuleDO.getInterestRate() || billRuleDO.getInterestRate().equals(0D)){
+            return goodsDetailsList;
+        }
+        //利息
+        Double interestRate = billRuleDO.getInterestRate();
+        //还款截至日
+        Integer repaymentDeadlineDate = billRuleDO.getRepaymentDeadlineDate();
+        if (null == repaymentDeadlineDate || repaymentDeadlineDate == 0) {
+            repaymentDeadlineDate = 1;
+        }
+        //还款截至日
+        Integer billDate = billRuleDO.getBillDate();
+        if (null == billDate || billDate == 0) {
+            billDate = 1;
+        }
+
+
+        //计算利息（欠款金额 * 利息 * 逾期天数 * 利息单位）
+        for (BillRepaymentGoodsInfoResponse goodsDetails: goodsDetailsList) {
+            //逾期天数
+            Integer overdueDays = DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(billDate, repaymentDeadlineDate, goodsDetails.getShipmentTime()), new Date());
+            if (overdueDays < 0){
+                overdueDays = 0;
+            }
+            goodsDetails.setInterestAmount(CountUtil.mul(goodsDetails.getOrderCreditMoney(), interestRate, overdueDays, AppConstant.INTEREST_RATE_UNIT));
+        }
+
+        return goodsDetailsList;
+    }
+
+    @Override
     public BillRepaymentInfoDO findBillRepaymentInfoByRepaymentNo(String repaymentNo) {
         return this.billInfoDAO.findBillRepaymentInfoByRepaymentNo(repaymentNo);
     }
@@ -332,6 +374,11 @@ public class BillInfoServiceImpl implements BillInfoService {
     @Override
     public void saveBillInfo(BillInfoDO billInfo) {
         this.billInfoDAO.saveBillInfo(billInfo);
+    }
+
+    @Override
+    public void handleHistoryBill(Long storeId) {
+
     }
 
     public Double AddAllCreditMoney(List<BillRepaymentGoodsInfoResponse> list){
