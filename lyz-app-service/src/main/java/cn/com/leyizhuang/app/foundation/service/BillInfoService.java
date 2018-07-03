@@ -9,6 +9,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.BillInfoResponse;
 import com.github.pagehelper.PageInfo;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -41,5 +42,9 @@ public interface BillInfoService {
     List<BillRepaymentInfoDO> findBillRepaymentInfoByBillNo(String billNo);
 
     List<BillRepaymentGoodsDetailsDO> findRepaymentGoodsDetailsByBillNo(String billNo);
+
+    BillInfoDO createBillInfo(Long storeId);
+
+    void saveBillInfo(BillInfoDO billInfo);
 
 }

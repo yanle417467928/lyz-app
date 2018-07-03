@@ -101,4 +101,14 @@
         WHERE r.bill_no = #{billNo} AND b.is_paid IS TRUE
     </select>
 
+    <insert id="saveBillInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO">
+        INSERT INTO bill_info (bill_no, bill_name, store_id, bill_start_date, bill_end_date, repayment_deadline_date,
+        bill_total_amount, current_bill_amount, current_adjustment_amount, current_paid_amount, current_unpaid_amount,
+        prior_paid_bill_amount, prior_paid_interest_amount, status, create_time, create_user_id, create_user_name)
+        VALUES
+        (#{billNo}, #{billName}, #{storeId}, #{billStartDate}, #{billEndDate}, #{repaymentDeadlineDate},
+        #{billTotalAmount}, #{currentBillAmount}, #{currentAdjustmentAmount}, #{currentPaidAmount}, #{currentUnpaidAmount},
+        #{priorPaidBillAmount}, #{priorPaidInterestAmount}, #{status}, #{createTime}, #{createUserId}, #{createUserName})
+    </insert>
+
 </mapper>

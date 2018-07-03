@@ -35,4 +35,6 @@ public interface BillInfoDAO {
 
     List<BillRepaymentGoodsDetailsDO> findRepaymentGoodsDetailsByBillNo(String billNo);
 
+    void saveBillInfo(BillInfoDO billInfo);
+
 }

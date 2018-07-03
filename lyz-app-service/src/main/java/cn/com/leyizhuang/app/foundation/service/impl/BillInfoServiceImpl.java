@@ -4,7 +4,9 @@ import cn.com.leyizhuang.app.core.constant.AppConstant;
 import cn.com.leyizhuang.app.core.constant.BillStatusEnum;
 import cn.com.leyizhuang.app.core.constant.OnlinePayType;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
+import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.BillInfoDAO;
+import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
@@ -14,10 +16,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.BillHistoryListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillInfoResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentGoodsInfoResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentResponse;
-import cn.com.leyizhuang.app.foundation.service.AppOrderService;
-import cn.com.leyizhuang.app.foundation.service.BillInfoService;
-import cn.com.leyizhuang.app.foundation.service.BillRuleService;
-import cn.com.leyizhuang.app.foundation.service.PaymentDataService;
+import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.util.CountUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -52,6 +51,10 @@ public class BillInfoServiceImpl implements BillInfoService {
 
     @Autowired
     private AppOrderService orderService;
+
+    @Autowired
+    private AppStoreService appStoreService;
+
 
     @Override
     public List<BillRepaymentGoodsDetailsDO> computeInterestAmount(Long storeId, List<BillRepaymentGoodsDetailsDO> goodsDetailsDOList) {
@@ -123,7 +126,7 @@ public class BillInfoServiceImpl implements BillInfoService {
         if (null == repaymentDeadlineDate || repaymentDeadlineDate == 0) {
             repaymentDeadlineDate = 1;
         }
-        //还款截至日
+        //账期日
         Integer billDate = billRuleDO.getBillDate();
         if (null == billDate || billDate == 0) {
             billDate = 1;
@@ -276,6 +279,59 @@ public class BillInfoServiceImpl implements BillInfoService {
     @Override
     public List<BillRepaymentGoodsDetailsDO> findRepaymentGoodsDetailsByBillNo(String billNo) {
         return this.billInfoDAO.findRepaymentGoodsDetailsByBillNo(billNo);
+    }
+
+    @Override
+    public BillInfoDO createBillInfo(Long storeId) {
+        AppStore store = this.appStoreService.findById(storeId);
+        if (null == store) {
+            return null;
+        }
+        //根据门店ID查询账单规则
+        BillRuleDO billRuleDO = this.billRuleService.getBillRuleByStoreId(storeId);
+        //还款截至日
+        Integer repaymentDeadlineDate = billRuleDO.getRepaymentDeadlineDate();
+        if (null == repaymentDeadlineDate || repaymentDeadlineDate == 0) {
+            repaymentDeadlineDate = 1;
+        }
+        //账期日
+        Integer billDate = billRuleDO.getBillDate();
+        if (null == billDate || billDate == 0) {
+            billDate = 1;
+        }
+        Integer nowDay = DateUtil.getDate();
+        Date billStartDate = new Date();
+        if (nowDay < billDate) {
+            billStartDate = DateUtil.getBillDate(billStartDate, -1, billDate);
+        } else {
+            billStartDate = DateUtil.getBillDate(billStartDate, 0, billDate);
+        }
+
+        BillInfoDO billInfo = new BillInfoDO();
+        billInfo.setBillNo(OrderUtils.generateBillNo(store.getStoreCode()));
+        billInfo.setBillName(store.getStoreName() + DateUtil.getMonthByDate(billStartDate) + "月账单");
+        billInfo.setStoreId(storeId);
+        billInfo.setBillStartDate(billStartDate);
+        billInfo.setBillEndDate(DateUtil.getNextMonthByDateBeforOne(billStartDate));
+        billInfo.setRepaymentDeadlineDate(DateUtil.getDifferenceFatalism(billDate, repaymentDeadlineDate, new Date()));
+        billInfo.setBillTotalAmount(0D);
+        billInfo.setCurrentBillAmount(0D);
+        billInfo.setCurrentAdjustmentAmount(0D);
+        billInfo.setCurrentPaidAmount(0D);
+        billInfo.setCurrentUnpaidAmount(0D);
+        billInfo.setPriorPaidBillAmount(0D);
+        billInfo.setPriorPaidInterestAmount(0D);
+        billInfo.setStatus(BillStatusEnum.NOT_OUT);
+        billInfo.setCreateTime(new Date());
+        billInfo.setCreateUserId(0L);
+        billInfo.setCreateUserName("系统");
+        this.billInfoDAO.saveBillInfo(billInfo);
+        return billInfo;
+    }
+
+    @Override
+    public void saveBillInfo(BillInfoDO billInfo) {
+        this.billInfoDAO.saveBillInfo(billInfo);
     }
 
     public Double AddAllCreditMoney(List<BillRepaymentGoodsInfoResponse> list){
