@@ -732,7 +732,7 @@ public class BillInfoServiceImpl implements BillInfoService {
             Date billStartTime = billInfoDO.getBillStartDate();
             for (BillRepaymentGoodsInfoResponse goodsInfoResponse : billOrderList){
                 if (goodsInfoResponse.getShipmentTime().before(billStartTime)){
-
+                    pirorOrderList.add(goodsInfoResponse);
                 }
             }
 
