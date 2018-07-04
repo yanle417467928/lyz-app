@@ -481,11 +481,11 @@ public class BillInfoServiceImpl implements BillInfoService {
             Double fees = 0D; // 滞纳金
 
             // 本期已还订单
-            currentPaidOrderDetails = billInfoDAO.getCurrentOrderDetails(billStartTime,billEndTime,true);
+            currentPaidOrderDetails = billInfoDAO.getCurrentOrderDetails(billStartTime,billEndTime,true, storeId);
             // 本期未还订单
-            currentNotPayOrderDetails = billInfoDAO.getCurrentOrderDetails(billStartTime,billEndTime,false);
+            currentNotPayOrderDetails = billInfoDAO.getCurrentOrderDetails(billStartTime,billEndTime,false, storeId);
             // 上期未还订单
-            beforNotPayOrderDetails = billInfoDAO.getCurrentOrderDetails(null,billStartTime,false);
+            beforNotPayOrderDetails = billInfoDAO.getCurrentOrderDetails(null,billStartTime,false, storeId);
 
 
             currentNotPay = this.AddAllCreditMoney(currentNotPayOrderDetails);
