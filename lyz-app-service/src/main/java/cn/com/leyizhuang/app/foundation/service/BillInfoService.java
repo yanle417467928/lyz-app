@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.core.constant.BillStatusEnum;
 import cn.com.leyizhuang.app.core.constant.OnlinePayType;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
@@ -50,6 +51,10 @@ public interface BillInfoService {
 
     void saveBillInfo(BillInfoDO billInfo);
 
-    void handleHistoryBill(Long storeId);
+    void updateBillStatus(Long storeId, BillStatusEnum beforeStatus, BillStatusEnum afterStatus);
+
+    void handleBillInfoInBillDate(Long storeId);
+
+    BillInfoDO findBillInfoByBillEndDateAndStoreIdAndStatus(Long storeId, String billEndDate, BillStatusEnum status);
 
 }

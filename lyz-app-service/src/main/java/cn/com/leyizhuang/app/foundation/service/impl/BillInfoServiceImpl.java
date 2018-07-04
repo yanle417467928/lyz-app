@@ -402,6 +402,9 @@ public class BillInfoServiceImpl implements BillInfoService {
         }
         //根据门店ID查询账单规则
         BillRuleDO billRuleDO = this.billRuleService.getBillRuleByStoreId(storeId);
+        if (null == billRuleDO){
+            return null;
+        }
         //还款截至日
         Integer repaymentDeadlineDate = billRuleDO.getRepaymentDeadlineDate();
         if (null == repaymentDeadlineDate || repaymentDeadlineDate == 0) {
@@ -448,8 +451,69 @@ public class BillInfoServiceImpl implements BillInfoService {
     }
 
     @Override
-    public void handleHistoryBill(Long storeId) {
+    public void updateBillStatus(Long storeId, BillStatusEnum beforeStatus, BillStatusEnum afterStatus) {
+        this.billInfoDAO.updateBillStatus(storeId, beforeStatus, afterStatus);
+    }
 
+    @Override
+    public void handleBillInfoInBillDate(Long storeId) {
+        String nowStr = DateUtil.getDateStr(new Date());
+        BillInfoDO billInfo = this.billInfoDAO.findBillInfoByBillEndDateAndStoreIdAndStatus(storeId, nowStr, BillStatusEnum.NOT_OUT);
+        if (null != billInfo) {
+            LocalDateTime billStartTime = null; // 账单开始时间
+            LocalDateTime billEndTime = null;   // 账单结束时间
+            Instant instant = billInfo.getBillStartDate().toInstant();
+            ZoneId zone = ZoneId.systemDefault();
+            billStartTime = instant.atZone(zone).toLocalDateTime();
+            Instant instant2 = billInfo.getBillEndDate().toInstant();
+            billEndTime = instant2.atZone(zone).toLocalDateTime();
+
+            // 获取本期未还订单，本期已还订单，上期未还订单
+            List<BillRepaymentGoodsInfoResponse> currentPaidOrderDetails = new ArrayList<>();
+            List<BillRepaymentGoodsInfoResponse> currentNotPayOrderDetails = new ArrayList<>();
+            List<BillRepaymentGoodsInfoResponse> beforNotPayOrderDetails = new ArrayList<>();
+            Double billTotalAmount = 0D; // 账单总金额：本期账单金额+上期未还账单金额+上期滞纳金+本期调整金额
+            Double currentBillAmount = 0D; // 本期账单金额
+            Double currentAdjustmentAmount = 0D; // 本期调整金额
+            Double currentPaid = 0D; // 本期已还
+            Double currentNotPay = 0D; // 本期未还
+            Double beforNotPay = 0D;   // 上期未还
+            Double fees = 0D; // 滞纳金
+
+            // 本期已还订单
+            currentPaidOrderDetails = billInfoDAO.getCurrentOrderDetails(billStartTime,billEndTime,true);
+            // 本期未还订单
+            currentNotPayOrderDetails = billInfoDAO.getCurrentOrderDetails(billStartTime,billEndTime,false);
+            // 上期未还订单
+            beforNotPayOrderDetails = billInfoDAO.getCurrentOrderDetails(null,billStartTime,false);
+
+
+            currentNotPay = this.AddAllCreditMoney(currentNotPayOrderDetails);
+            beforNotPay = this.AddAllCreditMoney(beforNotPayOrderDetails);
+
+            currentPaidOrderDetails.addAll(currentNotPayOrderDetails); // 合并本期已还和未还订单
+            currentBillAmount = this.AddAllPositiveCreditMoney(currentPaidOrderDetails);
+            currentAdjustmentAmount = this.AddAllNegativeCreditMoney(currentPaidOrderDetails);
+
+            // 计算滞纳金
+            beforNotPayOrderDetails = this.computeInterestAmount2(storeId,beforNotPayOrderDetails);
+            fees = this.AddAllInterestAmount(beforNotPayOrderDetails);
+
+            // 账单总金额
+            billTotalAmount = CountUtil.add(currentBillAmount,currentAdjustmentAmount,beforNotPay,fees);
+            billInfo.setBillTotalAmount(billTotalAmount);
+            billInfo.setCurrentBillAmount(currentBillAmount);
+            billInfo.setCurrentAdjustmentAmount(currentAdjustmentAmount);
+            billInfo.setCurrentUnpaidAmount(currentNotPay);
+            billInfo.setStatus(BillStatusEnum.ALREADY_OUT);
+            this.billInfoDAO.updateBillInfo(billInfo);
+        }
+
+    }
+
+    @Override
+    public BillInfoDO findBillInfoByBillEndDateAndStoreIdAndStatus(Long storeId, String billEndDate, BillStatusEnum status) {
+        return this.billInfoDAO.findBillInfoByBillEndDateAndStoreIdAndStatus(storeId, billEndDate, status);
     }
 
     /**

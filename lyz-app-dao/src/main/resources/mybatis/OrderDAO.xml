@@ -865,6 +865,9 @@
             <if test="null != empCreditMoney">
                 emp_credit_money = #{empCreditMoney},
             </if>
+            <if test="null != empCreditMoney">
+                st_credit_money = #{storeCreditMoney},
+            </if>
             <if test="null != sellerStoreDeposit">
                 seller_store_deposit = #{sellerStoreDeposit},
             </if>
