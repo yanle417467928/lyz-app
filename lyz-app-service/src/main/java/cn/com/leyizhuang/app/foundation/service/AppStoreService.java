@@ -107,4 +107,9 @@ public interface AppStoreService {
     List<AppStore> findStoreListByLoginAdministrator();
 
     List<AppStore> findFitStoreListByLoginAdministrator();
+
+    StoreCreditMoney findStoreCreditMoneyByStoreId(Long storeId);
+
+    Integer updateStoreCreditByStoreIdAndVersion(Long storeId, Double storeCredit, Timestamp version);
+
 }

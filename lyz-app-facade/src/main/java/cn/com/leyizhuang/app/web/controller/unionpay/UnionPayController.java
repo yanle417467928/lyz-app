@@ -289,7 +289,7 @@ public class UnionPayController {
                             logger.info("alipayReturnAsync ,银联支付回调接口，支付数据记录信息 paymentDataDO:{}",
                                     paymentDataDO);
                             //处理第三方支付成功之后订单相关事务
-                            billInfoService.handleBillRepaymentAfterOnlinePayUp(orderNumber, OnlinePayType.UNION_PAY);
+                            billInfoService.handleBillRepaymentAfterOnlinePayUp(orderNumber, OnlinePayType.UNION_PAY, paymentDataDO.getAppIdentityType().getValue());
                             //将收款记录入拆单消息队列
                             sinkSender.sendRechargeReceipt(orderNumber);
                             logger.warn("alipayReturnAsync OUT,银联支付回调接口处理成功，出参 result:{}", "success");

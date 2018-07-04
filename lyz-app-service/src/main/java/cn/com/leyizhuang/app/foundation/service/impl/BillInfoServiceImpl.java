@@ -1,16 +1,19 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
-import cn.com.leyizhuang.app.core.constant.AppConstant;
-import cn.com.leyizhuang.app.core.constant.BillStatusEnum;
-import cn.com.leyizhuang.app.core.constant.OnlinePayType;
+import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.exception.LockStorePreDepositException;
+import cn.com.leyizhuang.app.core.exception.SystemBusyException;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.BillInfoDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.StoreCreditMoney;
+import cn.com.leyizhuang.app.foundation.pojo.StoreCreditMoneyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRuleDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyCredit;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.request.BillorderDetailsRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillHistoryListResponse;
@@ -27,10 +30,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -57,6 +62,9 @@ public class BillInfoServiceImpl implements BillInfoService {
 
     @Autowired
     private AppStoreService appStoreService;
+
+    @Autowired
+    private MaDecorativeCompanyCreditService maDecorativeCompanyCreditService;
 
 
     @Override
@@ -150,7 +158,7 @@ public class BillInfoServiceImpl implements BillInfoService {
 
     @Override
     @Transactional
-    public void handleBillRepaymentAfterOnlinePayUp(String repaymentNo, OnlinePayType onlinePayType) {
+    public void handleBillRepaymentAfterOnlinePayUp(String repaymentNo, OnlinePayType onlinePayType, Integer identityType) {
 
         //更改账单收款信息
         BillRepaymentInfoDO billRepaymentInfoDO = this.billInfoDAO.findBillRepaymentInfoByRepaymentNo(repaymentNo);
@@ -176,7 +184,6 @@ public class BillInfoServiceImpl implements BillInfoService {
         if (null == billDate || billDate == 0) {
             billDate = 1;
         }
-
 
         //订单账单更新是否已付清、付清时间
         List<BillRepaymentGoodsDetailsDO> goodsDetailsDOS = this.billInfoDAO.findRepaymentGoodsDetailsByRepaymentNo(repaymentNo);
@@ -209,8 +216,37 @@ public class BillInfoServiceImpl implements BillInfoService {
                 billInfoDO.setStatus(BillStatusEnum.HISTORY);
             }
         }
-        this.billInfoDAO.updateBillInfo(billInfoDO);
 
+        this.billInfoDAO.updateBillInfo(billInfoDO);
+        //加信用金
+        for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+            StoreCreditMoney storeCreditMoney = this.appStoreService.findStoreCreditMoneyByStoreId(billInfoDO.getStoreId());
+            if (null != storeCreditMoney) {
+                int affectLine = appStoreService.updateStoreCreditByStoreIdAndVersion(
+                        billInfoDO.getStoreId(), billRepaymentInfoDO.getTotalRepaymentAmount(), storeCreditMoney.getLastUpdateTime());
+                if (affectLine > 0) {
+                    StoreCreditMoneyChangeLog log = new StoreCreditMoneyChangeLog();
+                    log.setStoreId(storeCreditMoney.getStoreId());
+                    log.setChangeAmount(billRepaymentInfoDO.getTotalRepaymentAmount());
+                    log.setCreditLimitAvailableAfterChange(storeCreditMoney.getCreditLimitAvailable() + billRepaymentInfoDO.getTotalRepaymentAmount());
+                    log.setCreateTime(Calendar.getInstance().getTime());
+                    log.setChangeType(StoreCreditMoneyChangeType.REPAYMENT);
+                    log.setChangeTypeDesc(StoreCreditMoneyChangeType.REPAYMENT.getDescription());
+                    log.setOperatorId(billRepaymentInfoDO.getRepaymentUserId());
+                    log.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                    log.setOperatorIp("");
+                    log.setReferenceNumber(billRepaymentInfoDO.getRepaymentNo());
+                    appStoreService.addStoreCreditMoneyChangeLog(log);
+                    break;
+                } else {
+                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                        throw new SystemBusyException("系统繁忙，请稍后再试!");
+                    }
+                }
+            } else {
+                throw new LockStorePreDepositException("没有找到该门店的信用金信息!");
+            }
+        }
     }
 
     @Override
@@ -396,6 +432,7 @@ public class BillInfoServiceImpl implements BillInfoService {
     }
 
     @Override
+    @Transactional
     public BillInfoDO createBillInfo(Long storeId) {
         AppStore store = this.appStoreService.findById(storeId);
         if (null == store) {
@@ -457,6 +494,7 @@ public class BillInfoServiceImpl implements BillInfoService {
     }
 
     @Override
+    @Transactional
     public void handleBillInfoInBillDate(Long storeId) {
         String nowStr = DateUtil.getDateStr(DateUtil.getbeforMonthByDate(new Date()));
         BillInfoDO billInfo = this.billInfoDAO.findBillInfoByBillStartDateAndStoreIdAndStatus(storeId, nowStr, BillStatusEnum.NOT_OUT);
