@@ -65,12 +65,12 @@ public class BillInfoServiceImpl implements BillInfoService {
             return goodsDetailsDOList;
         }
 
-        if (null == storeId){
+        if (null == storeId) {
             return goodsDetailsDOList;
         }
         //根据门店ID查询账单规则
         BillRuleDO billRuleDO = this.billRuleService.getBillRuleByStoreId(storeId);
-        if (null == billRuleDO || null == billRuleDO.getInterestRate() || billRuleDO.getInterestRate().equals(0D)){
+        if (null == billRuleDO || null == billRuleDO.getInterestRate() || billRuleDO.getInterestRate().equals(0D)) {
             return goodsDetailsDOList;
         }
         //利息
@@ -88,10 +88,10 @@ public class BillInfoServiceImpl implements BillInfoService {
 
 
         //计算利息（欠款金额 * 利息 * 逾期天数 * 利息单位）
-        for (BillRepaymentGoodsDetailsDO goodsDetailsDO: goodsDetailsDOList) {
+        for (BillRepaymentGoodsDetailsDO goodsDetailsDO : goodsDetailsDOList) {
             //逾期天数
             Integer overdueDays = DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(billDate, repaymentDeadlineDate, goodsDetailsDO.getShipmentTime()), new Date());
-            if (overdueDays < 0){
+            if (overdueDays < 0) {
                 overdueDays = 0;
             }
             goodsDetailsDO.setInterestAmount(CountUtil.mul(goodsDetailsDO.getOrderCreditMoney(), interestRate, overdueDays, AppConstant.INTEREST_RATE_UNIT));
@@ -107,12 +107,12 @@ public class BillInfoServiceImpl implements BillInfoService {
             return goodsDetailsList;
         }
 
-        if (null == storeId){
+        if (null == storeId) {
             return goodsDetailsList;
         }
         //根据门店ID查询账单规则
         BillRuleDO billRuleDO = this.billRuleService.getBillRuleByStoreId(storeId);
-        if (null == billRuleDO || null == billRuleDO.getInterestRate() || billRuleDO.getInterestRate().equals(0D)){
+        if (null == billRuleDO || null == billRuleDO.getInterestRate() || billRuleDO.getInterestRate().equals(0D)) {
             return goodsDetailsList;
         }
         //利息
@@ -130,10 +130,10 @@ public class BillInfoServiceImpl implements BillInfoService {
 
 
         //计算利息（欠款金额 * 利息 * 逾期天数 * 利息单位）
-        for (BillRepaymentGoodsInfoResponse goodsDetails: goodsDetailsList) {
+        for (BillRepaymentGoodsInfoResponse goodsDetails : goodsDetailsList) {
             //逾期天数
             Integer overdueDays = DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(billDate, repaymentDeadlineDate, goodsDetails.getShipmentTime()), new Date());
-            if (overdueDays < 0){
+            if (overdueDays < 0) {
                 overdueDays = 0;
             }
             goodsDetails.setInterestAmount(CountUtil.mul(goodsDetails.getOrderCreditMoney(), interestRate, overdueDays, AppConstant.INTEREST_RATE_UNIT));
@@ -162,7 +162,7 @@ public class BillInfoServiceImpl implements BillInfoService {
 
         //根据门店ID查询账单规则
         BillRuleDO billRuleDO = this.billRuleService.getBillRuleByStoreId(billInfoDO.getStoreId());
-        if (null == billRuleDO){
+        if (null == billRuleDO) {
             billRuleDO = new BillRuleDO();
         }
         //还款截至日
@@ -180,7 +180,7 @@ public class BillInfoServiceImpl implements BillInfoService {
         //订单账单更新是否已付清、付清时间
         List<BillRepaymentGoodsDetailsDO> goodsDetailsDOS = this.billInfoDAO.findRepaymentGoodsDetailsByRepaymentNo(repaymentNo);
         Double priorPaidBillAmount = 0D;
-        if (null != goodsDetailsDOS && goodsDetailsDOS.size() > 0){
+        if (null != goodsDetailsDOS && goodsDetailsDOS.size() > 0) {
             for (BillRepaymentGoodsDetailsDO goodsDetails : goodsDetailsDOS) {
                 if ("order".equals(goodsDetails.getOrderType())) {
                     OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
@@ -192,7 +192,7 @@ public class BillInfoServiceImpl implements BillInfoService {
                 //逾期天数
                 Integer overdueDays = DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(billDate, repaymentDeadlineDate, goodsDetails.getShipmentTime()), new Date());
 
-                if (overdueDays > 0){
+                if (overdueDays > 0) {
                     priorPaidBillAmount = CountUtil.add(priorPaidBillAmount, goodsDetails.getOrderCreditMoney());
                 }
             }
@@ -202,9 +202,9 @@ public class BillInfoServiceImpl implements BillInfoService {
         billInfoDO.setCurrentPaidAmount(CountUtil.add(billInfoDO.getCurrentPaidAmount(), billRepaymentInfoDO.getOnlinePayAmount()));
         billInfoDO.setPriorPaidInterestAmount(CountUtil.add(billInfoDO.getPriorPaidInterestAmount(), billRepaymentInfoDO.getTotalInterestAmount()));
         billInfoDO.setPriorPaidBillAmount(priorPaidBillAmount);
-        if (billInfoDO.getStatus() == BillStatusEnum.ALREADY_OUT){
+        if (billInfoDO.getStatus() == BillStatusEnum.ALREADY_OUT) {
             billInfoDO.setCurrentUnpaidAmount(CountUtil.sub(billInfoDO.getCurrentUnpaidAmount(), billRepaymentInfoDO.getOnlinePayAmount()));
-            if (billInfoDO.getCurrentUnpaidAmount() < AppConstant.PAY_UP_LIMIT){
+            if (billInfoDO.getCurrentUnpaidAmount() < AppConstant.PAY_UP_LIMIT) {
                 billInfoDO.setStatus(BillStatusEnum.HISTORY);
             }
         }
@@ -235,15 +235,16 @@ public class BillInfoServiceImpl implements BillInfoService {
 
     /**
      * 查看账单
+     *
      * @param starTime 开始时间
-     * @param endTime 结束时间
-     * @param storeid 门店id
-     * @param page 预留
-     * @param size 预留
+     * @param endTime  结束时间
+     * @param storeid  门店id
+     * @param page     预留
+     * @param size     预留
      * @return
      * @throws Exception
      */
-    public BillInfoResponse lookBill(LocalDateTime starTime, LocalDateTime endTime, Long storeid,Integer page,Integer size) throws Exception {
+    public BillInfoResponse lookBill(LocalDateTime starTime, LocalDateTime endTime, Long storeid, Integer page, Integer size) throws Exception {
         BillInfoResponse response = new BillInfoResponse(); // 返回结果
         // 初始化
         response.setBillTotalAmount(0D);
@@ -259,24 +260,24 @@ public class BillInfoServiceImpl implements BillInfoService {
 
         LocalDateTime now = LocalDateTime.now(); //当前时间
         // 查询已出账单
-        BillInfoDO billInfoDO = billInfoDAO.findBillByStatus(BillStatusEnum.ALREADY_OUT,storeid);
+        BillInfoDO billInfoDO = billInfoDAO.findBillByStatus(BillStatusEnum.ALREADY_OUT, storeid);
 
-        if (billInfoDO == null ){
+        if (billInfoDO == null) {
             // 已出账单不存在 处理未出账单
-            billInfoDO = billInfoDAO.findBillByStatus(BillStatusEnum.NOT_OUT,storeid);
+            billInfoDO = billInfoDAO.findBillByStatus(BillStatusEnum.NOT_OUT, storeid);
 
-            if (billInfoDO == null){
+            if (billInfoDO == null) {
                 billInfoDO = this.createBillInfo(storeid);
             }
         }
 
         response = BillInfoDO.transfer(billInfoDO);
 
-        if (billInfoDO.getBillStartDate() == null){
+        if (billInfoDO.getBillStartDate() == null) {
             return response;
         }
 
-        if (billInfoDO.getBillEndDate() == null){
+        if (billInfoDO.getBillEndDate() == null) {
             return response;
         }
 
@@ -289,10 +290,10 @@ public class BillInfoServiceImpl implements BillInfoService {
         billEndTime = instant2.atZone(zone).toLocalDateTime();
 
         // 设置客户选择时间范围
-        if (starTime != null && starTime.isAfter(billStartTime) && starTime.isBefore(billEndTime)){
+        if (starTime != null && starTime.isAfter(billStartTime) && starTime.isBefore(billEndTime)) {
             billStartTime = starTime;
         }
-        if (endTime != null && endTime.isAfter(billStartTime) && endTime.isBefore(billEndTime)){
+        if (endTime != null && endTime.isAfter(billStartTime) && endTime.isBefore(billEndTime)) {
             billEndTime = endTime;
         }
 
@@ -309,27 +310,34 @@ public class BillInfoServiceImpl implements BillInfoService {
         Double fees = 0D; // 滞纳金
 
         // 本期已还订单
-        currentPaidOrderDetails = billInfoDAO.getCurrentOrderDetails(billStartTime,billEndTime,true);
+        currentPaidOrderDetails = billInfoDAO.getCurrentOrderDetails(billStartTime, billEndTime, true, storeid);
         // 本期未还订单
-        currentNotPayOrderDetails = billInfoDAO.getCurrentOrderDetails(billStartTime,billEndTime,false);
+        currentNotPayOrderDetails = billInfoDAO.getCurrentOrderDetails(billStartTime, billEndTime, false, storeid);
         // 上期未还订单
-        beforNotPayOrderDetails = billInfoDAO.getCurrentOrderDetails(null,billStartTime,false);
+        beforNotPayOrderDetails = billInfoDAO.getCurrentOrderDetails(null, billStartTime, false, storeid);
 
 
         currentPaid = this.AddAllCreditMoney(currentPaidOrderDetails);
         currentNotPay = this.AddAllCreditMoney(currentNotPayOrderDetails);
         beforNotPay = this.AddAllCreditMoney(beforNotPayOrderDetails);
 
+        // 将订单结果注入response
+        response.setPaidOrderDetails(currentPaidOrderDetails);
+        // 合并未还清结果集
+        beforNotPayOrderDetails.addAll(currentNotPayOrderDetails);
+        // TODO 排序
+        response.setNotPayOrderDetails(beforNotPayOrderDetails);
+
         currentPaidOrderDetails.addAll(currentNotPayOrderDetails); // 合并本期已还和未还订单
         currentBillAmount = this.AddAllPositiveCreditMoney(currentPaidOrderDetails);
         currentAdjustmentAmount = this.AddAllNegativeCreditMoney(currentPaidOrderDetails);
 
         // 计算滞纳金
-        beforNotPayOrderDetails = this.computeInterestAmount2(storeid,beforNotPayOrderDetails);
+        beforNotPayOrderDetails = this.computeInterestAmount2(storeid, beforNotPayOrderDetails);
         fees = this.AddAllInterestAmount(beforNotPayOrderDetails);
 
         // 账单总金额
-        billTotalAmount = CountUtil.add(currentBillAmount,currentAdjustmentAmount,beforNotPay,fees);
+        billTotalAmount = CountUtil.add(currentBillAmount, currentAdjustmentAmount, beforNotPay, fees);
 
         response.setBillTotalAmount(billTotalAmount);
         response.setCurrentBillAmount(currentBillAmount);
@@ -371,7 +379,7 @@ public class BillInfoServiceImpl implements BillInfoService {
                     billRepaymentResponse.setBillRepaymentDetails(billRepaymentDetails);
                 }
             }
-        return billInfoResponse;
+            return billInfoResponse;
         }
         return null;
     }
@@ -446,17 +454,18 @@ public class BillInfoServiceImpl implements BillInfoService {
 
     /**
      * 求和所有信用金
+     *
      * @param list
      * @return
      */
-    public Double AddAllCreditMoney(List<BillRepaymentGoodsInfoResponse> list){
+    public Double AddAllCreditMoney(List<BillRepaymentGoodsInfoResponse> list) {
         Double totalCreditMoney = 0D;
-        if (list == null){
+        if (list == null) {
             return totalCreditMoney;
         }
 
-        for (BillRepaymentGoodsInfoResponse response : list){
-            totalCreditMoney = CountUtil.add(totalCreditMoney,response.getOrderCreditMoney());
+        for (BillRepaymentGoodsInfoResponse response : list) {
+            totalCreditMoney = CountUtil.add(totalCreditMoney, response.getOrderCreditMoney());
         }
 
         return totalCreditMoney;
@@ -464,18 +473,19 @@ public class BillInfoServiceImpl implements BillInfoService {
 
     /**
      * 求和所以正向信用金
+     *
      * @param list
      * @return
      */
-    public Double AddAllPositiveCreditMoney(List<BillRepaymentGoodsInfoResponse> list){
+    public Double AddAllPositiveCreditMoney(List<BillRepaymentGoodsInfoResponse> list) {
         Double totalCreditMoney = 0D;
-        if (list == null){
+        if (list == null) {
             return totalCreditMoney;
         }
 
-        for (BillRepaymentGoodsInfoResponse response : list){
-            if(response.getOrderCreditMoney() > 0){
-                totalCreditMoney = CountUtil.add(totalCreditMoney,response.getOrderCreditMoney());
+        for (BillRepaymentGoodsInfoResponse response : list) {
+            if (response.getOrderCreditMoney() > 0) {
+                totalCreditMoney = CountUtil.add(totalCreditMoney, response.getOrderCreditMoney());
             }
         }
 
@@ -484,18 +494,19 @@ public class BillInfoServiceImpl implements BillInfoService {
 
     /**
      * 求和所有负向信用金
+     *
      * @param list
      * @return
      */
-    public Double AddAllNegativeCreditMoney(List<BillRepaymentGoodsInfoResponse> list){
+    public Double AddAllNegativeCreditMoney(List<BillRepaymentGoodsInfoResponse> list) {
         Double totalCreditMoney = 0D;
-        if (list == null){
+        if (list == null) {
             return totalCreditMoney;
         }
 
-        for (BillRepaymentGoodsInfoResponse response : list){
-            if (response.getOrderCreditMoney() < 0){
-                totalCreditMoney = CountUtil.add(totalCreditMoney,response.getOrderCreditMoney());
+        for (BillRepaymentGoodsInfoResponse response : list) {
+            if (response.getOrderCreditMoney() < 0) {
+                totalCreditMoney = CountUtil.add(totalCreditMoney, response.getOrderCreditMoney());
             }
         }
 
@@ -504,19 +515,18 @@ public class BillInfoServiceImpl implements BillInfoService {
 
     /**
      * 求和所有滞纳金
+     *
      * @param list
      * @return
      */
-    public Double AddAllInterestAmount(List<BillRepaymentGoodsInfoResponse> list){
+    public Double AddAllInterestAmount(List<BillRepaymentGoodsInfoResponse> list) {
         Double interestAmount = 0D;
-        if (list == null){
+        if (list == null) {
             return interestAmount;
         }
 
-        for (BillRepaymentGoodsInfoResponse response : list){
-            if (response.getOrderCreditMoney() < 0){
-                interestAmount = CountUtil.add(interestAmount,response.getInterestAmount());
-            }
+        for (BillRepaymentGoodsInfoResponse response : list) {
+            interestAmount = CountUtil.add(interestAmount, response.getInterestAmount());
         }
 
         return interestAmount;

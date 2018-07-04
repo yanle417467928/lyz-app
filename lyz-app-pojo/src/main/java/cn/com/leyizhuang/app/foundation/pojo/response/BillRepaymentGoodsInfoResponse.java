@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -70,5 +71,15 @@ public class BillRepaymentGoodsInfoResponse {
             goodsDetailsDOS.add(detailsDO);
         }
         return  goodsDetailsDOS;
+    }
+
+    @JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
+    public Date getOrderTime() {
+        return orderTime;
+    }
+
+    @JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
+    public Date getShipmentTime() {
+        return shipmentTime;
     }
 }

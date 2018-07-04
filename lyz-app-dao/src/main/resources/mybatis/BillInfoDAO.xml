@@ -61,7 +61,7 @@
         WHERE bill_no = #{billNo}
     </update>
 
-    <!-- 本期已还 -->
+    <!--  -->
     <select id="getCurrentOrderDetails" resultType="cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentGoodsInfoResponse">
         <!-- 配送 -->
         (SELECT
@@ -76,7 +76,11 @@
         LEFT JOIN bill_repayment_goods_details brgd on brgd.order_no = ob.ord_no
         left JOIN bill_repayment_info bpi on bpi.id = brgd.repayment_id
         LEFT  JOIN (SELECT * from inter_wta_order_shipping_header where send_flag = 1 GROUP BY order_no) wa on wa.order_no = ob.ord_no
+        LEFT JOIN decoration_company_credit_billing_details dccb on dccb.order_number = ob.ord_no
+        LEFT JOIN decoration_company_credit_billing dc on dc.credit_billing_no = dccb.credit_billing_no
         where ob.delivery_type = "HOUSE_DELIVERY" and obd.st_credit_money > 0
+        and ob.`status` in ('PENDING_RECEIVE','FINISHED','REJECTED','CLOSED')
+        and ob.store_id = #{storeId}
         <if test="startTime != null">
            AND wa.send_time &gt; #{startTime}
         </if>
@@ -84,10 +88,10 @@
           and wa.send_time &lt; #{endTime}
         </if>
         <if test="isPaid != null and isPaid == true">
-            and bpi.is_paid = 1
+            and (bpi.is_paid = 1 OR dc.is_pay_off = 1)
         </if>
         <if test="isPaid != null and isPaid == false">
-            and (bpi.is_paid = 0 OR bpi.is_paid is null)
+            and (bpi.is_paid = 0 OR bpi.is_paid is null) and (dc.is_pay_off = 0 Or dc.is_pay_off is null)
         </if>
         )
 
@@ -106,7 +110,11 @@
         LEFT JOIN bill_repayment_goods_details brgd on brgd.order_no = ob.ord_no
         left JOIN bill_repayment_info bpi on bpi.id = brgd.repayment_id
         LEFT  JOIN (SELECT * from ord_shipping GROUP BY ord_no) os on os.ord_no = ob.ord_no
+        LEFT JOIN decoration_company_credit_billing_details dccb on dccb.order_number = ob.ord_no
+        LEFT JOIN decoration_company_credit_billing dc on dc.credit_billing_no = dccb.credit_billing_no
         where ob.delivery_type = "SELF_TAKE" and obd.st_credit_money > 0 and obd.is_pay_up = 1
+        and ob.`status` in ('FINISHED')
+        and ob.store_id = #{storeId}
         <if test="startTime != null">
             AND os.shipping_time &gt; #{startTime}
         </if>
@@ -114,10 +122,10 @@
             and os.shipping_time &lt; #{endTime}
         </if>
         <if test="isPaid != null and isPaid == true">
-            and bpi.is_paid = 1
+            and (bpi.is_paid = 1 OR dc.is_pay_off = 1)
         </if>
         <if test="isPaid != null and isPaid == false">
-            and (bpi.is_paid = 0 OR bpi.is_paid is null)
+            and (bpi.is_paid = 0 OR bpi.is_paid is null) and (dc.is_pay_off = 0 Or dc.is_pay_off is null)
         </if>
         )
 
@@ -137,7 +145,11 @@
         LEFT JOIN bill_repayment_goods_details brgd on brgd.order_no = orb.return_no
         left JOIN bill_repayment_info bpi on bpi.id = brgd.repayment_id
         LEFT JOIN ord_return_lifecycle orl on orl.return_no = orb.return_no
-        where ob.delivery_type in ("SELF_TAKE","HOUSE_DELIVERY") and orl.operation in ('REJECTED','NORMAL_RETURN') and post_status = "FINISHED" and orbd.st_credit_money > 0
+        LEFT JOIN decoration_company_credit_billing_details dccb on dccb.order_number = orb.return_no
+        LEFT JOIN decoration_company_credit_billing dc on dc.credit_billing_no = dccb.credit_billing_no
+        where ob.delivery_type in ("SELF_TAKE","HOUSE_DELIVERY")
+        and orl.operation in ('REJECTED','NORMAL_RETURN') and post_status = "FINISHED" and orbd.st_credit_money > 0
+        and ob.store_id = #{storeId}
         <if test="startTime != null">
             AND orl.operation_time &gt; #{startTime}
         </if>
@@ -145,10 +157,10 @@
             and orl.operation_time &lt; #{endTime}
         </if>
         <if test="isPaid != null and isPaid == true">
-            and bpi.is_paid = 1
+            and (bpi.is_paid = 1 OR  dc.is_pay_off = 1)
         </if>
         <if test="isPaid != null and isPaid == false">
-            and (bpi.is_paid = 0 OR bpi.is_paid is null)
+            and (bpi.is_paid = 0 OR bpi.is_paid is null) and (dc.is_pay_off = 0 Or dc.is_pay_off is null)
         </if>
         )
 
