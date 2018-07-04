@@ -175,21 +175,21 @@ public class BillInfoServiceImpl implements BillInfoService {
 
         BillInfoDO billInfoDO = this.billInfoDAO.findBillInfoByBillNo(billRepaymentInfoDO.getBillNo());
 
-//        //根据门店ID查询账单规则
-//        BillRuleDO billRuleDO = this.billRuleService.getBillRuleByStoreId(billInfoDO.getStoreId());
-//        if (null == billRuleDO) {
-//            billRuleDO = new BillRuleDO();
-//        }
-//        //还款截至日
-//        Integer repaymentDeadlineDate = billRuleDO.getRepaymentDeadlineDate();
-//        if (null == repaymentDeadlineDate || repaymentDeadlineDate == 0) {
-//            repaymentDeadlineDate = 1;
-//        }
-//        //账期日
-//        Integer billDate = billRuleDO.getBillDate();
-//        if (null == billDate || billDate == 0) {
-//            billDate = 1;
-//        }
+        //根据门店ID查询账单规则
+        BillRuleDO billRuleDO = this.billRuleService.getBillRuleByStoreId(billInfoDO.getStoreId());
+        if (null == billRuleDO) {
+            billRuleDO = new BillRuleDO();
+        }
+        //还款截至日
+        Integer repaymentDeadlineDate = billRuleDO.getRepaymentDeadlineDate();
+        if (null == repaymentDeadlineDate || repaymentDeadlineDate == 0) {
+            repaymentDeadlineDate = 1;
+        }
+        //账期日
+        Integer billDate = billRuleDO.getBillDate();
+        if (null == billDate || billDate == 0) {
+            billDate = 1;
+        }
 
         //订单账单更新是否已付清、付清时间
         List<BillRepaymentGoodsDetailsDO> goodsDetailsDOS = this.billInfoDAO.findRepaymentGoodsDetailsByRepaymentNo(repaymentNo);
@@ -204,18 +204,18 @@ public class BillInfoServiceImpl implements BillInfoService {
                     orderService.updateOrderBillingDetails(orderBillingDetails);
                 }
                 //逾期天数
-//                Integer overdueDays = DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(billDate, repaymentDeadlineDate, goodsDetails.getShipmentTime()), new Date());
-//
-//                if (overdueDays > 0) {
+                Integer overdueDays = DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(billDate, repaymentDeadlineDate, goodsDetails.getShipmentTime()), new Date());
+
+                if (overdueDays > 0) {
                     priorPaidBillAmount = CountUtil.add(priorPaidBillAmount, goodsDetails.getOrderCreditMoney());
-//                }
+                }
             }
         }
 
         //更新账单信息
         billInfoDO.setCurrentPaidAmount(CountUtil.add(billInfoDO.getCurrentPaidAmount(), billRepaymentInfoDO.getOnlinePayAmount()));
         billInfoDO.setPriorPaidInterestAmount(CountUtil.add(billInfoDO.getPriorPaidInterestAmount(), billRepaymentInfoDO.getTotalInterestAmount()));
-        billInfoDO.setPriorPaidBillAmount(priorPaidBillAmount);
+        billInfoDO.setPriorPaidBillAmount(CountUtil.add(billInfoDO.getPriorPaidBillAmount(), priorPaidBillAmount));
         if (billInfoDO.getStatus() == BillStatusEnum.ALREADY_OUT) {
             billInfoDO.setCurrentUnpaidAmount(CountUtil.sub(billInfoDO.getCurrentUnpaidAmount(), billRepaymentInfoDO.getOnlinePayAmount()));
             if (billInfoDO.getCurrentUnpaidAmount() < AppConstant.PAY_UP_LIMIT) {
@@ -681,72 +681,5 @@ public class BillInfoServiceImpl implements BillInfoService {
         totalAmount = CountUtil.add(totalOrderAmount,totalReturnAmount,fees);
 
         return totalAmount;
-    }
-
-    @Transactional
-    public void createRepayMentInfo(Long storeId,Long userId,String repaymentSystem,List<BillorderDetailsRequest> billorderDetailsRequests,
-                                    Double stPreDeposit,Double cash,Double pos,Double totalRepaymentAmount,
-                                    String posNumber,Double other,
-                                    String billNo) throws Exception {
-        if (billorderDetailsRequests != null || billorderDetailsRequests.size() > 0){
-            //查询账单
-            BillInfoDO billInfoDO = billInfoDAO.findBillInfoByBillNo(billNo);
-
-            if (billInfoDO == null){
-                throw new Exception("账单不存在");
-            }
-
-            // 账单规则
-            BillRuleDO ruleDO = billRuleService.getBillRuleByStoreId(storeId);
-
-            if (billInfoDO == null){
-                throw new Exception("账单规则不存在");
-            }
-
-            //创建还款头信息
-            BillRepaymentInfoDO repaymentInfoDO = new BillRepaymentInfoDO();
-            repaymentInfoDO.setBillId(billInfoDO.getId());
-            repaymentInfoDO.setBillNo(billNo);
-            repaymentInfoDO.setRepaymentNo(OrderUtils.generateRepaymentNo());
-            repaymentInfoDO.setRepaymentUserId(userId);
-            repaymentInfoDO.setRepaymentSystem(repaymentSystem);
-            repaymentInfoDO.setRepaymentTime(new Date());
-            repaymentInfoDO.setCreateTime(new Date());
-            repaymentInfoDO.setPreDeposit(stPreDeposit);
-            repaymentInfoDO.setCashMoney(cash);
-            repaymentInfoDO.setPosMoney(pos);
-            repaymentInfoDO.setPosNumber(posNumber);
-            repaymentInfoDO.setOtherMoney(other);
-            repaymentInfoDO.setTotalRepaymentAmount(totalRepaymentAmount);
-            repaymentInfoDO.setIsPaid(true);
-            repaymentInfoDO.setInterestRate(ruleDO.getInterestRate());
-
-            List<Long> orderIds = new ArrayList<>();
-            for (BillorderDetailsRequest request : billorderDetailsRequests){
-                orderIds.add(request.getId());
-            }
-            List<BillRepaymentGoodsInfoResponse> billOrderList = billInfoDAO.getCurrentOrderDetailsByOrderNo(orderIds,storeId);
-            // 计算滞纳金
-            billOrderList = this.computeInterestAmount2(storeId,billOrderList);
-            // 总滞纳金
-            Double totalIntersAmount = this.AddAllInterestAmount(billOrderList);
-            repaymentInfoDO.setTotalInterestAmount(totalIntersAmount);
-
-            // 保存还款头信息
-            billRepaymentDAO.saveBillRepayment(repaymentInfoDO);
-
-            List<BillRepaymentGoodsDetailsDO> billRepaymentGoodsDetailsDOList = new ArrayList<>();
-            billRepaymentGoodsDetailsDOList = BillRepaymentGoodsInfoResponse.transfer(billOrderList);
-
-            for (BillRepaymentGoodsDetailsDO detailsDO: billRepaymentGoodsDetailsDOList){
-                detailsDO.setRepayment_No(repaymentInfoDO.getRepaymentNo());
-                detailsDO.setRepaymentId(repaymentInfoDO.getId());
-
-                billRepaymentDAO.saveBillRepaymentGoodsDetails(detailsDO);
-            }
-
-            // 更新账单数据
-
-        }
     }
 }
