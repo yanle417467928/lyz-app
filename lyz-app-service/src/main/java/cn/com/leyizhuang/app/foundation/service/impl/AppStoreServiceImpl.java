@@ -409,6 +409,22 @@ public class AppStoreServiceImpl implements AppStoreService {
     }
 
     @Override
+    public StoreCreditMoney findStoreCreditMoneyByStoreId(Long storeId) {
+        if (null != storeId){
+            return this.storeDAO.findStoreCreditMoneyByStoreId(storeId);
+        }
+        return null;
+    }
+
+    @Override
+    public Integer updateStoreCreditByStoreIdAndVersion(Long storeId, Double storeCredit, Timestamp version) {
+        if (null != storeCredit && null != storeId) {
+            return storeDAO.updateStoreCreditByStoreIdAndVersion(storeId, storeCredit, version);
+        }
+        return null;
+    }
+
+    @Override
     public StorePreDeposit findStorePreDepositByUserIdAndIdentityType(Long userId, Integer identityType) {
         if (null != userId && null != identityType) {
             return storeDAO.findStorePreDepositByUserIdAndIdentityType(userId, identityType);

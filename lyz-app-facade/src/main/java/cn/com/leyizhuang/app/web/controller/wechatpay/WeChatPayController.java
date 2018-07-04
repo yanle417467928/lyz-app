@@ -511,7 +511,7 @@ public class WeChatPayController {
                                     logger.info("weChatReturnSync ,微信支付异步回调接口，支付数据记录信息 paymentDataDO:{}",
                                             paymentDataDO);
                                     //处理第三方支付成功之后订单相关事务
-                                    billInfoService.handleBillRepaymentAfterOnlinePayUp(orderNumber, OnlinePayType.WE_CHAT);
+                                    billInfoService.handleBillRepaymentAfterOnlinePayUp(orderNumber, OnlinePayType.WE_CHAT, paymentDataDO.getAppIdentityType().getValue());
                                     //将收款记录入拆单消息队列
                                     sinkSender.sendRechargeReceipt(orderNumber);
                                     logger.warn("weChatReturnSync OUT,微信支付异步回调接口处理成功，出参 result:{}", "success");

@@ -18,8 +18,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BillRepaymentGoodsInfoResponse {
-
-    private Long bill_id;
+    // 订单或者退单id
+    private Long orderId;
+    // 账单
+    private Long billId;
     //订单号
     private String orderNo;
     //退单号
@@ -51,7 +53,7 @@ public class BillRepaymentGoodsInfoResponse {
     public static BillRepaymentGoodsDetailsDO transfer(BillRepaymentGoodsInfoResponse response){
         BillRepaymentGoodsDetailsDO detailsDO = new BillRepaymentGoodsDetailsDO();
 
-        detailsDO.setId(response.getBill_id());
+        detailsDO.setId(response.getBillId());
         detailsDO.setReturnNo(response.getReturnNo());
         detailsDO.setOrderNo(response.getOrderNo());
         detailsDO.setOrderCreditMoney(response.getOrderCreditMoney());
