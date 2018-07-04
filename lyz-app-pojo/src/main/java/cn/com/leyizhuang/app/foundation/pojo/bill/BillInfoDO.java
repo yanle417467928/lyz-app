@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.BillInfoResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentResponse;
 import lombok.*;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -65,6 +66,9 @@ public class BillInfoDO {
             response.setStoreId(DO.getStoreId());
             response.setBillNo(DO.getBillNo());
             response.setBillName(DO.getBillName());
+
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
             response.setBillStartDate(DO.getBillStartDate());
             response.setBillEndDate(DO.getBillEndDate());
             response.setRepaymentDeadlineDate(DO.getRepaymentDeadlineDate());

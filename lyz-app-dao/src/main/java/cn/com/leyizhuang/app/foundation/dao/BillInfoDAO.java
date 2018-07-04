@@ -34,7 +34,7 @@ public interface BillInfoDAO {
 
     List<BillRepaymentGoodsInfoResponse> getCurrentOrderDetails(@Param("startTime") LocalDateTime startTime,
                                                           @Param("endTime") LocalDateTime endTime,
-                                                          @Param("isPaid") Boolean isPaid);
+                                                          @Param("isPaid") Boolean isPaid, @Param("storeId") Long storeId);
 
     List<BillHistoryListResponse> findBillHistoryListByEmpId(Long empId);
 
