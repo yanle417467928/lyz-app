@@ -4,7 +4,7 @@
 package cn.com.leyizhuang.app.core.utils.oss.utils;
 
 import cn.com.leyizhuang.app.core.constant.ApplicationConstant;
-import cn.com.leyizhuang.app.core.utils.DateUtil;
+import cn.com.leyizhuang.app.core.utils.DateUtils;
 import cn.com.leyizhuang.app.core.utils.RandomUtil;
 import cn.com.leyizhuang.app.core.utils.oss.ImageClient;
 import cn.com.leyizhuang.app.core.utils.oss.exception.ImageClientException;
@@ -70,8 +70,8 @@ public class ImageClientUtils {
     public String uploadImage(InputStream stream, long length) throws IOException, ImageClientException {
         ImageClient client = ImageClient.getInstance();
 
-        String filePath = String.format("%s/%s/", ApplicationConstant.ossFolder, DateUtil.getCurrentDateStr("yyyyMMdd"));
-        String fileName = String.format("%s_%s.jpg", DateUtil.getCurrentTimeStr("HHmmssSSS"), RandomUtil.randomNumCode(4));
+        String filePath = String.format("%s/%s/", ApplicationConstant.ossFolder, DateUtils.getCurrentDateStr("yyyyMMdd"));
+        String fileName = String.format("%s_%s.jpg", DateUtils.getCurrentTimeStr("HHmmssSSS"), RandomUtil.randomNumCode(4));
 
         client.saveImage(stream, length, filePath, fileName);
 
