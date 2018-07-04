@@ -60,4 +60,9 @@ public interface BillInfoService {
 
     Double calculatePayAmount(Long storeId,List<BillorderDetailsRequest> orderDetails);
 
+    void createRepayMentInfo(Long storeId,Long userId,String repaymentSystem,List<BillorderDetailsRequest> billorderDetailsRequests,
+                             Double stPreDeposit,Double cash,Double pos,Double totalRepaymentAmount,
+                             String posNumber,Double other,
+                             String billNo) throws Exception;
+
 }

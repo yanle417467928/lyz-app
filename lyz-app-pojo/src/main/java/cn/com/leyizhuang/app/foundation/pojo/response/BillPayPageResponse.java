@@ -14,7 +14,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BillPayPageResponse {
-
+    /**
+     * 帐单号
+     */
+    private String billNo;
     /**
      * 应付金额
      */

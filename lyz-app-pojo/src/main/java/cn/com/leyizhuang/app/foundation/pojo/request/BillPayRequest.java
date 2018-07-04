@@ -31,4 +31,8 @@ public class BillPayRequest {
      * 支付预存款金额
      */
     private Double stPreDepositAmount;
+    /**
+     * 账单号
+     */
+    private String billNo;
 }

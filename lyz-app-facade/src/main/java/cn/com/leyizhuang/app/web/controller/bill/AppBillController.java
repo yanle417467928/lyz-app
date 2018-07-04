@@ -229,6 +229,7 @@ public class AppBillController {
             response.setRepaymentCreditMoney(CountUtil.add(creditMoney,totalPayAmount));
             response.setTotalPayAmount(totalPayAmount);
             response.setBillorderDetailsRequests(billorderDetailsRequests);
+            response.setBillNo(billPayRequest.getBillNo());
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "查询成功", response);
             logger.info("toPayPage OUT,账单还款跳转支付页面成功，出参 resultDTO:{}", resultDTO);
@@ -273,7 +274,7 @@ public class AppBillController {
             AppEmployee appEmployee = appEmployeeService.findById(billPayRequest.getUserId());
 
             if (appEmployee == null) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "账号id不存在！", null);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "员工不存在！", null);
                 logger.info("payBill OUT,支付账单，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
@@ -326,10 +327,14 @@ public class AppBillController {
             // 应支付金额
             Double totalPayAmount = billInfoService.calculatePayAmount(storeId, billorderDetailsRequests);
 
-            if (totalPayAmount.equals(payStPreDeposit)){
+            if (totalPayAmount.equals(payStPreDeposit) || payStPreDeposit.equals(0D)){
                 // 付清
+                billInfoService.createRepayMentInfo(storeId,billPayRequest.getUserId(),"app",billorderDetailsRequests,payStPreDeposit,0D,0D,totalPayAmount,"",0D,billPayRequest.getBillNo());
             }else if (totalPayAmount > payStPreDeposit){
                 // 未付清
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店预存款支付需一次性付清", null);
+                logger.info("payBill OUT,支付账单，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
             }else if (totalPayAmount < payStPreDeposit){
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "门店预存款金额大于应付金额", null);
                 logger.info("payBill OUT,支付账单，出参 resultDTO:{}", resultDTO);
