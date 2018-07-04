@@ -140,12 +140,14 @@ public class BillInfoServiceImpl implements BillInfoService {
 
         //计算利息（欠款金额 * 利息 * 逾期天数 * 利息单位）
         for (BillRepaymentGoodsInfoResponse goodsDetails : goodsDetailsList) {
-            //逾期天数
-            Integer overdueDays = DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(billDate, repaymentDeadlineDate, goodsDetails.getShipmentTime()), new Date());
-            if (overdueDays < 0) {
-                overdueDays = 0;
+            if ("order".equals(goodsDetails.getOrderType())) {
+                //逾期天数
+                Integer overdueDays = DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(billDate, repaymentDeadlineDate, goodsDetails.getShipmentTime()), new Date());
+                if (overdueDays < 0) {
+                    overdueDays = 0;
+                }
+                goodsDetails.setInterestAmount(CountUtil.mul(goodsDetails.getOrderCreditMoney(), interestRate, overdueDays, AppConstant.INTEREST_RATE_UNIT));
             }
-            goodsDetails.setInterestAmount(CountUtil.mul(goodsDetails.getOrderCreditMoney(), interestRate, overdueDays, AppConstant.INTEREST_RATE_UNIT));
         }
 
         return goodsDetailsList;
@@ -169,21 +171,21 @@ public class BillInfoServiceImpl implements BillInfoService {
 
         BillInfoDO billInfoDO = this.billInfoDAO.findBillInfoByBillNo(billRepaymentInfoDO.getBillNo());
 
-        //根据门店ID查询账单规则
-        BillRuleDO billRuleDO = this.billRuleService.getBillRuleByStoreId(billInfoDO.getStoreId());
-        if (null == billRuleDO) {
-            billRuleDO = new BillRuleDO();
-        }
-        //还款截至日
-        Integer repaymentDeadlineDate = billRuleDO.getRepaymentDeadlineDate();
-        if (null == repaymentDeadlineDate || repaymentDeadlineDate == 0) {
-            repaymentDeadlineDate = 1;
-        }
-        //账期日
-        Integer billDate = billRuleDO.getBillDate();
-        if (null == billDate || billDate == 0) {
-            billDate = 1;
-        }
+//        //根据门店ID查询账单规则
+//        BillRuleDO billRuleDO = this.billRuleService.getBillRuleByStoreId(billInfoDO.getStoreId());
+//        if (null == billRuleDO) {
+//            billRuleDO = new BillRuleDO();
+//        }
+//        //还款截至日
+//        Integer repaymentDeadlineDate = billRuleDO.getRepaymentDeadlineDate();
+//        if (null == repaymentDeadlineDate || repaymentDeadlineDate == 0) {
+//            repaymentDeadlineDate = 1;
+//        }
+//        //账期日
+//        Integer billDate = billRuleDO.getBillDate();
+//        if (null == billDate || billDate == 0) {
+//            billDate = 1;
+//        }
 
         //订单账单更新是否已付清、付清时间
         List<BillRepaymentGoodsDetailsDO> goodsDetailsDOS = this.billInfoDAO.findRepaymentGoodsDetailsByRepaymentNo(repaymentNo);
@@ -198,11 +200,11 @@ public class BillInfoServiceImpl implements BillInfoService {
                     orderService.updateOrderBillingDetails(orderBillingDetails);
                 }
                 //逾期天数
-                Integer overdueDays = DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(billDate, repaymentDeadlineDate, goodsDetails.getShipmentTime()), new Date());
-
-                if (overdueDays > 0) {
+//                Integer overdueDays = DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(billDate, repaymentDeadlineDate, goodsDetails.getShipmentTime()), new Date());
+//
+//                if (overdueDays > 0) {
                     priorPaidBillAmount = CountUtil.add(priorPaidBillAmount, goodsDetails.getOrderCreditMoney());
-                }
+//                }
             }
         }
 
