@@ -566,4 +566,35 @@
         AND s.store_id IS NOT NULL
         AND s.store_type = 'ZS'
     </select>
+
+    <select id="findStoreCreditMoneyByStoreId" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.StoreCreditMoney">
+        SELECT
+        id,
+        create_time,
+        last_update_time,
+        store_id,
+        credit_limit,
+        credit_limit_available
+        FROM st_credit_money
+        WHERE store_id = #{storeId}
+    </select>
+
+    <update id="updateStoreSubventionByStoreIdAndVersion">
+        UPDATE st_subvention
+        SET balance = balance + #{subvention}
+        WHERE
+        store_id = #{storeId}
+        AND last_update_time = #{version}
+    </update>
+
+    <update id="updateStoreCreditByStoreIdAndVersion">
+        UPDATE
+        st_credit_money
+        SET credit_limit_available = credit_limit_available + #{credit}
+        WHERE
+        store_id = #{storeId}
+        AND last_update_time = #{version}
+    </update>
+
 </mapper>

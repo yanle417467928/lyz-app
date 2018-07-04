@@ -233,7 +233,7 @@
         LEFT JOIN emp_employee e ON e.store_id = b.store_id
         WHERE e.emp_id = #{empId}
         AND b.status = 'HISTORY'
-        ORDER b.bill_start_date DESC
+        ORDER BY b.bill_start_date DESC
     </select>
 
 

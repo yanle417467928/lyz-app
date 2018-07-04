@@ -145,4 +145,10 @@ public interface AppStoreDAO {
     List<AppStore> findStoreListByLoginAdministrator(Long id);
 
     List<AppStore> findFitStoreListByLoginAdministrator(Long id);
+
+    StoreCreditMoney findStoreCreditMoneyByStoreId(Long storeId);
+
+    Integer updateStoreCreditByStoreIdAndVersion(@Param("storeId") Long storeId, @Param("credit") Double storeCredit, @Param("version") Timestamp version);
+
+
 }

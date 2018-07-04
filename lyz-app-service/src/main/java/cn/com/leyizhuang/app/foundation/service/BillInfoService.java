@@ -28,7 +28,7 @@ public interface BillInfoService {
 
     BillRepaymentInfoDO findBillRepaymentInfoByRepaymentNo(String repaymentNo);
 
-    void handleBillRepaymentAfterOnlinePayUp(String repaymentNo, OnlinePayType onlinePayType);
+    void handleBillRepaymentAfterOnlinePayUp(String repaymentNo, OnlinePayType onlinePayType, Integer identityType);
 
     void updateBillRepaymentInfo(BillRepaymentInfoDO billRepaymentInfoDO);
 
