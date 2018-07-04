@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dto;
 
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
 import lombok.*;
 
 import java.io.Serializable;
@@ -78,4 +79,16 @@ public class PhotoOrderDTO implements Serializable {
 
     //代下单人id
     private Long proxyId;
+
+    //来源
+    private String source;
+
+    //促销信息
+    private String giftDetails;
+
+    //配送方式
+    private String sysDeliveryType;
+
+    //收款信息
+    private String billingMsg;
 }

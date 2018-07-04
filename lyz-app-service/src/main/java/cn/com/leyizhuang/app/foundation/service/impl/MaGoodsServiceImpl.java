@@ -92,4 +92,12 @@ public class MaGoodsServiceImpl implements MaGoodsService {
         }
         return null;
     }
+
+    @Override
+    public List<GoodsDO> findGoodsListByGidList(List<Long> internalGidList) {
+        if (null != internalGidList && internalGidList.size() > 0){
+            return maGoodsDAO.findGoodsListByGidList(internalGidList);
+        }
+        return null;
+    }
 }

@@ -387,4 +387,15 @@
         ORDER BY g.goods_specification
     </select>
 
+    <select id="findGoodsListByGidList" resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
+        SELECT
+        gid,
+        sku,
+        sku_name
+        FROM gds_goods where gid in
+        <foreach collection="internalGidList" separator="," open="(" close=")" item="item">
+            #{item}
+        </foreach>
+    </select>
+
 </mapper>

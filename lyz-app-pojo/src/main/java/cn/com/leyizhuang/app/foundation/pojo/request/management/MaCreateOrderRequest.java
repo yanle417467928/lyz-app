@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.request.management;
 
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
 import lombok.*;
 
 /**
@@ -51,4 +52,10 @@ public class MaCreateOrderRequest {
      * 备注
      */
     private String remark;
+
+    //来源
+    private String source;
+
+    //促销信息
+    private String PromotionInfo;
 }

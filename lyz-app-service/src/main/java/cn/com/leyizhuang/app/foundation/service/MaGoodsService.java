@@ -32,4 +32,5 @@ public interface MaGoodsService {
 
     List<GoodsSpecificationResponse> findGoodsSpecificationListByCategoryCodeAndUserIdAndIdentityType(String categoryCode, Long userId, Integer identityType, String categorySecond, String goodsBrand, String goodType);
 
+    List<GoodsDO> findGoodsListByGidList(List<Long> internalGidList);
 }
