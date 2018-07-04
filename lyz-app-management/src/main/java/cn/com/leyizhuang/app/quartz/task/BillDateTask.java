@@ -39,8 +39,8 @@ public class BillDateTask implements Job {
                 Integer repaymentDeadlineDate = billRule.getRepaymentDeadlineDate();
                 System.out.println(new Date() + "：开始处理账单规则： "+ billDate + "," + repaymentDeadlineDate);
                 if (null != billDate && nowDate.equals(billDate)) {
-                    billInfoService.createBillInfo(billRule.getStoreId());
                     billInfoService.handleBillInfoInBillDate(billRule.getStoreId());
+                    billInfoService.createBillInfo(billRule.getStoreId());
                 }
                 if (null != repaymentDeadlineDate && nowDate.equals(repaymentDeadlineDate)) {
                     billInfoService.updateBillStatus(billRule.getStoreId(), BillStatusEnum.ALREADY_OUT, BillStatusEnum.HISTORY);

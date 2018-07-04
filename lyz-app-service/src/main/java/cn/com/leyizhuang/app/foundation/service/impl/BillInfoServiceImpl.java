@@ -457,8 +457,8 @@ public class BillInfoServiceImpl implements BillInfoService {
 
     @Override
     public void handleBillInfoInBillDate(Long storeId) {
-        String nowStr = DateUtil.getDateStr(new Date());
-        BillInfoDO billInfo = this.billInfoDAO.findBillInfoByBillEndDateAndStoreIdAndStatus(storeId, nowStr, BillStatusEnum.NOT_OUT);
+        String nowStr = DateUtil.getDateStr(DateUtil.getbeforMonthByDate(new Date()));
+        BillInfoDO billInfo = this.billInfoDAO.findBillInfoByBillStartDateAndStoreIdAndStatus(storeId, nowStr, BillStatusEnum.NOT_OUT);
         if (null != billInfo) {
             LocalDateTime billStartTime = null; // 账单开始时间
             LocalDateTime billEndTime = null;   // 账单结束时间
@@ -512,8 +512,8 @@ public class BillInfoServiceImpl implements BillInfoService {
     }
 
     @Override
-    public BillInfoDO findBillInfoByBillEndDateAndStoreIdAndStatus(Long storeId, String billEndDate, BillStatusEnum status) {
-        return this.billInfoDAO.findBillInfoByBillEndDateAndStoreIdAndStatus(storeId, billEndDate, status);
+    public BillInfoDO findBillInfoByBillStartDateAndStoreIdAndStatus(Long storeId, String billStartDate, BillStatusEnum status) {
+        return this.billInfoDAO.findBillInfoByBillStartDateAndStoreIdAndStatus(storeId, billStartDate, status);
     }
 
     /**
