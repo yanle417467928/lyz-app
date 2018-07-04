@@ -19,9 +19,9 @@ public class BillHistoryListResponse {
     //账单名称
     private String billName;
     //记账周期开始时间
-    private Date billStartDate;
+    private String billStartDate;
     //记账周期结束时间
-    private Date billEndDate;
+    private String billEndDate;
     //本期已还金额
     private Double currentPaidAmount;
 }

@@ -144,12 +144,14 @@ public class BillInfoServiceImpl implements BillInfoService {
 
         //计算利息（欠款金额 * 利息 * 逾期天数 * 利息单位）
         for (BillRepaymentGoodsInfoResponse goodsDetails : goodsDetailsList) {
-            //逾期天数
-            Integer overdueDays = DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(billDate, repaymentDeadlineDate, goodsDetails.getShipmentTime()), new Date());
-            if (overdueDays < 0) {
-                overdueDays = 0;
+            if ("order".equals(goodsDetails.getOrderType())) {
+                //逾期天数
+                Integer overdueDays = DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(billDate, repaymentDeadlineDate, goodsDetails.getShipmentTime()), new Date());
+                if (overdueDays < 0) {
+                    overdueDays = 0;
+                }
+                goodsDetails.setInterestAmount(CountUtil.mul(goodsDetails.getOrderCreditMoney(), interestRate, overdueDays, AppConstant.INTEREST_RATE_UNIT));
             }
-            goodsDetails.setInterestAmount(CountUtil.mul(goodsDetails.getOrderCreditMoney(), interestRate, overdueDays, AppConstant.INTEREST_RATE_UNIT));
         }
 
         return goodsDetailsList;
@@ -213,7 +215,7 @@ public class BillInfoServiceImpl implements BillInfoService {
         //更新账单信息
         billInfoDO.setCurrentPaidAmount(CountUtil.add(billInfoDO.getCurrentPaidAmount(), billRepaymentInfoDO.getOnlinePayAmount()));
         billInfoDO.setPriorPaidInterestAmount(CountUtil.add(billInfoDO.getPriorPaidInterestAmount(), billRepaymentInfoDO.getTotalInterestAmount()));
-        billInfoDO.setPriorPaidBillAmount(priorPaidBillAmount);
+        billInfoDO.setPriorPaidBillAmount(CountUtil.add(billInfoDO.getPriorPaidBillAmount(), priorPaidBillAmount));
         if (billInfoDO.getStatus() == BillStatusEnum.ALREADY_OUT) {
             billInfoDO.setCurrentUnpaidAmount(CountUtil.sub(billInfoDO.getCurrentUnpaidAmount(), billRepaymentInfoDO.getOnlinePayAmount()));
             if (billInfoDO.getCurrentUnpaidAmount() < AppConstant.PAY_UP_LIMIT) {
