@@ -77,6 +77,7 @@
     <select id="getCurrentOrderDetails" resultType="cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentGoodsInfoResponse">
         <!-- 配送 -->
         (SELECT
+        ob.oid orderId,
         ob.ord_no orderNo,
         '' returnNo,
         obd.st_credit_money orderCreditMoney,
@@ -111,6 +112,7 @@
 
         <!-- 自提 -->
         (SELECT
+        ob.oid orderId,
         ob.ord_no orderNo,
         '' returnNo,
         obd.st_credit_money orderCreditMoney,
@@ -145,6 +147,7 @@
         UNION ALL
 
         (SELECT
+        orb.roid orderId,
         ob.ord_no orderNo,
         orb.return_no returnNo,
         -ABS(orbd.st_credit_money) orderCreditMoney,
@@ -176,6 +179,52 @@
         </if>
         )
 
+    </select>
+
+    <select id="getCurrentOrderDetailsByOrderNo" resultType="cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentGoodsInfoResponse">
+        SELECT
+        ob.oid orderId,
+        ob.ord_no orderNo,
+        '' returnNo,
+        obd.st_credit_money orderCreditMoney,
+        ob.create_time orderTime,
+        wa.send_time shipmentTime,
+        'order' orderType
+        from ord_base_info ob
+        INNER JOIN ord_billing_details obd on ob.oid = obd.oid
+        LEFT JOIN bill_repayment_goods_details brgd on brgd.order_no = ob.ord_no
+        left JOIN bill_repayment_info bpi on bpi.id = brgd.repayment_id
+        LEFT  JOIN (SELECT * from inter_wta_order_shipping_header where send_flag = 1 GROUP BY order_no) wa on wa.order_no = ob.ord_no
+        where ob.delivery_type = "HOUSE_DELIVERY" and obd.st_credit_money > 0
+        and ob.`status` in ('PENDING_RECEIVE','FINISHED','REJECTED','CLOSED')
+        and ob.store_id = #{storeId}
+        and ob.oid IN
+        <foreach collection="ids" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="getCurrentOrderDetailsByReturnNo" resultType="cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentGoodsInfoResponse">
+        SELECT
+        orb.roid orderId,
+        ob.ord_no orderNo,
+        orb.return_no returnNo,
+        -ABS(orbd.st_credit_money) orderCreditMoney,
+        ob.create_time orderTime,
+        orl.operation_time shipmentTime,
+        'return' orderType
+        from ord_return_base_info orb
+        INNER JOIN ord_base_info ob on orb.ord_no = ob.ord_no
+        INNER JOIN ord_return_billing orbd on orb.return_no = orbd.return_no
+        LEFT JOIN bill_repayment_goods_details brgd on brgd.order_no = orb.return_no
+        left JOIN bill_repayment_info bpi on bpi.id = brgd.repayment_id
+        LEFT JOIN ord_return_lifecycle orl on orl.return_no = orb.return_no
+        where ob.delivery_type in ("SELF_TAKE","HOUSE_DELIVERY")
+        and orl.operation in ('REJECTED','NORMAL_RETURN') and post_status = "FINISHED" and orbd.st_credit_money > 0
+        and ob.store_id = #{storeId}
+        <foreach collection="ids" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
     </select>
 
     <select id="findBillHistoryListByEmpId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.response.BillHistoryListResponse">
