@@ -2528,7 +2528,7 @@ public class CommonServiceImpl implements CommonService {
                                 if (storeCreditMoney.getCreditLimitAvailable() < billingDetails.getAmountPayable()) {
                                     throw new LockStorePreDepositException("信用金余额不足!");
                                 }
-                                int affectLine = storeService.updateStoreCreditByUserIdAndVersion(
+                                int affectLine = storeService.lockStoreCreditByUserIdAndCredit(
                                         userId, billingDetails.getAmountPayable(), storeCreditMoney.getLastUpdateTime());
                                 if (affectLine > 0) {
                                     StoreCreditMoneyChangeLog log = new StoreCreditMoneyChangeLog();
