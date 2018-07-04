@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.BillRepaymentDAO">
 
-    <insert id="saveBillRepayment" parameterType="cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO">
+    <insert id="saveBillRepayment" parameterType="cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO" useGeneratedKeys="true" keyProperty="id">
       insert into bill_repayment_info (id, repayment_no, bill_id,
       bill_no, repayment_user_id, repayment_user_name,
       repayment_system, repayment_time, online_pay_type,

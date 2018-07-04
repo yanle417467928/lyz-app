@@ -31,7 +31,7 @@
 
 
     <select id="findBillInfoByBillNo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO">
-        SELECT bill_no,bill_name,store_id,bill_start_date,bill_end_date,repayment_deadline_date,
+        SELECT id,bill_no,bill_name,store_id,bill_start_date,bill_end_date,repayment_deadline_date,
         IFNULL(bill_total_amount, 0) bill_total_amount, IFNULL(current_bill_amount, 0) current_bill_amount, IFNULL(current_adjustment_amount, 0) current_adjustment_amount,
         IFNULL(current_paid_amount, 0) current_paid_amount, IFNULL(current_unpaid_amount, 0) current_unpaid_amount,
         IFNULL(prior_paid_bill_amount, 0) prior_paid_bill_amount, IFNULL(prior_paid_interest_amount, 0) prior_paid_interest_amount,status,bill_time,create_time
