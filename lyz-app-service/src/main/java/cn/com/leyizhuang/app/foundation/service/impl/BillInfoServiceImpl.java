@@ -723,7 +723,20 @@ public class BillInfoServiceImpl implements BillInfoService {
             for (BillorderDetailsRequest request : billorderDetailsRequests){
                 orderIds.add(request.getId());
             }
+
+            // 本次还款订单
             List<BillRepaymentGoodsInfoResponse> billOrderList = billInfoDAO.getCurrentOrderDetailsByOrderNo(orderIds,storeId);
+            // 本次还款中上期订单
+            List<BillRepaymentGoodsInfoResponse> pirorOrderList = new ArrayList<>();
+            // 账单开始时间
+            Date billStartTime = billInfoDO.getBillStartDate();
+            for (BillRepaymentGoodsInfoResponse goodsInfoResponse : billOrderList){
+                if (goodsInfoResponse.getShipmentTime().before(billStartTime)){
+
+                }
+            }
+
+
             // 计算滞纳金
             billOrderList = this.computeInterestAmount2(storeId,billOrderList);
             // 总滞纳金
@@ -744,7 +757,17 @@ public class BillInfoServiceImpl implements BillInfoService {
             }
 
             // 更新账单数据
+            Double curentPaidAmount = billInfoDO.getCurrentPaidAmount() == null ? 0D : billInfoDO.getCurrentPaidAmount(); // 本期已还金额
+            Double priorpaidAmount = billInfoDO.getPriorPaidBillAmount() == null ? 0D : billInfoDO.getPriorPaidBillAmount(); // 已还上期金额
+            Double priorpaidInterestAmount = billInfoDO.getPriorPaidBillAmount() == null ? 0D : billInfoDO.getPriorPaidBillAmount(); // 已还滞纳金
 
+            curentPaidAmount = CountUtil.add(curentPaidAmount,totalRepaymentAmount);
+
+            billInfoDO.setCurrentPaidAmount(curentPaidAmount);
+            billInfoDO.setPriorPaidBillAmount(priorpaidAmount);
+            billInfoDO.setPriorPaidInterestAmount(priorpaidInterestAmount);
+
+            billInfoDAO.updateBillInfo(billInfoDO);
         }
     }
 }
