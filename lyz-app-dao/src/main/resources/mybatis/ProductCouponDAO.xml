@@ -61,6 +61,7 @@
     <select id="findCusProductCouponByCouponId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon">
         SELECT
+            ccpc.id id,
             ccpc.cus_id customerId,
             ccpc.seller_id sellerId,
             ccpc.store_id storeId,
