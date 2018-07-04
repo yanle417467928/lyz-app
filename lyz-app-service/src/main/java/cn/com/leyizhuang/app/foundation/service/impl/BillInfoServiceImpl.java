@@ -682,4 +682,94 @@ public class BillInfoServiceImpl implements BillInfoService {
 
         return totalAmount;
     }
+
+    @Transactional
+    public void createRepayMentInfo(Long storeId,Long userId,String repaymentSystem,List<BillorderDetailsRequest> billorderDetailsRequests,
+                                    Double stPreDeposit,Double cash,Double pos,Double totalRepaymentAmount,
+                                    String posNumber,Double other,
+                                    String billNo) throws Exception {
+        if (billorderDetailsRequests != null || billorderDetailsRequests.size() > 0){
+            //查询账单
+            BillInfoDO billInfoDO = billInfoDAO.findBillInfoByBillNo(billNo);
+
+            if (billInfoDO == null){
+                throw new Exception("账单不存在");
+            }
+
+            // 账单规则
+            BillRuleDO ruleDO = billRuleService.getBillRuleByStoreId(storeId);
+
+            if (billInfoDO == null){
+                throw new Exception("账单规则不存在");
+            }
+
+            //创建还款头信息
+            BillRepaymentInfoDO repaymentInfoDO = new BillRepaymentInfoDO();
+            repaymentInfoDO.setBillId(billInfoDO.getId());
+            repaymentInfoDO.setBillNo(billNo);
+            repaymentInfoDO.setRepaymentNo(OrderUtils.generateRepaymentNo());
+            repaymentInfoDO.setRepaymentUserId(userId);
+            repaymentInfoDO.setRepaymentSystem(repaymentSystem);
+            repaymentInfoDO.setRepaymentTime(new Date());
+            repaymentInfoDO.setCreateTime(new Date());
+            repaymentInfoDO.setPreDeposit(stPreDeposit);
+            repaymentInfoDO.setCashMoney(cash);
+            repaymentInfoDO.setPosMoney(pos);
+            repaymentInfoDO.setPosNumber(posNumber);
+            repaymentInfoDO.setOtherMoney(other);
+            repaymentInfoDO.setTotalRepaymentAmount(totalRepaymentAmount);
+            repaymentInfoDO.setIsPaid(true);
+            repaymentInfoDO.setInterestRate(ruleDO.getInterestRate());
+
+            List<Long> orderIds = new ArrayList<>();
+            for (BillorderDetailsRequest request : billorderDetailsRequests){
+                orderIds.add(request.getId());
+            }
+
+            // 本次还款订单
+            List<BillRepaymentGoodsInfoResponse> billOrderList = billInfoDAO.getCurrentOrderDetailsByOrderNo(orderIds,storeId);
+            // 本次还款中上期订单
+            List<BillRepaymentGoodsInfoResponse> pirorOrderList = new ArrayList<>();
+            // 账单开始时间
+            Date billStartTime = billInfoDO.getBillStartDate();
+            for (BillRepaymentGoodsInfoResponse goodsInfoResponse : billOrderList){
+                if (goodsInfoResponse.getShipmentTime().before(billStartTime)){
+                    pirorOrderList.add(goodsInfoResponse);
+                }
+            }
+
+
+            // 计算滞纳金
+            billOrderList = this.computeInterestAmount2(storeId,billOrderList);
+            // 总滞纳金
+            Double totalIntersAmount = this.AddAllInterestAmount(billOrderList);
+            repaymentInfoDO.setTotalInterestAmount(totalIntersAmount);
+
+            // 保存还款头信息
+            billRepaymentDAO.saveBillRepayment(repaymentInfoDO);
+
+            List<BillRepaymentGoodsDetailsDO> billRepaymentGoodsDetailsDOList = new ArrayList<>();
+            billRepaymentGoodsDetailsDOList = BillRepaymentGoodsInfoResponse.transfer(billOrderList);
+
+            for (BillRepaymentGoodsDetailsDO detailsDO: billRepaymentGoodsDetailsDOList){
+                detailsDO.setRepayment_No(repaymentInfoDO.getRepaymentNo());
+                detailsDO.setRepaymentId(repaymentInfoDO.getId());
+
+                billRepaymentDAO.saveBillRepaymentGoodsDetails(detailsDO);
+            }
+
+            // 更新账单数据
+            Double curentPaidAmount = billInfoDO.getCurrentPaidAmount() == null ? 0D : billInfoDO.getCurrentPaidAmount(); // 本期已还金额
+            Double priorpaidAmount = billInfoDO.getPriorPaidBillAmount() == null ? 0D : billInfoDO.getPriorPaidBillAmount(); // 已还上期金额
+            Double priorpaidInterestAmount = billInfoDO.getPriorPaidBillAmount() == null ? 0D : billInfoDO.getPriorPaidBillAmount(); // 已还滞纳金
+
+            curentPaidAmount = CountUtil.add(curentPaidAmount,totalRepaymentAmount);
+
+            billInfoDO.setCurrentPaidAmount(curentPaidAmount);
+            billInfoDO.setPriorPaidBillAmount(priorpaidAmount);
+            billInfoDO.setPriorPaidInterestAmount(priorpaidInterestAmount);
+
+            billInfoDAO.updateBillInfo(billInfoDO);
+        }
+    }
 }
