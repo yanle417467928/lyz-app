@@ -458,8 +458,8 @@ public class BillInfoServiceImpl implements BillInfoService {
 
     @Override
     public void handleBillInfoInBillDate(Long storeId) {
-        String nowStr = DateUtil.getDateStr(new Date());
-        BillInfoDO billInfo = this.billInfoDAO.findBillInfoByBillEndDateAndStoreIdAndStatus(storeId, nowStr, BillStatusEnum.NOT_OUT);
+        String nowStr = DateUtil.getDateStr(DateUtil.getbeforMonthByDate(new Date()));
+        BillInfoDO billInfo = this.billInfoDAO.findBillInfoByBillStartDateAndStoreIdAndStatus(storeId, nowStr, BillStatusEnum.NOT_OUT);
         if (null != billInfo) {
             LocalDateTime billStartTime = null; // 账单开始时间
             LocalDateTime billEndTime = null;   // 账单结束时间
@@ -482,11 +482,11 @@ public class BillInfoServiceImpl implements BillInfoService {
             Double fees = 0D; // 滞纳金
 
             // 本期已还订单
-            currentPaidOrderDetails = billInfoDAO.getCurrentOrderDetails(billStartTime,billEndTime,true,storeId);
+            currentPaidOrderDetails = billInfoDAO.getCurrentOrderDetails(billStartTime,billEndTime,true, storeId);
             // 本期未还订单
-            currentNotPayOrderDetails = billInfoDAO.getCurrentOrderDetails(billStartTime,billEndTime,false,storeId);
+            currentNotPayOrderDetails = billInfoDAO.getCurrentOrderDetails(billStartTime,billEndTime,false, storeId);
             // 上期未还订单
-            beforNotPayOrderDetails = billInfoDAO.getCurrentOrderDetails(null,billStartTime,false,storeId);
+            beforNotPayOrderDetails = billInfoDAO.getCurrentOrderDetails(null,billStartTime,false, storeId);
 
 
             currentNotPay = this.AddAllCreditMoney(currentNotPayOrderDetails);
@@ -513,8 +513,8 @@ public class BillInfoServiceImpl implements BillInfoService {
     }
 
     @Override
-    public BillInfoDO findBillInfoByBillEndDateAndStoreIdAndStatus(Long storeId, String billEndDate, BillStatusEnum status) {
-        return this.billInfoDAO.findBillInfoByBillEndDateAndStoreIdAndStatus(storeId, billEndDate, status);
+    public BillInfoDO findBillInfoByBillStartDateAndStoreIdAndStatus(Long storeId, String billStartDate, BillStatusEnum status) {
+        return this.billInfoDAO.findBillInfoByBillStartDateAndStoreIdAndStatus(storeId, billStartDate, status);
     }
 
     /**

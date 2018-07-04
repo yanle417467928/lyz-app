@@ -56,7 +56,7 @@ public interface BillInfoService {
 
     void handleBillInfoInBillDate(Long storeId);
 
-    BillInfoDO findBillInfoByBillEndDateAndStoreIdAndStatus(Long storeId, String billEndDate, BillStatusEnum status);
+    BillInfoDO findBillInfoByBillStartDateAndStoreIdAndStatus(Long storeId, String billStratDate, BillStatusEnum status);
 
     Double calculatePayAmount(Long storeId,List<BillorderDetailsRequest> orderDetails);
 

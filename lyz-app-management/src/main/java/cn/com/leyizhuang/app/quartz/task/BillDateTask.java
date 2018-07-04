@@ -2,18 +2,15 @@ package cn.com.leyizhuang.app.quartz.task;
 
 import cn.com.leyizhuang.app.core.constant.BillStatusEnum;
 import cn.com.leyizhuang.app.core.utils.ApplicationContextUtil;
-import cn.com.leyizhuang.app.core.utils.DateUtil;
+import cn.com.leyizhuang.app.core.utils.DateUtils;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRuleDO;
-import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.service.BillInfoService;
 import cn.com.leyizhuang.app.foundation.service.BillRuleService;
-import cn.com.leyizhuang.app.foundation.service.MaOrderService;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.stereotype.Component;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -34,7 +31,7 @@ public class BillDateTask implements Job {
 
         List<BillRuleDO> billRuleList = billRuleService.findAllBillRule();
 
-        Integer nowDate = DateUtil.getDate();
+        Integer nowDate = DateUtils.getDate();
         System.out.println(new Date() + "：开始处理账单规则： "+ billRuleList);
         if (null != billRuleList && billRuleList.size() > 0) {
             for (BillRuleDO billRule : billRuleList) {
@@ -42,8 +39,8 @@ public class BillDateTask implements Job {
                 Integer repaymentDeadlineDate = billRule.getRepaymentDeadlineDate();
                 System.out.println(new Date() + "：开始处理账单规则： "+ billDate + "," + repaymentDeadlineDate);
                 if (null != billDate && nowDate.equals(billDate)) {
-                    billInfoService.createBillInfo(billRule.getStoreId());
                     billInfoService.handleBillInfoInBillDate(billRule.getStoreId());
+                    billInfoService.createBillInfo(billRule.getStoreId());
                 }
                 if (null != repaymentDeadlineDate && nowDate.equals(repaymentDeadlineDate)) {
                     billInfoService.updateBillStatus(billRule.getStoreId(), BillStatusEnum.ALREADY_OUT, BillStatusEnum.HISTORY);

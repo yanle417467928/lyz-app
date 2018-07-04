@@ -279,14 +279,14 @@
 
     <update id="updateBillStatus" >
       UPDATE bill_info SET
-      `status` = {afterStatus}
+      `status` = #{afterStatus}
       WHERE store_id = #{storeId} AND `status` = #{beforeStatus}
     </update>
 
-    <select id="findBillInfoByBillEndDateAndStoreIdAndStatus" resultType="cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO">
+    <select id="findBillInfoByBillStartDateAndStoreIdAndStatus" resultType="cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO">
         SELECT bill_no, bill_start_date, bill_end_date, repayment_deadline_date, status
         FROM bill_info
-        WHERE store_id = #{storeId} AND `status` = #{status} AND bill_end_date = #{billEndDate}
+        WHERE store_id = #{storeId} AND `status` = #{status} AND bill_start_date = #{billStartDate}
     </select>
 
 

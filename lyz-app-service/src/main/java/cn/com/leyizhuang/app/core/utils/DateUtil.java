@@ -622,6 +622,23 @@ public class DateUtil {
     }
 
     /**
+     * @title   获取前一个月的今天
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/7/4
+     */
+    public static Date getbeforMonthByDate(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) - 1);
+        cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH));
+        return cal.getTime();
+    }
+
+    /**
      * @title   获取账期
      * @descripe
      * @param
@@ -640,7 +657,7 @@ public class DateUtil {
 
 
     public static void main(String[] args) {
-        System.out.println(getDate());
+        System.out.println(getbeforMonthByDate(new Date()));
         System.out.println(getMonthByDate(DateUtil.dateFromString("2018/1/05 00:00:01")));
         System.out.println(getDateStr(getBillDate(new Date(), -1, 5)));
         System.out.println(DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(20, 30, DateUtil.dateFromString("2016/02/05 00:00:01")), DateUtil.dateFromString("2016/03/25 00:00:01")));
