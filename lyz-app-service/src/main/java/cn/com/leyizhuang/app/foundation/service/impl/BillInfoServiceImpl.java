@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.core.exception.SystemBusyException;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.BillInfoDAO;
+import cn.com.leyizhuang.app.foundation.dao.BillRepaymentDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.StoreCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.StoreCreditMoneyChangeLog;
@@ -53,6 +54,9 @@ public class BillInfoServiceImpl implements BillInfoService {
 
     @Autowired
     private BillInfoDAO billInfoDAO;
+
+    @Autowired
+    private BillRepaymentDAO billRepaymentDAO;
 
     @Autowired
     private PaymentDataService paymentDataService;

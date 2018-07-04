@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.BillRepaymentDAO">
+
+    <insert id="saveBillRepayment" parameterType="cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO">
+      insert into bill_repayment_info (id, repayment_no, bill_id,
+      bill_no, repayment_user_id, repayment_user_name,
+      repayment_system, repayment_time, online_pay_type,
+      online_pay_amount, pre_deposit, cash_money,
+      other_money, pos_money, pos_number,
+      total_repayment_amount, is_paid, interest_rate,
+      total_interest_amount, create_time)
+      values (#{id,jdbcType=BIGINT}, #{repaymentNo,jdbcType=VARCHAR}, #{billId,jdbcType=BIGINT},
+      #{billNo,jdbcType=VARCHAR}, #{repaymentUserId,jdbcType=BIGINT}, #{repaymentUserName,jdbcType=VARCHAR},
+      #{repaymentSystem,jdbcType=VARCHAR}, #{repaymentTime,jdbcType=TIMESTAMP}, #{onlinePayType,jdbcType=VARCHAR},
+      #{onlinePayAmount,jdbcType=DECIMAL}, #{preDeposit,jdbcType=DECIMAL}, #{cashMoney,jdbcType=DECIMAL},
+      #{otherMoney,jdbcType=DECIMAL}, #{posMoney,jdbcType=DECIMAL}, #{posNumber,jdbcType=VARCHAR},
+      #{totalRepaymentAmount,jdbcType=DECIMAL}, #{isPaid,jdbcType=BIT}, #{interestRate,jdbcType=DECIMAL},
+      #{totalInterestAmount,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <insert id="saveBillRepaymentGoodsDetails" parameterType="cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO">
+      insert into bill_repayment_goods_details (id, repayment_id, repayment_no,
+      order_no, return_no, order_credit_money,
+      order_time, shipment_time, order_type,
+      interest_amount)
+      values (#{id,jdbcType=BIGINT}, #{repaymentId,jdbcType=BIGINT}, #{repaymentNo,jdbcType=VARCHAR},
+      #{orderNo,jdbcType=VARCHAR}, #{returnNo,jdbcType=VARCHAR}, #{orderCreditMoney,jdbcType=DECIMAL},
+      #{orderTime,jdbcType=TIMESTAMP}, #{shipmentTime,jdbcType=TIMESTAMP}, #{orderType,jdbcType=VARCHAR},
+      #{interestAmount,jdbcType=VARCHAR})
+    </insert>
+
+</mapper>
