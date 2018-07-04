@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.core.constant.OnlinePayType;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.BillInfoDAO;
+import cn.com.leyizhuang.app.foundation.dao.BillRepaymentDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
@@ -48,6 +49,9 @@ public class BillInfoServiceImpl implements BillInfoService {
 
     @Autowired
     private BillInfoDAO billInfoDAO;
+
+    @Autowired
+    private BillRepaymentDAO billRepaymentDAO;
 
     @Autowired
     private PaymentDataService paymentDataService;
