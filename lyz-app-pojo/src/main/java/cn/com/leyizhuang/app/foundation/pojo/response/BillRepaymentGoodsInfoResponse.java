@@ -53,7 +53,6 @@ public class BillRepaymentGoodsInfoResponse {
     public static BillRepaymentGoodsDetailsDO transfer(BillRepaymentGoodsInfoResponse response){
         BillRepaymentGoodsDetailsDO detailsDO = new BillRepaymentGoodsDetailsDO();
 
-        detailsDO.setId(response.getBillId());
         detailsDO.setReturnNo(response.getReturnNo());
         detailsDO.setOrderNo(response.getOrderNo());
         detailsDO.setOrderCreditMoney(response.getOrderCreditMoney());
