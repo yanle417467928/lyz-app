@@ -499,4 +499,14 @@ public class DateUtil {
         }
         return futureDaysList;
     }
+
+    /**
+     *  获取当前日期
+     * @return
+     */
+    public static Integer getDate() {
+        Calendar calendar = Calendar.getInstance();
+        int date = calendar.get(Calendar.DAY_OF_MONTH);
+        return date;
+    }
 }

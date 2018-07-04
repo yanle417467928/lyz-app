@@ -37,7 +37,7 @@ import java.util.List;
  * @author GenerationRoad
  * @date 2018/6/26
  */
-@Service
+@Service("billInfoService")
 public class BillInfoServiceImpl implements BillInfoService {
 
     private static final Logger logger = LoggerFactory.getLogger(BillInfoServiceImpl.class);
