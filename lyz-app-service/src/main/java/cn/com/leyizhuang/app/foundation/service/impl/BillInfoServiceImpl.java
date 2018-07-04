@@ -12,6 +12,7 @@ import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRuleDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
+import cn.com.leyizhuang.app.foundation.pojo.request.BillorderDetailsRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillHistoryListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillInfoResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentGoodsInfoResponse;
@@ -594,5 +595,47 @@ public class BillInfoServiceImpl implements BillInfoService {
         }
 
         return interestAmount;
+    }
+
+    /**
+     * 计算应该支付金额
+     * @param orderDetails
+     * @return
+     */
+    public Double calculatePayAmount(Long storeId,List<BillorderDetailsRequest> orderDetails){
+        Double totalAmount = 0D;
+        Double totalOrderAmount = 0D;
+        Double totalReturnAmount = 0D;
+        Double fees = 0D;
+        List<Long> orderIds = new ArrayList<>();
+        List<Long> returnIds = new ArrayList<>();
+
+        if (orderDetails == null || orderDetails.size() == 0){
+            return  totalAmount;
+        }
+
+        // 分离订单和退单
+        for (BillorderDetailsRequest request : orderDetails){
+            if (request.getOrderType().equals("order")){
+                orderIds.add(request.getId());
+            }else if (request.getOrderType().equals("return")){
+                returnIds.add(request.getId());
+            }
+        }
+
+        // 获取订单
+        List<BillRepaymentGoodsInfoResponse> billOrderList = billInfoDAO.getCurrentOrderDetailsByOrderNo(orderIds,storeId);
+        // 获取退单
+        List<BillRepaymentGoodsInfoResponse> billReturnOrderList = billInfoDAO.getCurrentOrderDetailsByReturnNo(returnIds,storeId);
+
+        // 计算滞纳金
+        billOrderList = this.computeInterestAmount2(storeId,billOrderList);
+        totalOrderAmount = this.AddAllCreditMoney(billOrderList);
+        totalReturnAmount = this.AddAllCreditMoney(billReturnOrderList);
+        fees = this.AddAllInterestAmount(billOrderList);
+
+        totalAmount = CountUtil.add(totalOrderAmount,totalReturnAmount,fees);
+
+        return totalAmount;
     }
 }

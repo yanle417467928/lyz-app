@@ -36,6 +36,10 @@ public interface BillInfoDAO {
                                                           @Param("endTime") LocalDateTime endTime,
                                                           @Param("isPaid") Boolean isPaid, @Param("storeId") Long storeId);
 
+    List<BillRepaymentGoodsInfoResponse> getCurrentOrderDetailsByOrderNo(@Param("ids") List<Long> orderIds,@Param("storeId") Long storeId);
+
+    List<BillRepaymentGoodsInfoResponse> getCurrentOrderDetailsByReturnNo(@Param("ids") List<Long> returnIds,@Param("storeId") Long storeId);
+
     List<BillHistoryListResponse> findBillHistoryListByEmpId(Long empId);
 
     List<BillRepaymentInfoDO> findBillRepaymentInfoByBillNo(String billNo);
