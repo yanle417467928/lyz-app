@@ -220,18 +220,22 @@ public class BillInfoServiceImpl implements BillInfoService {
             }
         }
 
+
         this.billInfoDAO.updateBillInfo(billInfoDO);
+
+
         //加信用金
+        Double amount = CountUtil.sub(billRepaymentInfoDO.getTotalRepaymentAmount(), billRepaymentInfoDO.getTotalInterestAmount());
         for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
             StoreCreditMoney storeCreditMoney = this.appStoreService.findStoreCreditMoneyByStoreId(billInfoDO.getStoreId());
             if (null != storeCreditMoney) {
                 int affectLine = appStoreService.updateStoreCreditByStoreIdAndVersion(
-                        billInfoDO.getStoreId(), billRepaymentInfoDO.getTotalRepaymentAmount(), storeCreditMoney.getLastUpdateTime());
+                        billInfoDO.getStoreId(), amount, storeCreditMoney.getLastUpdateTime());
                 if (affectLine > 0) {
                     StoreCreditMoneyChangeLog log = new StoreCreditMoneyChangeLog();
                     log.setStoreId(storeCreditMoney.getStoreId());
-                    log.setChangeAmount(billRepaymentInfoDO.getTotalRepaymentAmount());
-                    log.setCreditLimitAvailableAfterChange(storeCreditMoney.getCreditLimitAvailable() + billRepaymentInfoDO.getTotalRepaymentAmount());
+                    log.setChangeAmount(amount);
+                    log.setCreditLimitAvailableAfterChange(storeCreditMoney.getCreditLimitAvailable() + amount);
                     log.setCreateTime(Calendar.getInstance().getTime());
                     log.setChangeType(StoreCreditMoneyChangeType.REPAYMENT);
                     log.setChangeTypeDesc(StoreCreditMoneyChangeType.REPAYMENT.getDescription());
