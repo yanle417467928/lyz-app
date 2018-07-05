@@ -86,11 +86,14 @@
         'order' orderType
         from ord_base_info ob
         INNER JOIN ord_billing_details obd on ob.oid = obd.oid
-        LEFT JOIN bill_repayment_goods_details brgd on brgd.order_no = ob.ord_no
-        left JOIN bill_repayment_info bpi on bpi.id = brgd.repayment_id
+        left JOIN (SELECT a.is_paid,b.order_no from bill_repayment_info a
+                  LEFT JOIN bill_repayment_goods_details b on a.id = b.repayment_id where is_paid = 1
+                  ) bpi on bpi.order_no = ob.ord_no
         LEFT  JOIN (SELECT * from inter_wta_order_shipping_header where send_flag = 1 GROUP BY order_no) wa on wa.order_no = ob.ord_no
-        LEFT JOIN decoration_company_credit_billing_details dccb on dccb.order_number = ob.ord_no
-        LEFT JOIN decoration_company_credit_billing dc on dc.credit_billing_no = dccb.credit_billing_no
+        LEFT JOIN (
+                SELECT a.is_pay_off,b.order_number from decoration_company_credit_billing a
+                LEFT JOIN decoration_company_credit_billing_details b on a.credit_billing_no = b.credit_billing_no where a.is_pay_off = 1
+                  )dc ON dc.order_number = ob.ord_no
         where ob.delivery_type = "HOUSE_DELIVERY" and obd.st_credit_money > 0
         and ob.`status` in ('PENDING_RECEIVE','FINISHED','REJECTED','CLOSED')
         and ob.store_id = #{storeId}
@@ -104,7 +107,7 @@
             and (bpi.is_paid = 1 OR dc.is_pay_off = 1)
         </if>
         <if test="isPaid != null and isPaid == false">
-            and (bpi.is_paid = 0 OR bpi.is_paid is null) and (dc.is_pay_off = 0 Or dc.is_pay_off is null)
+            and bpi.is_paid is null and dc.is_pay_off is null
         </if>
         )
 
@@ -121,11 +124,14 @@
         'order' orderType
         from ord_base_info ob
         INNER JOIN ord_billing_details obd on ob.oid = obd.oid
-        LEFT JOIN bill_repayment_goods_details brgd on brgd.order_no = ob.ord_no
-        left JOIN bill_repayment_info bpi on bpi.id = brgd.repayment_id
+        left JOIN (SELECT a.is_paid,b.order_no from bill_repayment_info a
+                    LEFT JOIN bill_repayment_goods_details b on a.id = b.repayment_id where is_paid = 1
+                  ) bpi on bpi.order_no = ob.ord_no
         LEFT  JOIN (SELECT * from ord_shipping GROUP BY ord_no) os on os.ord_no = ob.ord_no
-        LEFT JOIN decoration_company_credit_billing_details dccb on dccb.order_number = ob.ord_no
-        LEFT JOIN decoration_company_credit_billing dc on dc.credit_billing_no = dccb.credit_billing_no
+        LEFT JOIN (
+                SELECT a.is_pay_off,b.order_number from decoration_company_credit_billing a
+                LEFT JOIN decoration_company_credit_billing_details b on a.credit_billing_no = b.credit_billing_no where a.is_pay_off = 1
+                )dc ON dc.order_number = ob.ord_no
         where ob.delivery_type = "SELF_TAKE" and obd.st_credit_money > 0 and obd.is_pay_up = 1
         and ob.`status` in ('FINISHED')
         and ob.store_id = #{storeId}
@@ -139,7 +145,7 @@
             and (bpi.is_paid = 1 OR dc.is_pay_off = 1)
         </if>
         <if test="isPaid != null and isPaid == false">
-            and (bpi.is_paid = 0 OR bpi.is_paid is null) and (dc.is_pay_off = 0 Or dc.is_pay_off is null)
+            and bpi.is_paid is null and dc.is_pay_off is null
         </if>
         )
 
@@ -157,11 +163,14 @@
         from ord_return_base_info orb
         INNER JOIN ord_base_info ob on orb.ord_no = ob.ord_no
         INNER JOIN ord_return_billing orbd on orb.return_no = orbd.return_no
-        LEFT JOIN bill_repayment_goods_details brgd on brgd.order_no = orb.return_no
-        left JOIN bill_repayment_info bpi on bpi.id = brgd.repayment_id
+        left JOIN (SELECT a.is_paid,b.return_no from bill_repayment_info a
+        LEFT JOIN bill_repayment_goods_details b on a.id = b.repayment_id where is_paid = 1
+        ) bpi on bpi.return_no = orb.return_no
         LEFT JOIN ord_return_lifecycle orl on orl.return_no = orb.return_no
-        LEFT JOIN decoration_company_credit_billing_details dccb on dccb.order_number = orb.return_no
-        LEFT JOIN decoration_company_credit_billing dc on dc.credit_billing_no = dccb.credit_billing_no
+        LEFT JOIN (
+                SELECT a.is_pay_off,b.order_number from decoration_company_credit_billing a
+                LEFT JOIN decoration_company_credit_billing_details b on a.credit_billing_no = b.credit_billing_no where a.is_pay_off = 1
+                )dc ON dc.order_number = orb.return_no
         where ob.delivery_type in ("SELF_TAKE","HOUSE_DELIVERY")
         and orl.operation in ('REJECTED','NORMAL_RETURN') and post_status = "FINISHED" and orbd.st_credit_money > 0
         and ob.store_id = #{storeId}
@@ -172,10 +181,10 @@
             and orl.operation_time &lt; #{endTime}
         </if>
         <if test="isPaid != null and isPaid == true">
-            and (bpi.is_paid = 1 OR  dc.is_pay_off = 1)
+            and (bpi.is_paid = 1 OR dc.is_pay_off = 1)
         </if>
         <if test="isPaid != null and isPaid == false">
-            and (bpi.is_paid = 0 OR bpi.is_paid is null) and (dc.is_pay_off = 0 Or dc.is_pay_off is null)
+            and bpi.is_paid is null and dc.is_pay_off is null
         </if>
         )
 
@@ -192,8 +201,6 @@
         'order' orderType
         from ord_base_info ob
         INNER JOIN ord_billing_details obd on ob.oid = obd.oid
-        LEFT JOIN bill_repayment_goods_details brgd on brgd.order_no = ob.ord_no
-        left JOIN bill_repayment_info bpi on bpi.id = brgd.repayment_id
         LEFT  JOIN (SELECT * from inter_wta_order_shipping_header where send_flag = 1 GROUP BY order_no) wa on wa.order_no = ob.ord_no
         where ob.delivery_type = "HOUSE_DELIVERY" and obd.st_credit_money > 0
         and ob.`status` in ('PENDING_RECEIVE','FINISHED','REJECTED','CLOSED')
@@ -216,19 +223,71 @@
         from ord_return_base_info orb
         INNER JOIN ord_base_info ob on orb.ord_no = ob.ord_no
         INNER JOIN ord_return_billing orbd on orb.return_no = orbd.return_no
-        LEFT JOIN bill_repayment_goods_details brgd on brgd.order_no = orb.return_no
-        left JOIN bill_repayment_info bpi on bpi.id = brgd.repayment_id
         LEFT JOIN ord_return_lifecycle orl on orl.return_no = orb.return_no
         where ob.delivery_type in ("SELF_TAKE","HOUSE_DELIVERY")
         and orl.operation in ('REJECTED','NORMAL_RETURN') and post_status = "FINISHED" and orbd.st_credit_money > 0
         and ob.store_id = #{storeId}
+        and orb.roid IN
         <foreach collection="ids" item="id" index="index" open="(" close=")" separator=",">
             #{id}
         </foreach>
     </select>
 
+    <select id="findPaidOrderDetailsByOids" resultType="cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentGoodsInfoResponse">
+        SELECT
+        ob.oid orderId,
+        ob.ord_no orderNo,
+        '' returnNo,
+        obd.st_credit_money orderCreditMoney,
+        ob.create_time orderTime,
+        'order' orderType
+        from ord_base_info ob
+        INNER JOIN ord_billing_details obd on ob.oid = obd.oid
+        left JOIN (SELECT a.is_paid,b.order_no from bill_repayment_info a
+                  LEFT JOIN bill_repayment_goods_details b on a.id = b.repayment_id where is_paid = 1
+                  ) bpi on bpi.order_no = ob.ord_no
+        LEFT JOIN (
+                SELECT a.is_pay_off,b.order_number from decoration_company_credit_billing a
+                LEFT JOIN decoration_company_credit_billing_details b on a.credit_billing_no = b.credit_billing_no where a.is_pay_off = 1
+                  )dc ON dc.order_number = ob.ord_no
+        where (bpi.is_paid = 1 OR dc.is_pay_off = 1) and ob.oid in
+        <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="findPaidReturnOrderDetailsByOids" resultType="cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentGoodsInfoResponse">
+        SELECT
+        orb.roid orderId,
+        ob.ord_no orderNo,
+        orb.return_no returnNo,
+        -ABS(orbd.st_credit_money) orderCreditMoney,
+        ob.create_time orderTime,
+        orl.operation_time shipmentTime,
+        'return' orderType
+        from ord_return_base_info orb
+        INNER JOIN ord_base_info ob on orb.ord_no = ob.ord_no
+        INNER JOIN ord_return_billing orbd on orb.return_no = orbd.return_no
+        left JOIN (SELECT a.is_paid,b.return_no from bill_repayment_info a
+        LEFT JOIN bill_repayment_goods_details b on a.id = b.repayment_id where is_paid = 1
+        ) bpi on bpi.return_no = orb.return_no
+        LEFT JOIN ord_return_lifecycle orl on orl.return_no = orb.return_no
+        LEFT JOIN (
+                SELECT a.is_pay_off,b.order_number from decoration_company_credit_billing a
+                LEFT JOIN decoration_company_credit_billing_details b on a.credit_billing_no = b.credit_billing_no where a.is_pay_off = 1
+                )dc ON dc.order_number = orb.return_no
+        where ob.delivery_type in ("SELF_TAKE","HOUSE_DELIVERY")
+        and orl.operation in ('REJECTED','NORMAL_RETURN') and post_status = "FINISHED" and orbd.st_credit_money > 0
+        and ob.store_id = #{storeId}
+        and (bpi.is_paid = 1 OR dc.is_pay_off = 1)
+        and orb.roid in
+        <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
     <select id="findBillHistoryListByEmpId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.response.BillHistoryListResponse">
-        SELECT DATE_FORMAT(b.bill_start_date,'%Y') years, b.bill_name, b.bill_start_date, b.bill_end_date, b.current_paid_amount
+        SELECT b.bill_no,DATE_FORMAT(b.bill_start_date,'%Y') years, b.bill_name, b.bill_start_date, b.bill_end_date, b.current_paid_amount
         FROM bill_info b
         LEFT JOIN emp_employee e ON e.store_id = b.store_id
         WHERE e.emp_id = #{empId}
@@ -288,7 +347,5 @@
         FROM bill_info
         WHERE store_id = #{storeId} AND `status` = #{status} AND bill_start_date = #{billStartDate}
     </select>
-
-
 
 </mapper>

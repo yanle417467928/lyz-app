@@ -22,6 +22,7 @@ import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.util.CountUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,7 +138,6 @@ public class BillInfoServiceImpl implements BillInfoService {
         if (null == billDate || billDate == 0) {
             billDate = 1;
         }
-
 
         //计算利息（欠款金额 * 利息 * 逾期天数 * 利息单位）
         for (BillRepaymentGoodsInfoResponse goodsDetails : goodsDetailsList) {
@@ -700,9 +700,9 @@ public class BillInfoServiceImpl implements BillInfoService {
         }
 
         // 获取订单
-        List<BillRepaymentGoodsInfoResponse> billOrderList = billInfoDAO.getCurrentOrderDetailsByOrderNo(orderIds,storeId);
+        List<BillRepaymentGoodsInfoResponse> billOrderList = this.getCurrentOrderDetailsByOrderNo(orderIds,storeId);
         // 获取退单
-        List<BillRepaymentGoodsInfoResponse> billReturnOrderList = billInfoDAO.getCurrentOrderDetailsByReturnNo(returnIds,storeId);
+        List<BillRepaymentGoodsInfoResponse> billReturnOrderList = this.getCurrentOrderDetailsByReturnNo(returnIds,storeId);
 
         // 计算滞纳金
         billOrderList = this.computeInterestAmount2(storeId,billOrderList);
@@ -731,7 +731,7 @@ public class BillInfoServiceImpl implements BillInfoService {
      * @throws Exception
      */
     @Transactional
-    public void createRepayMentInfo(Long storeId,Long userId,String repaymentSystem,List<BillorderDetailsRequest> billorderDetailsRequests,
+    public BillRepaymentInfoDO createRepayMentInfo(Long storeId,Long userId,String repaymentSystem,List<BillorderDetailsRequest> billorderDetailsRequests,
                                     Double stPreDeposit,Double cash,Double pos,Double totalRepaymentAmount,
                                     String posNumber,Double other,
                                     String billNo) throws Exception {
@@ -764,6 +764,7 @@ public class BillInfoServiceImpl implements BillInfoService {
             repaymentInfoDO.setPosMoney(pos);
             repaymentInfoDO.setPosNumber(posNumber);
             repaymentInfoDO.setOtherMoney(other);
+            repaymentInfoDO.setOnlinePayAmount(CountUtil.sub(totalRepaymentAmount,stPreDeposit,cash,pos,other));
             repaymentInfoDO.setTotalRepaymentAmount(totalRepaymentAmount);
 
             if (totalRepaymentAmount.equals(CountUtil.add(stPreDeposit,cash,pos,other))){
@@ -780,7 +781,7 @@ public class BillInfoServiceImpl implements BillInfoService {
             }
 
             // 本次还款订单
-            List<BillRepaymentGoodsInfoResponse> billOrderList = billInfoDAO.getCurrentOrderDetailsByOrderNo(orderIds,storeId);
+            List<BillRepaymentGoodsInfoResponse> billOrderList = this.getCurrentOrderDetailsByOrderNo(orderIds,storeId);
             // 本次还款中上期订单
             List<BillRepaymentGoodsInfoResponse> pirorOrderList = new ArrayList<>();
             // 账单开始时间
@@ -912,7 +913,42 @@ public class BillInfoServiceImpl implements BillInfoService {
                     }
                 }
             }
-
+            return repaymentInfoDO;
         }
+        return null;
+    }
+
+    List<BillRepaymentGoodsInfoResponse> getCurrentOrderDetailsByOrderNo(List<Long> orderIds,Long storeId){
+
+        if (orderIds == null || orderIds.size() == 0){
+            return  null;
+        }
+
+        return billInfoDAO.getCurrentOrderDetailsByOrderNo(orderIds,storeId);
+    }
+
+    List<BillRepaymentGoodsInfoResponse> getCurrentOrderDetailsByReturnNo(List<Long> orderIds,Long storeId){
+
+        if (orderIds == null || orderIds.size() == 0){
+            return  null;
+        }
+
+        return billInfoDAO.getCurrentOrderDetailsByReturnNo(orderIds,storeId);
+    }
+
+    public List<BillRepaymentGoodsInfoResponse> findPaidOrderDetailsByOids(List<Long> list, Long storeId){
+
+        if (list == null || list.size() == 0){
+            return null;
+        }
+        return billInfoDAO.findPaidOrderDetailsByOids(list,storeId);
+    }
+
+    public List<BillRepaymentGoodsInfoResponse> findPaidReturnOrderDetailsByOids(List<Long> list, Long storeId){
+
+        if (list == null || list.size() == 0){
+            return null;
+        }
+        return billInfoDAO.findPaidReturnOrderDetailsByOids(list,storeId);
     }
 }
