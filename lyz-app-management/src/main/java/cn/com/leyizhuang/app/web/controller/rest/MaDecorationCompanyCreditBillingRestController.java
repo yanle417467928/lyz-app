@@ -146,7 +146,7 @@ public class MaDecorationCompanyCreditBillingRestController extends BaseRestCont
                                 billingDetails.setIsPayUp(Boolean.TRUE);
                                 billingDetails.setPayUpTime(new Date());
                                 billingDetails.setOrderNumber(orderBillingDetails.getOrderNumber());
-                                appOrderService.updateOrderBillingDetails(orderBillingDetails);
+                                appOrderService.updateOrderBillingDetails(billingDetails);
                             }
                         }
                     }
