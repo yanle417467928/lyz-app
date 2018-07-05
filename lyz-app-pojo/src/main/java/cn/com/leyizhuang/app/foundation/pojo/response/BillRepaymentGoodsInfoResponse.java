@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -17,8 +18,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BillRepaymentGoodsInfoResponse {
-
-    private Long bill_id;
+    // 订单或者退单id
+    private Long orderId;
+    // 账单
+    private Long billId;
     //订单号
     private String orderNo;
     //退单号
@@ -37,12 +40,15 @@ public class BillRepaymentGoodsInfoResponse {
     public static BillRepaymentGoodsInfoResponse transform(BillRepaymentGoodsDetailsDO goodsDetailsDO){
         if (null != goodsDetailsDO) {
             BillRepaymentGoodsInfoResponse goodsInfoResponse = new BillRepaymentGoodsInfoResponse();
+
             goodsInfoResponse.setOrderNo(goodsDetailsDO.getOrderNo());
             goodsInfoResponse.setReturnNo(goodsDetailsDO.getReturnNo());
             goodsInfoResponse.setShipmentTime(goodsDetailsDO.getShipmentTime());
             goodsInfoResponse.setOrderCreditMoney(goodsDetailsDO.getOrderCreditMoney());
             goodsInfoResponse.setInterestAmount(goodsDetailsDO.getInterestAmount());
-
+            goodsInfoResponse.setOrderTime(goodsDetailsDO.getOrderTime());
+            goodsInfoResponse.setOrderType(goodsDetailsDO.getOrderType());
+            return  goodsInfoResponse;
         }
         return null;
     }
@@ -50,7 +56,6 @@ public class BillRepaymentGoodsInfoResponse {
     public static BillRepaymentGoodsDetailsDO transfer(BillRepaymentGoodsInfoResponse response){
         BillRepaymentGoodsDetailsDO detailsDO = new BillRepaymentGoodsDetailsDO();
 
-        detailsDO.setId(response.getBill_id());
         detailsDO.setReturnNo(response.getReturnNo());
         detailsDO.setOrderNo(response.getOrderNo());
         detailsDO.setOrderCreditMoney(response.getOrderCreditMoney());
@@ -70,5 +75,15 @@ public class BillRepaymentGoodsInfoResponse {
             goodsDetailsDOS.add(detailsDO);
         }
         return  goodsDetailsDOS;
+    }
+
+    @JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
+    public Date getOrderTime() {
+        return orderTime;
+    }
+
+    @JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
+    public Date getShipmentTime() {
+        return shipmentTime;
     }
 }

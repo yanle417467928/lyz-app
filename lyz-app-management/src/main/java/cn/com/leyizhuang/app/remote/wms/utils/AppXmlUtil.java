@@ -1,7 +1,7 @@
 package cn.com.leyizhuang.app.remote.wms.utils;
 
 import cn.com.leyizhuang.app.core.constant.AppReturnOrderStatus;
-import cn.com.leyizhuang.app.core.utils.DateUtil;
+import cn.com.leyizhuang.app.core.utils.DateUtils;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
 import cn.com.leyizhuang.common.core.utils.Base64Utils;
@@ -45,7 +45,7 @@ public class AppXmlUtil {
     public static String getRequisitionOrderXml(AtwRequisitionOrder requisitionOrder) {
         String orderTime = null;
         if (requisitionOrder.getOrderTime() != null) {
-            orderTime = DateUtil.formatDate(requisitionOrder.getOrderTime(), "yyyy-MM-dd HH:MM:ss");
+            orderTime = DateUtils.formatDate(requisitionOrder.getOrderTime(), "yyyy-MM-dd HH:MM:ss");
         }
         // 这里是一次临时处理，diy_site_id字面上的意义是门店ID，但因为历史原因这个标签必须传递门店编码
         String xmlStr = "<ERP><TABLE>" +
@@ -107,7 +107,7 @@ public class AppXmlUtil {
     public static String getReturnOrderXml(AtwReturnOrder returnOrder) {
         String returnTime = null;
         if (returnOrder.getReturnTime() != null) {
-            returnTime = DateUtil.formatDate(returnOrder.getReturnTime(), "yyyy-MM-dd HH:MM:ss");
+            returnTime = DateUtils.formatDate(returnOrder.getReturnTime(), "yyyy-MM-dd HH:MM:ss");
         }
 
         // 这里是一次临时处理，diy_site_id字面上的意义是门店ID，但因为历史原因这个标签必须传递门店编码
@@ -163,11 +163,11 @@ public class AppXmlUtil {
 
         String cancelTime = null;
         if (cancelOrderRequest.getCancelTime() != null) {
-            cancelTime = DateUtil.formatDate(cancelOrderRequest.getCancelTime(), "yyyy-MM-dd HH:MM:ss");
+            cancelTime = DateUtils.formatDate(cancelOrderRequest.getCancelTime(), "yyyy-MM-dd HH:MM:ss");
         }
         String createTime = null;
         if (cancelOrderRequest.getCreateTime() != null) {
-            createTime = DateUtil.formatDate(cancelOrderRequest.getCreateTime(), "yyyy-MM-dd HH:MM:ss");
+            createTime = DateUtils.formatDate(cancelOrderRequest.getCreateTime(), "yyyy-MM-dd HH:MM:ss");
         }
         // diy_site_id字面上的意义是门店ID，但因为历史原因这个标签必须传递门店编码
         String xmlStr = "<ERP><TABLE>" +
@@ -194,7 +194,7 @@ public class AppXmlUtil {
 
         String returnTime = null;
         if (returnOrderRequest.getReturnTime() != null) {
-            returnTime = DateUtil.formatDate(returnOrderRequest.getReturnTime(), "yyyy-MM-dd HH:MM:ss");
+            returnTime = DateUtils.formatDate(returnOrderRequest.getReturnTime(), "yyyy-MM-dd HH:MM:ss");
         }
         // diy_site_id字面上的意义是门店ID，但因为历史原因这个标签必须传递门店编码
         String xmlStr = "<ERP><TABLE>" +
@@ -246,7 +246,7 @@ public class AppXmlUtil {
 
         String checkTime = null;
         if (atwReturnOrderCheckEnter.getCheckGoodsTime() != null) {
-            checkTime = DateUtil.formatDate(atwReturnOrderCheckEnter.getCheckGoodsTime(), "yyyy-MM-dd HH:MM:ss");
+            checkTime = DateUtils.formatDate(atwReturnOrderCheckEnter.getCheckGoodsTime(), "yyyy-MM-dd HH:MM:ss");
         }
         int returnStatus = 0;
         if (AppReturnOrderStatus.PENDING_REFUND.equals(atwReturnOrderCheckEnter.getReturnStatus())) {

@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
 import cn.com.leyizhuang.app.core.constant.BillStatusEnum;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.util.Date;
@@ -28,6 +29,10 @@ public class BillInfoResponse {
     private Date billEndDate;
     //还款截至日
     private Date repaymentDeadlineDate;
+    //出账时间
+    private Date billTime;
+
+
     //账单总金额(本期账单金额+上期未还账单金额+上期滞纳金+本期调整金额)
     private Double billTotalAmount;
     //本期账单金额(账单日内出货订单正向金额求和)
@@ -46,12 +51,28 @@ public class BillInfoResponse {
     private Double priorPaidBillAmount;
     //已还上期滞纳金
     private Double priorPaidInterestAmount;
-    //出账时间
-    private Date billTime;
+
     //账单状态(0：未出帐；1：出帐；2 ：历史账单)
     private String status;
     // 未还订单明细
     List<BillRepaymentGoodsInfoResponse> notPayOrderDetails;
     // 已支付订单那明细
-    List<BillRepaymentGoodsInfoResponse> paidOrderDetails;
+    List<BillRepaymentResponse> paidOrderDetails;
+
+    @JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
+    public Date getBillStartDate() {
+        return billStartDate;
+    }
+    @JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
+    public Date getBillEndDate() {
+        return billEndDate;
+    }
+    @JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
+    public Date getRepaymentDeadlineDate() {
+        return repaymentDeadlineDate;
+    }
+    @JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
+    public Date getBillTime() {
+        return billTime;
+    }
 }

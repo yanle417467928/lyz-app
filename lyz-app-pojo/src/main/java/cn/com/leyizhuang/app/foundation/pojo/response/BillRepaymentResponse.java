@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.pojo.response;
 
 import cn.com.leyizhuang.app.core.constant.OnlinePayType;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.util.Date;
@@ -56,6 +57,16 @@ public class BillRepaymentResponse {
     private Date createTime;
 
     //账单明细
-    List<BillRepaymentGoodsInfoResponse> billRepaymentDetails;
+    private List<BillRepaymentGoodsInfoResponse> billRepaymentDetails;
+
+    @JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
+    public Date getRepaymentTime() {
+        return repaymentTime;
+    }
+
+    @JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
+    public Date getCreateTime() {
+        return createTime;
+    }
 
 }

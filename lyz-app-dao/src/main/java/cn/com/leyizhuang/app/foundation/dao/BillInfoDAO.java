@@ -34,7 +34,11 @@ public interface BillInfoDAO {
 
     List<BillRepaymentGoodsInfoResponse> getCurrentOrderDetails(@Param("startTime") LocalDateTime startTime,
                                                           @Param("endTime") LocalDateTime endTime,
-                                                          @Param("isPaid") Boolean isPaid);
+                                                          @Param("isPaid") Boolean isPaid, @Param("storeId") Long storeId);
+
+    List<BillRepaymentGoodsInfoResponse> getCurrentOrderDetailsByOrderNo(@Param("ids") List<Long> orderIds,@Param("storeId") Long storeId);
+
+    List<BillRepaymentGoodsInfoResponse> getCurrentOrderDetailsByReturnNo(@Param("ids") List<Long> returnIds,@Param("storeId") Long storeId);
 
     List<BillHistoryListResponse> findBillHistoryListByEmpId(Long empId);
 
@@ -44,8 +48,9 @@ public interface BillInfoDAO {
 
     void saveBillInfo(BillInfoDO billInfo);
 
-    void updateBillStatus(@Param("storeId") Long storeId, @Param("beforeStatus")BillStatusEnum beforeStatus, @Param("afterStatus")BillStatusEnum afterStatus);
+    void updateBillStatus(@Param("storeId") Long storeId, @Param("beforeStatus")BillStatusEnum beforeStatus,
+                          @Param("afterStatus")BillStatusEnum afterStatus);
 
-    BillInfoDO findBillInfoByBillEndDateAndStoreIdAndStatus(@Param("storeId") Long storeId, @Param("billEndDate")String billEndDate, @Param("status")BillStatusEnum status);
+    BillInfoDO findBillInfoByBillStartDateAndStoreIdAndStatus(@Param("storeId") Long storeId, @Param("billStartDate")String billStartDate, @Param("status")BillStatusEnum status);
 
 }

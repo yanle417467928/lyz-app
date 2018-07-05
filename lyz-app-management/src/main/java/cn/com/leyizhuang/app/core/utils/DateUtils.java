@@ -12,13 +12,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-public class DateUtil {
+public class DateUtils {
 
     public static final String FORMAT_DATETIME = "yyyy-MM-dd HH:mm:ss";
     public static final String FORMAT_DATE = "yyyy-MM-dd";
     public static final String FORMAT_MONTH = "yyyy-MM";
     public static final String FORMAT_TIME = "HH:mm:ss";
-    private final static Logger LOGGER = LoggerFactory.getLogger(DateUtil.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(DateUtils.class);
     public static long SECOND_MILLIS = 1000L;
 
     public static long MINUTE_MILLIS = 60 * SECOND_MILLIS;
@@ -495,8 +495,18 @@ public class DateUtil {
     public static ArrayList<String> getFutureDays(int intervals) {
         ArrayList<String> futureDaysList = new ArrayList<>();
         for (int i = 0; i < intervals; i++) {
-            futureDaysList.add(DateUtil.getFutureDate(i + 1));
+            futureDaysList.add(DateUtils.getFutureDate(i + 1));
         }
         return futureDaysList;
+    }
+
+    /**
+     *  获取当前日期
+     * @return
+     */
+    public static Integer getDate() {
+        Calendar calendar = Calendar.getInstance();
+        int date = calendar.get(Calendar.DAY_OF_MONTH);
+        return date;
     }
 }

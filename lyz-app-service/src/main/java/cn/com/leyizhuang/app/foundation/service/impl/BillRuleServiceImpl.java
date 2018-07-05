@@ -6,11 +6,13 @@ import cn.com.leyizhuang.app.foundation.service.BillRuleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @author GenerationRoad
  * @date 2018/6/26
  */
-@Service
+@Service("billRuleService")
 public class BillRuleServiceImpl implements BillRuleService {
 
     @Autowired
@@ -19,5 +21,10 @@ public class BillRuleServiceImpl implements BillRuleService {
     @Override
     public BillRuleDO getBillRuleByStoreId(Long storeId) {
         return this.billRuleDAO.getBillRuleByStoreId(storeId);
+    }
+
+    @Override
+    public List<BillRuleDO> findAllBillRule() {
+        return this.billRuleDAO.findAllBillRule();
     }
 }
