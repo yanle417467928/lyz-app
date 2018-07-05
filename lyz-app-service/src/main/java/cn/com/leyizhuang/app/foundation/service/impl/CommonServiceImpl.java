@@ -2553,12 +2553,12 @@ public class CommonServiceImpl implements CommonService {
                                 throw new LockStorePreDepositException("没有找到该导购所在门店的预存款信息!");
                             }
                         }
-                        if (FitCompayType.CASH == store.getFitCompayType()) {
-                            billingDetails.setStoreCreditMoney(billingDetails.getAmountPayable());
-                        } else {
-                            billingDetails.setStoreCreditMoney(billingDetails.getAmountPayable());
-                            billingDetails.setArrearage(CountUtil.sub(billingDetails.getArrearage(), billingDetails.getAmountPayable()));
-                        }
+//                        if (FitCompayType.CASH == store.getFitCompayType()) {
+//                            billingDetails.setStoreCreditMoney(billingDetails.getAmountPayable());
+//                        } else {
+                        billingDetails.setStoreCreditMoney(billingDetails.getAmountPayable());
+                        billingDetails.setArrearage(CountUtil.sub(billingDetails.getArrearage(), billingDetails.getAmountPayable()));
+//                        }
                         if (null != billingDetails.getStoreCreditMoney() && billingDetails.getStoreCreditMoney() > AppConstant.DOUBLE_ZERO) {
                             OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
                             details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.STORE_CREDIT_MONEY, billingDetails.getStoreCreditMoney(),
@@ -2571,7 +2571,7 @@ public class CommonServiceImpl implements CommonService {
                 }
             }
 
-            if (null != billingDetails.getArrearage() && billingDetails.getArrearage() <= 0) {
+            if (null != billingDetails.getArrearage() && billingDetails.getArrearage() <= 0 && billingDetails.getStoreCreditMoney() <= 0) {
                 billingDetails.setIsPayUp(true);
                 billingDetails.setPayUpTime(new Date());
             }
