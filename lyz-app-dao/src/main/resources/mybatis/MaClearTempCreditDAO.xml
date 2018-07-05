@@ -3,7 +3,7 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaClearTempCreditDAO">
 
     <select id="getCron" parameterType="java.lang.Long" resultType="java.lang.String">
-         select cron_express from timed_task  WHERE id = #{id}
+         select cron_express from timed_task  WHERE id = #{id}  AND is_open =1
     </select>
 
     <update id="update" >

@@ -11,10 +11,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQty
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderLifecycle;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaCancelOrderResultEnter;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturningOrderGoods;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturningOrderHeader;
-import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderHeader;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.*;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.remote.queue.MaSellDetailsSender;
@@ -111,6 +108,17 @@ public class WmsInterfaceRestController extends BaseRestController {
     @GetMapping(value = "/handle/wtaWarehouseWholeSplitToUnit/{directNo}/{sku}/{dsku}")
     public String handleWtaWarehouseWholeSplitToUnit(ModelMap map, @PathVariable(value = "directNo") String directNo, @PathVariable(value = "sku") String sku, @PathVariable(value = "dsku") String dsku) {
         this.wmsToAppOrderService.handlingWtaWarehouseWholeSplitToUnitAsync(directNo, sku, dsku);
+        return "sueesess";
+    }
+
+    @GetMapping(value = "/handle/wtaWarehouseWholeSplitToUnit/all")
+    public String handleWtaWarehouseWholeSplitToUnitAll() {
+        List<WtaWarehouseWholeSplitToUnit> wtaWarehouseWholeSplitToUnitList =wmsToAppOrderService.findWtaWarehouseWholeSplitToUnitAll();
+        if(wtaWarehouseWholeSplitToUnitList.size()>0){
+             for(WtaWarehouseWholeSplitToUnit wtaWarehouseWholeSplitToUnit : wtaWarehouseWholeSplitToUnitList){
+                 this.wmsToAppOrderService.handlingWtaWarehouseWholeSplitToUnitAsync(wtaWarehouseWholeSplitToUnit.getDirectNo(), wtaWarehouseWholeSplitToUnit.getSku(), wtaWarehouseWholeSplitToUnit.getDSku());
+            }
+        }
         return "sueesess";
     }
 

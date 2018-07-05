@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.foundation.pojo.CusExpiringSoonProductCouponInfo;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.reportDownload.*;
 import org.apache.ibatis.annotations.Param;
@@ -91,4 +92,6 @@ public interface MaReportDownloadDAO {
     List<PhotoOrderCheckDO> findPhotoOrderCheckDOAll(@Param("cityId") Long cityId, @Param("startTime") String startTime,
                                                      @Param("endTime") String endTime, @Param("keywords") String keywords);
 
+    List<CusExpiringSoonProductCouponInfo> findExpiringSoonProductAll(@Param("cityId") Long cityId, @Param("storeId") Long storeId, @Param("storeType") String storeType,
+                                                                      @Param("cusName") String cusName, @Param("list") List<Long> storeIds);
 }

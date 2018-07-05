@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.core.constant.OrderCouponType;
+import cn.com.leyizhuang.app.foundation.pojo.CusProductCouponMsgInfo;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCouponChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.ProductCoupon;
@@ -92,4 +93,8 @@ public interface ProductCouponService {
     void activateCusProductCoupon(String ordNo);
 
     CustomerProductCoupon findCustomerProductCouponByOrdNoAndSku(Long couponId);
+
+    List<CusProductCouponMsgInfo> findExpiringSoonProductCoupon();
+
+    void sendMsgForExpiringSoonProductCoupon();
 }

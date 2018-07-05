@@ -205,6 +205,13 @@
         WHERE direct_no = #{directNo} AND sku = #{sku} AND d_sku = #{dSku} AND (handle_flag = 0 OR handle_flag IS NULL)
     </select>
 
+    <select id="findWtaWarehouseWholeSplitToUnitAll"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaWarehouseWholeSplitToUnit">
+        SELECT *
+        FROM inter_wta_warehouse_whole_split_to_unit
+        WHERE  (handle_flag = 0 OR handle_flag IS NULL)
+    </select>
+
 
     <select id="findWtaWarehouseReportDamageAndOverflow"
             resultType="cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaWarehouseReportDamageAndOverflow">

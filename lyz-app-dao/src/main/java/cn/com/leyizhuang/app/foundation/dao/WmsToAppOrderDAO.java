@@ -203,6 +203,8 @@ public interface WmsToAppOrderDAO {
 
     WtaWarehouseWholeSplitToUnit findWtaWarehouseWholeSplitToUnit(@Param("directNo")String directNo,@Param("sku") String sku,@Param("dSku") String dSku);
 
+    List<WtaWarehouseWholeSplitToUnit> findWtaWarehouseWholeSplitToUnitAll();
+
     WtaWarehouseReportDamageAndOverflow findWtaWarehouseReportDamageAndOverflow(@Param("wasteNo")String wasteNo,@Param("wasteId") Long wasteId);
 
     void updateWtaWarehouseAllocation(WtaWarehouseAllocationHeader wtaWarehouseAllocationHeader);
