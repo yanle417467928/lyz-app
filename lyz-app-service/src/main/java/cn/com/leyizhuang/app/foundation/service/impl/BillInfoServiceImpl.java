@@ -7,9 +7,7 @@ import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.BillInfoDAO;
 import cn.com.leyizhuang.app.foundation.dao.BillRepaymentDAO;
-import cn.com.leyizhuang.app.foundation.pojo.AppStore;
-import cn.com.leyizhuang.app.foundation.pojo.StoreCreditMoney;
-import cn.com.leyizhuang.app.foundation.pojo.StoreCreditMoneyChangeLog;
+import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
@@ -296,9 +294,10 @@ public class BillInfoServiceImpl implements BillInfoService {
         response.setCurrentAdjustmentAmount(0D);
         response.setPriorNotPaidInterestAmount(0D);
         response.setPriorNotPaidBillAmount(0D);
-        List<BillRepaymentGoodsInfoResponse> list = new ArrayList<>();
-        response.setNotPayOrderDetails(list);
-        response.setPaidOrderDetails(list);
+        List<BillRepaymentGoodsInfoResponse> billRepaymentGoodsInfoResponseList = new ArrayList<>();
+        List<BillRepaymentResponse> repaymentResponseList = new ArrayList<>();
+        response.setNotPayOrderDetails(billRepaymentGoodsInfoResponseList);
+        response.setPaidOrderDetails(repaymentResponseList);
 
         LocalDateTime now = LocalDateTime.now(); //当前时间
         // 查询已出账单
@@ -364,7 +363,11 @@ public class BillInfoServiceImpl implements BillInfoService {
         beforNotPay = this.AddAllCreditMoney(beforNotPayOrderDetails);
 
         // 将订单结果注入response
-        response.setPaidOrderDetails(currentPaidOrderDetails);
+
+        // 已还结果集合
+        repaymentResponseList = this.findPaidRepaymentResponse(billInfoDO.getBillNo());
+        response.setPaidOrderDetails(repaymentResponseList);
+
         // 合并未还清结果集
         beforNotPayOrderDetails.addAll(currentNotPayOrderDetails);
         // TODO 排序
@@ -422,6 +425,32 @@ public class BillInfoServiceImpl implements BillInfoService {
                 }
             }
             return billInfoResponse;
+        }
+        return null;
+    }
+
+    public List<BillRepaymentResponse>  findPaidRepaymentResponse(String billNo){
+        BillInfoDO billInfoDO = this.billInfoDAO.findBillInfoByBillNo(billNo);
+        BillInfoResponse billInfoResponse = BillInfoDO.transfer(billInfoDO);
+        if (null != billInfoResponse) {
+            List<BillRepaymentInfoDO> billRepaymentInfoDOList = this.billInfoDAO.findBillRepaymentInfoByBillNo(billNo);
+            List<BillRepaymentResponse> billRepaymentResponseList = new ArrayList<>();
+            for (BillRepaymentInfoDO repaymentInfoDO : billRepaymentInfoDOList) {
+                BillRepaymentResponse billRepaymentResponse = new BillRepaymentResponse();
+                billRepaymentResponse.setRepaymentTime(repaymentInfoDO.getRepaymentTime());
+                billRepaymentResponse.setTotalRepaymentAmount(repaymentInfoDO.getTotalRepaymentAmount());
+                billRepaymentResponse.setBillNo(billInfoResponse.getBillNo());
+                List<BillRepaymentGoodsDetailsDO> goodsDetailsDOList = this.billInfoDAO.findRepaymentGoodsDetailsByRepaymentNo(repaymentInfoDO.getRepaymentNo());
+                if (null != goodsDetailsDOList && goodsDetailsDOList.size() > 0) {
+                    List<BillRepaymentGoodsInfoResponse> billRepaymentDetails = new ArrayList<>();
+                    goodsDetailsDOList.forEach(goodsDetailsDO -> {
+                        billRepaymentDetails.add(BillRepaymentGoodsInfoResponse.transform(goodsDetailsDO));
+                    });
+                    billRepaymentResponse.setBillRepaymentDetails(billRepaymentDetails);
+                }
+                billRepaymentResponseList.add(billRepaymentResponse);
+            }
+            return billRepaymentResponseList;
         }
         return null;
     }
@@ -779,7 +808,7 @@ public class BillInfoServiceImpl implements BillInfoService {
                 billRepaymentDAO.saveBillRepaymentGoodsDetails(detailsDO);
             }
 
-            if (totalRepaymentAmount.equals(CountUtil.add(stPreDeposit,cash,pos,other))){
+            if (totalRepaymentAmount.equals(CountUtil.add(stPreDeposit,cash,pos,other)) || totalRepaymentAmount < 0){
                 // 更新账单数据
                 Double curentPaidAmount = billInfoDO.getCurrentPaidAmount() == null ? 0D : billInfoDO.getCurrentPaidAmount(); // 本期已还金额
                 Double priorpaidAmount = billInfoDO.getPriorPaidBillAmount() == null ? 0D : billInfoDO.getPriorPaidBillAmount(); // 已还上期金额
@@ -806,6 +835,78 @@ public class BillInfoServiceImpl implements BillInfoService {
                     }
                 }
 
+                // 扣除预存款
+                if (stPreDeposit > 0){
+                    for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                        StorePreDeposit preDeposit = appStoreService.findStorePreDepositByEmpId(userId);
+                        if (null != preDeposit) {
+                            if (preDeposit.getBalance() < stPreDeposit) {
+                                throw new LockStorePreDepositException("导购所属门店预存款余额不足!");
+                            }
+                            int affectLine = appStoreService.lockStoreDepositByUserIdAndStoreDeposit(
+                                    userId, stPreDeposit, preDeposit.getLastUpdateTime());
+                            if (affectLine > 0) {
+                                StPreDepositLogDO log = new StPreDepositLogDO();
+                                log.setStoreId(preDeposit.getStoreId());
+                                log.setChangeMoney(stPreDeposit);
+                                log.setBalance(CountUtil.sub(preDeposit.getBalance(), stPreDeposit));
+                                log.setCreateTime(LocalDateTime.now());
+                                log.setOrderNumber(repaymentInfoDO.getRepaymentNo());
+                                log.setOperatorId(userId);
+                                if (repaymentSystem.equals("app")){
+                                    log.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(2));
+                                }else {
+                                    log.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(7));
+                                }
+                                log.setOperatorIp("");
+                                log.setChangeType(StorePreDepositChangeType.REPAYMENT_BILL);
+                                log.setChangeTypeDesc(StorePreDepositChangeType.REPAYMENT_BILL.getDescription());
+                                appStoreService.addStPreDepositLog(log);
+                                break;
+                            } else {
+                                if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                    throw new SystemBusyException("系统繁忙，请稍后再试!");
+                                }
+                            }
+                        } else {
+                            throw new LockStorePreDepositException("没有找到该导购所在门店的预存款信息!");
+                        }
+                    }
+                }
+
+                //加信用金
+                for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                    StoreCreditMoney storeCreditMoney = this.appStoreService.findStoreCreditMoneyByStoreId(billInfoDO.getStoreId());
+                    if (null != storeCreditMoney) {
+                        int affectLine = appStoreService.updateStoreCreditByStoreIdAndVersion(
+                                billInfoDO.getStoreId(), totalIntersAmount, storeCreditMoney.getLastUpdateTime());
+                        if (affectLine > 0) {
+                            StoreCreditMoneyChangeLog log = new StoreCreditMoneyChangeLog();
+                            log.setStoreId(storeCreditMoney.getStoreId());
+                            log.setChangeAmount(totalIntersAmount);
+                            log.setCreditLimitAvailableAfterChange(storeCreditMoney.getCreditLimitAvailable() + totalIntersAmount);
+                            log.setCreateTime(Calendar.getInstance().getTime());
+                            log.setChangeType(StoreCreditMoneyChangeType.REPAYMENT);
+                            log.setChangeTypeDesc(StoreCreditMoneyChangeType.REPAYMENT.getDescription());
+                            log.setOperatorId(userId);
+                            if (repaymentSystem.equals("app")){
+                                log.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(2));
+                            }else {
+                                log.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(7));
+                            }
+                            log.setOperatorIp("");
+                            log.setReferenceNumber(repaymentInfoDO.getRepaymentNo());
+                            appStoreService.addStoreCreditMoneyChangeLog(log);
+                            break;
+                        } else {
+                            if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                throw new SystemBusyException("系统繁忙，请稍后再试!");
+                            }
+                        }
+                    } else {
+                        throw new LockStorePreDepositException("没有找到该门店的信用金信息!");
+                    }
+                }
             }
 
         }
