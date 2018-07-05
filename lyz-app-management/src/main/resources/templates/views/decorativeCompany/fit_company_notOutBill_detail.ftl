@@ -27,48 +27,47 @@
 <section class="content">
     <div class="box">
         <div class="row" style="margin-top: 1%">
-            <input name="billNo" type="hidden" id="billNo" value="${billInfoResponse.billNo!''}" readonly>
+            <input name="storeId" type="hidden" id="storeId" value="${storeId?c}" readonly>
+            <input name="billNo" type="hidden" id="billNo" value="" readonly>
             <div class="col-xs-12">
                 <div class="col-sm-3" style="margin-left: 2%">
                     <h3>账单日期信息</h3>
                     <p>
                         <span>账单开始日期:</span>
-                        <span>${billInfoResponse.billStartDate?string("yyyy-MM-dd")}</span><br/>
+                        <span id = "billStartDate"></span><br/>
                         <span>账单结束日期:</span>
-                        <span>${billInfoResponse.billEndDate?string("yyyy-MM-dd")}</span><br/>
-                        <span>还款截止日期:</span>
-                        <span style="color: red;font-weight:bold">${billInfoResponse.repaymentDeadlineDate?string("yyyy-MM-dd")}</span>
+                        <span id = "billEndDate"></span><br/>
+                        <span >还款截止日期:</span>
+                        <span style="color: red;font-weight:bold" id = "repaymentDeadlineDate"></span>
                     </p>
                 </div>
                 <div class="col-sm-3">
                     <h3>上期账单信息</h3>
                     <p>
                         <span>上&nbsp;期&nbsp;滞&nbsp;纳&nbsp;金:</span>
-                        <span>￥${billInfoResponse.priorPaidInterestAmount!''}</span><br/>
+                        <span id = "priorNotPaidInterestAmount"></span><br/>
                         <span>上期未还金额:</span>
-                        <span>￥${billInfoResponse.priorNotPaidBillAmount!''}</span><br/>
+                        <span id = "priorNotPaidBillAmount"></span><br/>
                     </p>
                 </div>
                 <div class="col-sm-3">
                     <h3>本期账单信息</h3>
                     <p>
                         <span>本期调整金额:</span>
-                        <span>￥${billInfoResponse.currentAdjustmentAmount!''}</span><br/>
+                        <span id = "currentAdjustmentAmount"></span><br/>
                         <span>本期账单金额:</span>
-                        <span>￥${billInfoResponse.currentBillAmount!''}</span><br/>
+                        <span id = "currentBillAmount"></span><br/>
                         <span>本期已还金额:</span>
-                        <span>￥${billInfoResponse.currentPaidAmount!''}</span>
+                        <span id = "currentPaidAmount"></span>
                     </p>
                 </div>
                 <div class="col-sm-2">
                     <h3>账单汇总信息</h3>
                     <p>
                         <span>账单总金额:</span>
-                        <span style="color: red;font-weight:bold">￥${billInfoResponse.billTotalAmount!""}</span><br/>
+                        <span style="color: red;font-weight:bold" id = "billTotalAmount"></span><br/>
                         <span>本&nbsp;期&nbsp;应&nbsp;还:&nbsp;</span>
-                        <span style="color: red;font-weight:bold">￥${billInfoResponse.billTotalAmount!""}</span><br/>
-                        <span>最低还款额:&nbsp;</span>
-                        <span style="color: red;font-weight:bold">￥${billInfoResponse.priorPaidInterestAmount!""}</span>
+                        <span style="color: red;font-weight:bold" id = "billTotalAmount"></span><br/>
                     </p>
                 </div>
             </div>
@@ -92,14 +91,6 @@
                         <input name="endTime1" onchange="findByCondition()" type="text"
                                class="form-control datepicker" id="endTime1" style="width: 140px;"
                                placeholder="出货结束时间">
-                        <div class="input-group col-md-3" style="margin-top:0px positon:relative">
-                            <input type="text" name="info1" id="info1" class="form-control "
-                                   style="width:auto;" placeholder="请输入订单号" onkeypress="findBykey()">
-                            <span class="input-group-btn">
-                            <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
-                                    onclick="findByCondition()">查找</button>
-                           </span>
-                        </div>
                     </div>
                     <div id="toolbar2" class="form-inline ">
                         <input name="startTime2" onchange="findRepaymentByCondition()" type="text"
@@ -252,9 +243,10 @@
 
 <script>
 
-    var billNo = $('#billNo').val();
+    var storeId = $('#storeId').val();
     var ids = [];
     var billorderDetailsRequest = new Array();
+    var billNo = $('#billNo').val();
     reload();
     $(function () {
         inDataGrid1();
@@ -268,27 +260,6 @@
             language: 'zh-CN',
             autoclose: true
         });
-
-        /*      function payBill() {
-                  $.ajax({
-                      url: '/rest/fitBill/payBill/'+billNo,
-                      method: 'POST',
-                      error: function () {
-                          clearTimeout($global.timer);
-                          $loading.close();
-                          $global.timer = null;
-                          $notify.danger('网络异常，请稍后重试或联系管理员');
-                      },
-                      success: function (result) {
-                          clearTimeout($global.timer);
-                          $.each(result, function (i, item) {
-                              emptype += "<option value=" + item.identityType + ">" + item.identityType + "</option>";
-                          })
-                          $("#identityType").append(emptype);
-                      }
-                  });
-              }*/
-
         var form = $('#confirmReceivablesFrom');
         form.bootstrapValidator({
             framework: 'bootstrap',
@@ -326,24 +297,6 @@
                         }
                     }
                 },
-                /*   weMoney: {
-                       message: '微信支付校验失败',
-                       validators: {
-                           regexp: {
-                               regexp: /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/,
-                               message: '微信支付只能输入正数'
-                           }
-                       }
-                   },
-                   alipayMoney: {
-                       message: '支付宝支付校验失败',
-                       validators: {
-                           regexp: {
-                               regexp: /^[+]{0,1}(\d+)$|^[+]{0,1}(\d+\.\d+)$/,
-                               message: '支付宝支付只能输入正数'
-                           }
-                       }
-                   },*/
                 posNumber: {
                     message: '流水号校验失败',
                     validators: {
@@ -376,7 +329,7 @@
             var posNumber = $("#posNumber").val();
             var repaymentTime = $("#repaymentTime").val();
             var amount = $("#amount").val();
-            var billNo = $("#billNo").val();
+            var storeId = $("#storeId").val();
             var totalAmount = cashMoney + posMoney + otherMoney;
             var bv = form.data('bootstrapValidator');
             bv.validate();
@@ -434,14 +387,13 @@
 
     function inDataGrid1() {
         $("#dataGrid1").bootstrapTable('destroy');
-        $grid.initBill($('#dataGrid1'), $('#toolbar1'), '/rest/fitBill/noPayOrderBill/page/' + billNo, 'get', false, function (params) {
+        $grid.initBill($('#dataGrid1'), $('#toolbar1'), '/rest/fitBill/noPayOrderBill/page/' + storeId, 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
                 keywords: params.search,
                 startTime: $('#startTime1').val(),
                 endTime: $('#endTime1').val(),
-                orderNo: $('#info1').val()
             }
         }, [{
             checkbox: true,
@@ -493,6 +445,43 @@
                 }
             }
         ]);
+        getBillInfo()
+    }
+
+
+    function getBillInfo(){
+        var data = {
+            'startTime': $('#startTime1').val(),
+            'endTime': $('#endTime1').val(),
+            'storeId':storeId,
+        };
+        $.ajax({
+            url: '/rest/fitBill/billInfo',
+            async: true,
+            type: 'GET',
+            data: data,
+            success: function (result) {
+               if (result.code == 0) {repaymentDeadlineDate
+                $("#billStartDate").html( result.content.billStartDate);
+                $("#billEndDate").html(result.content.billEndDate);
+                $("#repaymentDeadlineDate").html( result.content.repaymentDeadlineDate);
+                $("#priorNotPaidInterestAmount").html('￥'+result.content.priorNotPaidInterestAmount);
+                $("#priorNotPaidBillAmount").html('￥'+result.content.priorNotPaidBillAmount);
+                $("#currentAdjustmentAmount").html('￥'+result.content.currentAdjustmentAmount);
+                $("#currentBillAmount").html('￥'+result.content.currentBillAmount);
+                $("#currentPaidAmount").html('￥'+result.content.currentPaidAmount);
+                $("#billTotalAmount").html('￥'+result.content.billTotalAmount);
+                $("#billTotalAmount").html('￥'+result.content.billTotalAmount);
+                $("#billNo").html('￥'+result.content.billNo);
+                }
+            },
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            }
+        })
     }
 
 
@@ -650,6 +639,7 @@
                 returnNo:data.returnNo,
                 orderType:data.orderType})
             amountBill = accAdd(amountBill, data.orderCreditMoney);
+            amountBill = accAdd(amountBill, data.interestAmount);
         }
         $("#amount").val(amountBill);
         $('#amountMoney').html('应收金额(元):' + amountBill);

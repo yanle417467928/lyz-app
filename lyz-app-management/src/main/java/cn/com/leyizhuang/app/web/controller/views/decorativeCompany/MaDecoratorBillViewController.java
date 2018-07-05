@@ -41,19 +41,9 @@ public class MaDecoratorBillViewController {
         return "/views/decorativeCompany/fit_company_notOutBill_page";
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/notOutBillDetail/{billNo}")
-    public String notOutBillDetailPage(@PathVariable String billNo, ModelMap map) {
-        BillInfoDO maFitBillVO = maFitBillService.getFitBillByBillNo(billNo);
-        try {
-            BillInfoResponse billInfoResponse = billInfoService.lookBill(null,null,maFitBillVO.getStoreId(),0,0);
-            billInfoResponse.setNotPayOrderDetails(null);
-            billInfoResponse.setPaidOrderDetails(null);
-            map.addAttribute("billInfoResponse",billInfoResponse);
-        }catch (Exception e){
-            e.printStackTrace();
-            logger.info("发生未知异常,请联系管理员");
-            return "/error/500";
-        }
+    @RequestMapping(method = RequestMethod.GET, value = "/notOutBillDetail/{storeId}")
+    public String notOutBillDetailPage(@PathVariable Long storeId, ModelMap map) {
+        map.addAttribute("storeId",storeId);
         return "/views/decorativeCompany/fit_company_notOutBill_detail";
     }
 
