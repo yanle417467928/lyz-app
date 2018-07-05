@@ -2,8 +2,12 @@ package cn.com.leyizhuang.app.web.controller.views.decorativeCompany;
 
 import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.BillInfoResponse;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.MaFitBillVO;
+import cn.com.leyizhuang.app.web.controller.rest.MaFitBillRestController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,12 +25,16 @@ import javax.annotation.Resource;
 @RequestMapping(value = "/views/admin/fit/bill")
 public class MaDecoratorBillViewController {
 
+    private final Logger logger = LoggerFactory.getLogger(MaDecoratorBillViewController.class);
+
     @Resource
     private MaFitBillService maFitBillService;
 
     @Resource
     private MaStoreService maStoreService;
 
+    @Resource
+    private BillInfoService billInfoService;
 
     @RequestMapping(method = RequestMethod.GET, value = "/notOutList")
     public String toNotOutBillPage() {
@@ -36,9 +44,16 @@ public class MaDecoratorBillViewController {
     @RequestMapping(method = RequestMethod.GET, value = "/notOutBillDetail/{billNo}")
     public String notOutBillDetailPage(@PathVariable String billNo, ModelMap map) {
         BillInfoDO maFitBillVO = maFitBillService.getFitBillByBillNo(billNo);
-        StorePreDeposit storePreDeposit = maStoreService.findByStoreId(maFitBillVO.getStoreId());
-        map.addAttribute("maFitBillVO", maFitBillVO);
-        map.addAttribute("storePreDeposit", storePreDeposit.getBalance());
+        try {
+            BillInfoResponse billInfoResponse = billInfoService.lookBill(null,null,maFitBillVO.getStoreId(),0,0);
+            billInfoResponse.setNotPayOrderDetails(null);
+            billInfoResponse.setPaidOrderDetails(null);
+            map.addAttribute("billInfoResponse",billInfoResponse);
+        }catch (Exception e){
+            e.printStackTrace();
+            logger.info("发生未知异常,请联系管理员");
+            return "/error/500";
+        }
         return "/views/decorativeCompany/fit_company_notOutBill_detail";
     }
 

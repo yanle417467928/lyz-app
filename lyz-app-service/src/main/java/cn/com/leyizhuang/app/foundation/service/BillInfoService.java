@@ -64,5 +64,4 @@ public interface BillInfoService {
                              Double stPreDeposit,Double cash,Double pos,Double totalRepaymentAmount,
                              String posNumber,Double other,
                              String billNo) throws Exception;
-
 }

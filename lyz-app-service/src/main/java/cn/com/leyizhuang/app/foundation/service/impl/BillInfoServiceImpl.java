@@ -222,10 +222,7 @@ public class BillInfoServiceImpl implements BillInfoService {
             }
         }
 
-
         this.billInfoDAO.updateBillInfo(billInfoDO);
-
-
         //加信用金
         Double amount = CountUtil.sub(billRepaymentInfoDO.getTotalRepaymentAmount(), billRepaymentInfoDO.getTotalInterestAmount());
         for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
@@ -649,6 +646,7 @@ public class BillInfoServiceImpl implements BillInfoService {
      * @param orderDetails
      * @return
      */
+    @Override
     public Double calculatePayAmount(Long storeId,List<BillorderDetailsRequest> orderDetails){
         Double totalAmount = 0D;
         Double totalOrderAmount = 0D;

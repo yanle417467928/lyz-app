@@ -200,6 +200,45 @@ var $grid = {
             columns: columns
         });
     },
+    initBill: function (container, toolbar, url, method, search, queryParams, columns) {
+        container.bootstrapTable({
+            // 请求地址
+            url: url,
+            // 请求方式
+            method: method,
+            // 是否隔行变色
+            striped: true,
+            // 服务器返回数据类型
+            dataType: 'json',
+            // 是否缓存
+            cache: true,
+            // 工具栏
+            toolbar: toolbar,
+            // 设置在服务端分页还是客户端分页
+            sidePagination: 'server',
+            // 是否开启查找按钮
+            search: search,
+            // 查找按钮位置
+            searchAlign: 'right',
+            // 是否显示内容下拉框
+            showColumns: true,
+            // 是否显示刷新按钮
+            showRefresh: true,
+            // 主键字段
+            idField: 'id',
+            // 设置唯一标识
+            uniqueId: 'id',
+            // 是否开启点击选中
+            clickToSelect: false,
+            // 是否使用按下Enter键之后执行查询
+            searchOnEnterKey: false,
+            // 是否允许空值查询
+            trimOnSearch: false,
+            // 查询参数
+            queryParams: queryParams,
+            columns: columns
+        });
+    },
     initZS: function (container, toolbar, url, method, search, queryParams, columns) {
         container.bootstrapTable({
             // 请求地址
