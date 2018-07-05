@@ -14,7 +14,6 @@ import cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRuleDO;
-import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyCredit;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.request.BillorderDetailsRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillHistoryListResponse;
@@ -223,18 +222,22 @@ public class BillInfoServiceImpl implements BillInfoService {
             }
         }
 
+
         this.billInfoDAO.updateBillInfo(billInfoDO);
+
+
         //加信用金
+        Double amount = CountUtil.sub(billRepaymentInfoDO.getTotalRepaymentAmount(), billRepaymentInfoDO.getTotalInterestAmount());
         for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
             StoreCreditMoney storeCreditMoney = this.appStoreService.findStoreCreditMoneyByStoreId(billInfoDO.getStoreId());
             if (null != storeCreditMoney) {
                 int affectLine = appStoreService.updateStoreCreditByStoreIdAndVersion(
-                        billInfoDO.getStoreId(), billRepaymentInfoDO.getTotalRepaymentAmount(), storeCreditMoney.getLastUpdateTime());
+                        billInfoDO.getStoreId(), amount, storeCreditMoney.getLastUpdateTime());
                 if (affectLine > 0) {
                     StoreCreditMoneyChangeLog log = new StoreCreditMoneyChangeLog();
                     log.setStoreId(storeCreditMoney.getStoreId());
-                    log.setChangeAmount(billRepaymentInfoDO.getTotalRepaymentAmount());
-                    log.setCreditLimitAvailableAfterChange(storeCreditMoney.getCreditLimitAvailable() + billRepaymentInfoDO.getTotalRepaymentAmount());
+                    log.setChangeAmount(amount);
+                    log.setCreditLimitAvailableAfterChange(storeCreditMoney.getCreditLimitAvailable() + amount);
                     log.setCreateTime(Calendar.getInstance().getTime());
                     log.setChangeType(StoreCreditMoneyChangeType.REPAYMENT);
                     log.setChangeTypeDesc(StoreCreditMoneyChangeType.REPAYMENT.getDescription());
@@ -683,6 +686,21 @@ public class BillInfoServiceImpl implements BillInfoService {
         return totalAmount;
     }
 
+    /**
+     * 账单还款支付
+     * @param storeId 门店id
+     * @param userId 还款人id
+     * @param repaymentSystem 还款系统 app ; manage
+     * @param billorderDetailsRequests 前台返回用户选择的订单集合
+     * @param stPreDeposit 门店预存款
+     * @param cash 现金
+     * @param pos pos
+     * @param totalRepaymentAmount 订单总信用金
+     * @param posNumber pos流水号
+     * @param other 其他收款
+     * @param billNo 账单号
+     * @throws Exception
+     */
     @Transactional
     public void createRepayMentInfo(Long storeId,Long userId,String repaymentSystem,List<BillorderDetailsRequest> billorderDetailsRequests,
                                     Double stPreDeposit,Double cash,Double pos,Double totalRepaymentAmount,
@@ -718,7 +736,13 @@ public class BillInfoServiceImpl implements BillInfoService {
             repaymentInfoDO.setPosNumber(posNumber);
             repaymentInfoDO.setOtherMoney(other);
             repaymentInfoDO.setTotalRepaymentAmount(totalRepaymentAmount);
-            repaymentInfoDO.setIsPaid(true);
+
+            if (totalRepaymentAmount.equals(CountUtil.add(stPreDeposit,cash,pos,other))){
+                repaymentInfoDO.setIsPaid(true);
+            }else{
+                repaymentInfoDO.setIsPaid(false);
+            }
+
             repaymentInfoDO.setInterestRate(ruleDO.getInterestRate());
 
             List<Long> orderIds = new ArrayList<>();
@@ -737,7 +761,8 @@ public class BillInfoServiceImpl implements BillInfoService {
                     pirorOrderList.add(goodsInfoResponse);
                 }
             }
-
+            // 上期金额
+            Double priorOrderTotalAmount = this.AddAllCreditMoney(pirorOrderList);
 
             // 计算滞纳金
             billOrderList = this.computeInterestAmount2(storeId,billOrderList);
@@ -752,24 +777,41 @@ public class BillInfoServiceImpl implements BillInfoService {
             billRepaymentGoodsDetailsDOList = BillRepaymentGoodsInfoResponse.transfer(billOrderList);
 
             for (BillRepaymentGoodsDetailsDO detailsDO: billRepaymentGoodsDetailsDOList){
-                detailsDO.setRepayment_No(repaymentInfoDO.getRepaymentNo());
+                detailsDO.setRepaymentNo(repaymentInfoDO.getRepaymentNo());
                 detailsDO.setRepaymentId(repaymentInfoDO.getId());
 
                 billRepaymentDAO.saveBillRepaymentGoodsDetails(detailsDO);
             }
 
-            // 更新账单数据
-            Double curentPaidAmount = billInfoDO.getCurrentPaidAmount() == null ? 0D : billInfoDO.getCurrentPaidAmount(); // 本期已还金额
-            Double priorpaidAmount = billInfoDO.getPriorPaidBillAmount() == null ? 0D : billInfoDO.getPriorPaidBillAmount(); // 已还上期金额
-            Double priorpaidInterestAmount = billInfoDO.getPriorPaidBillAmount() == null ? 0D : billInfoDO.getPriorPaidBillAmount(); // 已还滞纳金
+            if (totalRepaymentAmount.equals(CountUtil.add(stPreDeposit,cash,pos,other))){
+                // 更新账单数据
+                Double curentPaidAmount = billInfoDO.getCurrentPaidAmount() == null ? 0D : billInfoDO.getCurrentPaidAmount(); // 本期已还金额
+                Double priorpaidAmount = billInfoDO.getPriorPaidBillAmount() == null ? 0D : billInfoDO.getPriorPaidBillAmount(); // 已还上期金额
+                Double priorpaidInterestAmount = billInfoDO.getPriorPaidBillAmount() == null ? 0D : billInfoDO.getPriorPaidBillAmount(); // 已还滞纳金
 
-            curentPaidAmount = CountUtil.add(curentPaidAmount,totalRepaymentAmount);
+                curentPaidAmount = CountUtil.add(curentPaidAmount,totalRepaymentAmount);
+                priorpaidAmount = CountUtil.add(priorOrderTotalAmount,priorpaidAmount);
+                priorpaidInterestAmount = CountUtil.add(priorpaidInterestAmount,totalIntersAmount);
 
-            billInfoDO.setCurrentPaidAmount(curentPaidAmount);
-            billInfoDO.setPriorPaidBillAmount(priorpaidAmount);
-            billInfoDO.setPriorPaidInterestAmount(priorpaidInterestAmount);
+                billInfoDO.setCurrentPaidAmount(curentPaidAmount);
+                billInfoDO.setPriorPaidBillAmount(priorpaidAmount);
+                billInfoDO.setPriorPaidInterestAmount(priorpaidInterestAmount);
 
-            billInfoDAO.updateBillInfo(billInfoDO);
+                billInfoDAO.updateBillInfo(billInfoDO);
+
+                // 刷新原订单付清状态
+                for (BillRepaymentGoodsDetailsDO goodsDetails : billRepaymentGoodsDetailsDOList) {
+                    if ("order".equals(goodsDetails.getOrderType())) {
+                        OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
+                        orderBillingDetails.setOrderNumber(goodsDetails.getOrderNo());
+                        orderBillingDetails.setIsPayUp(Boolean.TRUE);
+                        orderBillingDetails.setPayUpTime(new Date());
+                        orderService.updateOrderBillingDetails(orderBillingDetails);
+                    }
+                }
+
+            }
+
         }
     }
 }
