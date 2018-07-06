@@ -74,7 +74,8 @@ public class MaFitBillServiceImpl implements MaFitBillService {
     public PageInfo<MaFitBillVO> getHistoryFitBill(Integer page, Integer size, List<Long> storeIds, String keywords) {
         PageHelper.startPage(page, size);
         List<MaFitBillVO> fitBillVOList = this.maFitBillDAO.getHistoryFitBill(storeIds, keywords);
-        return new PageInfo<>(fitBillVOList);
+        List<MaFitBillVO> fitBillVOLists  =   MaFitBillVO.transform(fitBillVOList);
+        return new PageInfo<>(fitBillVOLists);
     }
 
     @Override
@@ -219,9 +220,9 @@ public class MaFitBillServiceImpl implements MaFitBillService {
         response.setCurrentAdjustmentAmount(0D);
         response.setPriorNotPaidInterestAmount(0D);
         response.setPriorNotPaidBillAmount(0D);
-        List<BillRepaymentGoodsInfoResponse> list = new ArrayList<>();
+/*        List<BillRepaymentGoodsInfoResponse> list = new ArrayList<>();
         response.setNotPayOrderDetails(list);
-        response.setPaidOrderDetails(list);
+        response.setPaidOrderDetails(list);*/
 
         LocalDateTime now = LocalDateTime.now(); //当前时间
         // 查询已出账单
