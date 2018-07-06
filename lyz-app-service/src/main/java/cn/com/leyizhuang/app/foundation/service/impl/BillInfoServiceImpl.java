@@ -391,7 +391,7 @@ public class BillInfoServiceImpl implements BillInfoService {
         response.setBillTotalAmount(billTotalAmount);
         response.setCurrentBillAmount(currentBillAmount);
         response.setCurrentAdjustmentAmount(currentAdjustmentAmount);
-        response.setCurrentPaidAmount(currentPaid);
+        response.setCurrentPaidAmount(billInfoDO.getCurrentPaidAmount());
         response.setCurrentUnpaidAmount(currentNotPay);
         response.setPriorNotPaidBillAmount(beforNotPay);
         response.setPriorNotPaidInterestAmount(fees);
@@ -606,7 +606,7 @@ public class BillInfoServiceImpl implements BillInfoService {
         }
 
         for (BillRepaymentGoodsInfoResponse response : list) {
-            totalCreditMoney = CountUtil.add(totalCreditMoney, response.getOrderCreditMoney());
+            totalCreditMoney = CountUtil.add(totalCreditMoney, response.getOrderCreditMoney() == null ? 0D : response.getOrderCreditMoney());
         }
 
         return totalCreditMoney;
@@ -626,7 +626,7 @@ public class BillInfoServiceImpl implements BillInfoService {
 
         for (BillRepaymentGoodsInfoResponse response : list) {
             if (response.getOrderCreditMoney() > 0) {
-                totalCreditMoney = CountUtil.add(totalCreditMoney, response.getOrderCreditMoney());
+                totalCreditMoney = CountUtil.add(totalCreditMoney, response.getOrderCreditMoney() == null ? 0D : response.getOrderCreditMoney());
             }
         }
 
@@ -647,7 +647,7 @@ public class BillInfoServiceImpl implements BillInfoService {
 
         for (BillRepaymentGoodsInfoResponse response : list) {
             if (response.getOrderCreditMoney() < 0) {
-                totalCreditMoney = CountUtil.add(totalCreditMoney, response.getOrderCreditMoney());
+                totalCreditMoney = CountUtil.add(totalCreditMoney, response.getOrderCreditMoney() == null ? 0D : response.getOrderCreditMoney());
             }
         }
 
@@ -667,7 +667,7 @@ public class BillInfoServiceImpl implements BillInfoService {
         }
 
         for (BillRepaymentGoodsInfoResponse response : list) {
-            interestAmount = CountUtil.add(interestAmount, response.getInterestAmount());
+            interestAmount = CountUtil.add(interestAmount, response.getInterestAmount() == null ? 0D:response.getInterestAmount());
         }
 
         return interestAmount;

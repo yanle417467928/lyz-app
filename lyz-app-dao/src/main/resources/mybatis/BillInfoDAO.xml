@@ -83,7 +83,8 @@
         obd.st_credit_money orderCreditMoney,
         ob.create_time orderTime,
         wa.send_time shipmentTime,
-        'order' orderType
+        'order' orderType,
+        0 interestAmount
         from ord_base_info ob
         INNER JOIN ord_billing_details obd on ob.oid = obd.oid
         left JOIN (SELECT a.is_paid,b.order_no from bill_repayment_info a
@@ -121,7 +122,8 @@
         obd.st_credit_money orderCreditMoney,
         ob.create_time orderTime,
         os.shipping_time shipmentTime,
-        'order' orderType
+        'order' orderType,
+        0 interestAmount
         from ord_base_info ob
         INNER JOIN ord_billing_details obd on ob.oid = obd.oid
         left JOIN (SELECT a.is_paid,b.order_no from bill_repayment_info a
@@ -159,7 +161,8 @@
         -ABS(orbd.st_credit_money) orderCreditMoney,
         ob.create_time orderTime,
         orl.operation_time shipmentTime,
-        'return' orderType
+        'return' orderType,
+        0 interestAmount
         from ord_return_base_info orb
         INNER JOIN ord_base_info ob on orb.ord_no = ob.ord_no
         INNER JOIN ord_return_billing orbd on orb.return_no = orbd.return_no
