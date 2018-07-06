@@ -82,7 +82,7 @@
         '' returnNo,
         obd.st_credit_money orderCreditMoney,
         ob.create_time orderTime,
-        wa.send_time shipmentTime,
+        wa.end_dt shipmentTime,
         'order' orderType,
         0 interestAmount
         from ord_base_info ob
@@ -99,10 +99,10 @@
         and ob.`status` in ('PENDING_RECEIVE','FINISHED','REJECTED','CLOSED')
         and ob.store_id = #{storeId}
         <if test="startTime != null">
-           AND wa.send_time &gt; #{startTime}
+           AND wa.end_dt &gt; #{startTime}
         </if>
         <if test="endTime != null">
-          and wa.send_time &lt; #{endTime}
+          and wa.end_dt &lt; #{endTime}
         </if>
         <if test="isPaid != null and isPaid == true">
             and (bpi.is_paid = 1 OR dc.is_pay_off = 1)

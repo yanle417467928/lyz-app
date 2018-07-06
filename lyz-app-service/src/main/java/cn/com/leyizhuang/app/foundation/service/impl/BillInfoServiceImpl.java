@@ -787,7 +787,7 @@ public class BillInfoServiceImpl implements BillInfoService {
             repaymentInfoDO.setOnlinePayAmount(CountUtil.sub(totalRepaymentAmount,stPreDeposit,cash,pos,other));
             repaymentInfoDO.setTotalRepaymentAmount(totalRepaymentAmount);
 
-            if (totalRepaymentAmount.equals(CountUtil.add(stPreDeposit,cash,pos,other))){
+            if (totalRepaymentAmount.equals(CountUtil.add(stPreDeposit,cash,pos,other)) || totalRepaymentAmount < 0D){
                 repaymentInfoDO.setIsPaid(true);
             }else{
                 repaymentInfoDO.setIsPaid(false);
@@ -796,12 +796,21 @@ public class BillInfoServiceImpl implements BillInfoService {
             repaymentInfoDO.setInterestRate(ruleDO.getInterestRate());
 
             List<Long> orderIds = new ArrayList<>();
+            List<Long> returnIds = new ArrayList<>();
             for (BillorderDetailsRequest request : billorderDetailsRequests){
-                orderIds.add(request.getId());
+                if (request.getOrderType().equals("order")){
+                    orderIds.add(request.getId());
+                }else {
+                    returnIds.add(request.getId());
+                }
+
             }
 
             // 本次还款订单
             List<BillRepaymentGoodsInfoResponse> billOrderList = this.getCurrentOrderDetailsByOrderNo(orderIds,storeId);
+            // 本次还款中的退单
+            List<BillRepaymentGoodsInfoResponse> billReturnOrderList = this.getCurrentOrderDetailsByReturnNo(returnIds,storeId);
+
             // 本次还款中上期订单
             List<BillRepaymentGoodsInfoResponse> pirorOrderList = new ArrayList<>();
             // 账单开始时间
@@ -823,6 +832,8 @@ public class BillInfoServiceImpl implements BillInfoService {
             // 保存还款头信息
             billRepaymentDAO.saveBillRepayment(repaymentInfoDO);
 
+            // 合并 订单 和 退单
+            billOrderList.addAll(billReturnOrderList);
             List<BillRepaymentGoodsDetailsDO> billRepaymentGoodsDetailsDOList = new ArrayList<>();
             billRepaymentGoodsDetailsDOList = BillRepaymentGoodsInfoResponse.transfer(billOrderList);
 
