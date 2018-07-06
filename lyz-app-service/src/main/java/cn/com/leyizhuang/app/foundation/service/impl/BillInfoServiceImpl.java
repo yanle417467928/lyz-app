@@ -416,7 +416,7 @@ public class BillInfoServiceImpl implements BillInfoService {
         response.setCurrentUnpaidAmount(currentNotPay);
         response.setPriorNotPaidBillAmount(beforNotPay);
         response.setPriorNotPaidInterestAmount(fees);
-
+        response.setCurrentShouldPayAmount(CountUtil.sub(response.getBillTotalAmount(),response.getCurrentPaidAmount()));
         return response;
     }
 
