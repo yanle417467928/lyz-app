@@ -45,4 +45,21 @@ public class SmsAccountServiceImpl implements cn.com.leyizhuang.app.foundation.s
             e.printStackTrace();
         }
     }
+
+
+    @Override
+    public void commonSendGBKSms(String mobile, String content) {
+        if (StringUtils.isBlank(mobile) || StringUtils.isBlank(content)) {
+            return;
+        }
+        try {
+            String info = URLEncoder.encode(content, "GBK");
+            SmsAccount account = smsAccountDAO.findOne();
+            SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(), mobile, info);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

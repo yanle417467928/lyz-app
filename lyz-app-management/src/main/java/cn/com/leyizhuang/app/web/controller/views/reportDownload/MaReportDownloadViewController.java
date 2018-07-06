@@ -216,4 +216,11 @@ public class MaReportDownloadViewController extends BaseController {
         return "/views/reportDownload/photoOrderCheck_page";
     }
 
+
+    @GetMapping(value = "/expiringSoonProduct/list")
+    public String getExpiringSoonProductList(ModelMap map) {
+        map.addAttribute("storeTypes", StoreType.getNotZsType());
+        return "/views/reportDownload/expiringSoon_product_page";
+    }
+
 }

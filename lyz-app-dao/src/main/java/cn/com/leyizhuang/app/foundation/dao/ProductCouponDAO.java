@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.OrderCouponType;
+import cn.com.leyizhuang.app.foundation.pojo.CusProductCouponMsgInfo;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCouponChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.ProductCoupon;
@@ -99,4 +100,6 @@ public interface ProductCouponDAO {
     void activateCusProductCoupon(@Param("ordNo") String ordNo, @Param("effectiveEndTime")LocalDateTime effectiveEndTime);
 
     CustomerProductCoupon findCustomerProductCouponByOrdNoAndSku(@Param("couponId")Long couponId);
+
+    List<CusProductCouponMsgInfo> findExpiringSoonProductCoupon();
 }

@@ -127,6 +127,13 @@ public class MaStoreServiceImpl implements MaStoreService {
         return new PageInfo<>(pageStoreList);
     }
 
+    @Override
+    public PageInfo<StoreDO> queryDecorativeCompanyList(Integer page, Integer size,List<Long> storeIds,Long cityId,String keywords) {
+        PageHelper.startPage(page, size);
+        List<StoreDO> pageStoreList = this.mastoreDAO.queryDecorativeCompanyList(storeIds,cityId,keywords);
+        return new PageInfo<>(pageStoreList);
+    }
+
 
     @Override
     public PageInfo<StoreDO> findDecorativeByCondition(Integer page, Integer size, String enabled, Long cityId) {

@@ -3166,4 +3166,56 @@
         ORDER BY po.create_time ASC
     </select>
 
+
+    <select id="findExpiringSoonProductAll"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.CusExpiringSoonProductCouponInfo">
+        SELECT
+        ci.`name`  cityName,
+        s.store_name storeName,
+        s.store_type storeType,
+        c.name  customerName,
+        e.`name` sellerName,
+        g.sku_name  skuName,
+        g.sku sku,
+        ccpc.quantity quantity,
+        ccpc.get_type getType,
+        ccpc.get_time getTime,
+        ccpc.get_ord_no getOrderNumber,
+        ccpc.buy_price buyPrice,
+        ccpc.effective_start_time effectiveStartTime,
+        ccpc.effective_end_time effectiveEndTime,
+        ccpc.goods_sign goodsSign
+        FROM
+        cus_customer_product_coupon ccpc
+        LEFT JOIN st_store s ON ccpc.store_id =s.store_id
+        LEFT JOIN cus_customer c ON ccpc.cus_id =c.cus_id
+        LEFT JOIN emp_employee e ON e.emp_id = ccpc.seller_id
+        LEFT JOIN gds_goods g ON ccpc.gid =g.gid
+        LEFT JOIN city ci on ci.city_id = c.city_id
+        where
+        ccpc.is_used =0
+        AND
+        ccpc.`status` = 1
+        AND
+        ccpc.effective_end_time >= now()
+        AND
+        <![CDATA[ DATE_SUB(ccpc.effective_end_time, INTERVAL 7 DAY)<=now() ]]>
+        <if test="null != storeId and -1 != storeId">
+            AND ccpc.store_id = #{storeId}
+        </if>
+        <if test="null != cityId and -1 != cityId">
+            AND c.city_id = #{cityId}
+        </if>
+        <if test="null !=cusName  and ''!=cusName ">
+            AND c.name LIKE concat("%",#{cusName},"%")
+        </if>
+        <if test="null != storeType and ''!=storeType">
+            AND s.store_type =#{storeType}
+        </if>
+        AND ccpc.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
 </mapper>
