@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo.bill;
 
 import cn.com.leyizhuang.app.core.constant.OnlinePayType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.util.Date;

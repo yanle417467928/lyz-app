@@ -40,12 +40,15 @@ public class BillRepaymentGoodsInfoResponse {
     public static BillRepaymentGoodsInfoResponse transform(BillRepaymentGoodsDetailsDO goodsDetailsDO){
         if (null != goodsDetailsDO) {
             BillRepaymentGoodsInfoResponse goodsInfoResponse = new BillRepaymentGoodsInfoResponse();
+
             goodsInfoResponse.setOrderNo(goodsDetailsDO.getOrderNo());
             goodsInfoResponse.setReturnNo(goodsDetailsDO.getReturnNo());
             goodsInfoResponse.setShipmentTime(goodsDetailsDO.getShipmentTime());
             goodsInfoResponse.setOrderCreditMoney(goodsDetailsDO.getOrderCreditMoney());
             goodsInfoResponse.setInterestAmount(goodsDetailsDO.getInterestAmount());
-
+            goodsInfoResponse.setOrderTime(goodsDetailsDO.getOrderTime());
+            goodsInfoResponse.setOrderType(goodsDetailsDO.getOrderType());
+            return  goodsInfoResponse;
         }
         return null;
     }
