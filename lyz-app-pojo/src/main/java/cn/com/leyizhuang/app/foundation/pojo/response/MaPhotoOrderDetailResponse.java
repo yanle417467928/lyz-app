@@ -41,6 +41,11 @@ public class MaPhotoOrderDetailResponse {
     private String detailedAddress;
 
     /**
+     * 收货城市id
+     */
+    private String cityName;
+
+    /**
      * 下单人类型
      */
     private Integer identityType;

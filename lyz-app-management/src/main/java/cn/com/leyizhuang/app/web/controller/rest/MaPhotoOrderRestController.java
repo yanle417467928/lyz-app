@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.MaterialListType;
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.exception.*;
+import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.SmsUtils;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
@@ -15,6 +16,7 @@ import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
 import cn.com.leyizhuang.app.foundation.pojo.management.MaterialChangeDetailLog;
 import cn.com.leyizhuang.app.foundation.pojo.management.MaterialChangeHeadLog;
+import cn.com.leyizhuang.app.foundation.pojo.management.city.CityDeliveryTime;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsCategoryDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaActGoodsMapping;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
@@ -174,6 +176,8 @@ public class MaPhotoOrderRestController extends BaseRestController {
     @Resource
     private DeliveryFeeRuleService deliveryFeeRuleService;
 
+    @Resource
+    private CityService cityService;
 
     /**
      * @param
@@ -610,21 +614,23 @@ public class MaPhotoOrderRestController extends BaseRestController {
                         materialAuditSheet.setCreateTime(LocalDateTime.now());
                         List<MaterialAuditGoodsInfo> materialAuditGoodsInfoList = new ArrayList<>();
                         for (MaterialListDO materialListDO : combList) {
-                            //根据商品id查找对应的商品
-                            GoodsDO goodsDO = goodsService.queryById(materialListDO.getGid());
-                            MaterialAuditGoodsInfo materialAuditGoodsInfo = new MaterialAuditGoodsInfo();
-                            //对物料审核单商品详情请进行赋值
-                            materialAuditGoodsInfo.setGid(materialListDO.getGid());
-                            materialAuditGoodsInfo.setCoverImageUri(goodsDO.getCoverImageUri());
-                            materialAuditGoodsInfo.setQty(materialListDO.getQty());
-                            materialAuditGoodsInfo.setGoodsSpecification(goodsDO.getGoodsSpecification());
-                            materialAuditGoodsInfo.setGoodsUnit(goodsDO.getGoodsUnit());
-                            materialAuditGoodsInfo.setSku(goodsDO.getSku());
-                            materialAuditGoodsInfo.setSkuName(goodsDO.getSkuName());
-                            //获取商品零售价
-                            Double goodsPrice = goodsPriceService.findGoodsRetailPriceByGoodsIDAndStoreID(materialListDO.getGid(), decorateEmployee.getStoreId());
-                            materialAuditGoodsInfo.setRetailPrice(goodsPrice);
-                            materialAuditGoodsInfoList.add(materialAuditGoodsInfo);
+                            if (null != materialListDO && null != materialListDO.getGid()) {
+                                //根据商品id查找对应的商品
+                                GoodsDO goodsDO = goodsService.queryById(materialListDO.getGid());
+                                MaterialAuditGoodsInfo materialAuditGoodsInfo = new MaterialAuditGoodsInfo();
+                                //对物料审核单商品详情请进行赋值
+                                materialAuditGoodsInfo.setGid(materialListDO.getGid());
+                                materialAuditGoodsInfo.setCoverImageUri(goodsDO.getCoverImageUri());
+                                materialAuditGoodsInfo.setQty(materialListDO.getQty());
+                                materialAuditGoodsInfo.setGoodsSpecification(goodsDO.getGoodsSpecification());
+                                materialAuditGoodsInfo.setGoodsUnit(goodsDO.getGoodsUnit());
+                                materialAuditGoodsInfo.setSku(goodsDO.getSku());
+                                materialAuditGoodsInfo.setSkuName(goodsDO.getSkuName());
+                                //获取商品零售价
+                                Double goodsPrice = goodsPriceService.findGoodsRetailPriceByGoodsIDAndStoreID(materialListDO.getGid(), decorateEmployee.getStoreId());
+                                materialAuditGoodsInfo.setRetailPrice(goodsPrice);
+                                materialAuditGoodsInfoList.add(materialAuditGoodsInfo);
+                            }
                         }
                         Boolean b = maPhotoOrderService.saveMaterialAuditSheet(materialAuditSheet, materialAuditGoodsInfoList);
                         if (b) {
@@ -1245,23 +1251,24 @@ public class MaPhotoOrderRestController extends BaseRestController {
                     materialAuditSheet.setCreateTime(LocalDateTime.now());
                     List<MaterialAuditGoodsInfo> materialAuditGoodsInfoList = new ArrayList<>();
                     for (MaterialListDO materialListDO : combList) {
-                        //根据商品id查找对应的商品
-                        GoodsDO goodsDO = goodsService.queryById(materialListDO.getGid());
-                        MaterialAuditGoodsInfo materialAuditGoodsInfo = new MaterialAuditGoodsInfo();
-                        //对物料审核单商品详情请进行赋值
-                        materialAuditGoodsInfo.setGid(materialListDO.getGid());
-                        materialAuditGoodsInfo.setCoverImageUri(goodsDO.getCoverImageUri());
-                        materialAuditGoodsInfo.setQty(materialListDO.getQty());
-                        materialAuditGoodsInfo.setGoodsSpecification(goodsDO.getGoodsSpecification());
-                        materialAuditGoodsInfo.setGoodsUnit(goodsDO.getGoodsUnit());
-                        materialAuditGoodsInfo.setSku(goodsDO.getSku());
-                        materialAuditGoodsInfo.setSkuName(goodsDO.getSkuName());
-                        //获取商品零售价
-                        Double goodsPrice = goodsPriceService.findGoodsRetailPriceByGoodsIDAndStoreID(materialListDO.getGid(), decorateEmployee.getStoreId());
-                        materialAuditGoodsInfo.setRetailPrice(goodsPrice);
-                        materialAuditGoodsInfoList.add(materialAuditGoodsInfo);
+                        if (null != materialListDO && null != materialListDO.getGid()) {
+                            //根据商品id查找对应的商品
+                            GoodsDO goodsDO = goodsService.queryById(materialListDO.getGid());
+                            MaterialAuditGoodsInfo materialAuditGoodsInfo = new MaterialAuditGoodsInfo();
+                            //对物料审核单商品详情请进行赋值
+                            materialAuditGoodsInfo.setGid(materialListDO.getGid());
+                            materialAuditGoodsInfo.setCoverImageUri(goodsDO.getCoverImageUri());
+                            materialAuditGoodsInfo.setQty(materialListDO.getQty());
+                            materialAuditGoodsInfo.setGoodsSpecification(goodsDO.getGoodsSpecification());
+                            materialAuditGoodsInfo.setGoodsUnit(goodsDO.getGoodsUnit());
+                            materialAuditGoodsInfo.setSku(goodsDO.getSku());
+                            materialAuditGoodsInfo.setSkuName(goodsDO.getSkuName());
+                            //获取商品零售价
+                            Double goodsPrice = goodsPriceService.findGoodsRetailPriceByGoodsIDAndStoreID(materialListDO.getGid(), decorateEmployee.getStoreId());
+                            materialAuditGoodsInfo.setRetailPrice(goodsPrice);
+                            materialAuditGoodsInfoList.add(materialAuditGoodsInfo);
+                        }
                     }
-
                     //******************************************保存拍照下单实体********************************
                     String orderNumber = OrderUtils.generatePhotoOrderNumber(cityId);
                     PhotoOrderDO photoOrderDO = new PhotoOrderDO();
@@ -1280,14 +1287,16 @@ public class MaPhotoOrderRestController extends BaseRestController {
                     this.photoOrderServiceImpl.save(photoOrderDO);
 
                     for (MaterialListDO materialListDO : combList) {
-                        GoodsDO goodsDO = maGoodsService.findGoodsById(materialListDO.getGid());
-                        if (null != goodsDO) {
-                            PhotoOrderGoodsDO photoOrderGoodsDO = new PhotoOrderGoodsDO();
-                            photoOrderGoodsDO.setGid(goodsDO.getGid());
-                            photoOrderGoodsDO.setSkuName(goodsDO.getSkuName());
-                            photoOrderGoodsDO.setGoodsQty(materialListDO.getQty());
-                            photoOrderGoodsDO.setPhotoOrderNo(orderNumber);
-                            photoOrderGoodsDOList.add(photoOrderGoodsDO);
+                        if (null != materialListDO && null != materialListDO.getGid()) {
+                            GoodsDO goodsDO = maGoodsService.findGoodsById(materialListDO.getGid());
+                            if (null != goodsDO) {
+                                PhotoOrderGoodsDO photoOrderGoodsDO = new PhotoOrderGoodsDO();
+                                photoOrderGoodsDO.setGid(goodsDO.getGid());
+                                photoOrderGoodsDO.setSkuName(goodsDO.getSkuName());
+                                photoOrderGoodsDO.setGoodsQty(materialListDO.getQty());
+                                photoOrderGoodsDO.setPhotoOrderNo(orderNumber);
+                                photoOrderGoodsDOList.add(photoOrderGoodsDO);
+                            }
                         }
                     }
                     this.maPhotoOrderGoodsService.batchSave(photoOrderGoodsDOList);
@@ -1393,49 +1402,51 @@ public class MaPhotoOrderRestController extends BaseRestController {
                 //*****************************************************************************************
 
                 for (MaterialListDO materialListDO : combList) {
-                    GoodsDO goodsDO = maGoodsService.findGoodsById(materialListDO.getGid());
-                    if (null != goodsDO) {
-                        MaterialListDO materialList = null;
-                        if (null != proxyEmployee) {
-                            materialList = maMaterialListService.findByUserIdAndIdentityTypeAndGoodsId(proxyEmployee.getEmpId(),
-                                    proxyEmployee.getIdentityType(), materialListDO.getGid());
-                        } else {
-                            materialList = maMaterialListService.findByUserIdAndIdentityTypeAndGoodsId(userId,
-                                    appIdentityType, materialListDO.getGid());
-                        }
-                        if (null == materialList) {
-                            MaterialListDO materialListDOTemp = transformRepeat(goodsDO);
+                    if (null != materialListDO && null != materialListDO.getGid()) {
+                        GoodsDO goodsDO = maGoodsService.findGoodsById(materialListDO.getGid());
+                        if (null != goodsDO) {
+                            MaterialListDO materialList = null;
                             if (null != proxyEmployee) {
-                                materialListDOTemp.setUserId(proxyEmployee.getEmpId());
-                                materialListDOTemp.setIdentityType(proxyEmployee.getIdentityType());
+                                materialList = maMaterialListService.findByUserIdAndIdentityTypeAndGoodsId(proxyEmployee.getEmpId(),
+                                        proxyEmployee.getIdentityType(), materialListDO.getGid());
                             } else {
-                                materialListDOTemp.setUserId(userId);
-                                materialListDOTemp.setIdentityType(appIdentityType);
+                                materialList = maMaterialListService.findByUserIdAndIdentityTypeAndGoodsId(userId,
+                                        appIdentityType, materialListDO.getGid());
                             }
-                            materialListDOTemp.setDeliveryId(deliveryId);
-                            materialListDOTemp.setQty(materialListDO.getQty());
-                            materialListDOTemp.setRemark(photoOrderDTO.getRemark());
-                            materialListDOTemp.setIsGenerateOrder("N");
-                            materialListDOTemp.setMaterialListType(MaterialListType.NORMAL);
-                            materialListSave.add(materialListDOTemp);
-                        } else {
-                            if (null != proxyEmployee) {
-                                materialList.setUserId(proxyEmployee.getEmpId());
-                                materialList.setIdentityType(proxyEmployee.getIdentityType());
+                            if (null == materialList) {
+                                MaterialListDO materialListDOTemp = transformRepeat(goodsDO);
+                                if (null != proxyEmployee) {
+                                    materialListDOTemp.setUserId(proxyEmployee.getEmpId());
+                                    materialListDOTemp.setIdentityType(proxyEmployee.getIdentityType());
+                                } else {
+                                    materialListDOTemp.setUserId(userId);
+                                    materialListDOTemp.setIdentityType(appIdentityType);
+                                }
+                                materialListDOTemp.setDeliveryId(deliveryId);
+                                materialListDOTemp.setQty(materialListDO.getQty());
+                                materialListDOTemp.setRemark(photoOrderDTO.getRemark());
+                                materialListDOTemp.setIsGenerateOrder("N");
+                                materialListDOTemp.setMaterialListType(MaterialListType.NORMAL);
+                                materialListSave.add(materialListDOTemp);
+                            } else {
+                                if (null != proxyEmployee) {
+                                    materialList.setUserId(proxyEmployee.getEmpId());
+                                    materialList.setIdentityType(proxyEmployee.getIdentityType());
+                                }
+                                materialList.setDeliveryId(deliveryId);
+                                materialList.setRemark(photoOrderDTO.getRemark());
+                                materialList.setIsGenerateOrder("N");
+                                materialList.setQty(materialList.getQty() + materialListDO.getQty());
+                                materialListUpdate.add(materialList);
                             }
-                            materialList.setDeliveryId(deliveryId);
-                            materialList.setRemark(photoOrderDTO.getRemark());
-                            materialList.setIsGenerateOrder("N");
-                            materialList.setQty(materialList.getQty() + materialListDO.getQty());
-                            materialListUpdate.add(materialList);
-                        }
 
-                        PhotoOrderGoodsDO photoOrderGoodsDO = new PhotoOrderGoodsDO();
-                        photoOrderGoodsDO.setGid(goodsDO.getGid());
-                        photoOrderGoodsDO.setSkuName(goodsDO.getSkuName());
-                        photoOrderGoodsDO.setGoodsQty(materialListDO.getQty());
-                        photoOrderGoodsDO.setPhotoOrderNo(orderNumber);
-                        photoOrderGoodsDOList.add(photoOrderGoodsDO);
+                            PhotoOrderGoodsDO photoOrderGoodsDO = new PhotoOrderGoodsDO();
+                            photoOrderGoodsDO.setGid(goodsDO.getGid());
+                            photoOrderGoodsDO.setSkuName(goodsDO.getSkuName());
+                            photoOrderGoodsDO.setGoodsQty(materialListDO.getQty());
+                            photoOrderGoodsDO.setPhotoOrderNo(orderNumber);
+                            photoOrderGoodsDOList.add(photoOrderGoodsDO);
+                        }
                     }
                 }
                 PhotoOrderVO photoOrderVO = this.maPhotoOrderService.findByPhotoOrderNo(orderNumber);
@@ -1678,50 +1689,52 @@ public class MaPhotoOrderRestController extends BaseRestController {
 
 
                     for (MaterialListDO materialListDO : combList) {
-                        GoodsDO goodsDO = maGoodsService.findGoodsById(materialListDO.getGid());
-                        if (null != goodsDO) {
-                            MaterialListDO materialList = null;
-                            if (null != proxyEmployee) {
-                                materialList = maMaterialListService.findByUserIdAndIdentityTypeAndGoodsId(proxyEmployee.getEmpId(),
-                                        proxyEmployee.getIdentityType(), materialListDO.getGid());
-                            } else {
-                                materialList = maMaterialListService.findByUserIdAndIdentityTypeAndGoodsId(photoOrderVO.getUserId(),
-                                        photoOrderVO.getIdentityTypeValue(), materialListDO.getGid());
-                            }
-                            if (null == materialList) {
-                                MaterialListDO materialListDOTemp = transformRepeat(goodsDO);
+                        if (null != materialListDO && null != materialListDO.getGid()) {
+                            GoodsDO goodsDO = maGoodsService.findGoodsById(materialListDO.getGid());
+                            if (null != goodsDO) {
+                                MaterialListDO materialList = null;
                                 if (null != proxyEmployee) {
-                                    materialListDOTemp.setUserId(proxyEmployee.getEmpId());
-                                    materialListDOTemp.setIdentityType(proxyEmployee.getIdentityType());
-                                } else if (null != photoOrderDTO.getGuideId() && -1 != photoOrderDTO.getGuideId()) {
-                                    materialListDOTemp.setUserId(employee.getEmpId());
-                                    materialListDOTemp.setIdentityType(employee.getIdentityType());
+                                    materialList = maMaterialListService.findByUserIdAndIdentityTypeAndGoodsId(proxyEmployee.getEmpId(),
+                                            proxyEmployee.getIdentityType(), materialListDO.getGid());
                                 } else {
-                                    materialListDOTemp.setUserId(photoOrderVO.getUserId());
-                                    materialListDOTemp.setIdentityType(photoOrderVO.getIdentityTypeValue());
+                                    materialList = maMaterialListService.findByUserIdAndIdentityTypeAndGoodsId(photoOrderVO.getUserId(),
+                                            photoOrderVO.getIdentityTypeValue(), materialListDO.getGid());
                                 }
-                                materialListDOTemp.setDeliveryId(deliveryId);
-                                materialListDOTemp.setQty(materialListDO.getQty());
-                                materialListDOTemp.setIsGenerateOrder("N");
-                                materialListDOTemp.setMaterialListType(MaterialListType.NORMAL);
-                                materialListSave.add(materialListDOTemp);
-                            } else {
-                                if (null != proxyEmployee) {
-                                    materialList.setUserId(proxyEmployee.getEmpId());
-                                    materialList.setIdentityType(proxyEmployee.getIdentityType());
+                                if (null == materialList) {
+                                    MaterialListDO materialListDOTemp = transformRepeat(goodsDO);
+                                    if (null != proxyEmployee) {
+                                        materialListDOTemp.setUserId(proxyEmployee.getEmpId());
+                                        materialListDOTemp.setIdentityType(proxyEmployee.getIdentityType());
+                                    } else if (null != photoOrderDTO.getGuideId() && -1 != photoOrderDTO.getGuideId()) {
+                                        materialListDOTemp.setUserId(employee.getEmpId());
+                                        materialListDOTemp.setIdentityType(employee.getIdentityType());
+                                    } else {
+                                        materialListDOTemp.setUserId(photoOrderVO.getUserId());
+                                        materialListDOTemp.setIdentityType(photoOrderVO.getIdentityTypeValue());
+                                    }
+                                    materialListDOTemp.setDeliveryId(deliveryId);
+                                    materialListDOTemp.setQty(materialListDO.getQty());
+                                    materialListDOTemp.setIsGenerateOrder("N");
+                                    materialListDOTemp.setMaterialListType(MaterialListType.NORMAL);
+                                    materialListSave.add(materialListDOTemp);
+                                } else {
+                                    if (null != proxyEmployee) {
+                                        materialList.setUserId(proxyEmployee.getEmpId());
+                                        materialList.setIdentityType(proxyEmployee.getIdentityType());
+                                    }
+                                    materialList.setIsGenerateOrder("N");
+                                    materialList.setDeliveryId(deliveryId);
+                                    materialList.setQty(materialListDO.getQty());
+                                    materialListUpdate.add(materialList);
                                 }
-                                materialList.setIsGenerateOrder("N");
-                                materialList.setDeliveryId(deliveryId);
-                                materialList.setQty(materialListDO.getQty());
-                                materialListUpdate.add(materialList);
-                            }
 
-                            //创建修改明细日志
-                            MaterialChangeDetailLog materialChangeDetailLog = new MaterialChangeDetailLog();
-                            materialChangeDetailLog.setGid(goodsDO.getGid());
-                            materialChangeDetailLog.setSkuName(goodsDO.getSkuName());
-                            materialChangeDetailLog.setQty(materialListDO.getQty());
-                            materialChangeDetailLogList.add(materialChangeDetailLog);
+                                //创建修改明细日志
+                                MaterialChangeDetailLog materialChangeDetailLog = new MaterialChangeDetailLog();
+                                materialChangeDetailLog.setGid(goodsDO.getGid());
+                                materialChangeDetailLog.setSkuName(goodsDO.getSkuName());
+                                materialChangeDetailLog.setQty(materialListDO.getQty());
+                                materialChangeDetailLogList.add(materialChangeDetailLog);
+                            }
                         }
                     }
                     //修改处理人ID
@@ -1998,55 +2011,57 @@ public class MaPhotoOrderRestController extends BaseRestController {
         List<CityInventory> finalCityInventoryList = cityInventoryList;
         List<GoodsPrice> finalGoodsPriceList = goodsPriceList;
         photoOrderDTO.getCombList().forEach(p -> {
-            FitOrderExcelPageVO pageVO = new FitOrderExcelPageVO();
-            pageVO.setQty(p.getQty());
-            pageVO.setInternalCode(p.getSku());
-            pageVO.setInternalName(p.getSkuName());
-            //设置内部商品是否存在
-            if (StringUtils.isBlank(p.getSku())) {
-                pageVO.setIsInternalCodeExists(false);
-            } else {
-                if (goodsList.stream().map(GoodsDO::getSku).collect(Collectors.toList()).contains(p.getSku())) {
-                    pageVO.setIsInternalCodeExists(true);
-                } else {
+            if (null != p.getGid()) {
+                FitOrderExcelPageVO pageVO = new FitOrderExcelPageVO();
+                pageVO.setQty(p.getQty());
+                pageVO.setInternalCode(p.getSku());
+                pageVO.setInternalName(p.getSkuName());
+                //设置内部商品是否存在
+                if (StringUtils.isBlank(p.getSku())) {
                     pageVO.setIsInternalCodeExists(false);
-                }
-            }
-            if (pageVO.getIsInternalCodeExists()) {
-                //设置库存相关信息
-                List<CityInventory> cityInventoryListTemp = finalCityInventoryList.stream().filter(q -> q.getSku().equals(p.getSku())).collect(Collectors.toList());
-                if (AssertUtil.isNotEmpty(cityInventoryListTemp)) {
-                    pageVO.setInventory(cityInventoryListTemp.get(0).getAvailableIty() == null ? 0 : cityInventoryListTemp.get(0).getAvailableIty());
                 } else {
-                    pageVO.setInventory(0);
+                    if (goodsList.stream().map(GoodsDO::getSku).collect(Collectors.toList()).contains(p.getSku())) {
+                        pageVO.setIsInternalCodeExists(true);
+                    } else {
+                        pageVO.setIsInternalCodeExists(false);
+                    }
                 }
-                if (pageVO.getInventory() >= pageVO.getQty()) {
-                    pageVO.setIsInvEnough(true);
-                    pageVO.setInvDifference(0);
-                } else {
-                    pageVO.setIsInvEnough(false);
-                    pageVO.setInvDifference(pageVO.getInventory() - pageVO.getQty());
-                }
+                if (pageVO.getIsInternalCodeExists()) {
+                    //设置库存相关信息
+                    List<CityInventory> cityInventoryListTemp = finalCityInventoryList.stream().filter(q -> q.getSku().equals(p.getSku())).collect(Collectors.toList());
+                    if (AssertUtil.isNotEmpty(cityInventoryListTemp)) {
+                        pageVO.setInventory(cityInventoryListTemp.get(0).getAvailableIty() == null ? 0 : cityInventoryListTemp.get(0).getAvailableIty());
+                    } else {
+                        pageVO.setInventory(0);
+                    }
+                    if (pageVO.getInventory() >= pageVO.getQty()) {
+                        pageVO.setIsInvEnough(true);
+                        pageVO.setInvDifference(0);
+                    } else {
+                        pageVO.setIsInvEnough(false);
+                        pageVO.setInvDifference(pageVO.getInventory() - pageVO.getQty());
+                    }
 
-                //设置价目表是否存在
-                List<GoodsPrice> goodsPriceListTemp = finalGoodsPriceList.stream().filter(t -> t.getSku().equals(p.getSku())).collect(Collectors.toList());
-                if (AssertUtil.isNotEmpty(goodsPriceListTemp)) {
-                    pageVO.setIsPriceItemExists(true);
-                } else {
-                    pageVO.setIsPriceItemExists(false);
+                    //设置价目表是否存在
+                    List<GoodsPrice> goodsPriceListTemp = finalGoodsPriceList.stream().filter(t -> t.getSku().equals(p.getSku())).collect(Collectors.toList());
+                    if (AssertUtil.isNotEmpty(goodsPriceListTemp)) {
+                        pageVO.setIsPriceItemExists(true);
+                    } else {
+                        pageVO.setIsPriceItemExists(false);
+                    }
                 }
+                if (!pageVO.getIsInternalCodeExists()) {
+                    pageVO.setErrorType(FitExcelImportGoodsErrorType.GOODS_NOT_EXISTS);
+                } else if (!pageVO.getIsInvEnough()) {
+                    pageVO.setErrorType(FitExcelImportGoodsErrorType.INV_NOT_ENOUGH);
+                } else if (!pageVO.getIsPriceItemExists()) {
+                    pageVO.setErrorType(FitExcelImportGoodsErrorType.PRICE_NOT_EXISTS);
+                }
+                if (!pageVO.getIsInternalCodeExists() || !pageVO.getIsInvEnough() || !pageVO.getIsPriceItemExists()) {
+                    submitFlag[0] = false;
+                }
+                pageVOList.add(pageVO);
             }
-            if (!pageVO.getIsInternalCodeExists()) {
-                pageVO.setErrorType(FitExcelImportGoodsErrorType.GOODS_NOT_EXISTS);
-            } else if (!pageVO.getIsInvEnough()) {
-                pageVO.setErrorType(FitExcelImportGoodsErrorType.INV_NOT_ENOUGH);
-            } else if (!pageVO.getIsPriceItemExists()) {
-                pageVO.setErrorType(FitExcelImportGoodsErrorType.PRICE_NOT_EXISTS);
-            }
-            if (!pageVO.getIsInternalCodeExists() || !pageVO.getIsInvEnough() || !pageVO.getIsPriceItemExists()) {
-                submitFlag[0] = false;
-            }
-            pageVOList.add(pageVO);
         });
         map.put("submitFlag", submitFlag[0]);
         map.put("code", 0);
@@ -2099,7 +2114,8 @@ public class MaPhotoOrderRestController extends BaseRestController {
                         appIdentityType = AppIdentityType.CUSTOMER;
                     }else if (photoOrderVO.getIdentityTypeValue() == AppIdentityType.DECORATE_MANAGER){
                         AppEmployee employee = employeeService.findById(photoOrderVO.getUserId());
-                        storeId = employee.getEmpId();
+                        userId = employee.getEmpId();
+                        storeId = employee.getStoreId();
                         appIdentityType = employee.getIdentityType();
                     }
                 }else{
@@ -2125,16 +2141,25 @@ public class MaPhotoOrderRestController extends BaseRestController {
             //创建促销查询所需商品参数list
             List<OrderGoodsSimpleResponse> orderGoodsSimpleResponseList = new ArrayList<>();
             for (MaterialListDO materialListDO : photoOrderDTO.getCombList()) {
-                OrderGoodsSimpleResponse orderGoodsSimpleResponse = new OrderGoodsSimpleResponse();
-                //根据商品id和门店id查询商品价格+ 顾客id
-                GoodsPrice goodsPrice = goodsPriceService.findGoodsPriceByGoodsIDAndStoreID(materialListDO.getGid(), storeId,customerId);
-                orderGoodsSimpleResponse.setId(materialListDO.getGid());
-                orderGoodsSimpleResponse.setSku(goodsPrice.getSku());
-                orderGoodsSimpleResponse.setGoodsQty(materialListDO.getQty());
-                orderGoodsSimpleResponse.setVipPrice(goodsPrice.getVIPPrice());
-                orderGoodsSimpleResponse.setRetailPrice(goodsPrice.getRetailPrice());
-                //将参数添加到list中
-                orderGoodsSimpleResponseList.add(orderGoodsSimpleResponse);
+                if (null != materialListDO && null != materialListDO.getGid()) {
+                    OrderGoodsSimpleResponse orderGoodsSimpleResponse = new OrderGoodsSimpleResponse();
+                    GoodsPrice goodsPrice = null;
+                    if (appIdentityType != AppIdentityType.CUSTOMER) {
+                        //根据商品id和门店id查询商品价格+ 顾客id
+                        goodsPrice = goodsPriceService.findGoodsPriceByGoodsIDAndStoreID(materialListDO.getGid(), storeId, userId);
+                    } else {
+                        //根据商品id和门店id查询商品价格+ 员工id
+                        goodsPrice = goodsPriceService.findGoodsPriceByGoodsIDAndStoreIDAndEmpId(materialListDO.getGid(), storeId, userId);
+                    }
+
+                    orderGoodsSimpleResponse.setId(materialListDO.getGid());
+                    orderGoodsSimpleResponse.setSku(goodsPrice.getSku());
+                    orderGoodsSimpleResponse.setGoodsQty(materialListDO.getQty());
+                    orderGoodsSimpleResponse.setVipPrice(goodsPrice.getVIPPrice());
+                    orderGoodsSimpleResponse.setRetailPrice(goodsPrice.getRetailPrice());
+                    //将参数添加到list中
+                    orderGoodsSimpleResponseList.add(orderGoodsSimpleResponse);
+                }
             }
             //查询所有符合条件的促销
             PromotionsListResponse promotionsListResponse = appActService.countAct(userId, appIdentityType, orderGoodsSimpleResponseList,customerId,"GOODS");
@@ -2161,45 +2186,48 @@ public class MaPhotoOrderRestController extends BaseRestController {
 
         ResultDTO<Object> resultDTO;
         //获取客户端ip地址
-        if (StringUtils.isBlank(photoOrderDTO.getReceiverName())) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "收货人姓名不能为空，保存拍照下单失败！", null);
-            logger.info("saveUpdatePhotoOrder EXCEPTION，收货人姓名不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (StringUtils.isBlank(photoOrderDTO.getReceiverPhone())) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "收货人电话号码不能为空，保存拍照下单失败！", null);
-            logger.info("saveUpdatePhotoOrder EXCEPTION，收货人姓名不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (StringUtils.isBlank(photoOrderDTO.getProvince())) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "省不能为空，保存拍照下单失败！", null);
-            logger.info("saveUpdatePhotoOrder EXCEPTION，省不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (StringUtils.isBlank(photoOrderDTO.getCity())) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "市不能为空，保存拍照下单失败！", null);
-            logger.info("saveUpdatePhotoOrder EXCEPTION，市不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (StringUtils.isBlank(photoOrderDTO.getCounty())) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "区不能为空，保存拍照下单失败！", null);
-            logger.info("saveUpdatePhotoOrder EXCEPTION，区不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (StringUtils.isBlank(photoOrderDTO.getStreet())) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "街道不能为空，保存拍照下单失败！", null);
-            logger.info("saveUpdatePhotoOrder EXCEPTION，街道不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (StringUtils.isBlank(photoOrderDTO.getResidenceName())) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "小区名不能为空，保存拍照下单失败！", null);
-            logger.info("saveUpdatePhotoOrder EXCEPTION，小区名不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (StringUtils.isBlank(photoOrderDTO.getDetailedAddress())) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "详细地址不能为空，保存拍照下单失败！", null);
-            logger.info("saveUpdatePhotoOrder EXCEPTION，详细地址不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
-            return resultDTO;
+
+        if (null == photoOrderDTO.getDeliveryId() || -1 == photoOrderDTO.getDeliveryId()) {
+            if (StringUtils.isBlank(photoOrderDTO.getReceiverName())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "收货人姓名不能为空，保存拍照下单失败！", null);
+                logger.info("saveUpdatePhotoOrder EXCEPTION，收货人姓名不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (StringUtils.isBlank(photoOrderDTO.getReceiverPhone())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "收货人电话号码不能为空，保存拍照下单失败！", null);
+                logger.info("saveUpdatePhotoOrder EXCEPTION，收货人姓名不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (StringUtils.isBlank(photoOrderDTO.getProvince())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "省不能为空，保存拍照下单失败！", null);
+                logger.info("saveUpdatePhotoOrder EXCEPTION，省不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (StringUtils.isBlank(photoOrderDTO.getCity())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "市不能为空，保存拍照下单失败！", null);
+                logger.info("saveUpdatePhotoOrder EXCEPTION，市不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (StringUtils.isBlank(photoOrderDTO.getCounty())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "区不能为空，保存拍照下单失败！", null);
+                logger.info("saveUpdatePhotoOrder EXCEPTION，区不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (StringUtils.isBlank(photoOrderDTO.getStreet())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "街道不能为空，保存拍照下单失败！", null);
+                logger.info("saveUpdatePhotoOrder EXCEPTION，街道不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (StringUtils.isBlank(photoOrderDTO.getResidenceName())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "小区名不能为空，保存拍照下单失败！", null);
+                logger.info("saveUpdatePhotoOrder EXCEPTION，小区名不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (StringUtils.isBlank(photoOrderDTO.getDetailedAddress())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "详细地址不能为空，保存拍照下单失败！", null);
+                logger.info("saveUpdatePhotoOrder EXCEPTION，详细地址不能为空，保存修改拍照下单失败，出参 ResultDTO:{}", resultDTO);
+                return resultDTO;
+            }
         }
 
         try {
@@ -2209,6 +2237,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
             Long customerId = null;
             Long userId = null;
             Integer identityType = null;
+            Long deliveryId = null;
             if ("appPhotoOrder".equals(photoOrderDTO.getSource()) || "updatePhotoOrder".equals(photoOrderDTO.getSource())){
             //查询拍照订单信息
             List<PhotoOrderStatus> status = new ArrayList<>();
@@ -2250,24 +2279,24 @@ public class MaPhotoOrderRestController extends BaseRestController {
             }
         }else if ("addPhotoOrder".equals(photoOrderDTO.getSource())){
                 if ("装饰公司经理".equals(photoOrderDTO.getPeopleIdentityType())){
-                    employee = employeeService.findById(appCustomer.getSalesConsultId());
+                    employee = employeeService.findById(photoOrderDTO.getGuideId());
                     userId = photoOrderDTO.getGuideId();
                     identityType = 2;
-                }else if ("顾客".equals(photoOrderDTO.getSource())){
-                    appCustomer = customerService.findById(photoOrderVO.getUserId());
+                }else if ("顾客".equals(photoOrderDTO.getPeopleIdentityType())){
+                    appCustomer = customerService.findById(photoOrderDTO.getGuideId());
                     employee = employeeService.findById(appCustomer.getSalesConsultId());
                     userId = photoOrderDTO.getGuideId();
                     identityType = 6;
                 }
             }
 //        Long userId = photoOrderVO.getUserId();
-        if (null == photoOrderVO.getUserId()) {
+        if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不允许为空!", "");
             logger.warn("maCreatePhotoOrder OUT,后台拍照下单创建订单方法失败,出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
 
-        if (null == photoOrderVO.getIdentityTypeValue()) {
+        if (null == identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份类型不允许为空!", "");
             logger.warn("maCreatePhotoOrder OUT,后台拍照下单创建订单方法失败,出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -2300,25 +2329,77 @@ public class MaPhotoOrderRestController extends BaseRestController {
             List<GoodsSimpleInfo> goodsList = new ArrayList<>();
 
             for (MaterialListDO materialListDO : photoOrderDTO.getCombList()){
-                GoodsSimpleInfo goodsSimpleInfo = new GoodsSimpleInfo();
-                goodsSimpleInfo.setId(materialListDO.getGid());
-                goodsSimpleInfo.setQty(materialListDO.getQty());
-                goodsSimpleInfo.setGoodsLineType("GOODS");
-                goodsList.add(goodsSimpleInfo);
+                if (null != materialListDO && null != materialListDO.getGid()) {
+                    GoodsSimpleInfo goodsSimpleInfo = new GoodsSimpleInfo();
+                    goodsSimpleInfo.setId(materialListDO.getGid());
+                    goodsSimpleInfo.setQty(materialListDO.getQty());
+                    goodsSimpleInfo.setGoodsLineType("GOODS");
+                    goodsList.add(goodsSimpleInfo);
+                }
             }
+
+            String provinceName = null;
+            String cityName = null;
+            String countyName = null;
+            String street = null;
+
+            if (null == photoOrderDTO.getDeliveryId() || -1 == photoOrderDTO.getDeliveryId()){
+                provinceName = deliveryAddressService.findAreaNameByCode(photoOrderDTO.getProvince());
+                cityName = deliveryAddressService.findAreaNameByCode(photoOrderDTO.getCity());
+                countyName = deliveryAddressService.findAreaNameByCode(photoOrderDTO.getCounty());
+                street = photoOrderDTO.getStreet();
+
+            }else{
+                DeliveryAddressResponse deliveryAddressResponse = deliveryAddressService.getDefaultDeliveryAddressByDeliveryId(photoOrderDTO.getDeliveryId());
+                if (null == deliveryAddressResponse){
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到该地址信息！", null);
+                    logger.info("maCreatePhotoOrder EXCEPTION，未查询到该地址信息，跳转确认订单失败，出参 ResultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+                provinceName = deliveryAddressResponse.getDeliveryProvince();
+                cityName = deliveryAddressResponse.getDeliveryCity();
+                countyName =deliveryAddressResponse.getDeliveryCounty();
+                street = deliveryAddressResponse.getDeliveryStreet();
+            }
+
+            //获取默认配送时间
+
 
             //配送信息
             DeliverySimpleInfo deliverySimpleInfo = new DeliverySimpleInfo();
             deliverySimpleInfo.setReceiver(photoOrderDTO.getReceiverName());
             deliverySimpleInfo.setReceiverPhone(photoOrderDTO.getReceiverPhone());
-            deliverySimpleInfo.setDeliveryProvince(photoOrderDTO.getProvince());
-            deliverySimpleInfo.setDeliveryCity(photoOrderDTO.getCity());
-            deliverySimpleInfo.setDeliveryCounty(photoOrderDTO.getCounty());
-            deliverySimpleInfo.setDeliveryStreet(photoOrderDTO.getStreet());
+            deliverySimpleInfo.setDeliveryProvince(provinceName);
+            deliverySimpleInfo.setDeliveryCity(cityName);
+            deliverySimpleInfo.setDeliveryCounty(countyName);
+            deliverySimpleInfo.setDeliveryStreet(street);
             deliverySimpleInfo.setResidenceName(photoOrderDTO.getResidenceName());
             deliverySimpleInfo.setEstateInfo(photoOrderDTO.getEstateInfo());
             deliverySimpleInfo.setDetailedAddress(photoOrderDTO.getDetailedAddress());
+            deliverySimpleInfo.setDeliveryTime(photoOrderDTO.getPointDistributionTime());
             deliverySimpleInfo.setDeliveryType("HOUSE_DELIVERY");
+
+            if (null == photoOrderDTO.getDeliveryId() || -1 == photoOrderDTO.getDeliveryId()){
+                DeliveryAddressDO deliveryAddressDO = new DeliveryAddressDO();
+                deliveryAddressDO.setReceiver(photoOrderDTO.getReceiverName());
+                deliveryAddressDO.setReceiverPhone(photoOrderDTO.getReceiverPhone());
+                deliveryAddressDO.setDeliveryProvince(provinceName);
+                deliveryAddressDO.setDeliveryCity(cityName);
+                deliveryAddressDO.setDeliveryCounty(countyName);
+                deliveryAddressDO.setDeliveryStreet(street);
+                deliveryAddressDO.setDetailedAddress(photoOrderDTO.getDetailedAddress());
+                deliveryAddressDO.setResidenceName(photoOrderDTO.getResidenceName());
+                deliveryAddressDO.setUserId(userId);
+                deliveryAddressDO.setIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                deliveryAddressDO.setStatus(Boolean.TRUE);
+                deliveryAddressDO.setIsDefault(Boolean.FALSE);
+                deliveryAddressDO.setEstateInfo(photoOrderDTO.getEstateInfo());
+                deliveryAddressService.maAddDeliveryAddress(deliveryAddressDO);
+                deliveryId = deliveryAddressDO.getId();
+            }else{
+                deliveryId = photoOrderDTO.getDeliveryId();
+            }
+
 
 //            //优惠券信息
             List<Long> cashCouponList = new ArrayList<>();
@@ -2336,13 +2417,13 @@ public class MaPhotoOrderRestController extends BaseRestController {
                 if (StringUtils.isNotBlank(photoOrderDTO.getGiftDetails())) {
                     promotionSimpleInfoList = objectMapper.readValue(photoOrderDTO.getGiftDetails(), promotionSimpleInfo);
                 }
-            }else if (2 == identityType){
-                promotionSimpleInfoList = null;
             }
             // 检查促销是否过期
             List<Long> promotionIds = new ArrayList<>();
-            for (PromotionSimpleInfo promotion : promotionSimpleInfoList) {
-                promotionIds.add(promotion.getPromotionId());
+            if (null != promotionSimpleInfoList && promotionSimpleInfoList.size() > 0) {
+                for (PromotionSimpleInfo promotion : promotionSimpleInfoList) {
+                    promotionIds.add(promotion.getPromotionId());
+                }
             }
             if (promotionIds.size() > 0) {
                 Boolean outTime = actService.checkActOutTime(promotionIds);
@@ -2490,6 +2571,38 @@ public class MaPhotoOrderRestController extends BaseRestController {
                 }
                 this.maPhotoOrderGoodsService.batchSave(orderGoodsDOList);
                 this.maPhotoOrderService.updateStatusAndsaveAndUpdateMaterialStatus(photoOrderDTO.getPhotoId(), PhotoOrderStatus.FINISH);
+            }else if ("addPhotoOrder".equals(photoOrderDTO.getSource())){
+                //******************************************保存拍照下单实体********************************
+                String orderNumber = OrderUtils.generatePhotoOrderNumber(orderBaseInfo.getCityId());
+                PhotoOrderDO photoOrderDO = new PhotoOrderDO();
+                photoOrderDO.setCreateTime(LocalDateTime.now());
+                photoOrderDO.setIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                photoOrderDO.setContactPhone(photoOrderDTO.getContactPhone());
+                photoOrderDO.setContactName(photoOrderDTO.getContactName());
+                photoOrderDO.setPhotos(photoOrderDTO.getPhotoImgs());
+                photoOrderDO.setRemark(photoOrderDTO.getRemark());
+                photoOrderDO.setStatus(PhotoOrderStatus.FINISH);
+                photoOrderDO.setUserId(userId);
+                photoOrderDO.setPhotoOrderNo(orderNumber);
+                photoOrderDO.setDeliveryId(deliveryId);
+                photoOrderDO.setOrderType(PhotoOrderType.UNDERLINE);
+                photoOrderDO.setProxyId(photoOrderDTO.getProxyId());
+                this.photoOrderServiceImpl.save(photoOrderDO);
+                List<PhotoOrderGoodsDO> photoOrderGoodsDOList = new ArrayList<>();
+                for (MaterialListDO materialListDO : photoOrderDTO.getCombList()) {
+                    if (null != materialListDO && null != materialListDO.getGid()) {
+                        GoodsDO goodsDO = maGoodsService.findGoodsById(materialListDO.getGid());
+                        if (null != goodsDO) {
+                            PhotoOrderGoodsDO photoOrderGoodsDO = new PhotoOrderGoodsDO();
+                            photoOrderGoodsDO.setGid(goodsDO.getGid());
+                            photoOrderGoodsDO.setSkuName(goodsDO.getSkuName());
+                            photoOrderGoodsDO.setGoodsQty(materialListDO.getQty());
+                            photoOrderGoodsDO.setPhotoOrderNo(orderNumber);
+                            photoOrderGoodsDOList.add(photoOrderGoodsDO);
+                        }
+                    }
+                }
+                this.maPhotoOrderGoodsService.batchSave(photoOrderGoodsDOList);
             }
 
 
@@ -2558,63 +2671,82 @@ public class MaPhotoOrderRestController extends BaseRestController {
     public ResultDTO<Object> orderDetail(@Valid PhotoOrderDTO photoOrderDTO){
         logger.info("orderDetail  跳转确认订单入参  photoOrderDTO:{}",photoOrderDTO);
         ResultDTO<Object> resultDTO;
+        try {
+            String provinceName = null;
+            String cityName = null;
+            String countyName = null;
+            String street = null;
 
         if (null == photoOrderDTO.getCombList() || photoOrderDTO.getCombList().size() <= 0){
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品信息不能为空，跳转确认订单失败！", null);
             logger.info("orderDetail EXCEPTION，商品信息不能为空，跳转确认订单失败，出参 ResultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (StringUtils.isBlank(photoOrderDTO.getReceiverName())) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "收货人姓名不能为空，跳转确认订单失败！", null);
-            logger.info("orderDetail EXCEPTION，收货人姓名不能为空，跳转确认订单失败，出参 ResultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (StringUtils.isBlank(photoOrderDTO.getReceiverPhone())) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "收货人电话号码不能为空，跳转确认订单失败！", null);
-            logger.info("orderDetail EXCEPTION，收货人姓名不能为空，跳转确认订单失败，出参 ResultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (StringUtils.isBlank(photoOrderDTO.getProvince())) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "省不能为空，跳转确认订单失败！", null);
-            logger.info("orderDetail EXCEPTION，省不能为空，跳转确认订单失败，出参 ResultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (StringUtils.isBlank(photoOrderDTO.getCity())) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "市不能为空，跳转确认订单失败！", null);
-            logger.info("orderDetail EXCEPTION，市不能为空，跳转确认订单失败，出参 ResultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (StringUtils.isBlank(photoOrderDTO.getCounty())) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "区不能为空，跳转确认订单失败！", null);
-            logger.info("orderDetail EXCEPTION，区不能为空，跳转确认订单失败，出参 ResultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (StringUtils.isBlank(photoOrderDTO.getStreet())) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "街道不能为空，跳转确认订单失败！", null);
-            logger.info("orderDetail EXCEPTION，街道不能为空，跳转确认订单失败，出参 ResultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (StringUtils.isBlank(photoOrderDTO.getResidenceName())) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "小区名不能为空，跳转确认订单失败！", null);
-            logger.info("orderDetail EXCEPTION，小区名不能为空，跳转确认订单失败，出参 ResultDTO:{}", resultDTO);
-            return resultDTO;
-        }
-        if (StringUtils.isBlank(photoOrderDTO.getDetailedAddress())) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "详细地址不能为空，跳转确认订单失败！", null);
-            logger.info("orderDetail EXCEPTION，详细地址不能为空，跳转确认订单失败，出参 ResultDTO:{}", resultDTO);
-            return resultDTO;
+
+        if (null == photoOrderDTO.getDeliveryId() || -1 == photoOrderDTO.getDeliveryId()) {
+            if (StringUtils.isBlank(photoOrderDTO.getReceiverName())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "收货人姓名不能为空，跳转确认订单失败！", null);
+                logger.info("orderDetail EXCEPTION，收货人姓名不能为空，跳转确认订单失败，出参 ResultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (StringUtils.isBlank(photoOrderDTO.getReceiverPhone())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "收货人电话号码不能为空，跳转确认订单失败！", null);
+                logger.info("orderDetail EXCEPTION，收货人姓名不能为空，跳转确认订单失败，出参 ResultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (StringUtils.isBlank(photoOrderDTO.getProvince())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "省不能为空，跳转确认订单失败！", null);
+                logger.info("orderDetail EXCEPTION，省不能为空，跳转确认订单失败，出参 ResultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (StringUtils.isBlank(photoOrderDTO.getCity())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "市不能为空，跳转确认订单失败！", null);
+                logger.info("orderDetail EXCEPTION，市不能为空，跳转确认订单失败，出参 ResultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (StringUtils.isBlank(photoOrderDTO.getCounty())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "区不能为空，跳转确认订单失败！", null);
+                logger.info("orderDetail EXCEPTION，区不能为空，跳转确认订单失败，出参 ResultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (StringUtils.isBlank(photoOrderDTO.getStreet())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "街道不能为空，跳转确认订单失败！", null);
+                logger.info("orderDetail EXCEPTION，街道不能为空，跳转确认订单失败，出参 ResultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (StringUtils.isBlank(photoOrderDTO.getResidenceName())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "小区名不能为空，跳转确认订单失败！", null);
+                logger.info("orderDetail EXCEPTION，小区名不能为空，跳转确认订单失败，出参 ResultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (StringUtils.isBlank(photoOrderDTO.getDetailedAddress())) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "详细地址不能为空，跳转确认订单失败！", null);
+                logger.info("orderDetail EXCEPTION，详细地址不能为空，跳转确认订单失败，出参 ResultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            provinceName = deliveryAddressService.findAreaNameByCode(photoOrderDTO.getProvince());
+            cityName = deliveryAddressService.findAreaNameByCode(photoOrderDTO.getCity());
+            countyName = deliveryAddressService.findAreaNameByCode(photoOrderDTO.getCounty());
+            street = photoOrderDTO.getStreet();
+        }else{
+            DeliveryAddressResponse deliveryAddressResponse = deliveryAddressService.getDefaultDeliveryAddressByDeliveryId(photoOrderDTO.getDeliveryId());
+            if (null == deliveryAddressResponse){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到该地址信息！", null);
+                logger.info("orderDetail EXCEPTION，未查询到该地址信息，跳转确认订单失败，出参 ResultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            provinceName = deliveryAddressResponse.getDeliveryProvince();
+            cityName = deliveryAddressResponse.getDeliveryCity();
+            countyName =deliveryAddressResponse.getDeliveryCounty();
+            street = deliveryAddressResponse.getDeliveryStreet();
         }
 
-        try {
-            String provinceName = deliveryAddressService.findAreaNameByCode(photoOrderDTO.getProvince());
-            String cityName = deliveryAddressService.findAreaNameByCode(photoOrderDTO.getCity());
-            String countyName = deliveryAddressService.findAreaNameByCode(photoOrderDTO.getCounty());
             //拼接地址
             StringBuffer detailedAddress = new StringBuffer();
             detailedAddress.append(provinceName);
             detailedAddress.append(cityName);
             detailedAddress.append(countyName);
-            detailedAddress.append(photoOrderDTO.getStreet());
+            detailedAddress.append(street);
             detailedAddress.append(photoOrderDTO.getResidenceName());
             detailedAddress.append(photoOrderDTO.getDetailedAddress());
 
@@ -2628,10 +2760,12 @@ public class MaPhotoOrderRestController extends BaseRestController {
 
             List<GoodsIdQtyParam> goodsList = new ArrayList<>();
             for (MaterialListDO materialListDO : photoOrderDTO.getCombList()){
-                GoodsIdQtyParam goodsIdQtyParam = new GoodsIdQtyParam();
-                goodsIdQtyParam.setId(materialListDO.getGid());
-                goodsIdQtyParam.setQty(materialListDO.getQty());
-                goodsList.add(goodsIdQtyParam);
+                if (null != materialListDO && null != materialListDO.getGid()) {
+                    GoodsIdQtyParam goodsIdQtyParam = new GoodsIdQtyParam();
+                    goodsIdQtyParam.setId(materialListDO.getGid());
+                    goodsIdQtyParam.setQty(materialListDO.getQty());
+                    goodsList.add(goodsIdQtyParam);
+                }
             }
             ObjectMapper objectMapper = new ObjectMapper();
             JavaType goodsSimpleInfo = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, PromotionSimpleInfo.class);
@@ -2661,8 +2795,8 @@ public class MaPhotoOrderRestController extends BaseRestController {
                 if ("装饰公司经理".equals(photoOrderDTO.getPeopleIdentityType())){
                     userId = photoOrderDTO.getGuideId();
                     identityType = 2;
-                }else if ("顾客".equals(photoOrderDTO.getSource())){
-                    appCustomer = customerService.findById(photoOrderVO.getUserId());
+                }else if ("顾客".equals(photoOrderDTO.getPeopleIdentityType())){
+                    appCustomer = customerService.findById(photoOrderDTO.getGuideId());
                     userId = photoOrderDTO.getGuideId();
                     identityType = 6;
                 }
@@ -2767,19 +2901,22 @@ public class MaPhotoOrderRestController extends BaseRestController {
                List<MaPhotoOrderGoodsDetailResponse> maPhotoOrderGoodsDetailResponseList = new ArrayList<>();
 
                 for (OrderGoodsSimpleResponse orderGoodsSimpleResponse : goodsInfo){
-                    for (GoodsIdQtyParam goodsIdQtyParam : goodsList){
-                        if (goodsIdQtyParam.getId().equals(orderGoodsSimpleResponse.getId())){
-                            orderGoodsSimpleResponse.setGoodsQty(goodsIdQtyParam.getQty());
+                    if (null != orderGoodsSimpleResponse && null != orderGoodsSimpleResponse.getId()) {
+                        for (GoodsIdQtyParam goodsIdQtyParam : goodsList) {
+                            if (goodsIdQtyParam.getId().equals(orderGoodsSimpleResponse.getId())) {
+                                orderGoodsSimpleResponse.setGoodsQty(goodsIdQtyParam.getQty());
+                            }
                         }
+                        MaPhotoOrderGoodsDetailResponse maPhotoOrderGoodsDetailResponse = new MaPhotoOrderGoodsDetailResponse();
+                        maPhotoOrderGoodsDetailResponse.setGid(orderGoodsSimpleResponse.getId());
+                        maPhotoOrderGoodsDetailResponse.setSku(orderGoodsSimpleResponse.getSku());
+                        maPhotoOrderGoodsDetailResponse.setSkuName(orderGoodsSimpleResponse.getGoodsName());
+                        maPhotoOrderGoodsDetailResponse.setQty(orderGoodsSimpleResponse.getGoodsQty());
+                        maPhotoOrderGoodsDetailResponse.setRetailPrice(orderGoodsSimpleResponse.getRetailPrice());
+                        maPhotoOrderGoodsDetailResponse.setVipPrice(orderGoodsSimpleResponse.getVipPrice());
+                        maPhotoOrderGoodsDetailResponse.setGoodsType("本品");
+                        maPhotoOrderGoodsDetailResponseList.add(maPhotoOrderGoodsDetailResponse);
                     }
-                    MaPhotoOrderGoodsDetailResponse maPhotoOrderGoodsDetailResponse = new MaPhotoOrderGoodsDetailResponse();
-                    maPhotoOrderGoodsDetailResponse.setGid(orderGoodsSimpleResponse.getId());
-                    maPhotoOrderGoodsDetailResponse.setSku(orderGoodsSimpleResponse.getSku());
-                    maPhotoOrderGoodsDetailResponse.setSkuName(orderGoodsSimpleResponse.getGoodsName());
-                    maPhotoOrderGoodsDetailResponse.setQty(orderGoodsSimpleResponse.getGoodsQty());
-                    maPhotoOrderGoodsDetailResponse.setRetailPrice(orderGoodsSimpleResponse.getRetailPrice());
-                    maPhotoOrderGoodsDetailResponse.setGoodsType("本品");
-                    maPhotoOrderGoodsDetailResponseList.add(maPhotoOrderGoodsDetailResponse);
                 }
                 if (null != giftsInfo && giftsInfo.size() > 0) {
 
@@ -2803,6 +2940,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
                         maPhotoOrderGoodsDetailResponse.setSkuName(orderGoodsSimpleResponse.getGoodsName());
                         maPhotoOrderGoodsDetailResponse.setQty(orderGoodsSimpleResponse.getGoodsQty());
                         maPhotoOrderGoodsDetailResponse.setRetailPrice(orderGoodsSimpleResponse.getRetailPrice());
+                        maPhotoOrderGoodsDetailResponse.setVipPrice(orderGoodsSimpleResponse.getVipPrice());
                         maPhotoOrderGoodsDetailResponse.setGoodsType("赠品");
                         maPhotoOrderGoodsDetailResponseList.add(maPhotoOrderGoodsDetailResponse);
                     }
@@ -2921,6 +3059,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
                 maPhotoOrderDetailResponse.setReceiverPhone(photoOrderDTO.getReceiverPhone());
                 maPhotoOrderDetailResponse.setMaPhotoOrderGoodsDetailResponse(maPhotoOrderGoodsDetailResponseList);
                 maPhotoOrderDetailResponse.setMaOrderCalulatedAmountResponse(maOrderCalulatedAmountResponse);
+                maPhotoOrderDetailResponse.setCityName(cityName);
                 maPhotoOrderDetailResponse.setIdentityType(identityType);
 
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,maPhotoOrderDetailResponse);
@@ -2935,6 +3074,91 @@ public class MaPhotoOrderRestController extends BaseRestController {
             logger.warn("{}", e);
             return resultDTO;
         }
+    }
+
+    @RequestMapping(value = "/get/deliveryTime/{cityName}", method = RequestMethod.GET)
+    public ResultDTO<Object> getCityDeliveryTime(@PathVariable(value = "cityName") String cityName) {
+        logger.info("getCityDeliveryTime CALLED,获取城市配送时间列表，入参 cityName:{}", cityName);
+
+        ResultDTO<Object> resultDTO;
+        if (null == cityName) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市名不允许为空", null);
+            logger.warn("getCityDeliveryTime OUT,获取城市配送时间列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            List<CityDeliveryTime> deliveryTimeList = cityService.findCityDeliveryTimeByCityName(cityName);
+
+            List<String> futureDays = DateUtil.getFutureDays(6);
+            List<CityDeliveryTimeResponse> responseList = new ArrayList<>();
+
+            CityDeliveryTimeResponse responseDay1 = new CityDeliveryTimeResponse();
+            List<CityDeliveryTime> day1DeliveryTime = new ArrayList<>();
+
+            responseDay1.setDay(DateUtil.getFutureDate(0));
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date());
+            int hour = calendar.get(Calendar.HOUR_OF_DAY);
+
+            for (int i = 0; i < deliveryTimeList.size(); i++) {
+                if (i == 0) {
+                    if (hour < deliveryTimeList.get(i).getStartHour()) {
+                        deliveryTimeList.remove(0);
+//                        Collections.copy(day1DeliveryTime, deliveryTimeList); copy方法报错:Source does not fit in dest 使用下面方法代替
+                        day1DeliveryTime = new ArrayList<>(deliveryTimeList);
+                        break;
+                    }
+                } else {
+                    if (deliveryTimeList.get(i).getStartHour() > hour) {
+                        day1DeliveryTime.add(deliveryTimeList.get(i));
+                    }
+                }
+            }
+            responseDay1.setDeliveryTime(transformDeliveryTimeToString(day1DeliveryTime));
+            responseList.add(responseDay1);
+
+            for (int i = 0; i < 6; i++) {
+                CityDeliveryTimeResponse response = new CityDeliveryTimeResponse();
+                response.setDay(futureDays.get(i));
+                response.setDeliveryTime(transformDeliveryTimeToString(deliveryTimeList));
+                responseList.add(response);
+            }
+            List<String> citydeliveryTimeList = new ArrayList<>();
+            for (CityDeliveryTimeResponse cityDeliveryTimeResponse : responseList){
+                if (null != cityDeliveryTimeResponse && null != cityDeliveryTimeResponse.getDeliveryTime() && cityDeliveryTimeResponse.getDeliveryTime().size() > 0){
+                    for (String time : cityDeliveryTimeResponse.getDeliveryTime()){
+                        StringBuffer buffer = new StringBuffer();
+                        buffer.append(cityDeliveryTimeResponse.getDay());
+                        buffer.append(time);
+                        citydeliveryTimeList.add(buffer.toString());
+                    }
+                }
+            }
+            resultDTO = new ResultDTO<Object>(CommonGlobal.COMMON_CODE_SUCCESS, null, citydeliveryTimeList);
+            logger.info("getCityDeliveryTime CALLED,获取城市配送时间列表成功，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,获取城市配送时间列表失败", null);
+            logger.warn("customerLogin EXCEPTION,获取城市配送时间列表失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    public List<String> transformDeliveryTimeToString(List<CityDeliveryTime> deliveryTimeList) {
+        List<String> resultList = new ArrayList<>();
+        for (CityDeliveryTime deliveryTime : deliveryTimeList) {
+            String s = (deliveryTime.getStartHour() < 10 ? "0" + deliveryTime.getStartHour() : deliveryTime.getStartHour()) +
+                    ":" +
+                    (deliveryTime.getStartMinute() < 10 ? "0" + deliveryTime.getStartMinute() : deliveryTime.getStartMinute()) +
+                    "-" +
+                    (deliveryTime.getEndHour() < 10 ? "0" + deliveryTime.getEndHour() : deliveryTime.getEndHour()) +
+                    ":" +
+                    (deliveryTime.getEndMinute() < 10 ? "0" + deliveryTime.getEndMinute() : deliveryTime.getEndMinute());
+            resultList.add(s);
+        }
+        return resultList;
     }
 
 }

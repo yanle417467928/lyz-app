@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link href="/stylesheet/devkit.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
     <link href="https://cdn.bootcss.com/bootstrap-select/1.12.2/css/bootstrap-select.min.css" rel="stylesheet">
@@ -402,7 +403,7 @@
                     </div>
                     <div class="modal-body">
                         <!--  设置这个div的大小，超出部分显示滚动条 -->
-                        <div id="addressDataGridTree" class="ztree" style="height: 60%;overflow:auto; ">
+                        <div id="inspectionStockDataGridTree" class="ztree" style="height: 60%;overflow:auto; ">
                             <section class="content">
                                 <div class="row">
                                     <div class="col-xs-12">
@@ -415,7 +416,7 @@
                                                 </div>
                                             </div>
                                             <div class="box-body table-reponsive">
-                                                <table id="addressDataGrid"
+                                                <table id="inspectionStockDataGrid"
                                                        class="table table-bordered table-hover">
                                                     <thead>
                                                     <tr>
@@ -523,7 +524,7 @@
                                         <!-- /.box-header -->
                                     <#--订单商品信息-->
                                         <div id="goodsDetails">
-                                            <table id="addressDataGrid"
+                                            <table id="orderDetailDataGrid"
                                                    class="table table-bordered table-hover">
                                                 <thead>
                                                 <tr>
@@ -532,6 +533,7 @@
                                                     <th>商品名称</th>
                                                     <th>数量</th>
                                                     <th>零售价</th>
+                                                    <th>会员价</th>
                                                     <th>商品类型</th>
                                                 </tr>
                                                 </thead>
@@ -557,6 +559,21 @@
                                                 <span id="setDetailedAddress"></span>
                                             </div>
                                         </div>
+
+                                        <div class="box box-success">
+                                            <div class="row" id="selectDistributionTime" style="margin-left: 5px;">
+                                                <div class="col-xs-12 col-md-4">
+                                                    <label for="title">
+                                                        配送时间
+                                                    </label>
+                                                    <select name="distributionTime" id="distributionTime" class="form-control select">
+                                                        <option value="-1">选择配送时间</option>
+                                                    </select>
+                                                    <span id="pointDistributionTime" style="color: red">
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <div class="box box-success">
                                             <div class="input-group col-md-6"
                                                  style="margin-top:0px positon:relative">
@@ -585,15 +602,18 @@
                                                 <h4>支付信息</h4>
                                                 <b>客户预存款：</b>
                                                 <span id="stPreDeposit" name="stPreDeposit"></span>
-                                                <input id="usePreDeposit" style="float: right" value="0.00"/>
+                                                <input id="usePreDeposit" style="float: right" value="0.00" onblur="priceBlur('stPreDeposit')"/>
+                                                <span id="pointUsePreDeposit" style="color: red"></span>
                                                 <br><br><br>
                                                 <b>信&nbsp;&nbsp;&nbsp;&nbsp;用&nbsp;&nbsp;&nbsp;&nbsp;金：</b>
                                                 <span id="stCreditMoney" name="stCreditMoney"></span>
-                                                <input id="useCreditMoney" style="float: right" value="0.00"/>
+                                                <input id="useCreditMoney" style="float: right" value="0.00" onblur="priceBlur('stCreditMoney')"/>
+                                                <span id="pointUseCreditMoney" style="color: red"></span>
                                                 <br><br><br>
                                                 <b>现&nbsp;金&nbsp;返&nbsp;利&nbsp;：</b>
                                                 <span id="stSubvention" name="stSubvention"></span>
-                                                <input id="useSubvention" style="float: right" value="0.00"/>
+                                                <input id="useSubvention" style="float: right" value="0.00" onblur="priceBlur('stSubvention')"/>
+                                                <span id="pointUseSubvention" style="color: red"></span>
                                             </div>
                                         </div>
                                     </div>
@@ -2200,7 +2220,7 @@
             //确认订单框
             function openOrderDetail() {
                 document.getElementById('GoodsListTable').innerHTML = "";
-                // document.getElementById("payMsg").style.display="none";
+                 document.getElementById("payMsg").style.display="none";
                 document.getElementById("totalGoodsAmount").innerText = 0.00;
                 document.getElementById("memberDiscount").innerText = 0.00;
                 document.getElementById("promotionDiscount").innerText = 0.00;
@@ -2253,6 +2273,7 @@
                                             "<td><input id='gdsSkuName' type='text' value='" + goodsDetail[i].skuName + "' style='width:90%;border: none;' readonly></td>" +
                                             "<td><input id='gdsQty' type='number' value='" + goodsDetail[i].qty + "' style='width:90%;border: none;' readonly></td>" +
                                             "<td><input id='gdsRetailPrice' type='number' value='" + goodsDetail[i].retailPrice + "' style='width:90%;border: none;' readonly></td>" +
+                                            "<td><input id='gdsVipPrice' type='number' value='" + goodsDetail[i].vipPrice + "' style='width:90%;border: none;' readonly></td>" +
                                             "<td><input id='gdsTye' type='text' value='" + goodsDetail[i].goodsType + "' style='width:90%;border: none;' readonly></td>" +
                                             "</tr>"
 
@@ -2262,6 +2283,7 @@
                                 $("#setReceiverName").text(promotionsListResponse.receiverName);
                                 $("#setReceiverPhone").text(promotionsListResponse.receiverPhone);
 
+                                getDistributionTime(promotionsListResponse.cityName);
 
                                 document.getElementById("totalGoodsAmount").innerText = calulateAmount.totalGoodsAmount;
                                 document.getElementById("memberDiscount").innerText = calulateAmount.memberDiscount;
@@ -2272,7 +2294,7 @@
 
                                 if (null != promotionsListResponse.identityType && 2 == promotionsListResponse.identityType) {
 
-                                    document.getElementById("payMsg").style.display="";
+                                    document.getElementById("payMsg").style.display="block";
 
                                     document.getElementById("stPreDeposit").innerText = calulateAmount.stPreDeposit;
                                     document.getElementById("stCreditMoney").innerText = calulateAmount.stCreditMoney;
@@ -2280,6 +2302,7 @@
                                 }
                             }
                         } else {
+                            $('#giftSelectionBox').modal('hide');
                             $('#orderDetail').modal('hide');
                             $notify.danger(result.message);
 //                             $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
@@ -2361,25 +2384,39 @@
 
             //去支付
             function goPay() {
+                $loading.show();
                 var residenceName = $("#residenceName").val();
                 var estateInfo = $("#estateInfo").val();
                 var detailedAddress = $("#detailedAddress").val();
+                var pointDistributionTime = $("#distributionTime").val();
 
                 var estateInfoLength = getInputLength(estateInfo);
                 var residenceNameLength = getInputLength(residenceName);
                 var detailedAddressLength = getInputLength(detailedAddress);
 
+                if (null == pointDistributionTime || -1 == pointDistributionTime){
+                    $loading.close();
+                    $("#pointDistributionTime").text("请选择配送时间");
+                    return false;
+                }else{
+                    $("#pointDistributionTime").text("");
+                }
+
+
                 if (estateInfoLength > 50) {
+                    $loading.close();
                     $notify.danger('楼盘名称长度超长，请重新输入！');
                     $('#form').bootstrapValidator('disableSubmitButtons', false);
                     return false;
                 }
                 if (detailedAddressLength > 200) {
+                    $loading.close();
                     $notify.danger('详细地址长度超长，请重新输入！');
                     $('#form').bootstrapValidator('disableSubmitButtons', false);
                     return false;
                 }
                 if (residenceNameLength > 50) {
+                    $loading.close();
                     $notify.danger('小区名长度超长，请重新输入！');
                     $('#form').bootstrapValidator('disableSubmitButtons', false);
                     return false;
@@ -2389,18 +2426,40 @@
                 var useSubvention = $("#useSubvention").val();
                 var amountsPayable = $("#amountsPayable").text();
                 var freight = $("#freight").text();
-                var billingMsgString = {
-                    "stPreDeposit": usePreDeposit,
-                    "storeCreditMoney": useCreditMoney,
-                    "storeSubvention": useSubvention
+                var stPreDeposit = $("#stPreDeposit").text();
+                var stCreditMoney = $("#stCreditMoney").text();
+                var stSubvention = $("#stSubvention").text();
+                if (Number(usePreDeposit) > Number(stPreDeposit)){
+                    $loading.close();
+                    $notify.warning("使用客户预存款金额超出可用金额！");
+                    return;
+                }
+                if (Number(useCreditMoney) > Number(stCreditMoney)){
+                    $loading.close();
+                    $notify.warning("使用信用金金额超出可用金额！");
+                    return;
+                }
+                if (Number(useSubvention) > Number(stSubvention)){
+                    $loading.close();
+                    $notify.warning("使用现金返利金额超出可用金额！");
+                    return;
                 }
 
                 if (null != useCreditMoney && useCreditMoney > 0){
                     var totalAmount = (usePreDeposit*100 + useCreditMoney*100 + useSubvention*100)/100;
                     if (totalAmount != amountsPayable){
+                        $loading.close();
+                        $('#giftSelectionBox').modal('hide');
+                        $('#orderDetail').modal('hide');
                         $notify.warning("使用信用金支付必须一次性支付完毕");
                         return;
                     }
+                }
+
+                var billingMsgString = {
+                    "stPreDeposit": usePreDeposit,
+                    "storeCreditMoney": useCreditMoney,
+                    "storeSubvention": useSubvention
                 }
 
 
@@ -2415,6 +2474,7 @@
                 var formData = new FormData($("#form")[0]);
                 formData.append("giftDetails",JSON.stringify(giftDetails));
                 formData.append("billingMsg",JSON.stringify(billingMsgString));
+                formData.append("pointDistributionTime", pointDistributionTime);
 
                 $.ajax({
                     url: url,
@@ -2427,14 +2487,19 @@
                     error: function () {
                         clearTimeout($global.timer);
                         $loading.close();
+                        $('#giftSelectionBox').modal('hide');
+                        $('#orderDetail').modal('hide');
                         $global.timer = null;
                         $notify.danger('网络异常，请稍后重试或联系管理员');
                         $('#form').bootstrapValidator('disableSubmitButtons', false);
                     },
                     success: function (result) {
                         if (0 === result.code) {
-
+                            $loading.close();
+                            window.location.href="/views/admin/order/photo/list";
                         } else {
+                            $loading.close();
+                            $('#giftSelectionBox').modal('hide');
                             $('#orderDetail').modal('hide');
                             $notify.danger(result.message);
 //                             $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
@@ -2442,7 +2507,64 @@
                     }
                 });
             }
-            
+
+            function priceBlur(type) {
+                if ('stPreDeposit' === type){
+                    var stPreDeposit = $("#stPreDeposit").text();
+                    var price = document.getElementById("usePreDeposit").value;
+                    if (Number(price) > Number(stPreDeposit)){
+                        $("#pointUsePreDeposit").text("输入金额大于可使用金额");
+//                        $notify.warning("输入金额大于可使用金额，请重新输入！")
+                        return;
+                    }else{
+                        $("#pointUsePreDeposit").text("");
+                    }
+                }else if ('stCreditMoney' === type){
+                    var stCreditMoney = $("#stCreditMoney").text();
+                    var price = document.getElementById("useCreditMoney").value;
+                    if (Number(price) > Number(stCreditMoney)){
+                        $("#pointUseCreditMoney").text("输入金额大于可使用金额");
+//                        $notify.warning("输入金额大于可使用金额，请重新输入！")
+                        return;
+                    }else{
+                        $("#pointUseCreditMoney").text("");
+                    }
+                }else if ('stSubvention' === type){
+                    var stSubvention = $("#stSubvention").text();
+                    var price = document.getElementById("useSubvention").value;
+                    if (Number(price) > Number(stSubvention)){
+                        $("#pointUseSubvention").text("输入金额大于可使用金额");
+//                        $notify.warning("输入金额大于可使用金额，请重新输入！")
+                        return;
+                    }else{
+                        $("#pointUseSubvention").text("");
+                    }
+                }
+            }
+
+            //获取配送时间
+            function getDistributionTime(cityName) {
+                var distributionTime = "";
+                $.ajax({
+                    url: '/rest/order/photo/get/deliveryTime/'+cityName,
+                    method: 'GET',
+                    error: function () {
+                        clearTimeout($global.timer);
+                        $loading.close();
+                        $global.timer = null;
+                        $notify.danger('网络异常，请稍后重试或联系管理员');
+                    },
+                    success: function (result) {
+                        clearTimeout($global.timer);
+                        var a = result.content;
+                        $.each(a, function (i, item) {
+                            distributionTime += "<option value=" + item + ">" + item + "</option>";
+                        })
+                        $("#distributionTime").append(distributionTime);
+                        $("#distributionTime").selectpicker('refresh');
+                    }
+                });
+            }
         </script>
     </section>
 </div>

@@ -38,6 +38,11 @@ public class MaPhotoOrderGoodsDetailResponse {
     private Double retailPrice;
 
     /**
+     * 会员价
+     */
+    private Double vipPrice;
+
+    /**
      * 数量
      */
     private Integer qty;

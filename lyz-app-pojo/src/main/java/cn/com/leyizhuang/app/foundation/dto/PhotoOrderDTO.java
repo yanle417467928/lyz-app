@@ -89,6 +89,9 @@ public class PhotoOrderDTO implements Serializable {
     //配送方式
     private String sysDeliveryType;
 
+    //配送时间
+    private String pointDistributionTime;
+
     //收款信息
     private String billingMsg;
 }
