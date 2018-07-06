@@ -26,6 +26,7 @@
 <section class="content">
     <div class="box">
         <div class="row" style="margin-top: 1%">
+            <input name="billNo" type="hidden" id="billNo" value="${maFitBillVO.billNo!''}" readonly>
             <div class="col-xs-12">
                 <div class="col-sm-3" style="margin-left: 2%">
                     <h3>账单日期信息</h3>
@@ -79,14 +80,14 @@
                         <li><a href="#tab_1-2" data-toggle="tab" >账单还款记录</a></li>
                     </ul>
                     <div id="toolbar1" class="form-inline ">
-                        <input name="startTime" <#--onchange="findByCondition()"--> type="text"
-                               class="form-control datepicker" id="startTime" style="width: 140px;"
+                        <input name="startTime1" <#--onchange="findByCondition()"--> type="text"
+                               class="form-control datepicker" id="startTime1" style="width: 140px;"
                                placeholder="出货开始时间">
-                        <input name="endTime" <#--onchange="findByCondition()"--> type="text"
-                               class="form-control datepicker" id="endTime" style="width: 140px;"
+                        <input name="endTime1" <#--onchange="findByCondition()"--> type="text"
+                               class="form-control datepicker" id="endTime1" style="width: 140px;"
                                placeholder="出货结束时间">
                         <div class="input-group col-md-3" style="margin-top:0px positon:relative">
-                            <input type="text" name="info" id="info" class="form-control "
+                            <input type="text" name="info1" id="info1" class="form-control "
                                    style="width:auto;" placeholder="请输入订单号" onkeypress="findBykey()">
                             <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
@@ -95,18 +96,18 @@
                         </div>
                     </div>
                     <div id="toolbar2" class="form-inline ">
-                        <input name="startTime" <#--onchange="findByCondition()"--> type="text"
-                               class="form-control datepicker" id="startTime" style="width: 140px;"
-                               placeholder="出货开始时间">
-                        <input name="endTime" <#--onchange="findByCondition()"--> type="text"
-                               class="form-control datepicker" id="endTime" style="width: 140px;"
-                               placeholder="出货结束时间">
+                        <input name="startTime2" onchange="findRepaymentByCondition()" type="text"
+                               class="form-control datepicker" id="startTime2" style="width: 140px;"
+                               placeholder="还款开始时间">
+                        <input name="endTime2" onchange="findRepaymentByCondition()" type="text"
+                               class="form-control datepicker" id="endTime2" style="width: 140px;"
+                               placeholder="还款结束时间">
                         <div class="input-group col-md-3" style="margin-top:0px positon:relative">
-                            <input type="text" name="info" id="info" class="form-control "
-                                   style="width:auto;" placeholder="请输入订单号" onkeypress="findBykey()">
+                            <input type="text" name="info2" id="info2" class="form-control "
+                                   style="width:auto;" placeholder="请输入还款单号" onkeypress="findBykey()">
                             <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
-                                    onclick="findBillByCondition()">查找</button>
+                                    onclick="findRepaymentByCondition()">查找</button>
                            </span>
                         </div>
                     </div>
@@ -128,10 +129,30 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="orderDetail">
+        <div class="modal-dialog" style="width: 50%;">
+            <div class="modal-content message_align">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"
+                            aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">还款订单</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="box-body table-reponsive">
+                        <table id="dataGrid3" class="table table-bordered table-hover">
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 
 
 <script>
+    var billNo = $('#billNo').val();
 
     $(function () {
         inDataGrid1();
@@ -212,12 +233,14 @@
 
     function inDataGrid2() {
         $("#dataGrid2").bootstrapTable('destroy');
-        var guideId = $('#guideId').val();
-        $grid.init($('#dataGrid2'), $('#toolbar2'), '/rest/guideLine/tempCreditChangePage/grid/' + guideId, 'get', false, function (params) {
+        $grid.init($('#dataGrid2'), $('#toolbar2'), '/rest/fitBill/payOrderBill/page/' + billNo, 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
-                keywords: params.search
+                keywords: params.search,
+                startTime: $('#startTime2').val(),
+                endTime:  $('#endTime2').val(),
+                repaymentNo: $('#info2').val()
             }
         }, [{
             checkbox: true,
@@ -228,48 +251,99 @@
                 title: 'ID',
                 align: 'center'
             }, {
-                field: 'tempCreditChangeId.tempCreditLimitChangeAmount',
-                title: '订单日期',
+                field: 'repaymentNo',
+                title: '还款单号',
+                align: 'center',
+                formatter: function (value, row) {
+                    if (null == value) {
+                        return '<a class="scan" href="#">' + '未知' + '</a>';
+                    } else {
+                        return '<a class="scan" href="#" onclick="showDetail(' + '\'' + value + '\'' + ')">' + value + '</a>';
+                    }
+                }
+            }, {
+                field: 'repaymentUserName',
+                title: '还款人',
                 align: 'center'
             }, {
-                field: 'tempCreditChangeId.tempCreditLimitAfterChange',
-                title: '订单出货日',
+                field: 'repaymentSystem',
+                title: '还款系统',
                 align: 'center',
             },
             {
-                field: 'referenceNumber',
+                field: 'repaymentTime',
+                title: '还款时间',
+                align: 'center',
+                formatter: function (value, row) {
+                    if (null == value) {
+                        return '-';
+                    } else if (null != value) {
+                        return formatDateTime(value);
+                    }
+                }
+            },
+            {
+                field: 'totalRepaymentAmount',
+                title: '还款总金额',
+                align: 'center'
+            }
+        ]);
+    }
+
+    function inDataGrid3(repaymentNo) {
+        $("#dataGrid3").bootstrapTable('destroy');
+        $grid.init($('#dataGrid3'), null, '/rest/fitBill/billOrderDetail/page/' + repaymentNo, 'get', false, function (params) {
+            return {
+                offset: params.offset,
+                size: params.limit,
+                keywords: params.search
+            }
+        }, [{
+            checkbox: true,
+            title: '选择'
+        },
+            {
+                field: 'orderTime',
+                title: '订单日期',
+                align: 'center',
+                formatter: function (value, row) {
+                    if (null == value) {
+                        return '-';
+                    } else if (null != value) {
+                        return formatDateTime(value);
+                    }
+                }
+            }, {
+                field: 'shipmentTime',
+                title: '订单出货日',
+                align: 'center',
+                formatter: function (value, row) {
+                    if (null == value) {
+                        return '-';
+                    } else if (null != value) {
+                        return formatDateTime(value);
+                    }
+                }
+            },
+            {
+                field: 'orderNo',
                 title: '订单号',
                 align: 'center'
             },
             {
-                field: 'changeType',
+                field: 'orderCreditMoney',
                 title: '金额',
-                align: 'center',
-                formatter: function (value, row) {
-                    if ('PLACE_ORDER' == value) {
-                        return '订单消费';
-                    } else if ('RETURN_ORDER' == value) {
-                        return '退单返还';
-                    } else if ('CANCEL_ORDER' == value) {
-                        return '取消订单返还';
-                    } else if ('TEMPORARY_ADJUSTMENT' == value) {
-                        return '临时额度调整';
-                    } else if ('ADMIN_RECHARGE' == value) {
-                        return '管理员修改';
-                    } else if ('ORDER_REPAYMENT' == value) {
-                        return '订单还款';
-                    } else if ('TEMPORARY_CLEAR' == value) {
-                        return '临时额度清零';
-                    } else if ('FIXEDAMOUNT_ADJUSTMENT' == value) {
-                        return '固定额度调整';
-                    } else if ('AVALIABLED_CHANGE_BY_FIXE' == value) {
-                        return '可用额度因固定额度调整修改';
-                    } else if ('AVALIABLED_CHANGE_BY_TEMP' == value) {
-                        return '可用额度因临时额度调整修改';
-                    }
-                }
+                align: 'center'
             }
         ]);
+    }
+
+
+    function showDetail(repaymentNo) {
+        inDataGrid3(repaymentNo);
+        $('#payOrderBill').modal('hide');
+        $('#orderDetail').modal('show');
+
     }
 
 
@@ -288,6 +362,16 @@
         second = second < 10 ? ('0' + second) : second;
         return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
     };
+
+    function  findRepaymentByCondition() {
+        inDataGrid2();
+    }
+
+    function findBykey(){
+        if(event.keyCode==13){
+            findRepaymentByCondition();
+        }
+    }
 
 </script>
 </body>

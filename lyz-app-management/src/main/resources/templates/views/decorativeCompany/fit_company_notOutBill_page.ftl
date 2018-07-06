@@ -136,19 +136,10 @@
             title: '账单还款截止日',
             align: 'center'
         }, {
-            field: 'billTotalAmount',
-            title: '账单总额',
-            align: 'center'
-        }, {
             field: 'currentPaidAmount',
             title: '已还金额',
             align: 'center'
-        }, {
-            field: 'currentUnpaidAmount',
-            title: '未还金额',
-            align: 'center'
         }
-
         ]);
     }
 
