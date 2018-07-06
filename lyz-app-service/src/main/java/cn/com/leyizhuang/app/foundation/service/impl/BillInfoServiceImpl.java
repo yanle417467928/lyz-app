@@ -33,10 +33,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author GenerationRoad
@@ -371,7 +368,29 @@ public class BillInfoServiceImpl implements BillInfoService {
 
         // 合并未还清结果集
         beforNotPayOrderDetails.addAll(currentNotPayOrderDetails);
-        // TODO 排序
+        // 排序
+        Collections.sort(beforNotPayOrderDetails, new Comparator<BillRepaymentGoodsInfoResponse>() {
+
+            private Date getshipmentTime(BillRepaymentGoodsInfoResponse m) {
+                if (m == null || m.getShipmentTime() == null)
+                    return null;
+                return m.getShipmentTime();
+            }
+
+            @Override
+            public int compare(BillRepaymentGoodsInfoResponse o1, BillRepaymentGoodsInfoResponse o2) {
+                Date d1 = getshipmentTime(o1);
+                Date d2 = getshipmentTime(o2);
+                if (d1 == null && d2 == null)
+                    return 0;
+
+                if (d1 == null)
+                    return -1;
+                if (d2 == null)
+                    return 1;
+                return d1.compareTo(d2);
+            }
+        });
         response.setNotPayOrderDetails(beforNotPayOrderDetails);
 
         currentPaidOrderDetails.addAll(currentNotPayOrderDetails); // 合并本期已还和未还订单
@@ -879,14 +898,15 @@ public class BillInfoServiceImpl implements BillInfoService {
                 //加信用金
                 for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                     StoreCreditMoney storeCreditMoney = this.appStoreService.findStoreCreditMoneyByStoreId(billInfoDO.getStoreId());
+                    Double balance = CountUtil.sub(totalRepaymentAmount,totalIntersAmount);
                     if (null != storeCreditMoney) {
                         int affectLine = appStoreService.updateStoreCreditByStoreIdAndVersion(
-                                billInfoDO.getStoreId(), totalIntersAmount, storeCreditMoney.getLastUpdateTime());
+                                billInfoDO.getStoreId(),balance, storeCreditMoney.getLastUpdateTime());
                         if (affectLine > 0) {
                             StoreCreditMoneyChangeLog log = new StoreCreditMoneyChangeLog();
                             log.setStoreId(storeCreditMoney.getStoreId());
-                            log.setChangeAmount(totalIntersAmount);
-                            log.setCreditLimitAvailableAfterChange(storeCreditMoney.getCreditLimitAvailable() + totalIntersAmount);
+                            log.setChangeAmount(balance);
+                            log.setCreditLimitAvailableAfterChange(storeCreditMoney.getCreditLimitAvailable() + balance);
                             log.setCreateTime(Calendar.getInstance().getTime());
                             log.setChangeType(StoreCreditMoneyChangeType.REPAYMENT);
                             log.setChangeTypeDesc(StoreCreditMoneyChangeType.REPAYMENT.getDescription());
