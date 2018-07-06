@@ -372,7 +372,7 @@ public class BillInfoServiceImpl implements BillInfoService {
         response.setPaidOrderDetails(repaymentResponseList);
 
         // 合并未还清结果集
-        beforNotPayOrderDetails.addAll(currentNotPayOrderDetails);
+        beforNotPayOrderDetails.addAll(currentNotPayOrderDetails == null ? new ArrayList<>() : currentNotPayOrderDetails);
         // 排序
         Collections.sort(beforNotPayOrderDetails, new Comparator<BillRepaymentGoodsInfoResponse>() {
 
@@ -398,7 +398,7 @@ public class BillInfoServiceImpl implements BillInfoService {
         });
         response.setNotPayOrderDetails(beforNotPayOrderDetails);
 
-        currentPaidOrderDetails.addAll(currentNotPayOrderDetails); // 合并本期已还和未还订单
+        currentPaidOrderDetails.addAll(currentNotPayOrderDetails == null ? new ArrayList<>() : currentNotPayOrderDetails); // 合并本期已还和未还订单
         currentBillAmount = this.AddAllPositiveCreditMoney(currentPaidOrderDetails);
         currentAdjustmentAmount = this.AddAllNegativeCreditMoney(currentPaidOrderDetails);
 
@@ -589,7 +589,7 @@ public class BillInfoServiceImpl implements BillInfoService {
             currentNotPay = this.AddAllCreditMoney(currentNotPayOrderDetails);
             beforNotPay = this.AddAllCreditMoney(beforNotPayOrderDetails);
 
-            currentPaidOrderDetails.addAll(currentNotPayOrderDetails); // 合并本期已还和未还订单
+            currentPaidOrderDetails.addAll(currentNotPayOrderDetails  == null ? new ArrayList<>() : currentNotPayOrderDetails); // 合并本期已还和未还订单
             currentBillAmount = this.AddAllPositiveCreditMoney(currentPaidOrderDetails);
             currentAdjustmentAmount = this.AddAllNegativeCreditMoney(currentPaidOrderDetails);
 
@@ -834,7 +834,7 @@ public class BillInfoServiceImpl implements BillInfoService {
             billRepaymentDAO.saveBillRepayment(repaymentInfoDO);
 
             // 合并 订单 和 退单
-            billOrderList.addAll(billReturnOrderList);
+            billOrderList.addAll(billReturnOrderList == null ? new ArrayList<>() : billReturnOrderList);
             List<BillRepaymentGoodsDetailsDO> billRepaymentGoodsDetailsDOList = new ArrayList<>();
             billRepaymentGoodsDetailsDOList = BillRepaymentGoodsInfoResponse.transfer(billOrderList);
 
