@@ -160,6 +160,8 @@
         <if test="null !=repaymentNo">
             AND repayment_no like concat('%',#{repaymentNo},'%')
         </if>
+        AND
+        b.is_paid !=0
         ORDER BY b.id DESC
     </select>
 

@@ -53,20 +53,20 @@
                 <div class="col-sm-3">
                     <h3>本期账单信息</h3>
                     <p>
-                        <span>本期调整金额:</span>
+                        <span>本期退款金额:&nbsp;&nbsp;&nbsp;&nbsp;</span>
                         <span id="currentAdjustmentAmount"></span><br/>
-                        <span>本期账单金额:</span>
+                        <span>本期账单金额:&nbsp;&nbsp;&nbsp;&nbsp;</span>
                         <span id="currentBillAmount"></span><br/>
-                        <span>本期已还金额:</span>
+                        <span>本期已还款金额:</span>
                         <span id="currentPaidAmount"></span>
                     </p>
                 </div>
                 <div class="col-sm-2">
                     <h3>账单汇总信息</h3>
                     <p>
-                        <span>账单总金额:</span>
+                        <span>本期应还:</span>
                         <span style="color: red;font-weight:bold" id="billTotalAmount"></span><br/>
-                        <span>剩&nbsp;余&nbsp;应&nbsp;还&nbsp;:</span>
+                        <span>剩余应还:</span>
                         <span style="color: red;font-weight:bold" id="remainAmount"></span>
                     </p>
                 </div>

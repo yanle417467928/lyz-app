@@ -51,7 +51,7 @@
                 <div class="col-sm-3">
                     <h3>本期账单信息</h3>
                     <p>
-                        <span>本期调整金额:</span>
+                        <span>本期退款金额:</span>
                         <span>${maFitBillVO.currentAdjustmentAmount!''}</span><br/>
                         <span>本期账单金额:</span>
                         <span>${maFitBillVO.currentBillAmount!''}</span><br/>
