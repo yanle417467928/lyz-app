@@ -808,9 +808,11 @@ public class BillInfoServiceImpl implements BillInfoService {
             }
 
             // 本次还款订单
-            List<BillRepaymentGoodsInfoResponse> billOrderList = this.getCurrentOrderDetailsByOrderNo(orderIds,storeId);
+            List<BillRepaymentGoodsInfoResponse> billOrderList = new ArrayList<>();
+            billOrderList = this.getCurrentOrderDetailsByOrderNo(orderIds,storeId);
             // 本次还款中的退单
-            List<BillRepaymentGoodsInfoResponse> billReturnOrderList = this.getCurrentOrderDetailsByReturnNo(returnIds,storeId);
+            List<BillRepaymentGoodsInfoResponse> billReturnOrderList = new ArrayList<>();
+            billReturnOrderList = this.getCurrentOrderDetailsByReturnNo(returnIds,storeId);
 
             // 本次还款中上期订单
             List<BillRepaymentGoodsInfoResponse> pirorOrderList = new ArrayList<>();

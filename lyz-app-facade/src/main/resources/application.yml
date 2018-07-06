@@ -94,7 +94,7 @@ spring:
   datasource:
     druid:
       config:
-        url: jdbc:mysql://localhost:3306/lyz_app?useUnicode=true&characterEncoding=utf-8&autoReconnect=true&useSSL=false
+        url: jdbc:mysql://eqtest.leyizhuang.com.cn:3306/lyz_app?useUnicode=true&characterEncoding=utf-8&autoReconnect=true&useSSL=false
         username: root
         password: root
         initial-size: 10
