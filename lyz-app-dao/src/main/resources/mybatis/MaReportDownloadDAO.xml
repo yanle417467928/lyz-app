@@ -1238,14 +1238,14 @@
         IFNULL(unit_price, 0) wholesalePrice, IFNULL(unit_price, 0) * IFNULL(quantity, 0) wholesaleTotlePrice
         FROM
         ord_jx_price_difference_return_details
-        WHERE ord_no = #{orderNumber} AND sku = #{sku}
+        WHERE ord_no = #{orderNumber} AND sku = #{sku} and goods_line_type = #{goodsLineType}
         GROUP BY sku
         UNION
         SELECT
         IFNULL(unit_price, 0) wholesalePrice, IFNULL(unit_price, 0) * IFNULL(return_qty, 0) wholesaleTotlePrice
         FROM
         ord_return_jx_price_difference_return_details
-        WHERE return_no = #{orderNumber} AND sku = #{sku}
+        WHERE return_no = #{orderNumber} AND sku = #{sku} and goods_line_type = #{goodsLineType}
         GROUP BY sku
     </select>
 

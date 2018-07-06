@@ -53,7 +53,9 @@ public interface MaReportDownloadDAO {
 
     List<StoreInventory> findStoreInventorys(@Param("storeId") Long storeId, @Param("list") List<Long> storeIds);
 
-    AccountGoodsItemsDO getJxPriceByOrderNoAndSku(@Param("orderNumber") String orderNumber, @Param("sku") String sku);
+    AccountGoodsItemsDO getJxPriceByOrderNoAndSku(@Param("orderNumber") String orderNumber,
+                                                  @Param("sku") String sku,
+                                                  @Param("goodsLineType") String goodsLineType);
 
 
 

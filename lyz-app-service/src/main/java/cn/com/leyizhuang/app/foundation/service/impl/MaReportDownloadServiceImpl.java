@@ -354,8 +354,8 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
     }
 
     @Override
-    public AccountGoodsItemsDO getJxPriceByOrderNoAndSku(String orderNumber, String sku) {
-        return this.maReportDownloadDAO.getJxPriceByOrderNoAndSku(orderNumber, sku);
+    public AccountGoodsItemsDO getJxPriceByOrderNoAndSku(String orderNumber, String sku,String goodsLineType) {
+        return this.maReportDownloadDAO.getJxPriceByOrderNoAndSku(orderNumber, sku,goodsLineType);
     }
 
     @Override
