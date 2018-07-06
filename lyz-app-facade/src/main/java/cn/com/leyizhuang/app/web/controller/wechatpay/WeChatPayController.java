@@ -588,6 +588,8 @@ public class WeChatPayController {
 
         PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo, repaymentNo, identityType, AppApplicationConstant.wechatReturnUrlAsnyc,
                 totalFeeParse, PaymentDataStatus.WAIT_PAY, OnlinePayType.WE_CHAT, "账单还款");
+        paymentDataDO.setPaymentType(PaymentDataType.BILLPAY);
+        paymentDataDO.setPaymentTypeDesc(PaymentDataType.BILLPAY.getDescription());
         this.paymentDataService.save(paymentDataDO);
 
         try {

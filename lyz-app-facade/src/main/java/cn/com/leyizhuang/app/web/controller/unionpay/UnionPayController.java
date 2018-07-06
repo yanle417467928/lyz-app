@@ -566,8 +566,8 @@ public class UnionPayController {
             PaymentDataDO paymentData = new PaymentDataDO();
             paymentData.setUserId(userId);
             paymentData.setOnlinePayType(OnlinePayType.UNION_PAY);
-            paymentData.setPaymentType(PaymentDataType.ORDER);
-            paymentData.setPaymentTypeDesc(PaymentDataType.ORDER.getDescription());
+            paymentData.setPaymentType(PaymentDataType.BILLPAY);
+            paymentData.setPaymentTypeDesc(PaymentDataType.BILLPAY.getDescription());
             paymentData.setAppIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
             paymentData.setCreateTime(LocalDateTime.now());
             paymentData.setOutTradeNo(outTradeNo);
