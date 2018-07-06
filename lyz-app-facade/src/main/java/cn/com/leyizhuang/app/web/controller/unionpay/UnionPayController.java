@@ -10,6 +10,7 @@ import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.PaymentDataDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
+import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeOrder;
 import cn.com.leyizhuang.app.foundation.pojo.recharge.RechargeReceiptInfo;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.remote.queue.SinkSender;
@@ -75,7 +76,7 @@ public class UnionPayController {
     private BillInfoService billInfoService;
 
     /**
-     * 订单银联支付
+     * 订单银联订单支付
      *
      * @param userId        用户id
      * @param identityType  用户身份
@@ -143,6 +144,88 @@ public class UnionPayController {
         }
     }
 
+    /**
+     * 银联充值支付
+     *
+     * @param userId        用户id
+     * @param identityType  用户身份
+     * @param payableAmount 支付金额（单位 RMB 元）
+     * @param cityId        城市id
+     * @param response      响应对象
+     * @return 银联支付请求html
+     */
+    @PostMapping(value = "/recharge/pay/html", produces = "application/json")
+    public ResultDTO rechargeUnionPayHtml(Long userId, Integer identityType, Double payableAmount,Long cityId, HttpServletResponse response) {
+
+        logger.info("orderUnionPay CALLED,订单银联支付信息提交,入参 userId:{}, identityType:{}, payableAmount:{},cityId{}",
+                userId, identityType, payableAmount,cityId);
+        ResultDTO<String> resultDTO;
+        if (null == userId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+            logger.info("orderUnionPay OUT,订单银联支付信息提交失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("orderUnionPay OUT,订单银联支付信息提交失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (!(null != payableAmount && payableAmount > 0)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "支付金额不正确！", null);
+            logger.info("orderUnionPay OUT,订单银联支付信息提交失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (cityId == null){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市信息不正确！", null);
+            logger.info("orderUnionPay OUT,订单银联支付信息提交失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            // 创建充值点单
+            String totalFee = CountUtil.retainTwoDecimalPlaces(payableAmount);
+            String outTradeNo = OrderUtils.generateRechargeNumber(cityId);
+
+            RechargeOrder rechargeOrder = rechargeService.createRechargeOrder(identityType, userId, payableAmount, outTradeNo);
+            rechargeService.saveRechargeOrder(rechargeOrder);
+
+            PaymentDataDO paymentData = new PaymentDataDO();
+            paymentData.setUserId(userId);
+            paymentData.setOnlinePayType(OnlinePayType.UNION_PAY);
+            if (identityType.equals(0)){
+                paymentData.setPaymentType(PaymentDataType.ST_PRE_DEPOSIT);
+                paymentData.setPaymentTypeDesc(PaymentDataType.ST_PRE_DEPOSIT.getDescription());
+            }else if (identityType.equals(2)){
+                paymentData.setPaymentType(PaymentDataType.DEC_PRE_DEPOSIT);
+                paymentData.setPaymentTypeDesc(PaymentDataType.DEC_PRE_DEPOSIT.getDescription());
+            }else if (identityType.equals(6)){
+                paymentData.setPaymentType(PaymentDataType.CUS_PRE_DEPOSIT);
+                paymentData.setPaymentTypeDesc(PaymentDataType.CUS_PRE_DEPOSIT.getDescription());
+            }
+
+            paymentData.setAppIdentityType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+            paymentData.setCreateTime(LocalDateTime.now());
+            paymentData.setOutTradeNo(outTradeNo);
+            paymentData.setOrderNumber(rechargeOrder.getRechargeNo());
+            paymentData.setTotalFee(Double.parseDouble(totalFee));
+            paymentData.setTradeStatus(PaymentDataStatus.WAIT_PAY);
+            paymentData.setNotifyUrl(AppApplicationConstant.unionPayAsyncUrlBack);
+            paymentDataService.save(paymentData);
+
+            //生成银联支付请求html
+            String html = this.generatePaymentHtml(payableAmount, outTradeNo);
+
+            LogUtil.writeLog("打印请求HTML，此为请求报文，为联调排查问题的依据：" + html);
+
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, html);
+            response.getWriter().write(resultDTO.getContent());
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.info("银联支付订单发生异常:" + e);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "银联支付订单发生异常", null);
+            return resultDTO;
+        }
+    }
 
     /**
      * 银联支付异步通知(后台通知)
