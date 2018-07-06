@@ -308,6 +308,10 @@ public class BillInfoServiceImpl implements BillInfoService {
             if (billInfoDO == null) {
                 billInfoDO = this.createBillInfo(storeid);
             }
+
+            if (billInfoDO == null){
+                return  response;
+            }
         }
 
         response = BillInfoDO.transfer(billInfoDO);

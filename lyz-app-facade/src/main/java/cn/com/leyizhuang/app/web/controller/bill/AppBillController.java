@@ -139,6 +139,13 @@ public class AppBillController {
             }
 
             BillInfoResponse response = billInfoService.lookBill(startTime, endTime, storeId, page, size);
+
+            if (response.getBillNo() == null){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "请联系管理员，创建账单规则！", null);
+                logger.info("lookBill OUT,查看账单失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "查询成功", response);
             logger.info("lookBill CALLED,查看账单接口成功 出参 resultDTO:{}",resultDTO);
             return resultDTO;
