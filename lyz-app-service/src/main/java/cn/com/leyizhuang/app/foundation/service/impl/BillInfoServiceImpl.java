@@ -331,6 +331,7 @@ public class BillInfoServiceImpl implements BillInfoService {
         billStartTime = instant.atZone(zone).toLocalDateTime();
         Instant instant2 = billInfoDO.getBillEndDate().toInstant();
         billEndTime = instant2.atZone(zone).toLocalDateTime();
+        billEndTime = LocalDateTime.of(billEndTime.getYear(),billEndTime.getMonth(),billEndTime.getDayOfMonth(),23,59,59);
 
         // 设置客户选择时间范围
         if (starTime != null && starTime.isAfter(billStartTime) && starTime.isBefore(billEndTime)) {
