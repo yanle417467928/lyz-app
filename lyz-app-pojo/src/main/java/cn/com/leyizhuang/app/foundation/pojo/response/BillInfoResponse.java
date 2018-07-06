@@ -57,7 +57,7 @@ public class BillInfoResponse {
     // 未还订单明细
     List<BillRepaymentGoodsInfoResponse> notPayOrderDetails;
     // 已支付订单那明细
-    List<BillRepaymentGoodsInfoResponse> paidOrderDetails;
+    List<BillRepaymentResponse> paidOrderDetails;
 
     @JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
     public Date getBillStartDate() {
