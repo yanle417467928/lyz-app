@@ -322,7 +322,6 @@ public class MaFitBillRestController extends BaseRestController {
         ResultDTO<String> resultDTO;
         if (null != billNo) {
             try {
-
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "后台账单下载成功！", null);
             } catch (Exception e) {
                 e.printStackTrace();

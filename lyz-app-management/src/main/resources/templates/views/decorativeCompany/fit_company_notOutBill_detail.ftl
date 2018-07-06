@@ -34,40 +34,40 @@
                     <h3>账单日期信息</h3>
                     <p>
                         <span>账单开始日期:</span>
-                        <span id = "billStartDate"></span><br/>
+                        <span id="billStartDate"></span><br/>
                         <span>账单结束日期:</span>
-                        <span id = "billEndDate"></span><br/>
-                        <span >还款截止日期:</span>
-                        <span style="color: red;font-weight:bold" id = "repaymentDeadlineDate"></span>
+                        <span id="billEndDate"></span><br/>
+                        <span>还款截止日期:</span>
+                        <span style="color: red;font-weight:bold" id="repaymentDeadlineDate"></span>
                     </p>
                 </div>
                 <div class="col-sm-3">
                     <h3>上期账单信息</h3>
                     <p>
                         <span>上&nbsp;期&nbsp;滞&nbsp;纳&nbsp;金:</span>
-                        <span id = "priorNotPaidInterestAmount"></span><br/>
+                        <span id="priorNotPaidInterestAmount"></span><br/>
                         <span>上期未还金额:</span>
-                        <span id = "priorNotPaidBillAmount"></span><br/>
+                        <span id="priorNotPaidBillAmount"></span><br/>
                     </p>
                 </div>
                 <div class="col-sm-3">
                     <h3>本期账单信息</h3>
                     <p>
                         <span>本期调整金额:</span>
-                        <span id = "currentAdjustmentAmount"></span><br/>
+                        <span id="currentAdjustmentAmount"></span><br/>
                         <span>本期账单金额:</span>
-                        <span id = "currentBillAmount"></span><br/>
+                        <span id="currentBillAmount"></span><br/>
                         <span>本期已还金额:</span>
-                        <span id = "currentPaidAmount"></span>
+                        <span id="currentPaidAmount"></span>
                     </p>
                 </div>
                 <div class="col-sm-2">
                     <h3>账单汇总信息</h3>
                     <p>
                         <span>账单总金额:</span>
-                        <span style="color: red;font-weight:bold" id = "billTotalAmount"></span><br/>
-                        <span>本&nbsp;期&nbsp;应&nbsp;还:&nbsp;</span>
-                        <span style="color: red;font-weight:bold" id = "billTotalAmount"></span><br/>
+                        <span style="color: red;font-weight:bold" id="billTotalAmount"></span><br/>
+                        <span>剩&nbsp;余&nbsp;应&nbsp;还&nbsp;:</span>
+                        <span style="color: red;font-weight:bold" id="remainAmount"></span>
                     </p>
                 </div>
             </div>
@@ -220,7 +220,7 @@
     </div>
 
     <div class="modal fade" id="orderDetail">
-        <div class="modal-dialog" style="width: 50%;">
+        <div class="modal-dialog" style="width: 60%;">
             <div class="modal-content message_align">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"
@@ -246,7 +246,6 @@
     var storeId = $('#storeId').val();
     var ids = [];
     var billorderDetailsRequest = new Array();
-    var billNo = $('#billNo').val();
     reload();
     $(function () {
         inDataGrid1();
@@ -330,30 +329,48 @@
             var repaymentTime = $("#repaymentTime").val();
             var amount = $("#amount").val();
             var storeId = $("#storeId").val();
-            var totalAmount = cashMoney + posMoney + otherMoney;
+            var billNo = $("#billNo").val();
+            if (null == cashMoney || '' == cashMoney) {
+                cashMoney = 0
+            }
+            if (null == posMoney || '' == posMoney) {
+                posMoney = 0
+            }
+            if (null == otherMoney || '' == otherMoney) {
+                otherMoney = 0
+            }
+            var totalAmount = parseFloat(cashMoney) + parseFloat(posMoney) + parseFloat(otherMoney);
             var bv = form.data('bootstrapValidator');
             bv.validate();
-            var data = {
-                'cashMoney': cashMoney,
-                'posMoney': posMoney,
-                'otherMoney': otherMoney,
-                'posNumber': posNumber,
-                'repaymentTime': repaymentTime,
-                'billNo':billNo,
-                'billorderDetailsRequest': JSON.stringify(billorderDetailsRequest)
-            };
+            var data = {};
+            data["cashMoney"] = cashMoney;
+            data["posMoney"] = posMoney;
+            data["otherMoney"] = otherMoney;
+            data["posNumber"] = posNumber;
+            data["repaymentTime"] = repaymentTime;
+            data["billNo"] = billNo;
+            data["billorderDetailsRequest"] = JSON.stringify(billorderDetailsRequest);
             if (bv.isValid()) {
                 if (totalAmount != amount) {
+                    $("#message").empty();
                     $("#message").html('填写总金额不等于应收金额,请检查');
                     return;
                 } else {
                     $("#message").empty();
+                }
+                if (null != posMoney && '' != posMoney) {
+                    if (null == posNumber || '' == posNumber) {
+                        $("#message").empty();
+                        $("#message").html('请填写pos流水号');
+                        return;
+                    }
                 }
                 if (null === $global.timer) {
                     $global.timer = setTimeout($loading.show, 2000);
                     $.ajax({
                         url: '/rest/fitBill/payBill',
                         async: false,
+                        processData: true,
                         type: 'GET',
                         data: data,
                         success: function (result) {
@@ -397,17 +414,25 @@
             }
         }, [{
             checkbox: true,
-            title: '选择'
+            title: '选择',
+            formatter: function (value, row) {
+                if (null != row.returnNo && '' != row.returnNo) {
+                    return {
+                        disabled: true,//设置是否可用
+                        checked: true//设置选中
+                    };
+                }
+            }
         }, {
             field: 'orderId',
             title: 'ID',
             align: 'center',
-            visible:false
+            visible: false
         }, {
             field: 'orderType',
             title: 'orderType',
             align: 'center',
-            visible:false
+            visible: false
         }, {
             field: 'orderTime',
             title: '订单日期',
@@ -445,34 +470,36 @@
                 }
             }
         ]);
-        getBillInfo()
+        getBillInfo();
     }
 
 
-    function getBillInfo(){
+    function getBillInfo() {
         var data = {
             'startTime': $('#startTime1').val(),
             'endTime': $('#endTime1').val(),
-            'storeId':storeId,
+            'storeId': storeId,
         };
         $.ajax({
             url: '/rest/fitBill/billInfo',
-            async: true,
+            async: false,
             type: 'GET',
             data: data,
             success: function (result) {
-               if (result.code == 0) {repaymentDeadlineDate
-                $("#billStartDate").html( result.content.billStartDate);
-                $("#billEndDate").html(result.content.billEndDate);
-                $("#repaymentDeadlineDate").html( result.content.repaymentDeadlineDate);
-                $("#priorNotPaidInterestAmount").html('￥'+result.content.priorNotPaidInterestAmount);
-                $("#priorNotPaidBillAmount").html('￥'+result.content.priorNotPaidBillAmount);
-                $("#currentAdjustmentAmount").html('￥'+result.content.currentAdjustmentAmount);
-                $("#currentBillAmount").html('￥'+result.content.currentBillAmount);
-                $("#currentPaidAmount").html('￥'+result.content.currentPaidAmount);
-                $("#billTotalAmount").html('￥'+result.content.billTotalAmount);
-                $("#billTotalAmount").html('￥'+result.content.billTotalAmount);
-                $("#billNo").html('￥'+result.content.billNo);
+                if (result.code == 0) {
+                    repaymentDeadlineDate
+                    $("#billStartDate").html(result.content.billStartDate);
+                    $("#billEndDate").html(result.content.billEndDate);
+                    $("#repaymentDeadlineDate").html(result.content.repaymentDeadlineDate);
+                    $("#priorNotPaidInterestAmount").html('￥' + result.content.priorNotPaidInterestAmount);
+                    $("#priorNotPaidBillAmount").html('￥' + result.content.priorNotPaidBillAmount);
+                    $("#currentAdjustmentAmount").html('￥' + result.content.currentAdjustmentAmount);
+                    $("#currentBillAmount").html('￥' + result.content.currentBillAmount);
+                    $("#currentPaidAmount").html('￥' + result.content.currentPaidAmount);
+                    $("#billTotalAmount").html('￥' + result.content.billTotalAmount);
+                    $("#billTotalAmount").html('￥' + result.content.billTotalAmount);
+                    $("#billNo").val("" + result.content.billNo);
+                    $("#remainAmount").html('￥' + accAdd(result.content.priorNotPaidInterestAmount, accAdd(result.content.currentUnpaidAmount, result.content.priorNotPaidBillAmount)));
                 }
             },
             error: function () {
@@ -486,6 +513,7 @@
 
 
     function inDataGrid2() {
+        var billNo = $("#billNo").val();
         $("#dataGrid2").bootstrapTable('destroy');
         $grid.init($('#dataGrid2'), $('#toolbar2'), '/rest/fitBill/payOrderBill/page/' + billNo, 'get', false, function (params) {
             return {
@@ -523,6 +551,13 @@
                 field: 'repaymentSystem',
                 title: '还款系统',
                 align: 'center',
+                formatter: function (value, row) {
+                    if ('MANAGE' == value) {
+                        return '后台';
+                    } else {
+                        return 'APP';
+                    }
+                }
             },
             {
                 field: 'repaymentTime',
@@ -588,7 +623,12 @@
                 field: 'orderCreditMoney',
                 title: '金额',
                 align: 'center'
+            }, {
+                field: 'interestAmount',
+                title: '滞纳金',
+                align: 'center'
             }
+
         ]);
     }
 
@@ -634,10 +674,11 @@
             var data = selected[i];
             //ids.push(data.ordId)
             billorderDetailsRequest.push({
-                id:data.orderId,
-                orderNo:data.orderNo,
-                returnNo:data.returnNo,
-                orderType:data.orderType})
+                id: data.orderId,
+                orderNo: data.orderNo,
+                returnNo: data.returnNo,
+                orderType: data.orderType
+            })
             amountBill = accAdd(amountBill, data.orderCreditMoney);
             amountBill = accAdd(amountBill, data.interestAmount);
         }
@@ -667,6 +708,14 @@
         var startTime1 = $('#startTime1').val();
         var endTime1 = $('#endTime1').val();
         var info1 = $('#info1').val();
+        var billStartDate = $('#billStartDate').html();
+        if (endTime1 != null && endTime1 != '') {
+            if (endTime1 < billStartDate) {
+                $notify.danger('请选择大于账单开始日期的出货结束日期');
+                return;
+            }
+        }
+
         if (startTime1 == null || startTime1 == '') {
             var a = 0
         }
@@ -681,6 +730,7 @@
         } else {
             inDataGrid1();
         }
+        ;
     }
 
 
