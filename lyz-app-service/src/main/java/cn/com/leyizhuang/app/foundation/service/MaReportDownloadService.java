@@ -49,7 +49,7 @@ public interface MaReportDownloadService {
 
     List<StoreInventory> downloadStoreInventorys(Long storeId, List<Long> storeIds);
 
-    AccountGoodsItemsDO getJxPriceByOrderNoAndSku(String orderNumber, String sku);
+    AccountGoodsItemsDO getJxPriceByOrderNoAndSku(String orderNumber, String sku,String goodsLineType);
 
     List<ShipmentAndReturnGoods> downShipmentAndReturnOrder(Long cityId, Long storeId, String storeType, String startTime, String endTime,
 
