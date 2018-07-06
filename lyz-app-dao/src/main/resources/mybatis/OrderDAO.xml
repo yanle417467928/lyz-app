@@ -1845,6 +1845,7 @@
         ob.delivery_type != "PRODUCT_COUPON"
          and s.store_type = 'JM'
         and ob.create_time > '2018-05-01 00:00:00'
+        and ob.create_time &lt; '2018-06-30 23:59:59'
         and ob.`status` = 'FINISHED';
     </select>
 

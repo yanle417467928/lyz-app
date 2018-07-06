@@ -147,7 +147,7 @@ public class AppBillController {
             }
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "查询成功", response);
-            logger.info("lookBill CALLED,查看账单接口成功 出参 resultDTO:{}",resultDTO);
+            logger.info("lookBill CALLED,查看账单接口成功 出参 未还账单条数："+ response.getNotPayOrderDetails().size());
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
@@ -166,7 +166,7 @@ public class AppBillController {
      */
     @PostMapping(value = "/pay/page", produces = "application/json;charset=UTF-8")
     public ResultDTO<BillPayPageResponse> toPayPage(BillPayRequest billPayRequest) {
-        logger.info("lookBill CALLED,查看账单接口,入参 billPayRequest:{}",billPayRequest);
+        logger.info("toPayPage CALLED,查看账单接口,入参 billPayRequest:{}",billPayRequest);
         ResultDTO<BillPayPageResponse> resultDTO;
         try {
 
@@ -285,7 +285,7 @@ public class AppBillController {
             response.setBillNo(billPayRequest.getBillNo());
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "查询成功", response);
-            logger.info("toPayPage OUT,账单还款跳转支付页面成功，出参 resultDTO:{}", resultDTO);
+            logger.info("toPayPage OUT,账单还款跳转支付页面成功" );
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
@@ -303,7 +303,7 @@ public class AppBillController {
      */
     @PostMapping(value = "/pay", produces = "application/json;charset=UTF-8")
     public ResultDTO<String> payBill(BillPayRequest billPayRequest) {
-        logger.info("lookBill CALLED,查看账单接口,入参 billPayRequest:{}",billPayRequest);
+        logger.info("payBill CALLED,查看账单接口,入参 billPayRequest:{}",billPayRequest);
         ResultDTO<String> resultDTO;
         try {
 
@@ -381,7 +381,7 @@ public class AppBillController {
             // 应支付金额
             Double totalPayAmount = billInfoService.calculatePayAmount(storeId, billorderDetailsRequests);
             BillRepaymentInfoDO repaymentInfoDO = new BillRepaymentInfoDO();
-            if (totalPayAmount.equals(payStPreDeposit) || payStPreDeposit.equals(0D)){
+            if (totalPayAmount.equals(payStPreDeposit) || payStPreDeposit.equals(0D) || totalPayAmount < 0D){
                 // 付清
                 repaymentInfoDO = billInfoService.createRepayMentInfo(storeId,billPayRequest.getUserId(),"app",billorderDetailsRequests,payStPreDeposit,0D,0D,totalPayAmount,"",0D,billPayRequest.getBillNo());
             }else if (totalPayAmount > payStPreDeposit){
@@ -399,8 +399,12 @@ public class AppBillController {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "支付成功", repaymentInfoDO.getRepaymentNo());
                 logger.info("payBill OUT,账单还款支付成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
-            }else if (payStPreDeposit.equals(0D)){
+            }else if (payStPreDeposit.equals(0D) && totalPayAmount > 0D){
                 resultDTO = new ResultDTO<>(CommonGlobal.PAGEABLE_DEFAULT_PAGE, "请使用第三方支付", repaymentInfoDO.getRepaymentNo());
+                logger.info("payBill OUT,账单还款支付成功，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }else if (payStPreDeposit.equals(0D) && totalPayAmount < 0D){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "支付成功", repaymentInfoDO.getRepaymentNo());
                 logger.info("payBill OUT,账单还款支付成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }else {
