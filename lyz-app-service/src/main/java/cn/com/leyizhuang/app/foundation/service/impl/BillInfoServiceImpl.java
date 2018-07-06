@@ -841,7 +841,6 @@ public class BillInfoServiceImpl implements BillInfoService {
             for (BillRepaymentGoodsDetailsDO detailsDO: billRepaymentGoodsDetailsDOList){
                 detailsDO.setRepaymentNo(repaymentInfoDO.getRepaymentNo());
                 detailsDO.setRepaymentId(repaymentInfoDO.getId());
-
                 billRepaymentDAO.saveBillRepaymentGoodsDetails(detailsDO);
             }
 

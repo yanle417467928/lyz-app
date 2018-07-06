@@ -235,8 +235,8 @@
         SELECT
         gid,
         sku,
-        retail_price
-        min(ip_price)AS vip_price
+        retail_price,
+        min(vip_price)AS vip_price
         FROM gds_goods_price
         WHERE store_id = #{storeId}
         AND sku in
