@@ -27,6 +27,10 @@ public class BillRepaymentGoodsDetailsVO {
     private Date orderTime;
     //出货/反配时间
     private Date shipmentTime;
+    //滞纳金
+    private Double interestAmount;
+    //总金额
+    private Double totalAmount;
 
     public static final BillRepaymentGoodsDetailsVO transfrom(BillRepaymentGoodsDetailsDO billRepaymentGoodsDetailsDO){
         if(null !=billRepaymentGoodsDetailsDO){
@@ -36,6 +40,16 @@ public class BillRepaymentGoodsDetailsVO {
             billRepaymentGoodsDetailsVO.setOrderNo(billRepaymentGoodsDetailsDO.getOrderNo());
             billRepaymentGoodsDetailsVO.setOrderTime(billRepaymentGoodsDetailsDO.getOrderTime());
             billRepaymentGoodsDetailsVO.setShipmentTime(billRepaymentGoodsDetailsDO.getShipmentTime());
+            billRepaymentGoodsDetailsVO.setInterestAmount(billRepaymentGoodsDetailsDO.getInterestAmount());
+            if(null !=billRepaymentGoodsDetailsDO.getInterestAmount() && null != billRepaymentGoodsDetailsDO.getOrderCreditMoney()){
+                billRepaymentGoodsDetailsVO.setTotalAmount(billRepaymentGoodsDetailsDO.getInterestAmount()+billRepaymentGoodsDetailsDO.getOrderCreditMoney());
+            }else if(null !=billRepaymentGoodsDetailsDO.getInterestAmount() && null == billRepaymentGoodsDetailsDO.getOrderCreditMoney()){
+                billRepaymentGoodsDetailsVO.setTotalAmount(billRepaymentGoodsDetailsDO.getInterestAmount());
+            }else if(null ==billRepaymentGoodsDetailsDO.getInterestAmount() && null != billRepaymentGoodsDetailsDO.getOrderCreditMoney()){
+                billRepaymentGoodsDetailsVO.setTotalAmount(billRepaymentGoodsDetailsDO.getOrderCreditMoney());
+            }else{
+                billRepaymentGoodsDetailsVO.setTotalAmount(0d);
+            }
             return billRepaymentGoodsDetailsVO;
         }else{
             return null;
