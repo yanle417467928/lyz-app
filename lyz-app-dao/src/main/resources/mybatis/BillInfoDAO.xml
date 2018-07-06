@@ -16,7 +16,7 @@
     <update id="updateBillRepaymentInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO">
         UPDATE bill_repayment_info
         <set>
-            <if test="null != onlinePayType">
+            <if test="null != onlinePayType ">
                 online_pay_type = #{onlinePayType},
             </if>
             <if test="null != isPaid">

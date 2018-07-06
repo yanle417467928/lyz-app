@@ -502,7 +502,8 @@ public class WeChatPayController {
                                     // productCouponService.activateCusProductCoupon(outTradeNo);
                                 }
                             } else if (paymentDataDO.getPaymentType() == PaymentDataType.BILLPAY) {
-                                if (null != paymentDataDO.getId() && paymentDataDO.getTotalFee().equals(Double.parseDouble(totalFee))) {
+                                logger.info("weChatReturnSync,微信支付异步回调接口,回调单据类型:{}", "账单还款");
+                                if (null != paymentDataDO.getId() && paymentDataDO.getTotalFee().equals(totalFeeParse)) {
                                     String orderNumber = paymentDataDO.getOrderNumber();
                                     paymentDataDO.setTradeNo(tradeNo);
                                     paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
