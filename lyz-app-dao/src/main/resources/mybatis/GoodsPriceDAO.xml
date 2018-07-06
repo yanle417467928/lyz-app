@@ -236,6 +236,7 @@
         gid,
         sku,
         retail_price
+        min(ip_price)AS vip_price
         FROM gds_goods_price
         WHERE store_id = #{storeId}
         AND sku in
@@ -244,7 +245,6 @@
         </foreach>
         AND start_time &lt; NOW()
         AND (end_time IS NULL OR end_time &gt; NOW())
-        AND price_type = 'COMMON'
     </select>
 
     <select id="findGoodsPriceListByStoreIdAndPriceType" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">

@@ -427,13 +427,13 @@
                                                        class="table table-bordered table-hover">
                                                     <thead>
                                                     <tr>
-                                                        <th>序号</th>
-                                                        <th>数量</th>
-                                                        <th>商品内部编码</th>
-                                                        <th>商品内部名称</th>
-                                                        <th>库存</th>
-                                                        <th>缺货数量</th>
-                                                        <th>状态</th>
+                                                        <th style="width:8%;">商品id</th>
+                                                        <th style="width:20%;">商品编码</th>
+                                                        <th style="width:35%;">商品名称</th>
+                                                        <th style="width:9%;">数量</th>
+                                                        <th style="width:9%;">零售价</th>
+                                                        <th style="width:9%;">会员价</th>
+                                                        <th style="width:10%;">商品类型</th>
                                                     </tr>
                                                     </thead>
 
@@ -535,13 +535,13 @@
                                                    class="table table-bordered table-hover">
                                                 <thead>
                                                 <tr>
-                                                    <th>商品id</th>
-                                                    <th>商品编码</th>
-                                                    <th>商品名称</th>
-                                                    <th>数量</th>
-                                                    <th>零售价</th>
-                                                    <th>会员价</th>
-                                                    <th>商品类型</th>
+                                                    <th style="width:8%;">商品id</th>
+                                                    <th style="width:20%;">商品编码</th>
+                                                    <th style="width:35%;">商品名称</th>
+                                                    <th style="width:9%;">数量</th>
+                                                    <th style="width:9%;">零售价</th>
+                                                    <th style="width:9%;">会员价</th>
+                                                    <th style="width:10%;">商品类型</th>
                                                 </tr>
                                                 </thead>
 
@@ -2386,6 +2386,8 @@
                 if (null == pointDistributionTime || -1 == pointDistributionTime){
                     $loading.close();
                     $("#pointDistributionTime").text("请选择配送时间");
+                    alert("请选择配送时间");
+                    $('#orderDetail').modal('hide');
                     return false;
                 }else{
                     $("#pointDistributionTime").text("");
@@ -2394,18 +2396,24 @@
 
                 if (estateInfoLength > 50) {
                     $loading.close();
+                    $('#giftSelectionBox').modal('hide');
+                    $('#orderDetail').modal('hide');
                     $notify.danger('楼盘名称长度超长，请重新输入！');
                     $('#form').bootstrapValidator('disableSubmitButtons', false);
                     return false;
                 }
                 if (detailedAddressLength > 200) {
                     $loading.close();
+                    $('#giftSelectionBox').modal('hide');
+                    $('#orderDetail').modal('hide');
                     $notify.danger('详细地址长度超长，请重新输入！');
                     $('#form').bootstrapValidator('disableSubmitButtons', false);
                     return false;
                 }
                 if (residenceNameLength > 50) {
                     $loading.close();
+                    $('#giftSelectionBox').modal('hide');
+                    $('#orderDetail').modal('hide');
                     $notify.danger('小区名长度超长，请重新输入！');
                     $('#form').bootstrapValidator('disableSubmitButtons', false);
                     return false;
@@ -2420,19 +2428,25 @@
                 var stSubvention = $("#stSubvention").text();
                 if (Number(usePreDeposit) > Number(stPreDeposit)){
                     $loading.close();
-                    $("#pointUsePreDeposit").text("使用客户预存款金额超出可用金额");
+                    $('#orderDetail').modal('hide');
+                    alert("使用客户预存款金额超出可用金额!");
+//                    $("#pointUsePreDeposit").text("使用客户预存款金额超出可用金额");
 //                    $notify.warning("使用客户预存款金额超出可用金额！");
                     return;
                 }
                 if (Number(useCreditMoney) > Number(stCreditMoney)){
                     $loading.close();
-                    $("#pointUseCreditMoney").text("使用信用金金额超出可用金额");
+                    $('#orderDetail').modal('hide');
+                    alert("使用信用金金额超出可用金额!");
+//                    $("#pointUseCreditMoney").text("使用信用金金额超出可用金额");
 //                    $notify.warning("使用信用金金额超出可用金额！");
                     return;
                 }
                 if (Number(useSubvention) > Number(stSubvention)){
                     $loading.close();
-                    $("#pointUseSubvention").text("使用现金返利金额超出可用金额");
+                    $('#orderDetail').modal('hide');
+                    alert("使用现金返利金额超出可用金额!");
+//                    $("#pointUseSubvention").text("使用现金返利金额超出可用金额");
 //                    $notify.warning("使用现金返利金额超出可用金额！");
                     return;
                 }
@@ -2442,9 +2456,10 @@
                     var totalAmount = (usePreDeposit*100 + useCreditMoney*100 + useSubvention*100)/100;
                     if (totalAmount != amountsPayable){
                         $loading.close();
-                        $('#giftSelectionBox').modal('hide');
+//                        $('#giftSelectionBox').modal('hide');
                         $('#orderDetail').modal('hide');
-                        $notify.warning("使用信用金支付必须一次性支付完毕");
+                        alert("使用信用金支付必须一次性支付完毕!");
+//                        $notify.warning("使用信用金支付必须一次性支付完毕");
                         return;
                     }
                 }
@@ -2452,7 +2467,8 @@
                 var billingMsgString = {
                     "stPreDeposit": usePreDeposit,
                     "storeCreditMoney": useCreditMoney,
-                    "storeSubvention": useSubvention
+                    "storeSubvention": useSubvention,
+                    "freight":freight
                 }
 
 
@@ -2507,8 +2523,8 @@
                     var stPreDeposit = $("#stPreDeposit").text();
                     var price = document.getElementById("usePreDeposit").value;
                     if (Number(price) > Number(stPreDeposit)){
-                        $("#pointUsePreDeposit").text("输入金额大于可使用金额");
-//                        $notify.warning("输入金额大于可使用金额，请重新输入！")
+//                        $("#pointUsePreDeposit").text("输入金额大于可使用金额");
+                        $notify.warning("输入金额大于可使用金额，请重新输入！");
                         return;
                     }else{
                         $("#pointUsePreDeposit").text("");
