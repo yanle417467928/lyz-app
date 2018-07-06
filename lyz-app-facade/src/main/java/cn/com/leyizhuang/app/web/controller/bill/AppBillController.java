@@ -73,6 +73,8 @@ public class AppBillController {
                                                 String startTimeStr,
                                                 String endTimeStr,
                                                 Integer page, Integer size) {
+        logger.info("lookBill CALLED,查看账单接口,入参 userId:{}, identityType:{}, startTimeStr:{},endTimeStr:{},page:{},size:{}",
+                userId, identityType, startTimeStr,endTimeStr,page,size);
         ResultDTO<BillInfoResponse> resultDTO;
         try {
 
@@ -138,6 +140,7 @@ public class AppBillController {
 
             BillInfoResponse response = billInfoService.lookBill(startTime, endTime, storeId, page, size);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "查询成功", response);
+            logger.info("lookBill CALLED,查看账单接口成功 出参 resultDTO:{}",resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
@@ -156,6 +159,7 @@ public class AppBillController {
      */
     @PostMapping(value = "/pay/page", produces = "application/json;charset=UTF-8")
     public ResultDTO<BillPayPageResponse> toPayPage(BillPayRequest billPayRequest) {
+        logger.info("lookBill CALLED,查看账单接口,入参 billPayRequest:{}",billPayRequest);
         ResultDTO<BillPayPageResponse> resultDTO;
         try {
 
@@ -292,6 +296,7 @@ public class AppBillController {
      */
     @PostMapping(value = "/pay", produces = "application/json;charset=UTF-8")
     public ResultDTO<String> payBill(BillPayRequest billPayRequest) {
+        logger.info("lookBill CALLED,查看账单接口,入参 billPayRequest:{}",billPayRequest);
         ResultDTO<String> resultDTO;
         try {
 

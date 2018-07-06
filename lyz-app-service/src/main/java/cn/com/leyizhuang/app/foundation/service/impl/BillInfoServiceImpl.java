@@ -675,7 +675,6 @@ public class BillInfoServiceImpl implements BillInfoService {
      * @param orderDetails
      * @return
      */
-    @Override
     public Double calculatePayAmount(Long storeId,List<BillorderDetailsRequest> orderDetails){
         Double totalAmount = 0D;
         Double totalOrderAmount = 0D;
