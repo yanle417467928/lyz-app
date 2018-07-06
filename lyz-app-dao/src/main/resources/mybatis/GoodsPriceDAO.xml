@@ -245,6 +245,7 @@
         </foreach>
         AND start_time &lt; NOW()
         AND (end_time IS NULL OR end_time &gt; NOW())
+        GROUP BY sku
     </select>
 
     <select id="findGoodsPriceListByStoreIdAndPriceType" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">

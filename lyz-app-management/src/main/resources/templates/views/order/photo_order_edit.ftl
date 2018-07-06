@@ -2523,8 +2523,8 @@
                     var stPreDeposit = $("#stPreDeposit").text();
                     var price = document.getElementById("usePreDeposit").value;
                     if (Number(price) > Number(stPreDeposit)){
-//                        $("#pointUsePreDeposit").text("输入金额大于可使用金额");
-                        $notify.warning("输入金额大于可使用金额，请重新输入！");
+                        $("#pointUsePreDeposit").text("输入金额大于可使用金额");
+//                        $notify.warning("输入金额大于可使用金额，请重新输入！");
                         return;
                     }else{
                         $("#pointUsePreDeposit").text("");
