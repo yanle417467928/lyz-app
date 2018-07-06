@@ -98,7 +98,7 @@ public class BillInfoServiceImpl implements BillInfoService {
         //计算利息（欠款金额 * 利息 * 逾期天数 * 利息单位）
         for (BillRepaymentGoodsDetailsDO goodsDetailsDO : goodsDetailsDOList) {
             //逾期天数
-            Integer overdueDays = DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(billDate, repaymentDeadlineDate, goodsDetailsDO.getShipmentTime()), new Date());
+            Integer overdueDays = DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(billDate, repaymentDeadlineDate, DateUtil.getToDayOfStart(goodsDetailsDO.getShipmentTime())), new Date());
             if (overdueDays < 0) {
                 overdueDays = 0;
             }
@@ -140,7 +140,7 @@ public class BillInfoServiceImpl implements BillInfoService {
         for (BillRepaymentGoodsInfoResponse goodsDetails : goodsDetailsList) {
             if ("order".equals(goodsDetails.getOrderType())) {
                 //逾期天数
-                Integer overdueDays = DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(billDate, repaymentDeadlineDate, goodsDetails.getShipmentTime()), new Date());
+                Integer overdueDays = DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(billDate, repaymentDeadlineDate, DateUtil.getToDayOfStart(goodsDetails.getShipmentTime())), new Date());
                 if (overdueDays < 0) {
                     overdueDays = 0;
                 }
