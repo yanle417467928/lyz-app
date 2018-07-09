@@ -1760,7 +1760,8 @@
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
-        'FINISHED'
+        'FINISHED',
+        'REJECTED'
         )
         <if test="null!=startTime and ''!=startTime">
             AND obd.pay_up_time >= #{startTime}
@@ -1982,7 +1983,8 @@
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
-        'FINISHED'
+        'FINISHED',
+        'REJECTED'
         )
         <if test="null!=startTime and ''!=startTime">
             AND wa.end_dt >= #{startTime}
@@ -2215,7 +2217,7 @@
         left JOIN cus_customer cc on cc.cus_id = ob.customer_id
         where
         1=1
-        and ob.`status` IN ('FINISHED')
+        and ob.`status` IN ('FINISHED','REJECTED')
         <if test="null!=startTime and ''!=startTime">
             AND
             wro.c_end_dt > #{startTime}
@@ -2433,7 +2435,8 @@
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
-        'FINISHED'
+        'FINISHED',
+        'REJECTED'
         )
         <if test="null!=startTime and ''!=startTime">
             AND obd.pay_up_time >= #{startTime}
@@ -2534,7 +2537,7 @@
 
         where
         1=1
-        and ob.`status` IN ('FINISHED')
+        and ob.`status` IN ('FINISHED','REJECTED')
         <if test="null!=startTime and ''!=startTime">
             AND
             wro.c_end_dt > #{startTime}
