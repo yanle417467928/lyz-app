@@ -55,7 +55,8 @@ public class MaDecoratorBillViewController {
     @RequestMapping(method = RequestMethod.GET, value = "/historyDetail/{billNo}")
     public String HistoryDetailBill(@PathVariable String billNo, ModelMap map) {
         BillInfoDO maFitBillVO = maFitBillService.getFitBillByBillNo(billNo);
-        map.addAttribute("maFitBillVO", maFitBillVO);
+        BillInfoResponse billInfoResponse = BillInfoDO.transfer(maFitBillVO);
+        map.addAttribute("maFitBillVO", billInfoResponse);
         return "/views/decorativeCompany/fit_company_historyDetailBill_detail";
     }
 

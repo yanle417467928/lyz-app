@@ -33,6 +33,7 @@ public interface DeliveryAddressDAO {
     DeliveryAddressResponse getDefaultDeliveryAddressByUserIdAndIdentityTypeAndDeliveryId(@Param(value = "userId") Long userId,
                                                                              @Param(value = "identityType") AppIdentityType identityType,
                                                                              @Param(value = "deliveryId") Long deliveryId);
+    DeliveryAddressResponse getDefaultDeliveryAddressByDeliveryId(@Param(value = "deliveryId") Long deliveryId);
 
     void clearDefaultAddressByUserIdAndIdentityType(@Param(value = "userId") Long userId,
                                                     @Param(value = "identityType") AppIdentityType identityType);

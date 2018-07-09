@@ -634,11 +634,11 @@ public class AppOrderServiceImpl implements AppOrderService {
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getStoreCreditMoney())
                         - OrderUtils.replaceNullWithZero(orderBillingDetails.getStoreSubvention());
                 orderBillingDetails.setAmountPayable(amountPayable);
-                if (FitCompayType.CASH == store.getFitCompayType()) {
-                    orderBillingDetails.setArrearage(CountUtil.add(orderBillingDetails.getAmountPayable(), orderBillingDetails.getStoreCreditMoney()));
-                } else {
+//                if (FitCompayType.CASH == store.getFitCompayType()) {
+//                    orderBillingDetails.setArrearage(CountUtil.add(orderBillingDetails.getAmountPayable(), orderBillingDetails.getStoreCreditMoney()));
+//                } else {
                     orderBillingDetails.setArrearage(orderBillingDetails.getAmountPayable());
-                }
+//                }
                 break;
             default:
                 break;
@@ -655,7 +655,7 @@ public class AppOrderServiceImpl implements AppOrderService {
             throw new OrderPayableAmountException("订单应付款金额异常(<0)");
         }
         //根据应付金额判断订单账单是否已付清
-        if (Math.abs(orderBillingDetails.getArrearage()) <= AppConstant.PAY_UP_LIMIT) {
+        if (Math.abs(orderBillingDetails.getArrearage()) <= AppConstant.PAY_UP_LIMIT && orderBillingDetails.getStoreCreditMoney() <= AppConstant.PAY_UP_LIMIT) {
             orderBillingDetails.setIsPayUp(true);
             orderBillingDetails.setPayUpTime(new Date());
         } else {

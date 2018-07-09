@@ -801,7 +801,7 @@
                         document.getElementById("stCreditMoney").innerText = orderAmount.stCreditMoney;
                         document.getElementById("stSubvention").innerText = orderAmount.stSubvention;
                         document.getElementById("freight").innerText = orderAmount.freight;
-                        var amountsPayable = (orderAmount.totalGoodsAmount*100 - (orderAmount.memberDiscount*100 + orderAmount.promotionDiscount*100) + orderAmount.freight*100)/100
+                        var amountsPayable = (orderAmount.totalGoodsAmount*100 - (orderAmount.memberDiscount*100 + orderAmount.promotionDiscount*100))/100
                         document.getElementById("amountsPayable").innerText = amountsPayable;
 
                         if (orderAmount.stCreditMoney > amountsPayable){

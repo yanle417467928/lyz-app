@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
 import cn.com.leyizhuang.app.core.constant.PaymentSubjectType;
 import cn.com.leyizhuang.app.core.constant.RechargeAccountType;
+import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dto.CreditBillingDTO;
 import cn.com.leyizhuang.app.foundation.dto.DecorationCompanyCreditBillingDTO;
@@ -140,9 +141,13 @@ public class MaDecorationCompanyCreditBillingRestController extends BaseRestCont
                         for (int i = 0; i < orderNumbers.length; i++) {
                             String orderNumber = orderNumbers[i];
                             OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderNumber);
-                            orderBillingDetails.setIsPayUp(Boolean.TRUE);
-                            orderBillingDetails.setPayUpTime(new Date());
-                            appOrderService.updateOrderBillingDetails(orderBillingDetails);
+                            if (null != orderBillingDetails && DateUtil.compare(orderBillingDetails.getCreateTime(), DateUtil.parseDateTime("2018-07-01 00:00:00")) > 0) {
+                                OrderBillingDetails billingDetails = new OrderBillingDetails();
+                                billingDetails.setIsPayUp(Boolean.TRUE);
+                                billingDetails.setPayUpTime(new Date());
+                                billingDetails.setOrderNumber(orderBillingDetails.getOrderNumber());
+                                appOrderService.updateOrderBillingDetails(billingDetails);
+                            }
                         }
                     }
                 } else {
