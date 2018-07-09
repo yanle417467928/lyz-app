@@ -44,6 +44,13 @@ public class MaDecoratorBillViewController {
     @RequestMapping(method = RequestMethod.GET, value = "/notOutBillDetail/{storeId}")
     public String notOutBillDetailPage(@PathVariable Long storeId, ModelMap map) {
         map.addAttribute("storeId",storeId);
+        try{
+            BillInfoResponse billInfoResponse = billInfoService.lookBill(null, null, storeId, null, null);
+            map.addAttribute("startTime",billInfoResponse.getBillStartDate());
+            map.addAttribute("endTime",billInfoResponse.getBillEndDate());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         return "/views/decorativeCompany/fit_company_notOutBill_detail";
     }
 
