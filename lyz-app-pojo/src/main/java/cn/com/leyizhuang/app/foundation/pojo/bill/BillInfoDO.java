@@ -1,9 +1,14 @@
 package cn.com.leyizhuang.app.foundation.pojo.bill;
 
 import cn.com.leyizhuang.app.core.constant.BillStatusEnum;
+import cn.com.leyizhuang.app.foundation.pojo.response.BillInfoResponse;
+import cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentResponse;
 import lombok.*;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 账单表
@@ -54,4 +59,40 @@ public class BillInfoDO {
     private Long createUserId;
     //创建者
     private String createUserName;
+
+    public static BillInfoResponse transfer(BillInfoDO DO){
+        if (null != DO) {
+            BillInfoResponse response =  new BillInfoResponse();
+            response.setStoreId(DO.getStoreId());
+            response.setBillNo(DO.getBillNo());
+            response.setBillName(DO.getBillName());
+
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
+            response.setBillStartDate(DO.getBillStartDate());
+            response.setBillEndDate(DO.getBillEndDate());
+            response.setRepaymentDeadlineDate(DO.getRepaymentDeadlineDate());
+            response.setBillTotalAmount(DO.getBillTotalAmount());
+            response.setCurrentBillAmount(DO.getCurrentBillAmount());
+            response.setCurrentAdjustmentAmount(DO.getCurrentAdjustmentAmount());
+            response.setCurrentPaidAmount(DO.getCurrentPaidAmount());
+            response.setCurrentUnpaidAmount(DO.getCurrentUnpaidAmount());
+            response.setPriorNotPaidBillAmount(0D);
+            response.setPriorNotPaidInterestAmount(0D);
+            response.setPriorPaidBillAmount(DO.getPriorPaidBillAmount());
+            response.setPriorPaidInterestAmount(DO.getPriorPaidInterestAmount());
+            response.setStatus(DO.getStatus().getDesccription());
+            return response;
+        }
+        return null;
+    }
+
+    public static List<BillInfoResponse> transfer(List<BillInfoDO> list){
+        List<BillInfoResponse> responseList = new ArrayList<>();
+        for (BillInfoDO billInfoDO : list){
+            BillInfoResponse response =  BillInfoDO.transfer(billInfoDO);
+            responseList.add(response);
+        }
+        return responseList;
+    }
 }

@@ -16,13 +16,13 @@
     <update id="updateBillRepaymentInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO">
         UPDATE bill_repayment_info
         <set>
-            <if test="null != onlinePayType and onlinePayType != ''">
+            <if test="null != onlinePayType ">
                 online_pay_type = #{onlinePayType},
             </if>
             <if test="null != isPaid">
                 is_paid = #{isPaid},
             </if>
-            <if test="null != repaymentTime and repaymentTime != ''">
+            <if test="null != repaymentTime">
                 repayment_time = #{repaymentTime},
             </if>
         </set>
@@ -31,7 +31,7 @@
 
 
     <select id="findBillInfoByBillNo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO">
-        SELECT bill_no,bill_name,store_id,bill_start_date,bill_end_date,repayment_deadline_date,
+        SELECT id,bill_no,bill_name,store_id,bill_start_date,bill_end_date,repayment_deadline_date,
         IFNULL(bill_total_amount, 0) bill_total_amount, IFNULL(current_bill_amount, 0) current_bill_amount, IFNULL(current_adjustment_amount, 0) current_adjustment_amount,
         IFNULL(current_paid_amount, 0) current_paid_amount, IFNULL(current_unpaid_amount, 0) current_unpaid_amount,
         IFNULL(prior_paid_bill_amount, 0) prior_paid_bill_amount, IFNULL(prior_paid_interest_amount, 0) prior_paid_interest_amount,status,bill_time,create_time
@@ -51,6 +51,21 @@
             <if test="null != currentUnpaidAmount">
                 current_unpaid_amount = #{currentUnpaidAmount},
             </if>
+            <if test="null != priorPaidBillAmount">
+                prior_paid_bill_amount = #{priorPaidBillAmount},
+            </if>
+            <if test="null != billTotalAmount">
+                bill_total_amount = #{billTotalAmount},
+            </if>
+            <if test="null != currentBillAmount">
+                current_bill_amount = #{currentBillAmount},
+            </if>
+            <if test="null != currentAdjustmentAmount">
+                current_adjustment_amount = #{currentAdjustmentAmount},
+            </if>
+            <if test="null != currentUnpaidAmount">
+                current_unpaid_amount = #{currentUnpaidAmount},
+            </if>
             <if test="null != status">
                 status = #{status},
             </if>
@@ -58,5 +73,282 @@
         WHERE bill_no = #{billNo}
     </update>
 
+    <!--  -->
+    <select id="getCurrentOrderDetails" resultType="cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentGoodsInfoResponse">
+        <!-- 配送 -->
+        (SELECT
+        ob.oid orderId,
+        ob.ord_no orderNo,
+        '' returnNo,
+        obd.st_credit_money orderCreditMoney,
+        ob.create_time orderTime,
+        wa.end_dt shipmentTime,
+        'order' orderType,
+        0 interestAmount
+        from ord_base_info ob
+        INNER JOIN ord_billing_details obd on ob.oid = obd.oid
+        left JOIN (SELECT a.is_paid,b.order_no from bill_repayment_info a
+                  LEFT JOIN bill_repayment_goods_details b on a.id = b.repayment_id where is_paid = 1 and order_type = 'order'
+                  ) bpi on bpi.order_no = ob.ord_no
+        LEFT  JOIN (SELECT * from inter_wta_order_shipping_header where send_flag = 1 GROUP BY order_no) wa on wa.order_no = ob.ord_no
+        LEFT JOIN (
+                SELECT a.is_pay_off,b.order_number from decoration_company_credit_billing a
+                LEFT JOIN decoration_company_credit_billing_details b on a.credit_billing_no = b.credit_billing_no where a.is_pay_off = 1
+                  )dc ON dc.order_number = ob.ord_no
+        where ob.delivery_type = "HOUSE_DELIVERY" and obd.st_credit_money > 0
+        and ob.`status` in ('PENDING_RECEIVE','FINISHED','REJECTED','CLOSED')
+        and ob.store_id = #{storeId}
+        <if test="startTime != null">
+           AND wa.end_dt &gt; #{startTime}
+        </if>
+        <if test="endTime != null">
+          and wa.end_dt &lt; #{endTime}
+        </if>
+        <if test="isPaid != null and isPaid == true">
+            and (bpi.is_paid = 1 OR dc.is_pay_off = 1)
+        </if>
+        <if test="isPaid != null and isPaid == false">
+            and bpi.is_paid is null and dc.is_pay_off is null
+        </if>
+        )
+
+        UNION ALL
+
+        <!-- 自提 -->
+        (SELECT
+        ob.oid orderId,
+        ob.ord_no orderNo,
+        '' returnNo,
+        obd.st_credit_money orderCreditMoney,
+        ob.create_time orderTime,
+        os.shipping_time shipmentTime,
+        'order' orderType,
+        0 interestAmount
+        from ord_base_info ob
+        INNER JOIN ord_billing_details obd on ob.oid = obd.oid
+        left JOIN (SELECT a.is_paid,b.order_no from bill_repayment_info a
+                    LEFT JOIN bill_repayment_goods_details b on a.id = b.repayment_id where is_paid = 1 and order_type = 'order'
+                  ) bpi on bpi.order_no = ob.ord_no
+        LEFT  JOIN (SELECT * from ord_shipping GROUP BY ord_no) os on os.ord_no = ob.ord_no
+        LEFT JOIN (
+                SELECT a.is_pay_off,b.order_number from decoration_company_credit_billing a
+                LEFT JOIN decoration_company_credit_billing_details b on a.credit_billing_no = b.credit_billing_no where a.is_pay_off = 1
+                )dc ON dc.order_number = ob.ord_no
+        where ob.delivery_type = "SELF_TAKE" and obd.st_credit_money > 0 and obd.is_pay_up = 1
+        and ob.`status` in ('FINISHED')
+        and ob.store_id = #{storeId}
+        <if test="startTime != null">
+            AND os.shipping_time &gt; #{startTime}
+        </if>
+        <if test="endTime != null">
+            and os.shipping_time &lt; #{endTime}
+        </if>
+        <if test="isPaid != null and isPaid == true">
+            and (bpi.is_paid = 1 OR dc.is_pay_off = 1)
+        </if>
+        <if test="isPaid != null and isPaid == false">
+            and bpi.is_paid is null and dc.is_pay_off is null
+        </if>
+        )
+
+        <!-- 退货 -->
+        UNION ALL
+
+        (SELECT
+        orb.roid orderId,
+        ob.ord_no orderNo,
+        orb.return_no returnNo,
+        -ABS(orbd.st_credit_money) orderCreditMoney,
+        ob.create_time orderTime,
+        orl.operation_time shipmentTime,
+        'return' orderType,
+        0 interestAmount
+        from ord_return_base_info orb
+        INNER JOIN ord_base_info ob on orb.ord_no = ob.ord_no
+        INNER JOIN ord_return_billing orbd on orb.return_no = orbd.return_no
+        left JOIN (SELECT a.is_paid,b.return_no from bill_repayment_info a
+        LEFT JOIN bill_repayment_goods_details b on a.id = b.repayment_id where is_paid = 1 and order_type = 'return'
+        ) bpi on bpi.return_no = orb.return_no
+        LEFT JOIN ord_return_lifecycle orl on orl.return_no = orb.return_no
+        LEFT JOIN (
+                SELECT a.is_pay_off,b.order_number from decoration_company_credit_billing a
+                LEFT JOIN decoration_company_credit_billing_details b on a.credit_billing_no = b.credit_billing_no where a.is_pay_off = 1
+                )dc ON dc.order_number = orb.return_no
+        where ob.delivery_type in ("SELF_TAKE","HOUSE_DELIVERY")
+        and orl.operation in ('REJECTED','NORMAL_RETURN') and post_status = "FINISHED" and orbd.st_credit_money > 0
+        and ob.store_id = #{storeId}
+        <if test="startTime != null">
+            AND orl.operation_time &gt; #{startTime}
+        </if>
+        <if test="endTime != null">
+            and orl.operation_time &lt; #{endTime}
+        </if>
+        <if test="isPaid != null and isPaid == true">
+            and (bpi.is_paid = 1 OR dc.is_pay_off = 1)
+        </if>
+        <if test="isPaid != null and isPaid == false">
+            and bpi.is_paid is null and dc.is_pay_off is null
+        </if>
+        )
+
+    </select>
+
+    <select id="getCurrentOrderDetailsByOrderNo" resultType="cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentGoodsInfoResponse">
+        SELECT
+        ob.oid orderId,
+        ob.ord_no orderNo,
+        '' returnNo,
+        obd.st_credit_money orderCreditMoney,
+        ob.create_time orderTime,
+        wa.send_time shipmentTime,
+        'order' orderType
+        from ord_base_info ob
+        INNER JOIN ord_billing_details obd on ob.oid = obd.oid
+        LEFT  JOIN (SELECT * from inter_wta_order_shipping_header where send_flag = 1 GROUP BY order_no) wa on wa.order_no = ob.ord_no
+        where ob.delivery_type = "HOUSE_DELIVERY" and obd.st_credit_money > 0
+        and ob.`status` in ('PENDING_RECEIVE','FINISHED','REJECTED','CLOSED')
+        and ob.store_id = #{storeId}
+        and ob.oid IN
+        <foreach collection="ids" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="getCurrentOrderDetailsByReturnNo" resultType="cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentGoodsInfoResponse">
+        SELECT
+        orb.roid orderId,
+        ob.ord_no orderNo,
+        orb.return_no returnNo,
+        -ABS(orbd.st_credit_money) orderCreditMoney,
+        ob.create_time orderTime,
+        orl.operation_time shipmentTime,
+        'return' orderType
+        from ord_return_base_info orb
+        INNER JOIN ord_base_info ob on orb.ord_no = ob.ord_no
+        INNER JOIN ord_return_billing orbd on orb.return_no = orbd.return_no
+        LEFT JOIN ord_return_lifecycle orl on orl.return_no = orb.return_no
+        where ob.delivery_type in ("SELF_TAKE","HOUSE_DELIVERY")
+        and orl.operation in ('REJECTED','NORMAL_RETURN') and post_status = "FINISHED" and orbd.st_credit_money > 0
+        and ob.store_id = #{storeId}
+        and orb.roid IN
+        <foreach collection="ids" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="findPaidOrderDetailsByOids" resultType="cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentGoodsInfoResponse">
+        SELECT
+        ob.oid orderId,
+        ob.ord_no orderNo,
+        '' returnNo,
+        obd.st_credit_money orderCreditMoney,
+        ob.create_time orderTime,
+        'order' orderType
+        from ord_base_info ob
+        INNER JOIN ord_billing_details obd on ob.oid = obd.oid
+        left JOIN (SELECT a.is_paid,b.order_no from bill_repayment_info a
+                  LEFT JOIN bill_repayment_goods_details b on a.id = b.repayment_id where is_paid = 1 and order_type = 'order'
+                  ) bpi on bpi.order_no = ob.ord_no
+        LEFT JOIN (
+                SELECT a.is_pay_off,b.order_number from decoration_company_credit_billing a
+                LEFT JOIN decoration_company_credit_billing_details b on a.credit_billing_no = b.credit_billing_no where a.is_pay_off = 1
+                  )dc ON dc.order_number = ob.ord_no
+        where (bpi.is_paid = 1 OR dc.is_pay_off = 1) and ob.oid in
+        <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="findPaidReturnOrderDetailsByOids" resultType="cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentGoodsInfoResponse">
+        SELECT
+        orb.roid orderId,
+        ob.ord_no orderNo,
+        orb.return_no returnNo,
+        -ABS(orbd.st_credit_money) orderCreditMoney,
+        ob.create_time orderTime,
+        orl.operation_time shipmentTime,
+        'return' orderType
+        from ord_return_base_info orb
+        INNER JOIN ord_base_info ob on orb.ord_no = ob.ord_no
+        INNER JOIN ord_return_billing orbd on orb.return_no = orbd.return_no
+        left JOIN (SELECT a.is_paid,b.return_no from bill_repayment_info a
+        LEFT JOIN bill_repayment_goods_details b on a.id = b.repayment_id where is_paid = 1 and order_type = 'return'
+        ) bpi on bpi.return_no = orb.return_no
+        LEFT JOIN ord_return_lifecycle orl on orl.return_no = orb.return_no
+        LEFT JOIN (
+                SELECT a.is_pay_off,b.order_number from decoration_company_credit_billing a
+                LEFT JOIN decoration_company_credit_billing_details b on a.credit_billing_no = b.credit_billing_no where a.is_pay_off = 1
+                )dc ON dc.order_number = orb.return_no
+        where ob.delivery_type in ("SELF_TAKE","HOUSE_DELIVERY")
+        and orl.operation in ('REJECTED','NORMAL_RETURN') and post_status = "FINISHED" and orbd.st_credit_money > 0
+        and ob.store_id = #{storeId}
+        and (bpi.is_paid = 1 OR dc.is_pay_off = 1)
+        and orb.roid in
+        <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="findBillHistoryListByEmpId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.response.BillHistoryListResponse">
+        SELECT b.bill_no,DATE_FORMAT(b.bill_start_date,'%Y') years, b.bill_name, b.bill_start_date, b.bill_end_date, b.current_paid_amount
+        FROM bill_info b
+        LEFT JOIN emp_employee e ON e.store_id = b.store_id
+        WHERE e.emp_id = #{empId}
+        AND b.status = 'HISTORY'
+        ORDER BY b.bill_start_date DESC
+    </select>
+
+
+    <select id="findBillRepaymentInfoByBillNo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO">
+        SELECT repayment_no, bill_id, bill_no, repayment_user_id, repayment_user_name,
+        repayment_time, online_pay_type, IFNULL(online_pay_amount, 0) online_pay_amount, IFNULL(pre_deposit, 0) pre_deposit,
+        IFNULL(total_repayment_amount, 0) total_repayment_amount,
+        IFNULL(cash_money, 0) cash_money, IFNULL(other_money, 0) other_money, IFNULL(pos_money, 0) pos_money, pos_number
+        is_paid, IFNULL(interest_rate, 0) interest_rate, IFNULL(total_interest_amount, 0) total_interest_amount, create_time
+        FROM bill_repayment_info
+        WHERE bill_no = #{billNo} AND is_paid IS TRUE
+    </select>
+
+    <select id="findRepaymentGoodsDetailsByRepaymentNo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO">
+        SELECT repayment_id, repayment_no, order_no, return_no, order_credit_money, order_time, shipment_time, order_type, interest_amount
+        FROM bill_repayment_goods_details
+        WHERE repayment_no = #{repaymentNo}
+    </select>
+
+
+    <select id="findRepaymentGoodsDetailsByBillNo" parameterType="java.lang.String" resultType="cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO">
+        SELECT g.repayment_id, g.repayment_no, g.order_no, g.return_no, g.order_credit_money,
+        g.order_time, g.shipment_time, g.order_type, g.interest_amount
+        FROM bill_repayment_info r
+        LEFT JOIN bill_repayment_goods_details g ON g.repayment_no = r.repayment_no
+        WHERE r.bill_no = #{billNo} AND b.is_paid IS TRUE
+    </select>
+
+    <insert id="saveBillInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO">
+        INSERT INTO bill_info (bill_no, bill_name, store_id, bill_start_date, bill_end_date, repayment_deadline_date,
+        bill_total_amount, current_bill_amount, current_adjustment_amount, current_paid_amount, current_unpaid_amount,
+        prior_paid_bill_amount, prior_paid_interest_amount, status, create_time, create_user_id, create_user_name)
+        VALUES
+        (#{billNo}, #{billName}, #{storeId}, #{billStartDate}, #{billEndDate}, #{repaymentDeadlineDate},
+        #{billTotalAmount}, #{currentBillAmount}, #{currentAdjustmentAmount}, #{currentPaidAmount}, #{currentUnpaidAmount},
+        #{priorPaidBillAmount}, #{priorPaidInterestAmount}, #{status}, #{createTime}, #{createUserId}, #{createUserName})
+    </insert>
+
+    <select id="findBillByStatus" resultType="cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO">
+        SELECT  * from bill_info where `status` = #{status} and store_id = #{storeId}
+    </select>
+
+
+    <update id="updateBillStatus" >
+      UPDATE bill_info SET
+      `status` = #{afterStatus}
+      WHERE store_id = #{storeId} AND `status` = #{beforeStatus}
+    </update>
+
+    <select id="findBillInfoByBillStartDateAndStoreIdAndStatus" resultType="cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO">
+        SELECT bill_no, bill_start_date, bill_end_date, repayment_deadline_date, status
+        FROM bill_info
+        WHERE store_id = #{storeId} AND `status` = #{status} AND bill_start_date = #{billStartDate}
+    </select>
 
 </mapper>

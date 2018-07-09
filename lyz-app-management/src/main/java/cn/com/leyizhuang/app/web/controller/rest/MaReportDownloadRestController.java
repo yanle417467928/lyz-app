@@ -3,18 +3,17 @@ package cn.com.leyizhuang.app.web.controller.rest;
 import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
+import cn.com.leyizhuang.app.core.utils.DateUtils;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
+import cn.com.leyizhuang.app.foundation.pojo.CusExpiringSoonProductCouponInfo;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.management.User;
-import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
-import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInfo;
 import cn.com.leyizhuang.app.foundation.pojo.reportDownload.*;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsVO;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingVO;
-import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeDetailVO;
 import cn.com.leyizhuang.common.util.CountUtil;
 import com.github.pagehelper.PageInfo;
 import jxl.Workbook;
@@ -330,6 +329,21 @@ public class MaReportDownloadRestController extends BaseRestController {
     }
 
 
+    @GetMapping(value = "/expiringSoonProduct/page/grid")
+    public GridDataVO<CusExpiringSoonProductCouponInfo> restExpiringSoonProductPageGird(Integer offset, Integer size, Long cityId, Long storeId, String storeType, String cusName) {
+        size = getSize(size);
+        Integer page = getPage(offset, size);
+        //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
+        if(null !=storeId && -1L !=storeId){
+            storeIds.clear();
+            storeIds.add(storeId);
+        }
+        PageInfo<CusExpiringSoonProductCouponInfo> expiringSoonProductPageInfo = this.maReportDownloadService.findExpiringSoonProductAll(cityId, storeId, storeType, cusName, page, size,storeIds);
+        return new GridDataVO<CusExpiringSoonProductCouponInfo>().transform(expiringSoonProductPageInfo.getList(), expiringSoonProductPageInfo.getTotal());
+    }
+
+
 
     /**
      * @param
@@ -355,7 +369,7 @@ public class MaReportDownloadRestController extends BaseRestController {
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "收款报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
+        String fileurl = "收款报表-" + DateUtils.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
@@ -582,7 +596,7 @@ public class MaReportDownloadRestController extends BaseRestController {
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "未提货报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
+        String fileurl = "未提货报表-" + DateUtils.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
@@ -726,7 +740,7 @@ public class MaReportDownloadRestController extends BaseRestController {
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "门店预存款-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
+        String fileurl = "门店预存款-" + DateUtils.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
@@ -849,7 +863,7 @@ public class MaReportDownloadRestController extends BaseRestController {
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "导购信用额度变动-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
+        String fileurl = "导购信用额度变动-" + DateUtils.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
@@ -978,7 +992,7 @@ public class MaReportDownloadRestController extends BaseRestController {
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "订单明细报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
+        String fileurl = "订单明细报表-" + DateUtils.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
@@ -1170,7 +1184,7 @@ public class MaReportDownloadRestController extends BaseRestController {
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "订单汇总报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
+        String fileurl = "订单汇总报表-" + DateUtils.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
@@ -1339,7 +1353,7 @@ public class MaReportDownloadRestController extends BaseRestController {
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "配送员代收款报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
+        String fileurl = "配送员代收款报表-" + DateUtils.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
@@ -1487,7 +1501,7 @@ public class MaReportDownloadRestController extends BaseRestController {
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "门店库存明细报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls"; //如  D:/xx/xx/xxx.xls
+        String fileurl = "门店库存明细报表-" + DateUtils.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls"; //如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
@@ -1588,7 +1602,7 @@ public class MaReportDownloadRestController extends BaseRestController {
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "商品出退货明细报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls"; //如  D:/xx/xx/xxx.xls
+        String fileurl = "商品出退货明细报表-" + DateUtils.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls"; //如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
@@ -1759,7 +1773,7 @@ public class MaReportDownloadRestController extends BaseRestController {
         }
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "欠款报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls"; //如  D:/xx/xx/xxx.xls
+        String fileurl = "欠款报表-" + DateUtils.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls"; //如  D:/xx/xx/xxx.xls
         //查询筛选门店信息
         String storeName = null;
         if (null != storeId && -1L != storeId) {
@@ -1940,7 +1954,7 @@ public class MaReportDownloadRestController extends BaseRestController {
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "销量报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls"; //如  D:/xx/xx/xxx.xls
+        String fileurl = "销量报表-" + DateUtils.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls"; //如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
@@ -2447,7 +2461,7 @@ public class MaReportDownloadRestController extends BaseRestController {
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "装饰公司对账单-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
+        String fileurl = "装饰公司对账单-" + DateUtils.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
@@ -2594,6 +2608,151 @@ public class MaReportDownloadRestController extends BaseRestController {
     }
 
 
+    /**
+     * 未提货报表
+     *
+     * @param request
+     * @param response
+     * @param cityId
+     * @param storeId
+     * @param storeType
+     * @param startTime
+     * @param endTime
+     * @param pickType
+     */
+    @GetMapping(value = "/expiringSoonProduct/download")
+    public void notPickGoodsDownload(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId, String storeType, String cusName) {
+        //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
+        if(null !=storeId && -1L !=storeId){
+            storeIds.clear();
+            storeIds.add(storeId);
+        }
+        List<CusExpiringSoonProductCouponInfo> cusExpiringSoonProductCouponList = this.maReportDownloadService.downloadExpiringSoonProduct(cityId, storeId, storeType, cusName, storeIds);
+        ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
+        String shiroName = "";
+        if (null != shiroUser) {
+            shiroName = shiroUser.getName();
+        }
+        response.setContentType("text/html;charset=UTF-8");
+        //创建名称
+        String fileurl = "产品券将逾期报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
+
+        WritableWorkbook wwb = null;
+        try {
+            //创建文件
+            wwb = exportXML(fileurl, response);
+
+            //excel单表最大行数是65535
+            int maxSize = 0;
+            if (cusExpiringSoonProductCouponList != null) {
+                maxSize = cusExpiringSoonProductCouponList.size();
+            }
+            int sheets = maxSize / maxRowNum + 1;
+            //设置excel的sheet数
+            for (int i = 0; i < sheets; i++) {
+                //标题格式
+                WritableCellFormat titleFormat = this.setTitleStyle();
+                //正文格式
+                WritableCellFormat textFormat = this.setTextStyle();
+
+                //工作表，参数0表示这是第一页
+                WritableSheet ws = wwb.createSheet("第" + (i + 1) + "页", i);
+
+                //筛选条件
+                Map<String, String> map = new HashMap<>();
+                if (null != cityId && !(cityId.equals(-1L)) && null != cusExpiringSoonProductCouponList && cusExpiringSoonProductCouponList.size() > 0) {
+                    map.put("城市", cusExpiringSoonProductCouponList.get(0).getCityName());
+                } else {
+                    map.put("城市", "无");
+                }
+                if (null != storeId && !(storeId.equals(-1L)) && null != cusExpiringSoonProductCouponList && cusExpiringSoonProductCouponList.size() > 0) {
+                    map.put("门店", cusExpiringSoonProductCouponList.get(0).getStoreName());
+                } else {
+                    map.put("门店", "无");
+                }
+                if (null != storeType && !("".equals(storeType)) && null != cusExpiringSoonProductCouponList && cusExpiringSoonProductCouponList.size() > 0) {
+                    map.put("门店类型", cusExpiringSoonProductCouponList.get(0).getStoreType());
+                } else {
+                    map.put("门店类型", "无");
+                }
+                if (null != cusName && !("".equals(cusName)) && null != cusExpiringSoonProductCouponList && cusExpiringSoonProductCouponList.size() > 0) {
+                    map.put("顾客姓名", cusExpiringSoonProductCouponList.get(0).getCustomerName());
+                } else {
+                    map.put("顾客姓名", "无");
+                }
+                //设置筛选条件
+                ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
+
+                //列宽
+                int[] columnView = {10, 15, 10, 10, 10, 15, 20, 20, 15, 20, 20, 20, 10, 10, 10, 10, 10, 10, 30};
+                //列标题
+                String[] titles = {"城市","门店类型", "门店名称", "顾客","导购","sku", "商品名称", "获取时间","产品券获取途径","买劵单号", "生效开始时间", "生效结束时间",
+                        "购买价格","购买数量", "购买总价","商品标志"};
+
+                //计算标题开始行号
+                int row = 1;
+                if (null != map && map.size() > 0) {
+                    row = (map.size() + 1) / 2 + 4;
+                }
+
+                int collectRow = row + 1;
+//
+                row += 2;
+//                //设置标题
+                ws = this.setHeader(ws, titleFormat, columnView, titles, row);
+//
+                row += 1;
+                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.NO_BOLD, false,
+                        UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
+
+                //填写表体数据
+                for (int j = 0; j < maxRowNum; j++) {
+                    if (j + i * maxRowNum >= maxSize) {
+                        break;
+                    }
+                    CusExpiringSoonProductCouponInfo cusExpiringSoonProductCouponInfo = cusExpiringSoonProductCouponList.get(j + i * maxRowNum);
+                    ws.addCell(new Label(0, j + row, cusExpiringSoonProductCouponInfo.getCityName(), textFormat));
+                    ws.addCell(new Label(1, j + row, cusExpiringSoonProductCouponInfo.getStoreType(), textFormat));
+                    ws.addCell(new Label(2, j + row, cusExpiringSoonProductCouponInfo.getStoreName(), textFormat));
+                    ws.addCell(new Label(3, j + row, cusExpiringSoonProductCouponInfo.getCustomerName(), textFormat));
+                    ws.addCell(new Label(4, j + row, cusExpiringSoonProductCouponInfo.getSellerName(), textFormat));
+                    ws.addCell(new Label(5, j + row, cusExpiringSoonProductCouponInfo.getSku(), textFormat));
+                    ws.addCell(new Label(6, j + row, cusExpiringSoonProductCouponInfo.getSkuName(), textFormat));
+                    ws.addCell(new Label(7, j + row, cusExpiringSoonProductCouponInfo.getGetTime(), textFormat));
+                    ws.addCell(new Label(8, j + row, cusExpiringSoonProductCouponInfo.getGetType(), textFormat));
+                    ws.addCell(new Label(9, j + row, cusExpiringSoonProductCouponInfo.getGetOrderNumber(), textFormat));
+                    ws.addCell(new Label(10, j + row, cusExpiringSoonProductCouponInfo.getEffectiveStartTime(), textFormat));
+                    ws.addCell(new Label(11, j + row, cusExpiringSoonProductCouponInfo.getEffectiveEndTime().toString(), textFormat));
+                    ws.addCell(new Number(12, j + row, cusExpiringSoonProductCouponInfo.getBuyPrice(), textFormat));
+                    ws.addCell(new Number(13, j + row, cusExpiringSoonProductCouponInfo.getQuantity(), textFormat));
+                    if(null !=cusExpiringSoonProductCouponInfo.getBuyPrice() && null!=cusExpiringSoonProductCouponInfo.getQuantity()){
+                        ws.addCell(new Number(14, j + row, cusExpiringSoonProductCouponInfo.getBuyPrice()*cusExpiringSoonProductCouponInfo.getQuantity(), textFormat));
+                    }
+                    if("COMMON".equals(cusExpiringSoonProductCouponInfo.getGoodsSign())){
+                        ws.addCell(new Label(14, j + row, "普通", textFormat));
+                    }else {
+                        ws.addCell(new Label(14, j + row, "专供", textFormat));
+                    }
+
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+        } finally {
+            if (wwb != null) {
+                try {
+                    wwb.write();//刷新（或写入），生成一个excel文档
+                    wwb.close();//关闭
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
     public WritableWorkbook exportXML(String fileurl, HttpServletResponse response)
             throws IOException {
         response.reset();
@@ -2660,7 +2819,7 @@ public class MaReportDownloadRestController extends BaseRestController {
             }
             row += 1;
             ws.addCell(new Label(3, row, "导出时间:", titleFormat));
-            ws.addCell(new Label(4, row, DateUtil.getDateTimeStr(new Date()), textFormat));
+            ws.addCell(new Label(4, row, DateUtils.getDateTimeStr(new Date()), textFormat));
 
             ws.addCell(new Label(6, row, "导出人:", titleFormat));
             ws.addCell(new Label(7, row, shiroName, textFormat));
@@ -2833,7 +2992,7 @@ public class MaReportDownloadRestController extends BaseRestController {
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "专供对账商品明细报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
+        String fileurl = "专供对账商品明细报表-" + DateUtils.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
@@ -2980,7 +3139,7 @@ public class MaReportDownloadRestController extends BaseRestController {
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "配送报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
+        String fileurl = "配送报表-" + DateUtils.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
@@ -3109,7 +3268,7 @@ public class MaReportDownloadRestController extends BaseRestController {
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "客服考核报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
+        String fileurl = "客服考核报表-" + DateUtils.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {
@@ -3258,7 +3417,7 @@ public class MaReportDownloadRestController extends BaseRestController {
 
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
-        String fileurl = "郑州华润产品销顾终端出货销量报表-" + DateUtil.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
+        String fileurl = "郑州华润产品销顾终端出货销量报表-" + DateUtils.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
 
         WritableWorkbook wwb = null;
         try {

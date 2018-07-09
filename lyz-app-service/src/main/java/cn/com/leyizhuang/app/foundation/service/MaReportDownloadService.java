@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.foundation.pojo.CusExpiringSoonProductCouponInfo;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.reportDownload.*;
 import com.github.pagehelper.PageInfo;
@@ -94,4 +95,8 @@ public interface MaReportDownloadService {
     PageInfo<PhotoOrderCheckDO> findPhotoOrderCheckDOAll(Long cityId, String startTime, String endTime, String keywords, Integer page, Integer size);
 
     List<PhotoOrderCheckDO> downloadPhotoOrderCheckDO(Long cityId, String startTime, String endTime, String keywords);
+
+    PageInfo<CusExpiringSoonProductCouponInfo> findExpiringSoonProductAll(Long cityId, Long storeId, String storeType, String cusName, Integer page, Integer size, List<Long> storeIds);
+
+    List<CusExpiringSoonProductCouponInfo> downloadExpiringSoonProduct(Long cityId, Long storeId, String storeType, String cusName, List<Long> storeIds);
 }

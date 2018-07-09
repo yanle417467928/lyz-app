@@ -23,7 +23,8 @@ public enum StorePreDepositChangeType {
     JX_PRICE_DIFFERENCE_RETURN("JX_PRICE_DIFFERENCE_RETURN", "经销差价返还"),
     JX_PRICE_DIFFERENCE_DEDUCTION("JX_PRICE_DIFFERENCE_DEDUCTION", "经销差价扣除"),
     WITHDRAW("WITHDRAW", "提现"),
-    RETURN_WITHDRAW("RETURN_WITHDRAW", "提现退还");
+    RETURN_WITHDRAW("RETURN_WITHDRAW", "提现退还"),
+    REPAYMENT_BILL("REPAYMENT_BILL","信用金还款");
 
     private final String value;
     private final String description;

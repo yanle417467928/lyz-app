@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.MaReportDownloadDAO;
+import cn.com.leyizhuang.app.foundation.pojo.CusExpiringSoonProductCouponInfo;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.reportDownload.*;
 import cn.com.leyizhuang.app.foundation.service.MaReportDownloadService;
@@ -393,4 +394,19 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
         }
         return this.maReportDownloadDAO.findAccountGoodsItemsDOHR(cityId, storeId, storeType, startTime, endTime, keywords, storeIds);
     }
+
+
+    @Override
+    public PageInfo<CusExpiringSoonProductCouponInfo> findExpiringSoonProductAll(Long cityId, Long storeId, String storeType, String cusName, Integer page, Integer size, List<Long> storeIds) {
+        PageHelper.startPage(page, size);
+        List<CusExpiringSoonProductCouponInfo> cusExpiringSoonProductCouponInfoList = this.maReportDownloadDAO.findExpiringSoonProductAll(cityId, storeId, storeType,cusName, storeIds);
+        return new PageInfo<>(cusExpiringSoonProductCouponInfoList);
+    }
+
+    @Override
+    public List<CusExpiringSoonProductCouponInfo> downloadExpiringSoonProduct(Long cityId, Long storeId, String storeType, String cusName, List<Long> storeIds) {
+        List<CusExpiringSoonProductCouponInfo> cusExpiringSoonProductCouponInfoList = this.maReportDownloadDAO.findExpiringSoonProductAll(cityId, storeId, storeType,cusName, storeIds);
+        return cusExpiringSoonProductCouponInfoList;
+    }
+
 }

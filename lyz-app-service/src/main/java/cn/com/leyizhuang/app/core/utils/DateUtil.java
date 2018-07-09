@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.core.utils;
 
+import cn.com.leyizhuang.app.core.constant.AppConstant;
+import cn.com.leyizhuang.common.util.CountUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -560,27 +562,115 @@ public class DateUtil {
     }
 
     /**
-     *  获取当前日期与指定日期相差天数
+     *  获取指定日期的还款截止日
      * @return
      */
-    public static Integer getDifferenceFatalism (Integer date) {
-        if (null == date){
-            return 0;
+    public static Date getDifferenceFatalism (Integer billDate,Integer repaymentDeadlineDate, Date startDate) {
+        if (null == repaymentDeadlineDate || null == billDate){
+            return startDate;
         }
         Calendar calendar = Calendar.getInstance();
-
+        calendar.setTime(startDate);
         int days = calendar.get(Calendar.DAY_OF_MONTH);
-        if (days > date){
-            return days - date;
+        if (days > repaymentDeadlineDate){
+            if (days >= billDate){
+                calendar.set(Calendar.DATE, repaymentDeadlineDate);
+                calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) + 2);
+            } else {
+                calendar.set(Calendar.DATE, repaymentDeadlineDate);
+                calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) + 1);
+            }
         } else {
-            calendar.set(Calendar.DAY_OF_MONTH, 0);
-            Integer inDays = calendar.get(Calendar.DAY_OF_MONTH);
-            return (inDays - date) + days;
+            if (days >= billDate){
+                calendar.set(Calendar.DATE, repaymentDeadlineDate);
+                calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) + 1);
+            } else {
+                calendar.set(Calendar.DATE, repaymentDeadlineDate);
+            }
         }
+        return calendar.getTime();
     }
 
-    public static void main(String[] args) {
+    /**
+     * @title   获取指定时间月份
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/7/3
+     */
+    public static Integer getMonthByDate(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return cal.get(Calendar.MONTH) + 1;
+    }
 
-        System.out.println(DateUtil.getDifferenceFatalism(25));
+    /**
+     * @title   获取下月的今天的前一天
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/7/3
+     */
+    public static Date getNextMonthByDateBeforOne(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) + 1);
+        cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH) - 1);
+        return cal.getTime();
+    }
+
+    /**
+     * @title   获取前一个月的今天
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/7/4
+     */
+    public static Date getbeforMonthByDate(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) - 1);
+        cal.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH));
+        return cal.getTime();
+    }
+
+    /**
+     * @title   获取账期
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/7/3
+     */
+    public static Date getBillDate(Date date, Integer month, Integer billDay) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.MONTH, cal.get(Calendar.MONTH) + month);
+        cal.set(Calendar.DAY_OF_MONTH, billDay);
+        return cal.getTime();
+    }
+
+    public static Date getToDayOfStart(Date date) {
+        String str = getDateStr(date);
+        Date date1 = parseDate(str);
+        return date1;
+    }
+
+
+    public static void main(String[] args) {
+        Integer overdueDays = DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(5, 15, getToDayOfStart(DateUtil.dateFromString("2018/05/02 23:22:01"))), new Date());
+        System.out.println(overdueDays);
+        System.out.println(CountUtil.mul(2065, 1, overdueDays, AppConstant.INTEREST_RATE_UNIT));
+        System.out.println(getbeforMonthByDate(new Date()));
+        System.out.println(getMonthByDate(DateUtil.dateFromString("2018/1/05 00:00:01")));
+        System.out.println(getDateStr(getBillDate(new Date(), -1, 5)));
+        System.out.println(DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(20, 30, DateUtil.dateFromString("2016/02/05 00:00:01")), DateUtil.dateFromString("2016/03/25 00:00:01")));
     }
 }

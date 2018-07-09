@@ -132,6 +132,11 @@ public class WmsToAppOrderServiceImpl implements WmsToAppOrderService {
         return -1;
     }
 
+    @Override
+    public  List<WtaWarehouseWholeSplitToUnit> findWtaWarehouseWholeSplitToUnitAll() {
+            return wmsToAppOrderDAO.findWtaWarehouseWholeSplitToUnitAll();
+    }
+
 
     /**
      * 异步处理整转零逻辑

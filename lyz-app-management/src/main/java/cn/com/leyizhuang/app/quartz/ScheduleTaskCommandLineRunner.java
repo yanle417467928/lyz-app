@@ -1,10 +1,7 @@
 package cn.com.leyizhuang.app.quartz;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.service.MaClearTempCreditService;
-import cn.com.leyizhuang.app.quartz.task.AutoResendWMSScheduleTask;
-import cn.com.leyizhuang.app.quartz.task.ClearTempCreditScheduleTask;
-import cn.com.leyizhuang.app.quartz.task.ScanningUnpaidOrderTask;
-import cn.com.leyizhuang.app.quartz.task.SendSellDetailsToHQTask;
+import cn.com.leyizhuang.app.quartz.task.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -53,6 +50,21 @@ public class ScheduleTaskCommandLineRunner implements CommandLineRunner {
             QuartzManager.addJob("autoResendWMS", "jobGroup4", "trigger4", "triggerGroup4", AutoResendWMSScheduleTask.class, autoResendWMSCron);
         } else {
             throw new RuntimeException("autoResendWMS为空");
+        }
+
+     /*   String sendMsgForExpiringSoonProductCouponCron = maClearTempCreditService.getCron(6L);
+        if (StringUtils.isNotBlank(sendMsgForExpiringSoonProductCouponCron)) {
+            QuartzManager.addJob("sendMsgForExpiringSoonProductCoupon", "jobGroup5", "trigger5", "triggerGroup5", sendProductSMSTask.class, sendMsgForExpiringSoonProductCouponCron);
+        } else {
+           // throw new RuntimeException("sendMsgForExpiringSoonProductCouponCron为空");
+        }*/
+
+        //账期定时任务
+        String billDateTaskCron = maClearTempCreditService.getCron(6L);
+        if (StringUtils.isNotBlank(autoResendWMSCron)) {
+            QuartzManager.addJob("billDateTask", "jobGroup6", "trigger6", "triggerGroup6", BillDateTask.class, billDateTaskCron);
+        } else {
+            throw new RuntimeException("billDateTask为空");
         }
     }
 }

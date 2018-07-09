@@ -291,6 +291,27 @@
         (#{cusId}, #{useTime}, #{couponId}, #{referenceNumber}, #{changeType}, #{changeTypeDesc},#{operatorId}, #{operatorType}, #{operatorIp}, #{remark})
     </insert>
 
+
+    <select id="findExpiringSoonProductCoupon" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.CusProductCouponMsgInfo">
+        SELECT
+        c.sku_name,
+        a.effective_end_time,
+        b.mobile
+        FROM
+        cus_customer_product_coupon a
+        LEFT JOIN
+        cus_customer b ON  a.cus_id=b.cus_id
+        LEFT JOIN gds_goods c ON  a.gid=c.gid
+        where
+        a.is_used =0
+        AND
+        a.`status` = 1
+        AND
+        a.effective_end_time >= now()
+        AND
+        <![CDATA[  DATE_SUB(a.effective_end_time, INTERVAL 7 DAY) <=now()]]>
+    </select>
     <select id="findCustomerProductCouponByOrdNoAndSku" resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon">
          SELECT
             ccpc.cus_id customerId,

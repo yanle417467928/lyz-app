@@ -431,7 +431,9 @@ public class OrderUtils {
     public static String generateBillNo(String storeCode) {
         StringBuilder orderNumberTemp = new StringBuilder();
         orderNumberTemp.append("B_");
-        orderNumberTemp.append(storeCode);
+        if (null != storeCode){
+            orderNumberTemp.append(storeCode);
+        }
         Calendar calendar = Calendar.getInstance();
         Date date = calendar.getTime();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");

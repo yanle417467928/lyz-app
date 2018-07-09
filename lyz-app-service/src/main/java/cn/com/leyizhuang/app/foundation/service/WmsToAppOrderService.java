@@ -80,6 +80,14 @@ public interface WmsToAppOrderService {
      */
     int saveWtaWarehouseWholeSplitToUnit(WtaWarehouseWholeSplitToUnit wholeSplitToUnit);
 
+    /**
+     * 查询所有未处理整转零
+     *
+     * @param
+     * @return
+     */
+    List<WtaWarehouseWholeSplitToUnit> findWtaWarehouseWholeSplitToUnitAll();
+
 
     /**
      * 处理整转零信息

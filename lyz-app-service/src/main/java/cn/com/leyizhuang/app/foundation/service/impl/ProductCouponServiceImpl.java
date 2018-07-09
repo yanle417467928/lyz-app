@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.core.constant.OrderCouponType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
 import cn.com.leyizhuang.app.foundation.dao.ProductCouponDAO;
+import cn.com.leyizhuang.app.foundation.pojo.CusProductCouponMsgInfo;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon;
 import cn.com.leyizhuang.app.foundation.pojo.CustomerProductCouponChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.ProductCoupon;
@@ -14,12 +15,14 @@ import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf
 import cn.com.leyizhuang.app.foundation.pojo.response.OrderUsableProductCouponResponse;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.app.foundation.service.ProductCouponService;
+import cn.com.leyizhuang.app.foundation.service.SmsAccountService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,7 +30,7 @@ import java.util.List;
  * @author GenerationRoad
  * @date 2017/10/19
  */
-@Service
+@Service("productCouponService")
 @Transactional
 public class ProductCouponServiceImpl implements ProductCouponService {
 
@@ -38,6 +41,9 @@ public class ProductCouponServiceImpl implements ProductCouponService {
     private OrderDAO orderDAO;
 
     private GoodsService goodsService;
+
+    @Autowired
+    private SmsAccountService smsAccountService;
 
     @Override
     public List<OrderUsableProductCouponResponse> findProductCouponByCustomerIdAndGoodsId(Long userId, List<Long> goodsIds) {
@@ -72,8 +78,8 @@ public class ProductCouponServiceImpl implements ProductCouponService {
     }
 
     @Override
-    public  List<OrderCouponInfo>  findOrderCouponByCouponTypeAndOrderId(Long orderId, OrderCouponType couponType) {
-        return productCouponDAO.findOrderCouponByCouponTypeAndOrderId(orderId,couponType);
+    public List<OrderCouponInfo> findOrderCouponByCouponTypeAndOrderId(Long orderId, OrderCouponType couponType) {
+        return productCouponDAO.findOrderCouponByCouponTypeAndOrderId(orderId, couponType);
     }
 
     @Override
@@ -89,22 +95,24 @@ public class ProductCouponServiceImpl implements ProductCouponService {
 
     /**
      * 新增产品券模版
+     *
      * @param productCoupon
      */
     @Override
-    public void addProductCoupon(ProductCoupon productCoupon){
-        if (productCoupon != null){
+    public void addProductCoupon(ProductCoupon productCoupon) {
+        if (productCoupon != null) {
             productCouponDAO.addProductCoupon(productCoupon);
         }
     }
 
     /**
      * 更新产品券模版
+     *
      * @param productCoupon
      */
     @Override
-    public void updateProductCoupon(ProductCoupon productCoupon){
-        if (productCoupon != null){
+    public void updateProductCoupon(ProductCoupon productCoupon) {
+        if (productCoupon != null) {
             productCouponDAO.updateProductCoupon(productCoupon);
         }
     }
@@ -114,9 +122,9 @@ public class ProductCouponServiceImpl implements ProductCouponService {
      */
     @Override
     @Transactional
-    public void deletedProductCoupon(List<Long> ids){
-        if (ids != null && ids.size() > 0){
-            for (Long id : ids){
+    public void deletedProductCoupon(List<Long> ids) {
+        if (ids != null && ids.size() > 0) {
+            for (Long id : ids) {
                 ProductCoupon productCoupon = productCouponDAO.queryProductCouponById(id);
                 productCoupon.setStatus(false);
                 productCouponDAO.updateProductCoupon(productCoupon);
@@ -125,22 +133,22 @@ public class ProductCouponServiceImpl implements ProductCouponService {
     }
 
     @Override
-    public PageInfo<ProductCoupon> queryPage(Integer page, Integer size, String keywords,String startTime,String endTime) {
+    public PageInfo<ProductCoupon> queryPage(Integer page, Integer size, String keywords, String startTime, String endTime) {
         PageHelper.startPage(page, size);
-        if(null!=startTime && !"".equals(startTime)){
-            startTime+=" 00:00:00";
+        if (null != startTime && !"".equals(startTime)) {
+            startTime += " 00:00:00";
         }
-        if(null!=endTime && !"".equals(endTime)){
-            endTime+=" 23:59:59";
+        if (null != endTime && !"".equals(endTime)) {
+            endTime += " 23:59:59";
         }
-        List<ProductCoupon> list = productCouponDAO.queryByKeywords(keywords,startTime,endTime);
+        List<ProductCoupon> list = productCouponDAO.queryByKeywords(keywords, startTime, endTime);
         return new PageInfo<ProductCoupon>(list);
     }
 
     @Override
-    public ProductCoupon queryProductCouponById(Long id){
+    public ProductCoupon queryProductCouponById(Long id) {
 
-        if (id == null){
+        if (id == null) {
             return null;
         }
 
@@ -154,8 +162,8 @@ public class ProductCouponServiceImpl implements ProductCouponService {
     }
 
     @Override
-    public void updateProductCouponIsReturn(Long id,Boolean isReturn) {
-        productCouponDAO.updateProductCouponIsReturn(id,isReturn);
+    public void updateProductCouponIsReturn(Long id, Boolean isReturn) {
+        productCouponDAO.updateProductCouponIsReturn(id, isReturn);
     }
 
 
@@ -165,13 +173,13 @@ public class ProductCouponServiceImpl implements ProductCouponService {
     }
 
     @Override
-    public void activateCusProductCoupon(String ordNo){
-        if (StringUtils.isNotBlank(ordNo)){
+    public void activateCusProductCoupon(String ordNo) {
+        if (StringUtils.isNotBlank(ordNo)) {
             // 取半年后时间为失效时间
             LocalDateTime now = LocalDateTime.now();
             LocalDateTime effectiveEndTime = now.plusMonths(6);
 
-            productCouponDAO.activateCusProductCoupon(ordNo,effectiveEndTime);
+            productCouponDAO.activateCusProductCoupon(ordNo, effectiveEndTime);
         }
 
         // 找到这一单中的FW产品券 并扣减产品券原订单高端产品可退货数量
@@ -187,6 +195,23 @@ public class ProductCouponServiceImpl implements ProductCouponService {
 //            orderDAO.getOrderGoodsByOrderNumberAndSkuAndGoodsLineType(ordNo,bindSku, AppGoodsLineType.GOODS.getValue());
 //        }
 
+    }
+
+    @Override
+    public List<CusProductCouponMsgInfo> findExpiringSoonProductCoupon() {
+       return productCouponDAO.findExpiringSoonProductCoupon();
+    }
+
+
+    @Override
+    public void sendMsgForExpiringSoonProductCoupon(){
+        List<CusProductCouponMsgInfo> ExpiringSoonProductCouponList = this.findExpiringSoonProductCoupon();
+        for(CusProductCouponMsgInfo cusProductCouponMsgInfo:ExpiringSoonProductCouponList){
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String efTime =  sdf.format(cusProductCouponMsgInfo.getEffectiveEndTime()).toString();
+            String msg ="尊敬的顾客,您购买的"+cusProductCouponMsgInfo.getSkuName()+"产品劵将于"+efTime+"失效,请及时使用";
+            smsAccountService.commonSendGBKSms(cusProductCouponMsgInfo.getMobile(), msg);
+        }
     }
 
     @Override

@@ -184,6 +184,25 @@
 			and (ggp.price_type = rc.rank_code or ggp.price_type = 'common')
 			ORDER BY ggp.vip_price LIMIT 1
     </select>
+
+    <select id="findGoodsPriceByGoodsIDAndStoreIDAndEmpId" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
+        SELECT
+        ggp.*
+        FROM
+        gds_goods_price ggp
+        LEFT JOIN emp_employee e ON #{storeID} = ggp.store_id
+        WHERE
+        ggp.gid = #{goodsID}
+        AND ggp.store_id = #{storeID}
+        AND ggp.start_time &lt; NOW()
+        AND (
+        ggp.end_time IS NULL
+        OR ggp.end_time > NOW()
+        )
+        AND e.emp_id = #{empId}
+        AND ggp.price_type = 'common'
+    </select>
+
     <select id="findCustomerGoodsPriceListByGoodsIdsAndUserId" resultType=
             "cn.com.leyizhuang.app.foundation.pojo.response.GiftListResponseGoods">
         SELECT
@@ -216,7 +235,8 @@
         SELECT
         gid,
         sku,
-        retail_price
+        retail_price,
+        min(vip_price)AS vip_price
         FROM gds_goods_price
         WHERE store_id = #{storeId}
         AND sku in
@@ -225,7 +245,6 @@
         </foreach>
         AND start_time &lt; NOW()
         AND (end_time IS NULL OR end_time &gt; NOW())
-        AND price_type = 'COMMON'
     </select>
 
     <select id="findGoodsPriceListByStoreIdAndPriceType" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">

@@ -2,8 +2,12 @@ package cn.com.leyizhuang.app.web.controller.views.decorativeCompany;
 
 import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.BillInfoResponse;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.MaFitBillVO;
+import cn.com.leyizhuang.app.web.controller.rest.MaFitBillRestController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,24 +25,25 @@ import javax.annotation.Resource;
 @RequestMapping(value = "/views/admin/fit/bill")
 public class MaDecoratorBillViewController {
 
+    private final Logger logger = LoggerFactory.getLogger(MaDecoratorBillViewController.class);
+
     @Resource
     private MaFitBillService maFitBillService;
 
     @Resource
     private MaStoreService maStoreService;
 
+    @Resource
+    private BillInfoService billInfoService;
 
     @RequestMapping(method = RequestMethod.GET, value = "/notOutList")
     public String toNotOutBillPage() {
         return "/views/decorativeCompany/fit_company_notOutBill_page";
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/notOutBillDetail/{billNo}")
-    public String notOutBillDetailPage(@PathVariable String billNo, ModelMap map) {
-        BillInfoDO maFitBillVO = maFitBillService.getFitBillByBillNo(billNo);
-        StorePreDeposit storePreDeposit = maStoreService.findByStoreId(maFitBillVO.getStoreId());
-        map.addAttribute("maFitBillVO", maFitBillVO);
-        map.addAttribute("storePreDeposit", storePreDeposit.getBalance());
+    @RequestMapping(method = RequestMethod.GET, value = "/notOutBillDetail/{storeId}")
+    public String notOutBillDetailPage(@PathVariable Long storeId, ModelMap map) {
+        map.addAttribute("storeId",storeId);
         return "/views/decorativeCompany/fit_company_notOutBill_detail";
     }
 
@@ -50,7 +55,8 @@ public class MaDecoratorBillViewController {
     @RequestMapping(method = RequestMethod.GET, value = "/historyDetail/{billNo}")
     public String HistoryDetailBill(@PathVariable String billNo, ModelMap map) {
         BillInfoDO maFitBillVO = maFitBillService.getFitBillByBillNo(billNo);
-        map.addAttribute("maFitBillVO", maFitBillVO);
+        BillInfoResponse billInfoResponse = BillInfoDO.transfer(maFitBillVO);
+        map.addAttribute("maFitBillVO", billInfoResponse);
         return "/views/decorativeCompany/fit_company_historyDetailBill_detail";
     }
 

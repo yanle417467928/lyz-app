@@ -238,6 +238,24 @@
         LIMIT 1
     </select>
 
+    <select id="getDefaultDeliveryAddressByDeliveryId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse">
+        SELECT
+        id,
+        receiver         delivery_name,
+        receiver_phone   delivery_phone,
+        delivery_city    delivery_city,
+        delivery_county  delivery_county,
+        delivery_street  delivery_street,
+        residence_name   village_name,
+        detailed_address detailed_address,
+        delivery_province deliveryProvince,
+        is_default,
+        estate_info
+        FROM delivery_address
+        WHERE id = #{deliveryId}
+    </select>
+
     <select id="findAllAreaManagement" resultType="cn.com.leyizhuang.app.foundation.pojo.AreaManagementDO">
         SELECT
             id,

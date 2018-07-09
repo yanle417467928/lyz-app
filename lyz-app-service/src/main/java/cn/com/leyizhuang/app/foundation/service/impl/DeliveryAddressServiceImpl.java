@@ -95,6 +95,11 @@ public class DeliveryAddressServiceImpl implements DeliveryAddressService {
     }
 
     @Override
+    public DeliveryAddressResponse getDefaultDeliveryAddressByDeliveryId(Long deliveryId) {
+            return deliveryAddressDAO.getDefaultDeliveryAddressByDeliveryId(deliveryId);
+    }
+
+    @Override
     public void clearDefaultAddressByUserIdAndIdentityType(Long userId, AppIdentityType identityType) {
         if (null != userId && null != identityType) {
             deliveryAddressDAO.clearDefaultAddressByUserIdAndIdentityType(userId, identityType);

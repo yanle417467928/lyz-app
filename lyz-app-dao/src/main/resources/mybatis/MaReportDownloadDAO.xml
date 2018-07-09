@@ -1760,7 +1760,8 @@
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
-        'FINISHED'
+        'FINISHED',
+        'REJECTED'
         )
         <if test="null!=startTime and ''!=startTime">
             AND obd.pay_up_time >= #{startTime}
@@ -1982,7 +1983,8 @@
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
-        'FINISHED'
+        'FINISHED',
+        'REJECTED'
         )
         <if test="null!=startTime and ''!=startTime">
             AND wa.end_dt >= #{startTime}
@@ -2215,7 +2217,7 @@
         left JOIN cus_customer cc on cc.cus_id = ob.customer_id
         where
         1=1
-        and ob.`status` IN ('FINISHED')
+        and ob.`status` IN ('FINISHED','REJECTED')
         <if test="null!=startTime and ''!=startTime">
             AND
             wro.c_end_dt > #{startTime}
@@ -2426,14 +2428,15 @@
         LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku  and og.goods_line_type = 'PRODUCT_COUPON'
         LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
-        LEFT JOIN emp_employee e2 on e2.emp_id = s.sales_manager
+        LEFT JOIN emp_employee e2 on e2.emp_id = ob.sales_manager_id
         LEFT JOIN st_store st2 on st2.store_id = e2.store_id
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
         left JOIN cus_customer cc on cc.cus_id = ob.customer_id
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
-        'FINISHED'
+        'FINISHED',
+        'REJECTED'
         )
         <if test="null!=startTime and ''!=startTime">
             AND obd.pay_up_time >= #{startTime}
@@ -2527,14 +2530,14 @@
         LEFT JOIN ord_return_product_coupon oci on orb.roid = oci.roid and org.sku = oci.sku and org.goods_line_type = 'PRODUCT_COUPON'
         LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.pcid
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
-        LEFT JOIN emp_employee e2 on e2.emp_id = s.sales_manager
+        LEFT JOIN emp_employee e2 on e2.emp_id = ob.sales_manager_id
         LEFT JOIN st_store st2 on st2.store_id = e2.store_id
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
         left JOIN cus_customer cc on cc.cus_id = ob.customer_id
 
         where
         1=1
-        and ob.`status` IN ('FINISHED')
+        and ob.`status` IN ('FINISHED','REJECTED')
         <if test="null!=startTime and ''!=startTime">
             AND
             wro.c_end_dt > #{startTime}
@@ -3164,6 +3167,58 @@
         </if>
         GROUP BY po.id
         ORDER BY po.create_time ASC
+    </select>
+
+
+    <select id="findExpiringSoonProductAll"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.CusExpiringSoonProductCouponInfo">
+        SELECT
+        ci.`name`  cityName,
+        s.store_name storeName,
+        s.store_type storeType,
+        c.name  customerName,
+        e.`name` sellerName,
+        g.sku_name  skuName,
+        g.sku sku,
+        ccpc.quantity quantity,
+        ccpc.get_type getType,
+        ccpc.get_time getTime,
+        ccpc.get_ord_no getOrderNumber,
+        ccpc.buy_price buyPrice,
+        ccpc.effective_start_time effectiveStartTime,
+        ccpc.effective_end_time effectiveEndTime,
+        ccpc.goods_sign goodsSign
+        FROM
+        cus_customer_product_coupon ccpc
+        LEFT JOIN st_store s ON ccpc.store_id =s.store_id
+        LEFT JOIN cus_customer c ON ccpc.cus_id =c.cus_id
+        LEFT JOIN emp_employee e ON e.emp_id = ccpc.seller_id
+        LEFT JOIN gds_goods g ON ccpc.gid =g.gid
+        LEFT JOIN city ci on ci.city_id = c.city_id
+        where
+        ccpc.is_used =0
+        AND
+        ccpc.`status` = 1
+        AND
+        ccpc.effective_end_time >= now()
+        AND
+        <![CDATA[ DATE_SUB(ccpc.effective_end_time, INTERVAL 7 DAY)<=now() ]]>
+        <if test="null != storeId and -1 != storeId">
+            AND ccpc.store_id = #{storeId}
+        </if>
+        <if test="null != cityId and -1 != cityId">
+            AND c.city_id = #{cityId}
+        </if>
+        <if test="null !=cusName  and ''!=cusName ">
+            AND c.name LIKE concat("%",#{cusName},"%")
+        </if>
+        <if test="null != storeType and ''!=storeType">
+            AND s.store_type =#{storeType}
+        </if>
+        AND ccpc.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
     </select>
 
 </mapper>

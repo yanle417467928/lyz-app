@@ -502,7 +502,8 @@ public class WeChatPayController {
                                     // productCouponService.activateCusProductCoupon(outTradeNo);
                                 }
                             } else if (paymentDataDO.getPaymentType() == PaymentDataType.BILLPAY) {
-                                if (null != paymentDataDO.getId() && paymentDataDO.getTotalFee().equals(Double.parseDouble(totalFee))) {
+                                logger.info("weChatReturnSync,微信支付异步回调接口,回调单据类型:{}", "账单还款");
+                                if (null != paymentDataDO.getId() && paymentDataDO.getTotalFee().equals(totalFeeParse)) {
                                     String orderNumber = paymentDataDO.getOrderNumber();
                                     paymentDataDO.setTradeNo(tradeNo);
                                     paymentDataDO.setTradeStatus(PaymentDataStatus.TRADE_SUCCESS);
@@ -511,7 +512,7 @@ public class WeChatPayController {
                                     logger.info("weChatReturnSync ,微信支付异步回调接口，支付数据记录信息 paymentDataDO:{}",
                                             paymentDataDO);
                                     //处理第三方支付成功之后订单相关事务
-                                    billInfoService.handleBillRepaymentAfterOnlinePayUp(orderNumber, OnlinePayType.WE_CHAT);
+                                    billInfoService.handleBillRepaymentAfterOnlinePayUp(orderNumber, OnlinePayType.WE_CHAT, paymentDataDO.getAppIdentityType().getValue());
                                     //将收款记录入拆单消息队列
                                     sinkSender.sendRechargeReceipt(orderNumber);
                                     logger.warn("weChatReturnSync OUT,微信支付异步回调接口处理成功，出参 result:{}", "success");
@@ -588,6 +589,8 @@ public class WeChatPayController {
 
         PaymentDataDO paymentDataDO = new PaymentDataDO(userId, outTradeNo, repaymentNo, identityType, AppApplicationConstant.wechatReturnUrlAsnyc,
                 totalFeeParse, PaymentDataStatus.WAIT_PAY, OnlinePayType.WE_CHAT, "账单还款");
+        paymentDataDO.setPaymentType(PaymentDataType.BILLPAY);
+        paymentDataDO.setPaymentTypeDesc(PaymentDataType.BILLPAY.getDescription());
         this.paymentDataService.save(paymentDataDO);
 
         try {

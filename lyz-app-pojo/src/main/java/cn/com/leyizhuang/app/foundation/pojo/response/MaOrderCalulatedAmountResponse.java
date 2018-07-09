@@ -40,4 +40,8 @@ public class MaOrderCalulatedAmountResponse {
      * 运费
      */
     private Double freight;
+    /**
+     * 订单应付金额
+     */
+    private Double totalOrderAmount;
 }
