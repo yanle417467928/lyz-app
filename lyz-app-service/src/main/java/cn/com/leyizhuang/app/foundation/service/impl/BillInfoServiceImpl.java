@@ -345,7 +345,7 @@ public class BillInfoServiceImpl implements BillInfoService {
         List<BillRepaymentGoodsInfoResponse> currentPaidOrderDetails = new ArrayList<>();
         List<BillRepaymentGoodsInfoResponse> currentNotPayOrderDetails = new ArrayList<>();
         List<BillRepaymentGoodsInfoResponse> beforNotPayOrderDetails = new ArrayList<>();
-        Double billTotalAmount = 0D; // 账单总金额：本期账单金额+上期未还账单金额+上期滞纳金+本期调整金额
+        Double billTotalAmount = 0D; // 账单总金额：本期账单金额+本期调整金额+上期未还账单金额+上期未还滞纳金+上期已还+上期已还滞纳金
         Double currentBillAmount = 0D; // 本期账单金额
         Double currentAdjustmentAmount = 0D; // 本期调整金额
         Double currentPaid = 0D; // 本期已还
@@ -407,15 +407,15 @@ public class BillInfoServiceImpl implements BillInfoService {
         fees = this.AddAllInterestAmount(beforNotPayOrderDetails);
 
         // 账单总金额
-        billTotalAmount = CountUtil.add(currentBillAmount, currentAdjustmentAmount, beforNotPay, fees);
+        billTotalAmount = CountUtil.add(currentBillAmount, currentAdjustmentAmount, beforNotPay, fees,billInfoDO.getPriorPaidBillAmount(),billInfoDO.getPriorPaidInterestAmount());
 
         response.setBillTotalAmount(billTotalAmount);
         response.setCurrentBillAmount(currentBillAmount);
         response.setCurrentAdjustmentAmount(currentAdjustmentAmount);
         response.setCurrentPaidAmount(billInfoDO.getCurrentPaidAmount());
         response.setCurrentUnpaidAmount(currentNotPay);
-        response.setPriorNotPaidBillAmount(beforNotPay);
-        response.setPriorNotPaidInterestAmount(fees);
+        response.setPriorNotPaidBillAmount(CountUtil.add(beforNotPay,billInfoDO.getPriorPaidBillAmount()));
+        response.setPriorNotPaidInterestAmount(CountUtil.add(fees,billInfoDO.getPriorPaidInterestAmount()));
         response.setCurrentShouldPayAmount(CountUtil.sub(response.getBillTotalAmount(),response.getCurrentPaidAmount()));
         return response;
     }

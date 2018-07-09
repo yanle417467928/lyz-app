@@ -347,11 +347,15 @@
             },
             success: function (result) {
                 clearTimeout($global.timer);
-                $("#billAmount").val(parseFloat(result));
-                $("#billModal").unbind('click').click(function(){
-                    /*chooseCity(id);*/
-                });
-                $('#billModal').modal('show');
+                if(parseFloat(result) >= 0) {
+                    $("#billAmount").val(parseFloat(result));
+                    $("#billModal").unbind('click').click(function () {
+                        /*chooseCity(id);*/
+                    });
+                    $('#billModal').modal('show');
+                } else {
+                    $notify.danger('还款金额不能小于零');
+                }
             }
         });
 
