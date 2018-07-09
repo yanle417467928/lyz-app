@@ -133,7 +133,7 @@ public class MaDecorationCompanyCreditBillingRestController extends BaseRestCont
         logger.info("创建装饰公司信用金账单 createCreditBilling 入参 orderNumbers{}，result", orderNumbers, result);
         if (!result.hasErrors()) {
             try {
-                if (null != creditBillingDTO && creditBillingDTO.getBillAmount() != null && creditBillingDTO.getBillAmount() != 0D){
+                if (null != creditBillingDTO && creditBillingDTO.getBillAmount() != null && creditBillingDTO.getBillAmount() >= 0D){
                     this.maDecorationCompanyCreditBillingService.createCreditBilling(orderNumbers, creditBillingDTO);//
                     //更改订单为已付清
                     if (null != orderNumbers && orderNumbers.length > 0) {
@@ -147,7 +147,7 @@ public class MaDecorationCompanyCreditBillingRestController extends BaseRestCont
                     }
                 } else {
                     logger.info("创建装饰公司信用金账单 createCreditBilling");
-                    return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "变更金额不能为零！", null);
+                    return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "变更金额不能小于零！", null);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
