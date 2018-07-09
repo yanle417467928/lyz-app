@@ -108,8 +108,6 @@
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
-        AND
-        b.is_paid !=0
         order by b.create_time DESC
     </select>
 
