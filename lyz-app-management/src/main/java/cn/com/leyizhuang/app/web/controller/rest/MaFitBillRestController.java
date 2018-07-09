@@ -283,6 +283,28 @@ public class MaFitBillRestController extends BaseRestController {
                 List<BillorderDetailsRequest> billorderDetailsRequestList = objectMapper.readValue(billorderDetailsRequest, javaType1);
                 String billNo = billPaymentData.getBillNo();
                 BillInfoDO maFitBillVO = maFitBillService.getFitBillByBillNo(billNo);
+                List<Long> orderIds = new ArrayList<>();
+                List<Long> returnIds = new ArrayList<>();
+                for (BillorderDetailsRequest request : billorderDetailsRequestList){
+                    if (request.getOrderType().equals("order")){
+                        orderIds.add(request.getId());
+                    }else if (request.getOrderType().equals("return")){
+                        returnIds.add(request.getId());
+                    }
+                }
+                List<BillRepaymentGoodsInfoResponse> paidOrderDetails = billInfoService.findPaidOrderDetailsByOids(orderIds,maFitBillVO.getStoreId());
+                if (paidOrderDetails != null && paidOrderDetails.size() > 0) {
+                    String msg = "存在已经还款订单";
+                    for (int i = 0; i < paidOrderDetails.size(); i++) {
+                        if (i < 3) {
+                            msg += " " + paidOrderDetails.get(i).getOrderNo() + " ";
+                        } else {
+                            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, msg, null);
+                            logger.info("toPayPage OUT,跳转账单支付页面，出参 resultDTO:{}", resultDTO);
+                            return resultDTO;
+                        }
+                    }
+                }
                 if (null == billPaymentData.getCashMoney()) {
                     billPaymentData.setCashMoney(0d);
                 }
@@ -322,7 +344,6 @@ public class MaFitBillRestController extends BaseRestController {
         ResultDTO<String> resultDTO;
         if (null != billNo) {
             try {
-
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "后台账单下载成功！", null);
             } catch (Exception e) {
                 e.printStackTrace();

@@ -140,7 +140,7 @@
             title: '账单总额',
             align: 'center'
         }, {
-            field: 'currentPaidAmount',
+            field: 'payAmount',
             title: '已还金额',
             align: 'center'
         }, {
@@ -156,7 +156,7 @@
 
     function findBillByCondition() {
         $("#dataGrid").bootstrapTable('destroy');
-        initDateGird('/rest/fitBill/notOut/page/grid');
+        initDateGird('/rest/fitBill/history/page/grid');
     }
 
 

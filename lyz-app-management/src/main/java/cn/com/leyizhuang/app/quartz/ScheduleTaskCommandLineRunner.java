@@ -52,6 +52,13 @@ public class ScheduleTaskCommandLineRunner implements CommandLineRunner {
             throw new RuntimeException("autoResendWMS为空");
         }
 
+     /*   String sendMsgForExpiringSoonProductCouponCron = maClearTempCreditService.getCron(6L);
+        if (StringUtils.isNotBlank(sendMsgForExpiringSoonProductCouponCron)) {
+            QuartzManager.addJob("sendMsgForExpiringSoonProductCoupon", "jobGroup5", "trigger5", "triggerGroup5", sendProductSMSTask.class, sendMsgForExpiringSoonProductCouponCron);
+        } else {
+           // throw new RuntimeException("sendMsgForExpiringSoonProductCouponCron为空");
+        }*/
+
         //账期定时任务
         String billDateTaskCron = maClearTempCreditService.getCron(6L);
         if (StringUtils.isNotBlank(autoResendWMSCron)) {

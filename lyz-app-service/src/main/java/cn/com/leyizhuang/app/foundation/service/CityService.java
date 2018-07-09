@@ -41,6 +41,8 @@ public interface CityService {
 
     List<CityDeliveryTime> findCityDeliveryTimeByCityId(Long cityId);
 
+    List<CityDeliveryTime> findCityDeliveryTimeByCityName(String cityName);
+
     Integer lockCityInventoryByCityIdAndGoodsIdAndInventory(Long cityId, Long goodsId, Integer inventory, Timestamp version);
 
     CityInventory findCityInventoryByCityIdAndGoodsId(Long cityId, Long goodsId);

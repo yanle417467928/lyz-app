@@ -88,7 +88,9 @@
         b.repayment_deadline_date,
         b.bill_total_amount,
         b.current_paid_amount,
-        b.current_unpaid_amount
+        b.current_unpaid_amount,
+        b.prior_paid_interest_amount,
+        b.prior_paid_bill_amount
         from bill_info b
         LEFT JOIN st_store a on b.store_id = a.store_id
         WHERE
@@ -106,6 +108,8 @@
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
+        AND
+        b.is_paid !=0
         order by b.create_time DESC
     </select>
 
@@ -158,6 +162,8 @@
         <if test="null !=repaymentNo">
             AND repayment_no like concat('%',#{repaymentNo},'%')
         </if>
+        AND
+        b.is_paid !=0
         ORDER BY b.id DESC
     </select>
 
@@ -169,7 +175,8 @@
         b.order_time,
         b.shipment_time,
         b.order_no,
-        b.order_credit_money
+        b.order_credit_money,
+        b.interest_amount
         from bill_repayment_goods_details b
         WHERE
         b.repayment_no = #{repaymentNo}

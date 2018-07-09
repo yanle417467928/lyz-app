@@ -1108,13 +1108,23 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Number(23, j + row, accountGoodsItemsDO.getTotalJxPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
 
                     if (StoreType.JM == accountGoodsItemsDO.getStoreTypes() || StoreType.FX == accountGoodsItemsDO.getStoreTypes()) {
-                        if (accountGoodsItemsDO.getGoodsLineType().equals("本品")) {
+                        if (accountGoodsItemsDO.getGoodsLineType().equals("本品") || accountGoodsItemsDO.getGoodsLineType().equals("产品券")) {
+                            String goodsLineType = "";
+
+                            if (accountGoodsItemsDO.getGoodsLineType().equals("本品")){
+                                goodsLineType = "GOODS";
+                            }else {
+                                goodsLineType = "PRODUCT_COUPON";
+                            }
+
                             String orderNumber = accountGoodsItemsDO.getOrderNumber();
 
                             if (null != accountGoodsItemsDO.getReturnNumber()) {
                                 orderNumber = accountGoodsItemsDO.getReturnNumber();
                             }
-                            AccountGoodsItemsDO accountGoods = this.maReportDownloadService.getJxPriceByOrderNoAndSku(orderNumber, accountGoodsItemsDO.getSku());
+
+                            AccountGoodsItemsDO accountGoods = this.maReportDownloadService.getJxPriceByOrderNoAndSku(orderNumber, accountGoodsItemsDO.getSku(),goodsLineType);
+
                             if (null == accountGoods) {
                                 accountGoods = new AccountGoodsItemsDO();
                             }

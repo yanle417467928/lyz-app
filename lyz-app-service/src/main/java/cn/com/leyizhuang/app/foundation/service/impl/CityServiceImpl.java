@@ -126,6 +126,14 @@ public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service
     }
 
     @Override
+    public List<CityDeliveryTime> findCityDeliveryTimeByCityName(String cityName) {
+        if (null != cityName) {
+            return cityDAO.findCityDeliveryTimeByCityName(cityName);
+        }
+        return null;
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public Integer lockCityInventoryByCityIdAndGoodsIdAndInventory(Long cityId, Long goodsId, Integer inventory, Timestamp version) {
         if (null != cityId && null != goodsId && null != inventory) {
