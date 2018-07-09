@@ -40,6 +40,14 @@ public interface ReturnOrderDAO {
     ReturnOrderBaseInfo queryByReturnNo(@Param("returnNo") String returnNo);
 
     /**
+     * 根据订单号查询退单基础信息
+     *
+     * @param ordNo 订单号
+     * @return 退单基础信息
+     */
+    ReturnOrderBaseInfo queryByOrdNo(@Param("ordNo") String ordNo);
+
+    /**
      * 添加保存退单退款总情况
      *
      * @param returnOrderBilling 退款总和
