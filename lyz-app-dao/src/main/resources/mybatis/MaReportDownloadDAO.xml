@@ -2426,7 +2426,7 @@
         LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku  and og.goods_line_type = 'PRODUCT_COUPON'
         LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
-        LEFT JOIN emp_employee e2 on e2.emp_id = s.sales_manager
+        LEFT JOIN emp_employee e2 on e2.emp_id = ob.sales_manager_id
         LEFT JOIN st_store st2 on st2.store_id = e2.store_id
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
         left JOIN cus_customer cc on cc.cus_id = ob.customer_id
@@ -2527,7 +2527,7 @@
         LEFT JOIN ord_return_product_coupon oci on orb.roid = oci.roid and org.sku = oci.sku and org.goods_line_type = 'PRODUCT_COUPON'
         LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.pcid
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
-        LEFT JOIN emp_employee e2 on e2.emp_id = s.sales_manager
+        LEFT JOIN emp_employee e2 on e2.emp_id = ob.sales_manager_id
         LEFT JOIN st_store st2 on st2.store_id = e2.store_id
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
         left JOIN cus_customer cc on cc.cus_id = ob.customer_id
