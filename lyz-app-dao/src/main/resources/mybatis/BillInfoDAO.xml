@@ -247,7 +247,7 @@
         from ord_base_info ob
         INNER JOIN ord_billing_details obd on ob.oid = obd.oid
         left JOIN (SELECT a.is_paid,b.order_no from bill_repayment_info a
-                  LEFT JOIN bill_repayment_goods_details b on a.id = b.repayment_id where is_paid = 1
+                  LEFT JOIN bill_repayment_goods_details b on a.id = b.repayment_id where is_paid = 1 and order_type = 'order'
                   ) bpi on bpi.order_no = ob.ord_no
         LEFT JOIN (
                 SELECT a.is_pay_off,b.order_number from decoration_company_credit_billing a
@@ -272,7 +272,7 @@
         INNER JOIN ord_base_info ob on orb.ord_no = ob.ord_no
         INNER JOIN ord_return_billing orbd on orb.return_no = orbd.return_no
         left JOIN (SELECT a.is_paid,b.return_no from bill_repayment_info a
-        LEFT JOIN bill_repayment_goods_details b on a.id = b.repayment_id where is_paid = 1
+        LEFT JOIN bill_repayment_goods_details b on a.id = b.repayment_id where is_paid = 1 and order_type = 'return'
         ) bpi on bpi.return_no = orb.return_no
         LEFT JOIN ord_return_lifecycle orl on orl.return_no = orb.return_no
         LEFT JOIN (
