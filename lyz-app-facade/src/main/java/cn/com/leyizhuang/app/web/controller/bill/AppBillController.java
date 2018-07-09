@@ -276,6 +276,12 @@ public class AppBillController {
             // 应支付金额
             totalPayAmount = billInfoService.calculatePayAmount(storeId, billorderDetailsRequests);
 
+            if (totalPayAmount < 0){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "还款金额不能小于0,请使用信用金下单后冲抵", null);
+                logger.info("toPayPage OUT,跳转账单支付页面，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+
             BillPayPageResponse response = new BillPayPageResponse();
             response.setCurrentCreditMoney(creditMoney);
             response.setStPreDiposit(preDepositAmount);
