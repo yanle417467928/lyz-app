@@ -499,7 +499,9 @@
                     $("#billTotalAmount").html('￥' + result.content.billTotalAmount);
                     $("#billTotalAmount").html('￥' + result.content.billTotalAmount);
                     $("#billNo").val("" + result.content.billNo);
-                    $("#remainAmount").html('￥' + accAdd(result.content.priorNotPaidInterestAmount, accAdd(result.content.currentUnpaidAmount, result.content.priorNotPaidBillAmount)));
+//                    $("#remainAmount").html('￥' + accAdd(result.content.priorNotPaidInterestAmount, accAdd(result.content.currentUnpaidAmount, result.content.priorNotPaidBillAmount)));
+                    var currentShouldReturn = parseFloat(result.content.billTotalAmount) - parseFloat(result.content.currentPaidAmount);
+                    $("#remainAmount").html('￥' + currentShouldReturn);
                 }
             },
             error: function () {
