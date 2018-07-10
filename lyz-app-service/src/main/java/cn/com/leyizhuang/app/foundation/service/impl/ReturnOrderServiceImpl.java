@@ -234,6 +234,11 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
     }
 
     @Override
+    public ReturnOrderBaseInfo queryByOrdNo(String ordNo) {
+        return  returnOrderDAO.queryByOrdNo(ordNo);
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveReturnOrderBilling(ReturnOrderBilling returnOrderBilling) {
         returnOrderDAO.saveReturnOrderBilling(returnOrderBilling);

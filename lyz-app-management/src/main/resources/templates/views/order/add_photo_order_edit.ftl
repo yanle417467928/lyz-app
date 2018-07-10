@@ -91,7 +91,7 @@
             <div class="row">
                 <div class="col-md-6 col-xs-12">
                     <div class="form-group">
-                        <label for="exampleInputFile">轮播图片</label>
+                        <label for="exampleInputFile">拍照下单图片</label>
                         <input id="rotationImagefile" type="file" name="file" multiple class="file-loading">
                         <p class="help-block">支持jpg、jpeg、png格式，大小不超过2.0M</p>
                     </div>
@@ -1893,6 +1893,7 @@
 
                 function findPeople() {
                     var peopleType = $('#peopleType').val();
+                    var storeId = $('#decorationCompany').val();
                     var selectCreateOrderPeopleConditions = $('#selectCreateOrderPeopleConditions').val();
                     if (-1 == peopleType || null == peopleType || '' == peopleType) {
                         $notify.warning("请选择下单人类型！");
@@ -1906,6 +1907,7 @@
                             size: params.limit,
                             keywords: params.search,
                             peopleType: peopleType,
+                            storeId: storeId,
                             selectCreateOrderPeopleConditions: selectCreateOrderPeopleConditions
                         }
                     }, [{

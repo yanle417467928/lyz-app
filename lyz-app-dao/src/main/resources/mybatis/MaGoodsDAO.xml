@@ -36,7 +36,8 @@
             <foreach collection="list" item="cid" open="(" close=")" separator=",">
                 #{cid}
             </foreach>
-
+        ORDER BY
+        g.sort_id
     </select>
 
     <select id="findGoodsByCidAndEmpId" resultType="cn.com.leyizhuang.app.foundation.vo.management.goods.GoodsResponseVO">
@@ -65,7 +66,8 @@
         <foreach collection="list" item="cid" open="(" close=")" separator=",">
             #{cid}
         </foreach>
-
+        ORDER BY
+        g.sort_id
     </select>
 
     <select id="findGoodsByMultiConditionQueryAndCusId" resultType="cn.com.leyizhuang.app.foundation.vo.management.goods.GoodsResponseVO">
@@ -113,6 +115,8 @@
         <if test="null != specification and specification != ''">
             AND g.specification_type = #{specification}
         </if>
+        ORDER BY
+        g.sort_id
     </select>
 
 
@@ -154,6 +158,8 @@
         <if test="null != specification and specification != ''">
             AND g.specification_type = #{specification}
         </if>
+        ORDER BY
+        g.sort_id
     </select>
 
     <select id="findGoodsById" parameterType="java.lang.Long"
@@ -195,7 +201,8 @@
         INNER JOIN gds_goods g ON p.gid = g.gid
         WHERE
         c.cus_id = #{cusId}
-
+        ORDER BY
+	    g.sort_id
     </select>
 
     <select id="findGoodsBrandListByCategoryCodeAndCustomerIdAndIdentityType"
