@@ -157,7 +157,7 @@ deploy:
 ---
 ############################################### 测试环境配置 ##################################################
 server:
-  port: 9990
+  port: 9999
   display-name: 乐易装APP接口服务层
 spring:
   profiles: test
@@ -197,7 +197,7 @@ deploy:
   alipay:
     url:
     async:
-      url: http://119.23.149.7:9990/app/alipay/return/async
+      url: http://119.23.149.7:9999/app/alipay/return/async
   wechat:
     async:
       url: http://119.23.149.7:9999/app/wechatpay/return/async
