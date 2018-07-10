@@ -682,6 +682,7 @@
             amountBill = accAdd(amountBill, data.orderCreditMoney);
             amountBill = accAdd(amountBill, data.interestAmount);
         }
+        amountBill= Math.round(amountBill * 100) / 100
         $("#amount").val(amountBill);
         $('#amountMoney').html('应收金额(元):' + amountBill);
         $('#payOrderBill').modal();
