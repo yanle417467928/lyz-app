@@ -85,12 +85,12 @@
                         <button id="payBill" type="button" class="btn btn-success" onclick="payBill()">
                             <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>&nbsp;还款
                         </button>
-                        <input name="startTime1" type="text" class="form-control datepicker" id="startTime1" style="width: 140px;"
-                               placeholder="出货开始时间" value="${startTime?string('yyyy-MM-dd')}">
-                        <input name="endTime1" type="text" class="form-control datepicker" id="endTime1" style="width: 140px;"
-                               placeholder="出货结束时间" value="${endTime?string('yyyy-MM-dd')}">
-                        <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
-                                onclick="findByCondition()">查找</button>
+                        <input name="startTime1" onchange="findByCondition()" type="text"
+                               class="form-control datepicker" id="startTime1" style="width: 140px;"
+                               placeholder="出货开始时间">
+                        <input name="endTime1" onchange="findByCondition()" type="text"
+                               class="form-control datepicker" id="endTime1" style="width: 140px;"
+                               placeholder="出货结束时间">
                     </div>
                     <div id="toolbar2" class="form-inline ">
                         <input name="startTime2" onchange="findRepaymentByCondition()" type="text"
