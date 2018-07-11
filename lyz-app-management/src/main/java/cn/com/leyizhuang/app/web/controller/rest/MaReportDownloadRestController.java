@@ -220,6 +220,9 @@ public class MaReportDownloadRestController extends BaseRestController {
     @GetMapping(value = "/goodsShipmentAndReturn/page/grid")
     public GridDataVO<ShipmentAndReturnGoods> restGoodsShipmentAndReturnPageGird(Integer offset, Integer size, Long cityId, Long storeId, String storeType,
                                                                                  String startTime, String endTime, String keywords) {
+        if (StringUtils.isBlank(startTime)) {
+            startTime = "2018-04-01 00:00:00";
+        }
         size = getSize(size);
         Integer page = getPage(offset, size);
         //查询登录用户门店权限的门店ID
@@ -1590,6 +1593,9 @@ public class MaReportDownloadRestController extends BaseRestController {
     @GetMapping(value = "/goodsShipmentAndReturn/download")
     public void downloadGoodsShipmentAndReturn(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId, String storeType,
                                                String startTime, String endTime, String keywords) {
+        if (StringUtils.isBlank(startTime)) {
+            startTime = "2018-04-01 00:00:00";
+        }
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
         List<ShipmentAndReturnGoods> shipmentAndReturnGoodsList = this.maReportDownloadService.downShipmentAndReturnOrder(cityId, storeId, storeType, startTime, endTime, keywords, storeIds);
