@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.foundation.pojo.CusExpiringSoonProductCouponInfo;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.reportDownload.*;
 import com.github.pagehelper.PageInfo;
@@ -49,7 +50,7 @@ public interface MaReportDownloadService {
 
     List<StoreInventory> downloadStoreInventorys(Long storeId, List<Long> storeIds);
 
-    AccountGoodsItemsDO getJxPriceByOrderNoAndSku(String orderNumber, String sku);
+    AccountGoodsItemsDO getJxPriceByOrderNoAndSku(String orderNumber, String sku,String goodsLineType);
 
     List<ShipmentAndReturnGoods> downShipmentAndReturnOrder(Long cityId, Long storeId, String storeType, String startTime, String endTime,
 
@@ -94,4 +95,16 @@ public interface MaReportDownloadService {
     PageInfo<PhotoOrderCheckDO> findPhotoOrderCheckDOAll(Long cityId, String startTime, String endTime, String keywords, Integer page, Integer size);
 
     List<PhotoOrderCheckDO> downloadPhotoOrderCheckDO(Long cityId, String startTime, String endTime, String keywords);
+
+    PageInfo<CusExpiringSoonProductCouponInfo> findExpiringSoonProductAll(Long cityId, Long storeId, String storeType, String cusName, Integer page, Integer size, List<Long> storeIds);
+
+    List<CusExpiringSoonProductCouponInfo> downloadExpiringSoonProduct(Long cityId, Long storeId, String storeType, String cusName, List<Long> storeIds);
+
+    PageInfo<EmpCreditDO> empCreditMoneySituationPage(Long cityId,String storeType,List<Long> storeIds,Integer page, Integer size,String keywords);
+
+    PageInfo<StCreditDO> stCreditMoneySituationPage(Long cityId, String storeType, List<Long> storeIds, Integer page, Integer size);
+
+    List<EmpCreditDO> empCreditMoneySituation(Long cityId,String storeType,List<Long> storeIds,String keywords);
+
+    List<StCreditDO> stCreditMoneySituation(Long cityId, String storeType, List<Long> storeIds);
 }

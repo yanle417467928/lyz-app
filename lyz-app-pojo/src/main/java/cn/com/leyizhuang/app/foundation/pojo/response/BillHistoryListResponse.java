@@ -14,6 +14,8 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BillHistoryListResponse {
+    //单号
+    private String billNo;
     //年份
     private String years;
     //账单名称

@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
-import cn.com.leyizhuang.app.core.constant.StoreCreditMoneyChangeType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -15,6 +14,8 @@ import lombok.ToString;
 @ToString
 public class StoreCreditMoneyLogResponse {
     private Long id;
+    //订单编号
+    private String  referenceNumber;
     //生成时间
     private String createTime;
     //变更金额

@@ -50,6 +50,8 @@ public interface CityDAO {
 
     List<CityDeliveryTime> findCityDeliveryTimeByCityId(Long cityId);
 
+    List<CityDeliveryTime> findCityDeliveryTimeByCityName(String cityName);
+
     Integer updateCityInventoryByCityIdAndGoodsIdAndInventory(@Param(value = "cityId") Long cityId,
                                                               @Param(value = "goodsId") Long goodsId,
                                                               @Param(value = "inventory") Integer inventory,

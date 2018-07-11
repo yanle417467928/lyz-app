@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.web.controller.order;
 import cn.com.leyizhuang.app.core.bean.GridDataVO;
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.exception.*;
+import cn.com.leyizhuang.app.core.utils.ArrayListUtils;
 import cn.com.leyizhuang.app.core.utils.IpUtils;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.*;
@@ -566,8 +567,8 @@ public class OrderController {
                     }
                 }
             }
-            // 本品集合 用来计算立减促销
-            List<OrderGoodsSimpleResponse> bGoodsList = goodsInfo;
+            // 本品集合 用来计算立减促销 深克隆
+            List<OrderGoodsSimpleResponse> bGoodsList = ArrayListUtils.deepCopyList(goodsInfo);
 
             //赠品的数量和标识
             if (AssertUtil.isNotEmpty(giftsInfo)) {

@@ -25,4 +25,12 @@ public interface SmsAccountService {
      * @param content 短信内容
      */
     void commonSendSms(String mobile, String content);
+
+    /**
+     * GBK短信发送方法
+     *
+     * @param mobile  手机号
+     * @param content 短信内容
+     */
+    void commonSendGBKSms(String mobile, String content);
 }

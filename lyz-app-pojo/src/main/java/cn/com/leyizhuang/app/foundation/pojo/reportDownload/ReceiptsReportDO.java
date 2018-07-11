@@ -51,6 +51,8 @@ public class ReceiptsReportDO {
 
     //顾客姓名
     private String customerName;
+    //订单类型
+    private String orderType;
 
     public void setPayType(OrderBillingPaymentType payType){
         this.payType = payType.getDescription();

@@ -146,7 +146,7 @@ public interface MaCustomerDAO {
      * @param keywords 关键字
      * @return
      */
-    List<MaCreateOrderPeopleResponse> maFindCreatePeople(@Param("keywords")String keywords,@Param("peopleType")String peopleType);
+    List<MaCreateOrderPeopleResponse> maFindCreatePeople(@Param("keywords")String keywords,@Param("peopleType")String peopleType,@Param("storeId")Long storeId);
 
     /**
      * 后台查询代下单人

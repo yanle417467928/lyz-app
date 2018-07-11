@@ -35,13 +35,13 @@
         <div class=" col-xs-12">
             <div class="box box-primary">
                 <div id="toolbar" class="form-inline">
-                    <select name="store" id="storeCode" class="form-control selectpicker" data-width="140px"
-                            onchange="findBillByCondition()" data-live-search="true">
-                        <option value="-1">选择装饰公司</option>
+                    <select name="store" id="cityCode" class="form-control" data-width="140px"
+                            onchange="findBillByCondition()">
+                        <option value="-1">选择城市</option>
                     </select>
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
                         <input type="text" name="info" id="info" class="form-control "
-                               style="width:auto;" placeholder="请输入账单单号或名称" onkeypress="findBykey()">
+                               style="width:auto;" placeholder="请输入装饰公司名称或编码" onkeypress="findBykey()">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
                                     onclick="findBillByCondition()">查找</button>
@@ -61,7 +61,7 @@
 
     $(function () {
         initDateGird('/rest/fitBill/notOut/page/grid');
-        findStoreSelection();
+        findCitySelection()
         $('.datepicker').datepicker({
             format: 'yyyy-mm-dd',
             language: 'zh-CN',
@@ -70,28 +70,6 @@
     });
 
 
-    function findStoreSelection() {
-        var store = "";
-        $.ajax({
-            url: '/rest/stores/findSmallFitStoresListByStoreId',
-            method: 'GET',
-            error: function () {
-                clearTimeout($global.timer);
-                $loading.close();
-                $global.timer = null;
-                $notify.danger('网络异常，请稍后重试或联系管理员');
-            },
-            success: function (result) {
-                clearTimeout($global.timer);
-                $.each(result, function (i, item) {
-                    store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
-                })
-                $("#storeCode").append(store);
-                $('#storeCode').selectpicker('refresh');
-                $('#storeCode').selectpicker('render');
-            }
-        });
-    }
 
     function initDateGird(url) {
         $grid.init($('#dataGrid'), $('#toolbar'), url, 'get', false, function (params) {
@@ -99,56 +77,40 @@
                 offset: params.offset,
                 size: params.limit,
                 keywords: $("#info").val(),
-                storeId: $("#storeCode").val()
+                cityId: $("#cityCode").val()
             }
         }, [{
             checkbox: true,
             title: '选择'
         },{
-            field: 'billName',
-            title: '账单名称',
+            field: 'id',
+            title: 'ID',
+            align: 'center',
+            visible:false
+        },{
+            field: 'storeCode',
+            title: '装饰公司编码',
             align: 'center'
         }, {
-            field: 'billNo',
-            title: '账单单号',
+            field: 'storeName',
+            title: '装饰公司名称',
             align: 'center',
             formatter: function (value, row, index) {
                 if (null == value) {
                     return '<a class="scan" href="#">' + '未知' + '</a>';
                 } else {
-                    return '<a class="scan" href="/views/admin/fit/bill/notOutBillDetail/'+ value+'" target="_blank">' + value + '</a>';
+                    return '<a class="scan" href="/views/admin/fit/bill/notOutBillDetail/'+ row.id+'" target="_blank">' + value + '</a>';
                 }
             }
         }, {
-            field: 'storeName',
-            title: '装饰公司名称',
+            field: 'cityCode.name',
+            title: '归属城市',
             align: 'center'
         }, {
-            field: 'billStartDate',
-            title: '账单开始日期',
-            align: 'center'
-        }, {
-            field: 'billEndDate',
-            title: '账单结束日期',
-            align: 'center'
-        }, {
-            field: 'repaymentDeadlineDate',
-            title: '账单还款截止日',
-            align: 'center'
-        }, {
-            field: 'billTotalAmount',
-            title: '账单总额',
-            align: 'center'
-        }, {
-            field: 'currentPaidAmount',
-            title: '已还金额',
-            align: 'center'
-        }, {
-            field: 'currentUnpaidAmount',
-            title: '未还金额',
+            field: 'salesManager',
+            title: '销售经理',
             align: 'center'
         }
-
         ]);
     }
 
@@ -189,6 +151,27 @@
         return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
     };
 
+
+    function findCitySelection() {
+        var city = "";
+        $.ajax({
+            url: '/rest/citys/findCitylist',
+            method: 'GET',
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    city += "<option value=" + item.cityId + ">" + item.name + "</option>";
+                })
+                $("#cityCode").append(city);
+            }
+        });
+    }
 
 </script>
 </body>

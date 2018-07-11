@@ -126,6 +126,14 @@
         ORDER BY start_hour
     </select>
 
+    <select id="findCityDeliveryTimeByCityName" parameterType="java.lang.String" resultType=
+            "cn.com.leyizhuang.app.foundation.pojo.management.city.CityDeliveryTime">
+        SELECT *
+        FROM city_delivery_time
+        WHERE cityName = #{cityName}
+        ORDER BY start_hour
+    </select>
+
     <update id="updateCityInventoryByCityIdAndGoodsIdAndInventory">
         UPDATE city_inventory
         SET available_ity = available_ity - #{inventory}

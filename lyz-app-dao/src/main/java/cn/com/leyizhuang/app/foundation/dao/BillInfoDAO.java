@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.constant.BillStatusEnum;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
+import cn.com.leyizhuang.app.foundation.pojo.request.BillorderDetailsRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillHistoryListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentGoodsInfoResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillHistoryListResponse;
@@ -39,6 +40,10 @@ public interface BillInfoDAO {
     List<BillRepaymentGoodsInfoResponse> getCurrentOrderDetailsByOrderNo(@Param("ids") List<Long> orderIds,@Param("storeId") Long storeId);
 
     List<BillRepaymentGoodsInfoResponse> getCurrentOrderDetailsByReturnNo(@Param("ids") List<Long> returnIds,@Param("storeId") Long storeId);
+
+    List<BillRepaymentGoodsInfoResponse> findPaidOrderDetailsByOids(@Param("list") List<Long> list, @Param("storeId") Long storeId);
+
+    List<BillRepaymentGoodsInfoResponse> findPaidReturnOrderDetailsByOids(@Param("list") List<Long> list, @Param("storeId") Long storeId);
 
     List<BillHistoryListResponse> findBillHistoryListByEmpId(Long empId);
 

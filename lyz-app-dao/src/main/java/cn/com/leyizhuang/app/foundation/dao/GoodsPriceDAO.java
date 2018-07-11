@@ -43,6 +43,14 @@ public interface GoodsPriceDAO {
      * @return
      */
     GoodsPrice findGoodsPriceByGoodsIDAndStoreID(@Param("goodsID") Long goodsID, @Param("storeID") Long storeID,@Param("cusId") Long cusId);
+    /**
+     * 根据商品id + 门店id 查询商品价格
+     *
+     * @param goodsID 商品id
+     * @param storeID 门店id
+     * @return
+     */
+    GoodsPrice findGoodsPriceByGoodsIDAndStoreIDAndEmpId(@Param("goodsID") Long goodsID, @Param("storeID") Long storeID,@Param("empId") Long empId);
 
     GoodsPrice findGoodsPriceByTypeAndStoreIDAndSku(@Param("priceType") String priceType, @Param("storeID") Long storeID,@Param("sku") String sku);
 

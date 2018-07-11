@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.core.utils;
 
+import cn.com.leyizhuang.app.core.constant.AppConstant;
+import cn.com.leyizhuang.common.util.CountUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -655,8 +657,17 @@ public class DateUtil {
         return cal.getTime();
     }
 
+    public static Date getToDayOfStart(Date date) {
+        String str = getDateStr(date);
+        Date date1 = parseDate(str);
+        return date1;
+    }
+
 
     public static void main(String[] args) {
+        Integer overdueDays = DateUtil.getDifferDays(DateUtil.getDifferenceFatalism(5, 15, getToDayOfStart(DateUtil.dateFromString("2018/05/02 23:22:01"))), new Date());
+        System.out.println(overdueDays);
+        System.out.println(CountUtil.mul(2065, 1, overdueDays, AppConstant.INTEREST_RATE_UNIT));
         System.out.println(getbeforMonthByDate(new Date()));
         System.out.println(getMonthByDate(DateUtil.dateFromString("2018/1/05 00:00:01")));
         System.out.println(getDateStr(getBillDate(new Date(), -1, 5)));

@@ -8,7 +8,8 @@
             l.id,
             l.change_type_desc type,
             l.create_time,
-            l.change_amount    change_money
+            l.change_amount    change_money,
+            l.reference_number referenceNumber
         FROM st_credit_money_change_log l
             INNER JOIN emp_employee e ON e.store_id = l.store_id AND e.emp_id = #{userId}
         ORDER BY l.create_time DESC

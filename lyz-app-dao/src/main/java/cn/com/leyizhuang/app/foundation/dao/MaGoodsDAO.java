@@ -49,6 +49,7 @@ public interface MaGoodsDAO {
     List<GoodsSpecificationResponse> findGoodsSpecificationListByCategoryCodeAndEmployeeIdAndIdentityType(
             @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId, @Param(value = "categorySecond")  String categorySecond , @Param(value = "goodsBrand") String goodsBrand, @Param(value = "goodsType") String goodsType );
 
+    List<GoodsDO> findGoodsListByGidList(@Param(value = "internalGidList") List<Long> internalGidList);
 
 }
 

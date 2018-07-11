@@ -211,9 +211,23 @@ public class MaReportDownloadViewController extends BaseController {
         map.addAttribute("storeTypes", StoreType.getStoreTypeList());
         return "/views/reportDownload/account_goods_items_hr_page";
     }
+
+    @GetMapping(value = "/emp/credit")
+    public String empCreditMoney(ModelMap map) {
+        map.addAttribute("storeTypes", StoreType.getStoreTypeList());
+        return "/views/reportDownload/emp_credit_money";
+    }
+
     @GetMapping(value = "/photoOrderCheck/list")
     public String getPhotoOrderCheckList(ModelMap map) {
         return "/views/reportDownload/photoOrderCheck_page";
+    }
+
+
+    @GetMapping(value = "/expiringSoonProduct/list")
+    public String getExpiringSoonProductList(ModelMap map) {
+        map.addAttribute("storeTypes", StoreType.getNotZsType());
+        return "/views/reportDownload/expiringSoon_product_page";
     }
 
 }

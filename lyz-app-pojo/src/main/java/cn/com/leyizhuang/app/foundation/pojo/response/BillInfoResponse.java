@@ -35,6 +35,8 @@ public class BillInfoResponse {
 
     //账单总金额(本期账单金额+上期未还账单金额+上期滞纳金+本期调整金额)
     private Double billTotalAmount;
+    //本期应还 （账单总金额 - 本期已还）
+    private Double currentShouldPayAmount;
     //本期账单金额(账单日内出货订单正向金额求和)
     private Double currentBillAmount;
     //本期调整金额(账单日内退货订单（包含退货、拒签）负向金额求和)

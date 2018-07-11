@@ -7,7 +7,10 @@
         sellerName, obpd.pay_time as payTime,null as returnPayTime,
         obpd.pay_type payTypes, obpd.pay_type payType, IFNULL(obpd.amount, 0) money, obi.ord_no as orderNumber,null as returnOrderNumber,
         IF(obpd.pay_type = 'POS',obd.store_pos_number,null) remarks, obpd.payment_subject_type paymentSubjectType ,
-        pd.out_trade_no as outTradeNo, pd.trade_no as tradeNo,obi.customer_name
+        pd.out_trade_no as outTradeNo, pd.trade_no as tradeNo,obi.customer_name,
+        CASE obi.delivery_type when 'SELF_TAKE'
+        then '门店自提' when 'HOUSE_DELIVERY' then '送货上门'
+        when 'PRODUCT_COUPON' then '购买产品券' end as orderType
         FROM
         ord_billing_payment_details obpd
         INNER JOIN ord_base_info obi ON obi.ord_no = obpd.ord_no
@@ -46,7 +49,10 @@
         sellerName,null as payTime, orbd.create_time as returnPayTime,
         orbd.return_pay_type payTypes, orbd.return_pay_type payType, (-1 * IFNULL(orbd.return_money, 0)) money,
         orbi.ord_no as orderNumber,orbi.return_no as returnOrderNumber,
-        NULL remarks, null paymentSubjectType,pd.out_trade_no as outTradeNo, pd.trade_no as tradeNo,obi.customer_name
+        NULL remarks, null paymentSubjectType,pd.out_trade_no as outTradeNo, pd.trade_no as tradeNo,obi.customer_name,
+        CASE obi.delivery_type when 'SELF_TAKE'
+        then '门店自提' when 'HOUSE_DELIVERY' then '送货上门'
+        when 'PRODUCT_COUPON' then '购买产品券' end as orderType
         FROM ord_return_billing_detail orbd
         INNER JOIN ord_return_base_info orbi ON orbi.return_no = orbd.return_no
         INNER JOIN st_store st ON st.store_id = orbi.store_id
@@ -722,7 +728,8 @@
         WHEN 'REJECTED' THEN '拒签'
         WHEN 'CANCELING' THEN '取消中' end as orderStatus,
         pd.out_trade_no outTradeNo,
-        pd.trade_no tradeNo
+        pd.trade_no tradeNo,
+        CASE obd.is_pay_up when 0 then '未结清' when 1 then '结清' end as isPayUp
         FROM
         ord_base_info obi
         INNER JOIN st_store st ON st.store_id = obi.store_id
@@ -791,7 +798,8 @@
         WHEN 'REJECTED' THEN '拒签'
         WHEN 'CANCELING' THEN '取消中' end as orderStatus,
         '' as outTradeNo,
-        '' as tradeNo
+        '' as tradeNo,
+        CASE obd.is_pay_up when 0 then '未结清' when 1 then '结清' end as isPayUp
         FROM ord_return_base_info orbi
         LEFT JOIN ord_return_lifecycle rl ON orbi.return_no = rl.return_no
         LEFT JOIN st_store st ON st.store_id = orbi.store_id
@@ -1238,14 +1246,14 @@
         IFNULL(unit_price, 0) wholesalePrice, IFNULL(unit_price, 0) * IFNULL(quantity, 0) wholesaleTotlePrice
         FROM
         ord_jx_price_difference_return_details
-        WHERE ord_no = #{orderNumber} AND sku = #{sku}
+        WHERE ord_no = #{orderNumber} AND sku = #{sku} and goods_line_type = #{goodsLineType}
         GROUP BY sku
         UNION
         SELECT
         IFNULL(unit_price, 0) wholesalePrice, IFNULL(unit_price, 0) * IFNULL(return_qty, 0) wholesaleTotlePrice
         FROM
         ord_return_jx_price_difference_return_details
-        WHERE return_no = #{orderNumber} AND sku = #{sku}
+        WHERE return_no = #{orderNumber} AND sku = #{sku} and goods_line_type = #{goodsLineType}
         GROUP BY sku
     </select>
 
@@ -1702,7 +1710,6 @@
     </select>
 
 
-
     <select id="findProductSalesList" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.SalesReportDO">
         <!-- 配送 -->
         (SELECT
@@ -1744,7 +1751,8 @@
         '' as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId,
-        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType
+        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType,
+        cu2.cus_store_name fxCkName
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -1757,10 +1765,12 @@
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
         left JOIN cus_customer cc on cc.cus_id = ob.customer_id
+        left JOIN cus_customer_fx_store_relation cu2 on ob.store_code = cu2.fx_store_code
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
-        'FINISHED'
+        'FINISHED',
+        'REJECTED'
         )
         <if test="null!=startTime and ''!=startTime">
             AND obd.pay_up_time >= #{startTime}
@@ -1856,7 +1866,8 @@
         '' as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId,
-        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType
+        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType,
+        cu2.cus_store_name fxCkName
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -1868,6 +1879,7 @@
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
         left JOIN cus_customer cc on cc.cus_id = ob.customer_id
+        left JOIN cus_customer_fx_store_relation cu2 on ob.store_code = cu2.fx_store_code
         WHERE
         ob.`status` IN (
         'FINISHED'
@@ -1967,7 +1979,8 @@
         '' as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId,
-        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType
+        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType,
+        cu2.cus_store_name fxCkName
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -1979,10 +1992,12 @@
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
         left JOIN cus_customer cc on cc.cus_id = ob.customer_id
+        left JOIN cus_customer_fx_store_relation cu2 on ob.store_code = cu2.fx_store_code
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
-        'FINISHED'
+        'FINISHED',
+        'REJECTED'
         )
         <if test="null!=startTime and ''!=startTime">
             AND wa.end_dt >= #{startTime}
@@ -2089,7 +2104,8 @@
         '' as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId,
-        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType
+        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType,
+        '' fxCkName
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -2199,7 +2215,8 @@
         orb.return_no as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId,
-        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType
+        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType,
+        cu2.cus_store_name fxCkName
         FROM
         ord_return_base_info orb
         LEFT JOIN ord_base_info ob on orb.oid = ob.oid
@@ -2213,9 +2230,10 @@
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
         left JOIN cus_customer cc on cc.cus_id = ob.customer_id
+        left JOIN cus_customer_fx_store_relation cu2 on ob.store_code = cu2.fx_store_code
         where
         1=1
-        and ob.`status` IN ('FINISHED')
+        and ob.`status` IN ('FINISHED','REJECTED')
         <if test="null!=startTime and ''!=startTime">
             AND
             wro.c_end_dt > #{startTime}
@@ -2305,7 +2323,8 @@
         orb.return_no as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId,
-        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType
+        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType,
+        '' fxCkName
         FROM
         ord_return_base_info orb
         LEFT JOIN ord_base_info ob on orb.oid = ob.oid
@@ -2415,7 +2434,8 @@
         '' as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId,
-        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType
+        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType,
+        '' fxCkName
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -2426,14 +2446,15 @@
         LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku  and og.goods_line_type = 'PRODUCT_COUPON'
         LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
-        LEFT JOIN emp_employee e2 on e2.emp_id = s.sales_manager
+        LEFT JOIN emp_employee e2 on e2.emp_id = ob.sales_manager_id
         LEFT JOIN st_store st2 on st2.store_id = e2.store_id
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
         left JOIN cus_customer cc on cc.cus_id = ob.customer_id
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
-        'FINISHED'
+        'FINISHED',
+        'REJECTED'
         )
         <if test="null!=startTime and ''!=startTime">
             AND obd.pay_up_time >= #{startTime}
@@ -2515,7 +2536,8 @@
         orb.return_no as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId,
-        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType
+        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType,
+        '' fxCkName
         FROM
         ord_return_base_info orb
         LEFT JOIN ord_base_info ob on orb.oid = ob.oid
@@ -2527,14 +2549,13 @@
         LEFT JOIN ord_return_product_coupon oci on orb.roid = oci.roid and org.sku = oci.sku and org.goods_line_type = 'PRODUCT_COUPON'
         LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.pcid
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
-        LEFT JOIN emp_employee e2 on e2.emp_id = s.sales_manager
+        LEFT JOIN emp_employee e2 on e2.emp_id = ob.sales_manager_id
         LEFT JOIN st_store st2 on st2.store_id = e2.store_id
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
         left JOIN cus_customer cc on cc.cus_id = ob.customer_id
-
         where
         1=1
-        and ob.`status` IN ('FINISHED')
+        and ob.`status` IN ('FINISHED','REJECTED')
         <if test="null!=startTime and ''!=startTime">
             AND
             wro.c_end_dt > #{startTime}
@@ -3091,9 +3112,9 @@
         '' as estateInfo,
         CASE obd.is_pay_up when 0 then '未结清（退）' when 1 then '结清（退）' end as isPayUp,
         IFNULL(org.VIP_price,0) as vipPrice,
-        IFNULL(org.VIP_price * org.return_qty,0) as totalVipPrice,
+        -1 * IFNULL(org.VIP_price * org.return_qty,0) as totalVipPrice,
         IFNULL(org.VIP_price,0) as retailPrice,
-        IFNULL(org.VIP_price * org.return_qty,0) as totalRetailPrice
+        -1 * IFNULL(org.VIP_price * org.return_qty,0) as totalRetailPrice
 
         FROM ord_return_base_info orbi
         LEFT JOIN (SELECT DISTINCT return_no,post_status,operation_time from ord_return_lifecycle) rl ON orbi.return_no = rl.return_no
@@ -3166,4 +3187,107 @@
         ORDER BY po.create_time ASC
     </select>
 
+
+    <select id="findExpiringSoonProductAll"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.CusExpiringSoonProductCouponInfo">
+        SELECT
+        ci.`name`  cityName,
+        s.store_name storeName,
+        s.store_type storeType,
+        c.name  customerName,
+        e.`name` sellerName,
+        g.sku_name  skuName,
+        g.sku sku,
+        ccpc.quantity quantity,
+        ccpc.get_type getType,
+        ccpc.get_time getTime,
+        ccpc.get_ord_no getOrderNumber,
+        ccpc.buy_price buyPrice,
+        ccpc.effective_start_time effectiveStartTime,
+        ccpc.effective_end_time effectiveEndTime,
+        ccpc.goods_sign goodsSign
+        FROM
+        cus_customer_product_coupon ccpc
+        LEFT JOIN st_store s ON ccpc.store_id =s.store_id
+        LEFT JOIN cus_customer c ON ccpc.cus_id =c.cus_id
+        LEFT JOIN emp_employee e ON e.emp_id = ccpc.seller_id
+        LEFT JOIN gds_goods g ON ccpc.gid =g.gid
+        LEFT JOIN city ci on ci.city_id = c.city_id
+        where
+        ccpc.is_used =0
+        AND
+        ccpc.`status` = 1
+        AND
+        ccpc.effective_end_time >= now()
+        AND
+        <![CDATA[ DATE_SUB(ccpc.effective_end_time, INTERVAL 7 DAY)<=now() ]]>
+        <if test="null != storeId and -1 != storeId">
+            AND ccpc.store_id = #{storeId}
+        </if>
+        <if test="null != cityId and -1 != cityId">
+            AND c.city_id = #{cityId}
+        </if>
+        <if test="null !=cusName  and ''!=cusName ">
+            AND c.name LIKE concat("%",#{cusName},"%")
+        </if>
+        <if test="null != storeType and ''!=storeType">
+            AND s.store_type =#{storeType}
+        </if>
+        AND ccpc.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="empCreditMoneySituation" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.EmpCreditDO" >
+        SELECT
+        s.city as city,
+        s.store_name as storeName,
+        e.`name` as sellerName,
+        e.mobile sellerMobile,
+        ec.credit_limit as maxCreditMoney,
+        ec.temp_credit_limit as tempCreditLimit,
+        ec.credit_limit_available as avaliableCreditMoney,
+        ec.last_update_time as lastChangeTime
+        FROM emp_employee e
+        LEFT JOIN st_store s on s.store_id = e.store_id
+        LEFT JOIN emp_credit_money ec on ec.emp_id = e.emp_id
+        where 1=1
+        <if test="city != null">
+           and e.city_id = #{city}
+        </if>
+        <if test="storeType != null and storeType != ''">
+          and  s.store_type = #{storeType}
+        </if>
+        <if test="keywords != null and keywords != ''">
+          and ( e.name LIKE concat(concat('%',#{keywords}),'%') or e.mobile LIKE concat(concat('%',#{keywords}),'%'))
+        </if>
+        AND s.store_id IN
+        <foreach collection="storeIds" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="stCreditMoneySituation" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.StCreditDO">
+        SELECT
+        s.city as city,
+        s.store_name as storeName,
+        sc.credit_limit as maxCreditMoney,
+        sc.credit_limit_available as avaliableCreditMoney,
+        sc.last_update_time lastChangeTime
+         from st_credit_money sc
+        LEFT JOIN st_store s on s.store_id = sc.store_id
+        where s.store_type = 'ZS'
+        where 1=1
+        <if test="city != null">
+           and e.city_id = #{city}
+        </if>
+        <if test="storeType != null and storeType != ''">
+           and s.store_type = #{storeType}
+        </if>
+        AND s.store_id IN
+        <foreach collection="storeIds" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
 </mapper>

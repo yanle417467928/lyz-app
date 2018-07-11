@@ -81,6 +81,8 @@ public class BillingItemsDO {
     private String returnStatus = "";
     //订单状态
     private String orderStatus = "";
+    //是否结清
+    private String isPayUp;
     /**
      * 商户订单号
      */

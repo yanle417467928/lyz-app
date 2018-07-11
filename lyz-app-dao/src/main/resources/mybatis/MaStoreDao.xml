@@ -277,6 +277,41 @@
         DESC
     </select>
 
+    <select id="queryDecorativeCompanyList" resultMap="storeDOResultMap">
+           SELECT
+        s.store_code,
+        s.store_name,
+        s.enable,
+        s.store_type,
+        s.store_id,
+        s.create_time,
+        c.name,
+        ee.name sales_manager
+        FROM
+        st_store s
+        LEFT JOIN city c ON s.city_code = c.code
+        LEFT  JOIN emp_employee ee ON  ee.emp_id = s.sales_manager
+        WHERE
+         s.store_type="ZS"
+         AND
+         s.fit_compay_type='CASH'
+        <if test="keywords !=null and ''!=keywords">
+          AND (
+            s.store_code like CONCAT('%', #{keywords}, '%')
+            OR
+            s.store_name like CONCAT('%', #{keywords}, '%')
+            )
+        </if>
+        <if test="cityId !=null and -1!=cityId">
+            AND   s.city_id =#{cityId}
+        </if>
+        AND
+        s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
 
     <select id="queryDecorativeCompanyVOList"
             resultType="cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.SimpleDecorativeCompany">
