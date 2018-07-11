@@ -7,7 +7,10 @@
         sellerName, obpd.pay_time as payTime,null as returnPayTime,
         obpd.pay_type payTypes, obpd.pay_type payType, IFNULL(obpd.amount, 0) money, obi.ord_no as orderNumber,null as returnOrderNumber,
         IF(obpd.pay_type = 'POS',obd.store_pos_number,null) remarks, obpd.payment_subject_type paymentSubjectType ,
-        pd.out_trade_no as outTradeNo, pd.trade_no as tradeNo,obi.customer_name
+        pd.out_trade_no as outTradeNo, pd.trade_no as tradeNo,obi.customer_name,
+        CASE obi.delivery_type when 'SELF_TAKE'
+        then '门店自提' when 'HOUSE_DELIVERY' then '送货上门'
+        when 'PRODUCT_COUPON' then '购买产品券' end as orderType
         FROM
         ord_billing_payment_details obpd
         INNER JOIN ord_base_info obi ON obi.ord_no = obpd.ord_no
@@ -46,7 +49,10 @@
         sellerName,null as payTime, orbd.create_time as returnPayTime,
         orbd.return_pay_type payTypes, orbd.return_pay_type payType, (-1 * IFNULL(orbd.return_money, 0)) money,
         orbi.ord_no as orderNumber,orbi.return_no as returnOrderNumber,
-        NULL remarks, null paymentSubjectType,pd.out_trade_no as outTradeNo, pd.trade_no as tradeNo,obi.customer_name
+        NULL remarks, null paymentSubjectType,pd.out_trade_no as outTradeNo, pd.trade_no as tradeNo,obi.customer_name,
+        CASE obi.delivery_type when 'SELF_TAKE'
+        then '门店自提' when 'HOUSE_DELIVERY' then '送货上门'
+        when 'PRODUCT_COUPON' then '购买产品券' end as orderType
         FROM ord_return_billing_detail orbd
         INNER JOIN ord_return_base_info orbi ON orbi.return_no = orbd.return_no
         INNER JOIN st_store st ON st.store_id = orbi.store_id
@@ -722,7 +728,8 @@
         WHEN 'REJECTED' THEN '拒签'
         WHEN 'CANCELING' THEN '取消中' end as orderStatus,
         pd.out_trade_no outTradeNo,
-        pd.trade_no tradeNo
+        pd.trade_no tradeNo,
+        CASE obd.is_pay_up when 0 then '未结清' when 1 then '结清' end as isPayUp
         FROM
         ord_base_info obi
         INNER JOIN st_store st ON st.store_id = obi.store_id
@@ -791,7 +798,8 @@
         WHEN 'REJECTED' THEN '拒签'
         WHEN 'CANCELING' THEN '取消中' end as orderStatus,
         '' as outTradeNo,
-        '' as tradeNo
+        '' as tradeNo,
+        CASE obd.is_pay_up when 0 then '未结清' when 1 then '结清' end as isPayUp
         FROM ord_return_base_info orbi
         LEFT JOIN ord_return_lifecycle rl ON orbi.return_no = rl.return_no
         LEFT JOIN st_store st ON st.store_id = orbi.store_id
@@ -2534,7 +2542,6 @@
         LEFT JOIN st_store st2 on st2.store_id = e2.store_id
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
         left JOIN cus_customer cc on cc.cus_id = ob.customer_id
-
         where
         1=1
         and ob.`status` IN ('FINISHED','REJECTED')

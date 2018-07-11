@@ -435,9 +435,9 @@ public class MaReportDownloadRestController extends BaseRestController {
                 //设置筛选条件
                 ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
                 //列宽
-                int[] columnView = {10, 13, 10, 15, 15, 20, 20, 12, 10, 30, 30, 15, 15, 15, 35,35, 25};
+                int[] columnView = {10, 13, 10, 15, 15, 20, 20, 12, 10, 30,10, 30, 15, 15, 15, 35,35, 25};
                 //列标题
-                String[] titles = {"城市", "门店名称", "门店类型", "导购姓名", "顾客姓名", "付款时间", "退款时间", "支付方式", "支付金额", "订单号", "退单号", "第三方支付流水号","商户订单号", "pos交易流水单号"};
+                String[] titles = {"城市", "门店名称", "门店类型", "导购姓名", "顾客姓名", "付款时间", "退款时间", "支付方式", "支付金额", "订单号","订单类型", "退单号", "第三方支付流水号","商户订单号", "pos交易流水单号"};
                 //计算标题开始行号
                 int row = 1;
                 if (null != map && map.size() > 0) {
@@ -510,10 +510,11 @@ public class MaReportDownloadRestController extends BaseRestController {
                     }
                     ws.addCell(new Number(8, j + row, receiptsReportDO.getMoney(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     ws.addCell(new Label(9, j + row, receiptsReportDO.getOrderNumber(), textFormat));
-                    ws.addCell(new Label(10, j + row, receiptsReportDO.getReturnOrderNumber(), textFormat));
-                    ws.addCell(new Label(11, j + row, receiptsReportDO.getTradeNo() == null ? "" : receiptsReportDO.getTradeNo(), textFormat));
-                    ws.addCell(new Label(12, j + row, receiptsReportDO.getOutTradeNo(), textFormat));
-                    ws.addCell(new Label(13, j + row, receiptsReportDO.getRemarks(), textFormat));
+                    ws.addCell(new Label(10, j + row, receiptsReportDO.getOrderType(), textFormat));
+                    ws.addCell(new Label(11, j + row, receiptsReportDO.getReturnOrderNumber(), textFormat));
+                    ws.addCell(new Label(12, j + row, receiptsReportDO.getTradeNo() == null ? "" : receiptsReportDO.getTradeNo(), textFormat));
+                    ws.addCell(new Label(13, j + row, receiptsReportDO.getOutTradeNo(), textFormat));
+                    ws.addCell(new Label(14, j + row, receiptsReportDO.getRemarks(), textFormat));
 
                     if ("CUS_PREPAY".equals(receiptsReportDO.getPayTypes())) {
                         cusPrepay = CountUtil.add(cusPrepay, null == receiptsReportDO.getMoney() ? 0D : receiptsReportDO.getMoney());
@@ -1247,9 +1248,9 @@ public class MaReportDownloadRestController extends BaseRestController {
                 //设置筛选条件
                 ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
                 //列宽
-                int[] columnView = {10, 13, 10, 20, 30, 25, 15, 15, 15, 15, 10, 10, 50, 15, 15, 15, 15, 10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,30,30};
+                int[] columnView = {10, 13, 10, 20, 30, 25, 15,10,15, 15, 15, 10, 10, 50, 15, 15, 15, 15, 10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,30,30};
                 //列标题
-                String[] titles = {"城市", "门店名称", "门店类型", "下单/退单时间", "订单号", "订单状态", "退单号", "退单状态", "顾客", "导购姓名", "配送/退货方式",
+                String[] titles = {"城市", "门店名称", "门店类型", "下单/退单时间", "订单号", "订单状态", "是否结清","退单号", "退单状态", "顾客", "导购姓名", "配送/退货方式",
                         "出/退货状态", "送/退货地址", "商品总额", "会员折扣", "订单折扣", "配送费", "优惠券折扣", "产品券折扣", "乐币折扣", "应付总额",
                         "微信", "支付宝", "银联", "门店现金", "门店POS", "配送现金", "配送POS", "其他", "门店预存款", "顾客预存款", "支付总额", "退回门店","商户订单号","第三方流水号"};
                 //计算标题开始行号
@@ -1283,37 +1284,38 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Label(3, j + row, billingItemsDO.getOrderTime(), textFormat));
                     ws.addCell(new Label(4, j + row, billingItemsDO.getOrderNumber(), textFormat));
                     ws.addCell(new Label(5, j + row, billingItemsDO.getOrderStatus(), textFormat));
+                    ws.addCell(new Label(6, j + row, billingItemsDO.getIsPayUp(), textFormat));
 
-                    ws.addCell(new Label(6, j + row, billingItemsDO.getReturnNumber(), textFormat));
-                    ws.addCell(new Label(7, j + row, billingItemsDO.getReturnStatus(), textFormat));
+                    ws.addCell(new Label(7, j + row, billingItemsDO.getReturnNumber(), textFormat));
+                    ws.addCell(new Label(8, j + row, billingItemsDO.getReturnStatus(), textFormat));
 
-                    ws.addCell(new Label(8, j + row, billingItemsDO.getCustomerName(), textFormat));
-                    ws.addCell(new Label(9, j + row, billingItemsDO.getSellerName(), textFormat));
-                    ws.addCell(new Label(10, j + row, billingItemsDO.getDeliveryType(), textFormat));
-                    ws.addCell(new Label(11, j + row, billingItemsDO.getDeliveryStatus(), textFormat));
-                    ws.addCell(new Label(12, j + row, billingItemsDO.getShippingAddress(), textFormat));
-                    ws.addCell(new Number(13, j + row, billingItemsDO.getTotalGoodsPrice(), numberFormat));
-                    ws.addCell(new Number(14, j + row, billingItemsDO.getMemberDiscount(), numberFormat));
-                    ws.addCell(new Number(15, j + row, billingItemsDO.getPromotionDiscount(), numberFormat));
-                    ws.addCell(new Number(16, j + row, billingItemsDO.getFreight(), numberFormat));
-                    ws.addCell(new Number(17, j + row, billingItemsDO.getCashCouponDiscount(), numberFormat));
-                    ws.addCell(new Number(18, j + row, billingItemsDO.getProductCouponDiscount(), numberFormat));
-                    ws.addCell(new Number(19, j + row, billingItemsDO.getLbDiscount(), numberFormat));
-                    ws.addCell(new Number(20, j + row, billingItemsDO.getAmountPayable(), numberFormat));
-                    ws.addCell(new Number(21, j + row, billingItemsDO.getWeChat(), numberFormat));
-                    ws.addCell(new Number(22, j + row, billingItemsDO.getAlipay(), numberFormat));
-                    ws.addCell(new Number(23, j + row, billingItemsDO.getUnionPay(), numberFormat));
-                    ws.addCell(new Number(24, j + row, billingItemsDO.getStoreCash(), numberFormat));
-                    ws.addCell(new Number(25, j + row, billingItemsDO.getStorePosMoney(), numberFormat));
-                    ws.addCell(new Number(26, j + row, billingItemsDO.getDeliveryCash(), numberFormat));
-                    ws.addCell(new Number(27, j + row, billingItemsDO.getDeliveryPos(), numberFormat));
-                    ws.addCell(new Number(28, j + row, billingItemsDO.getStoreOtherMoney(), numberFormat));
-                    ws.addCell(new Number(29, j + row, billingItemsDO.getStPreDeposit(), numberFormat));
-                    ws.addCell(new Number(30, j + row, billingItemsDO.getCusPreDeposit(), numberFormat));
-                    ws.addCell(new Number(31, j + row, billingItemsDO.getTotalPay(), numberFormat));
-                    ws.addCell(new Number(32, j + row, billingItemsDO.getReturnStore(), numberFormat));
-                    ws.addCell(new Label(33, j + row, billingItemsDO.getOutTradeNo(), textFormat));
-                    ws.addCell(new Label(34, j + row, billingItemsDO.getTradeNo(), textFormat));
+                    ws.addCell(new Label(9, j + row, billingItemsDO.getCustomerName(), textFormat));
+                    ws.addCell(new Label(10, j + row, billingItemsDO.getSellerName(), textFormat));
+                    ws.addCell(new Label(11, j + row, billingItemsDO.getDeliveryType(), textFormat));
+                    ws.addCell(new Label(12, j + row, billingItemsDO.getDeliveryStatus(), textFormat));
+                    ws.addCell(new Label(13, j + row, billingItemsDO.getShippingAddress(), textFormat));
+                    ws.addCell(new Number(14, j + row, billingItemsDO.getTotalGoodsPrice(), numberFormat));
+                    ws.addCell(new Number(15, j + row, billingItemsDO.getMemberDiscount(), numberFormat));
+                    ws.addCell(new Number(16, j + row, billingItemsDO.getPromotionDiscount(), numberFormat));
+                    ws.addCell(new Number(17, j + row, billingItemsDO.getFreight(), numberFormat));
+                    ws.addCell(new Number(18, j + row, billingItemsDO.getCashCouponDiscount(), numberFormat));
+                    ws.addCell(new Number(19, j + row, billingItemsDO.getProductCouponDiscount(), numberFormat));
+                    ws.addCell(new Number(20, j + row, billingItemsDO.getLbDiscount(), numberFormat));
+                    ws.addCell(new Number(21, j + row, billingItemsDO.getAmountPayable(), numberFormat));
+                    ws.addCell(new Number(22, j + row, billingItemsDO.getWeChat(), numberFormat));
+                    ws.addCell(new Number(23, j + row, billingItemsDO.getAlipay(), numberFormat));
+                    ws.addCell(new Number(24, j + row, billingItemsDO.getUnionPay(), numberFormat));
+                    ws.addCell(new Number(25, j + row, billingItemsDO.getStoreCash(), numberFormat));
+                    ws.addCell(new Number(26, j + row, billingItemsDO.getStorePosMoney(), numberFormat));
+                    ws.addCell(new Number(27, j + row, billingItemsDO.getDeliveryCash(), numberFormat));
+                    ws.addCell(new Number(28, j + row, billingItemsDO.getDeliveryPos(), numberFormat));
+                    ws.addCell(new Number(29, j + row, billingItemsDO.getStoreOtherMoney(), numberFormat));
+                    ws.addCell(new Number(30, j + row, billingItemsDO.getStPreDeposit(), numberFormat));
+                    ws.addCell(new Number(31, j + row, billingItemsDO.getCusPreDeposit(), numberFormat));
+                    ws.addCell(new Number(32, j + row, billingItemsDO.getTotalPay(), numberFormat));
+                    ws.addCell(new Number(33, j + row, billingItemsDO.getReturnStore(), numberFormat));
+                    ws.addCell(new Label(34, j + row, billingItemsDO.getOutTradeNo(), textFormat));
+                    ws.addCell(new Label(35, j + row, billingItemsDO.getTradeNo(), textFormat));
 
                 }
             }
@@ -2622,9 +2624,7 @@ public class MaReportDownloadRestController extends BaseRestController {
      * @param cityId
      * @param storeId
      * @param storeType
-     * @param startTime
-     * @param endTime
-     * @param pickType
+
      */
     @GetMapping(value = "/expiringSoonProduct/download")
     public void notPickGoodsDownload(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId, String storeType, String cusName) {

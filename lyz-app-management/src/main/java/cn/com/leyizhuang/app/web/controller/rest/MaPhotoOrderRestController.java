@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.MaterialListType;
 import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.exception.*;
+import cn.com.leyizhuang.app.core.utils.ArrayListUtils;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.SmsUtils;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
@@ -2943,7 +2944,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
                     }
                 }
             // 本品集合 用来计算立减促销
-            List<OrderGoodsSimpleResponse> bGoodsList = goodsInfo;
+            List<OrderGoodsSimpleResponse> bGoodsList = ArrayListUtils.deepCopyList(goodsInfo);
 
             //赠品的数量和标识
             if (AssertUtil.isNotEmpty(giftsInfo)) {

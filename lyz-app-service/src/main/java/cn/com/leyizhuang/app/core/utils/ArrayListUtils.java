@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.core.utils;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,5 +32,35 @@ public class ArrayListUtils {
             returnList.add(subList);
         }
         return returnList;
+    }
+
+    /**
+     * ArrayList 深克隆
+     * @param src
+     * @param <T>
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> List<T> deepCopyList(List<T> src)
+    {
+        List<T> dest = null;
+        try
+        {
+            ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+            ObjectOutputStream out = new ObjectOutputStream(byteOut);
+            out.writeObject(src);
+            ByteArrayInputStream byteIn = new ByteArrayInputStream(byteOut.toByteArray());
+            ObjectInputStream in = new ObjectInputStream(byteIn);
+            dest = (List<T>) in.readObject();
+        }
+        catch (IOException e)
+        {
+
+        }
+        catch (ClassNotFoundException e)
+        {
+
+        }
+        return dest;
     }
 }
