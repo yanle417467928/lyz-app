@@ -409,4 +409,34 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
         return cusExpiringSoonProductCouponInfoList;
     }
 
+    @Override
+    public PageInfo<EmpCreditDO> empCreditMoneySituationPage(Long cityId, String storeType, List<Long> storeIds, Integer page, Integer size,String keywords) {
+        PageHelper.startPage(page, size);
+
+        List<EmpCreditDO> itemsDOS = this.maReportDownloadDAO.empCreditMoneySituation(cityId,storeType,storeIds,keywords);
+        return new PageInfo<>(itemsDOS);
+
+    }
+
+    @Override
+    public PageInfo<StCreditDO> stCreditMoneySituationPage(Long cityId, String storeType, List<Long> storeIds, Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+
+        List<StCreditDO> itemsDOS = this.maReportDownloadDAO.stCreditMoneySituation(cityId,storeType,storeIds);
+        return new PageInfo<>(itemsDOS);
+
+    }
+
+    @Override
+    public List<EmpCreditDO> empCreditMoneySituation(Long cityId, String storeType, List<Long> storeIds,String keywords) {
+
+        return  this.maReportDownloadDAO.empCreditMoneySituation(cityId,storeType,storeIds,keywords);
+    }
+
+    @Override
+    public List<StCreditDO> stCreditMoneySituation(Long cityId, String storeType, List<Long> storeIds) {
+        return this.maReportDownloadDAO.stCreditMoneySituation(cityId,storeType,storeIds);
+    }
+
+
 }

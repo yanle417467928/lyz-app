@@ -84,4 +84,6 @@ public class SalesReportDO {
     private Long cusId = 0L;
     //顾客类型
     private String cusType;
+    // 分析仓库名称
+    private String fxCkName;
 }

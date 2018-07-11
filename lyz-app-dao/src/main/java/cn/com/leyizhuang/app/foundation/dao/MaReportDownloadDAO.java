@@ -96,4 +96,9 @@ public interface MaReportDownloadDAO {
 
     List<CusExpiringSoonProductCouponInfo> findExpiringSoonProductAll(@Param("cityId") Long cityId, @Param("storeId") Long storeId, @Param("storeType") String storeType,
                                                                       @Param("cusName") String cusName, @Param("list") List<Long> storeIds);
+
+    List<EmpCreditDO> empCreditMoneySituation(@Param("city") Long cityId,@Param("storeType") String storeType,@Param("storeIds") List<Long> storeIds,
+                                              @Param("keywords") String keywords);
+
+    List<StCreditDO> stCreditMoneySituation(@Param("city") Long cityId,@Param("storeType") String storeType,@Param("storeIds") List<Long> storeIds);
 }
