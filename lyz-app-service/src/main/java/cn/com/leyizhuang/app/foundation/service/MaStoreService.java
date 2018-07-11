@@ -122,6 +122,8 @@ public interface MaStoreService {
 
     List<SimpleStoreParam> findStoresListByStoreId(List<Long> storeIds);
 
+    List<SimpleStoreParam> findFitAndStoresListByStoreId(Long cityId,String storeType,List<Long> storeIds);
+
     AppStore findAppStoreByStoreId(Long storeId);
 
     StorePreDeposit findByStoreId(Long storeId);

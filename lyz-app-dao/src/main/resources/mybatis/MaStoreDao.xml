@@ -695,6 +695,36 @@
         </foreach>
     </select>
 
+
+    <select id="findFitAndStoresListByStoreId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
+        SELECT
+        s.store_id,
+        s.store_name
+        FROM
+        st_store s
+        WHERE
+        1=1
+        <if test="null != cityId and cityId != -1">
+            AND s.city_id = #{cityId}
+        </if>
+        <choose>
+            <when test="'ZS'==storeType">
+                and (s.store_type = 'ZS' AND s.fit_compay_type = 'CASH' )
+            </when>
+            <otherwise>
+                <if test="null!=storeType and ''!=storeType and '-1' != storeType">
+                    and s.store_type =#{storeType}
+                </if>
+            </otherwise>
+        </choose>
+        AND
+        s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
     <select id="findAppStoreByStoreId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.AppStore">
         SELECT city_id, store_id, store_type, store_name FROM st_store WHERE store_id = #{storeId}
@@ -868,11 +898,11 @@
                 <if test="null!=storeType and ''!=storeType">
                     and s.store_type =#{storeType}
                 </if>
-                <if test="null != companyCode and ''!=companyCode">
-                    AND s.store_structure_code like concat('%',#{companyCode},'%')
-                </if>
             </otherwise>
         </choose>
+        <if test="null != companyCode and ''!=companyCode and 'ALL' != companyCode">
+            AND s.store_structure_code like concat('%',#{companyCode},'%')
+        </if>
         AND s.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
@@ -901,11 +931,11 @@
                 <if test="null!=storeType and ''!=storeType">
                     and s.store_type =#{storeType}
                 </if>
-                <if test="null != structureCode and ''!=structureCode">
-                    AND s.store_structure_code like concat('%',#{structureCode},'%')
-                </if>
             </otherwise>
         </choose>
+        <if test="null != structureCode and ''!=structureCode">
+            AND s.store_structure_code like concat('%',#{structureCode},'%')
+        </if>
     </select>
 
 

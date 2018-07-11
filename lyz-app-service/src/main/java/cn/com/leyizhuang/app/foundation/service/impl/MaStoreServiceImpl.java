@@ -305,6 +305,11 @@ public class MaStoreServiceImpl implements MaStoreService {
     }
 
     @Override
+    public List<SimpleStoreParam> findFitAndStoresListByStoreId(Long cityId,String storeType,List<Long> storeIds) {
+        return this.mastoreDAO.findFitAndStoresListByStoreId(cityId,storeType,storeIds);
+    }
+
+    @Override
     public AppStore findAppStoreByStoreId(Long storeId) {
         return this.mastoreDAO.findAppStoreByStoreId(storeId);
     }
@@ -353,6 +358,9 @@ public class MaStoreServiceImpl implements MaStoreService {
         if ("-1".equals(storeType)) {
             storeType = null;
         }
+        if("JZSYBM".equals(structureCode)){
+            structureCode="|JZC001|";
+        }
         return this.mastoreDAO.findStoresIdByStructureCodeAndStoreType(structureCode, storeType);
     }
 
@@ -383,6 +391,9 @@ public class MaStoreServiceImpl implements MaStoreService {
         }
         if ("-1".equals(storeType)) {
             storeType = null;
+        }
+        if("JZSYBM".equals(companyCode)){
+            companyCode="|JZC001|";
         }
         return this.mastoreDAO.findStoresListByCompanyCodeAndStoreType(companyCode, storeType, storeIds);
     }

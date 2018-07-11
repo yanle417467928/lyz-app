@@ -937,17 +937,19 @@
         orbi.return_no as referenceNumber,
         wh.wh_name as wareHouse,
         orli.delivery_type as returnOrderDeliveryType,
-        obi.delivery_type as orderDeliveryType
+        obi.delivery_type as orderDeliveryType,
+        gg.category_name as categoryName
         from ord_return_base_info orbi
         LEFT JOIN ord_return_goods_info orgi ON orgi.return_no =orbi.return_no
         LEFT JOIN ord_base_info obi ON orbi.ord_no=obi.ord_no
         LEFT JOIN ord_return_delivery_detail ordd ON orbi.return_no = ordd.return_no
-        LEFT JOIN inter_wta_return_order_back_header iwrobh ON orbi.return_no = iwrobh.po_no
+        LEFT JOIN (SELECT * from inter_wta_return_order_back_header GROUP  BY po_no) iwrobh ON orbi.return_no = iwrobh.po_no
         LEFT JOIN st_store ss ON orbi.store_id = ss.store_id
         LEFT JOIN ord_return_logistic_info orli on orli.return_no = orbi.return_no
         LEFT JOIN (select return_no,purchase_price ,sum(qty) qty,sku from ord_return_product_coupon GROUP BY return_no,sku,purchase_price) orpc on orbi.return_no =orpc.return_no
         AND orpc.sku = orgi.sku  AND orgi.goods_line_type='PRODUCT_COUPON'
         LEFT JOIN warehouse wh on wh.wh_no = ordd.warehouse_no
+        LEFT JOIN gds_goods gg ON  orgi.sku=gg.sku
         where
         orli.delivery_type='HOUSE_PICK'
         AND
@@ -1004,17 +1006,19 @@
         orbi.return_no as referenceNumber,
         wh.wh_name as wareHouse,
         orli.delivery_type as returnOrderDeliveryType,
-        obi.delivery_type as orderDeliveryType
+        obi.delivery_type as orderDeliveryType,
+        gg.category_name as categoryName
         from ord_return_base_info orbi
         LEFT JOIN ord_return_goods_info orgi ON orgi.return_no =orbi.return_no
         LEFT JOIN ord_base_info obi ON orbi.ord_no=obi.ord_no
         LEFT JOIN ord_return_delivery_detail ordd ON orbi.return_no = ordd.return_no
-        LEFT JOIN inter_wta_return_order_back_header iwrobh ON orbi.return_no = iwrobh.po_no
+        LEFT JOIN (SELECT * from inter_wta_return_order_back_header GROUP  BY po_no) iwrobh ON orbi.return_no = iwrobh.po_no
         LEFT JOIN st_store ss ON orbi.store_id = ss.store_id
         LEFT JOIN ord_return_logistic_info orli on orli.return_no = orbi.return_no
         LEFT JOIN (select return_no,purchase_price ,sum(qty) qty,sku from ord_return_product_coupon GROUP BY return_no,sku,purchase_price) orpc on orbi.return_no =orpc.return_no
         AND orpc.sku = orgi.sku  AND orgi.goods_line_type='PRODUCT_COUPON'
         LEFT JOIN warehouse wh on wh.wh_no = ordd.warehouse_no
+        LEFT JOIN gds_goods gg ON  orgi.sku=gg.sku
         where
         orbi.return_type='REFUSED_RETURN'
         AND
@@ -1070,7 +1074,8 @@
         orbi.return_no as referenceNumber,
         "" as wareHouse,
         orli.delivery_type as returnOrderDeliveryType,
-        obi.delivery_type as orderDeliveryType
+        obi.delivery_type as orderDeliveryType,
+        gg.category_name as categoryName
         from ord_return_base_info orbi
         LEFT JOIN ord_return_goods_info orgi ON orgi.return_no =orbi.return_no
         LEFT JOIN ord_base_info obi ON orbi.ord_no=obi.ord_no
@@ -1079,6 +1084,7 @@
         LEFT JOIN ord_return_logistic_info orli on orli.return_no = orbi.return_no
         LEFT JOIN (select return_no,purchase_price ,sum(qty) qty,sku from ord_return_product_coupon GROUP BY return_no,sku,purchase_price) orpc on orbi.return_no =orpc.return_no
         AND orpc.sku = orgi.sku  AND orgi.goods_line_type='PRODUCT_COUPON'
+        LEFT JOIN gds_goods gg ON  orgi.sku=gg.sku
         where
         orli.delivery_type='RETURN_STORE'
         AND
@@ -1136,15 +1142,17 @@
         obi.ord_no as referenceNumber,
         wh.wh_name as wareHouse,
         null as returnOrderDeliveryType,
-        obi.delivery_type as orderDeliveryType
+        obi.delivery_type as orderDeliveryType,
+        gg.category_name as categoryName
         from ord_base_info obi
         LEFT JOIN ord_goods_info ogi ON obi.ord_no =ogi.ord_no
         LEFT JOIN ord_delivery_info_details odid ON obi.ord_no = odid.order_no
-        LEFT JOIN inter_wta_order_shipping_header wa ON obi.ord_no = wa.order_no
+        LEFT JOIN (SELECT * FROM inter_wta_order_shipping_header  WHERE send_flag = 1 GROUP BY order_no) wa ON obi.ord_no = wa.order_no
         LEFT JOIN st_store ss ON obi.store_id = ss.store_id
         LEFT JOIN (select ord_no,purchase_price ,count(*) as qty,sku from ord_coupon_info GROUP BY sku,purchase_price,ord_no) oci ON obi.ord_no= oci.ord_no
         AND oci.sku = ogi.sku  AND ogi.goods_line_type='PRODUCT_COUPON'
         LEFT JOIN warehouse wh on wh.wh_no = odid.warehouse_no
+        LEFT JOIN gds_goods gg ON  ogi.sku=gg.sku
         where
         obi.delivery_type ='HOUSE_DELIVERY'
         AND
@@ -1201,13 +1209,15 @@
         obi.ord_no as referenceNumber,
         "" as wareHouse,
         null as returnOrderDeliveryType,
-        obi.delivery_type as orderDeliveryType
+        obi.delivery_type as orderDeliveryType,
+        gg.category_name as categoryName
         from ord_base_info obi
         LEFT JOIN ord_goods_info ogi ON ogi.ord_no =obi.ord_no
         LEFT JOIN st_store ss ON obi.store_id = ss.store_id
         LEFT JOIN ord_lifecycle ol ON obi.ord_no = ol.ord_no
         LEFT JOIN (select ord_no,purchase_price ,count(*) as qty,sku from ord_coupon_info GROUP BY sku,purchase_price,ord_no) oci ON obi.ord_no= oci.ord_no
         AND oci.sku = ogi.sku  AND ogi.goods_line_type='PRODUCT_COUPON'
+        LEFT JOIN gds_goods gg ON  ogi.sku=gg.sku
         where
         obi.delivery_type ='SELF_TAKE'
         AND
@@ -1807,10 +1817,6 @@
                 <if test="null!=storeType and ''!=storeType">
                     and s.store_type =#{storeType}
                 </if>
-                AND ob.store_id IN
-                <foreach collection="list" item="item" open="(" close=")" separator=",">
-                    #{item}
-                </foreach>
             </otherwise>
         </choose>
         <if test="productType != null and productType == 'HR'">
@@ -1819,6 +1825,10 @@
         <if test="productType != null and productType == 'LYZ'">
             and og.company_flag in ('LYZ','YR')
         </if>
+        AND ob.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         order by ob.store_id,ob.sales_consult_id,ob.create_time)
 
         UNION ALL
@@ -1918,13 +1928,12 @@
                 <if test="null!=storeType and ''!=storeType">
                     and s.store_type = #{storeType} and s.store_type != 'JM'
                 </if>
-                AND ob.store_id IN
-                <foreach collection="list" item="item" open="(" close=")" separator=",">
-                    #{item}
-                </foreach>
             </otherwise>
         </choose>
-
+        AND ob.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         <if test="productType != null and productType == 'HR'">
             and og.company_flag = #{productType}
         </if>
@@ -2039,13 +2048,12 @@
                 <if test="null!=storeType and ''!=storeType">
                     and s.store_type =#{storeType}
                 </if>
-                AND ob.store_id IN
-                <foreach collection="list" item="item" open="(" close=")" separator=",">
-                    #{item}
-                </foreach>
             </otherwise>
         </choose>
-
+        AND ob.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         <if test="productType != null and productType == 'HR'">
             and og.company_flag = #{productType}
         </if>
@@ -2160,12 +2168,12 @@
                 <if test="null!=storeType and ''!=storeType">
                     and s.store_type =#{storeType} and s.store_type != 'JM'
                 </if>
-                AND ob.store_id IN
-                <foreach collection="list" item="item" open="(" close=")" separator=",">
-                    #{item}
-                </foreach>
             </otherwise>
         </choose>
+        AND ob.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         <if test="productType != null and productType == 'HR'">
             and og.company_flag = #{productType}
         </if>
@@ -2268,12 +2276,12 @@
                 <if test="null!=storeType and ''!=storeType">
                     and s.store_type =#{storeType}
                 </if>
-                AND ob.store_id IN
-                <foreach collection="list" item="item" open="(" close=")" separator=",">
-                    #{item}
-                </foreach>
             </otherwise>
         </choose>
+        AND ob.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         <if test="productType != null and productType == 'HR'">
             and org.company_flag = #{productType}
         </if>
@@ -2377,12 +2385,12 @@
                 <if test="null!=storeType and ''!=storeType">
                     and s.store_type =#{storeType} and s.store_type != 'JM'
                 </if>
-                AND ob.store_id IN
-                <foreach collection="list" item="item" open="(" close=")" separator=",">
-                    #{item}
-                </foreach>
             </otherwise>
         </choose>
+        AND ob.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         <if test="productType != null and productType == 'HR'">
             and org.company_flag = #{productType}
         </if>
@@ -2477,12 +2485,12 @@
             </when>
             <otherwise>
                 and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
-                and st2.store_id in
-                <foreach collection="list" item="item" open="(" close=")" separator=",">
-                    #{item}
-                </foreach>
             </otherwise>
         </choose>
+        and st2.store_id in
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         <if test="productType != null and productType == 'HR'">
             and og.company_flag = #{productType}
         </if>
@@ -2576,12 +2584,12 @@
             </when>
             <otherwise>
                 and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
-                and st2.store_id in
-                <foreach collection="list" item="item" open="(" close=")" separator=",">
-                    #{item}
-                </foreach>
             </otherwise>
         </choose>
+        and st2.store_id in
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         <if test="productType != null and productType == 'HR'">
             and org.company_flag = #{productType}
         </if>
@@ -2751,12 +2759,12 @@
                     and  ( s.store_type =#{storeType}
                     OR  s.store_type = 'ZS')
                 </if>
-                AND o.store_id IN
-                <foreach collection="list" item="item" open="(" close=")" separator=",">
-                    #{item}
-                </foreach>
             </otherwise>
         </choose>
+        AND o.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         GROUP BY o.ord_no
         ORDER BY storeName, name, createTime
         )
@@ -2814,16 +2822,15 @@
                     and  ( s.store_type =#{storeType}
                     OR  s.store_type = 'ZS')
                 </if>
-                AND o.store_id IN
-                <foreach collection="list" item="item" open="(" close=")" separator=",">
-                    #{item}
-                </foreach>
             </otherwise>
         </choose>
+        AND o.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
         GROUP BY o.ord_no
         ORDER BY storeName, name, createTime
         )
-
     </select>
 
     <select id="findDistributionDOAll" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.DistributionDO">

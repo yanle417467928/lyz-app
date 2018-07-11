@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.core.utils.*;
 import cn.com.leyizhuang.app.core.utils.csrf.EncryptUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.pojo.*;
+import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
@@ -29,7 +30,9 @@ import cn.com.leyizhuang.app.foundation.pojo.user.*;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
 import cn.com.leyizhuang.app.foundation.vo.UserVO;
+import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.SmsAccount;
+import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.AssertUtil;
 import cn.com.leyizhuang.common.util.CountUtil;
 import com.alibaba.fastjson.JSON;
@@ -1864,32 +1867,46 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public Boolean checkCashDelivery(List<OrderGoodsInfo> orderGoodsInfoList, Long userId, AppIdentityType identityType) {
-        logger.info("checkCashDelivery CALLED,判断是否可选择货到付款,入参:orderGoodsInfoList:{}, orderProductCouponInfoList:{}, userId:{},identityType:{}",
-                JSON.toJSONString(orderGoodsInfoList), userId, identityType);
+    public Boolean checkCashDelivery(List<OrderGoodsInfo> orderGoodsInfoList, Long userId, AppIdentityType identityType, AppDeliveryType deliveryType) {
+        logger.info("checkCashDelivery CALLED,判断是否可选择货到付款,入参:orderGoodsInfoList:{}, userId:{},identityType:{}, deliveryType:{}",
+                JSON.toJSONString(orderGoodsInfoList), userId, identityType, deliveryType);
         List<Long> goodsIdList = new ArrayList<>();
         try {
-            for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
-                goodsIdList.add(orderGoodsInfo.getGid());
-            }
-
-            if (goodsIdList != null && goodsIdList.size() > 0 && userId != null && identityType != null) {
-                if (identityType.getValue() == AppIdentityType.CUSTOMER.getValue()) {
-                    List<GiftListResponseGoods> goodsList = this.goodsPriceService.findGoodsPriceListByGoodsIdsAndUserId(goodsIdList, userId, identityType);
-                    if (null != goodsList && goodsList.size() > 0) {
-                        logger.info("checkCashDelivery OUT,判断是否可选择货到付款,出参 result:{}", Boolean.TRUE);
-                        return Boolean.TRUE;
+            Boolean flag = Boolean.FALSE;
+            //分销仓库货到付款
+            if (identityType == AppIdentityType.SELLER) {
+                AppEmployee employee = employeeService.findById(userId);
+                if (null != employee && null != employee.getStoreId()) {
+                    AppStore appStore = storeService.findById(employee.getStoreId());
+                    if (null != appStore && appStore.getStoreType() == StoreType.FXCK) {
+                        flag = Boolean.TRUE;
                     }
                 }
             }
+
+            //专供货到付款
+//            for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
+//                goodsIdList.add(orderGoodsInfo.getGid());
+//            }
+//
+//            if (goodsIdList != null && goodsIdList.size() > 0 && userId != null && identityType != null) {
+//                if (identityType.getValue() == AppIdentityType.CUSTOMER.getValue()) {
+//                    List<GiftListResponseGoods> goodsList = this.goodsPriceService.findGoodsPriceListByGoodsIdsAndUserId(goodsIdList, userId, identityType);
+//                    if (null != goodsList && goodsList.size() > 0) {
+//                        logger.info("checkCashDelivery OUT,判断是否可选择货到付款,出参 result:{}", Boolean.TRUE);
+//                        return Boolean.TRUE;
+//                    }
+//                }
+//            }
+            logger.info("checkCashDelivery OUT,判断是否可选择货到付款,出参 result:{}", flag);
+            return flag;
         } catch (Exception e) {
             e.printStackTrace();
             logger.warn("checkCashDelivery EXCEPTION,判断是否可选择货到付款,出参 resultDTO:{}", Boolean.FALSE);
             logger.warn("{}", e);
             return Boolean.FALSE;
         }
-        logger.info("checkCashDelivery OUT,判断是否可选择货到付款,出参 result:{}", Boolean.FALSE);
-        return Boolean.FALSE;
+
     }
 
     @Transactional

@@ -89,6 +89,9 @@ public class AppOrderServiceImpl implements AppOrderService {
     @Resource
     private GoodsService goodsService;
 
+    @Resource
+    private CommonService commonService;
+
     @Override
     public int lockUserExpendOfOrder(OrderLockExpendRequest lockExpendRequest) {
         return 0;
@@ -1105,6 +1108,9 @@ public class AppOrderServiceImpl implements AppOrderService {
         orderPageInfoVOList = orderDAO.getOrderListPageInfoByUserIdAndIdentityType(userID, AppIdentityType.getAppIdentityTypeByValue(identityType), showStatus, sellerType, empStoreId);
 
         orderPageInfoVOList.forEach(p -> {
+            //判断是否货到付款
+            p.setIsCashDelivery(this.commonService.checkCashDelivery(null, userID, AppIdentityType.getAppIdentityTypeByValue(identityType), AppDeliveryType.getAppDeliveryTypeByValue(p.getDeliveryType())));
+
             List<String> goodsImgList = p.getOrderGoodsInfoList().stream().map(OrderGoodsInfo::getCoverImageUri).collect(Collectors.toList());
             Integer count = p.getOrderGoodsInfoList().stream().mapToInt(OrderGoodsInfo::getOrderQuantity).sum();
             p.setGoodsImgList(goodsImgList);
