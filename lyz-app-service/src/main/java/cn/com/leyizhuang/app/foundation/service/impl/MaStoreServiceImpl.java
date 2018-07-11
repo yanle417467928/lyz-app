@@ -366,7 +366,11 @@ public class MaStoreServiceImpl implements MaStoreService {
 
     @Override
     public List<Long> findFitCompanyIdByStoreId(List<Long> storeIds) {
-        return this.mastoreDAO.findFitCompanyIdByStoreId(storeIds);
+        if(null !=storeIds && storeIds.size()>0){
+            return this.mastoreDAO.findFitCompanyIdByStoreId(storeIds);
+        }else{
+            return  null;
+        }
     }
 
 

@@ -309,7 +309,10 @@ public class MaReportDownloadRestController extends BaseRestController {
         storeIds.retainAll(storeIdInCompany);
         if (null != storeId && -1L != storeId) {
             storeIds.clear();
-            storeIds.add(storeId);
+            AppStore store =  maStoreService.findAppStoreByStoreId(storeId);
+            if(!"ZS".equals(store.getStoreType().toString())){
+                storeIds.add(storeId);
+            }
         }
         //查询关联小型装饰公司
         List<Long> fitId = maStoreService.findFitCompanyIdByStoreId(storeIds);
@@ -1786,7 +1789,10 @@ public class MaReportDownloadRestController extends BaseRestController {
         storeIds.retainAll(storeIdInCompany);
         if (null != storeId && -1L != storeId) {
             storeIds.clear();
-            storeIds.add(storeId);
+            AppStore store =  maStoreService.findAppStoreByStoreId(storeId);
+            if(!"ZS".equals(store.getStoreType().toString())){
+                storeIds.add(storeId);
+            }
         }
         //查询关联小型装饰公司
         List<Long> fitId = maStoreService.findFitCompanyIdByStoreId(storeIds);
