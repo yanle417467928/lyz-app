@@ -310,6 +310,17 @@ public class ReturnOrderController {
             if (redisLock.lock(AppLock.REFUSE_ORDER, orderNumber, 30)) {
                 //获取订单头信息
                 OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
+                if (AppOrderStatus.REJECTED == orderBaseInfo.getStatus()){
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此订单已拒签, 不能重复拒签！", null);
+                    logger.info("refusedOrder OUT,此订单已拒签, 拒签退货失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+                ReturnOrderBaseInfo returnOrderBaseInfo2 = returnOrderService.queryByOrdNo(orderNumber);
+                if (null != returnOrderBaseInfo2){
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此订单已拒签, 不能重复拒签！", null);
+                    logger.info("refusedOrder OUT,此订单已拒签, 拒签退货失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
                 //获取订单账目明细
                 OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderNumber);
                 if (null == orderBaseInfo) {

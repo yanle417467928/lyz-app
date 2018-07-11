@@ -105,7 +105,7 @@ public interface MaCustomerService {
      */
     void updateMemberType(ManageUpdateCustomerTypeResponse manageUpdateCustomerTypeResponse) throws UnsupportedEncodingException;
 
-    PageInfo<MaCreateOrderPeopleResponse> maFindCreatePeople(Integer page, Integer size,String keywords,String peopleType);
+    PageInfo<MaCreateOrderPeopleResponse> maFindCreatePeople(Integer page, Integer size,String keywords,String peopleType,Long storeId);
 
     PageInfo<MaCreateOrderPeopleResponse> maFindProxyCreatePeople(Integer page, Integer size,String keywords);
 

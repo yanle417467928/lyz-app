@@ -1019,7 +1019,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
      */
     @GetMapping(value = "/find/people")
     public GridDataVO<MaCreateOrderPeopleResponse> findCreateOrderPeople(Integer offset, Integer size, String keywords,
-                                                                         String peopleType, String selectCreateOrderPeopleConditions) {
+                                                                         String peopleType, String selectCreateOrderPeopleConditions,Long storeId) {
         logger.info("findCreateOrderPeople 获取下单人列表,入参 offset:{},size:{},keywords:{},peopleType:{}," +
                 "selectCreateOrderPeopleConditions:{}", offset, size, keywords, peopleType, selectCreateOrderPeopleConditions);
         if (StringUtils.isBlank(peopleType) || "-1".equals(peopleType)) {
@@ -1036,36 +1036,14 @@ public class MaPhotoOrderRestController extends BaseRestController {
             if (StringUtils.isBlank(selectCreateOrderPeopleConditions)) {
                 selectCreateOrderPeopleConditions = null;
             }
-            maCreateOrderPeopleResponsePageInfo = maCustomerService.maFindCreatePeople(page, size, selectCreateOrderPeopleConditions, peopleType);
+            if (null == storeId || -1 == storeId){
+                storeId = null;
+            }
+            maCreateOrderPeopleResponsePageInfo = maCustomerService.maFindCreatePeople(page, size, selectCreateOrderPeopleConditions, peopleType, storeId);
             maCreateOrderPeopleResponseList = maCreateOrderPeopleResponsePageInfo.getList();
-
 
             logger.warn("findCreateOrderPeople ,获取下单人列表成功", maCreateOrderPeopleResponseList.size());
             return new GridDataVO<MaCreateOrderPeopleResponse>().transform(maCreateOrderPeopleResponseList, maCreateOrderPeopleResponsePageInfo.getTotal());
-
-//            if (null != guideId && -1 != guideId){
-//                AppEmployee employee = employeeService.findById(guideId);
-//                deliveryAddressResponseList = deliveryAddressService.getDefaultDeliveryAddressListByUserIdAndIdentityType(page,size,employee.getEmpId(),AppIdentityType.DECORATE_MANAGER,sellerAddressConditions);
-//                deliveryAddressResponses = deliveryAddressResponseList.getList();
-//                logger.warn("findAddressByUserMobile ,获取下单人地址库成功", deliveryAddressResponses.size());
-//                return new GridDataVO<DeliveryAddressResponse>().transform(deliveryAddressResponses, deliveryAddressResponseList.getTotal());
-//            }
-//
-//            if ("顾客".equals(identityType)){
-//                AppCustomer customer =customerService.findByMobile(userMobile);
-//                deliveryAddressResponseList = deliveryAddressService.getDefaultDeliveryAddressListByUserIdAndIdentityType(page,size,customer.getCusId(),AppIdentityType.CUSTOMER,sellerAddressConditions);
-//                deliveryAddressResponses = deliveryAddressResponseList.getList();
-//            }else if ("装饰公司经理".equals(identityType)){
-//                AppEmployee employee = employeeService.findByMobile(userMobile);
-//                deliveryAddressResponseList = deliveryAddressService.getDefaultDeliveryAddressListByUserIdAndIdentityType(page,size,employee.getEmpId(),AppIdentityType.DECORATE_MANAGER,sellerAddressConditions);
-//                deliveryAddressResponses = deliveryAddressResponseList.getList();
-//            }else if ("导购".equals(identityType)){
-//                AppEmployee employee = employeeService.findByMobile(userMobile);
-//                deliveryAddressResponseList = deliveryAddressService.getDefaultDeliveryAddressListByUserIdAndIdentityType(page,size,employee.getEmpId(),AppIdentityType.SELLER,sellerAddressConditions);
-//                deliveryAddressResponses = deliveryAddressResponseList.getList();
-//            }
-//            logger.warn("findCreateOrderPeople ,获取下单人列表成功", deliveryAddressResponses.size());
-//            return new GridDataVO<DeliveryAddressResponse>().transform(deliveryAddressResponses, deliveryAddressResponseList.getTotal());
         } catch (Exception e) {
             e.printStackTrace();
             logger.warn("findCreateOrderPeople EXCEPTION,发生未知错误，获取下单人列表失败");

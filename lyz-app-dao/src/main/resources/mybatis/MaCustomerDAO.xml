@@ -566,6 +566,9 @@
                 OR e.mobile LIKE concat(concat('%',#{keywords}),'%'))
             </if>
             AND (e.identity_type = 'DECORATE_MANAGER' OR  e.identity_type = 'DECORATE_EMPLOYEE')
+            <if test="null != storeId and -1 != storeId" >
+                AND s.store_id = #{storeId}
+            </if>
         </if>
     </select>
 
