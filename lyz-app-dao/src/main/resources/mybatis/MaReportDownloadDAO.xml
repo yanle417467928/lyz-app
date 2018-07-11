@@ -1710,7 +1710,6 @@
     </select>
 
 
-
     <select id="findProductSalesList" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.SalesReportDO">
         <!-- 配送 -->
         (SELECT
@@ -1752,7 +1751,8 @@
         '' as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId,
-        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType
+        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType,
+        cu2.cus_store_name fxCkName
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -1765,6 +1765,7 @@
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
         left JOIN cus_customer cc on cc.cus_id = ob.customer_id
+        left JOIN cus_customer_fx_store_relation cu2 on ob.store_code = cu2.fx_store_code
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
@@ -1865,7 +1866,8 @@
         '' as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId,
-        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType
+        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType,
+        cu2.cus_store_name fxCkName
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -1877,6 +1879,7 @@
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
         left JOIN cus_customer cc on cc.cus_id = ob.customer_id
+        left JOIN cus_customer_fx_store_relation cu2 on ob.store_code = cu2.fx_store_code
         WHERE
         ob.`status` IN (
         'FINISHED'
@@ -1976,7 +1979,8 @@
         '' as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId,
-        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType
+        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType,
+        cu2.cus_store_name fxCkName
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -1988,6 +1992,7 @@
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
         left JOIN cus_customer cc on cc.cus_id = ob.customer_id
+        left JOIN cus_customer_fx_store_relation cu2 on ob.store_code = cu2.fx_store_code
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
@@ -2099,7 +2104,8 @@
         '' as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId,
-        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType
+        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType,
+        '' fxCkName
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -2209,7 +2215,8 @@
         orb.return_no as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId,
-        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType
+        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType,
+        cu2.cus_store_name fxCkName
         FROM
         ord_return_base_info orb
         LEFT JOIN ord_base_info ob on orb.oid = ob.oid
@@ -2223,6 +2230,7 @@
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
         left JOIN cus_customer cc on cc.cus_id = ob.customer_id
+        left JOIN cus_customer_fx_store_relation cu2 on ob.store_code = cu2.fx_store_code
         where
         1=1
         and ob.`status` IN ('FINISHED','REJECTED')
@@ -2315,7 +2323,8 @@
         orb.return_no as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId,
-        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType
+        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType,
+        '' fxCkName
         FROM
         ord_return_base_info orb
         LEFT JOIN ord_base_info ob on orb.oid = ob.oid
@@ -2425,7 +2434,8 @@
         '' as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId,
-        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType
+        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType,
+        '' fxCkName
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -2526,7 +2536,8 @@
         orb.return_no as 'returnNo',
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId,
-        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType
+        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType,
+        '' fxCkName
         FROM
         ord_return_base_info orb
         LEFT JOIN ord_base_info ob on orb.oid = ob.oid
@@ -3228,4 +3239,55 @@
         </foreach>
     </select>
 
+    <select id="empCreditMoneySituation" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.EmpCreditDO" >
+        SELECT
+        s.city as city,
+        s.store_name as storeName,
+        e.`name` as sellerName,
+        e.mobile sellerMobile,
+        ec.credit_limit as maxCreditMoney,
+        ec.temp_credit_limit as tempCreditLimit,
+        ec.credit_limit_available as avaliableCreditMoney,
+        ec.last_update_time as lastChangeTime
+        FROM emp_employee e
+        LEFT JOIN st_store s on s.store_id = e.store_id
+        LEFT JOIN emp_credit_money ec on ec.emp_id = e.emp_id
+        where 1=1
+        <if test="city != null">
+           and e.city_id = #{city}
+        </if>
+        <if test="storeType != null and storeType != ''">
+          and  s.store_type = #{storeType}
+        </if>
+        <if test="keywords != null and keywords != ''">
+          and ( e.name LIKE concat(concat('%',#{keywords}),'%') or e.mobile LIKE concat(concat('%',#{keywords}),'%'))
+        </if>
+        AND s.store_id IN
+        <foreach collection="storeIds" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="stCreditMoneySituation" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.StCreditDO">
+        SELECT
+        s.city as city,
+        s.store_name as storeName,
+        sc.credit_limit as maxCreditMoney,
+        sc.credit_limit_available as avaliableCreditMoney,
+        sc.last_update_time lastChangeTime
+         from st_credit_money sc
+        LEFT JOIN st_store s on s.store_id = sc.store_id
+        where s.store_type = 'ZS'
+        where 1=1
+        <if test="city != null">
+           and e.city_id = #{city}
+        </if>
+        <if test="storeType != null and storeType != ''">
+           and s.store_type = #{storeType}
+        </if>
+        AND s.store_id IN
+        <foreach collection="storeIds" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
 </mapper>

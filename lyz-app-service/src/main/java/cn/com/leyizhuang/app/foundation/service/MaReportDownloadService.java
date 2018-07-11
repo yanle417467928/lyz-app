@@ -99,4 +99,12 @@ public interface MaReportDownloadService {
     PageInfo<CusExpiringSoonProductCouponInfo> findExpiringSoonProductAll(Long cityId, Long storeId, String storeType, String cusName, Integer page, Integer size, List<Long> storeIds);
 
     List<CusExpiringSoonProductCouponInfo> downloadExpiringSoonProduct(Long cityId, Long storeId, String storeType, String cusName, List<Long> storeIds);
+
+    PageInfo<EmpCreditDO> empCreditMoneySituationPage(Long cityId,String storeType,List<Long> storeIds,Integer page, Integer size,String keywords);
+
+    PageInfo<StCreditDO> stCreditMoneySituationPage(Long cityId, String storeType, List<Long> storeIds, Integer page, Integer size);
+
+    List<EmpCreditDO> empCreditMoneySituation(Long cityId,String storeType,List<Long> storeIds,String keywords);
+
+    List<StCreditDO> stCreditMoneySituation(Long cityId, String storeType, List<Long> storeIds);
 }

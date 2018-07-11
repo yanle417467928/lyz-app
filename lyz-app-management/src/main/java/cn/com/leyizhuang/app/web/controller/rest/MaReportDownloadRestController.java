@@ -231,6 +231,16 @@ public class MaReportDownloadRestController extends BaseRestController {
         return new GridDataVO<ShipmentAndReturnGoods>().transform(shipmentAndReturnGoodsList.getList(), shipmentAndReturnGoodsList.getTotal());
     }
 
+    @GetMapping(value = "/empcredit/page/grid")
+    public GridDataVO<EmpCreditDO> restEmpCreditDOPageGrid(Integer offset, Integer size, Long cityId, Long storeId, String storeType,String keywords){
+        size = getSize(size);
+        Integer page = getPage(offset, size);
+        //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
+        PageInfo<EmpCreditDO> pageInfo =maReportDownloadService.empCreditMoneySituationPage(cityId,storeType,storeIds,page,size,keywords);
+        return new GridDataVO<EmpCreditDO>().transform(pageInfo.getList(), pageInfo.getTotal());
+    }
+
     /**
      * @param
      * @return
@@ -2121,10 +2131,10 @@ public class MaReportDownloadRestController extends BaseRestController {
                     // 分销
 
                     //列宽
-                    int[] columnView = {10, 20, 15, 10, 10, 30, 10, 15, 15, 15, 15, 15, 20, 15, 15, 15, 15, 15, 15, 15, 15, 15};
+                    int[] columnView = {10, 20, 15, 10, 10, 30, 10, 15, 15, 15, 15, 15, 20, 15, 15, 15, 15, 15, 15, 15, 15,15,15};
                     //列标题城市
 
-                    String[] titles = {"城市", "门店", "门店编码", "名称", "会员名称", "订单号", "退单号", "配送/自提", "订单状态", "订单日期", "出货时间", "是否结清", "订单还清日期", "编号", "商品名称", "品牌", "下单数量", "本赠品", "分销财务销量", "经销单价", "原单价", "产品券类型", "分销门店编码", "顾客类型"
+                    String[] titles = {"城市", "门店", "门店编码", "名称", "会员名称", "订单号", "退单号", "配送/自提", "订单状态", "订单日期", "出货时间", "是否结清", "订单还清日期", "编号", "商品名称", "品牌", "下单数量", "本赠品", "分销财务销量", "经销单价", "原单价", "产品券类型", "分销门店编码","所属分销仓库", "顾客类型"
                     };
                     //计算标题开始行号
                     int row = 1;
@@ -2218,7 +2228,8 @@ public class MaReportDownloadRestController extends BaseRestController {
                         if (null != salesReportDO.getFxStoreCode()) {
                             ws.addCell(new Label(22, j + row, salesReportDO.getFxStoreCode().toString(), textFormat));
                         }
-                        ws.addCell(new Label(23, j + row, salesReportDO.getCusType(), textFormat));
+                        ws.addCell(new Label(23, j + row, salesReportDO.getFxCkName(), textFormat));
+                        ws.addCell(new Label(24, j + row, salesReportDO.getCusType(), textFormat));
                     }
                 }else if (storeType.equals("ZS")){
 
@@ -3524,6 +3535,117 @@ public class MaReportDownloadRestController extends BaseRestController {
             }
         } catch (Exception e) {
             System.out.println(e);
+            e.printStackTrace();
+        } finally {
+            if (wwb != null) {
+                try {
+                    wwb.write();//刷新（或写入），生成一个excel文档
+                    wwb.close();//关闭
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * 导购信用额度
+     * @param request
+     * @param response
+     * @param cityId
+     * @param storeId
+     * @param storeType
+     * @param keywords
+     */
+    @GetMapping(value = "/emp/credit")
+    public void downloadEmpCreditMoney(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId, String storeType,String keywords) {
+        //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
+        List<EmpCreditDO> itemsDOList = maReportDownloadService.empCreditMoneySituation(cityId,storeType,storeIds,keywords);
+        ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
+        String shiroName = "";
+        if (null != shiroUser) {
+            shiroName = shiroUser.getName();
+        }
+
+        response.setContentType("text/html;charset=UTF-8");
+        //创建名称
+        String fileurl = "导购信用额度报表-" + DateUtils.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
+
+        WritableWorkbook wwb = null;
+        try {
+            //创建文件
+            wwb = exportXML(fileurl, response);
+
+            //excel单表最大行数是65535
+            int maxSize = 0;
+            if (null != itemsDOList) {
+                maxSize = itemsDOList.size();
+            }
+            int sheets = maxSize / maxRowNum + 1;
+            //设置excel的sheet数
+            for (int i = 0; i < sheets; i++) {
+                //标题格式
+                WritableCellFormat titleFormat = this.setTitleStyle();
+                //正文格式
+                WritableCellFormat textFormat = this.setTextStyle();
+
+                //工作表，参数0表示这是第一页
+                WritableSheet ws = wwb.createSheet("第" + (i + 1) + "页", i);
+
+                //筛选条件
+                Map<String, String> map = new HashMap<>();
+                if (null != cityId && !(cityId.equals(-1L)) && null != itemsDOList && itemsDOList.size() > 0) {
+                    map.put("城市", itemsDOList.get(0).getCity());
+                } else {
+                    map.put("城市", "无");
+                }
+                if (null != storeId && !(storeId.equals(-1L)) && null != itemsDOList && itemsDOList.size() > 0) {
+                    map.put("门店", itemsDOList.get(0).getStoreName());
+                } else {
+                    map.put("门店", "无");
+                }
+
+                if (null != keywords && !("".equals(keywords))) {
+                    map.put("关键字", keywords);
+                } else {
+                    map.put("关键字", "无");
+                }
+
+                //设置筛选条件
+                ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
+                //列宽
+                int[] columnView = {10, 13, 10, 20, 30, 25, 15, 15, 20};
+                //列标题
+                String[] titles = {"城市", "门店名称","导购名称","导购电话","信用额度","临时额度","可用余额","最后一次变更时间"};
+                //计算标题开始行号
+                int row = 1;
+                if (null != map && map.size() > 0) {
+                    row = (map.size() + 1) / 2 + 4;
+                }
+
+                //设置标题
+                ws = this.setHeader(ws, titleFormat, columnView, titles, row);
+                row += 1;
+                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.NO_BOLD, false,
+                        UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
+                //填写表体数据
+                for (int j = 0; j < maxRowNum; j++) {
+                    if (j + i * maxRowNum >= maxSize) {
+                        break;
+                    }
+                    EmpCreditDO itemsDO = itemsDOList.get(j + i * maxRowNum);
+                    ws.addCell(new Label(0, j + row, itemsDO.getCity(), textFormat));
+                    ws.addCell(new Label(1, j + row, itemsDO.getStoreName(), textFormat));
+                    ws.addCell(new Label(2, j + row, itemsDO.getSellerName(), textFormat));
+                    ws.addCell(new Label(3, j + row, itemsDO.getSellerMobile(), textFormat));
+                    ws.addCell(new Number(4, j + row, itemsDO.getMaxCreditMoney(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Number(5, j + row, itemsDO.getTempCreditLimit(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Number(6, j + row, itemsDO.getAvaliableCreditMoney(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Label(7, j + row, itemsDO.getLastChangeTime(), textFormat));
+                }
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             if (wwb != null) {
