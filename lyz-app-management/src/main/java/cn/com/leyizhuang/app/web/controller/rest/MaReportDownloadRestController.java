@@ -304,7 +304,7 @@ public class MaReportDownloadRestController extends BaseRestController {
         size = getSize(size);
         Integer page = getPage(offset, size);
         //查询登录用户门店权限的门店ID
-        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
         List<Long> storeIdInCompany = maStoreService.findStoresIdByStructureCodeAndStoreType(companyCode, storeType);
         storeIds.retainAll(storeIdInCompany);
         if (null != storeId && -1L != storeId) {
@@ -1781,7 +1781,7 @@ public class MaReportDownloadRestController extends BaseRestController {
     @GetMapping(value = "/arrearsReport/download")
     public void downArrearsReportDown(HttpServletRequest request, HttpServletResponse response, String companyCode, String storeType, Long storeId) {
         //查询登录用户门店权限的门店ID
-        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
         List<Long> storeIdInCompany = maStoreService.findStoresIdByStructureCodeAndStoreType(companyCode, storeType);
         storeIds.retainAll(storeIdInCompany);
         if (null != storeId && -1L != storeId) {

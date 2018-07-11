@@ -286,6 +286,9 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
 
     @Override
     public PageInfo<ArrearsReportDO> findArrearsList(String companyCode, String storeType, List<Long> storeIds, Long storeId, Integer page, Integer size) {
+        if(null ==storeIds||storeIds.size()==0){
+            return null;
+        }
         PageHelper.startPage(page, size);
         List<ArrearsReportDO> shipmentAndReturnGoodsList = new ArrayList<>();
         if ("-1".equals(storeType)) {
@@ -301,6 +304,9 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
 
     @Override
     public List<ArrearsReportDO> downArrearsList(String companyCode, String storeType, List<Long> storeIds, Long storeId) {
+        if(null ==storeIds||storeIds.size()==0){
+            return null;
+        }
         List<ArrearsReportDO> shipmentAndReturnGoodsList = new ArrayList<>();
         if ("-1".equals(storeType)) {
             storeType = null;
