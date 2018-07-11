@@ -120,6 +120,8 @@ public interface MaStoreDAO {
 
     List<SimpleStoreParam> findStoresListByStoreId(@Param("list") List<Long> storeIds);
 
+    List<SimpleStoreParam> findFitAndStoresListByStoreId(@Param("cityId")Long cityId,@Param("storeType")String storeType,@Param("list") List<Long> storeIds);
+
     AppStore findAppStoreByStoreId(Long storeId);
 
     List<SimpleStoreParam> findStoresListByStoreIdAndStoreType(@Param("list") List<Long> storeIds, @Param("storeTypes") List<StoreType> storeTypes);

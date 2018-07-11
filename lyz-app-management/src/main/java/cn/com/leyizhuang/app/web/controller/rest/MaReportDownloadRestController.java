@@ -260,10 +260,13 @@ public class MaReportDownloadRestController extends BaseRestController {
         Integer page = getPage(offset, size);
 
         //查询登录用户门店权限的门店ID
-        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
         if ("ALL".equals(companyCode)) {
             // 不限分公司
         } else {
+            if("JZSYBM".equals(companyCode)){
+                companyCode="|JZC001|";
+            }
             List<Long> storeIdInCompany = maStoreService.findStoresIdByStructureCode(companyCode);
             storeIds.retainAll(storeIdInCompany);
         }
@@ -291,7 +294,7 @@ public class MaReportDownloadRestController extends BaseRestController {
         size = getSize(size);
         Integer page = getPage(offset, size);
         //查询登录用户门店权限的门店ID
-        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
         List<Long> storeIdInCompany = maStoreService.findStoresIdByStructureCodeAndStoreType(companyCode, storeType);
         storeIds.retainAll(storeIdInCompany);
         if (null != storeId && -1L != storeId) {
@@ -1672,7 +1675,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                 int[] columnView = {10, 40, 20, 20, 30, 15, 15};
                 //列标题城市
 
-                String[] titles = {"城市", "门店名称", "门店类型", "项目", "订单号", "原订单类型", "退单类型", "出退货日期", "原订单日期", "客户编号", "客户电话", "客户姓名", "客户类型", "销顾姓名", "公司标识", "商品编码", "商品名称", "产品类型", "数量", "成交单价", "成交总价", "仓库信息"};
+                String[] titles = {"城市", "门店名称", "门店类型", "项目", "订单号", "原订单类型", "退单类型", "出退货日期", "原订单日期", "客户编号", "客户电话", "客户姓名", "客户类型", "销顾姓名", "公司标识", "商品编码", "商品名称", "产品类型", "商品类型","数量", "成交单价", "成交总价", "仓库信息"};
                 //计算标题开始行号
                 int row = 1;
                 if (null != map && map.size() > 0) {
@@ -1724,16 +1727,21 @@ public class MaReportDownloadRestController extends BaseRestController {
                     if (null != shipmentAndReturnGoods.getGoodsLineType()) {
                         ws.addCell(new Label(17, j + row, shipmentAndReturnGoods.getGoodsLineType(), textFormat));
                     }
+
+                    if (null != shipmentAndReturnGoods.getCategoryName()) {
+                        ws.addCell(new Label(18, j + row, shipmentAndReturnGoods.getCategoryName(), textFormat));
+                    }
+
                     if (null != shipmentAndReturnGoods.getOrderQty()) {
-                        ws.addCell(new Number(18, j + row, shipmentAndReturnGoods.getOrderQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                        ws.addCell(new Number(19, j + row, shipmentAndReturnGoods.getOrderQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
                     }
                     if (null != shipmentAndReturnGoods.getReturnPrice()) {
-                        ws.addCell(new Number(19, j + row, shipmentAndReturnGoods.getReturnPrice().doubleValue(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                        ws.addCell(new Number(20, j + row, shipmentAndReturnGoods.getReturnPrice().doubleValue(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     }
                     if (null != shipmentAndReturnGoods.getAmount()) {
-                        ws.addCell(new Number(20, j + row, shipmentAndReturnGoods.getAmount().doubleValue(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                        ws.addCell(new Number(21, j + row, shipmentAndReturnGoods.getAmount().doubleValue(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     }
-                    ws.addCell(new Label(21, j + row, shipmentAndReturnGoods.getWareHouse(), textFormat));
+                    ws.addCell(new Label(22, j + row, shipmentAndReturnGoods.getWareHouse(), textFormat));
                 }
             }
         } catch (Exception e) {
@@ -1763,7 +1771,7 @@ public class MaReportDownloadRestController extends BaseRestController {
     @GetMapping(value = "/arrearsReport/download")
     public void downArrearsReportDown(HttpServletRequest request, HttpServletResponse response, String companyCode, String storeType, Long storeId) {
         //查询登录用户门店权限的门店ID
-        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
         List<Long> storeIdInCompany = maStoreService.findStoresIdByStructureCodeAndStoreType(companyCode, storeType);
         storeIds.retainAll(storeIdInCompany);
         if (null != storeId && -1L != storeId) {
@@ -1939,10 +1947,13 @@ public class MaReportDownloadRestController extends BaseRestController {
             }
         }
         //查询登录用户门店权限的门店ID
-        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
         if (companyCode.equals("ALL")) {
             // 不限分公司
         } else {
+            if("JZSYBM".equals(companyCode)){
+                companyCode="|JZC001|";
+            }
             List<Long> storeIdInCompany = maStoreService.findStoresIdByStructureCode(companyCode);
             storeIds.retainAll(storeIdInCompany);
         }

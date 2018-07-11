@@ -47,9 +47,7 @@
                                 下载报表
                             </button>
                         <#--</@shiro.hasPermission>-->
-                            <select name="company" id="companyCode" class="form-control selectpicker"
-                                    data-width="120px"
-                                    style="width:auto;"
+                            <select name="company" id="companyCode" class="form-control" style="width:auto;"
                                     onchange="findStorelist()" data-live-search="true">
 
                             <#if structureList?? && structureList?size gt 0 >
@@ -59,14 +57,12 @@
                             </#if>
                                 <option value="ALL">所有分公司</option>
                             </select>
-                            <select name="storeType" id="storeType" class="form-control selectpicker"
-                                    data-width="160px"
-                                    style="width:auto;"
+                            <select name="storeType" id="storeType" class="form-control" style="width:auto;"
                                     onchange="findStorelist()" data-live-search="true">
                                 <option value="ZY">直营</option>
                                 <option value="JM">加盟</option>
-                                <option value="FX">分销(不分公司)</option>
-                                <option value="ZS">装饰公司(不分公司)</option>
+                                <option value="FX">分销</option>
+                                <option value="ZS">装饰公司</option>
                             </select>
                             <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px"
                                     style="width:auto;"
@@ -115,7 +111,7 @@
             language: 'zh-CN',
             autoclose: true
         });
-
+        findStorelist();
     });
 
 

@@ -501,6 +501,7 @@
                     $("#billNo").val("" + result.content.billNo);
 //                    $("#remainAmount").html('￥' + accAdd(result.content.priorNotPaidInterestAmount, accAdd(result.content.currentUnpaidAmount, result.content.priorNotPaidBillAmount)));
                     var currentShouldReturn = parseFloat(result.content.billTotalAmount) - parseFloat(result.content.currentPaidAmount);
+                    currentShouldReturn= Math.round(currentShouldReturn * 100) / 100
                     $("#remainAmount").html('￥' + currentShouldReturn);
                 }
             },
@@ -661,6 +662,7 @@
 
     function payBill() {
         $('#amountMoney').empty();
+        billorderDetailsRequest.splice(0,billorderDetailsRequest.length);
         var selected = $('#dataGrid1').bootstrapTable('getSelections');
         var billNos = [];
         for (var i = 0; i < selected.length; i++) {

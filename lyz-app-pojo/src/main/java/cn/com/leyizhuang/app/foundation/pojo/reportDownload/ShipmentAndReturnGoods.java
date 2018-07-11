@@ -72,6 +72,9 @@ public class ShipmentAndReturnGoods {
     //退单类型
     private String returnOrderDeliveryType ;
 
+    //商品类型
+    private String categoryName ;
+
     public void setCustomerType(AppCustomerType appCustomerType) {
         this.customerType = appCustomerType.getDescription();
     }
