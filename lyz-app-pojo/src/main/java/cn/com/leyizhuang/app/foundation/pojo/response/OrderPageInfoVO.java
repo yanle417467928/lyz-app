@@ -105,4 +105,9 @@ public class OrderPageInfoVO {
      *  门店名字
      */
     private String storeName;
+
+    /**
+     * 是否货到付款
+     */
+    private Boolean isCashDelivery;
 }

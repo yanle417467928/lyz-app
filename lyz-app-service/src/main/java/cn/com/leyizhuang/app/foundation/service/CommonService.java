@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 
+import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.OnlinePayType;
 import cn.com.leyizhuang.app.core.exception.*;
@@ -102,7 +103,7 @@ public interface CommonService {
      */
     public Map<Long, Integer> createInventoryCheckMap(List<OrderGoodsInfo> orderGoodsInfoList);
 
-    Boolean checkCashDelivery(List<OrderGoodsInfo> orderGoodsInfoList, Long userId, AppIdentityType identityType);
+    Boolean checkCashDelivery(List<OrderGoodsInfo> orderGoodsInfoList, Long userId, AppIdentityType identityType, AppDeliveryType deliveryType);
 
     void handleOrderRelevantBusinessAfterOnlinePayCashDelivery(String orderNumber, OnlinePayType payType) throws UnsupportedEncodingException;
 
