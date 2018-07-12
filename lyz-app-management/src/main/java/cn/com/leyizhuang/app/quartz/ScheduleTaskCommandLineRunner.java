@@ -60,12 +60,12 @@ public class ScheduleTaskCommandLineRunner implements CommandLineRunner {
             throw new RuntimeException("cusOverdueProductCouponTransferPreDepositCron 任务未找到!");
         }
 
-     /*   String sendMsgForExpiringSoonProductCouponCron = maClearTempCreditService.getCron(6L);
+        String sendMsgForExpiringSoonProductCouponCron = maClearTempCreditService.getCron(7L);
         if (StringUtils.isNotBlank(sendMsgForExpiringSoonProductCouponCron)) {
             QuartzManager.addJob("sendMsgForExpiringSoonProductCoupon", "jobGroup5", "trigger5", "triggerGroup5", sendProductSMSTask.class, sendMsgForExpiringSoonProductCouponCron);
         } else {
-           // throw new RuntimeException("sendMsgForExpiringSoonProductCouponCron为空");
-        }*/
+            throw new RuntimeException("sendMsgForExpiringSoonProductCouponCron为空");
+        }
 
         //账期定时任务
         String billDateTaskCron = maClearTempCreditService.getCron(6L);

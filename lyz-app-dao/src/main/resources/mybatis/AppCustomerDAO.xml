@@ -686,7 +686,7 @@
         uc.goods_code,
         uc.goods_specification,
         uc.goods_unit,
-        uc.left_number,
+        SUM(uc.left_number) left_number,
         uc.cover_image_uri,
         uc.isZG,
         uc.effective_start_time,
@@ -701,8 +701,8 @@
         sum(c.quantity) left_number,
         g.cover_image_uri,
         CASE WHEN ggp.price_type = "COMMON" THEN 0 ELSE 1 END AS isZG,
-        c.effective_start_time,
-        c.effective_end_time
+        DATE_FORMAT(c.effective_start_time,'%Y-%m-%d') effective_start_time,
+        DATE_FORMAT(c.effective_end_time,'%Y-%m-%d') effective_end_time
         FROM
         cus_customer_product_coupon c
         INNER JOIN gds_goods g ON c.gid = g.gid
@@ -721,7 +721,7 @@
         OR ggp.price_type = 'common'
         )
         GROUP BY
-        g.sku,ggp.price_type
+        g.sku,ggp.price_type, effective_start_time, effective_end_time
         UNION ALL
         <!-- 没有价目表的产品券 -->
         SELECT
@@ -733,8 +733,8 @@
         sum(c.quantity) left_number,
         g.cover_image_uri,
         0 as isZG,
-        c.effective_start_time,
-        c.effective_end_time
+        DATE_FORMAT(c.effective_start_time,'%Y-%m-%d') effective_start_time,
+        DATE_FORMAT(c.effective_end_time,'%Y-%m-%d') effective_end_time
         FROM
         cus_customer_product_coupon c
         INNER JOIN gds_goods g ON c.gid = g.gid
@@ -754,8 +754,8 @@
         )
         and ggp.price_type is NULL
         GROUP BY
-        g.sku,
-        ggp.price_type) uc
+        g.sku, ggp.price_type, effective_start_time, effective_end_time) uc
+        GROUP BY goods_code, isZG, effective_start_time, effective_end_time
     </select>
 
     <select id="findProductCouponByCustomerIdNew" resultType=
@@ -766,7 +766,7 @@
         uc.goods_code,
         uc.goods_specification,
         uc.goods_unit,
-        uc.left_number,
+        SUM(uc.left_number) left_number,
         uc.cover_image_uri,
         uc.isZG,
         uc.effective_start_time,
@@ -781,8 +781,8 @@
         sum(c.quantity) left_number,
         g.cover_image_uri,
         CASE WHEN ggp.price_type = "COMMON" THEN 0 ELSE 1 END AS isZG,
-        c.effective_start_time,
-        c.effective_end_time
+        DATE_FORMAT(c.effective_start_time,'%Y-%m-%d') effective_start_time,
+        DATE_FORMAT(c.effective_end_time,'%Y-%m-%d') effective_end_time
         FROM
         cus_customer_product_coupon c
         INNER JOIN gds_goods g ON c.gid = g.gid
@@ -800,7 +800,7 @@
         OR ggp.price_type = 'common'
         )
         GROUP BY
-        g.sku,ggp.price_type
+        g.sku,ggp.price_type, effective_start_time, effective_end_time
         UNION ALL
         <!-- 没有价目表的产品券 -->
         SELECT
@@ -812,8 +812,8 @@
         sum(c.quantity) left_number,
         g.cover_image_uri,
         0 as isZG,
-        c.effective_start_time,
-        c.effective_end_time
+        DATE_FORMAT(c.effective_start_time,'%Y-%m-%d') effective_start_time,
+        DATE_FORMAT(c.effective_end_time,'%Y-%m-%d') effective_end_time
         FROM
         cus_customer_product_coupon c
         INNER JOIN gds_goods g ON c.gid = g.gid
@@ -832,8 +832,8 @@
         )
         and ggp.price_type is NULL
         GROUP BY
-        g.sku,
-        ggp.price_type) uc
+        g.sku, ggp.price_type, effective_start_time, effective_end_time) uc
+        GROUP BY goods_code, isZG, effective_start_time, effective_end_time
     </select>
 
 
