@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.core.utils.IpUtils;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
+import cn.com.leyizhuang.app.foundation.pojo.deliveryFeeRule.DeliveryFeeRule;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.*;
@@ -2692,6 +2693,77 @@ public class OrderController {
             e.printStackTrace();
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，处理信用额度支付的订单业务失败", null);
             logger.warn("handleOrderRelevantBusinessAfterPayCredit EXCEPTION,处理信用额度支付的订单业务失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * @title   计算运费
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/7/12
+     */
+    @PostMapping(value = "/deliveryFee", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> getDeliveryFee(Long userID, Integer identityType, Long cityId, String countyName, String goodsList, Double totalOrderAmount) {
+        ResultDTO<Object> resultDTO;
+        logger.info("getOrderList CALLED,用户获取订单列表，入参 userID:{}, identityType:{}, cityId:{}, countyName:{}, totalOrderAmount:{}, goodsList:{}",
+                userID, identityType, cityId, countyName, totalOrderAmount, goodsList);
+        if (null == userID) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
+            logger.info("getOrderList OUT,用户获取订单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
+            logger.info("getOrderList OUT,用户获取订单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == cityId) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市不能为空",
+                    null);
+            logger.info("getOrderList OUT,用户获取订单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == countyName) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
+                    null);
+            logger.info("getOrderList OUT,用户获取订单列表失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (!(null != goodsList && goodsList.length() > 0)) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品ID不允许为空", null);
+            logger.warn("chooseSelfTakeStore OUT,选择自提门店失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null == totalOrderAmount) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品ID不允许为空", null);
+            logger.warn("chooseSelfTakeStore OUT,选择自提门店失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        try {
+            List<DeliveryFeeRule> ruleList = deliveryFeeRuleService.findRuleByCityIdAndCountyName(cityId, countyName);
+            if (null == ruleList || ruleList.size() == 0){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品ID不允许为空", null);
+                logger.warn("chooseSelfTakeStore OUT,选择自提门店失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, OrderGoodsSimpleResponse.class);
+            List<OrderGoodsSimpleResponse> simpleInfos = objectMapper.readValue(goodsList, javaType1);
+            Double deliveryFee = this.deliveryFeeRuleService.countDeliveryFeeNew(identityType, cityId, totalOrderAmount, simpleInfos, countyName);
+            //创建一个返回对象list
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, deliveryFee);
+            logger.info("getOrderList OUT,用户获取订单列表成功，出参 resultDTO:{}", deliveryFee);
+            return resultDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，用户获取订单列表失败", null);
+            logger.warn("getOrderList EXCEPTION,用户获取订单列表失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

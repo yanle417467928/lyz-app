@@ -3,7 +3,7 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.DeliveryFeeRuleDAO">
     <sql id="ALL_FIELDS">
         id,create_date, city_id, city_name, `condition`, delivery_fee, toll_object, include_special_goods,
-    status
+    status, county_name
     </sql>
 
     <insert id="addDeliveryFeeRule"
@@ -96,4 +96,10 @@
         DELETE FROM  delivery_fee_rule_special_goods
         where rule_id = #{ruleId}
     </delete>
+
+    <select id="findRuleByCityIdAndCountyName" resultType="cn.com.leyizhuang.app.foundation.pojo.deliveryFeeRule.DeliveryFeeRule">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM delivery_fee_rule WHERE city_id = #{cityId} AND county_name = #{countyName}
+    </select>
 </mapper>

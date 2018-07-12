@@ -278,7 +278,7 @@ public class SettlementController {
                 }
             }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-            logger.info("chooseSelfTakeStore OUT,选择自提门店失败，出参 resultDTO:{}", resultDTO);
+            logger.info("chooseSelfTakeStore OUT,选择自提门店成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
