@@ -583,18 +583,18 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     @Override
     public List<SupportHotlineResponse> getCustomerSupportHotline(Long userId, Integer identityType) {
         List<SupportHotlineResponse> supportHotlineList = customerDAO.findAllSupportHotline();
-        SupportHotlineResponse supportHotlineResponse =  new SupportHotlineResponse();
-        if(6==identityType){
+        SupportHotlineResponse supportHotlineResponse = new SupportHotlineResponse();
+        if (6 == identityType) {
             String sellerMobile = customerDAO.getCustomerSupportHotline(userId);
             if (null != sellerMobile) {
                 supportHotlineResponse.setName("导购热线");
                 supportHotlineResponse.setSupportHotline(sellerMobile);
                 supportHotlineList.add(supportHotlineResponse);
             }
-        }else if(3==identityType||2==identityType){
-            AppStore appStore = appStoreService.findStoreByUserIdAndIdentityType(userId,identityType);
+        } else if (3 == identityType || 2 == identityType) {
+            AppStore appStore = appStoreService.findStoreByUserIdAndIdentityType(userId, identityType);
             String storeCode = appStore.getStoreCode();
-                String sellerMobile = appEmployeeService.getSalesManagerSupportHotline(storeCode);
+            String sellerMobile = appEmployeeService.getSalesManagerSupportHotline(storeCode);
             if (null != sellerMobile) {
                 supportHotlineResponse.setName("销售经理热线");
                 supportHotlineResponse.setSupportHotline(sellerMobile);
@@ -619,33 +619,33 @@ public class AppCustomerServiceImpl implements AppCustomerService {
 
     @Override
     public List<FindCustomerResponse> findCustomerByCusPhone(Long cityId, String mobile) {
-        if (null != cityId && null != mobile){
+        if (null != cityId && null != mobile) {
             return customerDAO.findCustomerByCusPhone(cityId, mobile);
-        }else {
+        } else {
             return null;
         }
     }
 
     @Override
     public List<FindCustomerResponse> findCustomerByCusNameOrPhone(Long storeId, String keywords) {
-        if (null != storeId && null != keywords){
-           return customerDAO.findCustomerByCusNameOrPhone(storeId, keywords);
-        }else {
+        if (null != storeId && null != keywords) {
+            return customerDAO.findCustomerByCusNameOrPhone(storeId, keywords);
+        } else {
             return null;
         }
     }
 
     @Override
     public void updateCustomerTypeByUserId(Long userId) {
-        if (null != userId){
+        if (null != userId) {
             customerDAO.updateCustomerTypeByUserId(userId);
         }
     }
 
     @Override
     public CustomerPreDeposit findCustomerPreDepositByCustomerId(Long cusId) {
-        if (null != cusId){
-           return customerDAO.findCustomerPreDepositByCustomerId(cusId);
+        if (null != cusId) {
+            return customerDAO.findCustomerPreDepositByCustomerId(cusId);
         }
         return null;
     }
@@ -659,7 +659,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     @Override
     @Transactional
     public void createCustomerPreDepositAccount(Long cusId) {
-        if (null != cusId){
+        if (null != cusId) {
             CustomerPreDeposit customerPreDeposit = new CustomerPreDeposit();
             customerPreDeposit.setBalance(0D);
             customerPreDeposit.setCreateTime(new Date());
@@ -671,7 +671,7 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void createCustomerLeBiAccount(Long cusId) {
-        if (null != cusId){
+        if (null != cusId) {
             CustomerLeBi customerLeBi = new CustomerLeBi();
             customerLeBi.setQuantity(0);
             customerLeBi.setCreateTime(new Date());
@@ -681,12 +681,26 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     }
 
     @Override
-    public void updateCustomerSellerIdStoreIdByCusId(Long cusId, Long storeId, Long salesConsultId,Date date) {
-        customerDAO.updateCustomerSellerIdStoreIdByCusId(cusId, storeId, salesConsultId,date);
+    public void updateCustomerSellerIdStoreIdByCusId(Long cusId, Long storeId, Long salesConsultId, Date date) {
+        customerDAO.updateCustomerSellerIdStoreIdByCusId(cusId, storeId, salesConsultId, date);
     }
 
     @Override
     public void updateCusProductCouponsStatusIsFlaseById(Long id) {
         this.customerDAO.updateCusProductCouponsStatusIsFlaseById(id);
+    }
+
+    @Override
+    public List<CustomerProductCoupon> findOverdueCustomerProductCoupon() {
+
+        return customerDAO.findOverdueCustomerProductCoupon();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveCustomerProductCouponTransferPreDepositRecord(CustomerProductCouponTransferPreDepositRecord record) {
+        if (null != record) {
+            customerDAO.saveCustomerProductCouponTransferPreDepositRecord(record);
+        }
     }
 }

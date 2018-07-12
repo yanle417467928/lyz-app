@@ -130,4 +130,5 @@ public interface CommonService {
     void handleOrderRelevantBusinessAfterPayCredit(String orderNumber, Long userId, Integer identityType, String payType, String ipAddress) throws IOException;
 
 
+    void cusProductCouponTransferPreDeposit() throws UnsupportedEncodingException;
 }
