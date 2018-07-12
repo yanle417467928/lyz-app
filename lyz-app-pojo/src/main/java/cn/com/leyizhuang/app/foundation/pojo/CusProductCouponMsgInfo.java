@@ -31,4 +31,8 @@ public class CusProductCouponMsgInfo implements Serializable {
      * 失效时间
      */
     private Date effectiveEndTime;
+    /**
+     * 数量
+     */
+    private Integer qty;
 }

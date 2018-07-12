@@ -62,7 +62,7 @@ public class ScheduleTaskCommandLineRunner implements CommandLineRunner {
 
         String sendMsgForExpiringSoonProductCouponCron = maClearTempCreditService.getCron(7L);
         if (StringUtils.isNotBlank(sendMsgForExpiringSoonProductCouponCron)) {
-            QuartzManager.addJob("sendMsgForExpiringSoonProductCoupon", "jobGroup5", "trigger5", "triggerGroup5", sendProductSMSTask.class, sendMsgForExpiringSoonProductCouponCron);
+            QuartzManager.addJob("sendMsgForExpiringSoonProductCoupon", "jobGroup7", "trigger7", "triggerGroup7", sendProductSMSTask.class, sendMsgForExpiringSoonProductCouponCron);
         } else {
             throw new RuntimeException("sendMsgForExpiringSoonProductCouponCron为空");
         }
