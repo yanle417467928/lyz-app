@@ -425,10 +425,10 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
     }
 
     @Override
-    public PageInfo<StCreditDO> stCreditMoneySituationPage(Long cityId, String storeType, List<Long> storeIds, Integer page, Integer size) {
+    public PageInfo<StCreditDO> stCreditMoneySituationPage(Long cityId, String storeType, List<Long> storeIds, Integer page, Integer size,String keywords) {
         PageHelper.startPage(page, size);
 
-        List<StCreditDO> itemsDOS = this.maReportDownloadDAO.stCreditMoneySituation(cityId,storeType,storeIds);
+        List<StCreditDO> itemsDOS = this.maReportDownloadDAO.stCreditMoneySituation(cityId,storeType,storeIds,keywords);
         return new PageInfo<>(itemsDOS);
 
     }
@@ -440,8 +440,8 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
     }
 
     @Override
-    public List<StCreditDO> stCreditMoneySituation(Long cityId, String storeType, List<Long> storeIds) {
-        return this.maReportDownloadDAO.stCreditMoneySituation(cityId,storeType,storeIds);
+    public List<StCreditDO> stCreditMoneySituation(Long cityId, String storeType, List<Long> storeIds,String keywords) {
+        return this.maReportDownloadDAO.stCreditMoneySituation(cityId,storeType,storeIds,keywords);
     }
 
 

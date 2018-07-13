@@ -102,9 +102,9 @@ public interface MaReportDownloadService {
 
     PageInfo<EmpCreditDO> empCreditMoneySituationPage(Long cityId,String storeType,List<Long> storeIds,Integer page, Integer size,String keywords);
 
-    PageInfo<StCreditDO> stCreditMoneySituationPage(Long cityId, String storeType, List<Long> storeIds, Integer page, Integer size);
+    PageInfo<StCreditDO> stCreditMoneySituationPage(Long cityId, String storeType, List<Long> storeIds, Integer page, Integer size,String keywords);
 
     List<EmpCreditDO> empCreditMoneySituation(Long cityId,String storeType,List<Long> storeIds,String keywords);
 
-    List<StCreditDO> stCreditMoneySituation(Long cityId, String storeType, List<Long> storeIds);
+    List<StCreditDO> stCreditMoneySituation(Long cityId, String storeType, List<Long> storeIds,String keywords);
 }

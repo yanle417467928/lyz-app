@@ -171,4 +171,8 @@ public interface AppCustomerService {
     void updateCustomerSellerIdStoreIdByCusId(Long cusId,Long storeId,Long salesConsultId,Date date);
 
     void updateCusProductCouponsStatusIsFlaseById(Long id);
+
+    List<CustomerProductCoupon> findOverdueCustomerProductCoupon();
+
+    void saveCustomerProductCouponTransferPreDepositRecord(CustomerProductCouponTransferPreDepositRecord record);
 }

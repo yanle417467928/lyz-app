@@ -19,7 +19,8 @@ public enum CustomerPreDepositChangeType {
     UNIONPAY_RECHARGE("UNIONPAY_RECHARGE","银联充值"),
     ADMIN_CHANGE("ADMIN_CHANGE","管理员修改"),
     WITHDRAW("WITHDRAW","提现"),
-    RETURN_WITHDRAW("RETURN_WITHDRAW","提现退还");
+    RETURN_WITHDRAW("RETURN_WITHDRAW","提现退还"),
+    OVERDUE_PRODUCT_COUPON_TRANSFER("PRODUCT_COUPON_TRANSFER","过期产品券转预存款");
 
     private final String value;
     private final String description;

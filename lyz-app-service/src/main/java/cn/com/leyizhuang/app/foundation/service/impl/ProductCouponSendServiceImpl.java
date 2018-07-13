@@ -73,6 +73,7 @@ public class ProductCouponSendServiceImpl implements ProductCouponSendService {
         customerProductCoupon.setStoreId(employeeDO.getStoreId().getStoreId());
         customerProductCoupon.setSellerId(employeeDO.getEmpId());
         customerProductCoupon.setStatus(true);
+        customerProductCoupon.setGoodsSign("COMMON");
 
         for (int i = 0;i < qty ; i++){
             productCouponDAO.addCustomerProductCoupon(customerProductCoupon);

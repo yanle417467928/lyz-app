@@ -218,6 +218,12 @@ public class MaReportDownloadViewController extends BaseController {
         return "/views/reportDownload/emp_credit_money";
     }
 
+    @GetMapping(value = "/st/credit")
+    public String stCreditMoney(ModelMap map) {
+        map.addAttribute("storeTypes", StoreType.getStoreTypeList());
+        return "/views/reportDownload/emp_credit_money";
+    }
+
     @GetMapping(value = "/photoOrderCheck/list")
     public String getPhotoOrderCheckList(ModelMap map) {
         return "/views/reportDownload/photoOrderCheck_page";

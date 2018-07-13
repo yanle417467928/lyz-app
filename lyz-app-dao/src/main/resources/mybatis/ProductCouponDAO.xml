@@ -296,8 +296,9 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.CusProductCouponMsgInfo">
         SELECT
         c.sku_name,
-        a.effective_end_time,
-        b.mobile
+        DATE_FORMAT(a.effective_end_time,'%Y-%m-%d') effective_end_time,
+        b.mobile,
+        IFNULL(COUNT(a.id),0) qty
         FROM
         cus_customer_product_coupon a
         LEFT JOIN
@@ -311,6 +312,7 @@
         a.effective_end_time >= now()
         AND
         <![CDATA[  DATE_SUB(a.effective_end_time, INTERVAL 7 DAY) <=now()]]>
+        GROUP BY a.cus_id, sku_name, effective_end_time
     </select>
     <select id="findCustomerProductCouponByOrdNoAndSku" resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon">
          SELECT
