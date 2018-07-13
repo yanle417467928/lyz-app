@@ -562,8 +562,8 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
                             detailsDO.setSellDetalsFlag(0);
                             detailsDO.setCompanyFlag(goodsInfo.getCompanyFlag());
                             detailsDO.setGoodsLineType(goodsInfo.getGoodsLineType());
-//                            Integer valid = sellDetailsDAO.getGDTSByOrdernumber(orderNumber,goodsInfo.getSku());
-//                            detailsDO.setValidCouponQty(valid);
+                            Integer valid = sellDetailsDAO.getGDTSByOrdernumber(orderNumber,goodsInfo.getSku());
+                            detailsDO.setValidCouponQty(valid);
                             sellDetailsDAO.addOneDetail(detailsDO);
 
                         }
@@ -648,8 +648,8 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
                         detailsDO.setSellDetalsFlag(1);
                         detailsDO.setCompanyFlag(goodsInfo.getCompanyFlag());
                         detailsDO.setGoodsLineType(goodsInfo.getGoodsLineType());
-//                        Integer valid = sellDetailsDAO.getGDTSByReturnNo(returnOrderNumber,goodsInfo.getSku());
-//                        detailsDO.setValidCouponQty(-valid);
+                        Integer valid = sellDetailsDAO.getGDTSByReturnNo(returnOrderNumber,goodsInfo.getSku());
+                        detailsDO.setValidCouponQty(-valid);
                         sellDetailsDAO.addOneDetail(detailsDO);
                     }
                 }
@@ -1058,7 +1058,7 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
     /**
      * 销量
      */
-    public SellDetailsResponse current(Long empId){
+    public SellDetailsResponse currentXL(Long empId){
         // 当前时间
         LocalDateTime now = LocalDateTime.now();
         // 当月1号 0 点 0 分 0 秒
@@ -1075,7 +1075,6 @@ public class StatisticsSellDetailsServiceImpl implements StatisticsSellDetailsSe
             sellDetailsResponse.setFinishChance(CountUtil.div(finish,target));
         }
 
-        // 查询每周开发会员详情
         List<SellDetailsWeekFinishResponse> sellDetailsWeekFinishResponses = null;
 
         sellDetailsResponse.setWeekFinishDetails(sellDetailsWeekFinishResponses);

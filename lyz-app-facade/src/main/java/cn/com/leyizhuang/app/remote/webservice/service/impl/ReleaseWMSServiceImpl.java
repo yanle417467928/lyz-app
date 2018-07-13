@@ -1379,18 +1379,12 @@ public class ReleaseWMSServiceImpl implements ReleaseWMSService {
                         //微信退款方法类
                         onlinePayRefundService.wechatReturnMoney(cancelOrderParametersDO.getUserId(), cancelOrderParametersDO.getIdentityType(), orderBillingDetails.getOnlinePayAmount(), cancelOrderParametersDO.getOrderNumber(), returnOrderBaseInfo.getReturnNo(), returnOrderBaseInfo.getRoid());
                     } else if (OnlinePayType.UNION_PAY.equals(orderBillingDetails.getOnlinePayType())) {
-                        //创建退单退款详情实体
-                        ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
-                        returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
-                        returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
-                        returnOrderBillingDetail.setReturnNo(returnOrderBaseInfo.getReturnNo());
-                        returnOrderBillingDetail.setRefundNumber(returnOrderBaseInfo.getReturnNo());
-                        //TODO 时间待定
-                        returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
-                        //TODO 第三方回复码
-                        returnOrderBillingDetail.setReplyCode("");
-                        returnOrderBillingDetail.setReturnMoney(orderBillingDetails.getOnlinePayAmount());
-                        returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.UNION_PAY);
+                        //银联支付退款
+                        Map<String, String> map = onlinePayRefundService.unionPayReturnMoney(cancelOrderParametersDO.getUserId(), cancelOrderParametersDO.getIdentityType(), orderBillingDetails.getOnlinePayAmount(), cancelOrderParametersDO.getOrderNumber(), returnOrderBaseInfo.getReturnNo(),
+                                returnOrderBaseInfo.getRoid());
+                        if ("FAILURE".equals(map.get("code"))) {
+                            returnOrderService.updateReturnOrderBaseInfoByReturnNo(returnOrderBaseInfo.getReturnNo(), AppReturnOrderStatus.PENDING_REFUND);
+                        }
                     }
                 }
                 //修改取消订单处理状态
