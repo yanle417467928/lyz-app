@@ -2708,62 +2708,68 @@ public class OrderController {
      * @date 2018/7/12
      */
     @PostMapping(value = "/deliveryFee", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getDeliveryFee(Long userID, Integer identityType, Long cityId, String countyName, String goodsList, Double totalOrderAmount) {
+    public ResultDTO<Object> getDeliveryFee(Long userId, Integer identityType, Long cityId, String countyName, String goodsList, String totalOrderAmount) {
         ResultDTO<Object> resultDTO;
-        logger.info("getOrderList CALLED,用户获取订单列表，入参 userID:{}, identityType:{}, cityId:{}, countyName:{}, totalOrderAmount:{}, goodsList:{}",
-                userID, identityType, cityId, countyName, totalOrderAmount, goodsList);
-        if (null == userID) {
+        logger.info("deliveryFee CALLED,计算运费，入参 userId:{}, identityType:{}, cityId:{}, countyName:{}, totalOrderAmount:{}, goodsList:{}",
+                userId, identityType, cityId, countyName, totalOrderAmount, goodsList);
+        if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
-            logger.info("getOrderList OUT,用户获取订单列表失败，出参 resultDTO:{}", resultDTO);
+            logger.info("deliveryFee OUT,计算运费失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
-            logger.info("getOrderList OUT,用户获取订单列表失败，出参 resultDTO:{}", resultDTO);
+            logger.info("deliveryFee OUT,计算运费失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == cityId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "城市不能为空",
                     null);
-            logger.info("getOrderList OUT,用户获取订单列表失败，出参 resultDTO:{}", resultDTO);
+            logger.info("deliveryFee OUT,计算运费失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == countyName) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
                     null);
-            logger.info("getOrderList OUT,用户获取订单列表失败，出参 resultDTO:{}", resultDTO);
+            logger.info("deliveryFee OUT,计算运费失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (!(null != goodsList && goodsList.length() > 0)) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品ID不允许为空", null);
-            logger.warn("chooseSelfTakeStore OUT,选择自提门店失败，出参 resultDTO:{}", resultDTO);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品列表", null);
+            logger.warn("deliveryFee OUT,计算运费失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == totalOrderAmount) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品ID不允许为空", null);
-            logger.warn("chooseSelfTakeStore OUT,选择自提门店失败，出参 resultDTO:{}", resultDTO);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单金额", null);
+            logger.warn("deliveryFee OUT,计算运费失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
+        }
+        Double amount;
+        try {
+            amount = Double.parseDouble(totalOrderAmount);
+        } catch (Exception e) {
+            amount = 0D;
         }
         try {
             List<DeliveryFeeRule> ruleList = deliveryFeeRuleService.findRuleByCityIdAndCountyName(cityId, countyName);
             if (null == ruleList || ruleList.size() == 0){
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品ID不允许为空", null);
-                logger.warn("chooseSelfTakeStore OUT,选择自提门店失败，出参 resultDTO:{}", resultDTO);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此地区还未开通配送服务，请联系客服为您开通", null);
+                logger.warn("deliveryFee OUT,计算运费失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
 
             ObjectMapper objectMapper = new ObjectMapper();
             JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, OrderGoodsSimpleResponse.class);
             List<OrderGoodsSimpleResponse> simpleInfos = objectMapper.readValue(goodsList, javaType1);
-            Double deliveryFee = this.deliveryFeeRuleService.countDeliveryFeeNew(identityType, cityId, totalOrderAmount, simpleInfos, countyName);
+            Double deliveryFee = this.deliveryFeeRuleService.countDeliveryFeeNew(identityType, cityId, amount, simpleInfos, countyName);
             //创建一个返回对象list
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, deliveryFee);
-            logger.info("getOrderList OUT,用户获取订单列表成功，出参 resultDTO:{}", deliveryFee);
+            logger.info("deliveryFee OUT,计算运费成功，出参 resultDTO:{}", deliveryFee);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，用户获取订单列表失败", null);
-            logger.warn("getOrderList EXCEPTION,用户获取订单列表失败，出参 resultDTO:{}", resultDTO);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，计算运费失败", null);
+            logger.warn("deliveryFee EXCEPTION,计算运费失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }
