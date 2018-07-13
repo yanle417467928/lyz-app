@@ -207,9 +207,9 @@ public class ProductCouponServiceImpl implements ProductCouponService {
     public void sendMsgForExpiringSoonProductCoupon(){
         List<CusProductCouponMsgInfo> ExpiringSoonProductCouponList = this.findExpiringSoonProductCoupon();
         for(CusProductCouponMsgInfo cusProductCouponMsgInfo:ExpiringSoonProductCouponList){
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             String efTime =  sdf.format(cusProductCouponMsgInfo.getEffectiveEndTime()).toString();
-            String msg ="尊敬的顾客,您购买的"+cusProductCouponMsgInfo.getSkuName()+"产品劵将于"+efTime+"失效,请及时使用";
+            String msg ="尊敬的顾客,您有"+ cusProductCouponMsgInfo.getQty() +"张的"+cusProductCouponMsgInfo.getSkuName()+"产品劵将于"+efTime+"到期，请及时至华润漆门店提货";
             smsAccountService.commonSendGBKSms(cusProductCouponMsgInfo.getMobile(), msg);
         }
     }
