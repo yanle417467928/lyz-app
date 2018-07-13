@@ -100,5 +100,6 @@ public interface MaReportDownloadDAO {
     List<EmpCreditDO> empCreditMoneySituation(@Param("city") Long cityId,@Param("storeType") String storeType,@Param("storeIds") List<Long> storeIds,
                                               @Param("keywords") String keywords);
 
-    List<StCreditDO> stCreditMoneySituation(@Param("city") Long cityId,@Param("storeType") String storeType,@Param("storeIds") List<Long> storeIds);
+    List<StCreditDO> stCreditMoneySituation(@Param("city") Long cityId,@Param("storeType") String storeType,@Param("storeIds") List<Long> storeIds,
+                                            @Param("keywords") String keywords);
 }
