@@ -211,4 +211,6 @@ public interface AppOrderService {
     PageInfo<OrderPageInfoVO> findSellerManagerPayForOrderList(Long userId, Integer page, Integer size);
 
     int checkOrderReturnCondition(String orderNumer);
+
+    void updateOrderGoodsInfo(OrderGoodsInfo goodsInfo);
 }

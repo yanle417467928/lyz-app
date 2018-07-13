@@ -107,7 +107,7 @@ public interface OrderDAO {
 
     void updateOrderBaseInfo(OrderBaseInfo baseInfo);
 
-    void updateOrderGoodsInfo(OrderGoodsInfo baseInfo);
+    void updateOrderGoodsInfo(OrderGoodsInfo goodsInfo);
 
     void updateOrderBillingDetails(OrderBillingDetails billingDetails);
 
