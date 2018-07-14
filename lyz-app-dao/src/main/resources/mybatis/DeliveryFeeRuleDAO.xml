@@ -10,10 +10,10 @@
             parameterType="cn.com.leyizhuang.app.foundation.pojo.deliveryFeeRule.DeliveryFeeRule" useGeneratedKeys="true" keyProperty="id">
     insert into delivery_fee_rule ( create_date,city_id, city_name,
       `condition`, delivery_fee, toll_object,
-      include_special_goods, status)
+      include_special_goods, status, county_name)
     values (#{createDate}, #{cityId,jdbcType=BIGINT}, #{cityName,jdbcType=VARCHAR},
       #{condition,jdbcType=DECIMAL}, #{deliveryFee,jdbcType=DECIMAL}, #{tollObject,jdbcType=VARCHAR},
-      #{includeSpecialGoods,jdbcType=BIT}, #{status,jdbcType=BIT})
+      #{includeSpecialGoods,jdbcType=BIT}, #{status,jdbcType=BIT}, #{countyName,jdbcType=VARCHAR})
 
     </insert>
 
@@ -32,6 +32,9 @@
             </if>
             <if test="cityName != null" >
                 city_name = #{cityName,jdbcType=VARCHAR},
+            </if>
+            <if test="countyName != null" >
+                county_name = #{countyName,jdbcType=VARCHAR},
             </if>
             <if test="condition != null" >
                 `condition` = #{condition,jdbcType=DECIMAL},

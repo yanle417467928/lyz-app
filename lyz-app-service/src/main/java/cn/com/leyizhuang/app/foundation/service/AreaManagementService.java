@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.foundation.pojo.AreaManagementDO;
+
 import java.util.List;
 
 /**
@@ -8,4 +10,7 @@ import java.util.List;
  */
 public interface AreaManagementService {
     List<String> findAreaManagementByParentCodeAndLevelIsFive(String parentCode);
+
+    List<AreaManagementDO> findAreaManagementByCityId(Long cityId);
+
 }

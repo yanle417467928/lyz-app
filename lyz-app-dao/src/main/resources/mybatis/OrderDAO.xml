@@ -680,6 +680,9 @@
             <if test="null != deliveryCash">
                 delivery_cash = #{deliveryCash},
             </if>
+            <if test="null != upstairsFee">
+                upstairs_fee = #{upstairsFee},
+            </if>
         </set>
         WHERE ord_no = #{orderNumber}
     </update>

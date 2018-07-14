@@ -287,6 +287,14 @@ public class OrderArriveController {
                         orderArrearsAuditDO.setPicture(picture.toString());
                         this.arrearsAuditServiceImpl.save(orderArrearsAuditDO);
 
+                        //加上楼费
+                        if (upstairFee > 0D) {
+                            orderBillingDetails = new OrderBillingDetails();
+                            orderBillingDetails.setUpstairsFee(upstairFee);
+                            this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
+                        }
+
+
                         if (!(amount.equals(collectionAmountOrder))) {
                             //短信提醒
                             String info = "您有新的欠款审核单，请及时处理。谢谢！";
@@ -402,6 +410,8 @@ public class OrderArriveController {
                 orderBaseInfo.setStatus(AppOrderStatus.FINISHED);
                 orderBaseInfo.setDeliveryStatus(LogisticStatus.CONFIRM_ARRIVAL);
 //            this.appOrderServiceImpl.updateOrderStatusByOrderNo(orderBaseInfo);
+
+                orderBillingDetails.setUpstairsFee(upstairFee);
 
                 this.CommonServiceImpl.confirmOrderArrive(paymentDetails, orderBillingDetails, empCreditMoneyChangeLog,
                         orderAgencyFundDO, orderDeliveryInfoDetails, orderBaseInfo, orderTempInfo.getSellerId(), credit, empCreditMoney.getLastUpdateTime());

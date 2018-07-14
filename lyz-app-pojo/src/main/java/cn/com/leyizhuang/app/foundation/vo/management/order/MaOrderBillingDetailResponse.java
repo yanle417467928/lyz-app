@@ -61,4 +61,9 @@ public class MaOrderBillingDetailResponse {
      */
     private Double empCreditMoney;
 
+    /**
+     * 导购信用额度
+     */
+    private Double upstairsFee;
+
 }

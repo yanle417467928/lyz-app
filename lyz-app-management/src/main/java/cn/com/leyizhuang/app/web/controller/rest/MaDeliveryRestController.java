@@ -62,7 +62,7 @@ public class MaDeliveryRestController extends BaseRestController {
             List<DeliveryFeeRuleSpecailGoods> goodsList = objectMapper.readValue(goodsDetails, javaType1);
 
             // 先检查该城市下是否已经存在运费规则
-            List<DeliveryFeeRule> deliveryFeeRuleList = deliveryFeeRuleService.findRuleByCityId(rule.getCityId());
+            List<DeliveryFeeRule> deliveryFeeRuleList = deliveryFeeRuleService.findRuleByCityIdAndCountyName(rule.getCityId(), rule.getCountyName());
 
             if (deliveryFeeRuleList != null && deliveryFeeRuleList.size() > 0){
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该城市下已存在运费规则", null);
@@ -76,7 +76,7 @@ public class MaDeliveryRestController extends BaseRestController {
 
             List<City> cityList = cityService.findAll();
             for (City city : cityList){
-                if (city.getCityId() == rule.getCityId()){
+                if (city.getCityId().equals(rule.getCityId())){
                     rule.setCityName(city.getName());
                     break;
                 }
