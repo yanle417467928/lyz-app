@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.foundation.dao.BillRuleDAO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRuleDO;
 import cn.com.leyizhuang.app.foundation.service.BillRuleService;
+import cn.com.leyizhuang.app.foundation.vo.management.BillRuleVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,5 +27,10 @@ public class BillRuleServiceImpl implements BillRuleService {
     @Override
     public List<BillRuleDO> findAllBillRule() {
         return this.billRuleDAO.findAllBillRule();
+    }
+
+    @Override
+    public List<BillRuleVO> findAllBillRuleVO() {
+        return this.billRuleDAO.findAllBillRuleVO();
     }
 }

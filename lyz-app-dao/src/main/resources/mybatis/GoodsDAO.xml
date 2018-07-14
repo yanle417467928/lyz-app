@@ -1459,6 +1459,7 @@
                 AND (g.sku_name LIKE concat('%', #{keywords}, '%')
                 OR g.sku LIKE concat('%', #{keywords}, '%'))
             </if>
+            ORDER BY g.sort_id ASC
         </if>
     </select>
 
@@ -1611,6 +1612,7 @@
                 AND (g.sku_name LIKE concat('%', #{keywords}, '%')
                 OR g.sku LIKE concat('%', #{keywords}, '%'))
             </if>
+            ORDER BY g.sort_id ASC
         </if>
     </select>
 

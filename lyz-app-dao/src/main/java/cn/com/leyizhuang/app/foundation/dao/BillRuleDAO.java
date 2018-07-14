@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRuleDO;
+import cn.com.leyizhuang.app.foundation.vo.management.BillRuleVO;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,4 +17,5 @@ public interface BillRuleDAO {
 
     List<BillRuleDO> findAllBillRule();
 
+    List<BillRuleVO> findAllBillRuleVO();
 }

@@ -13,6 +13,13 @@
         FROM bill_rule
     </select>
 
+    <select id="findAllBillRuleVO" resultType="cn.com.leyizhuang.app.foundation.vo.management.BillRuleVO">
+        SELECT r.id, r.bill_date, r.repayment_deadline_date, r.interest_rate, r.store_id,
+        r.create_time, s.store_name, s.store_code, c.name cityName
+        FROM bill_rule r
+        INNER JOIN st_store s ON s.store_id = r.store_id
+        INNER JOIN city c ON c.city_id = s.city_id
+    </select>
 
 
 </mapper>
