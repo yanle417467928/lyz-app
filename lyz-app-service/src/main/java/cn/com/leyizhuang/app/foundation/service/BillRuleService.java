@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.service;
 
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRuleDO;
 import cn.com.leyizhuang.app.foundation.vo.management.BillRuleVO;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 
@@ -15,6 +16,6 @@ public interface BillRuleService {
 
     List<BillRuleDO> findAllBillRule();
 
-    List<BillRuleVO> findAllBillRuleVO();
+    PageInfo<BillRuleVO> findAllBillRuleVO(Long storeId, Integer page, Integer size);
 
 }

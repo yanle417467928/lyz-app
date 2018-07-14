@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.vo.management;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -28,6 +29,7 @@ public class BillRuleVO {
     //门店code
     private String storeCode;
     //创建时间
+    @JsonFormat(pattern="yyyy-MM-dd hh:mm:ss",timezone = "GMT+8")
     private Date createTime;
     //城市
     private String cityName;

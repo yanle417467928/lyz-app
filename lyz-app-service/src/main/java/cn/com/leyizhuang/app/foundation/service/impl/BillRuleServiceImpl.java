@@ -4,6 +4,8 @@ import cn.com.leyizhuang.app.foundation.dao.BillRuleDAO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRuleDO;
 import cn.com.leyizhuang.app.foundation.service.BillRuleService;
 import cn.com.leyizhuang.app.foundation.vo.management.BillRuleVO;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +32,9 @@ public class BillRuleServiceImpl implements BillRuleService {
     }
 
     @Override
-    public List<BillRuleVO> findAllBillRuleVO() {
-        return this.billRuleDAO.findAllBillRuleVO();
+    public PageInfo<BillRuleVO> findAllBillRuleVO(Long storeId,Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        List<BillRuleVO> list = this.billRuleDAO.findAllBillRuleVO(storeId);
+        return  new PageInfo<>(list);
     }
 }

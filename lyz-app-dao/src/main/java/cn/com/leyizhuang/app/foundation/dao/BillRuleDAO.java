@@ -17,5 +17,5 @@ public interface BillRuleDAO {
 
     List<BillRuleDO> findAllBillRule();
 
-    List<BillRuleVO> findAllBillRuleVO();
+    List<BillRuleVO> findAllBillRuleVO(Long storeId);
 }
