@@ -503,58 +503,41 @@
     <select id="findEmployeeCreditMoneyReportDOAll"
             resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.EmpCreditMoneyChangeReportDO">
         SELECT
-        ac.id,
-        c.name cityName,
-        st.store_name storeName,
-        st.store_type storeType,
+        eaccl.id id,
+        ss.city cityName,
+        ss.store_name storeName,
+        ss.store_type store_type,
+        ee.`name` employeeName,
+        ecmcl.change_type_desc changeTypeDesc,
+        ecmcl.change_type changeType,
+        CASE
+        WHEN ecmcl.change_type = 'PLACE_ORDER' THEN
+        0 - eaccl.credit_limit_available_change_amount
+        ELSE
+        eaccl.credit_limit_available_change_amount
+        END changeMoney,
+        eaccl.credit_limit_available_after_change balance,
         ecmcl.create_time changeTime,
-        e.name employeeName,
-        ac.credit_limit_available_change_amount changeMoney,
-        ac.credit_limit_available_after_change balance,
-        ac.change_type changeType,
-        ac.change_type_desc changeTypeDesc,
-        if(orbi.roid is not NULL ,orbi.ord_no,ecmcl.reference_number) orderNumber,
-        if(orbi.roid is not NULL , orbi.return_no,'') as returnNumber
+        CASE
+        WHEN ecmcl.reference_number IS NULL THEN ''
+        ELSE ecmcl.reference_number
+        END orderNumber,
+        '' returnNumber
         FROM
-        (
-        select
-        eaccl.id,
-        -ABS(eaccl.credit_limit_available_change_amount) as credit_limit_available_change_amount,
-        eaccl.credit_limit_available_after_change,
-        eaccl.change_type,
-        eaccl.change_type_desc
-        from
-        emp_available_credit_change_log eaccl
-        where change_type in (
-        'PLACE_ORDER'
-        )
-        union all
-        select
-        eaccl.id,
-        eaccl.credit_limit_available_change_amount,
-        eaccl.credit_limit_available_after_change,
-        eaccl.change_type,
-        eaccl.change_type_desc
-        from
-        emp_available_credit_change_log eaccl
-        where change_type not in (
-        'PLACE_ORDER'
-        )
-        ) ac
-        INNER JOIN emp_credit_money_change_log ecmcl ON ac.id = ecmcl.available_credit_change_id
-        LEFT JOIN ord_return_base_info orbi on orbi.ord_no = ecmcl.reference_number
-        LEFT JOIN emp_employee e ON e.emp_id = ecmcl.emp_id
-        LEFT JOIN st_store st on st.store_id = e.store_id
-        LEFT JOIN city c ON c.city_id = st.city_id
-        WHERE TRUE
+        emp_credit_money_change_log ecmcl
+        LEFT JOIN emp_available_credit_change_log eaccl ON ecmcl.available_credit_change_id = eaccl.id
+        INNER JOIN emp_employee ee ON ee.emp_id = ecmcl.emp_id
+        INNER JOIN st_store ss ON ee.store_id = ss.store_id
+        WHERE
+        1=1
         <if test="null != cityId and cityId != -1">
-            AND c.city_id = #{cityId}
+            AND ss.city_id = #{cityId}
         </if>
         <if test="null != storeId and storeId != -1">
-            AND st.store_id = #{storeId}
+            AND ss.store_id = #{storeId}
         </if>
         <if test="null != storeType and storeType != ''">
-            AND st.store_type = #{storeType}
+            AND ss.store_type = #{storeType}
         </if>
         <if test="null != startTime and startTime != ''">
             AND ecmcl.create_time &gt;= #{startTime}
@@ -562,11 +545,13 @@
         <if test="null != endTime and endTime != ''">
             AND ecmcl.create_time &lt;= #{endTime}
         </if>
-        AND st.store_id IN
-        <foreach collection="list" item="item" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
-        ORDER BY ac.id DESC
+        <if test="null == storeId and storeId == -1">
+            AND ss.store_id IN
+            <foreach collection="list" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        ORDER BY eaccl.id DESC
     </select>
     <!-- 逻辑 下单时间 和 反配时间 为节点 -->
     <select id="findAccountGoodsItemsDOAll"
@@ -2739,14 +2724,15 @@
         LEFT JOIN inter_wta_order_shipping_header wa ON o.ord_no = wa.order_no
         LEFT JOIN  (SELECT * FROM (SELECT * FROM ord_arrears_audit  ORDER BY create_time DESC) c GROUP BY  c.ord_no) d ON  d.ord_no = o.ord_no
         where 1=1
+        <if test="null != endTime and '' != endTime">
+         AND  o.create_time &lt;= #{endTime}
+        </if>
         and
         o.`status` != 'REJECTED'
         AND
         o.`status` != 'CANCELED'
         AND
         o.`status` != 'UNPAID'
-        AND
-        b.is_pay_up = 0
         <choose>
             <when test="'FX'==storeType">
                  and s.store_type in ('FX','FXCK')
@@ -2804,12 +2790,13 @@
         LEFT  JOIN ord_return_base_info orbi ON o.ord_no = orbi.ord_no
         LEFT JOIN  inter_wta_return_order_back_header iwr ON orbi.return_no = iwr.po_no
         where 1=1
+        <if test="null != endTime and '' != endTime">
+        AND o.create_time &lt;= #{endTime}
+        </if>
         and
         o.`status` = 'REJECTED'
         AND
         iwr.id is NULL
-        AND
-        b.is_pay_up = 0
         <choose>
             <when test="'FX'==storeType">
                 and s.store_type in ('FX','FXCK')
@@ -3285,12 +3272,11 @@
          from st_credit_money sc
         LEFT JOIN st_store s on s.store_id = sc.store_id
         where s.store_type = 'ZS'
-        where 1=1
         <if test="city != null">
-           and e.city_id = #{city}
+           and s.city_id = #{city}
         </if>
-        <if test="storeType != null and storeType != ''">
-           and s.store_type = #{storeType}
+        <if test="keywords != null and keywords != ''">
+            and ( s.store_name LIKE concat(concat('%',#{keywords}),'%') or s.store_name LIKE concat(concat('%',#{keywords}),'%'))
         </if>
         AND s.store_id IN
         <foreach collection="storeIds" item="item" open="(" close=")" separator=",">

@@ -972,7 +972,7 @@ function save() {
         success: function (result) {
             if (result.code === 0) {
                 $loading.close();
-                window.location.href = "/views/admin/order/buy/produtCoupon";
+                window.location.href = "/views/admin/order/buy/zg/produtCoupon";
                 // $notify.info(result.message);
             } else {
                 $loading.close();

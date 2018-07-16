@@ -114,6 +114,9 @@ public class ActBaseDO{
     // 促销范围
     private String scope;
 
+    //是否是会员会促销
+    private Boolean isMemberConference;
+
     /**
      * 获取最终促销类型
      */

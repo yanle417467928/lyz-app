@@ -461,6 +461,15 @@ function formValidate() {
         var isDouble = $("#isDouble").prop("checked");
         var isGcOrder = $("#isGcOrder").prop("checked");
 
+
+        // 已选会员
+        var people = new Array();
+        $("#people > label[class='label label-success']").each(function () {
+            people.push(
+                $(this).prop("id").substring(6)
+            );
+        });
+
         // 已选门店
         var stores = new Array();
         $("#stores > label[class='label label-success']").each(function () {
@@ -622,6 +631,7 @@ function formValidate() {
         data["goodsDetails"] = JSON.stringify(goodsDetails);
         data["giftDetails"] = JSON.stringify(giftDetails);
         data["stores"] = JSON.stringify(stores);
+        data["people"] = JSON.stringify(people);
         $http.POST(url, data, function (result) {
             if (0 === result.code) {
                 $notify.info(result.message);
@@ -763,4 +773,153 @@ function starAndEndDatetimepiker(startDateId, endDateId) {
     }).on('hide', function (e) {
         // $('#goodsPackFrom').data('bootstrapValidator') .updateStatus(endDateId, 'NOT_VALIDATED',null) .validateField(endDateId);
     });
+}
+
+
+function openSelectPeopleModel() {
+    var peopleType = "会员";
+    $('#peopleModal').modal('show');
+    var queryPeopleInfo = $('#queryPeopleInfo').val();
+    var url = '/rest/order/photo/find/people';
+    $("#peopleDataGrid").bootstrapTable('destroy');
+    $grid.init($('#peopleDataGrid'), $('#toolbar1'), url, 'get', false, function (params) {
+        return {
+            offset: params.offset,
+            size: params.limit,
+            keywords: params.search,
+            peopleType: peopleType,
+            selectCreateOrderPeopleConditions: queryPeopleInfo
+        }
+    }, [{
+        checkbox: true,
+        title: '选择'
+    },{
+        field: 'peopleId',
+        title: 'ID',
+        align: 'center'
+//                    visible:false
+    }, {
+        field: 'name',
+        title: '会员人姓名',
+        align: 'center'
+    }, {
+        field: 'phone',
+        title: '会员人电话',
+        align: 'center'
+    }, {
+        field: 'identityType',
+        title: '身份类型',
+        align: 'center'
+    }, {
+        field: 'storeName',
+        title: '会员归属门店名',
+        align: 'center'
+    }, {
+        field: 'storeCode',
+        title: '会员归属门店code',
+        align: 'center',
+        visible: false
+    }
+    ]);
+}
+
+function findPeople() {
+    var peopleType = "会员";
+    var selectCreateOrderPeopleConditions = $('#queryPeopleInfo').val();
+    var url = '/rest/order/photo/find/people';
+    $("#peopleDataGrid").bootstrapTable('destroy');
+    $grid.init($('#peopleDataGrid'), $('#toolbar1'), url, 'get', false, function (params) {
+        return {
+            offset: params.offset,
+            size: params.limit,
+            keywords: params.search,
+            peopleType: peopleType,
+            selectCreateOrderPeopleConditions: selectCreateOrderPeopleConditions
+        }
+    }, [{
+        checkbox: true,
+        title: '选择'
+    },{
+        field: 'peopleId',
+        title: 'ID',
+        align: 'center'
+//                    visible:false
+    }, {
+        field: 'name',
+        title: '会员姓名',
+        align: 'center'
+    }, {
+        field: 'phone',
+        title: '会员电话',
+        align: 'center'
+    }, {
+        field: 'identityType',
+        title: '身份类型',
+        align: 'center'
+    }, {
+        field: 'storeName',
+        title: '会员归属门店名',
+        align: 'center'
+    }, {
+        field: 'storeCode',
+        title: '会员归属门店code',
+        align: 'center',
+        visible: false
+    }
+    ]);
+}
+
+// function openPeopleModal() {
+//     $("#peopleModalConfirm").unbind('click').click(function(){
+//         chooseStore('people');
+//     });
+//     $('#storeModal').modal('show');
+// }
+
+function chooseStore(tableId) {
+    var tableData = $('#peopleDataGrid').bootstrapTable('getSelections');
+
+    if (tableData.length == 0) {
+        $notify.warning('请先选择数据');
+    } else {
+        //alert(tableData);
+        var str = "";
+        for (var i = 0; i < tableData.length; i++) {
+            var item = tableData[i];
+
+            // 排除已选项
+            var trs = $("#" + tableId + item.peopleId).val();
+            var flag = true;
+            if (undefined != trs) {
+                flag = false;
+            }
+
+            // 此商品未添加过
+            if (flag) {
+                str += "<label id='people" +item.peopleId+ "' style='margin-right: 6px;' class='label label-success'>"+item.name;
+                str +="-";
+                str +=item.phone;
+                str += '&nbsp;<span onclick="deleteHtml(';
+                str += "'people" +item.peopleId + "'";
+                str += ')"';
+                str += ">×</span></label>";
+            }
+        }
+        $("#" + tableId).append(str);
+        // 取消所以选中行
+        $('#peopleDataGrid').bootstrapTable("uncheckAll");
+        $('#people label').css({'white-space':'normal','margin':'5px','display':'inline-block'});
+    }
+}
+
+function openPeopleModal() {
+    openSelectPeopleModel();
+    $("#peopleModalConfirm").unbind('click').click(function(){
+        chooseStore('people');
+    });
+    $('#storeModal').modal('show');
+}
+
+function deleteHtml(id){
+    $('#' + id).remove();
 }

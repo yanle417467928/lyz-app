@@ -5,6 +5,8 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.reportDownload.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -77,7 +79,8 @@ public interface MaReportDownloadDAO {
 
 
 
-    List<ArrearsReportDO> findArrearsList(@Param("companyCode") String companyCode, @Param("storeType") String storeType, @Param("list") List<Long> storeIds,@Param("storeId") Long storeId);
+    List<ArrearsReportDO> findArrearsList(@Param("companyCode") String companyCode, @Param("storeType") String storeType,
+                                          @Param("list") List<Long> storeIds, @Param("storeId") Long storeId, @Param("endTime")String endTime);
 
 
     List<EmpCreditMoneyChangeReportDO> findEmployeeCreditMoneyReportDOAll(@Param("cityId") Long cityId, @Param("storeId") Long storeId, @Param("storeType") String storeType,
@@ -100,6 +103,6 @@ public interface MaReportDownloadDAO {
     List<EmpCreditDO> empCreditMoneySituation(@Param("city") Long cityId,@Param("storeType") String storeType,@Param("storeIds") List<Long> storeIds,
                                               @Param("keywords") String keywords);
 
-    List<StCreditDO> stCreditMoneySituation(@Param("city") Long cityId,@Param("storeType") String storeType,@Param("storeIds") List<Long> storeIds,
+    List<StCreditDO> stCreditMoneySituation(@Param("city") Long cityId,@Param("storeIds") List<Long> storeIds,
                                             @Param("keywords") String keywords);
 }

@@ -173,6 +173,41 @@
                         </div>
 
                     </div>
+
+                    <div class="row">
+                        <div class="col-xs-12 col-md-12">
+                            <label for="title">
+                            </label>
+                            <div class="box box-success ">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title">选择会员</h3>
+                                    <div class="box-tools pull-right">
+                                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i
+                                                class="fa fa-plus"></i>
+                                        </button>
+                                    </div>
+                                    <!-- /.box-tools -->
+                                </div>
+                                <!-- /.box-header -->
+                                <div class="box-body">
+                                    <div class="row">
+                                        <div class="col-xs-12 col-md-2">
+                                            <button type="button" class="btn btn-primary btn-xs"
+                                                    onclick="openPeopleModal()">选择会员
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div id="people" style="margin-top: 10px;">
+
+                                    </div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                        </div>
+                    </div>
+
+
                     <div class="row">
                         <div class="col-xs-12 col-md-12">
                             <label for="title">
@@ -298,11 +333,11 @@
                                         <table class="table table-bordered">
                                             <thead>
                                             <tr>
-                                                <th>ID</th>
-                                                <th>sku</th>
-                                                <th>商品名</th>
-                                                <th>数量</th>
-                                                <th>操作</th>
+                                                <th style="width: 10%">GID</th>
+                                                <th style="width: 15%">sku</th>
+                                                <th style="width: 35%">商品名</th>
+                                                <th style="width: 15%">数量</th>
+                                                <th style="width: 8%">操作</th>
                                             </tr>
                                             </thead>
                                             <tbody id="selectedGoodsTable">
@@ -425,11 +460,11 @@
                                     <table class="table table-bordered">
                                         <thead>
                                         <tr>
-                                            <th>ID</th>
-                                            <th>sku</th>
-                                            <th>商品名</th>
-                                            <th>数量</th>
-                                            <th>操作</th>
+                                            <th style="width: 10%">GID</th>
+                                            <th style="width: 15%">sku</th>
+                                            <th style="width: 35%">商品名</th>
+                                            <th style="width: 15%">数量</th>
+                                            <th style="width: 8%">操作</th>
                                         </tr>
                                         </thead>
                                         <tbody id="selectedGiftTable">
@@ -462,6 +497,51 @@
 
                             </div>
                             <!-- /.box -->
+                        </div>
+                    </div>
+
+                    <!-- 会员选择框 -->
+                    <div id="peopleModal" class="modal fade" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document" style="width: 60%">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4>选择会员</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <!--  设置这个div的大小，超出部分显示滚动条 -->
+                                    <div id="selectPeople" class="ztree" style="height: 60%;overflow:auto; ">
+                                        <section class="content">
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <div class="box box-primary">
+                                                        <div id="toolbar1" class="form-inline">
+
+                                                            <div class="input-group col-md-3" style="margin-top:0px positon:relative">
+                                                                <input type="text" name="queryPeopleInfo" id="queryPeopleInfo" class="form-control" style="width:auto;"
+                                                                       placeholder="请输入会员姓名或电话..">
+                                                                <span class="input-group-btn">
+                                                                <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
+                                                                        onclick="findPeople()">查找</button>
+                                                            </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="box-body table-reponsive">
+                                                            <table id="peopleDataGrid"
+                                                                   class="table table-bordered table-hover">
+
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </section>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button id="peopleModalConfirm" type="button" class="btn btn-primary">确定</button>
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
