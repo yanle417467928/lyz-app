@@ -140,6 +140,9 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Autowired
     private AppActService actService;
 
+    @Autowired
+    private SmsAccountService smsAccountService;
+
     @Override
     public List<MaOrderVO> findMaOrderVOAll(List<Long> storeIds) {
         List<MaOrderVO> maOrderVOList = maOrderDAO.findMaOrderVOAll(storeIds);
@@ -980,6 +983,7 @@ public class MaOrderServiceImpl implements MaOrderService {
             if (null != orderBaseInfo.getId()) {
                 //保存订单商品信息
                 if (null != orderGoodsInfoList && orderGoodsInfoList.size() > 0) {
+                    StringBuilder msg = new StringBuilder("您购买的");
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                         goodsInfo.setOid(orderBaseInfo.getId());
                         orderService.saveOrderGoodsInfo(goodsInfo);
@@ -1051,7 +1055,13 @@ public class MaOrderServiceImpl implements MaOrderService {
                         } else {
                             throw new OrderSaveException("商品主键生成失败!");
                         }
+                        msg.append(goodsInfo.getSkuName());
+                        msg.append("产品券");
+                        msg.append(goodsInfo.getOrderQuantity());
+                        msg.append("张,");
                     }
+                    msg.append("已存入您的钱包中，请在六个月内提取完毕，有任何问题，请洽询您的专属导购！");
+                    smsAccountService.commonSendGBKSms(orderBaseInfo.getCustomerPhone(), msg.toString());
                 }
 
                 //保存订单物流信息

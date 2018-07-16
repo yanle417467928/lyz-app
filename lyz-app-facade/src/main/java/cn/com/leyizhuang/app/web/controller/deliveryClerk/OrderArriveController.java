@@ -80,7 +80,7 @@ public class OrderArriveController {
      */
     @PostMapping(value = "/confirm", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> confirmOrderArrive(Long userId, Integer identityType, String orderNo, String pickUpCode, String collectionAmount,
-                                                String paymentMethod, String remarks, HttpServletRequest request) {
+                                                String upstairsFee, String paymentMethod, String remarks, HttpServletRequest request) {
         logger.info("confirmOrderArrive CALLED,配送员确认订单送达，入参 userId:{} identityType:{} " +
                         "orderNo:{} pickUpCode:{} collectionAmount:{} paymentMethod:{}, remarks:{} request:{}",
                 userId, identityType, orderNo, pickUpCode, collectionAmount, paymentMethod, remarks, request);
@@ -119,6 +119,14 @@ public class OrderArriveController {
             amount = Double.parseDouble(collectionAmount);
         } catch (Exception e) {
             amount = 0D;
+        }
+        Double upstairFee = 0D;
+        if (null != upstairsFee && !"".equals(upstairsFee)){
+            try {
+                upstairFee = Double.parseDouble(upstairsFee);
+            } catch (Exception e) {
+                upstairFee = 0D;
+            }
         }
 
         try {
@@ -279,6 +287,15 @@ public class OrderArriveController {
                         orderArrearsAuditDO.setPicture(picture.toString());
                         this.arrearsAuditServiceImpl.save(orderArrearsAuditDO);
 
+                        //加上楼费
+                        if (upstairFee > 0D) {
+                            OrderBillingDetails billingDetail = new OrderBillingDetails();
+                            billingDetail.setUpstairsFee(upstairFee);
+                            billingDetail.setOrderNumber(orderNo);
+                            this.appOrderServiceImpl.updateOwnMoneyByOrderNo(billingDetail);
+                        }
+
+
                         if (!(amount.equals(collectionAmountOrder))) {
                             //短信提醒
                             String info = "您有新的欠款审核单，请及时处理。谢谢！";
@@ -394,7 +411,13 @@ public class OrderArriveController {
                 orderBaseInfo.setStatus(AppOrderStatus.FINISHED);
                 orderBaseInfo.setDeliveryStatus(LogisticStatus.CONFIRM_ARRIVAL);
 //            this.appOrderServiceImpl.updateOrderStatusByOrderNo(orderBaseInfo);
-
+                if (null != orderBillingDetails) {
+                    orderBillingDetails.setUpstairsFee(upstairFee);
+                } else {
+                    orderBillingDetails = new OrderBillingDetails();
+                    orderBillingDetails.setOrderNumber(orderNo);
+                    orderBillingDetails.setUpstairsFee(upstairFee);
+                }
                 this.CommonServiceImpl.confirmOrderArrive(paymentDetails, orderBillingDetails, empCreditMoneyChangeLog,
                         orderAgencyFundDO, orderDeliveryInfoDetails, orderBaseInfo, orderTempInfo.getSellerId(), credit, empCreditMoney.getLastUpdateTime());
 

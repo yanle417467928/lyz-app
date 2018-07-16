@@ -188,6 +188,9 @@
                     <span style="padding-top: 4px;color: #1c94c4" ;
                           onclick="$page.information.show($(dfasd).val())">点击查看物流详情</span>
                     <br>
+                    <b>上楼费:</b>
+                    <spanp class="span">${orderBillingDetail.upstairsFee?c}</spanp>
+                    <br>
                 </#if>
                 <#if maOrderDetail.deliveryType = 'SELF_TAKE'>
                     <b>发货门店:</b>
