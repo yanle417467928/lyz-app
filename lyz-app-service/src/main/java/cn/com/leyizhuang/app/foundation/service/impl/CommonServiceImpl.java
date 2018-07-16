@@ -2752,6 +2752,22 @@ public class CommonServiceImpl implements CommonService {
                             customerService.addCusPreDepositLog(cusPreDepositLogDO);
                             AppCustomer customer = customerService.findById(p.getCustomerId());
                             GoodsDO goodsDO = goodsService.findGoodsById(p.getGoodsId());
+
+                            this.customerService.updateCusProductCouponsStatusIsFlaseById(p.getId());
+                            //获取原单商品信息
+                            List<OrderGoodsInfo> orderGoodsInfoList = this.orderService.getOrderGoodsInfoByOrderNumber(p.getGetOrderNumber());
+                            if (AssertUtil.isNotEmpty(orderGoodsInfoList)) {
+                                for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
+                                    if (goodsInfo.getId().equals(p.getGoodsLineId())) {
+                                        //设置原订单可退数量 减少
+                                        goodsInfo.setReturnableQuantity(goodsInfo.getReturnableQuantity() - p.getQuantity());
+                                        //设置原订单退货数量 增加
+                                        goodsInfo.setReturnQuantity(goodsInfo.getReturnQuantity() + p.getQuantity());
+                                        this.orderService.updateOrderGoodsInfo(goodsInfo);
+                                    }
+                                }
+                            }
+
                             //发送短信
                             smsAccountService.commonSendSms(customer.getMobile(), "您有一张乐易装的产品券:'" + goodsDO.getSkuName() + "'因过期未使用" +
                                     "，已自动将等值金额转化到您的预存款账户，请注意查收!");

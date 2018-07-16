@@ -65,21 +65,24 @@ public class MaActivityRestController extends BaseRestController {
     }
 
     @PostMapping(value = "/save")
-    public ResultDTO<?> save(@Valid ActBaseDO baseDO, String goodsDetails, String giftDetails, String stores,Double subAmount,Double discount, BindingResult result) throws IOException {
+    public ResultDTO<?> save(@Valid ActBaseDO baseDO, String goodsDetails, String giftDetails, String stores,Double subAmount,Double discount,
+                             BindingResult result,String people) throws IOException {
         if (!result.hasErrors()) {
             ObjectMapper objectMapper = new ObjectMapper();
             JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, ActGoodsMappingDO.class);
             JavaType javaType2 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, ActGiftDetailsDO.class);
             JavaType javaType3 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, ActStoreDO.class);
+            JavaType javaType4 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class,Long.class);
             List<ActGoodsMappingDO> goodsList = objectMapper.readValue(goodsDetails, javaType1);
             List<ActGiftDetailsDO> giftList = objectMapper.readValue(giftDetails, javaType2);
             List<ActStoreDO> storeList =  objectMapper.readValue(stores, javaType3);
+            ArrayList<Long> customerIds =  objectMapper.readValue(people, javaType4);
 
             if(goodsList == null){
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "本品为空", null);
             }
 
-            appActService.save(baseDO,goodsList,giftList,subAmount,storeList,discount);
+            appActService.save(baseDO,goodsList,giftList,subAmount,storeList,discount,customerIds);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "保存成功", null);
         } else {
             return actFor400(result,"提交的数据有误");
@@ -87,15 +90,18 @@ public class MaActivityRestController extends BaseRestController {
     }
 
     @PostMapping(value = "/edit")
-    public ResultDTO<?> edit(@Valid ActBaseDO baseDO, String goodsDetails, String giftDetails, String stores,Double subAmount,Double discount, BindingResult result) throws IOException {
+    public ResultDTO<?> edit(@Valid ActBaseDO baseDO, String goodsDetails, String giftDetails, String stores,Double subAmount,
+                             Double discount, BindingResult result,String people) throws IOException {
         if (!result.hasErrors()) {
             ObjectMapper objectMapper = new ObjectMapper();
             JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, ActGoodsMappingDO.class);
             JavaType javaType2 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, ActGiftDetailsDO.class);
             JavaType javaType3 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, ActStoreDO.class);
+            JavaType javaType4 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class,Long.class);
             List<ActGoodsMappingDO> goodsList = objectMapper.readValue(goodsDetails, javaType1);
             List<ActGiftDetailsDO> giftList = objectMapper.readValue(giftDetails, javaType2);
             List<ActStoreDO> storeList =  objectMapper.readValue(stores, javaType3);
+            ArrayList<Long> customerIds =  objectMapper.readValue(people, javaType4);
 
             if(goodsList == null){
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "本品为空", null);
@@ -104,7 +110,7 @@ public class MaActivityRestController extends BaseRestController {
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "已经发布，不允许修改", null);
             }
 
-            appActService.edit(baseDO,goodsList,giftList,subAmount,storeList,discount);
+            appActService.edit(baseDO,goodsList,giftList,subAmount,storeList,discount,customerIds);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "修改成功", null);
         } else {
             return actFor400(result,"提交的数据有误");

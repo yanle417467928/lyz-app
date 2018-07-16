@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.reportDownload.*;
 import com.github.pagehelper.PageInfo;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -59,10 +60,10 @@ public interface MaReportDownloadService {
                                       String startTime, String endTime, Boolean isProductCoupon, List<Long> storeIds,String productType ,Long storeId, Integer page, Integer size);
 
 
-    PageInfo<ArrearsReportDO> findArrearsList(String companyCode, String storeType, List<Long> storeIds,Long storeId, Integer page, Integer size);
+    PageInfo<ArrearsReportDO> findArrearsList(String companyCode, String storeType, List<Long> storeIds,Long storeId, Integer page, Integer size, String endTime);
 
 
-    List<ArrearsReportDO> downArrearsList(String companyCode, String storeType, List<Long> storeIds,Long storeId);
+    List<ArrearsReportDO> downArrearsList(String companyCode, String storeType, List<Long> storeIds,Long storeId, String endTime);
 
 
     List<SalesReportDO> downSalesReport(String companyCode, String storeType,
@@ -102,9 +103,9 @@ public interface MaReportDownloadService {
 
     PageInfo<EmpCreditDO> empCreditMoneySituationPage(Long cityId,String storeType,List<Long> storeIds,Integer page, Integer size,String keywords);
 
-    PageInfo<StCreditDO> stCreditMoneySituationPage(Long cityId, String storeType, List<Long> storeIds, Integer page, Integer size,String keywords);
+    PageInfo<StCreditDO> stCreditMoneySituationPage(Long cityId, List<Long> storeIds, Integer page, Integer size,String keywords);
 
     List<EmpCreditDO> empCreditMoneySituation(Long cityId,String storeType,List<Long> storeIds,String keywords);
 
-    List<StCreditDO> stCreditMoneySituation(Long cityId, String storeType, List<Long> storeIds,String keywords);
+    List<StCreditDO> stCreditMoneySituation(Long cityId,List<Long> storeIds,String keywords);
 }

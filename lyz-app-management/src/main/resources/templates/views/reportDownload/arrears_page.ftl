@@ -68,6 +68,8 @@
                         <#--onchange="findByCondition()"--> data-live-search="true">
                             <option value="-1">选择门店</option>
                         </select>
+                        <input name="endTime" onchange="" type="text" class="form-control datepicker"
+                               id="endTime" style="width: 120px;" placeholder="截止时间">
                         <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
                                 onclick="return findByCondition()">查找
                         </button>
@@ -97,7 +99,7 @@
     });
 
 
-    function initDateGird(keywords, companyCode, storeType,storeCode) {
+    function initDateGird(keywords, companyCode, storeType,storeCode,endTime) {
         $grid.init($('#dataGrid'), $('#toolbar'), '/rest/reportDownload/arrearsReport/page/grid', 'get', false, function (params) {
             return {
                 offset: params.offset,
@@ -106,6 +108,7 @@
                 companyCode: companyCode,
                 storeType: storeType,
                 storeId: storeCode,
+                endTime: endTime
             }
         }, [{
             checkbox: true,
@@ -157,7 +160,8 @@
         var storeType = $('#storeType').val();
         var companyCode = $('#companyCode').val();
         var storeCode = $('#storeCode').val();
-        initDateGird(keywords, companyCode, storeType,storeCode);
+        var endTime = $('#endTime').val();
+        initDateGird(keywords, companyCode, storeType,storeCode,endTime);
     }
 
 

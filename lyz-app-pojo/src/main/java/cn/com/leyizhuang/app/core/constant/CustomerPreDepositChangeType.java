@@ -63,6 +63,7 @@ public enum CustomerPreDepositChangeType {
         consumptionList.add(PLACE_ORDER);
         consumptionList.add(RETURN_ORDER);
         consumptionList.add(CANCEL_ORDER);
+        consumptionList.add(OVERDUE_PRODUCT_COUPON_TRANSFER);
         return consumptionList;
     }
 

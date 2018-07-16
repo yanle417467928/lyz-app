@@ -8,10 +8,12 @@ import cn.com.leyizhuang.app.foundation.pojo.activity.ActGoodsMappingDO;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActStoreDO;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import com.github.pagehelper.PageInfo;
 import org.springframework.ui.ModelMap;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -38,9 +40,9 @@ public interface AppActService {
      * @param storeList 门店集合
      * @param discount 折扣
      */
-    void save(ActBaseDO baseDO, List<ActGoodsMappingDO> goodsList, List<ActGiftDetailsDO> giftList, Double subAmount, List<ActStoreDO> storeList,Double discount);
+    void save(ActBaseDO baseDO, List<ActGoodsMappingDO> goodsList, List<ActGiftDetailsDO> giftList, Double subAmount, List<ActStoreDO> storeList,Double discount, ArrayList<Long> customerIds);
 
-    void edit(ActBaseDO baseDO, List<ActGoodsMappingDO> goodsList, List<ActGiftDetailsDO> giftList, Double subAmount, List<ActStoreDO> storeDOList,Double discount);
+    void edit(ActBaseDO baseDO, List<ActGoodsMappingDO> goodsList, List<ActGiftDetailsDO> giftList, Double subAmount, List<ActStoreDO> storeDOList,Double discount, ArrayList<Long> customerIds);
 
     ActBaseDO findById(Long promotionId);
 
@@ -65,4 +67,6 @@ public interface AppActService {
     void inValid(Long id);
 
     Map<Long,Double> returnGcActIdAndJXDiscunt(List<PromotionSimpleInfo> simpleInfo);
+
+    List<AppCustomer> findCustomer(Long actId);
 }

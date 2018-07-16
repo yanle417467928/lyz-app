@@ -299,6 +299,23 @@ public class AppActServiceImpl implements AppActService {
                 continue;
             }
 
+            Boolean a = Boolean.FALSE;
+            //判断促销是否是会员个人促销
+            if (null != act.getIsMemberConference() && act.getIsMemberConference()){
+                List<ActMemberConference> actMemberConferenceList = actBaseDAO.findMemberConferenceByActId(act.getId());
+                if (null != actMemberConferenceList && actMemberConferenceList.size() > 0) {
+                    for (ActMemberConference actMemberConference : actMemberConferenceList) {
+                        if (cusId.equals(actMemberConference.getCusId())) {
+                            a = Boolean.TRUE;
+                            break;
+                        }
+                    }
+                }
+                if (!a){
+                    continue;
+                }
+            }
+
             // 促销类型
             String actType = act.getActType();
 
@@ -1192,7 +1209,8 @@ public class AppActServiceImpl implements AppActService {
      * @param subAmount
      */
     @Transactional
-    public void save(ActBaseDO baseDO, List<ActGoodsMappingDO> goodsList, List<ActGiftDetailsDO> giftList, Double subAmount, List<ActStoreDO> storeDOList, Double discount) {
+    public void save(ActBaseDO baseDO, List<ActGoodsMappingDO> goodsList, List<ActGiftDetailsDO> giftList, Double subAmount,
+                     List<ActStoreDO> storeDOList, Double discount, ArrayList<Long> customerIds) {
         String cityName = cityService.findById(baseDO.getCityId()).getName();
         baseDO.setCityName(cityName);
 
@@ -1236,8 +1254,23 @@ public class AppActServiceImpl implements AppActService {
         // 生成编码
         String code = baseDO.createCode();
         baseDO.setActCode(code);
-
+        if (null != customerIds && customerIds.size() > 0){
+            baseDO.setIsMemberConference(Boolean.TRUE);
+        }else{
+            baseDO.setIsMemberConference(Boolean.FALSE);
+        }
         actBaseDAO.save(baseDO);
+
+        //保存会员促销表
+        if (null != customerIds && customerIds.size() > 0){
+            for (Long cusId : customerIds){
+                ActMemberConference actMemberConference = new ActMemberConference();
+                actMemberConference.setCusId(cusId);
+                actMemberConference.setActId(baseDO.getId());
+                actMemberConference.setCreateTime(new Date());
+                actBaseDAO.saveMemberConference(actMemberConference);
+            }
+        }
 
         // 门店和促销映射
         for (ActStoreDO store : storeDOList) {
@@ -1317,7 +1350,8 @@ public class AppActServiceImpl implements AppActService {
      * @param storeDOList
      */
     @Transactional
-    public void edit(ActBaseDO baseDO, List<ActGoodsMappingDO> goodsList, List<ActGiftDetailsDO> giftList, Double subAmount, List<ActStoreDO> storeDOList, Double discount) {
+    public void edit(ActBaseDO baseDO, List<ActGoodsMappingDO> goodsList, List<ActGiftDetailsDO> giftList, Double subAmount,
+                     List<ActStoreDO> storeDOList, Double discount, ArrayList<Long> customerIds) {
         String cityName = cityService.findById(baseDO.getCityId()).getName();
         baseDO.setCityName(cityName);
 
@@ -1348,8 +1382,26 @@ public class AppActServiceImpl implements AppActService {
             }
 
         }
+        if (null != customerIds && customerIds.size() > 0){
+            baseDO.setIsMemberConference(Boolean.TRUE);
+        }else{
+            baseDO.setIsMemberConference(Boolean.FALSE);
+        }
 
         actBaseDAO.update(baseDO);
+
+        //修改会员促销表，先删除旧记录在新增
+        actBaseDAO.deleteMemberConferenceByActBaseId(baseDO.getId());
+        if (null != customerIds && customerIds.size() > 0){
+            for (Long cusId : customerIds){
+                ActMemberConference actMemberConference = new ActMemberConference();
+                actMemberConference.setCusId(cusId);
+                actMemberConference.setActId(baseDO.getId());
+                actMemberConference.setCreateTime(new Date());
+                actMemberConference.setUpdateTime(new Date());
+                actBaseDAO.saveMemberConference(actMemberConference);
+            }
+        }
 
         // 修改门店 先删除旧的记录
         actStoresDAO.deleteByActBaseId(baseDO.getId());
@@ -1532,5 +1584,13 @@ public class AppActServiceImpl implements AppActService {
             }
         }
         return map;
+    }
+
+    @Override
+    public List<AppCustomer> findCustomer(Long actId) {
+        if (actId != null){
+            return actBaseDAO.findCustomer(actId);
+        }
+        return null;
     }
 }

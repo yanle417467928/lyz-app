@@ -2123,7 +2123,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
                 if (null != materialListDO && null != materialListDO.getGid()) {
                     OrderGoodsSimpleResponse orderGoodsSimpleResponse = new OrderGoodsSimpleResponse();
                     GoodsPrice goodsPrice = null;
-                    if (appIdentityType != AppIdentityType.CUSTOMER) {
+                    if (appIdentityType == AppIdentityType.CUSTOMER) {
                         //根据商品id和门店id查询商品价格+ 顾客id
                         goodsPrice = goodsPriceService.findGoodsPriceByGoodsIDAndStoreID(materialListDO.getGid(), storeId, userId);
                     } else {

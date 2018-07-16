@@ -1379,4 +1379,9 @@ public class AppOrderServiceImpl implements AppOrderService {
 
         return flag;
     }
+
+    @Override
+    public void updateOrderGoodsInfo(OrderGoodsInfo goodsInfo) {
+        this.orderDAO.updateOrderGoodsInfo(goodsInfo);
+    }
 }
