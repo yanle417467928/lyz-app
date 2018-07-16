@@ -767,7 +767,7 @@
             });
             var storeId = $("#storeId").val();
             var guideId = $("#guideId").val();
-
+            var county = $("#county").find("option:selected").text();
             var identityType = 2;
             var sysDeliveryType = 'HOUSE_DELIVERY';
             var data = {
@@ -775,7 +775,8 @@
                 "userId": guideId,
                 "goodsList": JSON.stringify(goodsDetails),
                 "identityType": identityType,
-                "sysDeliveryType": sysDeliveryType
+                "sysDeliveryType": sysDeliveryType,
+                "county": county
             };
             var url = "/rest/admin/fit/place/order/calculated/amount"
             $.ajax({

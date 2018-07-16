@@ -61,7 +61,7 @@ public class ScheduleTaskCommandLineRunner implements CommandLineRunner {
 
         //账期定时任务
         String billDateTaskCron = maClearTempCreditService.getCron(6L);
-        if (StringUtils.isNotBlank(autoResendWMSCron)) {
+        if (StringUtils.isNotBlank(billDateTaskCron)) {
             QuartzManager.addJob("billDateTask", "jobGroup6", "trigger6", "triggerGroup6", BillDateTask.class, billDateTaskCron);
         } else {
             throw new RuntimeException("billDateTask为空");

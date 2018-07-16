@@ -378,7 +378,8 @@ public class OrderController {
                 logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
             } else {
                 //判断是否可选择货到付款
-                Boolean isCashDelivery = this.commonService.checkCashDelivery(orderGoodsInfoList, userId, AppIdentityType.getAppIdentityTypeByValue(identityType), orderBaseInfo.getDeliveryType());
+                final Boolean aBoolean = this.commonService.checkCashDelivery(orderGoodsInfoList, userId, AppIdentityType.getAppIdentityTypeByValue(identityType), orderBaseInfo.getDeliveryType());
+                Boolean isCashDelivery = aBoolean;
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
                         new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), false, isCashDelivery));
                 logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
@@ -663,9 +664,9 @@ public class OrderController {
             //由于运费不抵扣乐币及优惠券,避免分摊出现负,运费放最后计算
             // 运费计算
             //2018-04-01 generation 产品卷金额加进运费计算 买卷不计算运费
-            if (null == orderType || !orderType.equals("COUPON")) {
-                freight = deliveryFeeRuleService.countDeliveryFee(identityType, cityId, CountUtil.add(totalOrderAmount, proCouponDiscount), goodsInfo);
-            }
+//            if (null == orderType || !orderType.equals("COUPON")) {
+//                freight = deliveryFeeRuleService.countDeliveryFee(identityType, cityId, CountUtil.add(totalOrderAmount, proCouponDiscount), goodsInfo);
+//            }
             totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
             ArrayList<Long> allGoods = new ArrayList<>();
             allGoods.addAll(goodsIds);
@@ -2735,12 +2736,12 @@ public class OrderController {
             return resultDTO;
         }
         if (!(null != goodsList && goodsList.length() > 0)) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品列表", null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品列表不能为空", null);
             logger.warn("deliveryFee OUT,计算运费失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == totalOrderAmount) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单金额", null);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单金额不能为空！", null);
             logger.warn("deliveryFee OUT,计算运费失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
@@ -2760,7 +2761,12 @@ public class OrderController {
 
             ObjectMapper objectMapper = new ObjectMapper();
             JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, OrderGoodsSimpleResponse.class);
-            List<OrderGoodsSimpleResponse> simpleInfos = objectMapper.readValue(goodsList, javaType1);
+            List<OrderGoodsSimpleResponse> simpleInfos = new ArrayList<>();
+            String[] param = goodsList.split(",");
+            for (String s : param) {
+                OrderGoodsSimpleResponse goodsParam = new OrderGoodsSimpleResponse();
+                goodsParam.setId(Long.parseLong(s));
+            }
             Double deliveryFee = this.deliveryFeeRuleService.countDeliveryFeeNew(identityType, cityId, amount, simpleInfos, countyName);
             //创建一个返回对象list
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, deliveryFee);

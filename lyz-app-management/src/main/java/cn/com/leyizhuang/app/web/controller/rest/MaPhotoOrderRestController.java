@@ -2992,8 +2992,8 @@ public class MaPhotoOrderRestController extends BaseRestController {
                 //由于运费不抵扣乐币及优惠券,避免分摊出现负,运费放最后计算
                 // 运费计算
                 //2018-04-01 generation 产品卷金额加进运费计算
-                freight = deliveryFeeRuleService.countDeliveryFee(identityType, cityId, CountUtil.add(totalOrderAmount, 0), goodsInfo);
-
+//                freight = deliveryFeeRuleService.countDeliveryFee(identityType, cityId, CountUtil.add(totalOrderAmount, 0), goodsInfo);
+                freight = this.deliveryFeeRuleService.countDeliveryFeeNew(identityType, cityId, totalOrderAmount, goodsInfo, countyName);
                 totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
 
                 MaOrderCalulatedAmountResponse maOrderCalulatedAmountResponse = new MaOrderCalulatedAmountResponse();

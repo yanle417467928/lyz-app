@@ -1874,7 +1874,7 @@ public class CommonServiceImpl implements CommonService {
         try {
             Boolean flag = Boolean.FALSE;
             //分销仓库货到付款
-            if (identityType == AppIdentityType.SELLER) {
+            if (identityType == AppIdentityType.SELLER && AppDeliveryType.HOUSE_DELIVERY == deliveryType) {
                 AppEmployee employee = employeeService.findById(userId);
                 if (null != employee && null != employee.getStoreId()) {
                     AppStore appStore = storeService.findById(employee.getStoreId());
