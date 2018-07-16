@@ -289,9 +289,10 @@ public class OrderArriveController {
 
                         //加上楼费
                         if (upstairFee > 0D) {
-                            orderBillingDetails = new OrderBillingDetails();
-                            orderBillingDetails.setUpstairsFee(upstairFee);
-                            this.appOrderServiceImpl.updateOwnMoneyByOrderNo(orderBillingDetails);
+                            OrderBillingDetails billingDetail = new OrderBillingDetails();
+                            billingDetail.setUpstairsFee(upstairFee);
+                            billingDetail.setOrderNumber(orderNo);
+                            this.appOrderServiceImpl.updateOwnMoneyByOrderNo(billingDetail);
                         }
 
 
@@ -414,6 +415,7 @@ public class OrderArriveController {
                     orderBillingDetails.setUpstairsFee(upstairFee);
                 } else {
                     orderBillingDetails = new OrderBillingDetails();
+                    orderBillingDetails.setOrderNumber(orderNo);
                     orderBillingDetails.setUpstairsFee(upstairFee);
                 }
                 this.CommonServiceImpl.confirmOrderArrive(paymentDetails, orderBillingDetails, empCreditMoneyChangeLog,
