@@ -410,9 +410,12 @@ public class OrderArriveController {
                 orderBaseInfo.setStatus(AppOrderStatus.FINISHED);
                 orderBaseInfo.setDeliveryStatus(LogisticStatus.CONFIRM_ARRIVAL);
 //            this.appOrderServiceImpl.updateOrderStatusByOrderNo(orderBaseInfo);
-
-                orderBillingDetails.setUpstairsFee(upstairFee);
-
+                if (null != orderBillingDetails) {
+                    orderBillingDetails.setUpstairsFee(upstairFee);
+                } else {
+                    orderBillingDetails = new OrderBillingDetails();
+                    orderBillingDetails.setUpstairsFee(upstairFee);
+                }
                 this.CommonServiceImpl.confirmOrderArrive(paymentDetails, orderBillingDetails, empCreditMoneyChangeLog,
                         orderAgencyFundDO, orderDeliveryInfoDetails, orderBaseInfo, orderTempInfo.getSellerId(), credit, empCreditMoney.getLastUpdateTime());
 
