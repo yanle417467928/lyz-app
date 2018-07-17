@@ -235,20 +235,28 @@
         ity_allocation_detail d on a.id = d.allocation_id
         WHERE
         1=1
-        <if test="null != outCompany and '-1'!= outCompany">
-            and b.store_structure_code LIKE concat('%',#{outCompany},'%')
+        <if test="null != company and '-1'!= company">
+            and (b.store_structure_code LIKE concat('%',#{company},'%')
+            OR c.store_structure_code LIKE concat('%',#{company},'%'))
         </if>
         <if test="null != outStore and -1 != outStore">
             and  allocation_from = #{outStore}
-        </if>
-        <if test="null != inCompany and '-1'!= inCompany">
-            and  c.store_structure_code LIKE concat('%',#{inCompany},'%')
         </if>
         <if test="null != inStore and -1 != inStore">
             and allocation_to = #{inStore}
         </if>
         <if test="null != keywords and ''!= keywords">
-            and d.sku LIKE concat('%',#{keywords},'%')
+            and (d.sku LIKE concat('%',#{keywords},'%')
+            OR d.sku_name LIKE concat('%',#{keywords},'%'))
+        </if>
+        <if test="selectStatus != null and '-1' != selectStatus">
+            AND a.status = #{selectStatus}
+        </if>
+        <if test="startDateTime != null and '' != startDateTime">
+            AND a.modify_time &gt;= #{startDateTime}
+        </if>
+        <if test="endDateTime != null and '' != endDateTime">
+            AND a.modify_time &lt;= #{endDateTime}
         </if>
         AND (
         allocation_from IN

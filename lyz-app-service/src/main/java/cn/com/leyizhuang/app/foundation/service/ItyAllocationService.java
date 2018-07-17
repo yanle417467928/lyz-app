@@ -160,5 +160,5 @@ public interface ItyAllocationService {
      * @param keywords
      * @return
      */
-    PageInfo<AllocationVO> queryAllocationPage(Integer offset, Integer size, String keywords, String outCompany,String inCompany,Long outStore,Long inStore, List<Long> storeIds);
+    PageInfo<AllocationVO> queryAllocationPage(Integer offset, Integer size, String keywords,String company, Long outStore, Long inStore,String selectStatus,String startDateTime ,String endDateTime, List<Long> storeIds);
 }

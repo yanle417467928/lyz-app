@@ -35,18 +35,82 @@
         <div class="col-xs-12">
             <div class="box box-primary">
                 <form class="form-horizontal" id="formSearch">
-                    <div id="" class="box-body form-inline">
-                        <input name="startDateTime" type="text" class="form-control datepicker" id="startDateTime"
-                               placeholder="开始时间">
-                        至
-                        <input name="endDateTime" type="text" class="form-control datepicker" id="endDateTime"
-                               placeholder="结束时间">
-                        <button type="button" style="margin-left:50px" id="btn_query" class="btn btn-primary">
-                            <i class="fa fa-search"></i> 查询
-                        </button>
-                    <#--<button type="reset" class="btn btn-default">-->
-                    <#--<i class="fa fa-print"></i> 重置-->
-                    <#--</button>-->
+                    <div id="" class="box-body ">
+                        <div class="row">
+                            <div class="col-xs-12 col-md-2 ">
+                                <select name="company" id="company" class="form-control select" style="width:auto;"
+                                        onchange="findByInStructureCode()">
+                                    <option value="-1">选择分公司</option>
+                                <#if structureList?? && structureList?size gt 0 >
+                                    <#list structureList as structure>
+                                        <option value="${structure.number!''}">${structure.structureName!''}</option>
+                                    </#list>
+                                </#if>
+                                </select>
+                            </div>
+                            <div class="col-xs-12 col-md-2 " style="margin-left: -5.5%">
+                                <select name="inStoreCode" id="inStoreCode" class="form-control selectpicker"
+                                        data-width="140px" data-live-search="true">
+                                    <option value="-1">选择调入门店</option>
+                                <#if storeList?? && storeList?size gt 0 >
+                                    <#list storeList as store>
+                                        <option value="${store.id!''}">${store.storeName!''}</option>
+                                    </#list>
+                                </#if>
+                                </select>
+                            </div>
+                            <div class="col-xs-12 col-md-2" style="margin-left: -3.5%">
+                                <select name="outStoreCode" id="outStoreCode" class="form-control selectpicker"
+                                        data-width="140px" data-live-search="true">
+                                    <option value="-1">选择调出门店</option>
+                                <#if storeList?? && storeList?size gt 0 >
+                                    <#list storeList as store>
+                                        <option value="${store.id!''}">${store.storeName!''}</option>
+                                    </#list>
+                                </#if>
+                                </select>
+                            </div>
+                            <div class="col-xs-12 col-md-2" style="margin-left: -3.5%">
+                                <select name="selectStatus" id="selectStatus" class="form-control select"
+                                        style="width:auto;">
+                                    <option value="-1">选择状态</option>
+                                    <option value="NEW" <#if status?? && status==1>selected</#if>>新&nbsp;&nbsp;&nbsp;&nbsp;建</option>
+                                    <option value="SENT" <#if status?? && status==2>selected</#if>>已出库</option>
+                                    <option value="ENTERED" <#if status?? && status==3>selected</#if>>已入库</option>
+                                    <option value="CANCELLED" <#if status?? && status==4>selected</#if>>已作废</option>
+                                </select>
+                            </div>
+                            <div class="col-xs-12 col-md-2" style="margin-left: -6.8%">
+                                <input name="startDateTime" type="text" class="form-control datepicker"
+                                       id="startDateTime"
+                                       placeholder="开始时间">
+                            </div>
+                            <div class="col-xs-12 col-md-1" style="margin-left: -2%;margin-top: 0.5%">
+                                至
+                            </div>
+                            <div class="col-xs-12 col-md-2" style="margin-left: -6%">
+                                <input name="endDateTime" type="text" class="form-control datepicker" id="endDateTime"
+                                       placeholder="结束时间">
+                            </div>
+                            <div class="col-xs-12 col-md-2" style="margin-left: -2%">
+                                <input type="text" name="queryInfo" id="queryInfo" class="form-control "
+                                       placeholder="请输入商品编码">
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 1%">
+                            <div class="col-xs-12 col-md-9">
+                            </div>
+                            <div class="col-xs-12 col-md-1" style="margin-left: 4%">
+                                <button type="button" id="btn_query" class="btn btn-primary">
+                                    <i class="fa fa-search"></i> 查询
+                                </button>
+                            </div>
+                            <div class="col-xs-12 col-md-1" style="margin-left: -1.5%">
+                                <button type="reset" class="btn btn-default" onclick="clearAll()">
+                                    <i class="fa fa-print"></i> 重置
+                                </button>
+                            </div>
+                        </div>
                         <input type="hidden" id="formName" name="formName">
                         <input type="hidden" id="toName" name="toName">
                         <input type="hidden" id="city" name="city">
@@ -56,28 +120,8 @@
                         <button id="btn_add" type="button" class="btn btn-default">
                             <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
                         </button>
-                        <select name="selectCity" id="selectCity" class="form-control select"
-                                title="选择城市" onchange="findStoreListByCity(this.value)">
-                            <option value="-1">选择城市</option>
-                        </select>
-                        <select name="selectFromName" id="selectFromName" class="form-control selectpicker"
-                                data-width="180px"
-                                style="width:auto;" title="调出门店" data-live-search="true">
-                            <option value="-1">选择调出门店</option>
-                        </select>
-                        <select name="selectToName" id="selectToName" class="form-control selectpicker"
-                                data-width="180px"
-                                style="width:auto;" title="调入门店" data-live-search="true">
-                            <option value="-1">选择调入门店</option>
-                        </select>
-                        <select name="selectStatus" id="selectStatus" class="form-control select"
-                                style="width:auto;" title="选择状态">
-                            <option value="NEW" <#if status?? && status==1>selected</#if>>新&nbsp;&nbsp;&nbsp;&nbsp;建
-                            </option>
-                            <option value="SENT" <#if status?? && status==2>selected</#if>>已出库</option>
-                            <option value="ENTERED" <#if status?? && status==3>selected</#if>>已入库</option>
-                            <option value="CANCELLED" <#if status?? && status==4>selected</#if>>已作废</option>
-                        </select>
+                        <div id="toolbar" class="form-inline">
+                        </div>
                     </div>
                 </form>
                 <div class="box-body table-reponsive">
@@ -178,165 +222,17 @@
             autoclose: true
         });
 
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/store/allocation/page/grid', 'get', true, function (params) {
-            return {
-                offset: params.offset,
-                size: params.limit,
-                keywords: params.search
-            }
-        }, [{
-            checkbox: true,
-            title: '选择'
-        }, {
-            field: 'id',
-            title: 'ID',
-            align: 'center'
-        }, {
-            field: 'number',
-            title: '单号',
-            events: {
-                'click .scan': function (e, value, row) {
-                    turnDetail(row.id);
-                }
-            },
-            formatter: function (value) {
-                return '<a class="scan" href="#">' + value + '</a>';
-            },
-            align: 'center'
-        }, {
-            field: 'cityName',
-            title: '城市',
-            align: 'center'
-        }, {
-            field: 'allocationFromName',
-            title: '调出门店',
-            align: 'center'
-        }, {
-            field: 'allocationToName',
-            title: '调入门店',
-            align: 'center'
-        }, {
-            field: 'status',
-            title: '状态',
-            align: 'center',
-            formatter: function (value, row, index) {
-                if ('NEW' === value) {
-                    return '<span class="">新建</span>';
-                } else if ('SENT' === value) {
-                    return '<span class="">已出库</span>';
-                } else if ('ENTERED' === value) {
-                    return '<span class="">已入库</span>';
-                } else if ('CANCELLED' === value) {
-                    return '<span class="">已作废</span>';
-                }
-            }
-        }, {
-            field: 'modifyTime',
-            title: '修改时间',
-            align: 'center'
-        }]);
+        initDateGrid('/rest/allocation/queryPage/grid');
 
         $('#btn_add').on('click', function () {
             $grid.add('/views/admin/inventory/allocation/add?parentMenuId=${(parentMenuId!'0')}')
         });
 
         $('#btn_query').on('click', function () {
-            $('#city').val($('#selectCity').val());
-            $('#formName').val($('#selectFromName').val());
-            $('#toName').val($('#selectToName').val());
-            $('#allocationTypeEnum').val($('#selectStatus').val());
-            $grid.searchTable('dataGrid', 'formSearch');
+            initDateGrid('/rest/allocation/queryPage/grid');
         });
-
-        findCityList();
-        findStoreList()
     });
 
-    function findCityList() {
-        var city = "";
-        $.ajax({
-            url: '/rest/citys/findCitylist',
-            method: 'GET',
-            error: function () {
-                clearTimeout($global.timer);
-                $loading.close();
-                $global.timer = null;
-                $notify.danger('网络异常，请稍后重试或联系管理员');
-            },
-            success: function (result) {
-                clearTimeout($global.timer);
-                $.each(result, function (i, item) {
-                    city += "<option value=" + item.cityId + ">" + item.name + "</option>";
-                });
-                $("#selectCity").append(city);
-                //$("#selectCity").selectpicker('refresh');
-                //$("#selectCity").selectpicker('render');
-            }
-        });
-    }
-
-
-    function findStoreList() {
-        var store = "";
-        var fromName = $("#selectFromName");
-        var toName = $("#selectToName");
-        $.ajax({
-            url: '/rest/stores/findStoresListByStoreId',
-            method: 'GET',
-            error: function () {
-                clearTimeout($global.timer);
-                $loading.close();
-                $global.timer = null;
-                $notify.danger('网络异常，请稍后重试或联系管理员');
-            },
-            success: function (result) {
-                clearTimeout($global.timer);
-                $.each(result, function (i, item) {
-                    store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
-                });
-                fromName.append(store);
-                toName.append(store);
-                fromName.selectpicker('refresh');
-                fromName.selectpicker('render');
-                toName.selectpicker('refresh');
-                toName.selectpicker('render');
-            }
-        });
-    }
-
-    function findStoreListByCity(cityId) {
-        var fromName = $("#selectFromName");
-        var toName = $("#selectToName");
-        initSelect("#selectFromName", "选择调出门店");
-        initSelect("#selectToName", "选择调入门店");
-        if (cityId == -1) {
-            findStoreList();
-            return false;
-        };
-        var store;
-        $.ajax({
-            url: '/rest/stores/findStoresListByCityIdAndStoreId/' + cityId,
-            method: 'GET',
-            error: function () {
-                clearTimeout($global.timer);
-                $loading.close();
-                $global.timer = null;
-                $notify.danger('网络异常，请稍后重试或联系管理员');
-            },
-            success: function (result) {
-                clearTimeout($global.timer);
-                $.each(result, function (i, item) {
-                    store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
-                });
-                fromName.append(store);
-                fromName.selectpicker('refresh');
-                fromName.selectpicker('render');
-                toName.append(store);
-                toName.selectpicker('refresh');
-                toName.selectpicker('render');
-            }
-        });
-    }
 
     function initSelect(select, optionName) {
         $(select).empty();
@@ -377,7 +273,7 @@
                                 $('#number').html(data.number);
 
                                 if (null === data.cityName) {
-                                    data.cityName = 'fa fa-circle-o';
+                                    data.cityName = '-';
                                 }
                                 $('#cityName').html(data.cityName);
 
@@ -469,6 +365,126 @@
 
     function turnDetail(id) {
         window.location.href = "/views/admin/inventory/allocation/detail/" + id;
+    }
+
+
+    function findByInStructureCode() {
+        findStoreList();
+    }
+
+    function findStoreList() {
+        initSelect("#inStoreCode", "选择调入门店");
+        initSelect("#outStoreCode", "选择调出门店");
+        var store = "";
+        var toName = $("#inStoreCode");
+        var fromName = $("#outStoreCode");
+        var company = $('#company').val();
+        var data = {
+            "companyCode": company
+        }
+        $.ajax({
+            url: '/rest/stores/findStoresListByCompanyCodeAndStoreType',
+            method: 'GET',
+            data: data,
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
+                })
+                toName.append(store);
+                fromName.append(store);
+                toName.selectpicker('refresh');
+                toName.selectpicker('render');
+                fromName.selectpicker('refresh');
+                fromName.selectpicker('render');
+            }
+        });
+    }
+
+    function clearAll() {
+        var company = $('#company').val('-1');
+        findStoreList();
+    }
+
+    function initDateGrid(url) {
+        $("#dataGrid").bootstrapTable('destroy');
+        $grid.init($('#dataGrid'), $('#toolbar'), url, 'get', false, function (params) {
+            return {
+                offset: params.offset,
+                size: params.limit,
+                keywords: $('#queryInfo').val(),
+                company: $('#company').val(),
+                outStore: $('#outStoreCode').val(),
+                inStore: $('#inStoreCode').val(),
+                selectStatus: $('#selectStatus').val(),
+                startDateTime: $('#startDateTime').val(),
+                endDateTime: $('#endDateTime').val(),
+            }
+        }, [{
+            checkbox: true,
+            title: '选择'
+        }, {
+            field: 'id',
+            title: 'ID',
+            align: 'center'
+        }, {
+            field: 'number',
+            title: '单号',
+            events: {
+                'click .scan': function (e, value, row) {
+                    $page.information.show(row.id);
+                }
+            },
+            formatter: function (value) {
+                return '<a class="scan" href="#">' + value + '</a>';
+            },
+            align: 'center'
+        }, {
+            field: 'cityName',
+            title: '城市',
+            align: 'center'
+        }, {
+            field: 'allocationFromName',
+            title: '调出门店',
+            align: 'center'
+        }, {
+            field: 'allocationToName',
+            title: '调入门店',
+            align: 'center'
+        }, {
+            field: 'status',
+            title: '状态',
+            align: 'center',
+            formatter: function (value, row, index) {
+                if ('NEW' === value) {
+                    return '<span class="">新建</span>';
+                } else if ('SENT' === value) {
+                    return '<span class="">已出库</span>';
+                } else if ('ENTERED' === value) {
+                    return '<span class="">已入库</span>';
+                } else if ('CANCELLED' === value) {
+                    return '<span class="">已作废</span>';
+                }
+            }
+        }, {
+            field: 'modifyTime',
+            title: '修改时间',
+            align: 'center'
+        },
+            {
+                title: '操作',
+                align: 'center',
+                formatter: function (value, row) {
+                    return '<button class="btn btn-primary btn-sm" onclick="turnDetail(' + row.id + ')"> 调拨</button>';
+                }
+            }
+        ]);
     }
 </script>
 </body>

@@ -50,6 +50,9 @@ public class AppAdminStoreInventoryViewController extends BaseController {
     @Autowired
     private MaGroupStructureService maGroupStructureService;
 
+    @Autowired
+    private MaStoreService maStoreService;
+
 
     @RequestMapping("/page")
     public String inventoryList(Model model, Integer page, Integer size) {
@@ -76,6 +79,13 @@ public class AppAdminStoreInventoryViewController extends BaseController {
      */
     @RequestMapping("/allocation")
     public String allocationList(Model model) {
+        List<String> structureCodeList = new ArrayList<>();
+        structureCodeList.add("LYZ001|JZSYBM");
+        List<SimpaleGroupStructureParam>  structureList = maGroupStructureService.querySimpaleStructureListByFilter(structureCodeList);
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+        List<SimpleStoreParam> storesList = this.maStoreService.findStoresListByStoreId(storeIds);
+        model.addAttribute("structureList", structureList);
+        model.addAttribute("storeList", storesList);
         return "/views/inventory/store/store_allocation_page";
     }
 
