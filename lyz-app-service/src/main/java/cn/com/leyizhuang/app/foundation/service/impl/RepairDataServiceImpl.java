@@ -354,7 +354,7 @@ public class RepairDataServiceImpl implements RepairDataService {
                 return null;
             }
 
-            int affectLine = employeeService.lockGuideCreditByUserIdAndCredit(
+            int affectLine = employeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(
                     empId, changeMoney, empCreditMoney.getLastUpdateTime());
 
             if (affectLine > 0) {
