@@ -70,19 +70,11 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
         logger.info("GetEBSInfo CALLED,获取ebs信息，入参 strTable:{},strType:{},xml:{}", strTable, strType, xml);
 
         if (StringUtils.isBlank(strTable) || "?".equals(strTable)) {
-            EtaReturnAndRequireGoodsInfLog etaReturnAndRequireGoodsInfLog = new EtaReturnAndRequireGoodsInfLog();
-            etaReturnAndRequireGoodsInfLog.setMsg("STRTABLE参数错误");
-            etaReturnAndRequireGoodsInfLog.setCreatDate(new Date());
-            diySiteInventoryEbsService.saveReturnAndRequireGoodsInfLog(etaReturnAndRequireGoodsInfLog);
             logger.info("GetEBSInfo OUT,获取ebs信息失败 出参 strTable:{}", strTable);
             return AppXmlUtil.generateResultXmlToEbs(1, "STRTABLE参数错误");
         }
 
         if (StringUtils.isBlank(xml) || "?".equals(xml)) {
-            EtaReturnAndRequireGoodsInfLog etaReturnAndRequireGoodsInfLog = new EtaReturnAndRequireGoodsInfLog();
-            etaReturnAndRequireGoodsInfLog.setMsg("XML参数错误");
-            etaReturnAndRequireGoodsInfLog.setCreatDate(new Date());
-            diySiteInventoryEbsService.saveReturnAndRequireGoodsInfLog(etaReturnAndRequireGoodsInfLog);
             logger.info("GetEBSInfo OUT,获取ebs信息失败 出参 strTable:{}", xml);
             return AppXmlUtil.generateResultXmlToEbs(1, "XML参数错误");
         }
@@ -373,36 +365,103 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                 }
                 logger.info("GetEBSInfo OUT,获取ebs信息成功 出参 code=0");
                 return AppXmlUtil.resultStrXml(0, "NORMAL");
+            } else if ("CUXAPP_INV_GOODS_TRANS_OUT".equalsIgnoreCase(strTable)) {
+                for (int i = 0; i < nodeList.getLength(); i++) {
+                    //商品名称
+                     String skuName =null;
+                    //商品编码
+                     String sku =null;
+                    //单位单位
+                     String goodsUnit =null;
+                    //商品公司标识
+                     String companyFlag =null;
+                     //产品条码
+                    String  materialsCode = null;
+                    Node node = nodeList.item(i);
+                    NodeList childNodeList = node.getChildNodes();
+                    for (int idx = 0; idx < childNodeList.getLength(); idx++) {
+                        Node childNode = childNodeList.item(idx);
+                        if (childNode.getNodeType() == Node.ELEMENT_NODE) {
+                            if ("ITEM_CODE".equalsIgnoreCase(childNode.getNodeName())) {
+                                // 有值
+                                if (null != childNode.getChildNodes().item(0)) {
+                                    sku = childNode.getChildNodes().item(0).getNodeValue();
+                                }
+                            } else if ("ITEM_DESC".equalsIgnoreCase(childNode.getNodeName())) {
+                                // 有值
+                                if (null != childNode.getChildNodes().item(0)) {
+                                    skuName = childNode.getChildNodes().item(0).getNodeValue();
+                                }
+                            } else if ("ITEM_MEASURE".equalsIgnoreCase(childNode.getNodeName())) {
+                                if (null != childNode.getChildNodes().item(0)) {
+                                    goodsUnit = childNode.getChildNodes().item(0).getNodeValue();
+                                }
+                            } else if ("ITEM_IDENTIFY".equalsIgnoreCase(childNode.getNodeName())) {
+                                if (null != childNode.getChildNodes().item(0)) {
+                                    companyFlag = childNode.getChildNodes().item(0).getNodeValue();
+                                }
+                            } else if ("ITEM_BARCODE".equalsIgnoreCase(childNode.getNodeName())) {
+                                if (null != childNode.getChildNodes().item(0)) {
+                                    materialsCode = childNode.getChildNodes().item(0).getNodeValue();
+                                }
+                            }
+                        }
+                    }
+                    GoodsDO goodsDO = new GoodsDO();
+                    try {
+                        if(null==sku){
+                            logger.info("产品编码为空");
+                            return AppXmlUtil.generateResultXmlToEbs(1, "商品编码为空");
+                        }
+                        if(null==skuName){
+                            logger.info("产品名称为空");
+                            return AppXmlUtil.generateResultXmlToEbs(1, "产品名称为空");
+                        }
+                        if(null==companyFlag){
+                            logger.info("产品标识为空");
+                            return AppXmlUtil.generateResultXmlToEbs(1, "产品标识为空");
+                        }
+                        if(null==goodsUnit){
+                            logger.info("产品单位为空");
+                            return AppXmlUtil.generateResultXmlToEbs(1, "产品单位为空");
+                        }
+
+                        goodsDO.setSku(sku);
+                        goodsDO.setSkuName(skuName);
+                        goodsDO.setGoodsUnit(goodsUnit);
+                        goodsDO.setCreateTime(new Date());
+                        goodsDO.setCompanyFlag(companyFlag);
+                        if(null !=materialsCode){
+                            goodsDO.setMaterialsCode(materialsCode);
+                        }
+
+                        //判断sku是否存在
+                        GoodsDO goodsDOExist = goodsService.queryBySku(sku);
+                        if (null != goodsDOExist) {
+                            goodsService.modifySynchronize(goodsDO);
+                        }
+
+                        goodsService.saveSynchronize(goodsDO);
+                        return AppXmlUtil.resultStrXml(0, "同步EbsToApp商品成功!");
+                    } catch (Exception e) {
+                        logger.info("GetEBSInfo OUT,同步EbsToApp商品失败 出参 e:{}", e);
+                        return AppXmlUtil.resultStrXml(1, "同步EbsToApp商品失败!");
+                    }
+                }
             }
         } catch (ParserConfigurationException e) {
-            EtaReturnAndRequireGoodsInfLog etaReturnAndRequireGoodsInfLog = new EtaReturnAndRequireGoodsInfLog();
-            etaReturnAndRequireGoodsInfLog.setMsg("解密后xml参数错误");
-            etaReturnAndRequireGoodsInfLog.setCreatDate(new Date());
-            diySiteInventoryEbsService.saveReturnAndRequireGoodsInfLog(etaReturnAndRequireGoodsInfLog);
             logger.warn("GetEBSInfo EXCEPTION,解密后xml参数错误");
             logger.warn("{}", e);
             return AppXmlUtil.resultStrXml(1, "解密后xml参数错误");
 
         } catch (IOException | SAXException e) {
-            EtaReturnAndRequireGoodsInfLog etaReturnAndRequireGoodsInfLog = new EtaReturnAndRequireGoodsInfLog();
-            etaReturnAndRequireGoodsInfLog.setMsg("解密后xml格式不对");
-            etaReturnAndRequireGoodsInfLog.setCreatDate(new Date());
-            diySiteInventoryEbsService.saveReturnAndRequireGoodsInfLog(etaReturnAndRequireGoodsInfLog);
             logger.warn("GetEBSInfo EXCEPTION,解密后xml格式不对");
             logger.warn("{}", e);
             return AppXmlUtil.resultStrXml(1, "解密后xml格式不对");
         } catch (Exception e) {
-            EtaReturnAndRequireGoodsInfLog etaReturnAndRequireGoodsInfLog = new EtaReturnAndRequireGoodsInfLog();
-            etaReturnAndRequireGoodsInfLog.setMsg(e.getMessage());
-            etaReturnAndRequireGoodsInfLog.setCreatDate(new Date());
-            diySiteInventoryEbsService.saveReturnAndRequireGoodsInfLog(etaReturnAndRequireGoodsInfLog);
             logger.warn("{}", e);
             return AppXmlUtil.resultStrXml(1, e.getMessage());
         }
-        EtaReturnAndRequireGoodsInfLog etaReturnAndRequireGoodsInfLog = new EtaReturnAndRequireGoodsInfLog();
-        etaReturnAndRequireGoodsInfLog.setMsg("不支持该表数据传输");
-        etaReturnAndRequireGoodsInfLog.setCreatDate(new Date());
-        diySiteInventoryEbsService.saveReturnAndRequireGoodsInfLog(etaReturnAndRequireGoodsInfLog);
         return AppXmlUtil.resultStrXml(1, "不支持该表数据传输：" + strTable);
     }
 

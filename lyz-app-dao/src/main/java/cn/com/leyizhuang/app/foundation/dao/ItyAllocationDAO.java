@@ -91,4 +91,12 @@ public interface ItyAllocationDAO {
 
     void deleteAllocationInf(@Param("id") Long id);
 
+    /**
+     * 分页查询
+     *
+     * @param keywords
+     * @return
+     */
+    List<AllocationVO> queryAllocationPage(@Param("keywords") String keywords,@Param("outCompany")  String outCompany,@Param("inCompany")  String inCompany,@Param("outStore")  Long outStore,@Param("inStore")  Long inStore,@Param("list") List<Long> storeIds);
+
 }

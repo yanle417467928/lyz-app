@@ -64,8 +64,9 @@
         inv.available_ity soldInventory
         FROM
         st_inventory inv
+        LEFT JOIN gds_goods gg on inv.sku=gg.sku
         WHERE
-        1=1
+        gg.company_flag='HR'
         <if test="null != keywords">
             AND (inv.sku LIKE concat('%', #{keywords}, '%')
             OR inv.sku_name LIKE concat('%', #{keywords}, '%'))

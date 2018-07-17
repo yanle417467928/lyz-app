@@ -32,20 +32,25 @@
         <div class="col-xs-12">
             <div class="box box-primary">
                 <div id="toolbar" class="form-inline">
-                    <select name="city" id="cityCode" class="form-control select" style="width:auto;"
-                            data-live-search="true" onchange="findOrderByCity(this.value)">
-                        <option value="-1">选择城市</option>
+                    <select name="structureCode" id="structureCode" class="form-control select" style="width:auto;"
+                            data-live-search="true" onchange="findByStructureCode()">
+                        <option value="-1">选择分公司</option>
+                    <#if structureList?? && structureList?size gt 0 >
+                        <#list structureList as structure>
+                            <option value="${structure.number!''}">${structure.structureName!''}</option>
+                        </#list>
+                    </#if>
                     </select>
-                    <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px"
-                            onchange="findOrderByCondition()" data-live-search="true">
+                    <select name="storeCode" id="storeCode" class="form-control selectpicker" data-width="120px"
+                            onchange="findByCondition()" data-live-search="true">
                         <option value="-1">选择门店</option>
                     </select>
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
-                        <input type="text" name="queryOrderInfo" id="queryOrderInfo" class="form-control "
-                               style="width:auto;" placeholder="请输入单号" onkeypress="findBykey()">
+                        <input type="text" name="queryInfo" id="queryInfo" class="form-control "
+                               style="width:auto;" placeholder="请输入商品编码" onkeypress="findBykey()">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
-                                    onclick="findOrderByInfo()">查找</button>
+                                    onclick="findByCondition()">查找</button>
                         </span>
                     </div>
                 <#--<button id="btn_add" type="button" class="btn btn-default">
@@ -137,33 +142,8 @@
 </div>
 <script>
     $(function () {
-        findCitySelection();
         findStoreSelection();
-        initDateGird('/rest/store/requiring/page/grid');
-
-        /* $('#btn_add').on('click', function () {
-             $grid.add('/views/admin/menu/add?parentMenuId=${(parentMenuId!'0')}
-
-
-
-
-
-                                                ');
-                                                        });
-
-                                                        $('#btn_edit').on('click', function() {
-                                                            $grid.modify($('#dataGrid'), '/views/admin/menu/edit/{id}?parentMenuId=${parentMenuId!'0'}
-
-
-
-
-
-                                                ')
-                                                        });
-
-                                                        $('#btn_delete').on('click', function() {
-                                                            $grid.remove($('#dataGrid'), '/rest/menu', 'delete');
-                                                        });*/
+        initDateGird('/rest/storeInventory/goodRequire/page/grid');
     });
 
     var $page = {
@@ -248,89 +228,29 @@
         }
     }
 
-    function findOrderByCity(cityId) {
-        $("#queryOrderInfo").val('');
+    function findByStructureCode() {
         initSelect("#storeCode", "选择门店");
-        if (cityId == -1) {
-            findStoreSelection();
-            $("#dataGrid").bootstrapTable('destroy');
-            initDateGird('/rest/store/requiring/page/grid');
-            return false;
-        }
-        ;
-        var store;
-        $.ajax({
-            url: '/rest/stores/findStoresListByCityIdAndStoreId/' + cityId,
-            method: 'GET',
-            error: function () {
-                clearTimeout($global.timer);
-                $loading.close();
-                $global.timer = null;
-                $notify.danger('网络异常，请稍后重试或联系管理员');
-            },
-            success: function (result) {
-                clearTimeout($global.timer);
-                $.each(result, function (i, item) {
-                    store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
-                })
-                $("#storeCode").append(store);
-                $('#storeCode').selectpicker('refresh');
-                $('#storeCode').selectpicker('render');
-                $("#dataGrid").bootstrapTable('destroy');
-                initDateGird('/rest/store/requiring/page/grid?cityId=' + cityId + '&storeId=' + -1);
-            }
-        });
-    }
-
-    function findOrderByCondition() {
-        $("#queryOrderInfo").val('');
+        findStoreSelection();
         $("#dataGrid").bootstrapTable('destroy');
-        var cityId = $("#cityCode").val();
-        var storeId = $("#storeCode").val();
-        initDateGird('/rest/store/requiring/page/grid?cityId=' + cityId + '&storeId=' + storeId);
+        initDateGird('/rest/storeInventory/goodRequire/page/grid');
     }
 
-    function findOrderByInfo() {
-        var queryOrderInfo = $("#queryOrderInfo").val();
-        $('#cityCode').val("-1");
-        $('#storeCode').val("-1");
-        $('#storeCode').selectpicker('refresh');
+    function findByCondition() {
         $("#dataGrid").bootstrapTable('destroy');
-        if (null == queryOrderInfo || "" == queryOrderInfo) {
-            initDateGird('/rest/store/requiring/page/grid');
-        } else {
-            initDateGird('/rest/store/requiring/page/grid?keywords=' + queryOrderInfo);
-        }
-    }
-
-
-    function findCitySelection() {
-        var city = "";
-        $.ajax({
-            url: '/rest/citys/findCitylist',
-            method: 'GET',
-            error: function () {
-                clearTimeout($global.timer);
-                $loading.close();
-                $global.timer = null;
-                $notify.danger('网络异常，请稍后重试或联系管理员');
-            },
-            success: function (result) {
-                clearTimeout($global.timer);
-                $.each(result, function (i, item) {
-                    city += "<option value=" + item.cityId + ">" + item.name + "</option>";
-                })
-                $("#cityCode").append(city);
-            }
-        });
+        initDateGird('/rest/storeInventory/goodRequire/page/grid');
     }
 
 
     function findStoreSelection() {
         var store = "";
+        var structureCode = $('#structureCode').val();
+        var data = {
+            "companyCode": structureCode
+        }
         $.ajax({
-            url: '/rest/stores/findStoresListByStoreId',
+            url: '/rest/stores/findStoresListByCompanyCodeAndStoreType',
             method: 'GET',
+            data: data,
             error: function () {
                 clearTimeout($global.timer);
                 $loading.close();
@@ -358,48 +278,76 @@
 
 
     function initDateGird(url) {
+        var structureCode = $('#structureCode').val();
+        var storeCode = $('#storeCode').val();
+        var queryInfo = $('#queryInfo').val();
         $grid.init($('#dataGrid'), $('#toolbar'), url, 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
-                keywords: params.search
+                keywords: params.search,
+                structureCode: structureCode,
+                storeId: storeCode,
+                queryInfo: queryInfo
             }
         }, [{
             checkbox: true,
             title: '选择'
         }, {
-            field: 'id',
-            title: 'ID',
-            align: 'center'
-        }, {
-            field: 'orderNumber',
-            title: '订单号',
-            events: {
-                'click .scan': function (e, value, row) {
-                    $page.information.show(row.id);
-                }
-            },
-            formatter: function (value) {
-                return '<a class="scan" href="#">' + value + '</a>';
-            },
-            align: 'center'
-        }, {
-            field: 'city',
-            title: '城市',
-            align: 'center'
-        }, {
             field: 'storeName',
             title: '门店名称',
             align: 'center'
         }, {
-            field: 'remarkInfo',
-            title: '商户备注',
+            field: 'transNumber',
+            title: '要货编号',
             align: 'center'
         }, {
-            field: 'orderTime',
-            title: '下单时间',
+            field: 'itemCode',
+            title: '商品编号',
             align: 'center'
+        }, {
+            field: 'skuName',
+            title: '商品名称',
+            align: 'center'
+        }, {
+            field: 'quantity',
+            title: '商品数量',
+            align: 'center'
+        }, {
+            field: 'shipDate',
+            title: '要货时间',
+            align: 'center',
+            formatter:function (value, row, index) {
+                if (null == value) {
+                    return '-';
+                } else {
+                    return formatDateTime(value);
+                }
+            }
         }]);
+    }
+
+
+    var formatDateTime = function (date) {
+        var dt = new Date(date);
+        var y = dt.getFullYear();
+        var m = dt.getMonth() + 1;
+        m = m < 10 ? ('0' + m) : m;
+        var d = dt.getDate();
+        d = d < 10 ? ('0' + d) : d;
+        var h = dt.getHours();
+        h = h < 10 ? ('0' + h) : h;
+        var minute = dt.getMinutes();
+        minute = minute < 10 ? ('0' + minute) : minute;
+        var second = dt.getSeconds();
+        second = second < 10 ? ('0' + second) : second;
+        return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
+    };
+
+    function findBykey(){
+        if(event.keyCode==13){
+            findByCondition();
+        }
     }
 </script>
 </body>

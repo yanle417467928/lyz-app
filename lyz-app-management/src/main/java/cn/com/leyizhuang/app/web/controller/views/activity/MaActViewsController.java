@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActStoreDO;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.RankClassification;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.web.controller.BaseController;
@@ -111,6 +112,7 @@ public class MaActViewsController extends BaseController{
         Long cityId = actBaseDO.getCityId();
         List<SimpleStoreParam> stores = maStoreService.findStoresListByCityId(cityId,storeIds);
         List<ActStoreDO> actStoreDOList = (List<ActStoreDO>) map.get("actStoresDO");
+        List<AppCustomer> customerList = appActService.findCustomer(id);
 
         for (SimpleStoreParam VO : stores) {
             for ( ActStoreDO DO : actStoreDOList) {
@@ -124,6 +126,7 @@ public class MaActViewsController extends BaseController{
 
         }
         map.addAttribute("stores",stores);
+        map.addAttribute("customerList",customerList);
         // 获取专供类型
         List<RankClassification> rankClassificationList = maCustomerService.findRankAll();
         map.addAttribute("rankScopeList",rankClassificationList);

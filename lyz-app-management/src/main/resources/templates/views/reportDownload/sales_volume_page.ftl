@@ -61,7 +61,9 @@
                                     onchange="findStorelist()" data-live-search="true">
                                 <option value="ZY">直营</option>
                                 <option value="JM">加盟</option>
-                                <option value="FX">分销</option>
+                                <option value="FXAll">分销(总)</option>
+                                <option value="FX">分销门店</option>
+                                <option value="FXCK">分销仓库</option>
                                 <option value="ZS">装饰公司</option>
                             </select>
                             <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px"
@@ -232,7 +234,7 @@
                 $('#companyCode').selectpicker('render');
             }*/
         $.ajax({
-            url: '/rest/stores/findStoresListByCompanyCodeAndStoreType',
+            url: '/rest/stores/findStoresListByCompanyCodeAndStoreTypeForSale',
             method: 'GET',
             data: {
                 storeType: storeType,

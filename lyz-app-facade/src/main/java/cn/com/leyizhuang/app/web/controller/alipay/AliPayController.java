@@ -192,6 +192,15 @@ public class AliPayController {
             logger.info("orderAlipay OUT,订单支付宝支付信息提交失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        Double total_Fee = this.appOrderService.getAmountPayableByOrderNumber(orderNumber);
+        if (total_Fee == null) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查到该订单！", null);
+            logger.info("orderWeChatPay OUT,订单支付宝支付信息提交失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if (null != total_Fee && total_Fee > 0) {
+            payableAmount = total_Fee;
+        }
         String totalFee = CountUtil.retainTwoDecimalPlaces(payableAmount);
         String outTradeNo = OrderUtils.generatePayNumber();
         PaymentDataDO paymentData = new PaymentDataDO();

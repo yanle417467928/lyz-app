@@ -43,4 +43,8 @@ public class MaOrderCalulatedAmountRequest {
      * 城市id
      */
     private Long cityId;
+    /**
+     * 区县
+     */
+    private String county;
 }

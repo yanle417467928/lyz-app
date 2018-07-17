@@ -67,6 +67,17 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-xs-12 col-md-2">
+                            <div class="form-group">
+                                <label for="title">
+                                    地区
+                                </label>
+                                <div class="input-group">
+                                    <input  type="text" class="form-control"  value="<#if rule?? && rule.countyName??>${rule.countyName!""}</#if>" readonly="readonly">
+                                    <input name="countyName" type="hidden" value="<#if rule?? && rule.countyName??>${rule.countyName!""}</#if>">
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- 满足最低金额 -->

@@ -150,4 +150,15 @@ public interface ItyAllocationService {
      * @param number
      */
     void sendAllocationReceivedToEBSAndRecord(String number);
+
+
+    /**
+     * 分页查询
+     *
+     * @param offset
+     * @param size
+     * @param keywords
+     * @return
+     */
+    PageInfo<AllocationVO> queryAllocationPage(Integer offset, Integer size, String keywords, String outCompany,String inCompany,Long outStore,Long inStore, List<Long> storeIds);
 }

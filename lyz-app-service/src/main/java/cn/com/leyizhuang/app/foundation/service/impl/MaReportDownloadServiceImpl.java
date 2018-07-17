@@ -285,10 +285,10 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
 
 
     @Override
-    public PageInfo<ArrearsReportDO> findArrearsList(String companyCode, String storeType, List<Long> storeIds, Long storeId, Integer page, Integer size) {
-        if(null ==storeIds||storeIds.size()==0){
-            return null;
-        }
+    public PageInfo<ArrearsReportDO> findArrearsList(String companyCode, String storeType, List<Long> storeIds, Long storeId, Integer page, Integer size, String endTime) {
+            if(null ==storeIds||storeIds.size()==0){
+                return null;
+            }
         PageHelper.startPage(page, size);
         List<ArrearsReportDO> shipmentAndReturnGoodsList = new ArrayList<>();
         if ("-1".equals(storeType)) {
@@ -297,13 +297,13 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
         if (-1L == storeId) {
             storeId = null;
         }
-        shipmentAndReturnGoodsList = maReportDownloadDAO.findArrearsList(companyCode, storeType, storeIds, storeId);
+        shipmentAndReturnGoodsList = maReportDownloadDAO.findArrearsList(companyCode, storeType, storeIds, storeId,endTime);
         return new PageInfo<>(shipmentAndReturnGoodsList);
     }
 
 
     @Override
-    public List<ArrearsReportDO> downArrearsList(String companyCode, String storeType, List<Long> storeIds, Long storeId) {
+    public List<ArrearsReportDO> downArrearsList(String companyCode, String storeType, List<Long> storeIds, Long storeId, String endTime) {
         if(null ==storeIds||storeIds.size()==0){
             return null;
         }
@@ -314,7 +314,7 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
         if (-1L == storeId) {
             storeId = null;
         }
-        shipmentAndReturnGoodsList = maReportDownloadDAO.findArrearsList(companyCode, storeType, storeIds, storeId);
+        shipmentAndReturnGoodsList = maReportDownloadDAO.findArrearsList(companyCode, storeType, storeIds, storeId,endTime);
         return shipmentAndReturnGoodsList;
     }
 
@@ -425,10 +425,10 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
     }
 
     @Override
-    public PageInfo<StCreditDO> stCreditMoneySituationPage(Long cityId, String storeType, List<Long> storeIds, Integer page, Integer size,String keywords) {
+    public PageInfo<StCreditDO> stCreditMoneySituationPage(Long cityId, List<Long> storeIds, Integer page, Integer size,String keywords) {
         PageHelper.startPage(page, size);
 
-        List<StCreditDO> itemsDOS = this.maReportDownloadDAO.stCreditMoneySituation(cityId,storeType,storeIds,keywords);
+        List<StCreditDO> itemsDOS = this.maReportDownloadDAO.stCreditMoneySituation(cityId,storeIds,keywords);
         return new PageInfo<>(itemsDOS);
 
     }
@@ -440,8 +440,8 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
     }
 
     @Override
-    public List<StCreditDO> stCreditMoneySituation(Long cityId, String storeType, List<Long> storeIds,String keywords) {
-        return this.maReportDownloadDAO.stCreditMoneySituation(cityId,storeType,storeIds,keywords);
+    public List<StCreditDO> stCreditMoneySituation(Long cityId, List<Long> storeIds,String keywords) {
+        return this.maReportDownloadDAO.stCreditMoneySituation(cityId,storeIds,keywords);
     }
 
 

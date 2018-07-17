@@ -182,28 +182,26 @@
     </select>
 
     <select id="getDecorationCompanyCreditBilling" resultType="cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingVO">
-      SELECT a.id, a.store_name, CONCAT(DATE_FORMAT(a.start_time,'%y/%m/%d'),'~', DATE_FORMAT(a.end_time,'%y/%m/%d')) cycleTime, a.bill_name, a.bill_amount, a.repaid_amount,
-        a.is_pay_off, a.credit_billing_no, a.create_time
-      FROM decoration_company_credit_billing a
-      INNER JOIN st_store s ON s.store_id = a.store_id
-      WHERE 1=1
+        SELECT id, store_name, CONCAT(DATE_FORMAT(start_time,'%y/%m/%d'),'~', DATE_FORMAT(end_time,'%y/%m/%d')) cycleTime, bill_name, bill_amount, repaid_amount,
+        is_pay_off, credit_billing_no, create_time
+        FROM decoration_company_credit_billing
+        WHERE 1=1
         <if test="null != storeId and -1 != storeId">
-          AND a.store_id = #{storeId}
+            AND store_id = #{storeId}
         </if>
         <if test="null != startTime and '' != startTime">
-            AND a.create_time &gt; #{startTime}
+            AND create_time &gt; #{startTime}
         </if>
         <if test="null != endTime and '' != endTime">
-            AND a.create_time &lt; #{endTime}
+            AND create_time &lt; #{endTime}
         </if>
         <if test="null != isPayOff and '' != isPayOff">
-            AND a.is_pay_off = #{isPayOff}
+            AND is_pay_off = #{isPayOff}
         </if>
         <if test="null != keywords and '' != keywords">
-            AND a.credit_billing_no LIKE concat(concat('%',#{keywords}),'%')
+            AND credit_billing_no LIKE concat(concat('%',#{keywords}),'%')
         </if>
-        AND s.fit_compay_type !='CASH'
-        ORDER BY a.create_time DESC
+        ORDER BY create_time DESC
     </select>
 
     <select id="getDecorationCompanyCreditBillingById"  parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingVO">

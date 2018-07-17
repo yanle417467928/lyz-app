@@ -111,8 +111,19 @@ public class UnionPayController {
             logger.info("orderUnionPay OUT,订单银联支付信息提交失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+        Double total_Fee = orderService.getAmountPayableByOrderNumber(orderNumber);
+        if (total_Fee == null) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查到该订单！", null);
+            logger.info("orderWeChatPay OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+//        if (!total_Fee.equals(payableAmount)) {
+//            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "支付金额与订单金额不匹配！", null);
+//            logger.info("orderWeChatPay OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
+//            return resultDTO;
+//        }
         try {
-            String totalFee = CountUtil.retainTwoDecimalPlaces(payableAmount);
+            String totalFee = CountUtil.retainTwoDecimalPlaces(total_Fee);
             String outTradeNo = orderNumber.replaceAll("_", "");
             PaymentDataDO paymentData = new PaymentDataDO();
             paymentData.setUserId(userId);
@@ -129,7 +140,7 @@ public class UnionPayController {
             paymentDataService.save(paymentData);
 
             //生成银联支付请求html
-            String html = this.generatePaymentHtml(payableAmount, outTradeNo);
+            String html = this.generatePaymentHtml(total_Fee, outTradeNo);
 
             LogUtil.writeLog("打印请求HTML，此为请求报文，为联调排查问题的依据：" + html);
 

@@ -22,5 +22,11 @@ public class MaGroupStructureServiceImpl implements MaGroupStructureService {
         return simpaleStructureList;
     }
 
+    @Override
+    public List<SimpaleGroupStructureParam> querySimpaleStructureListByFilter(List<String> structureCodeList) {
+        List<SimpaleGroupStructureParam> simpaleStructureList = this.maGroupStructureDAO.querySimpaleStructureListByFilter(structureCodeList);
+        return simpaleStructureList;
+    }
+
 
 }

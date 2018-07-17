@@ -7,4 +7,12 @@
     </select>
 
 
+    <select id="findAreaManagementByCityId" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.AreaManagementDO">
+        SELECT area_name,code,parent_code,level
+        FROM area_management
+        WHERE parent_code = (SELECT a.code FROM area_management a LEFT JOIN city c ON c.name = a.area_name WHERE c.city_id = #{cityId})
+        AND status IS TRUE
+    </select>
+
+
 </mapper>

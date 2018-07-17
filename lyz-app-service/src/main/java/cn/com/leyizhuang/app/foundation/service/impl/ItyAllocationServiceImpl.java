@@ -552,4 +552,13 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
             return String.valueOf(obj);
         }
     }
+
+
+    @Override
+    public PageInfo<AllocationVO> queryAllocationPage(Integer offset, Integer size, String keywords, String outCompany,String inCompany,Long outStore,Long inStore, List<Long> storeIds) {
+        PageHelper.startPage(offset, size);
+        List<AllocationVO> allocationVOList;
+        allocationVOList = ityAllocationDAO.queryAllocationPage(keywords,outCompany,inCompany,outStore,inStore,storeIds);
+        return new PageInfo<>(allocationVOList);
+    }
 }

@@ -32,6 +32,10 @@ public class DeliveryFeeRule {
     private String cityName;
 
     /**
+     * 区县名称
+     */
+    private String countyName;
+    /**
      * 条件
      */
     private Double condition;
@@ -55,4 +59,19 @@ public class DeliveryFeeRule {
      * 状态 true: 启用； false: 停用；
      */
     private Boolean status;
+
+    /**
+     * 修改时间
+     */
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date updateTime;
+
+    /**
+     * 修改人
+     */
+    private String updateUser;
+    /**
+     * 修改原因
+     */
+    private String updateReason;
 }

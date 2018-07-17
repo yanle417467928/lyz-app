@@ -15,7 +15,8 @@
 
     <link href="https://cdn.bootcss.com/admin-lte/2.3.11/css/AdminLTE.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
-
+    <link href="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.js"></script>
     <script type="text/javascript" src="/plugins/bootstrap-fileinput-master/js/fileinput.js"></script>
     <script type="text/javascript" src="/plugins/bootstrap-fileinput-master/js/locales/zh.js"></script>
     <script src="/plugins/iCheck/icheck.js"></script>
@@ -55,7 +56,19 @@
                                 <label for="title">
                                     城市
                                 </label>
-                                <select name="cityId" id="cityId" class="form-control select">
+                                <select name="cityId" id="cityId" class="form-control selectpicker" data-width="120px" style="width:auto;"
+                                        onchange="findcountyNameList()" data-live-search="true">
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12 col-md-2">
+                            <div class="form-group">
+                                <label for="title">
+                                    地区
+                                </label>
+                                <select name="countyName" id="countyName" class="form-control selectpicker" data-width="120px" style="width:auto;"
+                                        data-live-search="true">
                                 </select>
                             </div>
                         </div>
@@ -265,9 +278,60 @@
 
     $(function () {
         // 初始化城市、门店信息
-        $commonForm.city("/rest/citys/findCitylist", "cityId", "");
+//        $commonForm.city("/rest/citys/findCitylist", "cityId", "");
+        findCitylist();
+    });
+    function findCitylist() {
+        var city = "";
+        $.ajax({
+            url: '/rest/citys/findCitylist',
+            method: 'GET',
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    city += "<option value=" + item.cityId + ">" + item.name + "</option>";
+                });
+                $("#cityId").append(city);
+                $("#cityId").selectpicker('refresh');
+                $("#cityId").selectpicker('render');
+                findcountyNameList();
+            }
+        });
+    }
 
-    })
+    function findcountyNameList() {
+        $("#countyName").empty();
+        var countyName = "";
+        var cityId = $('#cityId').val();
+        $.ajax({
+            url: '/rest/areaManagement/findAreaListByCityId',
+            method: 'GET',
+            data:{
+                cityId: cityId
+            },
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    countyName += "<option value=" + item.areaName + ">" + item.areaName + "</option>";
+                });
+                $("#countyName").append(countyName);
+                $('#countyName').selectpicker('refresh');
+                $('#countyName').selectpicker('render');
+            }
+        });
+    }
 
 </script>
 </body>

@@ -754,6 +754,7 @@ public class CommonServiceImpl implements CommonService {
                 }
                 //保存订单商品信息
                 if (null != orderGoodsInfoList && orderGoodsInfoList.size() > 0) {
+                    StringBuilder msg = new StringBuilder("您购买的");
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                         goodsInfo.setOid(orderBaseInfo.getId());
                         orderService.saveOrderGoodsInfo(goodsInfo);
@@ -822,6 +823,14 @@ public class CommonServiceImpl implements CommonService {
                                 }
                             }
                         }
+                        msg.append(goodsInfo.getSkuName());
+                        msg.append("产品券");
+                        msg.append(goodsInfo.getOrderQuantity());
+                        msg.append("张,");
+                    }
+                    if (orderBaseInfo.getOrderType() == AppOrderType.COUPON && orderBillingDetails.getIsPayUp()) {
+                        msg.append("已存入您的钱包中，请在六个月内提取完毕，有任何问题，请洽询您的专属导购！");
+                        smsAccountService.commonSendGBKSms(orderBaseInfo.getCustomerPhone(), msg.toString());
                     }
                 }
                 //保存订单券信息
@@ -1002,6 +1011,7 @@ public class CommonServiceImpl implements CommonService {
                 baseInfo.setStatus(AppOrderStatus.FINISHED);
                 //保存订单商品信息
                 if (null != orderGoodsInfoList && orderGoodsInfoList.size() > 0) {
+                    StringBuilder msg = new StringBuilder("您购买的");
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                         if (null != goodsInfo.getId() && baseInfo.getOrderType() == AppOrderType.COUPON && billingDetails.getIsPayUp()) {
                             if (null != goodsInfo.getOrderQuantity() && goodsInfo.getOrderQuantity() > 0) {
@@ -1055,7 +1065,13 @@ public class CommonServiceImpl implements CommonService {
                                 }
                             }
                         }
+                        msg.append(goodsInfo.getSkuName());
+                        msg.append("产品券");
+                        msg.append(goodsInfo.getOrderQuantity());
+                        msg.append("张,");
                     }
+                    msg.append("已存入您的钱包中，请在六个月内提取完毕，有任何问题，请洽询您的专属导购！");
+                    smsAccountService.commonSendGBKSms(baseInfo.getCustomerPhone(), msg.toString());
                 }
             }
 
@@ -1875,7 +1891,7 @@ public class CommonServiceImpl implements CommonService {
         try {
             Boolean flag = Boolean.FALSE;
             //分销仓库货到付款
-            if (identityType == AppIdentityType.SELLER) {
+            if (identityType == AppIdentityType.SELLER && AppDeliveryType.HOUSE_DELIVERY == deliveryType) {
                 AppEmployee employee = employeeService.findById(userId);
                 if (null != employee && null != employee.getStoreId()) {
                     AppStore appStore = storeService.findById(employee.getStoreId());

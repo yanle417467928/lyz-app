@@ -2,6 +2,8 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.ActBaseType;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO;
+import cn.com.leyizhuang.app.foundation.pojo.activity.ActMemberConference;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.common.foundation.dao.BaseDAO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -76,5 +78,14 @@ public interface ActBaseDAO{
 
     void insertActLjGoodsMapping();
 
+    void saveMemberConference(ActMemberConference actMemberConference);
+
+    List<AppCustomer> findCustomer(@Param("actId") Long actId);
+
+    List<ActMemberConference> findMemberConferenceByCusId(@Param("cusId")Long cusId);
+
+    List<ActMemberConference> findMemberConferenceByActId(@Param("actId")Long actId);
+
+    void deleteMemberConferenceByActBaseId(@Param("actId")Long actId);
 
 }
