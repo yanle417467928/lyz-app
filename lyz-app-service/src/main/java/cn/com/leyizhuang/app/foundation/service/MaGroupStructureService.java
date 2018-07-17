@@ -11,4 +11,5 @@ public interface MaGroupStructureService {
 
     List<SimpaleGroupStructureParam> querySimpaleStructureList();
 
+    List<SimpaleGroupStructureParam> querySimpaleStructureListByFilter(List<String> structureCodeList);
 }

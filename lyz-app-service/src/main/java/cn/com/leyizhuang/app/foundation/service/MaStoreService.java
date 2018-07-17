@@ -149,4 +149,6 @@ public interface MaStoreService {
     List<Long> findFitCompanyIdBySellerId(Long id);
 
     List<SimpleStoreParam> findStoresListByCompanyCodeAndStoreType(String companyCode,String storeType,List<Long> storeIds);
+
+    List<SimpleStoreParam> findStoresListByCompanyCodeAndStoreTypeForSale(String companyCode,String storeType,List<Long> storeIds);
 }
