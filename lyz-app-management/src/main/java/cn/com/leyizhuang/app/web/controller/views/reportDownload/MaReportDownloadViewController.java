@@ -137,7 +137,6 @@ public class MaReportDownloadViewController extends BaseController {
      */
     @GetMapping(value = "/goods/shipmentAndReturn/list")
     public String getGoodsShipmentAndReturnList(ModelMap map) {
-        
         map.addAttribute("storeTypes", StoreType.getNotZsType());
         return "/views/reportDownload/goods_shipmentAndReturn_page";
     }

@@ -402,4 +402,18 @@ public class MaStoreServiceImpl implements MaStoreService {
         return this.mastoreDAO.findStoresListByCompanyCodeAndStoreType(companyCode, storeType, storeIds);
     }
 
+    @Override
+    public List<SimpleStoreParam> findStoresListByCompanyCodeAndStoreTypeForSale(String companyCode, String storeType, List<Long> storeIds) {
+        if ("-1".equals(companyCode)) {
+            companyCode = null;
+        }
+        if ("-1".equals(storeType)) {
+            storeType = null;
+        }
+        if("JZSYBM".equals(companyCode)){
+            companyCode="|JZC001|";
+        }
+        return this.mastoreDAO.findStoresListByCompanyCodeAndStoreTypeForSale(companyCode, storeType, storeIds);
+    }
+
 }
