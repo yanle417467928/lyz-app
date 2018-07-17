@@ -439,9 +439,9 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                         GoodsDO goodsDOExist = goodsService.queryBySku(sku);
                         if (null != goodsDOExist) {
                             goodsService.modifySynchronize(goodsDO);
+                        }else{
+                            goodsService.saveSynchronize(goodsDO);
                         }
-
-                        goodsService.saveSynchronize(goodsDO);
                         return AppXmlUtil.resultStrXml(0, "同步EbsToApp商品成功!");
                     } catch (Exception e) {
                         logger.info("GetEBSInfo OUT,同步EbsToApp商品失败 出参 e:{}", e);

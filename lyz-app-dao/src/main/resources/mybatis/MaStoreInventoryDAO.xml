@@ -102,7 +102,8 @@
             AND b.store_id = #{storeId}
         </if>
         <if test="null != queryInfo  and ''!= queryInfo">
-            AND a.item_code LIKE concat('%',#{queryInfo},'%')
+            AND (a.item_code LIKE concat('%',#{queryInfo},'%')
+            OR c.sku_name  LIKE concat('%',#{queryInfo},'%') )
         </if>
         AND b.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
@@ -131,7 +132,8 @@
             AND b.store_id = #{storeId}
         </if>
         <if test="null != queryInfo  and ''!= queryInfo">
-            AND a.item_code LIKE concat('%',#{queryInfo},'%')
+            AND (a.item_code LIKE concat('%',#{queryInfo},'%')
+            OR c.sku_name  LIKE concat('%',#{queryInfo},'%') )
         </if>
         AND b.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
