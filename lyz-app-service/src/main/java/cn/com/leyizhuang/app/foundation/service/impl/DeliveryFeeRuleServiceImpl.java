@@ -203,4 +203,97 @@ public class DeliveryFeeRuleServiceImpl implements DeliveryFeeRuleService {
         }
 
     }
+
+    @Override
+    public Double countDeliveryFeeNew(Integer identityType, Long cityId, Double totalPrice, List<OrderGoodsSimpleResponse> goodsInfoList, String countyName) {
+        // 如果商品为服务类商品不收取运费
+        for (OrderGoodsSimpleResponse goodsSimpleResponse : goodsInfoList){
+            if (goodsService.isFWGoods(goodsSimpleResponse.getId())){
+                return 0.00;
+            }else {
+                break;
+            }
+        }
+
+        List<DeliveryFeeRule> ruleList = deliveryFeeRuleDAO.findRuleByCityIdAndCountyName(cityId, countyName);
+        if (null == ruleList || ruleList.size() == 0){
+            return 0.00;
+        }
+        DeliveryFeeRule deliveryFeeRule = ruleList.get(0);
+        if (deliveryFeeRule == null) {
+            return 0.00;
+        } else {
+            String tollObject = deliveryFeeRule.getTollObject();
+
+            if (identityType == null || identityType.equals("")){
+                throw new RuntimeException("计算运费，用户身份信息为null");
+            }
+
+            if (!tollObject.contains(String.valueOf(identityType))){
+                return 0.00;
+            }
+
+            // 是否包含特殊商品
+            if (deliveryFeeRule.getIncludeSpecialGoods()) {
+                // 包含
+
+                //计算排除特殊商品后的价格
+                List<Long> specialGoodsIds = deliveryFeeRuleDAO.findSpecialGoodsIdByRuleId(deliveryFeeRule.getId());
+
+                Boolean flag = true;
+
+                if (specialGoodsIds == null || specialGoodsIds.size() == 0){
+                    flag = false;
+                }else{
+                    for (OrderGoodsSimpleResponse goods : goodsInfoList) {
+
+                        if (!specialGoodsIds.contains(goods.getId())) {
+                            // 有包含特殊商品以外的商品
+                            flag = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (flag) {
+                    // 如果商品全为特殊商品 则不收取运费
+                    return 0.00;
+                } else {
+                    //条件
+                    Double condition = deliveryFeeRule.getCondition() == null ? 0.00 : deliveryFeeRule.getCondition();
+                    Double deliveryFee = deliveryFeeRule.getDeliveryFee() == null ? 0.00 : deliveryFeeRule.getDeliveryFee();
+
+                    if (totalPrice >= condition) {
+                        deliveryFee = 0.00;
+                    }
+
+                    if (deliveryFee < 0.00) {
+                        deliveryFee = 0.00;
+                    }
+                    return deliveryFee;
+                }
+
+            } else {
+                // 不包含
+
+                //条件
+                Double condition = deliveryFeeRule.getCondition() == null ? 0.00 : deliveryFeeRule.getCondition();
+                Double deliveryFee = deliveryFeeRule.getDeliveryFee() == null ? 0.00 : deliveryFeeRule.getDeliveryFee();
+                if (totalPrice >= condition) {
+                    deliveryFee = 0.00;
+                }
+
+                if (deliveryFee < 0.00) {
+                    deliveryFee = 0.00;
+                }
+
+                return deliveryFee;
+            }
+        }
+    }
+
+    @Override
+    public List<DeliveryFeeRule> findRuleByCityIdAndCountyName(Long cityId, String countyName) {
+        return this.deliveryFeeRuleDAO.findRuleByCityIdAndCountyName(cityId, countyName);
+    }
 }

@@ -190,7 +190,7 @@
                 clearTimeout($global.timer);
                 $.each(result, function (i, item) {
                     store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
-                })
+                });
                 $("#storeCode").append(store);
                 $('#storeCode').selectpicker('refresh');
                 $('#storeCode').selectpicker('render');

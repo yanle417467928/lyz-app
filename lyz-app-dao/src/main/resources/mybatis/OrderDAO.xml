@@ -680,6 +680,9 @@
             <if test="null != deliveryCash">
                 delivery_cash = #{deliveryCash},
             </if>
+            <if test="null != upstairsFee">
+                upstairs_fee = #{upstairsFee},
+            </if>
         </set>
         WHERE ord_no = #{orderNumber}
     </update>
@@ -1841,12 +1844,14 @@
         SELECT DISTINCT ob.ord_no from ord_base_info ob
         LEFT JOIN st_store s on s.store_id = ob.store_id
         INNER JOIN ord_coupon_info oci on oci.ord_no = ob.ord_no
+        LEFT JOIN ord_jx_price_difference_return_details oj on oj.ord_no = ob.ord_no
         where
         ob.delivery_type != "PRODUCT_COUPON"
          and s.store_type = 'JM'
         and ob.create_time > '2018-05-01 00:00:00'
-        and ob.create_time &lt; '2018-06-30 23:59:59'
-        and ob.`status` = 'FINISHED';
+
+        and ob.`status` = 'FINISHED'
+        and oj.ord_no is null;
     </select>
 
     <select id="getBpProductByOrderNo" resultType="java.lang.Integer">

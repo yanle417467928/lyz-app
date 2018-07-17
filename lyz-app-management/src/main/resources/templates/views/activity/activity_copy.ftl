@@ -175,6 +175,41 @@
                         </div>
 
                     </div>
+
+                    <div class="row">
+                        <div class="col-xs-12 col-md-12">
+                            <label for="title">
+                            </label>
+                            <div class="box box-success ">
+                                <div class="box-header with-border">
+                                    <h3 class="box-title">选择会员</h3>
+                                    <div class="box-tools pull-right">
+                                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i
+                                                class="fa fa-plus"></i>
+                                        </button>
+                                    </div>
+                                    <!-- /.box-tools -->
+                                </div>
+                                <!-- /.box-header -->
+                                <div class="box-body">
+                                    <div class="row">
+                                        <div class="col-xs-12 col-md-2">
+                                            <button type="button" class="btn btn-primary btn-xs"
+                                                    onclick="openPeopleModal()">选择会员
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div id="people" style="margin-top: 10px;">
+
+                                    </div>
+                                </div>
+                                <!-- /.box-body -->
+                            </div>
+                        </div>
+                    </div>
+
+
                     <div class="row">
                         <div class="col-xs-12 col-md-12">
                             <label for="title">
@@ -306,12 +341,11 @@
                                     <table class="table table-bordered" >
                                         <thead>
                                         <tr>
-
-                                            <th>GID</th>
-                                            <th>sku</th>
-                                            <th>商品名</th>
-                                            <th>数量</th>
-                                            <th>操作</th>
+                                            <th style="width: 10%">GID</th>
+                                            <th style="width: 15%">sku</th>
+                                            <th style="width: 35%">商品名</th>
+                                            <th style="width: 15%">数量</th>
+                                            <th style="width: 8%">操作</th>
                                         </tr>
                                         </thead>
                                         <tbody id="selectedGoodsTable">
@@ -409,11 +443,11 @@
                                     <table class="table table-bordered" >
                                         <thead>
                                         <tr>
-                                            <th>GID</th>
-                                            <th>sku</th>
-                                            <th>商品名</th>
-                                            <th>数量</th>
-                                            <th>操作</th>
+                                            <th style="width: 10%">GID</th>
+                                            <th style="width: 15%">sku</th>
+                                            <th style="width: 35%">商品名</th>
+                                            <th style="width: 15%">数量</th>
+                                            <th style="width: 8%">操作</th>
                                         </tr>
                                         </thead>
                                         <tbody id="selectedGiftTable">

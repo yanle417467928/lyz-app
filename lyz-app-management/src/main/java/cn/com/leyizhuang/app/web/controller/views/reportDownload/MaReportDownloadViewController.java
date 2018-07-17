@@ -221,7 +221,7 @@ public class MaReportDownloadViewController extends BaseController {
     @GetMapping(value = "/st/credit")
     public String stCreditMoney(ModelMap map) {
         map.addAttribute("storeTypes", StoreType.getStoreTypeList());
-        return "/views/reportDownload/emp_credit_money";
+        return "/views/reportDownload/st_credit_money";
     }
 
     @GetMapping(value = "/photoOrderCheck/list")

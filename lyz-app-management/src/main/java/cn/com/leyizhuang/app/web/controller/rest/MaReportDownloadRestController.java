@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sun.misc.Cleaner;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -244,6 +245,17 @@ public class MaReportDownloadRestController extends BaseRestController {
         return new GridDataVO<EmpCreditDO>().transform(pageInfo.getList(), pageInfo.getTotal());
     }
 
+
+    @GetMapping(value = "/stcredit/page/grid")
+    public GridDataVO<StCreditDO> restStCreditDOPageGrid(Integer offset, Integer size, Long cityId, Long storeId, String keywords){
+        size = getSize(size);
+        Integer page = getPage(offset, size);
+        //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
+        PageInfo<StCreditDO> pageInfo =maReportDownloadService.stCreditMoneySituationPage(cityId,storeIds,page,size,keywords);
+        return new GridDataVO<StCreditDO>().transform(pageInfo.getList(), pageInfo.getTotal());
+    }
+
     /**
      * @param
      * @return
@@ -300,7 +312,7 @@ public class MaReportDownloadRestController extends BaseRestController {
      * @date 2018/4/3
      */
     @GetMapping(value = "/arrearsReport/page/grid")
-    public GridDataVO<ArrearsReportDO> restArrearsReportPageGird(Integer offset, Integer size, String companyCode, String storeType, Long storeId) {
+    public GridDataVO<ArrearsReportDO> restArrearsReportPageGird(Integer offset, Integer size, String companyCode, String storeType, Long storeId,String endTime) {
         size = getSize(size);
         Integer page = getPage(offset, size);
         //查询登录用户门店权限的门店ID
@@ -314,11 +326,16 @@ public class MaReportDownloadRestController extends BaseRestController {
                 storeIds.add(storeId);
             }
         }
+        if (StringUtils.isNotBlank(endTime)){
+            endTime += "00:00:00";
+        }else{
+            endTime = null;
+        }
         //查询关联小型装饰公司
         List<Long> fitId = maStoreService.findFitCompanyIdByStoreId(storeIds);
         storeIds.addAll(fitId);
         PageInfo<ArrearsReportDO> salesList = this.maReportDownloadService.findArrearsList(companyCode, storeType
-                , storeIds, storeId, page, size);
+                , storeIds, storeId, page, size, endTime);
         return new GridDataVO<ArrearsReportDO>().transform(salesList.getList(), salesList.getTotal());
     }
 
@@ -675,10 +692,10 @@ public class MaReportDownloadRestController extends BaseRestController {
                 ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
 
                 //列宽
-                int[] columnView = {10, 13, 10, 20, 20, 10, 10, 15, 20, 10, 10, 20, 30, 10, 10, 10, 10, 10, 30};
+                int[] columnView = {10, 13, 10, 20, 20, 10, 10, 15, 20, 10, 10, 20, 30, 10, 10, 10, 10, 10, 30,20};
                 //列标题
                 String[] titles = {"城市", "门店名称", "门店类型", "未提货类型", "购买日期", "过期时间", "顾客编号", "顾客姓名	",
-                        "顾客电话", "顾客类型", "销顾姓名", "商品编码", "商品名称", "品牌", "数量", "购买单价", "经销价", "购买总价", "相关单号"};
+                        "顾客电话", "顾客类型", "销顾姓名", "商品编码", "商品名称", "品牌", "数量", "购买单价", "经销价", "购买总价", "相关单号","过期时间"};
 
                 //计算标题开始行号
                 int row = 1;
@@ -716,7 +733,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Label(3, j + row, notPickGoodsReportDO.getPickType(), textFormat));
                     ws.addCell(new Label(4, j + row, notPickGoodsReportDO.getBuyTime(), textFormat));
                     ws.addCell(new Label(5, j + row, notPickGoodsReportDO.getEffectiveTime(), textFormat));
-                    ws.addCell(new Label(6, j + row, notPickGoodsReportDO.getCustomerId() + "", textFormat));
+                    ws.addCell(new Label(6, j + row, notPickGoodsReportDO.getCustomerId() == null ?"":notPickGoodsReportDO.getCustomerId() + "", textFormat));
                     ws.addCell(new Label(7, j + row, notPickGoodsReportDO.getCustomerName(), textFormat));
                     ws.addCell(new Label(8, j + row, notPickGoodsReportDO.getCustomerPhone(), textFormat));
                     ws.addCell(new Label(9, j + row, notPickGoodsReportDO.getCustomerType(), textFormat));
@@ -729,6 +746,23 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Number(16, j + row, notPickGoodsReportDO.getWholesalePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     ws.addCell(new Number(17, j + row, notPickGoodsReportDO.getTotalBuyPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     ws.addCell(new Label(18, j + row, notPickGoodsReportDO.getReferenceNumber(), textFormat));
+                    if ("送货上门".equals(notPickGoodsReportDO.getPickType())){
+                        Date buyTime = DateUtils.parseDateTime(notPickGoodsReportDO.getBuyTime());
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(buyTime);
+                        calendar.add(Calendar.DATE, 7);
+                        String expiredTime = DateUtils.getDateTimeStr(calendar.getTime());
+                        ws.addCell(new Label(19, j + row, expiredTime, textFormat));
+                    }else if ("门店自提".equals(notPickGoodsReportDO.getPickType())){
+                        Date buyTime = DateUtils.parseDateTime(notPickGoodsReportDO.getBuyTime());
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(buyTime);
+                        calendar.add(Calendar.MONTH, 6);
+                        String expiredTime = DateUtils.getDateTimeStr(calendar.getTime());
+                        ws.addCell(new Label(19, j + row, expiredTime, textFormat));
+                    }else{
+                        ws.addCell(new Label(19, j + row, notPickGoodsReportDO.getEffectiveTime(), textFormat));
+                    }
 
                 }
             }
@@ -1782,7 +1816,7 @@ public class MaReportDownloadRestController extends BaseRestController {
      * @date 2018/4/3
      */
     @GetMapping(value = "/arrearsReport/download")
-    public void downArrearsReportDown(HttpServletRequest request, HttpServletResponse response, String companyCode, String storeType, Long storeId) {
+    public void downArrearsReportDown(HttpServletRequest request, HttpServletResponse response, String companyCode, String storeType, Long storeId, String endTime) {
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getNotZsType());
         List<Long> storeIdInCompany = maStoreService.findStoresIdByStructureCodeAndStoreType(companyCode, storeType);
@@ -1794,10 +1828,15 @@ public class MaReportDownloadRestController extends BaseRestController {
                 storeIds.add(storeId);
             }
         }
+        if (StringUtils.isNotBlank(endTime)){
+            endTime += "00:00:00";
+        }else{
+            endTime = null;
+        }
         //查询关联小型装饰公司
         List<Long> fitId = maStoreService.findFitCompanyIdByStoreId(storeIds);
         storeIds.addAll(fitId);
-        List<ArrearsReportDO> salesList = this.maReportDownloadService.downArrearsList(companyCode, storeType, storeIds, storeId);
+        List<ArrearsReportDO> salesList = this.maReportDownloadService.downArrearsList(companyCode, storeType, storeIds, storeId,endTime);
         ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
         String shiroName = "";
         if (null != shiroUser) {
@@ -3666,6 +3705,115 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Number(5, j + row, itemsDO.getTempCreditLimit(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     ws.addCell(new Number(6, j + row, itemsDO.getAvaliableCreditMoney(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     ws.addCell(new Label(7, j + row, itemsDO.getLastChangeTime(), textFormat));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (wwb != null) {
+                try {
+                    wwb.write();//刷新（或写入），生成一个excel文档
+                    wwb.close();//关闭
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
+    /**
+     * 装饰公司信金余额报表
+     * @param request
+     * @param response
+     * @param cityId
+     * @param storeId
+     * @param keywords
+     */
+    @GetMapping(value = "/store/credit")
+    public void downloadStCreditMoney(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId,String keywords) {
+        //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
+        List<StCreditDO> itemsDOList = maReportDownloadService.stCreditMoneySituation(cityId,storeIds,keywords);
+        ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
+        String shiroName = "";
+        if (null != shiroUser) {
+            shiroName = shiroUser.getName();
+        }
+
+        response.setContentType("text/html;charset=UTF-8");
+        //创建名称
+        String fileurl = "装饰信用金余额报表-" + DateUtils.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
+
+        WritableWorkbook wwb = null;
+        try {
+            //创建文件
+            wwb = exportXML(fileurl, response);
+
+            //excel单表最大行数是65535
+            int maxSize = 0;
+            if (null != itemsDOList) {
+                maxSize = itemsDOList.size();
+            }
+            int sheets = maxSize / maxRowNum + 1;
+            //设置excel的sheet数
+            for (int i = 0; i < sheets; i++) {
+                //标题格式
+                WritableCellFormat titleFormat = this.setTitleStyle();
+                //正文格式
+                WritableCellFormat textFormat = this.setTextStyle();
+
+                //工作表，参数0表示这是第一页
+                WritableSheet ws = wwb.createSheet("第" + (i + 1) + "页", i);
+
+                //筛选条件
+                Map<String, String> map = new HashMap<>();
+                if (null != cityId && !(cityId.equals(-1L)) && null != itemsDOList && itemsDOList.size() > 0) {
+                    map.put("城市", itemsDOList.get(0).getCity());
+                } else {
+                    map.put("城市", "无");
+                }
+                if (null != storeId && !(storeId.equals(-1L)) && null != itemsDOList && itemsDOList.size() > 0) {
+                    map.put("门店", itemsDOList.get(0).getStoreName());
+                } else {
+                    map.put("门店", "无");
+                }
+
+                if (null != keywords && !("".equals(keywords))) {
+                    map.put("关键字", keywords);
+                } else {
+                    map.put("关键字", "无");
+                }
+
+                //设置筛选条件
+                ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
+                //列宽
+                int[] columnView = {10, 30, 20, 15, 15, 15, 30};
+                //列标题
+                String[] titles = {"城市", "门店名称","门店电话","信用额度","可用余额","最后一次变更时间"};
+                //计算标题开始行号
+                int row = 1;
+                if (null != map && map.size() > 0) {
+                    row = (map.size() + 1) / 2 + 4;
+                }
+
+                //设置标题
+                ws = this.setHeader(ws, titleFormat, columnView, titles, row);
+                row += 1;
+                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.NO_BOLD, false,
+                        UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
+                //填写表体数据
+                for (int j = 0; j < maxRowNum; j++) {
+                    if (j + i * maxRowNum >= maxSize) {
+                        break;
+                    }
+                    StCreditDO itemsDO = itemsDOList.get(j + i * maxRowNum);
+                    ws.addCell(new Label(0, j + row, itemsDO.getCity(), textFormat));
+                    ws.addCell(new Label(1, j + row, itemsDO.getStoreName(), textFormat));
+                    ws.addCell(new Label(2, j + row, itemsDO.getStoreMobile(), textFormat));
+                    ws.addCell(new Number(3, j + row, itemsDO.getMaxCreditMoney(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Number(4, j + row, itemsDO.getAvaliableCreditMoney(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Label(5, j + row, itemsDO.getLastChangeTime(), textFormat));
                 }
             }
         } catch (Exception e) {

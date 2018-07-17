@@ -38,4 +38,10 @@ public interface DeliveryFeeRuleService {
      * @return
      */
     Double countDeliveryFee(Integer identityType,Long cityId, Double totalPrice, List<OrderGoodsSimpleResponse> goodsInfoList);
+
+    Double countDeliveryFeeNew(Integer identityType,Long cityId, Double totalPrice, List<OrderGoodsSimpleResponse> goodsInfoList, String countyName);
+
+    List<DeliveryFeeRule> findRuleByCityIdAndCountyName(Long cityId, String countyName);
+
+
 }

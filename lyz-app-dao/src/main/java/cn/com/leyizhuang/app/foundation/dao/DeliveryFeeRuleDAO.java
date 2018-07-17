@@ -34,4 +34,6 @@ public interface DeliveryFeeRuleDAO {
 
     void deleteSpecailGoodsByRuleId(@Param("ruleId") Long ruleId);
 
+    List<DeliveryFeeRule> findRuleByCityIdAndCountyName(@Param("cityId") Long cityId, @Param("countyName")String countyName);
+
 }
