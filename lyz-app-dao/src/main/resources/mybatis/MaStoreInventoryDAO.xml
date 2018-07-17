@@ -81,4 +81,62 @@
         (#{createTime},#{lastUpdateTime},#{cityId},#{cityCode},#{cityName},#{storeId},#{storeCode},#{storeName},#{gid},#{sku},#{skuName},#{availableIty},#{realIty})
     </insert>
 
+
+    <select id="queryStoresGoodRequirePageVO"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.StoreReturnAndRequireGoodsInf">
+            SELECT
+          a.trans_number,
+          b.store_name,
+          a.ship_date,
+          a.item_code,
+          c.sku_name,
+          a.quantity
+        FROM inter_eta_store_goods_trans_inf a
+        LEFT JOIN  st_store b on a.diy_site_code =b.store_code
+        LEFT JOIN  gds_goods c on a.item_code = c.sku
+        WHERE trans_type ='门店要货'
+        <if test="null != structureCode  and '-1'!= structureCode">
+            AND  b.store_structure_code LIKE concat('%',#{structureCode},'%')
+        </if>
+        <if test="null != storeId and -1 != storeId">
+            AND b.store_id = #{storeId}
+        </if>
+        <if test="null != queryInfo  and ''!= queryInfo">
+            AND a.item_code LIKE concat('%',#{queryInfo},'%')
+        </if>
+        AND b.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+
+    <select id="queryStoresGoodReturnPageVO"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.StoreReturnAndRequireGoodsInf">
+        SELECT
+          a.trans_number,
+          b.store_name,
+          a.ship_date,
+          a.item_code,
+          c.sku_name,
+          a.quantity
+        FROM inter_eta_store_goods_trans_inf a
+        LEFT JOIN  st_store b on a.diy_site_code =b.store_code
+        LEFT JOIN  gds_goods c on a.item_code = c.sku
+        WHERE trans_type ='门店退货'
+        <if test="null != structureCode  and '-1'!= structureCode">
+            AND  b.store_structure_code LIKE concat('%',#{structureCode},'%')
+        </if>
+        <if test="null != storeId and  -1!= storeId">
+            AND b.store_id = #{storeId}
+        </if>
+        <if test="null != queryInfo  and ''!= queryInfo">
+            AND a.item_code LIKE concat('%',#{queryInfo},'%')
+        </if>
+        AND b.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
 </mapper>

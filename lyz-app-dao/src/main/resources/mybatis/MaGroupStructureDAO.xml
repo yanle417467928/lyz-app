@@ -7,6 +7,15 @@
         select number,structure_name from group_structure where tier = 2 AND  enable = TRUE AND type ='COMPANY'
     </select>
 
+    <select id="querySimpaleStructureListByFilter"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.structure.SimpaleGroupStructureParam">
+        select number,structure_name from group_structure where tier = 2 AND  enable = TRUE AND type ='COMPANY'
+        AND structure_number not IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
 
     <select id="findByStructureNumber"
             resultType="cn.com.leyizhuang.app.foundation.pojo.management.structure.Structure">

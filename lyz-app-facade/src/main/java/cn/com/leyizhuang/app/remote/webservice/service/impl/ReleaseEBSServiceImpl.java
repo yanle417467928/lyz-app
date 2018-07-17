@@ -425,14 +425,7 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                             logger.info("产品单位为空");
                             return AppXmlUtil.generateResultXmlToEbs(1, "产品单位为空");
                         }
-                        //判断sku是否存在
-                        GoodsDO goodsDOExist = goodsService.queryBySku(sku);
-                        if (null != goodsDOExist) {
-                            logger.info("商品编码为：" + goodsDO.getSku() + " 的商品已存在");
-                            return AppXmlUtil.generateResultXmlToEbs(1, "商品编码为："+sku+" 的商品已存在");
-                        }
 
-                        //根据门店编码和商品sku查询门店库存
                         goodsDO.setSku(sku);
                         goodsDO.setSkuName(skuName);
                         goodsDO.setGoodsUnit(goodsUnit);
@@ -441,6 +434,13 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                         if(null !=materialsCode){
                             goodsDO.setMaterialsCode(materialsCode);
                         }
+
+                        //判断sku是否存在
+                        GoodsDO goodsDOExist = goodsService.queryBySku(sku);
+                        if (null != goodsDOExist) {
+                            goodsService.modifySynchronize(goodsDO);
+                        }
+
                         goodsService.saveSynchronize(goodsDO);
                         return AppXmlUtil.resultStrXml(0, "同步EbsToApp商品成功!");
                     } catch (Exception e) {

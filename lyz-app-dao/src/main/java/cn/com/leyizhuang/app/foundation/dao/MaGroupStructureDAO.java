@@ -12,6 +12,8 @@ public interface MaGroupStructureDAO {
 
     List<SimpaleGroupStructureParam> querySimpaleStructureList();
 
+    List<SimpaleGroupStructureParam> querySimpaleStructureListByFilter(@Param("list") List<String> structureCodeList);
+
     Structure findByStructureNumber(@Param(value = "structureNumber") String structureNumber);
 
     void SaveStructure(Structure structure);

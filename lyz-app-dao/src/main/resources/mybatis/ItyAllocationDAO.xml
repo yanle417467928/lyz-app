@@ -215,4 +215,52 @@
     <delete id="deleteAllocationInf" parameterType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationInf">
         DELETE  from inter_ate_allocation_inf where id = #{id}
     </delete>
+
+
+    <select id="queryAllocationPage" resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationVO">
+        select
+        a.id,
+        a.number,
+        a.status,
+        a.allocation_from_name,
+        a.allocation_to_name,
+        a.city_name,
+        DATE_FORMAT(a.modify_time,'%Y-%m-%d %H:%i:%s') modify_time
+        from ity_allocation a
+        LEFT JOIN
+        st_store b ON  a.allocation_from = b.store_id
+        LEFT JOIN
+        st_store c ON  a.allocation_to = c.store_id
+        LEFT JOIN
+        ity_allocation_detail d on a.id = d.allocation_id
+        WHERE
+        1=1
+        <if test="null != outCompany and '-1'!= outCompany">
+            and b.store_structure_code LIKE concat('%',#{outCompany},'%')
+        </if>
+        <if test="null != outStore and -1 != outStore">
+            and  allocation_from = #{outStore}
+        </if>
+        <if test="null != inCompany and '-1'!= inCompany">
+            and  c.store_structure_code LIKE concat('%',#{inCompany},'%')
+        </if>
+        <if test="null != inStore and -1 != inStore">
+            and allocation_to = #{inStore}
+        </if>
+        <if test="null != keywords and ''!= keywords">
+            and d.sku LIKE concat('%',#{keywords},'%')
+        </if>
+        AND (
+        allocation_from IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        OR
+        allocation_to IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        )
+        ORDER BY modify_time DESC
+    </select>
 </mapper>

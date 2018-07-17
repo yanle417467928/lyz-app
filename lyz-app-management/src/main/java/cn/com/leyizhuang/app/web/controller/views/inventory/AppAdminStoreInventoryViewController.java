@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.Allocation;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
+import cn.com.leyizhuang.app.foundation.pojo.management.structure.SimpaleGroupStructureParam;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
@@ -11,9 +12,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,6 +47,10 @@ public class AppAdminStoreInventoryViewController extends BaseController {
     @Autowired
     private CityService cityService;
 
+    @Autowired
+    private MaGroupStructureService maGroupStructureService;
+
+
     @RequestMapping("/page")
     public String inventoryList(Model model, Integer page, Integer size) {
         return "/views/inventory/store/store_inventory_page";
@@ -71,6 +78,24 @@ public class AppAdminStoreInventoryViewController extends BaseController {
     public String allocationList(Model model) {
         return "/views/inventory/store/store_allocation_page";
     }
+
+
+    /**
+     * 库存调拨查询
+     *
+     * @param model
+     * @return
+     */
+    @RequestMapping("/queryAllocation")
+    public String queryAllocationList(Model model) {
+        List<String> structureCodeList = new ArrayList<>();
+        structureCodeList.add("LYZ001|JZSYBM");
+        List<SimpaleGroupStructureParam>  structureList = maGroupStructureService.querySimpaleStructureListByFilter(structureCodeList);
+        model.addAttribute("structureList", structureList);
+        return "/views/inventory/store/store_queryAllocation_page";
+    }
+
+
 
     @RequestMapping("/allocation/add")
     public String addAllocation(Model model) {
@@ -118,22 +143,30 @@ public class AppAdminStoreInventoryViewController extends BaseController {
     /**
      * 库存要货
      *
-     * @param model
+     * @param map
      * @return
      */
     @RequestMapping("/requiring")
-    public String requiringList(Model model) {
+    public String requiringList(ModelMap map) {
+        List<String> structureCodeList = new ArrayList<>();
+        structureCodeList.add("LYZ001|JZSYBM");
+        List<SimpaleGroupStructureParam>  structureList = maGroupStructureService.querySimpaleStructureListByFilter(structureCodeList);
+        map.addAttribute("structureList", structureList);
         return "/views/inventory/store/store_requiring_page";
     }
 
     /**
      * 库存退货
-     *
-     * @param model
+     *4
+     * @param map
      * @return
      */
     @RequestMapping("/returning")
-    public String returningList(Model model) {
+    public String returningList(ModelMap map) {
+        List<String> structureCodeList = new ArrayList<>();
+        structureCodeList.add("LYZ001|JZSYBM");
+        List<SimpaleGroupStructureParam>  structureList = maGroupStructureService.querySimpaleStructureListByFilter(structureCodeList);
+        map.addAttribute("structureList", structureList);
         return "/views/inventory/store/store_returning_page";
     }
 

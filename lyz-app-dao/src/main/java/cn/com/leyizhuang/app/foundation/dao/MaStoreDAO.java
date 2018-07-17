@@ -145,4 +145,6 @@ public interface MaStoreDAO {
     List<Long> findFitCompanyIdBySellerId(@Param("id") Long id);
 
     List<SimpleStoreParam> findStoresListByCompanyCodeAndStoreType(@Param("companyCode") String companyCode, @Param("storeType") String storeType, @Param("list") List<Long> storeIds);
+
+    List<SimpleStoreParam> findStoresListByCompanyCodeAndStoreTypeForSale(@Param("companyCode") String companyCode, @Param("storeType") String storeType, @Param("list") List<Long> storeIds);
 }
