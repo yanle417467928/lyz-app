@@ -117,11 +117,11 @@ public class UnionPayController {
             logger.info("orderWeChatPay OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (!total_Fee.equals(payableAmount)) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "支付金额与订单金额不匹配！", null);
-            logger.info("orderWeChatPay OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
-            return resultDTO;
-        }
+//        if (!total_Fee.equals(payableAmount)) {
+//            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "支付金额与订单金额不匹配！", null);
+//            logger.info("orderWeChatPay OUT,微信支付订单失败，出参 resultDTO:{}", resultDTO);
+//            return resultDTO;
+//        }
         try {
             String totalFee = CountUtil.retainTwoDecimalPlaces(total_Fee);
             String outTradeNo = orderNumber.replaceAll("_", "");
