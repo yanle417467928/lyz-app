@@ -311,6 +311,10 @@ public class RepairDataServiceImpl implements RepairDataService {
         SellerCreditMoneyResponse creditMoneyResponse = employeeDAO.findCreditMoneyBalanceByUserId(empId);
         Double balance = creditMoneyResponse.getAvailableBalance() == null ? 0D : creditMoneyResponse.getAvailableBalance();
 
+        if (logList == null || logList.size() == 0){
+            return null;
+        }
+
         // 第一条 取得日志余额
         EmpAvailableCreditMoneyChangeLog log = logList.get(0);
         Double logBlance = log.getCreditLimitAvailableAfterChange();

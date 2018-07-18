@@ -871,6 +871,7 @@
         <if test="null!=companyCode and ''!=companyCode">
             and s.store_structure_code like concat('%',#{companyCode},'%')
         </if>
+        and s.store_type != 'JM'
         )
 
         <!-- 配送 现结装饰公司销量 -->

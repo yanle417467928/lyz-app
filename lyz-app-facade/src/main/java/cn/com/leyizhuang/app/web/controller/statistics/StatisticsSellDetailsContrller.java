@@ -51,12 +51,8 @@ public class StatisticsSellDetailsContrller {
     public ResultDTO<Object> statisticsPersonalSellDetais(Long sellerId, Long identityType, String flag) {
         /** 4月31号以前无销量 则提示功能暂未开放 **/
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime dateTime = LocalDateTime.of(2018,5,30,23,59,59);
+        LocalDateTime dateTime = LocalDateTime.of(2019,5,30,23,59,59);
 
-        if (now.isBefore(dateTime)){
-            ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此功能暂未开放，敬请期待", "");
-            return  resultDTO;
-        }
 
         logger.info("获取导购个人销量，入参 sellerId:{} identityType:{}", sellerId, identityType);
 
@@ -77,12 +73,27 @@ public class StatisticsSellDetailsContrller {
             sellDetailsResponse.setFinishChance(0.9);
 
             if (flag.equals("TS")) {
+                if (now.isBefore(dateTime)){
+                    ResultDTO<Object> result = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此功能暂未开放，敬请期待", "");
+                    return  result;
+                }
+
                 sellDetailsResponse = statisticsSellDetailsService.currentTsSellDetails(sellerId);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", sellDetailsResponse);
             } else if (flag.equals("HYS")) {
+                if (now.isBefore(dateTime)){
+                    ResultDTO<Object> result = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此功能暂未开放，敬请期待", "");
+                    return  result;
+                }
+
                 sellDetailsResponse = statisticsSellDetailsService.currentHYS(sellerId);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", sellDetailsResponse);
             } else if(flag.equals("XKF")) {
+                if (now.isBefore(dateTime)){
+                    ResultDTO<Object> result = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此功能暂未开放，敬请期待", "");
+                    return  result;
+                }
+
                 sellDetailsResponse = statisticsSellDetailsService.currentXKF(sellerId);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", sellDetailsResponse);
             }else if(flag.equals("XL")){
