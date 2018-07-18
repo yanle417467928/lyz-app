@@ -104,11 +104,11 @@ public class MaStoreInventoryRestController extends BaseRestController {
      * @return
      */
     @GetMapping(value = "/allocation/queryPage/grid")
-    public GridDataVO<AllocationVO> dataAllocationVOPageGridGet(Integer offset, Integer size, String keywords, String outCompany, String inCompany, Long outStore, Long inStore) {
-        logger.info("dataAllocationVOPageGridGet CREATE,门店库存调拨分页查询, 入参 offset:{},size:{},keywords:{},outCompany:{},inCompany:{},outStore:{},inStore:{}", offset, size, keywords, outCompany, inCompany, outStore, inStore);
+    public GridDataVO<AllocationVO> dataAllocationVOPageGridGet(Integer offset, Integer size, String keywords, String company, Long outStore, Long inStore,String selectStatus,String startDateTime ,String endDateTime) {
+        logger.info("dataAllocationVOPageGridGet CREATE,门店库存调拨分页查询, 入参 offset:{},size:{},keywords:{},company:{},outStore:{},inStore:{},selectStatus:{},startDateTime:{},endDateTime:{}", offset, size, keywords, company, outStore, inStore, selectStatus,startDateTime,endDateTime);
         List<Long> storeIds = adminUserStoreService.findStoreIdList();
         Integer page = getPage(offset, size);
-        PageInfo<AllocationVO> allocationVOPageInfo = ityAllocationService.queryAllocationPage(page, size, keywords, outCompany, inCompany, outStore, inStore, storeIds);
+        PageInfo<AllocationVO> allocationVOPageInfo = ityAllocationService.queryAllocationPage(page, size, keywords, company, outStore, inStore, selectStatus,startDateTime,endDateTime,storeIds);
         return new GridDataVO<AllocationVO>().transform(allocationVOPageInfo.getList(), allocationVOPageInfo.getTotal());
     }
 }

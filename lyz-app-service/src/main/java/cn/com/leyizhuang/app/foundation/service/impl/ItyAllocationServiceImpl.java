@@ -72,11 +72,11 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
     @Override
     public PageInfo<AllocationVO> queryPage(Integer offset, Integer size, String keywords, AllocationQuery query, Long storeId) {
         PageHelper.startPage(offset, size);
-        if (null != query.getStartDateTime()&&!"".equals(query.getStartDateTime())) {
-            query.setStartDateTime(query.getStartDateTime()+" 00:00:00");
+        if (null != query.getStartDateTime() && !"".equals(query.getStartDateTime())) {
+            query.setStartDateTime(query.getStartDateTime() + " 00:00:00");
         }
-        if (null != query.getEndDateTime()&&!"".equals(query.getEndDateTime())) {
-            query.setEndDateTime(query.getEndDateTime()+" 23:59:59");
+        if (null != query.getEndDateTime() && !"".equals(query.getEndDateTime())) {
+            query.setEndDateTime(query.getEndDateTime() + " 23:59:59");
         }
         List<AllocationVO> allocationVOList;
         if (StringUtils.isNotBlank(keywords)) {
@@ -184,7 +184,7 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
                 maStoreInventoryChange.setCityName(from.getCity());
                 maStoreInventoryChange.setStoreId(from.getStoreId());
                 maStoreInventoryChange.setStoreCode(from.getStoreCode());
-                maStoreInventoryChange.setStoreCode(from.getStoreName());
+                maStoreInventoryChange.setStoreName(from.getStoreName());
                 maStoreInventoryChange.setReferenceNumber(allocation.getNumber());
                 maStoreInventoryChange.setGid(goods.getGoodsId());
                 maStoreInventoryChange.setSku(goods.getSku());
@@ -555,10 +555,20 @@ public class ItyAllocationServiceImpl implements ItyAllocationService {
 
 
     @Override
-    public PageInfo<AllocationVO> queryAllocationPage(Integer offset, Integer size, String keywords, String outCompany,String inCompany,Long outStore,Long inStore, List<Long> storeIds) {
+    public PageInfo<AllocationVO> queryAllocationPage(Integer offset, Integer size, String keywords, String company, Long outStore, Long inStore, String selectStatus, String startDateTime, String endDateTime, List<Long> storeIds) {
         PageHelper.startPage(offset, size);
         List<AllocationVO> allocationVOList;
-        allocationVOList = ityAllocationDAO.queryAllocationPage(keywords,outCompany,inCompany,outStore,inStore,storeIds);
+        if (null == storeIds || storeIds.size() == 0) {
+            return null;
+        }
+        keywords = keywords.trim();
+        if(null !=startDateTime && !"".equals(startDateTime)){
+            startDateTime += " 00:00:00";
+        }
+        if(null !=endDateTime && !"".equals(endDateTime)){
+            endDateTime +=" 23:59:59";
+        }
+        allocationVOList = ityAllocationDAO.queryAllocationPage(keywords, company, outStore, inStore, selectStatus, startDateTime, endDateTime, storeIds);
         return new PageInfo<>(allocationVOList);
     }
 }

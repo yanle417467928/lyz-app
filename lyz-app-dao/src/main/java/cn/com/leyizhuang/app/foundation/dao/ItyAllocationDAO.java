@@ -97,6 +97,6 @@ public interface ItyAllocationDAO {
      * @param keywords
      * @return
      */
-    List<AllocationVO> queryAllocationPage(@Param("keywords") String keywords,@Param("outCompany")  String outCompany,@Param("inCompany")  String inCompany,@Param("outStore")  Long outStore,@Param("inStore")  Long inStore,@Param("list") List<Long> storeIds);
+    List<AllocationVO> queryAllocationPage(@Param("keywords") String keywords,@Param("company")  String company,@Param("outStore")  Long outStore,@Param("inStore")  Long inStore, @Param("selectStatus")String selectStatus,@Param("startDateTime")String startDateTime ,@Param("endDateTime")String endDateTime,@Param("list") List<Long> storeIds);
 
 }

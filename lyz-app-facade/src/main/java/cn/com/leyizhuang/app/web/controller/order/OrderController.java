@@ -2767,6 +2767,7 @@ public class OrderController {
             for (String s : param) {
                 OrderGoodsSimpleResponse goodsParam = new OrderGoodsSimpleResponse();
                 goodsParam.setId(Long.parseLong(s));
+                simpleInfos.add(goodsParam);
             }
             Double deliveryFee = this.deliveryFeeRuleService.countDeliveryFeeNew(identityType, cityId, amount, simpleInfos, countyName);
             //创建一个返回对象list
