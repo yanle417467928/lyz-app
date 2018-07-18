@@ -1146,9 +1146,9 @@ public class AppOrderServiceImpl implements AppOrderService {
     @Override
     public List<String> getNotSellDetailsOrderNOs(Boolean flag) {
         // 当前时间
-        LocalDateTime now = LocalDateTime.now();
+        // LocalDateTime now = LocalDateTime.now();
         // 当月1号 0 点 0 分 0 秒
-        LocalDateTime firstDay = LocalDateTime.of(now.getYear(), now.getMonth(), 1, 0, 0, 0);
+        LocalDateTime firstDay = LocalDateTime.of(2018, 4, 1, 0, 0, 0);
         return orderDAO.getNotSellDetailsOrderNOs(flag, firstDay);
     }
 

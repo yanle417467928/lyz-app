@@ -51,7 +51,7 @@ public class StatisticsSellDetailsContrller {
     public ResultDTO<Object> statisticsPersonalSellDetais(Long sellerId, Long identityType, String flag) {
         /** 4月31号以前无销量 则提示功能暂未开放 **/
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime dateTime = LocalDateTime.of(2019,5,30,23,59,59);
+        LocalDateTime dateTime = LocalDateTime.of(2018,5,30,23,59,59);
 
         if (now.isBefore(dateTime)){
             ResultDTO<Object> resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此功能暂未开放，敬请期待", "");
@@ -85,8 +85,8 @@ public class StatisticsSellDetailsContrller {
             } else if(flag.equals("XKF")) {
                 sellDetailsResponse = statisticsSellDetailsService.currentXKF(sellerId);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", sellDetailsResponse);
-            }else if(flag == "XL"){
-
+            }else if(flag.equals("XL")){
+                sellDetailsResponse = statisticsSellDetailsService.currentXL(sellerId);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", sellDetailsResponse);
             }
 

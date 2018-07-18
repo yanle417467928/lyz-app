@@ -9,6 +9,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import com.github.pagehelper.PageInfo;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -106,6 +107,8 @@ public interface StatisticsSellDetailsService {
 
     void statisticsAllSellerSellDetails(List<String> structureCode);
 
+    void statisticsAllSellerSellDetails(List<String> structureCode, LocalDate startDay, LocalDate endDay);
+
     void statisticOneSeller(Long empId);
 
     SellDetailsResponse currentTsSellDetails(Long empId);
@@ -113,6 +116,8 @@ public interface StatisticsSellDetailsService {
     SellDetailsResponse currentHYS(Long empId);
 
     SellDetailsResponse currentXKF(Long empId);
+
+    SellDetailsResponse currentXL(Long empId);
 
     List<SellDetailsResponse> getFgsRank(Long empId,String flag);
 
@@ -123,4 +128,8 @@ public interface StatisticsSellDetailsService {
     void createAllreturnOrderDetails() ;
 
     void repairAllOrderDetails();
+
+    void repairErrorlog();
+
+    void statisticsAllSellerSales(List<String> structureCode,LocalDate startDay,LocalDate endDay);
 }

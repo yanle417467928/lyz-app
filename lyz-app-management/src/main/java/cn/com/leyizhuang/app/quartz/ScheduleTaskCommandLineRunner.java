@@ -74,5 +74,13 @@ public class ScheduleTaskCommandLineRunner implements CommandLineRunner {
         } else {
             throw new RuntimeException("billDateTask为空");
         }
+
+        // 计算导购销量
+        String countSellerSales = maClearTempCreditService.getCron(8L);
+        if (StringUtils.isNotBlank(countSellerSales)){
+            QuartzManager.addJob("countSellerSalesTask", "jobGroup8", "trigger8", "triggerGroup8", CountSellerSalesTask.class, countSellerSales);
+        }else {
+            throw new RuntimeException("启动计算导购销量定时器 失败！");
+        }
     }
 }
