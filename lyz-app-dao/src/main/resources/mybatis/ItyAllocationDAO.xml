@@ -219,6 +219,7 @@
 
     <select id="queryAllocationPage" resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationVO">
         select
+        DISTINCT
         a.id,
         a.number,
         a.status,
