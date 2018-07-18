@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.foundation.service.StatisticsSellDetailsService;
 import cn.com.leyizhuang.app.foundation.service.impl.AppActDutchServiceImpl;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import org.apache.tomcat.jni.Local;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjuster;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,18 +39,52 @@ public class MaSelldetailsRestController {
 
     /**
      * 计算所有导购业绩
+     * @param date : 2018-04-01
      */
     @GetMapping(value = "/count")
-    public void countTest(){
+    public void countTest(String date){
         List<String> list = new ArrayList<>();
         list.add("RCC001");
         list.add("PCC001");
         list.add("BYC001");
         list.add("RDC001");
         list.add("ZZC001");
+        list.add("JZC001");
+        list.add("FXC001");
+        list.add("FXSYBM");
+
+        LocalDate localDate = LocalDate.parse(date);
+
+        LocalDate startDate = localDate.with(TemporalAdjusters.firstDayOfMonth());
+        LocalDate endDate = localDate.with(TemporalAdjusters.lastDayOfMonth());
+
+        // 计算业绩
+        statisticsSellDetailsService.statisticsAllSellerSellDetails(list,startDate,endDate);
+
+        // 计算销量
+        statisticsSellDetailsService.statisticsAllSellerSales(list,startDate,endDate);
+    }
+
+    /**
+     * 计算当前
+     * @param date
+     */
+    @GetMapping(value = "/count/now")
+    public void countNow(String date){
+        List<String> list = new ArrayList<>();
+        list.add("RCC001");
+        list.add("PCC001");
+        list.add("BYC001");
+        list.add("RDC001");
+        list.add("ZZC001");
+        list.add("JZC001");
+        list.add("FXC001");
+        list.add("FXSYBM");
 
         statisticsSellDetailsService.statisticsAllSellerSellDetails(list);
     }
+
+
 
     /**
      * 计算一个导购业绩
@@ -105,9 +143,9 @@ public class MaSelldetailsRestController {
     }
 
     @GetMapping("/reCreate/errorLog")
-    public String reCreateErrorLogDetail(){
-
-        return null;
+    public ResultDTO<Object> reCreateErrorLogDetail(){
+        statisticsSellDetailsService.repairErrorlog();
+        return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "修复销量数据完成", null);
     }
 
     @GetMapping("/re/goodsLine/{flag}")

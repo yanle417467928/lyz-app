@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.foundation.pojo.*;
+import cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsOrderRespons;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsWeekFinishResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
@@ -153,4 +154,23 @@ public interface SellDetailsDAO {
      * 将未结清订单 销量记录标志
      */
     void updateOrderRecordFlagFalse();
+
+    /**
+     * 查询销量记录错误日志
+     */
+    List<SellDetailsErrorLogDO> getRecordErrorLog(Boolean status);
+
+    /**
+     * 更新状态
+     */
+    void updateErrorLogStatus(SellDetailsErrorLogDO DO);
+
+    List<SellDetailsSingleDO> findProductSalesList(@Param("startTime") LocalDateTime startTime,
+                                                   @Param("endTime") LocalDateTime endTime,
+                                                   @Param("companyCode") String companyCode);
+
+    List<SellDetailsOrderRespons> findSalesOrderList(@Param("startTime") LocalDateTime startTime,
+                                                     @Param("endTime") LocalDateTime endTime,
+                                                     @Param("companyCode") String companyCode,
+                                                     @Param("empId") Long empId);
 }

@@ -62,4 +62,9 @@ public class SellDetailsResponse {
      */
     private Double finishSales;
 
+    /**
+     * 订单详情
+     */
+    private List<SellDetailsOrderRespons> orderList;
+
 }
