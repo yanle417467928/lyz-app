@@ -319,7 +319,7 @@
                                 if (null === data.createTime) {
                                     data.createTime = '-';
                                 }
-                                $('#createTime').html(data.createTime);
+                                $('#createTime').html(formatDateTime(data.createTime));
 
                                 if (null === data.modifier) {
                                     data.modifier = '-';
@@ -329,11 +329,12 @@
                                 if (null === data.modifyTime) {
                                     data.modifyTime = '-';
                                 }
-                                $('#modifyTime').html(data.modifyTime);
+                                $('#modifyTime').html(formatDateTime(data.modifyTime));
 
                                 if (null === data.details) {
                                     data.details = '-';
                                 }
+                                $("#details tbody").html("");
                                 var str = "";
                                 $.each(data.details, function (i, item) {
                                     str += "<tr><td>" + item.sku + "</td><td>" + item.skuName + "</td><td>" + item.qty + "</td></tr>";
@@ -486,5 +487,23 @@
             }
         ]);
     }
+
+
+    var formatDateTime = function (date) {
+        var dt = new Date(date);
+        var y = dt.getFullYear();
+        var m = dt.getMonth() + 1;
+        m = m < 10 ? ('0' + m) : m;
+        var d = dt.getDate();
+        d = d < 10 ? ('0' + d) : d;
+        var h = dt.getHours();
+        h = h < 10 ? ('0' + h) : h;
+        var minute = dt.getMinutes();
+        minute = minute < 10 ? ('0' + minute) : minute;
+        var second = dt.getSeconds();
+        second = second < 10 ? ('0' + second) : second;
+        return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
+    };
+
 </script>
 </body>
