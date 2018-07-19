@@ -427,8 +427,7 @@ public class ReturnOrderController {
 
     /**
      * 用户申请退货创建退货单
-     *
-     * @param param    创建退货单参数
+     * @param param   创建退货单参数
      * @param pictures 退货单问题描述图片
      * @return 是否成功
      */
