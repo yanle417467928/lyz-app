@@ -294,7 +294,6 @@ public class StoreController {
      * @title 获取门店返利记录
      * @descripe
      */
-
     @PostMapping(value = "/rebate/log", produces = "application/json;charset=UTF-8")
     public ResultDTO getStoreRebateLog(Long userId, Integer identityType,Integer page, Integer size) {
 
