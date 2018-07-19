@@ -1058,11 +1058,18 @@
         SELECT
         if(ua.orderQty >= 0,ua.ordNo,ua.returnNo) as ordNo,
         ua.shippingDate as shipmentTime,
-        if(ua.orderQty >= 0,'order','return') as orderType
+        if(ua.orderQty >= 0,'order','return') as orderType,
+        CASE ua.storeType
+        when 'ZY' then sum(ua.financialSales)
+        when 'JM' then sum(ua.distributionSales)
+        when 'FX' then sum(ua.distributionSales)
+        when 'FXCK' then sum(ua.financialSales)
+        when 'ZS' then sum(ua.financialSales)
+        end
+        as price
         from
         (
         <include refid="SalesSql"/>
         )ua where ua.emp_id = #{empId} GROUP BY ua.ordNo
     </select>
 </mapper>
-
