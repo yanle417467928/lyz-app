@@ -31,6 +31,9 @@ public class CountSellerSalesTask implements Job {
         list.add("BYC001");
         list.add("RDC001");
         list.add("ZZC001");
+        list.add("JZC001");
+        list.add("FXC001");
+        list.add("FXSYBM");
 
         statisticsSellDetailsService.statisticsAllSellerSellDetails(list);
 
