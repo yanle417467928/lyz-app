@@ -488,7 +488,8 @@ public class ReturnOrderController {
                 logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (!orderBillingDetails.getIsPayUp()) {
+            if ((!orderBillingDetails.getIsPayUp() && AppOrderSubjectType.FIT != order.getOrderSubjectType())
+                    || (orderBillingDetails.getArrearage() > 0D && AppOrderSubjectType.FIT == order.getOrderSubjectType())) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此订单还未付清欠款不可退货!", "");
                 logger.warn("createReturnOrder OUT,用户申请退货创建退货单失败,出参 resultDTO:{}", resultDTO);
                 return resultDTO;
