@@ -740,7 +740,7 @@
         CASE ob.`status` WHEN 'PENDING_RECEIVE' THEN '待收货' WHEN 'FINISHED' THEN '已完成' end as 'orderStatus',
         '' as 'selfTakeOrderTime',
         ob.create_time as 'createTime',
-        '' as 'shippingDate',
+        wro.c_end_dt as 'shippingDate',
         CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
         CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
         org.sku as 'sku',
@@ -814,7 +814,7 @@
         CASE ob.`status` WHEN 'PENDING_RECEIVE' THEN '待收货' WHEN 'FINISHED' THEN '已完成' end as 'orderStatus',
         '' as 'selfTakeOrderTime',
         ob.create_time as 'createTime',
-        '' as 'shippingDate',
+        orl.operation_time as 'shippingDate',
         CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
         CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
         org.sku as 'sku',
@@ -973,7 +973,7 @@
         CASE ob.`status` WHEN 'PENDING_RECEIVE' THEN '待收货' WHEN 'FINISHED' THEN '已完成' end as 'orderStatus',
         '' as 'selfTakeOrderTime',
         ob.create_time as 'createTime',
-        '' as 'shippingDate',
+        wro.c_end_dt as 'shippingDate',
         CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
         CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
         org.sku as 'sku',
@@ -1062,6 +1062,6 @@
         from
         (
         <include refid="SalesSql"/>
-        )ua where ua.emp_id = #{empId}
+        )ua where ua.emp_id = #{empId} GROUP BY ua.ordNo
     </select>
 </mapper>
