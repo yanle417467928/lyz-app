@@ -18,4 +18,7 @@ public class SellDetailsOrderRespons {
     private  String shipmentTime;
     // 单号类型 order / return
     private  String orderType;
+
+    // 价格
+    private Double price;
 }
