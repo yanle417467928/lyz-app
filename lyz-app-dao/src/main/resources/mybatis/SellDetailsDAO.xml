@@ -1070,6 +1070,6 @@
         from
         (
         <include refid="SalesSql"/>
-        )ua where ua.emp_id = #{empId} GROUP BY ua.ordNo
+        )ua where ua.emp_id = #{empId} GROUP BY ua.ordNo,ua.returnNo
     </select>
 </mapper>
