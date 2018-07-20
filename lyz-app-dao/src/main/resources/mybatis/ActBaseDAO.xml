@@ -311,23 +311,23 @@
     </select>
 
     <insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
-    <selectKey resultType="long" keyProperty="id" order="AFTER">
-        SELECT
-        LAST_INSERT_ID()
-    </selectKey>
-    insert into act_base (create_time, title, begin_time, end_time, city_id, city_name, act_target,
-    base_type, promotion_type, condition_type, is_double, gift_choose_number, full_amount,
-    full_number,sort_id)
-    values
-    <foreach collection="list" item="item" index="index" separator="," >
-        (#{item.createTime,jdbcType=TIMESTAMP}, #{item.title,jdbcType=VARCHAR},
-        #{item.beginTime,jdbcType=TIMESTAMP}, #{item.endTime,jdbcType=TIMESTAMP}, #{item.cityId,jdbcType=BIGINT},
-        #{item.cityName,jdbcType=VARCHAR}, #{item.actTarget,jdbcType=VARCHAR},
-        #{item.baseType,jdbcType=VARCHAR}, #{item.promotionType,jdbcType=VARCHAR}, #{item.conditionType,jdbcType=VARCHAR},
-        #{item.isDouble,jdbcType=BIT}, #{item.giftChooseNumber,jdbcType=INTEGER}, #{item.fullAmount,jdbcType=DECIMAL},
-        #{item.fullNumber,jdbcType=INTEGER},#{item.sortId,jdbcType=INTEGER})
-    </foreach>
-</insert>
+        <selectKey resultType="long" keyProperty="id" order="AFTER">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        insert into act_base (create_time, title, begin_time, end_time, city_id, city_name, act_target,
+        base_type, promotion_type, condition_type, is_double, gift_choose_number, full_amount,
+        full_number,sort_id)
+        values
+        <foreach collection="list" item="item" index="index" separator="," >
+            (#{item.createTime,jdbcType=TIMESTAMP}, #{item.title,jdbcType=VARCHAR},
+            #{item.beginTime,jdbcType=TIMESTAMP}, #{item.endTime,jdbcType=TIMESTAMP}, #{item.cityId,jdbcType=BIGINT},
+            #{item.cityName,jdbcType=VARCHAR}, #{item.actTarget,jdbcType=VARCHAR},
+            #{item.baseType,jdbcType=VARCHAR}, #{item.promotionType,jdbcType=VARCHAR}, #{item.conditionType,jdbcType=VARCHAR},
+            #{item.isDouble,jdbcType=BIT}, #{item.giftChooseNumber,jdbcType=INTEGER}, #{item.fullAmount,jdbcType=DECIMAL},
+            #{item.fullNumber,jdbcType=INTEGER},#{item.sortId,jdbcType=INTEGER})
+        </foreach>
+    </insert>
     <delete id="deleteMemberConferenceByActBaseId">
         DELETE
         FROM
@@ -335,5 +335,8 @@
         WHERE
             act_id = #{actId}
     </delete>
+
+    <!-- 促销参与记录 -->
+
 
 </mapper>
