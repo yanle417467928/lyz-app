@@ -25,7 +25,7 @@
       #{isDouble,jdbcType=BIT}, #{giftChooseNumber,jdbcType=INTEGER}, #{fullAmount,jdbcType=DECIMAL},
       #{fullNumber,jdbcType=INTEGER},#{isReturnable,jdbcType=BIT},#{sortId,jdbcType=INTEGER},#{status,jdbcType=VARCHAR},
       #{actCode,jdbcType=VARCHAR},#{addAmount,jdbcType=DECIMAL},#{isGcOrder,jdbcType=BIT},#{isGoodsOptionalQty,jdbcType=BIT},#{isGiftOptionalQty,jdbcType=BIT}
-      ,#{picUrl},#{rankCode},#{scope},#{isMemberConference}
+      ,#{picUrl},#{rankCode},#{scope},#{isMemberConference},#{isJoinOnce},#{joinInterval}
         )
     </insert>
 
@@ -338,5 +338,40 @@
 
     <!-- 促销参与记录 -->
 
+    <insert id="insertJoinLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.activity.ActJoinLog" >
+        insert into act_join_log (id, act_id, create_time,
+        user_id, identity_type)
+        values (#{id,jdbcType=BIGINT}, #{actId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP},
+        #{userId,jdbcType=BIGINT}, #{identityType,jdbcType=VARCHAR})
+    </insert>
 
+    <update id="updateJoinLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.activity.ActJoinLog" >
+        update act_join_log
+        <set >
+            <if test="actId != null" >
+                act_id = #{actId,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null" >
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="userId != null" >
+                user_id = #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="identityType != null" >
+                identity_type = #{identityType,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="getJoinLogByUserIdAndActId" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActJoinLog">
+        SELECT * from act_join_log
+        WHERE user_id = #{userId} and act_id = #{actId} and identity_type = #{identityType} order by create_time DESC
+    </select>
+
+    <select id="getVipMeetingJoinLogByUserIdAndActId" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActJoinLog">
+        SELECT * from act_join_log l
+        left JOIN act_base a on a.id = l.act_id
+        WHERE user_id = #{userId} and act_id = #{actId} and identity_type = #{identityType} and a.is_member_conference = 1 order by l.create_time DESC;
+    </select>
 </mapper>

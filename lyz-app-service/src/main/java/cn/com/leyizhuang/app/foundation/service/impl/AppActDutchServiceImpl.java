@@ -7,6 +7,7 @@ import cn.com.leyizhuang.app.foundation.dao.ActGoodsMappingDAO;
 import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActGoodsMappingDO;
+import cn.com.leyizhuang.app.foundation.pojo.activity.ActJoinLog;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -207,7 +209,8 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                     statisticsSellDetailsService.addOrUpdateSellZgCusTimes(cusId,"",1,sentQty,ActBaseType.ZGFRIST);
                     //计算分摊
                     finallyOrderGoodsInfo.addAll(this.countDutchPrice(newOrderGoodsInfoList, CountUtil.add(goodsTotalPrice, giftTotalPrice), giftTotalPrice, identityType, customerType));
-
+                    // 记录促销参与日志
+                    this.recordJoinLog(act.getId(),cusId,AppIdentityType.CUSTOMER);
                 }
 
             }
@@ -298,7 +301,8 @@ public class AppActDutchServiceImpl implements AppActDutchService {
 
                     //计算分摊
                     finallyOrderGoodsInfo.addAll(this.countDutchPrice(newOrderGoodsInfoList, CountUtil.add(goodsTotalPrice, giftTotalPrice), CountUtil.sub(giftTotalPrice), identityType, customerType));
-
+                    // 记录促销参与日志
+                    this.recordJoinLog(act.getId(),cusId,AppIdentityType.CUSTOMER);
                 }
             }
 
@@ -453,7 +457,8 @@ public class AppActDutchServiceImpl implements AppActDutchService {
 
                     // 计算分担金额 并持久化对象
                     finallyOrderGoodsInfo.addAll(this.countDutchPrice(newOrderGoodsInfoList, CountUtil.add(goodsTotalPrice, giftTotalPrice), CountUtil.sub(giftTotalPrice,addAmount), identityType, customerType));
-
+                    // 记录促销参与日志
+                    this.recordJoinLog(act.getId(),cusId,AppIdentityType.CUSTOMER);
                 } else if (promotionSimpleInfo.getDiscount() != null && promotionSimpleInfo.getDiscount() > 0.00) {
                     // 立减优惠
                     Double subPrice = promotionSimpleInfo.getDiscount();
@@ -558,7 +563,8 @@ public class AppActDutchServiceImpl implements AppActDutchService {
 
                     // 计算分担金额 并持久化对象
                     finallyOrderGoodsInfo.addAll(this.countDutchPrice(newOrderGoodsInfoList, goodsTotalPrice, subPrice, identityType, customerType));
-
+                    // 记录促销参与日志
+                    this.recordJoinLog(act.getId(),cusId,AppIdentityType.CUSTOMER);
                     // 从促销List中移除
                     promotionMap.remove(act.getId());
                 } else {
@@ -653,14 +659,16 @@ public class AppActDutchServiceImpl implements AppActDutchService {
 
                     // 计算分担金额 并持久化对象
                     this.countDutchPrice(newOrderGoodsInfoList, CountUtil.add(goodsTotalPrice, giftTotalPrice), CountUtil.sub(giftTotalPrice,addAmount), identityType, customerType);
-
+                    // 记录促销参与日志
+                    this.recordJoinLog(act.getId(),cusId,AppIdentityType.CUSTOMER);
                 } else if (promotionSimpleInfo.getDiscount() != null && promotionSimpleInfo.getDiscount() > 0.00) {
                     // 立减优惠
                     Double subPrice = promotionSimpleInfo.getDiscount();
 
                     // 计算分担金额 并持久化对象
                     this.countDutchPrice(newOrderGoodsInfoList, goodsTotalPrice, subPrice, identityType, customerType);
-
+                    // 记录促销参与日志
+                    this.recordJoinLog(act.getId(),cusId,AppIdentityType.CUSTOMER);
                     // 从促销List中移除
                     promotionMap.remove(act.getId());
                 } else {
@@ -1055,5 +1063,17 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                 }
             }
         }
+    }
+
+    /**
+     * 记录促销参与日志
+     */
+    public void recordJoinLog(Long actId,Long userId,AppIdentityType type){
+        ActJoinLog log = new ActJoinLog();
+        log.setActId(actId);
+        log.setUserId(userId);
+        log.setIdentityType(type);
+        log.setCreateTime(LocalDateTime.now());
+        actBaseDAO.insertJoinLog(log);
     }
 }
