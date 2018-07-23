@@ -427,13 +427,13 @@
                                                        class="table table-bordered table-hover">
                                                     <thead>
                                                     <tr>
-                                                        <th style="width:8%;">商品id</th>
-                                                        <th style="width:20%;">商品编码</th>
-                                                        <th style="width:35%;">商品名称</th>
-                                                        <th style="width:9%;">数量</th>
-                                                        <th style="width:9%;">零售价</th>
-                                                        <th style="width:9%;">会员价</th>
-                                                        <th style="width:10%;">商品类型</th>
+                                                        <th style="width: 5%;">序号</th>
+                                                        <th style="width: 10%;">数量</th>
+                                                        <th style="width: 20%;">商品内部编码</th>
+                                                        <th style="width: 35%;">商品内部名称</th>
+                                                        <th style="width: 10%;">库存</th>
+                                                        <th style="width: 10%;">缺货数量</th>
+                                                        <th style="width: 10%;">状态</th>
                                                     </tr>
                                                     </thead>
 

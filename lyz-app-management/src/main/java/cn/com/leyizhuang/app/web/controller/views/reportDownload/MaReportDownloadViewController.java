@@ -80,6 +80,12 @@ public class MaReportDownloadViewController extends BaseController {
         return "/views/reportDownload/emp_creditMoney_page";
     }
 
+    @GetMapping(value = "/company/creditMoney/list")
+    public String getCompanyCreditMoney(ModelMap map) {
+        map.addAttribute("storeTypes", StoreType.getStoreTypeList());
+        return "/views/reportDownload/company_creditMoney_page";
+    }
+
     /**
      * @title    订单明细报表
      * @descripe
@@ -235,4 +241,36 @@ public class MaReportDownloadViewController extends BaseController {
         return "/views/reportDownload/expiringSoon_product_page";
     }
 
+    /**
+     * 顾客产品券汇总报表页面跳转
+     * @param map
+     * @return
+     */
+    @GetMapping(value = "/productCoupon/cummary/list")
+    public String cusProductCouponList(ModelMap map){
+        map.addAttribute("storeTypes",StoreType.getStoreTypeList());
+        return "/views/reportDownload/cus_product_coupon_summary";
+    }
+
+    /**
+     * 顾客产品券变更明细报表页面跳转
+     * @param map
+     * @return
+     */
+    @GetMapping(value = "/productCoupon/changeLog/list")
+    public String cusProductCouponChangeLogList(ModelMap map){
+        map.addAttribute("storeTypes",StoreType.getStoreTypeList());
+        return "/views/reportDownload/cus_product_coupon_change_log";
+    }
+
+    /**
+     * 门店真实库存变更明细报表页面跳转
+     * @param map
+     * @return
+     */
+    @GetMapping(value = "/stInventory/changeLog/list")
+    public String stInventoryRealChangeLogList(ModelMap map){
+        map.addAttribute("storeTypes",StoreType.getStoreTypeList());
+        return "/views/reportDownload/st_inventory_real_change_log";
+    }
 }

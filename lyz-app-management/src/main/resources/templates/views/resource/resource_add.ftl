@@ -54,11 +54,6 @@
                             regexp: {
                                 regexp: /^[a-zA-Z\u4E00-\u9FA5]+$/,
                                 message: '资源名称只能输入字母或汉字'
-                            },
-                            stringLength: {
-                                min: 2,
-                                max: 10,
-                                message: '资源名称的长度必须在2~10位之间'
                             }
                         }
                     },
@@ -71,11 +66,6 @@
                             regexp: {
                                 regexp: /^[a-zA-Z\u4E00-\u9FA5]+$/,
                                 message: '资源描述只能输入字母或汉字'
-                            },
-                            stringLength: {
-                                min: 2,
-                                max: 10,
-                                message: '资源描述的长度必须在2~10位之间'
                             }
                         }
                     },
