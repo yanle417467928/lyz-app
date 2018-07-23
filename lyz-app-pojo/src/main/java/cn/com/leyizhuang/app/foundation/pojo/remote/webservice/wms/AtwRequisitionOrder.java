@@ -235,8 +235,8 @@ public class AtwRequisitionOrder {
         requisitionOrder.setAgencyFund(orderBillingDetails.getCollectionAmount());
 
         String isPrint = "Y";
-        if (store.getIsPrint() != null){
-            if (store.getIsPrint()){
+        if (store.getIsDisplayPrice() != null){
+            if (store.getIsDisplayPrice()){
                 isPrint = "Y";
             }else {
                 isPrint = "N";

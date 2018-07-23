@@ -10,7 +10,7 @@ import javax.annotation.Resource;
 /**
  * Created by caiyu on 2018/1/29.
  */
-@Service
+@Service("cancelOrderParametersService")
 public class CancelOrderParametersServiceImpl implements CancelOrderParametersService {
     @Resource
     private CancelOrderParametersDAO cancelOrderParametersDAO;

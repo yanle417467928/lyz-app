@@ -5,7 +5,7 @@
     <sql id="ALL_FIELDS">
         id, create_time, title, begin_time, end_time, city_id, city_name, act_target,
     base_type, promotion_type, condition_type, is_double, gift_choose_number, full_amount,
-    full_number,is_returnable,sort_id,status,act_code,add_amount,is_gcorder,is_goods_optional_qty,is_gift_optional_qty,pic_url,rank_code,scope,is_member_conference
+    full_number,is_returnable,sort_id,status,act_code,add_amount,is_gcorder,is_goods_optional_qty,is_gift_optional_qty,pic_url,rank_code,scope,is_member_conference,
     is_join_once,join_interval
     </sql>
 

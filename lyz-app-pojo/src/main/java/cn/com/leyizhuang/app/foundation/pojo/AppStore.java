@@ -128,7 +128,7 @@ public class AppStore {
     /**
      * wms出货单是否打印价格 true 打印 false 不打印
      */
-    private Boolean isPrint = true;
+    private Boolean isDisplayPrice = true;
 
     public void setFitCompayType(String fitCompayType){
         try {

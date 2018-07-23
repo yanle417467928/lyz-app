@@ -82,5 +82,13 @@ public class ScheduleTaskCommandLineRunner implements CommandLineRunner {
         }else {
             throw new RuntimeException("启动计算导购销量定时器 失败！");
         }
+
+        // 自动取消超过6个月未提货自提单 和 7天未出货配送单；
+        String autoCancelNotShippingOrderCron = maClearTempCreditService.getCron(9L);
+        if (StringUtils.isNotBlank(autoCancelNotShippingOrderCron)){
+            QuartzManager.addJob("autoCancelNotShippingOrderTask", "jobGroup9", "trigger9", "triggerGroup9", AutoCancelNotShippingOrder.class, autoCancelNotShippingOrderCron);
+        }else {
+            throw new RuntimeException("自动取消，超过6个月未提货自提单 和 7天未出货配送单");
+        }
     }
 }

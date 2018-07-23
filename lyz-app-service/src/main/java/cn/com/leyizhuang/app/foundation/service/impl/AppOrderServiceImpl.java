@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
  * Date: 2017/10/30.
  * Time: 18:17.
  */
-@Service
+@Service("appOrderService")
 @Slf4j
 public class AppOrderServiceImpl implements AppOrderService {
 
