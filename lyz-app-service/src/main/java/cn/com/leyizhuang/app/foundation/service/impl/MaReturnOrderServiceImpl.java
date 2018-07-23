@@ -442,7 +442,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
 
                             StPreDepositLogDO stPreDepositLogDO = new StPreDepositLogDO();
                             stPreDepositLogDO.setCreateTime(TimeTransformUtils.UDateToLocalDateTime(date));
-                            stPreDepositLogDO.setChangeMoney(stPreDepositAmount);
+                            stPreDepositLogDO.setChangeMoney(onlinePayAmount);
                             stPreDepositLogDO.setRemarks("退还第三方支付转预存款");
                             stPreDepositLogDO.setOrderNumber(maReturnOrderDetailInfo.getOrderNo());
                             stPreDepositLogDO.setChangeType(StorePreDepositChangeType.RETURN_ORDER);
@@ -461,7 +461,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                             maOrdReturnBillingStPreDeposit.setCreateTime(ReturnDate);
                             maOrdReturnBillingStPreDeposit.setIntoAmountTime(ReturnDate);
                             maOrdReturnBillingStPreDeposit.setRefundNumber(refundNumber);
-                            maOrdReturnBillingStPreDeposit.setReturnMoney(BigDecimal.valueOf(stPreDepositAmount));
+                            maOrdReturnBillingStPreDeposit.setReturnMoney(BigDecimal.valueOf(onlinePayAmount));
                             maOrdReturnBillingStPreDeposit.setReturnPayType(OrderBillingPaymentType.ST_PREPAY.getValue());
                             maOrdReturnBillingStPreDeposit.setRoid(roid);
                             maOrdReturnBillingStPreDeposit.setReturnNo(returnNumber);
