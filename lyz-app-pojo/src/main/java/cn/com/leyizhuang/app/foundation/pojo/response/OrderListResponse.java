@@ -81,5 +81,16 @@ public class OrderListResponse {
      *  楼盘信息
      */
     private String estateInfo;
+    //顾客预存款余额
+    private Double preDeposit = 0D;
+
+    //导购信用额度余额
+    private Double creditMoney = 0D;
+
+    //门店预存款余额
+    private Double stPreDeposit = 0D;
+
+    //门店信用金余额
+    private Double stCreditMoney = 0D;
 
 }
