@@ -2217,7 +2217,7 @@ public class OrderController {
                 }
                 orderDetailsResponse.setGoodsList(appOrderService.getOrderGoodsList(orderNumber));
                 if (orderBaseInfo.getOrderSubjectType() == AppOrderSubjectType.FIT){
-                    orderDetailsResponse.setIsUseEmpCredit(Boolean.FALSE);
+                    orderDetailsResponse.setIsUseEmpCredit(Boolean.TRUE);
                     orderDetailsResponse.setIsUseStorePre(Boolean.TRUE);
                 } else if (orderBaseInfo.getOrderSubjectType() == AppOrderSubjectType.STORE){
                     orderDetailsResponse.setIsUseEmpCredit(Boolean.TRUE);
