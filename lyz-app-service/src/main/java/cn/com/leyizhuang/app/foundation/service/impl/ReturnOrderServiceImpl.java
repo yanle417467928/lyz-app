@@ -660,7 +660,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                 }
             }
             //返回导购信用额度
-            if (orderBillingDetails.getEmpCreditMoney() != null && orderBillingDetails.getEmpCreditMoney() > 0) {
+            if (orderBillingDetails.getEmpCreditMoney() != null && orderBillingDetails.getEmpCreditMoney() > 0 && orderBillingDetails.getIsPayUp().equals(false)) {
                 for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                     //获取导购信用金
                     EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(userId);

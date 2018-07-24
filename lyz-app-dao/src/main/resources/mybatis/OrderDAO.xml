@@ -1849,9 +1849,9 @@
         ob.delivery_type != "PRODUCT_COUPON"
          and s.store_type = 'JM'
         and ob.create_time > '2018-05-01 00:00:00'
-
         and ob.`status` = 'FINISHED'
-        and oj.ord_no is null;
+        and oj.ord_no is null
+        and oci.get_type = 'BUY';
     </select>
 
     <select id="getBpProductByOrderNo" resultType="java.lang.Integer">
