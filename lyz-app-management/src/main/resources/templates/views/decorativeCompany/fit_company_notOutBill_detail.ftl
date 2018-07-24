@@ -81,42 +81,43 @@
                         </li>
                         <li><a href="#tab_1-2" data-toggle="tab">账单还款记录</a></li>
                     </ul>
-                    <div id="toolbar1" class="form-inline ">
-                        <button id="payBill" type="button" class="btn btn-success" onclick="payBill()">
-                            <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>&nbsp;还款
-                        </button>
-                        <input name="startTime1" onchange="findByCondition()" type="text"
-                               class="form-control datepicker" id="startTime1" style="width: 140px;"
-                               placeholder="出货开始时间">
-                        <input name="endTime1" onchange="findByCondition()" type="text"
-                               class="form-control datepicker" id="endTime1" style="width: 140px;"
-                               placeholder="出货结束时间">
-                    </div>
-                    <div id="toolbar2" class="form-inline ">
-                        <input name="startTime2" onchange="findRepaymentByCondition()" type="text"
-                               class="form-control datepicker" id="startTime2" style="width: 140px;"
-                               placeholder="还款开始时间">
-                        <input name="endTime2" onchange="findRepaymentByCondition()" type="text"
-                               class="form-control datepicker" id="endTime2" style="width: 140px;"
-                               placeholder="还款结束时间">
-                        <div class="input-group col-md-3" style="margin-top:0px positon:relative">
-                            <input type="text" name="info2" id="info2" class="form-control "
-                                   style="width:auto;" placeholder="请输入还款单号" onkeypress="findBykey()">
-                            <span class="input-group-btn">
-                            <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
-                                    onclick="findRepaymentByCondition()">查找</button>
-                           </span>
-                        </div>
-                    </div>
                     <div class="tab-content">
                         <div class="tab-pane active" id="tab_1-1">
                             <div class="box-body table-reponsive">
+                                <div id="toolbar1" class="form-inline ">
+                                    <button id="payBill" type="button" class="btn btn-success" onclick="payBill()">
+                                        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>&nbsp;还款
+                                    </button>
+                                    <input name="startTime1" type="text" class="form-control datepicker" id="startTime1"
+                                           style="width: 140px;" placeholder="出货开始时间">
+                                    <input name="endTime1" type="text" class="form-control datepicker" id="endTime1"
+                                           style="width: 140px;" placeholder="出货结束时间">
+                                    <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
+                                            onclick="findByCondition()">查找
+                                    </button>
+                                </div>
                                 <table id="dataGrid1" class="table table-bordered table-hover">
                                 </table>
                             </div>
                         </div>
                         <div class="tab-pane" id="tab_1-2">
                             <div class="box-body table-reponsive">
+                                <div id="toolbar2" class="form-inline ">
+                                    <input name="startTime2" onchange="findRepaymentByCondition()" type="text"
+                                           class="form-control datepicker" id="startTime2" style="width: 140px;"
+                                           placeholder="还款开始时间">
+                                    <input name="endTime2" onchange="findRepaymentByCondition()" type="text"
+                                           class="form-control datepicker" id="endTime2" style="width: 140px;"
+                                           placeholder="还款结束时间">
+                                    <div class="input-group col-md-3" style="margin-top:0px positon:relative">
+                                        <input type="text" name="info2" id="info2" class="form-control "
+                                               style="width:auto;" placeholder="请输入还款单号" onkeypress="findBykey()">
+                                        <span class="input-group-btn">
+                            <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
+                                    onclick="findRepaymentByCondition()">查找</button>
+                           </span>
+                                    </div>
+                                </div>
                                 <table id="dataGrid2" class="table table-bordered table-hover">
                                 </table>
                             </div>
@@ -501,7 +502,7 @@
                     $("#billNo").val("" + result.content.billNo);
 //                    $("#remainAmount").html('￥' + accAdd(result.content.priorNotPaidInterestAmount, accAdd(result.content.currentUnpaidAmount, result.content.priorNotPaidBillAmount)));
                     var currentShouldReturn = parseFloat(result.content.billTotalAmount) - parseFloat(result.content.currentPaidAmount);
-                    currentShouldReturn= Math.round(currentShouldReturn * 100) / 100
+                    currentShouldReturn = Math.round(currentShouldReturn * 100) / 100
                     $("#remainAmount").html('￥' + currentShouldReturn);
                 }
             },
@@ -662,7 +663,7 @@
 
     function payBill() {
         $('#amountMoney').empty();
-        billorderDetailsRequest.splice(0,billorderDetailsRequest.length);
+        billorderDetailsRequest.splice(0, billorderDetailsRequest.length);
         var selected = $('#dataGrid1').bootstrapTable('getSelections');
         var billNos = [];
         for (var i = 0; i < selected.length; i++) {
@@ -686,7 +687,7 @@
             amountBill = accAdd(amountBill, data.orderCreditMoney);
             amountBill = accAdd(amountBill, data.interestAmount);
         }
-        amountBill= Math.round(amountBill * 100) / 100
+        amountBill = Math.round(amountBill * 100) / 100
         $("#amount").val(amountBill);
         $('#amountMoney').html('应收金额(元):' + amountBill);
         $('#payOrderBill').modal();
@@ -734,7 +735,8 @@
             return;
         } else {
             inDataGrid1();
-        };
+        }
+        ;
     }
 
 

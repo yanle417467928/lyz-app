@@ -190,26 +190,28 @@
         FROM act_base
         WHERE
         1=1
-        <if test="keywords != null">
+        <if test="keywords != null and keywords != ''">
            AND  title LIKE concat("%",#{keywords},"%")
         </if>
         <if test="null != cityId and -1 !=cityId">
             and city_id = #{cityId}
         </if>
-        <if test="status == ''">
-            AND status != "INVALID"
-            ORDER BY create_time DESC
-        </if>
-
         <if test="status == 'NEW'">
             and status = #{status}
-            ORDER BY create_time DESC
+            AND end_time > now()
         </if>
         <if test="status == 'PUBLISH'">
             and status = #{status}
-            ORDER BY create_time DESC
+            AND end_time > now()
         </if>
-
+        <if test="status == 'INVALID'">
+            and status = #{status}
+            AND end_time > now()
+        </if>
+        <if test="status == 'EXPIRED'">
+            and <![CDATA[end_time < now()]]>
+        </if>
+        ORDER BY create_time DESC
     </select>
 
     <select id="queryListBySkus" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO">

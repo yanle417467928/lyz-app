@@ -972,7 +972,9 @@
         obi.delivery_type as orderDeliveryType,
         ggc.category_name as pcategoryName,
         gg.category_name as categoryName,
-        gg.brand_name as brandName
+        gg.brand_name as brandName,
+        gg.type_name as typeName,
+        gg.specification_type as specificationType
         from ord_return_base_info orbi
         LEFT JOIN ord_return_goods_info orgi ON orgi.return_no =orbi.return_no
         LEFT JOIN ord_base_info obi ON orbi.ord_no=obi.ord_no
@@ -1045,7 +1047,9 @@
         obi.delivery_type as orderDeliveryType,
         ggc.category_name as pcategoryName,
         gg.category_name as categoryName,
-        gg.brand_name as brandName
+        gg.brand_name as brandName,
+        gg.type_name as typeName,
+        gg.specification_type as specificationType
         from ord_return_base_info orbi
         LEFT JOIN ord_return_goods_info orgi ON orgi.return_no =orbi.return_no
         LEFT JOIN ord_base_info obi ON orbi.ord_no=obi.ord_no
@@ -1117,7 +1121,9 @@
         obi.delivery_type as orderDeliveryType,
         ggc.category_name as pcategoryName,
         gg.category_name as categoryName,
-        gg.brand_name as brandName
+        gg.brand_name as brandName,
+        gg.type_name as typeName,
+        gg.specification_type as specificationType
         from ord_return_base_info orbi
         LEFT JOIN ord_return_goods_info orgi ON orgi.return_no =orbi.return_no
         LEFT JOIN ord_base_info obi ON orbi.ord_no=obi.ord_no
@@ -1189,7 +1195,9 @@
         obi.delivery_type as orderDeliveryType,
         ggc.category_name as pcategoryName,
         gg.category_name as categoryName,
-        gg.brand_name as brandName
+        gg.brand_name as brandName,
+        gg.type_name as typeName,
+        gg.specification_type as specificationType
         from ord_base_info obi
         LEFT JOIN ord_goods_info ogi ON obi.ord_no =ogi.ord_no
         LEFT JOIN ord_delivery_info_details odid ON obi.ord_no = odid.order_no
@@ -1260,7 +1268,9 @@
         obi.delivery_type as orderDeliveryType,
         ggc.category_name as pcategoryName,
         gg.category_name as categoryName,
-        gg.brand_name as brandName
+        gg.brand_name as brandName,
+        gg.type_name as typeName,
+        gg.specification_type as specificationType
         from ord_base_info obi
         LEFT JOIN ord_goods_info ogi ON ogi.ord_no =obi.ord_no
         LEFT JOIN st_store ss ON obi.store_id = ss.store_id
