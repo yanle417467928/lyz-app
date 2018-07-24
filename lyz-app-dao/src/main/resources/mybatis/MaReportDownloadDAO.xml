@@ -2547,7 +2547,7 @@
             <when test="'FXCK'==storeType">
                 and s.store_type = -1
             </when>
-            <when test="'FXALL'==storeType">
+            <when test="'FXAll'==storeType">
                 and s.store_type = -1
             </when>
             <otherwise>
@@ -2652,7 +2652,7 @@
             <when test="'FXCK'==storeType">
                 and s.store_type = -1
             </when>
-            <when test="'FXALL'==storeType">
+            <when test="'FXAll'==storeType">
                 and s.store_type = -1
             </when>
             <otherwise>
