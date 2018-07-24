@@ -144,45 +144,45 @@ public class ReturnOrderController {
         try {
             if (redisLock.lock(AppLock.CANCEL_ORDER, orderNumber, 30)) {
             //获取订单头信息
-            OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
-            String orderStatus = orderBaseInfo.getStatus().getValue();
-            //获取订单账目明细
-            OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderNumber);
-            if (null == orderBaseInfo) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此订单！", null);
-                logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
-            if (null == orderBillingDetails) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此订单费用明细，请联系管理员！", null);
-                logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
-            Double storePos = orderBillingDetails.getStorePosMoney() == null ? 0 : orderBillingDetails.getStorePosMoney();
-            Double storeOther = orderBillingDetails.getStoreOtherMoney() == null ? 0 : orderBillingDetails.getStoreOtherMoney();
-            Double storeCash = orderBillingDetails.getStoreCash() == null ? 0 : orderBillingDetails.getStoreCash();
-            Double storeTotalMoney = CountUtil.add(storeCash, storeOther, storePos);
-            if (orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE) && storeTotalMoney > 0) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此订单已收款，无法取消！", null);
-                logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
+                OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
+                String orderStatus = orderBaseInfo.getStatus().getValue();
+                //获取订单账目明细
+                OrderBillingDetails orderBillingDetails = appOrderService.getOrderBillingDetail(orderNumber);
+                if (null == orderBaseInfo) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此订单！", null);
+                    logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+                if (null == orderBillingDetails) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到此订单费用明细，请联系管理员！", null);
+                    logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+                Double storePos = orderBillingDetails.getStorePosMoney() == null ? 0 : orderBillingDetails.getStorePosMoney();
+                Double storeOther = orderBillingDetails.getStoreOtherMoney() == null ? 0 : orderBillingDetails.getStoreOtherMoney();
+                Double storeCash = orderBillingDetails.getStoreCash() == null ? 0 : orderBillingDetails.getStoreCash();
+                Double storeTotalMoney = CountUtil.add(storeCash, storeOther, storePos);
+                if (orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE) && storeTotalMoney > 0) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此订单已收款，无法取消！", null);
+                    logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
 
             /*2018-04-08 generation 取消订单判断状态为待支付、配送代发货，自提待取货*/
-            if (AppOrderStatus.UNPAID.equals(orderBaseInfo.getStatus())
-                    || (orderBaseInfo.getDeliveryType().equals(AppDeliveryType.HOUSE_DELIVERY) && AppOrderStatus.PENDING_SHIPMENT.equals(orderBaseInfo.getStatus()))
-                    || (orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE) && AppOrderStatus.PENDING_RECEIVE.equals(orderBaseInfo.getStatus()))) {
-                //判断收货类型和订单状态
-                if (orderBaseInfo.getDeliveryType().equals(AppDeliveryType.HOUSE_DELIVERY) && AppOrderStatus.PENDING_SHIPMENT.equals(orderBaseInfo.getStatus())) {
-                    //创建取消订单参数存储类
-                    CancelOrderParametersDO cancelOrderParametersDO = new CancelOrderParametersDO();
-                    cancelOrderParametersDO.setOrderNumber(orderNumber);
-                    cancelOrderParametersDO.setIdentityType(identityType);
-                    cancelOrderParametersDO.setUserId(userId);
-                    cancelOrderParametersDO.setReasonInfo(reasonInfo);
-                    cancelOrderParametersDO.setRemarksInfo(remarksInfo);
-                    cancelOrderParametersDO.setCancelStatus(CancelProcessingStatus.SEND_WMS);
-                    cancelOrderParametersService.addCancelOrderParameters(cancelOrderParametersDO);
+                if (AppOrderStatus.UNPAID.equals(orderBaseInfo.getStatus())
+                        || (orderBaseInfo.getDeliveryType().equals(AppDeliveryType.HOUSE_DELIVERY) && AppOrderStatus.PENDING_SHIPMENT.equals(orderBaseInfo.getStatus()))
+                        || (orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE) && AppOrderStatus.PENDING_RECEIVE.equals(orderBaseInfo.getStatus()))) {
+                    //判断收货类型和订单状态
+                    if (orderBaseInfo.getDeliveryType().equals(AppDeliveryType.HOUSE_DELIVERY) && AppOrderStatus.PENDING_SHIPMENT.equals(orderBaseInfo.getStatus())) {
+                        //创建取消订单参数存储类
+                        CancelOrderParametersDO cancelOrderParametersDO = new CancelOrderParametersDO();
+                        cancelOrderParametersDO.setOrderNumber(orderNumber);
+                        cancelOrderParametersDO.setIdentityType(identityType);
+                        cancelOrderParametersDO.setUserId(userId);
+                        cancelOrderParametersDO.setReasonInfo(reasonInfo);
+                        cancelOrderParametersDO.setRemarksInfo(remarksInfo);
+                        cancelOrderParametersDO.setCancelStatus(CancelProcessingStatus.SEND_WMS);
+                        cancelOrderParametersService.addCancelOrderParameters(cancelOrderParametersDO);
 
                         // 发送到wms通知WMS
                         AtwCancelOrderRequest atwCancelOrderRequest = AtwCancelOrderRequest.transform(reasonInfo, orderBaseInfo);
@@ -228,7 +228,7 @@ public class ReturnOrderController {
                             }
                         }
 
-                    //如果是待发货的门店自提单发送退单拆单消息到拆单消息队列
+                        //如果是待发货的门店自提单发送退单拆单消息到拆单消息队列
                     /*2018-04-08 generation 改为待收货的自提单*/
 //                    if (orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_SHIPMENT) && orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE)){
                         if (orderStatus.equals(AppOrderStatus.PENDING_RECEIVE.getValue()) && orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE)) {

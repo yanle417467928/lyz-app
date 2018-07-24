@@ -95,6 +95,7 @@ public class AppXmlUtil {
                 "<TOTAL_GOODS_PRICE>" + CountUtil.HALF_UP_SCALE_2(requisitionOrder.getTotalGoodsPrice()) +
                 "</TOTAL_GOODS_PRICE>" +
                 "<AGENCY_FUND>" + CountUtil.HALF_UP_SCALE_2(requisitionOrder.getAgencyFund()) + "</AGENCY_FUND>" +
+                "<IS_PRINT>"+ requisitionOrder.getIsPrint() +"</IS_PRINT>"+
                 "</TABLE></ERP>";
 
         xmlStr = xmlStr.replace("null", "");

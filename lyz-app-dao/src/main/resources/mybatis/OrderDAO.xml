@@ -1855,9 +1855,9 @@
         ob.delivery_type != "PRODUCT_COUPON"
          and s.store_type = 'JM'
         and ob.create_time > '2018-05-01 00:00:00'
-
         and ob.`status` = 'FINISHED'
-        and oj.ord_no is null;
+        and oj.ord_no is null
+        and oci.get_type = 'BUY';
     </select>
 
     <select id="getBpProductByOrderNo" resultType="java.lang.Integer">
@@ -1888,5 +1888,13 @@
         FROM ord_return_jx_price_difference_return_details
         WHERE
         return_no = #{returnNo} and sku = #{sku} and goods_line_type = #{goodsLineType} );
+    </select>
+
+    <!-- 根据时间 配送状态 查询 -->
+    <select id="findOrderByStatusAndTypeAndCreateTime" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
+        SELECT
+        <include refid="All_FIELD"/>
+        from ord_base_info ob
+        where status = #{status} and delivery_type = #{type} and create_time &lt; #{endTime};
     </select>
 </mapper>

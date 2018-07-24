@@ -40,7 +40,9 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping(value = WmsInterfaceRestController.PRE_URL, produces = "application/json;charset=utf-8")
-public class WmsInterfaceRestController extends BaseRestController {
+public class
+
+WmsInterfaceRestController extends BaseRestController {
     protected static final String PRE_URL = "/rest/admin/wmsInterface";
 
     private final Logger logger = LoggerFactory.getLogger(WmsInterfaceViewController.class);

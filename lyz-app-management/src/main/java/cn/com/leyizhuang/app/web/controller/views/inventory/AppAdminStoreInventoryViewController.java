@@ -68,6 +68,13 @@ public class AppAdminStoreInventoryViewController extends BaseController {
      */
     @RequestMapping("/invoicing")
     public String invoicingList(Model model) {
+        List<String> structureCodeList = new ArrayList<>();
+        structureCodeList.add("LYZ001|JZSYBM");
+        List<SimpaleGroupStructureParam>  structureList = maGroupStructureService.querySimpaleStructureListByFilter(structureCodeList);
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+        List<SimpleStoreParam> storesList = this.maStoreService.findStoresListByStoreId(storeIds);
+        model.addAttribute("structureList", structureList);
+        model.addAttribute("storeList", storesList);
         return "/views/inventory/store/store_invoicing_page";
     }
 
@@ -183,11 +190,15 @@ public class AppAdminStoreInventoryViewController extends BaseController {
     /**
      * 库存盘点
      *
-     * @param model
+     * @param
      * @return
      */
     @RequestMapping("/checking")
-    public String checkingList(Model model) {
+    public String checkingList(ModelMap map) {
+        List<String> structureCodeList = new ArrayList<>();
+        structureCodeList.add("LYZ001|JZSYBM");
+        List<SimpaleGroupStructureParam>  structureList = maGroupStructureService.querySimpaleStructureListByFilter(structureCodeList);
+        map.addAttribute("structureList", structureList);
         return "/views/inventory/store/store_checking_page";
     }
 

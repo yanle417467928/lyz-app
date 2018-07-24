@@ -14,6 +14,7 @@ import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.util.CountUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.tomcat.jni.Local;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
 import javax.annotation.Resource;
+import javax.xml.crypto.Data;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -313,6 +315,26 @@ public class AppActServiceImpl implements AppActService {
                 }
                 if (!a){
                     continue;
+                }
+            }
+
+            if (act.getIsJoinOnce() != null && act.getIsJoinOnce().equals(true)){
+                /** 判断当前用户参与此促销记录 **/
+                List<ActJoinLog> logList = actBaseDAO.getJoinLogByUserIdAndActId(cusId,act.getId(),AppIdentityType.CUSTOMER);
+
+                if (logList != null && logList.size() > 0){
+                    ActJoinLog joinLog = logList.get(0);
+                    LocalDateTime lastJoinTime = joinLog.getCreateTime();
+                    // 是否超过期限
+                    Integer interval = act.getJoinInterval() == null ? 0 : act.getJoinInterval();
+
+                    // 过期时间
+                    LocalDateTime outTime = lastJoinTime.plusMonths(interval);
+
+                    if (LocalDateTime.now().isBefore(outTime)){
+                        logger.info("已经参与过此"+act.getId()+"促销，并且在时效范围内，不能再次参与");
+                        continue;
+                    }
                 }
             }
 
@@ -934,6 +956,15 @@ public class AppActServiceImpl implements AppActService {
             //查看是否享受过首单促销记录
             SellZgCusTimes sellZgCusTimes = statisticsSellDetailsService.getTimesByCusIdAndSku(cusId, null, ActBaseType.ZGFRIST);
             if (sellZgCusTimes == null) {
+                /** 2018-07-20 如果会员当前能享受会员会促销 则返回 **/
+                List<ActBaseDO>  meetActList = actBaseDAO.queryListBySkus(skus, LocalDateTime.now(), cityId, "6", storeId, scope);
+                for (ActBaseDO actBaseDO : meetActList){
+                    if (actBaseDO.getIsMemberConference() != null && actBaseDO.getIsMemberConference().equals(true)){
+                        logger.info("存在会员会促销，跳过专供首单促销计算");
+                        return giftListResponseList;
+                    }
+                }
+
                 // 首单
                 List<ActBaseDO> zgFirstList = actBaseDAO.queryZgFirstListByRankCode(cityId, LocalDateTime.now(), storeId, skus, rankCode, scope);
 
@@ -1256,8 +1287,12 @@ public class AppActServiceImpl implements AppActService {
         baseDO.setActCode(code);
         if (null != customerIds && customerIds.size() > 0){
             baseDO.setIsMemberConference(Boolean.TRUE);
+            baseDO.setIsJoinOnce(true);
+            baseDO.setJoinInterval(12);
         }else{
             baseDO.setIsMemberConference(Boolean.FALSE);
+            baseDO.setIsJoinOnce(false);
+            baseDO.setJoinInterval(0);
         }
         actBaseDAO.save(baseDO);
 
@@ -1384,8 +1419,12 @@ public class AppActServiceImpl implements AppActService {
         }
         if (null != customerIds && customerIds.size() > 0){
             baseDO.setIsMemberConference(Boolean.TRUE);
+            baseDO.setIsJoinOnce(true);
+            baseDO.setJoinInterval(12);
         }else{
             baseDO.setIsMemberConference(Boolean.FALSE);
+            baseDO.setIsJoinOnce(false);
+            baseDO.setJoinInterval(0);
         }
 
         actBaseDAO.update(baseDO);

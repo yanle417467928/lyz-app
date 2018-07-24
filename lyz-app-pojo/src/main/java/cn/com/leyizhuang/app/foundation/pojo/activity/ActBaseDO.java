@@ -117,6 +117,13 @@ public class ActBaseDO{
     //是否是会员会促销
     private Boolean isMemberConference;
 
+    //是否在间隔时间内 只能参与一次
+    private Boolean isJoinOnce = false;
+
+    //一次参与间隔月份
+    private Integer joinInterval = 12;
+
+
     /**
      * 获取最终促销类型
      */

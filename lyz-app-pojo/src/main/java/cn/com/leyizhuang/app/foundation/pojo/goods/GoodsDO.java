@@ -105,7 +105,7 @@ public class GoodsDO {
     // 施工面积
     private String workArea;
 
-    // 施工成不
+    // 施工价格（每平米）
     private String workCost;
 
     //vip价格

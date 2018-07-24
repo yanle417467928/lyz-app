@@ -1,7 +1,9 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.ActBaseType;
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO;
+import cn.com.leyizhuang.app.foundation.pojo.activity.ActJoinLog;
 import cn.com.leyizhuang.app.foundation.pojo.activity.ActMemberConference;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.common.foundation.dao.BaseDAO;
@@ -87,5 +89,20 @@ public interface ActBaseDAO{
     List<ActMemberConference> findMemberConferenceByActId(@Param("actId")Long actId);
 
     void deleteMemberConferenceByActBaseId(@Param("actId")Long actId);
+
+    void insertJoinLog(ActJoinLog log);
+
+    void updateJoinLog(ActJoinLog log);
+
+    List<ActJoinLog> getJoinLogByUserIdAndActId(@Param("userId") Long userId, @Param("actId") Long actId, @Param("identityType")AppIdentityType identityType);
+
+    /**
+     * 查会员会促销参与记录
+     * @param userId
+     * @param actId
+     * @param identityType
+     * @return
+     */
+    List<ActJoinLog> getVipMeetingJoinLogByUserIdAndActId(@Param("userId") Long userId, @Param("actId") Long actId, @Param("identityType")AppIdentityType identityType);
 
 }

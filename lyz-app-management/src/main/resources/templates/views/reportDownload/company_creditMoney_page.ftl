@@ -20,18 +20,18 @@
 
 <body>
 <section class="content-header">
-    <#if selectedMenu??>
-        <h1>${selectedMenu.resourceName!'??'}</h1>
-        <ol class="breadcrumb">
-            <li><a href="/views"><i class="fa fa-home"></i> 首页</a></li>
-            <#if selectedMenu.parentResourceName??>
-                <li><a href="javascript:void(0);">${selectedMenu.parentResourceName!'??'}</a></li>
-            </#if>
-            <li class="active">${selectedMenu.resourceName!'??'}</li>
-        </ol>
-        <#else>
-            <h1>装饰公司信用金余额</h1>
-    </#if>
+<#if selectedMenu??>
+    <h1>${selectedMenu.resourceName!'??'}</h1>
+    <ol class="breadcrumb">
+        <li><a href="/views"><i class="fa fa-home"></i> 首页</a></li>
+        <#if selectedMenu.parentResourceName??>
+            <li><a href="javascript:void(0);">${selectedMenu.parentResourceName!'??'}</a></li>
+        </#if>
+        <li class="active">${selectedMenu.resourceName!'??'}</li>
+    </ol>
+<#else>
+    <h1>加载中...</h1>
+</#if>
 </section>
 
 <section class="content">
@@ -39,28 +39,41 @@
         <div class="col-xs-12">
             <div class="box box-primary">
                 <div id="toolbar" class="form-inline">
-                    <select name="city" id="cityCode" class="form-control selectpicker" data-width="120px" style="width:auto;"
+                    <select name="city" id="cityCode" class="form-control selectpicker" data-width="120px"
+                            style="width:auto;"
                             onchange="findStorelist()" data-live-search="true">
+                        <option value="-1">选择城市</option>
                     </select>
 
-                    <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px" style="width:auto;"
-                    <#--onchange="findByCondition()"--> data-live-search="true">
+                    <select name="storeType" id="storeType" class="form-control selectpicker" data-width="120px"
+                            style="width:auto;"
+                            onchange="findStorelist()" data-live-search="true">
+                        <option value="">选择门店类型</option>
+                    <#if storeTypes??>
+                        <#list storeTypes as storeType>
+                            <option value="${storeType.value}">${storeType.description}</option>
+                        </#list>
+                    </#if>
+                    </select>
+
+                    <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px"
+                            style="width:auto;"
+                            onchange="findByCondition()" data-live-search="true">
                         <option value="-1">选择门店</option>
-                        </select>
-                                <div class="input-group col-md-2" style="margin-top:0px; positon:relative">
-                                    <input type="text" name="queryCusInfo" id="queryCusInfo" class="form-control" style="width:auto;"
-                                           placeholder="请输姓名或电话">
-                                    <span class="input-group-btn">
-                            <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
-                                    onclick="return findByOrderNumber()">查找</button>
-                        </span>
-                                </div>
-                                <#--<@shiro.hasPermission name="/views/admin/resource/add">-->
-                                <button id="btn_add" type="button" class="btn btn-default pull-left" onclick="openBillModal()">
-                                    <i class="fa fa-download"></i>
-                                    下载报表
-                                </button>
-                                <#--</@shiro.hasPermission>-->
+                    </select>
+
+                    <input name="startTime" onchange="findByCondition()" type="text" class="form-control datepicker"
+                           id="startTime" style="width: 120px;" placeholder="变更时间">
+                    --
+                    <input name="endTime" onchange="findByCondition()" type="text" class="form-control datepicker"
+                           id="endTime" style="width: 120px;" placeholder="变更时间">
+
+                <#--<@shiro.hasPermission name="/views/admin/resource/add">-->
+                    <button id="btn_add" type="button" class="btn btn-default pull-left" onclick="openBillModal()">
+                        <i class="fa fa-download"></i>
+                        下载报表
+                    </button>
+                <#--</@shiro.hasPermission>-->
 
                 </div>
 
@@ -81,13 +94,13 @@
         findStorelist();
 
         //获取数据
-//        initDateGird(null,null,null,null,null,null);
+        initDateGird(null, null, null, null, null);
         //时间选择框样式
-//        $('.datepicker').datepicker({
-//            format: 'yyyy-mm-dd',
-//            language: 'zh-CN',
-//            autoclose: true
-//        });
+        $('.datepicker').datepicker({
+            format: 'yyyy-mm-dd',
+            language: 'zh-CN',
+            autoclose: true
+        });
 
     });
 
@@ -105,9 +118,8 @@
             success: function (result) {
                 clearTimeout($global.timer);
                 $.each(result, function (i, item) {
-                        city += "<option value=" + item.cityId + ">" + item.name + "</option>";
+                    city += "<option value=" + item.cityId + ">" + item.name + "</option>";
                 });
-
                 $("#cityCode").append(city);
                 $("#cityCode").selectpicker('refresh');
                 $("#cityCode").selectpicker('render');
@@ -119,12 +131,14 @@
         initSelect("#storeCode", "选择门店");
         var store = "";
         var cityId = $('#cityCode').val();
-        if (null == cityId || '' == cityId){
-            cityId = 1;
-        }
+        var storeType = $('#storeType').val();
         $.ajax({
-            url: '/rest/stores/find/company/StoresListByCityId/'+cityId,
+            url: '/rest/stores/findStoresListByCityIdAndStoreType',
             method: 'GET',
+            data: {
+                storeType: storeType,
+                cityId: cityId
+            },
             error: function () {
                 clearTimeout($global.timer);
                 $loading.close();
@@ -139,82 +153,70 @@
                 $("#storeCode").append(store);
                 $('#storeCode').selectpicker('refresh');
                 $('#storeCode').selectpicker('render');
-//                findByCondition();
+                findByCondition();
             }
         });
     }
 
-    function initDateGird(keywords,startTime,endTime,storeId,cityId) {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/reportDownload/stcredit/page/grid', 'get', false, function (params) {
+    function initDateGird(startTime, endTime, storeId, storeType, cityId) {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/reportDownload/company/creditMoney/page/grid', 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
-                keywords: keywords,
                 storeId: storeId,
                 startTime: startTime,
                 endTime: endTime,
+                storeType: storeType,
                 cityId: cityId
             }
         }, [{
             checkbox: true,
             title: '选择'
         }, {
-            field: 'city',
+            field: 'cityName',
             title: '城市',
             align: 'center'
         }, {
             field: 'storeName',
             title: '门店名称',
             align: 'center'
-        },{
-            field: 'maxCreditMoney',
-            title: '信用额度',
-            align: 'center'
-        },{
-            field: 'avaliableCreditMoney',
-            title: '可用余额',
+        }, {
+            field: 'storeType',
+            title: '门店类型',
             align: 'center'
         }, {
-            field: 'lastChangeTime',
-            title: '上一次更新时间',
+            field: 'changeTypeDesc',
+            title: '变更类型',
+            align: 'center'
+        }, {
+            field: 'changeMoney',
+            title: '变更金额',
+            align: 'center'
+        }, {
+            field: 'balance',
+            title: '变更后余额',
+            align: 'center'
+        }, {
+            field: 'changeTime',
+            title: '变更时间',
+            align: 'center'
+        }, {
+            field: 'referenceNumber',
+            title: '订单号',
             align: 'center'
         }
         ]);
     }
 
     function findByCondition() {
-        $("#queryCusInfo").val('');
         $("#dataGrid").bootstrapTable('destroy');
-        var keywords = $('#queryCusInfo').val();
         var startTime = $('#startTime').val();
         var endTime = $('#endTime').val();
         var storeId = $("#storeCode").val();
         var cityId = $('#cityCode').val();
         var storeType = $('#storeType').val();
-        initDateGird(keywords,startTime,endTime,storeId,storeType,cityId);
+        initDateGird(startTime, endTime, storeId, storeType, cityId);
     }
-
-    function findByOrderNumber() {
-        /*$('#startTime').val('');
-         $('#endTime').val('');
-         $("#storeCode").val(-1);
-         $('#cityCode').val(-1);
-         $('#storeType').val('');
-         $('#storeCode').selectpicker('refresh');
-         $('#storeCode').selectpicker('render');
-         $('#cityCode').selectpicker('refresh');
-         $('#cityCode').selectpicker('render');
-         $('#storeType').selectpicker('refresh');
-         $('#storeType').selectpicker('render');*/
-        var queryCusInfo = $("#queryCusInfo").val();
-        $("#dataGrid").bootstrapTable('destroy');
-        var startTime = $('#startTime').val();
-        var endTime = $('#endTime').val();
-        var storeId = $("#storeCode").val();
-        var cityId = $('#cityCode').val();
-        initDateGird(queryCusInfo,startTime,endTime,storeId,cityId);
-    }
-
 
     function initSelect(select, optionName) {
         $(select).empty();
@@ -223,18 +225,16 @@
     }
 
     function openBillModal() {
-        var keywords = $("#queryCusInfo").val();
         var startTime = $('#startTime').val();
         var endTime = $('#endTime').val();
         var storeId = $("#storeCode").val();
         var cityId = $('#cityCode').val();
         var storeType = $('#storeType').val();
 
-        var url = "/rest/reportDownload/store/credit?keywords="+ keywords + "&storeId=" + storeId + "&startTime=" + startTime
-            + "&endTime=" + endTime + "&cityId=" + cityId;
-        var escapeUrl=url.replace(/\#/g,"%23");
+        var url = "/rest/reportDownload/company/creditMoney/download?&storeId=" + storeId + "&startTime=" + startTime
+                + "&endTime=" + endTime + "&storeType=" + storeType + "&cityId=" + cityId;
+        var escapeUrl = url.replace(/\#/g, "%23");
         window.open(escapeUrl);
-
     }
 
 </script>

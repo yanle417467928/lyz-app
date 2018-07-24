@@ -146,6 +146,30 @@ public class MaReportDownloadRestController extends BaseRestController {
     }
 
     /**
+     * 装饰公司信用金变更记录
+     *
+     * @param offset
+     * @param size
+     * @param cityId
+     * @param storeId
+     * @param storeType
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    @GetMapping(value = "/company/creditMoney/page/grid")
+    public GridDataVO<CompanyCreditMoneyChangeReportDO> restCompanyCreditMoneyPageGird(Integer offset, Integer size, Long cityId, Long storeId, String storeType,
+                                                                                    String startTime, String endTime) {
+        size = getSize(size);
+        Integer page = getPage(offset, size);
+        //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
+        PageInfo<CompanyCreditMoneyChangeReportDO> creditMoneyChangeReportDOPageInfo = this.maReportDownloadService.findCompanyCreditMoneyReportDOAll(cityId, storeId, storeType, startTime,
+                endTime, storeIds, page, size);
+        return new GridDataVO<CompanyCreditMoneyChangeReportDO>().transform(creditMoneyChangeReportDOPageInfo.getList(), creditMoneyChangeReportDOPageInfo.getTotal());
+    }
+
+    /**
      * @param
      * @return
      * @throws
@@ -380,6 +404,71 @@ public class MaReportDownloadRestController extends BaseRestController {
     }
 
 
+    /**
+     * 顾客产品券汇总报表
+     * @param offset
+     * @param size
+     * @param cityId
+     * @param storeId
+     * @param keywords
+     * @return
+     */
+    @GetMapping(value = "/cus/productCoupon/summary")
+    public GridDataVO<CusProductCouponSummary> restCusProductCouponSummaryPageGrid(Integer offset, Integer size, Long cityId, Long storeId, String keywords, String endTime, String productType){
+        size = getSize(size);
+        Integer page = getPage(offset, size);
+        //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
+        PageInfo<CusProductCouponSummary> pageInfo =maReportDownloadService.findCusProductCouponSummaryPage(cityId,storeId,storeIds,page,size,keywords,endTime,productType);
+        return new GridDataVO<CusProductCouponSummary>().transform(pageInfo.getList(), pageInfo.getTotal());
+    }
+
+    /**
+     * 顾客产品券变更明细
+     *
+     * @param offset
+     * @param size
+     * @param cityId
+     * @param storeId
+     * @param storeType
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    @GetMapping(value = "/cus/productCoupon/chang/log")
+    public GridDataVO<CusProductCouponChangeLogReportDO> cusProductCouponChangeLog(Integer offset, Integer size, Long cityId, Long storeId, String storeType,
+                                                                                    String startTime, String endTime,String keywords,String productType) {
+        size = getSize(size);
+        Integer page = getPage(offset, size);
+        //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
+        PageInfo<CusProductCouponChangeLogReportDO> cusProductCouponChangeLogReportDOPageInfo = this.maReportDownloadService.findCusProductCouponChangeLogPage(cityId, storeId,storeIds,
+                 page, size,keywords,endTime,startTime,productType);
+        return new GridDataVO<CusProductCouponChangeLogReportDO>().transform(cusProductCouponChangeLogReportDOPageInfo.getList(), cusProductCouponChangeLogReportDOPageInfo.getTotal());
+    }
+
+    /**
+     * 门店真实库存变更明细报表
+     *
+     * @param offset
+     * @param size
+     * @param cityId
+     * @param storeId
+     * @param endTime
+     * @return
+     */
+    @GetMapping(value = "/st/inventory/chang/log")
+    public GridDataVO<StInventoryRealChangeLogReportDO> stInventoryRealChangeLogList(Integer offset, Integer size, Long cityId, Long storeId, String endTime, String startTime) {
+
+        size = getSize(size);
+        Integer page = getPage(offset, size);
+        //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
+        PageInfo<StInventoryRealChangeLogReportDO> stInventoryRealChangeLogReportDOPageInfo = this.maReportDownloadService.findStInventoryRealChangeLogPage(cityId, storeId,storeIds,
+                page, size,endTime,startTime);
+        return new GridDataVO<StInventoryRealChangeLogReportDO>().transform(stInventoryRealChangeLogReportDOPageInfo.getList(), stInventoryRealChangeLogReportDOPageInfo.getTotal());
+    }
+
 
     /**
      * @param
@@ -393,6 +482,7 @@ public class MaReportDownloadRestController extends BaseRestController {
     @GetMapping(value = "/receipts/download")
     public void downloadReceipts(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId, String storeType, String startTime, String endTime,
                                  String payType, String keywords) {
+
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
         List<ReceiptsReportDO> receiptsReportDOS = this.maReportDownloadService.downloadReceipts(cityId, storeId, storeType, startTime,
@@ -1004,6 +1094,121 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Label(7, j + row, empCreditMoneyChangeReportDO.getChangeTime(), textFormat));
                     ws.addCell(new Label(8, j + row, empCreditMoneyChangeReportDO.getOrderNumber(), textFormat));
                     ws.addCell(new Label(9, j + row, empCreditMoneyChangeReportDO.getReturnNumber(), textFormat));
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            e.printStackTrace();
+        } finally {
+            if (wwb != null) {
+                try {
+                    wwb.write();//刷新（或写入），生成一个excel文档
+                    wwb.close();//关闭
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    @GetMapping(value = "/company/creditMoney/download")
+    public void downloadCompanyCreditMoneyChangeLog(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId, String storeType, String startTime, String endTime){
+        //查询登陆用户访问权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
+        List<CompanyCreditMoneyChangeReportDO> companyCreditMoneyChangeReportDOS = this.maReportDownloadService.companyCreditMoneyDownload(cityId, storeId, storeType, startTime, endTime, storeIds);
+        ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
+        String shiroName = "";
+        if (null != shiroUser) {
+            shiroName = shiroUser.getName();
+        }
+
+        response.setContentType("text/html;charset=UTF-8");
+        //创建名称
+        String fileurl = "装饰公司信用金变动-" + DateUtils.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
+
+        WritableWorkbook wwb = null;
+        try {
+            //创建文件
+            wwb = exportXML(fileurl, response);
+
+            //excel单表最大行数是65535
+            int maxSize = 0;
+            if (companyCreditMoneyChangeReportDOS != null) {
+                maxSize = companyCreditMoneyChangeReportDOS.size();
+            }
+            int sheets = maxSize / maxRowNum + 1;
+            //设置excel的sheet数
+            for (int i = 0; i < sheets; i++) {
+                //标题格式
+                WritableCellFormat titleFormat = this.setTitleStyle();
+                //正文格式
+                WritableCellFormat textFormat = this.setTextStyle();
+
+                //工作表，参数0表示这是第一页
+                WritableSheet ws = wwb.createSheet("第" + (i + 1) + "页", i);
+
+                //筛选条件
+                Map<String, String> map = new HashMap<>();
+                if (null != cityId && !(cityId.equals(-1L)) && null != companyCreditMoneyChangeReportDOS && companyCreditMoneyChangeReportDOS.size() > 0) {
+                    map.put("城市", companyCreditMoneyChangeReportDOS.get(0).getCityName());
+                } else {
+                    map.put("城市", "无");
+                }
+                if (null != storeId && !(storeId.equals(-1L)) && null != companyCreditMoneyChangeReportDOS && companyCreditMoneyChangeReportDOS.size() > 0) {
+                    map.put("门店", companyCreditMoneyChangeReportDOS.get(0).getStoreName());
+                } else {
+                    map.put("门店", "无");
+                }
+                if (null != storeType && !("".equals(storeType)) && null != companyCreditMoneyChangeReportDOS && companyCreditMoneyChangeReportDOS.size() > 0) {
+                    map.put("门店类型", companyCreditMoneyChangeReportDOS.get(0).getStoreType());
+                } else {
+                    map.put("门店类型", "无");
+                }
+                if (null != startTime && !("".equals(startTime))) {
+                    map.put("开始时间", startTime);
+                } else {
+                    map.put("开始时间", "无");
+                }
+                if (null != endTime && !("".equals(endTime))) {
+                    map.put("结束时间", endTime);
+                } else {
+                    map.put("结束时间", "无");
+                }
+                //设置筛选条件
+                ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
+                //列宽
+                int[] columnView = {10, 20, 13, 10, 10, 15, 20, 20, 20};
+                //列标题
+                String[] titles = {"城市", "门店名称", "门店类型", "变动类型", "变动金额", "变更后总金额", "变更时间", "相关单号"};
+                //计算标题开始行号
+                int row = 1;
+                if (null != map && map.size() > 0) {
+                    row = (map.size() + 1) / 2 + 4;
+                }
+
+                int collectRow = row + 1;
+//
+                row += 5;
+//                //设置标题
+                ws = this.setHeader(ws, titleFormat, columnView, titles, row);
+//
+                row += 1;
+                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.NO_BOLD, false,
+                        UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
+                //填写表体数据
+                for (int j = 0; j < maxRowNum; j++) {
+                    if (j + i * maxRowNum >= maxSize) {
+                        break;
+                    }
+                    CompanyCreditMoneyChangeReportDO companyCreditMoneyChangeReportDO = companyCreditMoneyChangeReportDOS.get(j + i * maxRowNum);
+                    ws.addCell(new Label(0, j + row, companyCreditMoneyChangeReportDO.getCityName(), textFormat));
+                    ws.addCell(new Label(1, j + row, companyCreditMoneyChangeReportDO.getStoreName(), textFormat));
+                    ws.addCell(new Label(2, j + row, companyCreditMoneyChangeReportDO.getStoreType(), textFormat));
+                    ws.addCell(new Label(3, j + row, companyCreditMoneyChangeReportDO.getChangeTypeDesc(), textFormat));
+                    ws.addCell(new Number(4, j + row, companyCreditMoneyChangeReportDO.getChangeMoney(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Number(5, j + row, companyCreditMoneyChangeReportDO.getBalance(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Label(6, j + row, companyCreditMoneyChangeReportDO.getChangeTime(), textFormat));
+                    ws.addCell(new Label(7, j + row, companyCreditMoneyChangeReportDO.getReferenceNumber(), textFormat));
                 }
             }
         } catch (Exception e) {
@@ -1722,7 +1927,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                 int[] columnView = {10, 40, 20, 20, 30, 15, 15};
                 //列标题城市
 
-                String[] titles = {"城市", "门店名称", "门店类型", "项目", "订单号", "原订单类型", "退单类型", "出退货日期", "原订单日期", "客户编号", "客户电话", "客户姓名", "客户类型", "销顾姓名", "公司标识", "商品编码", "商品名称", "产品类型","主分类", "商品类型","商品品牌","数量", "成交单价", "成交总价", "仓库信息"};
+                String[] titles = {"城市", "门店名称", "门店类型", "项目", "订单号", "原订单类型", "退单类型", "出退货日期", "原订单日期", "客户编号", "客户电话", "客户姓名", "客户类型", "销顾姓名", "公司标识", "商品编码", "商品名称", "产品类型","主分类", "商品类型","商品品牌","规格","类型","数量", "成交单价", "成交总价", "仓库信息"};
                 //计算标题开始行号
                 int row = 1;
                 if (null != map && map.size() > 0) {
@@ -1784,18 +1989,23 @@ public class MaReportDownloadRestController extends BaseRestController {
                     if (null != shipmentAndReturnGoods.getBrandName()) {
                         ws.addCell(new Label(20, j + row, shipmentAndReturnGoods.getBrandName(), textFormat));
                     }
-
+                    if (null != shipmentAndReturnGoods.getSpecificationType()) {
+                        ws.addCell(new Label(21, j + row, shipmentAndReturnGoods.getSpecificationType(), textFormat));
+                    }
+                    if (null != shipmentAndReturnGoods.getTypeName()) {
+                        ws.addCell(new Label(22, j + row, shipmentAndReturnGoods.getTypeName(), textFormat));
+                    }
 
                     if (null != shipmentAndReturnGoods.getOrderQty()) {
-                        ws.addCell(new Number(21, j + row, shipmentAndReturnGoods.getOrderQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                        ws.addCell(new Number(23, j + row, shipmentAndReturnGoods.getOrderQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
                     }
                     if (null != shipmentAndReturnGoods.getReturnPrice()) {
-                        ws.addCell(new Number(22, j + row, shipmentAndReturnGoods.getReturnPrice().doubleValue(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                        ws.addCell(new Number(24, j + row, shipmentAndReturnGoods.getReturnPrice().doubleValue(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     }
                     if (null != shipmentAndReturnGoods.getAmount()) {
-                        ws.addCell(new Number(23, j + row, shipmentAndReturnGoods.getAmount().doubleValue(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                        ws.addCell(new Number(25, j + row, shipmentAndReturnGoods.getAmount().doubleValue(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     }
-                    ws.addCell(new Label(24, j + row, shipmentAndReturnGoods.getWareHouse(), textFormat));
+                    ws.addCell(new Label(26, j + row, shipmentAndReturnGoods.getWareHouse(), textFormat));
                 }
             }
         } catch (Exception e) {
@@ -2066,7 +2276,11 @@ public class MaReportDownloadRestController extends BaseRestController {
                     map.put("城市", "无");
                 }
                 if (null != storeType && !"-1".equals(storeType) && !("".equals(storeType)) && null != salesList && salesList.size() > 0) {
-                    map.put("门店类型", StoreType.getStoreTypeByValue(storeType).getDescription());
+                    if("FXAll".equals(storeType)){
+                        map.put("门店类型","分销(总)");
+                    }else{
+                        map.put("门店类型", StoreType.getStoreTypeByValue(storeType).getDescription());
+                    }
                 } else {
                     map.put("门店类型", "无");
                 }
@@ -3738,7 +3952,7 @@ public class MaReportDownloadRestController extends BaseRestController {
      * @param keywords
      */
     @GetMapping(value = "/store/credit")
-    public void downloadStCreditMoney(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId,String keywords) {
+    public void downloadCusProductCouponSummary(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId,String keywords) {
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
         List<StCreditDO> itemsDOList = maReportDownloadService.stCreditMoneySituation(cityId,storeIds,keywords);
@@ -3821,6 +4035,373 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Number(3, j + row, itemsDO.getMaxCreditMoney(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     ws.addCell(new Number(4, j + row, itemsDO.getAvaliableCreditMoney(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     ws.addCell(new Label(5, j + row, itemsDO.getLastChangeTime(), textFormat));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (wwb != null) {
+                try {
+                    wwb.write();//刷新（或写入），生成一个excel文档
+                    wwb.close();//关闭
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * 顾客产品券汇总报表下载
+     * @param request
+     * @param response
+     * @param cityId
+     * @param storeId
+     * @param keywords
+     */
+    @GetMapping(value = "/cus/productCoupon/summary/excel")
+    public void downloadCusProductCouponSummary(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId,String keywords,String endTime,String productType) {
+        //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
+        List<CusProductCouponSummary> itemsDOList = maReportDownloadService.findCusProductCouponSummaryList(cityId,storeId,storeIds,keywords,endTime,productType);
+        ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
+        String shiroName = "";
+        if (null != shiroUser) {
+            shiroName = shiroUser.getName();
+        }
+
+        response.setContentType("text/html;charset=UTF-8");
+        //创建名称
+        String fileurl = "顾客产品券汇总报表-" + DateUtils.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
+
+        WritableWorkbook wwb = null;
+        try {
+            //创建文件
+            wwb = exportXML(fileurl, response);
+
+            //excel单表最大行数是65535
+            int maxSize = 0;
+            if (null != itemsDOList) {
+                maxSize = itemsDOList.size();
+            }
+            int sheets = maxSize / maxRowNum + 1;
+            //设置excel的sheet数
+            for (int i = 0; i < sheets; i++) {
+                //标题格式
+                WritableCellFormat titleFormat = this.setTitleStyle();
+                //正文格式
+                WritableCellFormat textFormat = this.setTextStyle();
+
+                //工作表，参数0表示这是第一页
+                WritableSheet ws = wwb.createSheet("第" + (i + 1) + "页", i);
+
+                //筛选条件
+                Map<String, String> map = new HashMap<>();
+                if (null != cityId && !(cityId.equals(-1L)) && null != itemsDOList && itemsDOList.size() > 0) {
+                    map.put("城市", itemsDOList.get(0).getCity());
+                } else {
+                    map.put("城市", "无");
+                }
+                if (null != storeId && !(storeId.equals(-1L)) && null != itemsDOList && itemsDOList.size() > 0) {
+                    map.put("门店", itemsDOList.get(0).getStoreName());
+                } else {
+                    map.put("门店", "无");
+                }
+
+                if (null != keywords && !("".equals(keywords))) {
+                    map.put("关键字", keywords);
+                } else {
+                    map.put("关键字", "无");
+                }
+
+                if (null != endTime && !("".equals(endTime))) {
+                    map.put("结束时间", endTime);
+                } else {
+                    map.put("结束时间", "无");
+                }
+
+                //设置筛选条件
+                ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
+                //列宽
+                int[] columnView = {10, 30, 20, 20, 30, 20, 10,10,10};
+                //列标题
+                String[] titles = {"城市", "门店名称","导购","顾客","商品名称","商品编码","未提货数量","已提货数量","退未提货券","一级分类","二级分类","品牌","规格","类型"};
+                //计算标题开始行号
+                int row = 1;
+                if (null != map && map.size() > 0) {
+                    row = (map.size() + 1) / 2 + 4;
+                }
+
+                //设置标题
+                ws = this.setHeader(ws, titleFormat, columnView, titles, row);
+                row += 1;
+                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.NO_BOLD, false,
+                        UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
+                //填写表体数据
+                for (int j = 0; j < maxRowNum; j++) {
+                    if (j + i * maxRowNum >= maxSize) {
+                        break;
+                    }
+                    CusProductCouponSummary itemsDO = itemsDOList.get(j + i * maxRowNum);
+                    ws.addCell(new Label(0, j + row, itemsDO.getCity(), textFormat));
+                    ws.addCell(new Label(1, j + row, itemsDO.getStoreName(), textFormat));
+                    ws.addCell(new Label(2, j + row, itemsDO.getSellerName(), textFormat));
+                    ws.addCell(new Label(3, j + row, itemsDO.getCusName(), textFormat));
+                    ws.addCell(new Label(4, j + row, itemsDO.getSkuName(), textFormat));
+                    ws.addCell(new Label(5, j + row, itemsDO.getSku(), textFormat));
+                    ws.addCell(new Number(6, j + row, itemsDO.getNotPickedUp(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(7, j + row, itemsDO.getPickedUp(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(8, j + row, itemsDO.getReturnQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Label(9, j + row, itemsDO.getClassifyOne(), textFormat));
+                    ws.addCell(new Label(10, j + row, itemsDO.getClassifyTow(), textFormat));
+                    ws.addCell(new Label(11, j + row, itemsDO.getBrand(), textFormat));
+                    ws.addCell(new Label(12, j + row, itemsDO.getSpecification(), textFormat));
+                    ws.addCell(new Label(13, j + row, itemsDO.getType(), textFormat));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (wwb != null) {
+                try {
+                    wwb.write();//刷新（或写入），生成一个excel文档
+                    wwb.close();//关闭
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * 顾客产品券变更明细报表下载
+     * @param request
+     * @param response
+     * @param cityId
+     * @param storeId
+     * @param keywords
+     */
+    @GetMapping(value = "/cus/productCoupon/changeLog/excel")
+    public void downloadCusProductCouponChangeLog(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId,String keywords,String endTime,String startTime, String productType) {
+        //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
+        List<CusProductCouponChangeLogReportDO> itemsDOList = maReportDownloadService.findCusProductCouponChangeLogList(cityId,storeId,storeIds,keywords,endTime,startTime,productType);
+        ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
+        String shiroName = "";
+        if (null != shiroUser) {
+            shiroName = shiroUser.getName();
+        }
+
+        response.setContentType("text/html;charset=UTF-8");
+        //创建名称
+        String fileurl = "顾客产品券变更明细报表-" + DateUtils.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
+
+        WritableWorkbook wwb = null;
+        try {
+            //创建文件
+            wwb = exportXML(fileurl, response);
+
+            //excel单表最大行数是65535
+            int maxSize = 0;
+            if (null != itemsDOList) {
+                maxSize = itemsDOList.size();
+            }
+            int sheets = maxSize / maxRowNum + 1;
+            //设置excel的sheet数
+            for (int i = 0; i < sheets; i++) {
+                //标题格式
+                WritableCellFormat titleFormat = this.setTitleStyle();
+                //正文格式
+                WritableCellFormat textFormat = this.setTextStyle();
+
+                //工作表，参数0表示这是第一页
+                WritableSheet ws = wwb.createSheet("第" + (i + 1) + "页", i);
+
+                //筛选条件
+                Map<String, String> map = new HashMap<>();
+                if (null != cityId && !(cityId.equals(-1L)) && null != itemsDOList && itemsDOList.size() > 0) {
+                    map.put("城市", itemsDOList.get(0).getCity());
+                } else {
+                    map.put("城市", "无");
+                }
+                if (null != storeId && !(storeId.equals(-1L)) && null != itemsDOList && itemsDOList.size() > 0) {
+                    map.put("门店", itemsDOList.get(0).getStore());
+                } else {
+                    map.put("门店", "无");
+                }
+
+                if (null != keywords && !("".equals(keywords))) {
+                    map.put("关键字", keywords);
+                } else {
+                    map.put("关键字", "无");
+                }
+
+                if (null != endTime && !("".equals(endTime))) {
+                    map.put("结束时间", endTime);
+                } else {
+                    map.put("结束时间", "无");
+                }
+
+                //设置筛选条件
+                ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
+                //列宽
+                int[] columnView = {10, 20, 20, 20, 20, 20, 30,10,10,15,15,15,15,15,20,20,10,20,5,5,10};
+                //列标题
+                String[] titles = {"城市", "门店名称","导购","顾客","购买券单号","购买券时间","商品名称","商品编码","购买价格",
+                                    "一级分类","二级分类","品牌","规格","类型",
+                                    "变更类型","变更时间","变更数量","变更相关单号","是否使用","券状态","券类型"};
+                //计算标题开始行号
+                int row = 1;
+                if (null != map && map.size() > 0) {
+                    row = (map.size() + 1) / 2 + 4;
+                }
+
+                //设置标题
+                ws = this.setHeader(ws, titleFormat, columnView, titles, row);
+                row += 1;
+                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.NO_BOLD, false,
+                        UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
+                //填写表体数据
+                for (int j = 0; j < maxRowNum; j++) {
+                    if (j + i * maxRowNum >= maxSize) {
+                        break;
+                    }
+                    CusProductCouponChangeLogReportDO itemsDO = itemsDOList.get(j + i * maxRowNum);
+                    ws.addCell(new Label(0, j + row, itemsDO.getCity(), textFormat));
+                    ws.addCell(new Label(1, j + row, itemsDO.getStore(), textFormat));
+                    ws.addCell(new Label(2, j + row, itemsDO.getSeller(), textFormat));
+                    ws.addCell(new Label(3, j + row, itemsDO.getCustomer(), textFormat));
+                    ws.addCell(new Label(4, j + row, itemsDO.getGetOrderNumber(), textFormat));
+                    ws.addCell(new Label(5, j + row, itemsDO.getGetTime(), textFormat));
+                    ws.addCell(new Label(6, j + row, itemsDO.getSkuName(), textFormat));
+                    ws.addCell(new Label(7, j + row, itemsDO.getSku(), textFormat));
+                    ws.addCell(new Number(8, j + row, itemsDO.getBuyPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Label(9, j + row, itemsDO.getClassifyOne(), textFormat));
+                    ws.addCell(new Label(10, j + row, itemsDO.getClassifyTow(), textFormat));
+                    ws.addCell(new Label(11, j + row, itemsDO.getBrand(), textFormat));
+                    ws.addCell(new Label(12, j + row, itemsDO.getSpecification(), textFormat));
+                    ws.addCell(new Label(13, j + row, itemsDO.getType(), textFormat));
+                    ws.addCell(new Label(14, j + row, itemsDO.getChangeTypeDesc(), textFormat));
+                    ws.addCell(new Label(15, j + row, itemsDO.getChangeTime(), textFormat));
+                    ws.addCell(new Number(16, j + row, itemsDO.getChangeQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Label(17, j + row, itemsDO.getChangeNumber(), textFormat));
+                    ws.addCell(new Label(18, j + row, itemsDO.getIsUse(), textFormat));
+                    ws.addCell(new Label(19, j + row, itemsDO.getStatus(), textFormat));
+                    ws.addCell(new Label(20, j + row, itemsDO.getIsZG(), textFormat));
+
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (wwb != null) {
+                try {
+                    wwb.write();//刷新（或写入），生成一个excel文档
+                    wwb.close();//关闭
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * 门店真实库存变更明细报表下载
+     * @param request
+     * @param response
+     * @param cityId
+     * @param storeId
+     */
+    @GetMapping(value = "/st/inventory/changeLog/excel")
+    public void downloadStoreInventoryRealChangeLog(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId,String endTime, String startTime) {
+        //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
+        List<StInventoryRealChangeLogReportDO> itemsDOList = maReportDownloadService.findStInventoryRealChangeLogList(cityId,storeId,storeIds,endTime,startTime);
+        ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
+        String shiroName = "";
+        if (null != shiroUser) {
+            shiroName = shiroUser.getName();
+        }
+
+        response.setContentType("text/html;charset=UTF-8");
+        //创建名称
+        String fileurl = "门店真实库存变更明细报表-" + DateUtils.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
+
+        WritableWorkbook wwb = null;
+        try {
+            //创建文件
+            wwb = exportXML(fileurl, response);
+
+            //excel单表最大行数是65535
+            int maxSize = 0;
+            if (null != itemsDOList) {
+                maxSize = itemsDOList.size();
+            }
+            int sheets = maxSize / maxRowNum + 1;
+            //设置excel的sheet数
+            for (int i = 0; i < sheets; i++) {
+                //标题格式
+                WritableCellFormat titleFormat = this.setTitleStyle();
+                //正文格式
+                WritableCellFormat textFormat = this.setTextStyle();
+
+                //工作表，参数0表示这是第一页
+                WritableSheet ws = wwb.createSheet("第" + (i + 1) + "页", i);
+
+                //筛选条件
+                Map<String, String> map = new HashMap<>();
+                if (null != cityId && !(cityId.equals(-1L)) && null != itemsDOList && itemsDOList.size() > 0) {
+                    map.put("城市", "无");
+                } else {
+                    map.put("城市", "无");
+                }
+                if (null != storeId && !(storeId.equals(-1L)) && null != itemsDOList && itemsDOList.size() > 0) {
+                    map.put("门店", itemsDOList.get(0).getStore());
+                } else {
+                    map.put("门店", "无");
+                }
+
+                map.put("关键字", "无");
+
+
+                if (null != endTime && !("".equals(endTime))) {
+                    map.put("结束时间", endTime);
+                } else {
+                    map.put("结束时间", "无");
+                }
+
+                //设置筛选条件
+                ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
+                //列宽
+                int[] columnView = {20, 30, 10, 10, 10, 10, 20,30,20};
+                //列标题
+                String[] titles = {"门店名称","商品名称","商品编码","初始数量","变更数量","变更后数量","变更类型","相关订单号","变更时间"};
+                //计算标题开始行号
+                int row = 1;
+                if (null != map && map.size() > 0) {
+                    row = (map.size() + 1) / 2 + 4;
+                }
+
+                //设置标题
+                ws = this.setHeader(ws, titleFormat, columnView, titles, row);
+                row += 1;
+                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.NO_BOLD, false,
+                        UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
+                //填写表体数据
+                for (int j = 0; j < maxRowNum; j++) {
+                    if (j + i * maxRowNum >= maxSize) {
+                        break;
+                    }
+                    StInventoryRealChangeLogReportDO itemsDO = itemsDOList.get(j + i * maxRowNum);
+                    ws.addCell(new Label(0, j + row, itemsDO.getStore(), textFormat));
+                    ws.addCell(new Label(1, j + row, itemsDO.getSkuName(), textFormat));
+                    ws.addCell(new Label(2, j + row, itemsDO.getSku(), textFormat));
+                    ws.addCell(new Number(3, j + row, itemsDO.getInitialQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(4, j + row, itemsDO.getChangeQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(5, j + row, itemsDO.getAfterChangeQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Label(6, j + row, itemsDO.getChangeTypeDesc(), textFormat));
+                    ws.addCell(new Label(7, j + row, itemsDO.getReferenceNumber(), textFormat));
+                    ws.addCell(new Label(8, j + row, itemsDO.getChangeTime(), textFormat));
                 }
             }
         } catch (Exception e) {

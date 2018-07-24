@@ -57,9 +57,11 @@
                     </select>
                     <select name="status" id="status" class="form-control select"
                             onchange="statusChange(this.value)" >
-                        <option value="">选择状态</option>
+                        <option value="ALL">全部</option>
                         <option value="NEW">新建</option>
-                        <option value="PUBLISH">已发布</option>
+                        <option value="PUBLISH">发布</option>
+                        <option value="INVALID">失效</option>
+                        <option value="EXPIRED">过期</option>
                     </select>
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
                         <input type="text" name="Info" id="Info" class="form-control"

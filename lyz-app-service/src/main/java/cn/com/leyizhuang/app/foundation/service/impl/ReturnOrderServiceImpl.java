@@ -14,6 +14,7 @@ import cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventoryAvailableQty
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventory;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.StoreInventoryAvailableQtyChangeLog;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
+import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwCancelOrderRequest;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwRequisitionOrderGoods;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.AtwReturnOrder;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaReturningOrderGoods;
@@ -25,12 +26,15 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.common.core.constant.CommonGlobal;
+import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.AssertUtil;
 import cn.com.leyizhuang.common.util.CountUtil;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.collections.map.HashedMap;
+import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -656,7 +660,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                 }
             }
             //返回导购信用额度
-            if (orderBillingDetails.getEmpCreditMoney() != null && orderBillingDetails.getEmpCreditMoney() > 0) {
+            if (orderBillingDetails.getEmpCreditMoney() != null && orderBillingDetails.getEmpCreditMoney() > 0 && orderBillingDetails.getIsPayUp().equals(false)) {
                 for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                     //获取导购信用金
                     EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(userId);
@@ -3404,5 +3408,40 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
         return returnOrderDAO.getReturnBaseinfoByOrderNo(ordNo);
     }
 
+    @Resource
+    private CancelOrderParametersService cancelOrderParametersService;
+
+    /**
+     * 自动取消 6个月未提货自提单，7天未出货配送单
+     */
+    public void  autoCancelOutShoppingTimeOrder(){
+
+        // 找到 超过6个月未出货的自提单
+        LocalDateTime sixMonthAfterTime = LocalDateTime.now().minusHours(6);
+        List<OrderBaseInfo> sixMonthNotShippingList = orderDAO.findOrderByStatusAndTypeAndCreateTime(AppOrderStatus.PENDING_SHIPMENT,AppDeliveryType.SELF_TAKE,sixMonthAfterTime);
+
+        // 取消订单
+
+        // 找到 超过7天没有出货的配送单
+        LocalDateTime sevenDayAfterTime = LocalDateTime.now().minusDays(7);
+        List<OrderBaseInfo> sevenDayNotShiooingList = orderDAO.findOrderByStatusAndTypeAndCreateTime(AppOrderStatus.PENDING_SHIPMENT,AppDeliveryType.HOUSE_DELIVERY,sevenDayAfterTime);
+
+        // 取消订单
+    }
+
+    public List<OrderBaseInfo>  findOrderByStatusAndTypeAndCreateTime(AppOrderStatus status,AppDeliveryType type,LocalDateTime endTime){
+        if (status == null){
+            return null;
+        }
+        if (type == null){
+            return null;
+        }
+        if (endTime == null){
+            return  null;
+        }
+
+        return orderDAO.findOrderByStatusAndTypeAndCreateTime(status,type,endTime);
+
+    }
 }
 

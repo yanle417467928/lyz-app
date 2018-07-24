@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
@@ -231,4 +232,8 @@ public interface OrderDAO {
     Boolean isReturnJxSubPrice(@Param("orderNo") String orderNo,@Param("sku") String sku,@Param("goodsLineType") String goodsLineType);
 
     Boolean isBuckleJxSubPrice(@Param("returnNo") String returnNo,@Param("sku") String sku,@Param("goodsLineType") String goodsLineType);
+
+    List<OrderBaseInfo> findOrderByStatusAndTypeAndCreateTime(@Param("status") AppOrderStatus status,
+                                                              @Param("type") AppDeliveryType type,
+                                                              @Param("endTime") LocalDateTime endTime);
 }

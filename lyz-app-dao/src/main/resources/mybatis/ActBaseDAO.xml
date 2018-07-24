@@ -5,14 +5,16 @@
     <sql id="ALL_FIELDS">
         id, create_time, title, begin_time, end_time, city_id, city_name, act_target,
     base_type, promotion_type, condition_type, is_double, gift_choose_number, full_amount,
-    full_number,is_returnable,sort_id,status,act_code,add_amount,is_gcorder,is_goods_optional_qty,is_gift_optional_qty,pic_url,rank_code,scope,is_member_conference
+    full_number,is_returnable,sort_id,status,act_code,add_amount,is_gcorder,is_goods_optional_qty,is_gift_optional_qty,pic_url,rank_code,scope,is_member_conference,
+    is_join_once,join_interval
     </sql>
 
     <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO act_base (
          create_time, title, begin_time, end_time, city_id, city_name,  act_target,
     base_type, promotion_type, condition_type, is_double, gift_choose_number, full_amount,
-    full_number,is_returnable,sort_id,status,act_code,add_amount,is_gcorder,is_goods_optional_qty,is_gift_optional_qty,pic_url,rank_code,scope,is_member_conference
+    full_number,is_returnable,sort_id,status,act_code,add_amount,is_gcorder,is_goods_optional_qty,is_gift_optional_qty,pic_url,rank_code,scope,is_member_conference,
+    is_join_once,join_interval
         )
         VALUES
         (
@@ -23,7 +25,7 @@
       #{isDouble,jdbcType=BIT}, #{giftChooseNumber,jdbcType=INTEGER}, #{fullAmount,jdbcType=DECIMAL},
       #{fullNumber,jdbcType=INTEGER},#{isReturnable,jdbcType=BIT},#{sortId,jdbcType=INTEGER},#{status,jdbcType=VARCHAR},
       #{actCode,jdbcType=VARCHAR},#{addAmount,jdbcType=DECIMAL},#{isGcOrder,jdbcType=BIT},#{isGoodsOptionalQty,jdbcType=BIT},#{isGiftOptionalQty,jdbcType=BIT}
-      ,#{picUrl},#{rankCode},#{scope},#{isMemberConference}
+      ,#{picUrl},#{rankCode},#{scope},#{isMemberConference},#{isJoinOnce},#{joinInterval}
         )
     </insert>
 
@@ -148,6 +150,12 @@
             <if test="isMemberConference != null">
                 is_member_conference = #{isMemberConference},
             </if>
+            <if test="isJoinOnce != null">
+                is_join_once = #{isJoinOnce},
+            </if>
+            <if test="joinInterval != null">
+                join_interval = #{joinInterval},
+            </if>
         </set>
         WHERE
         id = #{id}
@@ -182,26 +190,28 @@
         FROM act_base
         WHERE
         1=1
-        <if test="keywords != null">
+        <if test="keywords != null and keywords != ''">
            AND  title LIKE concat("%",#{keywords},"%")
         </if>
         <if test="null != cityId and -1 !=cityId">
             and city_id = #{cityId}
         </if>
-        <if test="status == ''">
-            AND status != "INVALID"
-            ORDER BY create_time DESC
-        </if>
-
         <if test="status == 'NEW'">
             and status = #{status}
-            ORDER BY create_time DESC
+            AND end_time > now()
         </if>
         <if test="status == 'PUBLISH'">
             and status = #{status}
-            ORDER BY create_time DESC
+            AND end_time > now()
         </if>
-
+        <if test="status == 'INVALID'">
+            and status = #{status}
+            AND end_time > now()
+        </if>
+        <if test="status == 'EXPIRED'">
+            and <![CDATA[end_time < now()]]>
+        </if>
+        ORDER BY create_time DESC
     </select>
 
     <select id="queryListBySkus" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO">
@@ -303,23 +313,23 @@
     </select>
 
     <insert id="insertBatch" useGeneratedKeys="true" parameterType="java.util.List">
-    <selectKey resultType="long" keyProperty="id" order="AFTER">
-        SELECT
-        LAST_INSERT_ID()
-    </selectKey>
-    insert into act_base (create_time, title, begin_time, end_time, city_id, city_name, act_target,
-    base_type, promotion_type, condition_type, is_double, gift_choose_number, full_amount,
-    full_number,sort_id)
-    values
-    <foreach collection="list" item="item" index="index" separator="," >
-        (#{item.createTime,jdbcType=TIMESTAMP}, #{item.title,jdbcType=VARCHAR},
-        #{item.beginTime,jdbcType=TIMESTAMP}, #{item.endTime,jdbcType=TIMESTAMP}, #{item.cityId,jdbcType=BIGINT},
-        #{item.cityName,jdbcType=VARCHAR}, #{item.actTarget,jdbcType=VARCHAR},
-        #{item.baseType,jdbcType=VARCHAR}, #{item.promotionType,jdbcType=VARCHAR}, #{item.conditionType,jdbcType=VARCHAR},
-        #{item.isDouble,jdbcType=BIT}, #{item.giftChooseNumber,jdbcType=INTEGER}, #{item.fullAmount,jdbcType=DECIMAL},
-        #{item.fullNumber,jdbcType=INTEGER},#{item.sortId,jdbcType=INTEGER})
-    </foreach>
-</insert>
+        <selectKey resultType="long" keyProperty="id" order="AFTER">
+            SELECT
+            LAST_INSERT_ID()
+        </selectKey>
+        insert into act_base (create_time, title, begin_time, end_time, city_id, city_name, act_target,
+        base_type, promotion_type, condition_type, is_double, gift_choose_number, full_amount,
+        full_number,sort_id)
+        values
+        <foreach collection="list" item="item" index="index" separator="," >
+            (#{item.createTime,jdbcType=TIMESTAMP}, #{item.title,jdbcType=VARCHAR},
+            #{item.beginTime,jdbcType=TIMESTAMP}, #{item.endTime,jdbcType=TIMESTAMP}, #{item.cityId,jdbcType=BIGINT},
+            #{item.cityName,jdbcType=VARCHAR}, #{item.actTarget,jdbcType=VARCHAR},
+            #{item.baseType,jdbcType=VARCHAR}, #{item.promotionType,jdbcType=VARCHAR}, #{item.conditionType,jdbcType=VARCHAR},
+            #{item.isDouble,jdbcType=BIT}, #{item.giftChooseNumber,jdbcType=INTEGER}, #{item.fullAmount,jdbcType=DECIMAL},
+            #{item.fullNumber,jdbcType=INTEGER},#{item.sortId,jdbcType=INTEGER})
+        </foreach>
+    </insert>
     <delete id="deleteMemberConferenceByActBaseId">
         DELETE
         FROM
@@ -328,4 +338,42 @@
             act_id = #{actId}
     </delete>
 
+    <!-- 促销参与记录 -->
+
+    <insert id="insertJoinLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.activity.ActJoinLog" >
+        insert into act_join_log (id, act_id, create_time,
+        user_id, identity_type)
+        values (#{id,jdbcType=BIGINT}, #{actId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP},
+        #{userId,jdbcType=BIGINT}, #{identityType,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="updateJoinLog" parameterType="cn.com.leyizhuang.app.foundation.pojo.activity.ActJoinLog" >
+        update act_join_log
+        <set >
+            <if test="actId != null" >
+                act_id = #{actId,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null" >
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="userId != null" >
+                user_id = #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="identityType != null" >
+                identity_type = #{identityType,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="getJoinLogByUserIdAndActId" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActJoinLog">
+        SELECT * from act_join_log
+        WHERE user_id = #{userId} and act_id = #{actId} and identity_type = #{identityType} order by create_time DESC
+    </select>
+
+    <select id="getVipMeetingJoinLogByUserIdAndActId" resultType="cn.com.leyizhuang.app.foundation.pojo.activity.ActJoinLog">
+        SELECT * from act_join_log l
+        left JOIN act_base a on a.id = l.act_id
+        WHERE user_id = #{userId} and act_id = #{actId} and identity_type = #{identityType} and a.is_member_conference = 1 order by l.create_time DESC;
+    </select>
 </mapper>
