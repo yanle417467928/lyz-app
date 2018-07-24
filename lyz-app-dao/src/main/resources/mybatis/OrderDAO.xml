@@ -837,13 +837,13 @@
                 is_evaluated = #{isEvaluated},
             </if>
             <if test="null != isRecordSales">
-                is_record_sales = #{isRecordSales}
+                is_record_sales = #{isRecordSales},
             </if>
             <if test="null != salesConsultId">
-                sales_consult_id = #{salesConsultId}
+                sales_consult_id = #{salesConsultId},
             </if>
             <if test="null != salesConsultName">
-                sales_consult_name = #{salesConsultName}
+                sales_consult_name = #{salesConsultName},
             </if>
             <if test="null != salesConsultPhone">
                 sales_consult_phone = #{salesConsultPhone}
