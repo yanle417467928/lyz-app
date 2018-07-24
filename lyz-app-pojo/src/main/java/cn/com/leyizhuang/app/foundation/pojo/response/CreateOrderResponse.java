@@ -35,4 +35,23 @@ public class CreateOrderResponse implements Serializable {
      * 是否货到付款
      */
     private Boolean isCashDelivery;
+
+    //顾客预存款余额
+    private Double preDeposit = 0D;
+
+    //导购信用额度余额
+    private Double creditMoney = 0D;
+
+    //门店预存款余额
+    private Double stPreDeposit = 0D;
+
+    //门店信用金余额
+    private Double stCreditMoney = 0D;
+
+    public CreateOrderResponse(String orderNumber, Double amountPayable, Boolean isPayUp, Boolean isCashDelivery){
+        this.orderNumber = orderNumber;
+        this.amountPayable = amountPayable;
+        this.isPayUp = isPayUp;
+        this.isCashDelivery = isCashDelivery;
+    }
 }

@@ -44,7 +44,12 @@ public class AutoCancelNotShippingOrder implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
 
 
-        // 找到 超过6个月未出货的自提单
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime dateTime = LocalDateTime.of(2018,8,1,0,0,59);
+
+        if (now.isAfter(dateTime)){
+
+            // 找到 超过6个月未出货的自提单
 //        LocalDateTime sixMonthAfterTime = LocalDateTime.now().minusHours(6);
 //        List<OrderBaseInfo> sixMonthNotShippingList = returnOrderService.findOrderByStatusAndTypeAndCreateTime(AppOrderStatus.PENDING_SHIPMENT,
 //                AppDeliveryType.SELF_TAKE,sixMonthAfterTime);
@@ -54,15 +59,15 @@ public class AutoCancelNotShippingOrder implements Job {
 //                    baseInfo.getOrderNumber(),"自提单超过6个月未提货，自动取消","");
 //        }
 
+            // 找到 超过7天没有出货的配送单
+            LocalDateTime sevenDayAfterTime = LocalDateTime.now().minusDays(7);
+            List<OrderBaseInfo> sevenDayNotShiooingList = returnOrderService.findOrderByStatusAndTypeAndCreateTime(AppOrderStatus.PENDING_SHIPMENT,
+                    AppDeliveryType.HOUSE_DELIVERY,sevenDayAfterTime);
 
-        // 找到 超过7天没有出货的配送单
-        LocalDateTime sevenDayAfterTime = LocalDateTime.now().minusDays(7);
-        List<OrderBaseInfo> sevenDayNotShiooingList = returnOrderService.findOrderByStatusAndTypeAndCreateTime(AppOrderStatus.PENDING_SHIPMENT,
-                AppDeliveryType.HOUSE_DELIVERY,sevenDayAfterTime);
-
-        for (OrderBaseInfo baseInfo : sevenDayNotShiooingList){
-            this.cancelOrder(baseInfo.getCreatorId(),baseInfo.getCreatorIdentityType().getValue(),
-                    baseInfo.getOrderNumber(),"配送单超过7天未出货，自动取消","");
+            for (OrderBaseInfo baseInfo : sevenDayNotShiooingList){
+                this.cancelOrder(baseInfo.getCreatorId(),baseInfo.getCreatorIdentityType().getValue(),
+                        baseInfo.getOrderNumber(),"配送单超过7天未出货，自动取消","");
+            }
         }
 
     }
@@ -110,7 +115,31 @@ public class AutoCancelNotShippingOrder implements Job {
                 appOrderService.updateOrderStatusByOrderNo(orderBaseInfo);
 
                 System.out.println("取消订单提交成功，等待确认");
-            }else {
+            }else if (orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE) && AppOrderStatus.PENDING_SHIPMENT.equals(orderBaseInfo.getStatus())){
+                //如果是待收货、门店自提单则需要返回第三方支付金额
+                if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.SELF_TAKE)) {
+                    if (null != orderBillingDetails.getOnlinePayType()) {
+                        Double onlinePayAmount = orderBillingDetails.getOnlinePayAmount();
+                        if (onlinePayAmount > 0D){
+                            // 第三方支付已经超过3个月，只能分别退顾客或者门店预存款
+                            if (orderBaseInfo.getCreatorIdentityType().equals(0)){
+                                // 退门店预存款 把第三方支付金额加至门店预存款
+                                Double stPredipostAmount = orderBillingDetails.getStPreDeposit();
+
+                                stPredipostAmount = CountUtil.add(stPredipostAmount,onlinePayAmount);
+                                orderBillingDetails.setStPreDeposit(stPredipostAmount);
+                            }else if(orderBaseInfo.getCreatorIdentityType().equals(6)){
+                                // 退顾客预存款 把第三方支付加至顾客预存款
+                                Double cusPredipostAmount = orderBillingDetails.getCusPreDeposit();
+
+                                cusPredipostAmount = CountUtil.add(cusPredipostAmount,onlinePayAmount);
+                                orderBillingDetails.setCusPreDeposit(cusPredipostAmount);
+                            }
+                            orderBillingDetails.setOnlinePayAmount(0D);
+                        }
+                    }
+                }
+
                 //调用取消订单通用方法
                 Map<Object, Object> maps = returnOrderService.cancelOrderUniversal(userId, identityType, orderNumber, reasonInfo, remarksInfo, orderBaseInfo, orderBillingDetails);
                 //获取退单基础表信息
@@ -118,7 +147,6 @@ public class AutoCancelNotShippingOrder implements Job {
                 String code = (String) maps.get("code");
                 Date date = new Date();
                 if ("SUCCESS".equals(code)) {
-
                     //如果是待发货的门店自提单发送退单拆单消息到拆单消息队列
                     /*2018-04-08 generation 改为待收货的自提单*/
 //                    if (orderBaseInfo.getStatus().equals(AppOrderStatus.PENDING_SHIPMENT) && orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE)){

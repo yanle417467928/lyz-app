@@ -837,7 +837,16 @@
                 is_evaluated = #{isEvaluated},
             </if>
             <if test="null != isRecordSales">
-                is_record_sales = #{isRecordSales}
+                is_record_sales = #{isRecordSales},
+            </if>
+            <if test="null != salesConsultId">
+                sales_consult_id = #{salesConsultId},
+            </if>
+            <if test="null != salesConsultName">
+                sales_consult_name = #{salesConsultName},
+            </if>
+            <if test="null != salesConsultPhone">
+                sales_consult_phone = #{salesConsultPhone}
             </if>
         </set>
         WHERE ord_no = #{orderNumber}
@@ -873,6 +882,12 @@
             </if>
             <if test="null != sellerStoreDeposit">
                 seller_store_deposit = #{sellerStoreDeposit},
+            </if>
+            <if test="null != stPreDeposit">
+                st_pre_deposit = #{stPreDeposit},
+            </if>
+            <if test="null != cusPreDeposit">
+                cus_pre_deposit = #{cusPreDeposit},
             </if>
             <if test="null != isPayUp  ">
                 is_pay_up = #{isPayUp}
@@ -1849,9 +1864,9 @@
         ob.delivery_type != "PRODUCT_COUPON"
          and s.store_type = 'JM'
         and ob.create_time > '2018-05-01 00:00:00'
-
         and ob.`status` = 'FINISHED'
-        and oj.ord_no is null;
+        and oj.ord_no is null
+        and oci.get_type = 'BUY';
     </select>
 
     <select id="getBpProductByOrderNo" resultType="java.lang.Integer">
