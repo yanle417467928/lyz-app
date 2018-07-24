@@ -839,6 +839,15 @@
             <if test="null != isRecordSales">
                 is_record_sales = #{isRecordSales}
             </if>
+            <if test="null != salesConsultId">
+                sales_consult_id = #{salesConsultId}
+            </if>
+            <if test="null != salesConsultName">
+                sales_consult_name = #{salesConsultName}
+            </if>
+            <if test="null != salesConsultPhone">
+                sales_consult_phone = #{salesConsultPhone}
+            </if>
         </set>
         WHERE ord_no = #{orderNumber}
     </update>
