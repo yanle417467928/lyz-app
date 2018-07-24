@@ -54,7 +54,7 @@
                                     <option value="-1">选择调入门店</option>
                                 <#if storeList?? && storeList?size gt 0 >
                                     <#list storeList as store>
-                                        <option value="${store.id!''}">${store.storeName!''}</option>
+                                        <option value="${store.storeId!''}">${store.storeName!''}</option>
                                     </#list>
                                 </#if>
                                 </select>
@@ -65,7 +65,7 @@
                                     <option value="-1">选择调出门店</option>
                                 <#if storeList?? && storeList?size gt 0 >
                                     <#list storeList as store>
-                                        <option value="${store.id!''}">${store.storeName!''}</option>
+                                        <option value="${store.storeId!''}">${store.storeName!''}</option>
                                     </#list>
                                 </#if>
                                 </select>
@@ -100,8 +100,13 @@
                         <div class="row" style="margin-top: 1%">
                             <div class="col-xs-12 col-md-9">
                             </div>
-                            <div class="col-xs-12 col-md-1" style="margin-left: 4%">
-                                <button type="button" id="btn_query" class="btn btn-primary">
+                            <div class="col-xs-12 col-md-1" style="margin-left: -2%">
+                                <button id="btn_add" type="button" class="btn btn-default">
+                                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
+                                </button>
+                            </div>
+                            <div class="col-xs-12 col-md-1" style="margin-left: -1.5%">
+                                <button type="button" id="btn_query" class="btn btn-default">
                                     <i class="fa fa-search"></i> 查询
                                 </button>
                             </div>
@@ -117,9 +122,6 @@
                         <input type="hidden" id="allocationTypeEnum" name="allocationTypeEnum">
                     </div>
                     <div id="toolbar" class="form-inline">
-                        <button id="btn_add" type="button" class="btn btn-default">
-                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
-                        </button>
                         <div id="toolbar" class="form-inline">
                         </div>
                     </div>
@@ -415,7 +417,7 @@
 
     function initDateGrid(url) {
         $("#dataGrid").bootstrapTable('destroy');
-        $grid.init($('#dataGrid'), $('#toolbar'), url, 'get', false, function (params) {
+        $grid.initAllocation($('#dataGrid'), $('#toolbar'), url, 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,

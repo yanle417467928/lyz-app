@@ -1,9 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
-import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventory;
-import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventoryChange;
-import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreRealInventoryChange;
-import cn.com.leyizhuang.app.foundation.pojo.management.store.StoreReturnAndRequireGoodsInf;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -32,4 +29,10 @@ public interface MaStoreInventoryDAO {
     List<StoreReturnAndRequireGoodsInf> queryStoresGoodRequirePageVO(@Param(value = "structureCode")String structureCode,@Param(value = "storeId") Long storeId, @Param(value = "queryInfo")String queryInfo,@Param(value = "list") List<Long> storeIds);
 
     List<StoreReturnAndRequireGoodsInf> queryStoresGoodReturnPageVO(@Param(value = "structureCode")String structureCode, @Param(value = "storeId") Long storeId, @Param(value = "queryInfo") String queryInfo,@Param(value = "list") List<Long> storeIds);
+
+    List<StoreReturnAndRequireGoodsInf> queryStoresGoodCheckingPageVO(@Param(value = "structureCode")String structureCode, @Param(value = "storeId") Long storeId, @Param(value = "queryInfo") String queryInfo,@Param(value = "list") List<Long> storeIds);
+
+    List<StoreInvoicingInf> queryInvoicingPage(@Param(value = "keywords")String keywords, @Param(value = "structureCode")String structureCode, @Param(value = "storeId") Long storeId, @Param(value = "endDateTime") String endDateTime, @Param(value = "list") List<Long> storeIds);
+
+    Integer queryStoreInitialrealQty(@Param(value = "storeCode")String storeCode , @Param(value = "sku")String sku);
 }

@@ -47,7 +47,7 @@
                     </select>
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
                         <input type="text" name="queryInfo" id="queryInfo" class="form-control "
-                               style="width:auto;" placeholder="请输入商品编码" onkeypress="findBykey()">
+                               style="width:auto;" placeholder="请输入商品编码或退货单号" onkeypress="findBykey()">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
                                     onclick="findByCondition()">查找</button>
