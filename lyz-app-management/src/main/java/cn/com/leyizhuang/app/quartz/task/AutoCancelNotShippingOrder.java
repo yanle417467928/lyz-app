@@ -45,14 +45,14 @@ public class AutoCancelNotShippingOrder implements Job {
 
 
         // 找到 超过6个月未出货的自提单
-        LocalDateTime sixMonthAfterTime = LocalDateTime.now().minusHours(6);
-        List<OrderBaseInfo> sixMonthNotShippingList = returnOrderService.findOrderByStatusAndTypeAndCreateTime(AppOrderStatus.PENDING_SHIPMENT,
-                AppDeliveryType.SELF_TAKE,sixMonthAfterTime);
-
-        for (OrderBaseInfo baseInfo : sixMonthNotShippingList){
-            this.cancelOrder(baseInfo.getCreatorId(),baseInfo.getCreatorIdentityType().getValue(),
-                    baseInfo.getOrderNumber(),"自提单超过6个月未提货，自动取消","");
-        }
+//        LocalDateTime sixMonthAfterTime = LocalDateTime.now().minusHours(6);
+//        List<OrderBaseInfo> sixMonthNotShippingList = returnOrderService.findOrderByStatusAndTypeAndCreateTime(AppOrderStatus.PENDING_SHIPMENT,
+//                AppDeliveryType.SELF_TAKE,sixMonthAfterTime);
+//
+//        for (OrderBaseInfo baseInfo : sixMonthNotShippingList){
+//            this.cancelOrder(baseInfo.getCreatorId(),baseInfo.getCreatorIdentityType().getValue(),
+//                    baseInfo.getOrderNumber(),"自提单超过6个月未提货，自动取消","");
+//        }
 
 
         // 找到 超过7天没有出货的配送单
