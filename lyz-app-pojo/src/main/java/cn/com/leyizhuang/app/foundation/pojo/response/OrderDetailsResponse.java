@@ -146,4 +146,11 @@ public class OrderDetailsResponse {
      */
     private Boolean isUseEmpCredit;
 
+    //导购信用额度余额
+    private Double creditMoney = 0D;
+
+    //门店预存款余额
+    private Double stPreDeposit = 0D;
+
+
 }
