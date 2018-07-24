@@ -30,7 +30,7 @@
             <li class="active">${selectedMenu.resourceName!'??'}</li>
         </ol>
         <#else>
-            <h1>装饰公司信用金余额</h1>
+            <h1>顾客产品券汇总报表</h1>
     </#if>
 </section>
 
@@ -47,9 +47,17 @@
                     <#--onchange="findByCondition()"--> data-live-search="true">
                         <option value="-1">选择门店</option>
                         </select>
+                    <select name="productType" id="productType" class="form-control selectpicker" data-width="120px" style="width:auto;"
+                    data-live-search="true">
+                        <option value="NO">选择券类型</option>
+                        <option value="COMMON">普通</option>
+                        <option value="ZG">专供</option>
+                    </select>
+                    <input name="endTime" onchange="" type="text" class="form-control datepicker"
+                           id="endTime" style="width: 120px;" placeholder="截止时间">
                                 <div class="input-group col-md-2" style="margin-top:0px; positon:relative">
                                     <input type="text" name="queryCusInfo" id="queryCusInfo" class="form-control" style="width:auto;"
-                                           placeholder="请输姓名或电话">
+                                           placeholder="请输顾客姓名或顾客电话">
                                     <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
                                     onclick="return findByOrderNumber()">查找</button>
@@ -82,12 +90,12 @@
 
         //获取数据
 //        initDateGird(null,null,null,null,null,null);
-        //时间选择框样式
-//        $('.datepicker').datepicker({
-//            format: 'yyyy-mm-dd',
-//            language: 'zh-CN',
-//            autoclose: true
-//        });
+//        时间选择框样式
+        $('.datepicker').datepicker({
+            format: 'yyyy-mm-dd',
+            language: 'zh-CN',
+            autoclose: true
+        });
 
     });
 
@@ -123,7 +131,7 @@
             cityId = 1;
         }
         $.ajax({
-            url: '/rest/stores/find/company/StoresListByCityId/'+cityId,
+            url: '/rest/stores/findStoresListByCityId/'+cityId,
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);
@@ -144,8 +152,8 @@
         });
     }
 
-    function initDateGird(keywords,startTime,endTime,storeId,cityId) {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/reportDownload/stcredit/page/grid', 'get', false, function (params) {
+    function initDateGird(keywords,startTime,endTime,storeId,cityId,productType) {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/reportDownload/cus/productCoupon/summary', 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
@@ -153,7 +161,8 @@
                 storeId: storeId,
                 startTime: startTime,
                 endTime: endTime,
-                cityId: cityId
+                cityId: cityId,
+                productType: productType
             }
         }, [{
             checkbox: true,
@@ -167,16 +176,32 @@
             title: '门店名称',
             align: 'center'
         },{
-            field: 'maxCreditMoney',
-            title: '信用额度',
+            field: 'sellerName',
+            title: '导购',
             align: 'center'
         },{
-            field: 'avaliableCreditMoney',
-            title: '可用余额',
+            field: 'cusName',
+            title: '顾客',
             align: 'center'
         }, {
-            field: 'lastChangeTime',
-            title: '上一次更新时间',
+            field: 'skuName',
+            title: '商品名称',
+            align: 'center'
+        },{
+            field: 'sku',
+            title: '商品编码',
+            align: 'center'
+        },{
+            field: 'notPickedUp',
+            title: '未提货数量',
+            align: 'center'
+        },{
+            field: 'pickedUp',
+            title: '提货数量',
+            align: 'center'
+        },{
+            field: 'returnQty',
+            title: '退未提货券',
             align: 'center'
         }
         ]);
@@ -212,7 +237,8 @@
         var endTime = $('#endTime').val();
         var storeId = $("#storeCode").val();
         var cityId = $('#cityCode').val();
-        initDateGird(queryCusInfo,startTime,endTime,storeId,cityId);
+        var productType = $('#productType').val();
+        initDateGird(queryCusInfo,startTime,endTime,storeId,cityId,productType);
     }
 
 
@@ -230,7 +256,7 @@
         var cityId = $('#cityCode').val();
         var storeType = $('#storeType').val();
 
-        var url = "/rest/reportDownload/store/credit?keywords="+ keywords + "&storeId=" + storeId + "&startTime=" + startTime
+        var url = "/rest/reportDownload/cus/productCoupon/summary/excel?keywords="+ keywords + "&storeId=" + storeId
             + "&endTime=" + endTime + "&cityId=" + cityId;
         var escapeUrl=url.replace(/\#/g,"%23");
         window.open(escapeUrl);

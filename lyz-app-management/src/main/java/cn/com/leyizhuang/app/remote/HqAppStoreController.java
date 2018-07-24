@@ -4,6 +4,8 @@ import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
 import cn.com.leyizhuang.app.foundation.service.CityService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
@@ -34,6 +36,8 @@ public class HqAppStoreController {
 
     @Resource
     private CityService cityService;
+    @Resource
+    private AppEmployeeService appEmployeeService;
 
     /**
      * 同步添加门店信息
@@ -139,6 +143,14 @@ public class HqAppStoreController {
                     logger.info("+++++++++++++++++++++++++++++:"+hqAppStoreDTO.getSboId());
                     appStore.setStoreOrgId(hqAppStoreDTO.getStoreOrgId());
                     appStore.setStoreStructureCode(hqAppStoreDTO.getStoreStructureCode());
+                    if(null !=hqAppStoreDTO.getSalesManager()){
+                        AppEmployee appEmployee = appEmployeeService.findByLoginName(hqAppStoreDTO.getSalesManager()) ;
+                        appStore.setSalesManager(appEmployee.getEmpId());
+                        appStore.setSalesManagerName(appEmployee.getName());
+                    }
+                    if(null !=hqAppStoreDTO.getFitType()){
+                        appStore.setFitCompayType(hqAppStoreDTO.getFitType());
+                    }
                     appStoreService.saveStore(appStore);
                     logger.warn("addStore EXCEPTION,同步添加门店信息成功，出参 resultDTO:{}", appStore);
                     return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
@@ -205,6 +217,14 @@ public class HqAppStoreController {
                 appStore.setEnable(hqAppStoreDTO.getEnable());
                 appStore.setIsSelfDelivery(hqAppStoreDTO.getIsSelfDelivery());
                 appStore.setIsOpenDelivery(hqAppStoreDTO.getIsOpenDelivery());
+                if(null !=hqAppStoreDTO.getSalesManager()){
+                    AppEmployee appEmployee = appEmployeeService.findByLoginName(hqAppStoreDTO.getSalesManager()) ;
+                    appStore.setSalesManager(appEmployee.getEmpId());
+                    appStore.setSalesManagerName(appEmployee.getName());
+                }
+                if(null !=hqAppStoreDTO.getFitType()){
+                    appStore.setFitCompayType(hqAppStoreDTO.getFitType());
+                }
                 appStoreService.modifyStore(appStore);
                 appStore.setSobId(null == hqAppStoreDTO.getCityCode() ? null : Long.parseLong(hqAppStoreDTO.getCityCode()));
                 appStore.setStoreOrgId(hqAppStoreDTO.getStoreOrgId());
