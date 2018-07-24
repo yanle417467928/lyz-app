@@ -2276,7 +2276,11 @@ public class MaReportDownloadRestController extends BaseRestController {
                     map.put("城市", "无");
                 }
                 if (null != storeType && !"-1".equals(storeType) && !("".equals(storeType)) && null != salesList && salesList.size() > 0) {
-                    map.put("门店类型", StoreType.getStoreTypeByValue(storeType).getDescription());
+                    if("FXAll".equals(storeType)){
+                        map.put("门店类型","分销(总)");
+                    }else{
+                        map.put("门店类型", StoreType.getStoreTypeByValue(storeType).getDescription());
+                    }
                 } else {
                     map.put("门店类型", "无");
                 }
