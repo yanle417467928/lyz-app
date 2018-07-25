@@ -829,7 +829,6 @@ public class ReturnOrderController {
                     returnOrderBaseInfo.setReturnPrice(CountUtil.sub(totalPrice, billingDetails.getFreight()));
                 } else {
 
-
                     //判断退款是否小于现金支付
                     if (returnTotalGoodsPrice <= cashPosPrice) {
                         returnOrderBilling.setCash(returnTotalGoodsPrice);
