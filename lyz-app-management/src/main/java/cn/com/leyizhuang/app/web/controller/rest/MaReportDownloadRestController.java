@@ -4277,7 +4277,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Label(5, j + row, itemsDO.getGetTime(), textFormat));
                     ws.addCell(new Label(6, j + row, itemsDO.getSkuName(), textFormat));
                     ws.addCell(new Label(7, j + row, itemsDO.getSku(), textFormat));
-                    ws.addCell(new Number(8, j + row, itemsDO.getBuyPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Number(8, j + row, itemsDO.getBuyPrice() == null?0:itemsDO.getBuyPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     ws.addCell(new Label(9, j + row, itemsDO.getClassifyOne(), textFormat));
                     ws.addCell(new Label(10, j + row, itemsDO.getClassifyTow(), textFormat));
                     ws.addCell(new Label(11, j + row, itemsDO.getBrand(), textFormat));

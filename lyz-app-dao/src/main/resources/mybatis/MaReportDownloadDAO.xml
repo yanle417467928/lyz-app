@@ -3501,7 +3501,12 @@
             g.sku sku,
             IFNULL(a.qty, 0) notPickedUp,
             IFNULL(b.qty, 0) pickedUp,
-            IFNULL(d.qty, 0) returnQty
+            IFNULL(d.qty, 0) returnQty,
+        ggc.category_name classifyOne,
+        g.category_name classifyTow,
+        ggb.brand_name brand,
+        g.specification_type specification,
+        ggt.type_name type
         FROM
             cus_customer_product_coupon cp
         LEFT JOIN (
@@ -3560,7 +3565,11 @@
         LEFT JOIN city ON city.city_id = c.city_id
         LEFT JOIN st_store s ON s.store_id = cp.store_id
         LEFT JOIN gds_goods g ON g.gid = cp.gid
-        LEFT JOIN emp_employee e ON e.emp_id = cp.seller_id
+        LEFT JOIN emp_employee e ON e.emp_id = c.sales_consult_id
+        LEFT JOIN gds_goods_category gc on g.cid =gc.cid
+        LEFT JOIN gds_goods_category ggc ON  gc.p_cid =ggc.cid
+        LEFT JOIN gds_goods_brand ggb ON ggb.brd_id = g.brd_id
+        LEFT JOIN gds_goods_type ggt ON ggt.gtid = g.gtid
         WHERE
             g.sku IS NOT NULL
             <if test="null != productType and 'COMMON' == productType">
@@ -3694,7 +3703,6 @@
         FROM
             st_inventory_real_qty_change_log srq
             INNER JOIN st_store ss ON ss.store_id = srq.store_id
-            LEFT JOIN ity_allocation ia ON srq.reference_number = ia.number
         WHERE
         1=1
         <if test="null != cityId and -1 != cityId">
