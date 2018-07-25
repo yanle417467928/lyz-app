@@ -1309,11 +1309,11 @@ public class MaReportDownloadRestController extends BaseRestController {
                 //设置筛选条件
                 ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
                 //列宽
-                int[] columnView = {10, 13, 10, 20, 30, 25, 15, 15, 10, 10, 20, 20, 50, 20, 20, 10, 10, 10, 15, 15, 15, 15, 15, 15, 15, 10, 5, 30, 30, 5};
+                int[] columnView = {10, 13, 10, 20, 30, 25, 15, 15, 10, 10, 20, 20, 50, 20, 20, 10, 10, 10, 15, 15, 15, 15, 15, 15, 15, 10, 5, 30, 30, 5,30};
                 //列标题
                 String[] titles = {"城市", "门店名称", "门店类型", "下单/反配上架时间", "订单号", "退单号", "顾客", "导购姓名", "配送/退货方式",
                         "出/退货状态", "收货/退货人", "收货/退货人电话", "送/退货地址", "产品编码", "产品名称", "产品标识", "产品类型", "数量", "结算单价", "结算总价",
-                        "成交单价", "成交总价", "经销单价", "总经销价", "单个产品经销差价", "总经销差价", "下单人", "单位", "备注", "楼盘信息", "是否结清"};
+                        "成交单价", "成交总价", "经销单价", "总经销价", "单个产品经销差价", "总经销差价", "下单人", "单位", "备注", "楼盘信息", "是否结清","产品全类型"};
                 //计算标题开始行号
                 int row = 1;
                 if (null != map && map.size() > 0) {
@@ -1367,7 +1367,8 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Number(23, j + row, accountGoodsItemsDO.getTotalJxPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
 
                     if (StoreType.JM == accountGoodsItemsDO.getStoreTypes() || StoreType.FX == accountGoodsItemsDO.getStoreTypes()) {
-                        if (accountGoodsItemsDO.getGoodsLineType().equals("本品") || accountGoodsItemsDO.getGoodsLineType().equals("产品券")) {
+                        if (accountGoodsItemsDO.getGoodsLineType().equals("本品") ||
+                                (accountGoodsItemsDO.getGoodsLineType().equals("产品券") && accountGoodsItemsDO.getProductCouponType().equals("本品"))) {
                             String goodsLineType = "";
 
                             if (accountGoodsItemsDO.getGoodsLineType().equals("本品")){
@@ -1402,6 +1403,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Label(28, j + row, accountGoodsItemsDO.getRemark(), textFormat));
                     ws.addCell(new Label(29, j + row, accountGoodsItemsDO.getEstateInfo(), textFormat));
                     ws.addCell(new Label(30, j + row, accountGoodsItemsDO.getIsPayUp(), textFormat));
+                    ws.addCell(new Label(31, j + row, accountGoodsItemsDO.getProductCouponType(), textFormat));
                 }
             }
         } catch (Exception e) {

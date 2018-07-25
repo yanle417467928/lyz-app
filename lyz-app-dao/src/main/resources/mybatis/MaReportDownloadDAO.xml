@@ -603,7 +603,7 @@
     <!-- 逻辑 下单时间 和 反配时间 为节点 -->
     <select id="findAccountGoodsItemsDOAll"
             resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.AccountGoodsItemsDO">
-        SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType, ol.operation_time
+        SELECT  obi.city_name cityName, st.store_name storeName, st.store_type storeType, ol.operation_time
         orderTime,'' as createTime, obi.ord_no orderNumber, st.store_type storeTypes,
         null returnNumber, obi.customer_name customerName, obi.sales_consult_name sellerName, obi.delivery_type
         deliveryType, oli.receiver receiver, oli.receiver_phone receiverPhone,
@@ -614,22 +614,26 @@
         END)deliveryStatus,
         oli.shipping_address, og.sku sku, og.sku_name skuName, (CASE WHEN og.company_flag = 'HR' THEN '华润'
         WHEN og.company_flag = 'LYZ' THEN '乐易装' WHEN og.company_flag = 'YR' THEN '莹润' ELSE '其他' END)companyFlag,
-        og.goods_line_type goodsLineType, IFNULL(og.order_qty, 0) quantity,
-        if(og.goods_line_type = "PRODUCT_COUPON",IFNULL((SELECT SUM(cost_price) from ord_coupon_info where ord_no = obi.ord_no and og.sku = sku)/og.order_qty,0),
+        og.goods_line_type goodsLineType,
+        IF(og.goods_line_type = "PRODUCT_COUPON",1,IFNULL(og.order_qty, 0)) quantity,
+        if(og.goods_line_type = "PRODUCT_COUPON",IFNULL(oci.cost_price,0),
         IFNULL(og.settlement_price, 0)) settlementPrice,
-        if(og.goods_line_type = "PRODUCT_COUPON",IFNULL((SELECT SUM(cost_price) from ord_coupon_info where ord_no = obi.ord_no and og.sku = sku),0),
+        if(og.goods_line_type = "PRODUCT_COUPON",IFNULL(oci.cost_price,0),
         (IFNULL(og.order_qty, 0) * IFNULL(og.settlement_price, 0))) settlementTotlePrice,
         if(og.goods_line_type = "PRODUCT_COUPON",IFNULL((SELECT SUM(purchase_price) from ord_coupon_info where ord_no = obi.ord_no and og.sku = sku)/og.order_qty,0),
         IFNULL(og.return_price, 0)) promotionSharePrice,
-        if(og.goods_line_type = "PRODUCT_COUPON",IFNULL((SELECT SUM(purchase_price) from ord_coupon_info where ord_no = obi.ord_no and og.sku = sku),0),
+        if(og.goods_line_type = "PRODUCT_COUPON",IFNULL(oci.purchase_price,0),
         (IFNULL(og.order_qty, 0) * IFNULL(og.return_price, 0))) promotionShareTotlePrice,
         og.wholesale_price as jxPrice,
-        og.wholesale_price * og.order_qty as totalJxPrice,
+        if(og.goods_line_type = "PRODUCT_COUPON",og.wholesale_price,og.wholesale_price * og.order_qty) as totalJxPrice,
         obi.creator_name as creatorName,
         gg.goods_unit as goodsUnit,
         oli.estate_info as estateInfo,
         obi.remark as remark,
-        CASE obd.is_pay_up when 0 then '未结清' when 1 then '结清' end as isPayUp
+        CASE obd.is_pay_up when 0 then '未结清' when 1 then '结清' end as isPayUp,
+        if(og.goods_line_type = "PRODUCT_COUPON",IF(ccpc.get_type = "BUY",IF(og2.goods_line_type is not null,
+        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END,
+        if(oci.purchase_price is null Or oci.purchase_price = 0 , '赠品','本品')),'后台发放'),'') as productCouponType
         FROM
         ord_base_info obi
         INNER JOIN st_store st ON st.store_id = obi.store_id
@@ -638,6 +642,9 @@
         LEFT JOIN ord_goods_info og ON og.ord_no = oli.ord_no
         LEFT JOIN gds_goods gg on og.gid = gg.gid
         LEFT JOIN ord_billing_details obd on obd.oid = obi.oid
+        LEFT JOIN ord_coupon_info oci on oci.ord_no = og.ord_no and oci.sku = og.sku and og.goods_line_type = 'PRODUCT_COUPON'
+        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
+        LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         WHERE obi.`status` != 'UNPAID' AND  obi.`status` != 'CANCELED'
         AND (ol.post_status = 'PENDING_SHIPMENT' OR (ol.post_status = 'PENDING_RECEIVE' AND obi.delivery_type =
         'SELF_TAKE'))
@@ -665,7 +672,7 @@
             #{item}
         </foreach>
         UNION
-        SELECT DISTINCT obi.city_name cityName, st.store_name storeName, st.store_type storeType,rl.operation_time as orderTime,-orbi.return_time as createTime,
+        SELECT  obi.city_name cityName, st.store_name storeName, st.store_type storeType,rl.operation_time as orderTime,-orbi.return_time as createTime,
         obi.ord_no orderNumber, st.store_type storeTypes,
         orbi.return_no returnNumber, orbi.cus_name customerName, obi.sales_consult_name sellerName, obi.delivery_type
         deliveryType, orli.rejecter receiver, orli.rejecter_phone receiverPhone,
@@ -673,21 +680,25 @@
         WHEN orbi.return_type = 'CANCEL_RETURN' THEN '订单取消' ELSE '未知' END) deliveryStatus,
         orli.return_full_address, org.sku sku, org.sku_name skuName, (CASE WHEN org.company_flag = 'HR' THEN '华润'
         WHEN org.company_flag = 'LYZ' THEN '乐易装' WHEN org.company_flag = 'YR' THEN '莹润' ELSE '其他' END) companyFlag,
-        org.goods_line_type goodsLineType, (-1 * IFNULL(org.return_qty,0)) quantity,
+        org.goods_line_type goodsLineType,
+        if(org.goods_line_type = "PRODUCT_COUPON",-1,(-1 * IFNULL(org.return_qty,0))) quantity,
         if(org.goods_line_type = "PRODUCT_COUPON",IFNULL(org.settlement_price,0),
         IFNULL(org.settlement_price, 0)) settlementPrice,
-        (-1 * IFNULL(org.return_qty, 0) * IFNULL(org.settlement_price, 0)) settlementTotlePrice,
-        if(org.goods_line_type = "PRODUCT_COUPON",IFNULL((SELECT SUM(purchase_price) from ord_return_product_coupon where return_no = orbi.return_no and org.sku = sku)/org.return_qty,0),
+        if(org.goods_line_type = "PRODUCT_COUPON",-1 * IFNULL(org.settlement_price, 0),(-1 * IFNULL(org.return_qty, 0) * IFNULL(org.settlement_price, 0))) settlementTotlePrice,
+        if(org.goods_line_type = "PRODUCT_COUPON",IFNULL(oci.purchase_price,0),
         IFNULL(org.return_price, 0)) promotionSharePrice,
-        if(org.goods_line_type = "PRODUCT_COUPON",-1 * IFNULL((SELECT SUM(purchase_price) from ord_return_product_coupon where return_no = orbi.return_no and org.sku = sku),0),
+        if(org.goods_line_type = "PRODUCT_COUPON",-1 * IFNULL(oci.purchase_price,0),
         (-1 * IFNULL(org.return_qty, 0) * IFNULL(org.return_price, 0))) promotionShareTotlePrice,
         org.wholesale_price as jxPrice,
-        org.wholesale_price * org.return_qty as totalJxPrice,
+        if(org.goods_line_type = "PRODUCT_COUPON",-1 * IFNULL(org.wholesale_price,0),org.wholesale_price * org.return_qty) as totalJxPrice,
         orbi.creator_name as creatorName,
         gg.goods_unit as goodsUnit,
         orbi.remarks_info as remark,
         '' as estateInfo,
-        CASE obd.is_pay_up when 0 then '未结清（退）' when 1 then '结清（退）' end as isPayUp
+        CASE obd.is_pay_up when 0 then '未结清（退）' when 1 then '结清（退）' end as isPayUp,
+        if(org.goods_line_type = "PRODUCT_COUPON",IF(ccpc.get_type = "BUY",IF(og2.goods_line_type is not null,
+        CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END,
+        if(oci.purchase_price is null Or oci.purchase_price = 0 , '赠品','本品')),'后台发放'),'') as productCouponType
         FROM ord_return_base_info orbi
         LEFT JOIN (SELECT DISTINCT return_no,post_status,operation_time from ord_return_lifecycle) rl ON orbi.return_no = rl.return_no
         LEFT JOIN st_store st ON st.store_id = orbi.store_id
@@ -696,6 +707,9 @@
         LEFT JOIN ord_return_goods_info org ON org.return_no = orbi.return_no
         LEFT JOIN gds_goods gg on gg.gid = org.gid
         LEFT JOIN ord_billing_details obd on obd.oid = obi.oid
+        LEFT JOIN ord_return_product_coupon oci on oci.return_no = org.return_no and oci.sku = org.sku and org.goods_line_type = 'PRODUCT_COUPON'
+        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.pcid
+        LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         WHERE orbi.return_status = 'FINISHED' AND rl.post_status = 'FINISHED' AND orbi.return_type != 'CANCEL_RETURN'
         AND (obi.delivery_type = 'HOUSE_DELIVERY' OR (obi.delivery_type = 'SELF_TAKE' AND st.store_type != 'JM'))
         <if test="null != cityId and cityId != -1">
