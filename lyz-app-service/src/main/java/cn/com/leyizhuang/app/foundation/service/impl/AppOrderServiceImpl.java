@@ -1111,6 +1111,37 @@ public class AppOrderServiceImpl implements AppOrderService {
             //判断是否货到付款
             p.setIsCashDelivery(this.commonService.checkCashDelivery(null, userID, AppIdentityType.getAppIdentityTypeByValue(identityType), AppDeliveryType.getAppDeliveryTypeByValue(p.getDeliveryType())));
 
+            //查询用户钱包余额（顾客：预存款，导购：信用额度、门店预存款，装饰公司：信用金、门店预存款）
+            if (AppIdentityType.CUSTOMER == AppIdentityType.getAppIdentityTypeByValue(identityType)) {
+                //查询顾客预存款
+                Double preDeposit = customerService.findPreDepositBalanceByUserIdAndIdentityType(userID, identityType);
+                if (preDeposit != null) {
+                    p.setPreDeposit(preDeposit);
+                }
+            } else if (AppIdentityType.SELLER == AppIdentityType.getAppIdentityTypeByValue(identityType)) {
+                //查询导购预存款和信用金
+                SellerCreditMoneyResponse sellerCreditMoneyResponse = appEmployeeService.findCreditMoneyBalanceByUserIdAndIdentityType(userID, identityType);
+                Double creditMoney = null != sellerCreditMoneyResponse ? sellerCreditMoneyResponse.getAvailableBalance() : 0D;
+                //导购门店预存款
+                Double storePreDeposit = storeService.findPreDepositBalanceByUserId(userID);
+                if (storePreDeposit != null) {
+                    p.setStPreDeposit(storePreDeposit);
+                }
+                p.setCreditMoney(creditMoney);
+
+            } else if (AppIdentityType.DECORATE_MANAGER == AppIdentityType.getAppIdentityTypeByValue(identityType)) {
+                //获取装饰公司门店预存款，信用金，现金返利。
+                Double storePreDeposit = storeService.findPreDepositBalanceByUserId(userID);
+                Double storeCreditMoney = storeService.findCreditMoneyBalanceByUserId(userID);
+                if (storePreDeposit != null) {
+                    p.setStPreDeposit(storePreDeposit);
+                }
+                if (storeCreditMoney != null) {
+                    p.setStCreditMoney(storeCreditMoney);
+                }
+
+            }
+
             List<String> goodsImgList = p.getOrderGoodsInfoList().stream().map(OrderGoodsInfo::getCoverImageUri).collect(Collectors.toList());
             Integer count = p.getOrderGoodsInfoList().stream().mapToInt(OrderGoodsInfo::getOrderQuantity).sum();
             p.setGoodsImgList(goodsImgList);
@@ -1368,6 +1399,7 @@ public class AppOrderServiceImpl implements AppOrderService {
         if (sendTime == null){
             flag  = 1 ;
             log.info("》》》》》》》》》》》》》   订单："+orderNumer+"超过3个月退货期限制   》》》》》》》》》》》》》");
+            return flag;
         }
 
         // 3个月后截至日期

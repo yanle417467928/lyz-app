@@ -194,4 +194,7 @@ public interface AppCustomerDAO {
     List<CustomerProductCoupon> findOverdueCustomerProductCoupon();
 
     void saveCustomerProductCouponTransferPreDepositRecord(CustomerProductCouponTransferPreDepositRecord record);
+
+
+    Integer findProductCouponAvailQtyByCustomerIdAndGid(@Param("userId") Long userId, @Param("gid")Long gid, @Param("sellerId")Long sellerId);
 }

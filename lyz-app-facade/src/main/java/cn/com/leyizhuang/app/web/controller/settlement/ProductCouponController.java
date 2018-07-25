@@ -49,6 +49,9 @@ public class ProductCouponController {
     @Autowired
     private GoodsPriceService goodsPriceService;
 
+    @Autowired
+    private AppCustomerService customerService;
+
     /**
      * @param
      * @return
@@ -164,8 +167,36 @@ public class ProductCouponController {
                         return resultDTO;
                     }
                 }
+
+                List<UsedMoreProductCoupon> goodsParamList = new ArrayList<>();
+                //2018-07-24
+                for (UsedMoreProductCoupon goodsParam: requestList) {
+                    Boolean flag = true;
+                    Integer total = goodsParam.getTotalQty();
+                    if (identityType == 6) {
+                        total = this.customerService.findProductCouponAvailQtyByCustomerIdAndGid(userId, goodsParam.getGid(), null);
+                    } if (identityType == 0) {
+                        total = this.customerService.findProductCouponAvailQtyByCustomerIdAndGid(cusId, goodsParam.getGid(), userId);
+                    }
+                    for (UsedMoreProductCoupon coupon: goodsParamList) {
+                        if (goodsParam.getGid().equals(coupon.getGid())) {
+                            coupon.setQty(goodsParam.getQty() + coupon.getQty());
+                            coupon.setTotalQty(total);
+                            flag = false;
+                        }
+                    }
+                    if (flag) {
+                        UsedMoreProductCoupon productCoupon = new UsedMoreProductCoupon();
+                        productCoupon.setGid(goodsParam.getGid());
+                        productCoupon.setQty(goodsParam.getQty());
+                        productCoupon.setTotalQty(total);
+                        goodsParamList.add(productCoupon);
+                    }
+                }
+
+
                 //从页面传过来的数组中有券ID 和数量查询出商品ID和数量装入Map
-                for (UsedMoreProductCoupon goodsIdQtyParam : requestList) {
+                for (UsedMoreProductCoupon goodsIdQtyParam : goodsParamList) {
 
                     Long goodsId = goodsIdQtyParam.getGid();
                     int qty = goodsIdQtyParam.getQty();

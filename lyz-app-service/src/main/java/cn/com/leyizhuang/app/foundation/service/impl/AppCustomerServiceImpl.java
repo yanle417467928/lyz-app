@@ -703,4 +703,9 @@ public class AppCustomerServiceImpl implements AppCustomerService {
             customerDAO.saveCustomerProductCouponTransferPreDepositRecord(record);
         }
     }
+
+    @Override
+    public Integer findProductCouponAvailQtyByCustomerIdAndGid(Long userId, Long gid, Long sellerId) {
+        return this.customerDAO.findProductCouponAvailQtyByCustomerIdAndGid(userId, gid, sellerId);
+    }
 }

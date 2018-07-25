@@ -99,6 +99,8 @@ public class AccountGoodsItemsDO {
     private Double vipPrice;
     //会员总价
     private Double totalVipPrice;
+    // 产品券类型
+    private String productCouponType;
 
     public void setGoodsLineType(AppGoodsLineType goodsLineType){
         this.goodsLineType = goodsLineType.getDescription();

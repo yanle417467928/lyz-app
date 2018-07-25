@@ -424,7 +424,6 @@ public class ReturnOrderController {
         }
     }
 
-
     /**
      * 用户申请退货创建退货单
      * @param param   创建退货单参数
@@ -826,10 +825,9 @@ public class ReturnOrderController {
                             hasFreight = false;
                         }
                     }
-                    Double totalPrice = CountUtil.add(customerPrePay, storePrePay, onlinePayPrice, cashPosPrice, sellerStoreDeposit);
+                    Double totalPrice = CountUtil.add(customerPrePay, storePrePay, onlinePayPrice, cashPosPrice, sellerStoreDeposit, storeCredit);
                     returnOrderBaseInfo.setReturnPrice(CountUtil.sub(totalPrice, billingDetails.getFreight()));
                 } else {
-
 
                     //判断退款是否小于现金支付
                     if (returnTotalGoodsPrice <= cashPosPrice) {
