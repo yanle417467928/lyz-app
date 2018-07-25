@@ -1399,6 +1399,7 @@ public class AppOrderServiceImpl implements AppOrderService {
         if (sendTime == null){
             flag  = 1 ;
             log.info("》》》》》》》》》》》》》   订单："+orderNumer+"超过3个月退货期限制   》》》》》》》》》》》》》");
+            return flag;
         }
 
         // 3个月后截至日期
