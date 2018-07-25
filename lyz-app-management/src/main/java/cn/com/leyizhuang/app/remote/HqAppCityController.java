@@ -111,7 +111,9 @@ public class HqAppCityController {
                 city.setStructureId(hqAppCityDTO.getStructureId());
                 city.setSpell(hqAppCityDTO.getSpell());
                 city.setName(hqAppCityDTO.getTitle());
-                city.setEnableFalseTime(sdf.parse(hqAppCityDTO.getEnableFalseTime()));
+                if(null!=hqAppCityDTO.getEnableFalseTime()){
+                    city.setEnableFalseTime(sdf.parse(hqAppCityDTO.getEnableFalseTime()));
+                }
                 city.setNumber(hqAppCityDTO.getNumber());
                 cityService.modifyCity(city);
                 logger.warn("updateCity OUT,同步修改城市信息成功，出参 resultDTO:{}", city);
