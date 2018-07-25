@@ -825,7 +825,7 @@ public class ReturnOrderController {
                             hasFreight = false;
                         }
                     }
-                    Double totalPrice = CountUtil.add(customerPrePay, storePrePay, onlinePayPrice, cashPosPrice, sellerStoreDeposit);
+                    Double totalPrice = CountUtil.add(customerPrePay, storePrePay, onlinePayPrice, cashPosPrice, sellerStoreDeposit, storeCredit);
                     returnOrderBaseInfo.setReturnPrice(CountUtil.sub(totalPrice, billingDetails.getFreight()));
                 } else {
 

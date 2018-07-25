@@ -2410,7 +2410,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                         ws.addCell(new Label(23, j + row, salesReportDO.getCusType(), textFormat));
                     }
 
-                } else if (storeType.equals("FX")) {
+                } else if (storeType.equals("FX") ||storeType.equals("FXCK") || storeType.equals("FXAll")) {
                     // 分销
 
                     //列宽
