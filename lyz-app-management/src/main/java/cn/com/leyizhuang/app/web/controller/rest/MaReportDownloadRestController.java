@@ -937,9 +937,9 @@ public class MaReportDownloadRestController extends BaseRestController {
                 //设置筛选条件
                 ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
                 //列宽
-                int[] columnView = {10, 20, 13, 20, 10, 10, 15, 20, 20, 20};
+                int[] columnView = {10, 20, 13, 20, 20, 20, 10, 10, 15, 20, 20, 20};
                 //列标题
-                String[] titles = {"城市", "门店名称", "门店类型", "变动类型", "变动金额", "变更后总金额", "变更时间", "订单号", "退单号", "备注"};
+                String[] titles = {"城市", "门店名称", "门店类型", "导购名称", "顾客名称", "变动类型", "变动金额", "变更后总金额", "变更时间", "订单号", "退单号", "备注"};
                 //计算标题开始行号
                 int row = 1;
                 if (null != map && map.size() > 0) {
@@ -970,13 +970,15 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Label(0, j + row, storePredepositReportDO.getCityName(), textFormat));
                     ws.addCell(new Label(1, j + row, storePredepositReportDO.getStoreName(), textFormat));
                     ws.addCell(new Label(2, j + row, storePredepositReportDO.getStoreType(), textFormat));
-                    ws.addCell(new Label(3, j + row, storePredepositReportDO.getChangeType(), textFormat));
-                    ws.addCell(new Number(4, j + row, storePredepositReportDO.getChangeMoney(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                    ws.addCell(new Number(5, j + row, storePredepositReportDO.getBalance(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                    ws.addCell(new Label(6, j + row, storePredepositReportDO.getChangeTime(), textFormat));
-                    ws.addCell(new Label(7, j + row, storePredepositReportDO.getReferenceNumber(), textFormat));
-                    ws.addCell(new Label(8, j + row, storePredepositReportDO.getReturnNo(), textFormat));
-                    ws.addCell(new Label(9, j + row, storePredepositReportDO.getRemarks(), textFormat));
+                    ws.addCell(new Label(3, j + row, storePredepositReportDO.getSellerName(), textFormat));
+                    ws.addCell(new Label(4, j + row, storePredepositReportDO.getCustomerName(), textFormat));
+                    ws.addCell(new Label(5, j + row, storePredepositReportDO.getChangeType(), textFormat));
+                    ws.addCell(new Number(6, j + row, storePredepositReportDO.getChangeMoney(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Number(7, j + row, storePredepositReportDO.getBalance(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Label(8, j + row, storePredepositReportDO.getChangeTime(), textFormat));
+                    ws.addCell(new Label(9, j + row, storePredepositReportDO.getReferenceNumber(), textFormat));
+                    ws.addCell(new Label(10, j + row, storePredepositReportDO.getReturnNo(), textFormat));
+                    ws.addCell(new Label(11, j + row, storePredepositReportDO.getRemarks(), textFormat));
                 }
             }
         } catch (Exception e) {
