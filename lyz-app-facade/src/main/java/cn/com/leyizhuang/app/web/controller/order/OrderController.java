@@ -10,6 +10,7 @@ import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.deliveryFeeRule.DeliveryFeeRule;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.order.OrderFreightChange;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.*;
@@ -44,6 +45,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -130,6 +132,9 @@ public class OrderController {
 
     @Resource
     private AppEmployeeService employeeService;
+
+    @Autowired
+    private MaOrderFreightService freightService;
 
     /**
      * 创建订单方法
@@ -1633,7 +1638,16 @@ public class OrderController {
                     orderDetailsResponse.setSellerBillingDetailResponse(sellerBillingDetailResponse);
                 }
                 orderDetailsResponse.setGoodsList(appOrderService.getOrderGoodsList(orderNumber));
-
+                //获取运费明细
+                List<OrderFreightChange> freightChanges = this.freightService.queryOrderFreightChangeLogListByOid(orderBaseInfo.getId());
+                orderDetailsResponse.setFreightChanges(freightChanges);
+                //获取运费初始值
+                OrderFreightChange freightChange = this.freightService.queryOrderFreightChangeLogFirstByOid(orderBaseInfo.getId());
+                if (null == freightChange){
+                    freightChange = new OrderFreightChange();
+                    freightChange.setFreight(BigDecimal.valueOf(orderBillingDetails.getFreight()));
+                }
+                orderDetailsResponse.setFreightChange(freightChange);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, orderDetailsResponse);
                 logger.info("getOrderDetail OUT,用户获取订单详情成功，出参 resultDTO:{}", resultDTO);
 
@@ -2300,6 +2314,16 @@ public class OrderController {
                     }
                     orderDetailsResponse.setCreditMoney(creditMoney);
                 }
+                //获取运费明细
+                List<OrderFreightChange> freightChanges = this.freightService.queryOrderFreightChangeLogListByOid(orderBaseInfo.getId());
+                orderDetailsResponse.setFreightChanges(freightChanges);
+                //获取运费初始值
+                OrderFreightChange freightChange = this.freightService.queryOrderFreightChangeLogFirstByOid(orderBaseInfo.getId());
+                if (null == freightChange){
+                    freightChange = new OrderFreightChange();
+                    freightChange.setFreight(BigDecimal.valueOf(orderBillingDetails.getFreight()));
+                }
+                orderDetailsResponse.setFreightChange(freightChange);
 
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, orderDetailsResponse);
                 logger.info("getPayForAnotherOrderDetail OUT,用户获取订单详情成功，出参 resultDTO:{}", resultDTO);

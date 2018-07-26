@@ -24,9 +24,13 @@ public interface MaOrderFreightDAO {
 
     OrderFreightVO queryOrderFreightVOById(Long id);
 
-    List<OrderFreightChangeVO> queryOrderFreightChangeList();
+    List<OrderFreightChangeVO> queryOrderFreightChangeList(@Param("keywords") String keywords);
 
     void saveOrderFreightChange(OrderFreightChange orderFreightChange);
 
     void updateOrderBillingPrice(@Param(value ="orderId" ) Long orderId,@Param(value ="freight" )  BigDecimal freight,@Param(value ="changAmount" )BigDecimal changAmount);
+
+    List<OrderFreightChange> queryOrderFreightChangeLogListByOid(Long oid);
+
+    OrderFreightChange queryOrderFreightChangeLogFirstByOid(Long oid);
 }

@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.dao.MaOrderFreightDAO;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderGoodsInfo;
@@ -8,8 +9,10 @@ import cn.com.leyizhuang.app.foundation.service.MaOrderFreightService;
 import cn.com.leyizhuang.app.foundation.vo.management.freight.OrderFreightChangeVO;
 import cn.com.leyizhuang.app.foundation.vo.management.freight.OrderFreightDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.freight.OrderFreightVO;
+import cn.com.leyizhuang.common.util.CountUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -92,21 +95,20 @@ public class MaOrderFreightServiceImpl implements MaOrderFreightService {
             OrderFreightVO orderFreightVO = this.maOrderFreightDAO.queryOrderFreightVOById(orid);
             Double freight = orderFreightVO.getSimpleOrderBillingDetails().getFreight();
             //修改订单金额小计和运费
-            BigDecimal changAmount =BigDecimal.valueOf(freight).subtract(orderFreightChange.getFreightChangeAfter());
+            BigDecimal changAmount = orderFreightChange.getChangeAmount();
+            orderFreightChange.setFreightChangeAfter(BigDecimal.valueOf(CountUtil.add(freight, changAmount.doubleValue())));
             this.updateOrderBillingPrice(orderFreightChange.getOrderId(),orderFreightChange.getFreightChangeAfter(),changAmount);
             orderFreightChange.setModifyTime(new Date());
             orderFreightChange.setModifier(AppIdentityType.ADMINISTRATOR.toString());
-            orderFreightChange.setFreightChangeAmount(BigDecimal.valueOf(freight).subtract(orderFreightChange.getFreightChangeAfter()));
-            orderFreightChange.setFreightChangeBefore(BigDecimal.valueOf(freight));
             //保存记录
             this.saveOrderFreightChange(orderFreightChange);
         }
     }
 
     @Override
-    public PageInfo<OrderFreightChangeVO> queryOrderFreightChangeList(Integer page, Integer size) {
+    public PageInfo<OrderFreightChangeVO> queryOrderFreightChangeList(Integer page, Integer size, String keywords) {
         PageHelper.startPage(page, size);
-        List<OrderFreightChangeVO> orderFreightChangePageList = this.maOrderFreightDAO.queryOrderFreightChangeList();
+        List<OrderFreightChangeVO> orderFreightChangePageList = this.maOrderFreightDAO.queryOrderFreightChangeList(keywords);
         return new PageInfo<>(orderFreightChangePageList);
     }
 
@@ -117,9 +119,24 @@ public class MaOrderFreightServiceImpl implements MaOrderFreightService {
 
     @Override
     public void saveOrderFreightChange(OrderFreightChange orderFreightChange) {
-        orderFreightChange.setFreightChangeAmount(orderFreightChange.getFreightChangeAfter().subtract(orderFreightChange.getFreightChangeBefore()));
-        orderFreightChange.setModifier("admin");
+        //获取登录用户ID
+        ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
+        if (null != shiroUser){
+            orderFreightChange.setModifier(shiroUser.getName());
+        } else {
+            orderFreightChange.setModifier("admin");
+        }
         orderFreightChange.setModifyTime(new Date());
         this.maOrderFreightDAO.saveOrderFreightChange(orderFreightChange);
+    }
+
+    @Override
+    public List<OrderFreightChange> queryOrderFreightChangeLogListByOid(Long oid) {
+        return this.maOrderFreightDAO.queryOrderFreightChangeLogListByOid(oid);
+    }
+
+    @Override
+    public OrderFreightChange queryOrderFreightChangeLogFirstByOid(Long oid) {
+        return this.maOrderFreightDAO.queryOrderFreightChangeLogFirstByOid(oid);
     }
 }

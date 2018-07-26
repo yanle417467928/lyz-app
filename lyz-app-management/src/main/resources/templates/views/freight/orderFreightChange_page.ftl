@@ -27,11 +27,20 @@
         <ul class="nav nav-tabs">
             <li class="active"><a href="#tab_1-1" data-toggle="tab" ">运费变更详情</a></li>
         </ul>
-        <div   id="toolbar"  class="form-inline " >
+        <div  id="toolbar"  class="form-inline " >
             <button id="btn_back" type="button" class="btn btn-default">
                 <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> 返回
             </button>
+            <div class="input-group col-md-3" style="margin-top:0px positon:relative">
+                <input type="text" name="keywords" id="keywords" class="form-control "
+                       style="width:auto;" placeholder="请输入单号、下单人或下单人电话.." onkeypress="findBykey()">
+                <span class="input-group-btn">
+                <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
+                        onclick="findByKeywords();">查找</button>
+            </span>
+            </div>
         </div>
+
         <div class="tab-content">
             <div class="tab-pane active" id="tab_1-1">
                 <div class="box-body table-reponsive">
@@ -46,18 +55,18 @@
 
 <script>
     $(function () {
-        initDateGird('/rest/orderFreight/page/freightChangeyGrid');
+        initDateGird('/rest/orderFreight/page/freightChangeyGrid',null);
         $('#btn_back').on('click', function () {
             window.history.back()
         });
     });
 
-    function initDateGird(url) {
+    function initDateGird(url,keywords) {
         $grid.init($('#dataGrid'), $('#toolbar'), url, 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
-                keywords: params.search
+                keywords: keywords
             }
         }, [{
             checkbox: true,
@@ -84,8 +93,15 @@
             title: '下单人',
             align: 'center',
         },  {
-            field: 'orderFreightChange.freightChangeBefore',
+            field: 'orderFreightChange.freight',
             title: '修改前',
+            align: 'center',
+            formatter: function (value, row) {
+                return '¥ '+changeDecimalBuZero(value,2);
+            }
+        },{
+            field: 'orderFreightChange.changeAmount',
+            title: '修改金额',
             align: 'center',
             formatter: function (value, row) {
                 return '¥ '+changeDecimalBuZero(value,2);
@@ -98,12 +114,9 @@
                 return '¥ '+changeDecimalBuZero(value,2);
             }
         },{
-            field: 'orderFreightChange.freightChangeAmount',
-            title: '修改金额',
-            align: 'center',
-            formatter: function (value, row) {
-                return '¥ '+changeDecimalBuZero(value,2);
-            }
+            field: 'orderFreightChange.changeType',
+            title: '变更类型',
+            align: 'center'
         },{
             field: 'orderFreightChange.modifier',
             title: '修改人',
@@ -116,6 +129,16 @@
              return  formatDateTime(value);
         }
         }]);
+    }
+    function findByKeywords() {
+        var keywords = $("#keywords").val();
+        $("#dataGrid").bootstrapTable('destroy');
+        initDateGird('/rest/orderFreight/page/freightChangeyGrid', keywords);
+    }
+    function findBykey(){
+        if(event.keyCode==13){
+            findByKeywords();
+        }
     }
 
     var formatDateTime = function (date) {

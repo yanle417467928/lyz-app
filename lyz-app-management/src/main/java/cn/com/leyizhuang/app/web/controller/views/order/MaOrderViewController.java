@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.web.controller.views.order;
 
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderArrearsAudit;
+import cn.com.leyizhuang.app.foundation.pojo.management.order.OrderFreightChange;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
@@ -12,6 +13,7 @@ import cn.com.leyizhuang.app.foundation.vo.management.order.*;
 import cn.com.leyizhuang.common.util.CountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,6 +50,9 @@ public class MaOrderViewController {
     private MaStoreService maStoreService;
     @Resource
     private AppOrderService orderService;
+
+    @Autowired
+    private MaOrderFreightService freightService;
 
     /**
      * 返回门店订单列表页
@@ -88,6 +94,7 @@ public class MaOrderViewController {
         logger.info("storeOrderDetail CALLED,门店订单详情，入参 orderaNumber:{}", orderaNumber);
         if (!StringUtils.isBlank(orderaNumber)) {
             OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderaNumber);
+
             if (orderBaseInfo != null && "门店".equals(orderBaseInfo.getOrderSubjectType().getDescription())) {
                 //查询订单基本信息
                 MaOrderDetailResponse maOrderDetailResponse = maOrderService.findMaOrderDetailByOrderNumber(orderaNumber);
@@ -162,6 +169,16 @@ public class MaOrderViewController {
                     map.addAttribute("paymentDetailList", maOrderBillingPaymentDetailResponseList);
                 }
                 map.addAttribute("maOrderDetail", maOrderDetailResponse);
+                //获取运费明细
+                List<OrderFreightChange> freightChanges = this.freightService.queryOrderFreightChangeLogListByOid(orderBaseInfo.getId());
+                map.addAttribute("freightChanges", freightChanges);
+                //获取运费初始值
+                OrderFreightChange freightChange = this.freightService.queryOrderFreightChangeLogFirstByOid(orderBaseInfo.getId());
+                if (null == freightChange){
+                    freightChange = new OrderFreightChange();
+                    freightChange.setFreight(BigDecimal.valueOf(maOrderBillingDetailResponse.getFreight()));
+                }
+                map.addAttribute("freightChange", freightChange);
                 return "/views/order/store_order_detail";
             } else if ("门店自提".equals(orderBaseInfo.getDeliveryType().getDescription())) {
                 MaOrderDetailResponse maOrderDetailResponse = maOrderService.findMaOrderDetailByOrderNumber(orderaNumber);
@@ -278,6 +295,16 @@ public class MaOrderViewController {
                 }
 
                 map.addAttribute("maOrderDetail", maCompanyOrderDetailResponse);
+                //获取运费明细
+                List<OrderFreightChange> freightChanges = this.freightService.queryOrderFreightChangeLogListByOid(orderBaseInfo.getId());
+                map.addAttribute("freightChanges", freightChanges);
+                //获取运费初始值
+                OrderFreightChange freightChange = this.freightService.queryOrderFreightChangeLogFirstByOid(orderBaseInfo.getId());
+                if (null == freightChange){
+                    freightChange = new OrderFreightChange();
+                    freightChange.setFreight(BigDecimal.valueOf(maOrderBillingDetailResponse.getFreight()));
+                }
+                map.addAttribute("freightChange", freightChange);
                 return "/views/order/company_order_detail";
             }
         }
