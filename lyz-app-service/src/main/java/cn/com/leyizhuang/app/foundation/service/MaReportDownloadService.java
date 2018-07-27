@@ -124,4 +124,8 @@ public interface MaReportDownloadService {
     PageInfo<StInventoryRealChangeLogReportDO> findStInventoryRealChangeLogPage(Long cityId, Long storeId, List<Long> storeIds, Integer page, Integer size,String endTime, String startTime);
 
     List<StInventoryRealChangeLogReportDO> findStInventoryRealChangeLogList(Long cityId, Long storeId, List<Long> storeIds,String endTime, String startTime);
+
+    PageInfo<StInventoryRealSummaryReportDO> findStInventoryRealSummaryPage(Long cityId, Long storeId, List<Long> storeIds, Integer page, Integer size,String endTime, String startTime);
+
+    List<StInventoryRealSummaryReportDO> findStInventoryRealSummaryList(Long cityId, Long storeId, List<Long> storeIds,String endTime, String startTime);
 }

@@ -302,4 +302,15 @@ public class MaReportDownloadViewController extends BaseController {
         model.addAttribute("storeList", storesList);
         return "/views/reportDownload/store_invoicing_page";
     }
+
+    /**
+     * 门店真实库存汇总报表页面跳转
+     * @param map
+     * @return
+     */
+    @GetMapping(value = "/stInventory/summary/list")
+    public String stInventoryRealSummaryList(ModelMap map){
+        map.addAttribute("storeTypes",StoreType.getStoreTypeList());
+        return "/views/reportDownload/st_inventory_real_summary";
+    }
 }

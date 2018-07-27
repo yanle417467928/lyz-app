@@ -474,6 +474,28 @@ public class MaReportDownloadRestController extends BaseRestController {
         return new GridDataVO<StInventoryRealChangeLogReportDO>().transform(stInventoryRealChangeLogReportDOPageInfo.getList(), stInventoryRealChangeLogReportDOPageInfo.getTotal());
     }
 
+    /**
+     * 门店真实库存汇总报表
+     *
+     * @param offset
+     * @param size
+     * @param cityId
+     * @param storeId
+     * @param endTime
+     * @return
+     */
+    @GetMapping(value = "/st/inventory/summary")
+    public GridDataVO<StInventoryRealSummaryReportDO> stInventoryRealSummayList(Integer offset, Integer size, Long cityId, Long storeId, String endTime, String startTime) {
+
+        size = getSize(size);
+        Integer page = getPage(offset, size);
+        //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
+        PageInfo<StInventoryRealSummaryReportDO> stInventoryRealChangeLogPage = this.maReportDownloadService.findStInventoryRealSummaryPage(cityId, storeId,storeIds,
+                page, size,endTime,startTime);
+        return new GridDataVO<StInventoryRealSummaryReportDO>().transform(stInventoryRealChangeLogPage.getList(), stInventoryRealChangeLogPage.getTotal());
+    }
+
 
     /**
      * @param
@@ -4536,6 +4558,128 @@ public class MaReportDownloadRestController extends BaseRestController {
             }
         } catch (Exception e) {
             System.out.println(e);
+            e.printStackTrace();
+        } finally {
+            if (wwb != null) {
+                try {
+                    wwb.write();//刷新（或写入），生成一个excel文档
+                    wwb.close();//关闭
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * 门店真实库存汇总报表下载
+     * @param request
+     * @param response
+     * @param cityId
+     * @param storeId
+     */
+    @GetMapping(value = "/st/inventory/summary/excel")
+    public void downloadStoreInventoryRealSummary(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId,String endTime, String startTime) {
+        //查询登录用户门店权限的门店ID
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
+        List<StInventoryRealSummaryReportDO> itemsDOList = maReportDownloadService.findStInventoryRealSummaryList(cityId,storeId,storeIds,endTime,startTime);
+        ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
+        String shiroName = "";
+        if (null != shiroUser) {
+            shiroName = shiroUser.getName();
+        }
+
+        response.setContentType("text/html;charset=UTF-8");
+        //创建名称
+        String fileurl = "门店真实库存汇总报表-" + DateUtils.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls";//如  D:/xx/xx/xxx.xls
+
+        WritableWorkbook wwb = null;
+        try {
+            //创建文件
+            wwb = exportXML(fileurl, response);
+
+            //excel单表最大行数是65535
+            int maxSize = 0;
+            if (null != itemsDOList) {
+                maxSize = itemsDOList.size();
+            }
+            int sheets = maxSize / maxRowNum + 1;
+            //设置excel的sheet数
+            for (int i = 0; i < sheets; i++) {
+                //标题格式
+                WritableCellFormat titleFormat = this.setTitleStyle();
+                //正文格式
+                WritableCellFormat textFormat = this.setTextStyle();
+
+                //工作表，参数0表示这是第一页
+                WritableSheet ws = wwb.createSheet("第" + (i + 1) + "页", i);
+
+                //筛选条件
+                Map<String, String> map = new HashMap<>();
+                if (null != cityId && !(cityId.equals(-1L)) && null != itemsDOList && itemsDOList.size() > 0) {
+                    map.put("城市", "无");
+                } else {
+                    map.put("城市", "无");
+                }
+                if (null != storeId && !(storeId.equals(-1L)) && null != itemsDOList && itemsDOList.size() > 0) {
+                    map.put("门店", itemsDOList.get(0).getStore());
+                } else {
+                    map.put("门店", "无");
+                }
+
+                map.put("关键字", "无");
+
+
+                if (null != endTime && !("".equals(endTime))) {
+                    map.put("结束时间", endTime);
+                } else {
+                    map.put("结束时间", "无");
+                }
+
+                //设置筛选条件
+                ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
+                //列宽
+                int[] columnView = {10,20, 30, 10, 20, 20, 10, 10,10,10,10,10,10,10,10,10};
+                //列标题
+                String[] titles = {"城市","门店名称","商品名称","商品编码","变更类型","变更类型描述","自提单退货","自提单发货","门店要货",
+                        "门店要货退货","门店调拨入库","门店调拨出库","盘点入库","盘点出库","期初库存数","期末库存数"};
+                //计算标题开始行号
+                int row = 1;
+                if (null != map && map.size() > 0) {
+                    row = (map.size() + 1) / 2 + 4;
+                }
+
+                //设置标题
+                ws = this.setHeader(ws, titleFormat, columnView, titles, row);
+                row += 1;
+                WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.NO_BOLD, false,
+                        UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
+                //填写表体数据
+                for (int j = 0; j < maxRowNum; j++) {
+                    if (j + i * maxRowNum >= maxSize) {
+                        break;
+                    }
+                    StInventoryRealSummaryReportDO itemsDO = itemsDOList.get(j + i * maxRowNum);
+
+                    ws.addCell(new Label(0, j + row, itemsDO.getCity(), textFormat));
+                    ws.addCell(new Label(1, j + row, itemsDO.getStore(), textFormat));
+                    ws.addCell(new Label(2, j + row, itemsDO.getSkuName(), textFormat));
+                    ws.addCell(new Label(3, j + row, itemsDO.getSku(), textFormat));
+                    ws.addCell(new Label(4, j + row, itemsDO.getChangeType(), textFormat));
+                    ws.addCell(new Label(5, j + row, itemsDO.getChangeTypeDesc(), textFormat));
+                    ws.addCell(new Number(6, j + row, itemsDO.getStoreOrderQty() == null?0:itemsDO.getStoreOrderQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(7, j + row, itemsDO.getStoreReturnQty() == null?0:itemsDO.getStoreReturnQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(8, j + row, itemsDO.getStoreImportGoodsQty() == null?0:itemsDO.getStoreImportGoodsQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(9, j + row, itemsDO.getStoreExportGoodsQty() == null?0:itemsDO.getStoreExportGoodsQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(10, j + row, itemsDO.getStoreAllocateInBoundQty() == null?0:itemsDO.getStoreAllocateInBoundQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(11, j + row, itemsDO.getStoreAllocateOutBoundQty() == null?0:itemsDO.getStoreAllocateOutBoundQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(12, j + row, itemsDO.getStoreInventoryInboundQty() == null?0:itemsDO.getStoreInventoryInboundQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(13, j + row, itemsDO.getStoreInventoryOutboundQty() == null?0:itemsDO.getStoreInventoryOutboundQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(14, j + row, itemsDO.getInterInventoryQty() == null?0:itemsDO.getInterInventoryQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(15, j + row, itemsDO.getAfterInventoryQty() == null?0:itemsDO.getAfterInventoryQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                }
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             if (wwb != null) {

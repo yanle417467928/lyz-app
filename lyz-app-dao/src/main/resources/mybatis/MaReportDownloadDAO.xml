@@ -3896,56 +3896,62 @@
 
     <select id="findStoreInventorySummaryList" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.StInventoryRealSummaryReportDO">
         SELECT
-            a.city '城市',
-            a.store '门店',
-            a.sku '商品编码',
-            a.skuName '商品名称',
-            a.changeType '变更类型',
-            a.changeTypeDesc '变更类型描述',
+            a.city city,
+            a.store store,
+            a.sku sku,
+            a.skuName skuName,
+            a.changeType changeType,
+            a.changeTypeDesc changeTypeDesc,
             CASE
             WHEN a.changeType = 'SELF_TAKE_ORDER_RETURN' THEN
                 a.changeQty
             ELSE
                 0
-            END '自提单退货',
+            END storeOrderQty,
             CASE
             WHEN a.changeType = 'ORDER_DELIVERY' THEN
                 a.changeQty
             ELSE
                 0
-            END '自提单发货',
+            END storeReturnQty,
             CASE
             WHEN a.changeType = 'STORE_IMPORT_GOODS' THEN
                 a.changeQty
             ELSE
                 0
-            END '门店要货',
+            END storeImportGoodsQty,
             CASE
             WHEN a.changeType = 'STORE_EXPORT_GOODS' THEN
                 a.changeQty
             ELSE
                 0
-            END '门店要货退货',
+            END storeExportGoodsQty,
             CASE
             WHEN a.changeType = 'STORE_ALLOCATE_INBOUND' THEN
                 a.changeQty
             ELSE
                 0
-            END '门店调拨入库',
+            END storeAllocateInBoundQty,
             CASE
             WHEN a.changeType = 'STORE_ALLOCATE_OUTBOUND' THEN
                 a.changeQty
             ELSE
                 0
-            END '门店调拨出库',
+            END storeAllocateOutBoundQty,
             CASE
             WHEN a.changeType = 'STORE_INVENTORY_INBOUND' THEN
                 a.changeQty
             ELSE
                 0
-            END '盘点入库',
-            c.after_change_qty - SUM(a.changeQty) '期初库存数',
-            c.after_change_qty '期末库存数'
+            END storeInventoryInboundQty,
+            CASE
+            WHEN a.changeType = 'STORE_INVENTORY_OUTBOUND' THEN
+            a.changeQty
+            ELSE
+            0
+            END storeInventoryOutboundQty,
+            c.after_change_qty - SUM(a.changeQty) interInventoryQty,
+            c.after_change_qty afterInventoryQty
         FROM
             (
                 SELECT
@@ -3963,6 +3969,24 @@
                     LEFT JOIN ity_allocation ia ON srq.reference_number = ia.number
                 WHERE
                     1 = 1
+                    <if test="null != cityId and -1 != cityId">
+                        AND ss.city_id = #{cityId}
+                    </if>
+                    <if test="null != storeId and -1 != storeId">
+                        AND ss.store_id = #{storeId}
+                    </if>
+                    <if test="null != endTime and '' != endTime">
+                        AND srq.change_time &lt;=  #{endTime}
+                    </if>
+                    <if test="null != startTime and '' != startTime">
+                        AND srq.change_time &gt;=  #{startTime}
+                    </if>
+                    <if test="null == storeId and storeId == -1">
+                        AND ss.store_id IN
+                        <foreach collection="storeIds" item="item" open="(" close=")" separator=",">
+                            #{item}
+                        </foreach>
+                    </if>
                 GROUP BY
                     srq.store_id,
                     srq.sku,
@@ -3976,8 +4000,27 @@
                               b.store_id
                           FROM
                               st_inventory_real_qty_change_log b
+                          INNER JOIN st_store s ON s.store_id = b.store_id
                           WHERE
                               1 = 1
+                            <if test="null != cityId and -1 != cityId">
+                                AND s.city_id = #{cityId}
+                            </if>
+                            <if test="null != storeId and -1 != storeId">
+                                AND s.store_id = #{storeId}
+                            </if>
+                            <if test="null != endTime and '' != endTime">
+                                AND b.change_time &lt;=  #{endTime}
+                            </if>
+                            <if test="null != startTime and '' != startTime">
+                                AND b.change_time &gt;=  #{startTime}
+                            </if>
+                            <if test="null == storeId and storeId == -1">
+                                AND s.store_id IN
+                                <foreach collection="storeIds" item="item" open="(" close=")" separator=",">
+                                    #{item}
+                                </foreach>
+                            </if>
                           GROUP BY
                               b.store_id,
                               b.gid
