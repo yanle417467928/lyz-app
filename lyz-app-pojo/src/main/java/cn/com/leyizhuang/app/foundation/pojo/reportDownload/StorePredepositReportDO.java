@@ -34,6 +34,10 @@ public class StorePredepositReportDO {
     private String returnNo;
     //备注
     private String remarks;
+    //顾客名称
+    private String customerName = "";
+    //导购名称
+    private String sellerName = "";
 
 
     public void setChangeType(StorePreDepositChangeType changeType) {

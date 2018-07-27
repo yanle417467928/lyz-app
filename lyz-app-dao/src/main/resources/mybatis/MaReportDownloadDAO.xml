@@ -430,7 +430,9 @@
         ua.balance as balance,
         if(orbi.roid is not NULL ,orbi.ord_no,ua.order_number) referenceNumber,
         if(orbi.roid is not NULL , orbi.return_no,'') as returnNo,
-        ua.remarks as remarks
+        ua.remarks as remarks,
+        obi.sales_consult_name sellerName,
+        obi.customer_name customerName
          from
         (
             SELECT
@@ -476,6 +478,7 @@
         LEFT JOIN st_store st on st.store_id = ua.store_id
         LEFT JOIN ord_billing_details obd on obd.ord_no = ua.order_number
         LEFT JOIN ord_return_base_info orbi ON orbi.return_no = ua.order_number
+        LEFT JOIN ord_base_info obi ON obi.ord_no = IF(orbi.roid IS NOT NULL, orbi.ord_no, ua.order_number)
         INNER JOIN city c ON c.city_id = st.city_id
         WHERE TRUE
         <if test="null != cityId and cityId != -1">
