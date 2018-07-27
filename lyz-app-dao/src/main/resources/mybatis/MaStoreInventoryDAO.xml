@@ -236,6 +236,7 @@
         orli.delivery_type='RETURN_STORE'
         AND orbi.return_status ='FINISHED'
         AND obi.delivery_type !='PRODUCT_COUPON'
+        AND obi.delivery_type = 'SELF_TAKE'
         AND orl.post_status ='FINISHED'
         GROUP BY orgi.sku,orbi.store_code)
 
