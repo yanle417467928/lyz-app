@@ -2753,7 +2753,7 @@ public class OrderController {
     public ResultDTO<Object> handleOrderRelevantBusinessAfterPayCredit(Long userId, Integer identityType, String orderNumber,
                                                                            String payType, HttpServletRequest request) {
         ResultDTO<Object> resultDTO;
-        logger.info("handleOrderRelevantBusinessAfterPayCredit CALLED,处理余额支付的订单业务，入参 userID:{}, identityType:{}, orderNumber{},payType{}",
+        logger.info("handleOrderRelevantBusinessAfterPayCredit CALLED,处理余额支付的订单业务，入参 userID:{}, identityType:{}, orderNumber:{},payType:{}",
                 userId, identityType, orderNumber, payType);
         //获取客户端ip地址
         String ipAddress = IpUtils.getIpAddress(request);
@@ -2788,8 +2788,8 @@ public class OrderController {
                 return resultDTO;
             }
             if (baseInfo.getDeliveryType() == AppDeliveryType.PRODUCT_COUPON
-                    && (OrderBillingPaymentType.EMP_CREDIT != OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)
-                    || OrderBillingPaymentType.STORE_CREDIT_MONEY != OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType))){
+                    && (OrderBillingPaymentType.EMP_CREDIT == OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)
+                    || OrderBillingPaymentType.STORE_CREDIT_MONEY == OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType))){
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "买卷订单不能使用信用额度！", null);
                 logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理余额支付的订单业务失败，订单状态错误，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -2822,7 +2822,7 @@ public class OrderController {
             if (OrderBillingPaymentType.ST_PREPAY == OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)) {
                 StorePreDeposit stPreDeposit = this.appStoreService.findStorePreDepositByUserIdAndIdentityType(userId, identityType);
                 if (null == stPreDeposit || null == billingDetails || stPreDeposit.getBalance() < billingDetails.getAmountPayable()) {
-                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "信用金余额不足，请更换支付方式！", null);
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "预存款余额不足，请更换支付方式！", null);
                     logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理余额支付的订单业务失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
