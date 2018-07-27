@@ -2320,7 +2320,7 @@
         left JOIN cus_customer_fx_store_relation cu2 on ob.store_code = cu2.fx_store_code
         where
         1=1
-        and ob.`status` IN ('FINISHED','REJECTED')
+        and (ob.`status` IN ('FINISHED') or (ob.status in ('REJECTED') and obd.is_pay_up = 1))
         <if test="null!=startTime and ''!=startTime">
             AND
             wro.c_end_dt > #{startTime}
@@ -2752,7 +2752,7 @@
         left JOIN cus_customer cc on cc.cus_id = ob.customer_id
         where
         1=1
-        and ob.`status` IN ('FINISHED','REJECTED')
+        and (ob.`status` IN ('FINISHED') or (ob.status in ('REJECTED') and obd.is_pay_up = 1))
         <if test="null!=startTime and ''!=startTime">
             AND
             wro.c_end_dt > #{startTime}
