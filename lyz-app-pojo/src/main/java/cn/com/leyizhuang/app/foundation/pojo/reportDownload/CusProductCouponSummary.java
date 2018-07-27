@@ -81,4 +81,9 @@ public class CusProductCouponSummary {
      * 类型
      */
     public String type;
+
+    /**
+     * 商品类型
+     */
+    public String couponGoodsType;
 }

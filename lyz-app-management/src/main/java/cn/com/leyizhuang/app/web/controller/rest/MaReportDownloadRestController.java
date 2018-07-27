@@ -3961,7 +3961,7 @@ public class MaReportDownloadRestController extends BaseRestController {
      * @param keywords
      */
     @GetMapping(value = "/store/credit")
-    public void downloadCusProductCouponSummary(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId,String keywords) {
+    public void downloadStoreCredit(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId,String keywords) {
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
         List<StCreditDO> itemsDOList = maReportDownloadService.stCreditMoneySituation(cityId,storeIds,keywords);
@@ -4132,9 +4132,9 @@ public class MaReportDownloadRestController extends BaseRestController {
                 //设置筛选条件
                 ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
                 //列宽
-                int[] columnView = {10, 30, 20, 20, 30, 20, 10,10,10};
+                int[] columnView = {10, 30, 20, 20, 30, 20, 10,10,10,10};
                 //列标题
-                String[] titles = {"城市", "门店名称","导购","顾客","商品名称","商品编码","未提货数量","已提货数量","退未提货券","一级分类","二级分类","品牌","规格","类型"};
+                String[] titles = {"城市", "门店名称","导购","顾客","商品名称","商品编码","未提货数量","已提货数量","退未提货券","一级分类","二级分类","品牌","规格","类型","商品类型"};
                 //计算标题开始行号
                 int row = 1;
                 if (null != map && map.size() > 0) {
@@ -4158,14 +4158,15 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Label(3, j + row, itemsDO.getCusName(), textFormat));
                     ws.addCell(new Label(4, j + row, itemsDO.getSkuName(), textFormat));
                     ws.addCell(new Label(5, j + row, itemsDO.getSku(), textFormat));
-                    ws.addCell(new Number(6, j + row, itemsDO.getNotPickedUp(), new WritableCellFormat(textFont, new NumberFormat("0"))));
-                    ws.addCell(new Number(7, j + row, itemsDO.getPickedUp(), new WritableCellFormat(textFont, new NumberFormat("0"))));
-                    ws.addCell(new Number(8, j + row, itemsDO.getReturnQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(6, j + row, itemsDO.getNotPickedUp() == null?0:itemsDO.getNotPickedUp(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(7, j + row, itemsDO.getPickedUp() == null?0:itemsDO.getPickedUp(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(8, j + row, itemsDO.getReturnQty() == null?0:itemsDO.getReturnQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
                     ws.addCell(new Label(9, j + row, itemsDO.getClassifyOne(), textFormat));
                     ws.addCell(new Label(10, j + row, itemsDO.getClassifyTow(), textFormat));
                     ws.addCell(new Label(11, j + row, itemsDO.getBrand(), textFormat));
                     ws.addCell(new Label(12, j + row, itemsDO.getSpecification(), textFormat));
                     ws.addCell(new Label(13, j + row, itemsDO.getType(), textFormat));
+                    ws.addCell(new Label(14, j + row, itemsDO.getCouponGoodsType(), textFormat));
                 }
             }
         } catch (Exception e) {
@@ -4254,11 +4255,11 @@ public class MaReportDownloadRestController extends BaseRestController {
                 //设置筛选条件
                 ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
                 //列宽
-                int[] columnView = {10, 20, 20, 20, 20, 20, 30,10,10,15,15,15,15,15,20,20,10,20,5,5,10};
+                int[] columnView = {10, 20, 20, 20, 20, 20, 30,10,10,15,15,15,15,15,20,20,10,20,10};
                 //列标题
                 String[] titles = {"城市", "门店名称","导购","顾客","购买券单号","购买券时间","商品名称","商品编码","购买价格",
                                     "一级分类","二级分类","品牌","规格","类型",
-                                    "变更类型","变更时间","变更数量","变更相关单号","是否使用","券状态","券类型"};
+                                    "变更类型","变更时间","变更数量","变更相关单号","券类型"};
                 //计算标题开始行号
                 int row = 1;
                 if (null != map && map.size() > 0) {
@@ -4294,9 +4295,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Label(15, j + row, itemsDO.getChangeTime(), textFormat));
                     ws.addCell(new Number(16, j + row, itemsDO.getChangeQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
                     ws.addCell(new Label(17, j + row, itemsDO.getChangeNumber(), textFormat));
-                    ws.addCell(new Label(18, j + row, itemsDO.getIsUse(), textFormat));
-                    ws.addCell(new Label(19, j + row, itemsDO.getStatus(), textFormat));
-                    ws.addCell(new Label(20, j + row, itemsDO.getIsZG(), textFormat));
+                    ws.addCell(new Label(18, j + row, itemsDO.getIsZG(), textFormat));
 
                 }
             }

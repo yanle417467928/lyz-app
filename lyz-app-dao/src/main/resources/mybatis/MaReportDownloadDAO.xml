@@ -3496,72 +3496,78 @@
 
     <select id="findCusProductCouponSummaryList" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.CusProductCouponSummary">
         SELECT
-            city.`name` city,
-            s.store_name storeName,
-            e.`name` sellerName,
-            c.`name` cusName,
-            g.sku_name skuName,
-            g.sku sku,
-            IFNULL(a.qty, 0) notPickedUp,
-            IFNULL(b.qty, 0) pickedUp,
-            IFNULL(d.qty, 0) returnQty,
+        city.`name` city,
+        s.store_name storeName,
+        e.`name` sellerName,
+        c.`name` cusName,
+        g.sku_name skuName,
+        g.sku sku,
+        IFNULL(a.qty, 0) notPickedUp,
+        IFNULL(b.qty, 0) pickedUp,
+        IFNULL(d.qty, 0) returnQty,
         ggc.category_name classifyOne,
         g.category_name classifyTow,
         ggb.brand_name brand,
         g.specification_type specification,
-        ggt.type_name type
+        ggt.type_name type,
+        CASE
+        WHEN cp.goods_sign = 'COMMON' THEN
+        '普通'
+        ELSE
+        '专供'
+        END couponGoodsType
         FROM
-            cus_customer_product_coupon cp
+        cus_customer_product_coupon cp
         LEFT JOIN (
-            SELECT
-                cus_id,
-                gid,
-                COUNT(id) qty
-            FROM
-                cus_customer_product_coupon
-            WHERE
-                effective_end_time > NOW()
-            AND (
-                is_used IS NULL
-                OR is_used IS FALSE
-            )
-            AND `status` IS TRUE
-            GROUP BY
-                cus_id,
-                gid
+        SELECT
+        cus_id,
+        gid,
+        COUNT(id) qty
+        FROM
+        cus_customer_product_coupon
+        WHERE
+        effective_end_time > NOW()
+        AND (
+        is_used IS NULL
+        OR is_used IS FALSE
+        )
+        AND `status` IS TRUE
+        GROUP BY
+        cus_id,
+        gid
         ) a ON a.cus_id = cp.cus_id
         AND a.gid = cp.gid
         LEFT JOIN (
-            SELECT
-                cus_id,
-                gid,
-                COUNT(id) qty
-            FROM
-                cus_customer_product_coupon
-            WHERE
-                is_used IS TRUE
-            GROUP BY
-                cus_id,
-                gid
+        SELECT
+        cus_id,
+        gid,
+        COUNT(id) qty
+        FROM
+        cus_customer_product_coupon
+        WHERE
+        is_used IS TRUE
+        GROUP BY
+        cus_id,
+        gid
         ) b ON b.cus_id = cp.cus_id
         AND b.gid = cp.gid
         LEFT JOIN (
-            SELECT
-                obi.customer_id cus_id,
-                obi.customer_name cus_name,
-                orgi.sku,
-                orgi.gid,
-                SUM(orgi.return_qty) qty
-            FROM
-                ord_base_info obi
-            LEFT JOIN ord_return_base_info orbi ON orbi.ord_no = obi.ord_no
-            LEFT JOIN ord_return_goods_info orgi ON orgi.roid = orbi.roid
-            WHERE
-                obi.order_type = 'COUPON'
-            AND orbi.roid IS NOT NULL
-            GROUP BY
-                orgi.return_no,
-                orgi.sku
+        SELECT
+        obi.customer_id cus_id,
+        obi.customer_name cus_name,
+        orgi.sku,
+        orgi.gid,
+        SUM(orgi.return_qty) qty
+        FROM
+        ord_base_info obi
+        LEFT JOIN ord_return_base_info orbi ON orbi.ord_no = obi.ord_no
+        LEFT JOIN ord_return_goods_info orgi ON orgi.roid = orbi.roid
+        WHERE
+        obi.order_type = 'COUPON'
+        AND orbi.roid IS NOT NULL
+        GROUP BY
+        orgi.return_no,
+        orgi.sku
         ) d ON d.cus_id = cp.cus_id
         AND d.gid = cp.gid
         LEFT JOIN cus_customer c ON c.cus_id = cp.cus_id
@@ -3569,8 +3575,8 @@
         LEFT JOIN st_store s ON s.store_id = cp.store_id
         LEFT JOIN gds_goods g ON g.gid = cp.gid
         LEFT JOIN emp_employee e ON e.emp_id = c.sales_consult_id
-        LEFT JOIN gds_goods_category gc on g.cid =gc.cid
-        LEFT JOIN gds_goods_category ggc ON  gc.p_cid =ggc.cid
+        LEFT JOIN gds_goods_category gc ON g.cid = gc.cid
+        LEFT JOIN gds_goods_category ggc ON gc.p_cid = ggc.cid
         LEFT JOIN gds_goods_brand ggb ON ggb.brd_id = g.brd_id
         LEFT JOIN gds_goods_type ggt ON ggt.gtid = g.gtid
         WHERE
@@ -3606,61 +3612,222 @@
 
     <select id="findCusProductCouponChangeLog" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.CusProductCouponChangeLogReportDO">
         SELECT
-            c.`name` city,
-            ss.store_name store,
-            ee.`name` seller,
-            cc.`name` customer,
-            CASE
-            WHEN cpccl.change_type = 'BUY_COUPON' THEN
-                ccpc.get_ord_no
-            ELSE
-                ''
-            END getOrderNumber,
-            gg.sku_name skuName,
-            gg.sku sku,
-            cpccl.change_type changeType,
-            cpccl.change_type_desc changeTypeDesc,
-            ccpc.get_time getTime,
-            cpccl.use_time changeTime,
-            cpccl.reference_number changeNumber,
-            ccpc.buy_price buyPrice,
-            CASE
-            WHEN ccpc.is_used THEN
-                '已使用'
-            ELSE
-                '未使用'
-            END isUse,
-            CASE
-            WHEN ccpc.`status` THEN
-                '可用'
-            ELSE
-                '禁用'
-            END status,
-            1 changeQty,
-            ggc.category_name classifyOne,
-            gg.category_name classifyTow,
-            ggb.brand_name brand,
-            gg.specification_type specification,
-            ggt.type_name type,
-            CASE
-            WHEN ccpc.goods_sign = 'COMMON' THEN '普通'
-            WHEN ccpc.goods_sign = '' OR ccpc.goods_sign IS NULL THEN '后台发放'
-            ELSE '专供'
-            END isZG
+        c.`name` city,
+        ss.store_name store,
+        ee.`name` seller,
+        cc.`name` customer,
+        CASE
+        WHEN ccpc.get_type = 'BUY' THEN
+        ccpc.get_ord_no
+        ELSE
+        ''
+        END getOrderNumber,
+        gg.sku_name skuName,
+        gg.sku sku,
+        'PLACE_ORDER' changeType,
+        '订单消费' changeTypeDesc,
+        ccpc.get_time getTime,
+        obi.create_time changeTime,
+        obi.ord_no orderNumber,
+        '' returnNumber,
+        ccpc.buy_price buyPrice,
+        - 1 changeQty,
+        ggc.category_name classifyOne,
+        gg.category_name classifyTow,
+        ggb.brand_name brand,
+        gg.specification_type specification,
+        ggt.type_name type,
+        CASE
+        WHEN ccpc.goods_sign = 'COMMON' THEN
+        '普通'
+        WHEN ccpc.goods_sign = ''
+        OR ccpc.goods_sign IS NULL THEN
+        '后台发放'
+        ELSE
+        '专供'
+        END isZG
         FROM
-            cus_product_coupon_change_log cpccl
-            INNER JOIN cus_customer cc ON cc.cus_id = cpccl.cus_id
-            INNER JOIN cus_customer_product_coupon ccpc ON ccpc.id = cpccl.coupon_id
-            INNER JOIN city c ON c.city_id = cc.city_id
-            INNER JOIN st_store ss ON ss.store_id = cc.store_id
-            INNER JOIN emp_employee ee ON ee.emp_id = cc.sales_consult_id
-            INNER JOIN gds_goods gg ON gg.gid = ccpc.gid
-            LEFT JOIN gds_goods_category gc on gg.cid =gc.cid
-            LEFT JOIN gds_goods_category ggc ON  gc.p_cid =ggc.cid
-            LEFT JOIN gds_goods_brand ggb ON ggb.brd_id = gg.brd_id
-            LEFT JOIN gds_goods_type ggt ON ggt.gtid = gg.gtid
+        ord_coupon_info ori
+        LEFT JOIN ord_base_info obi ON obi.oid = ori.oid
+        INNER JOIN cus_customer_product_coupon ccpc ON ccpc.id = ori.coupon_id
+        INNER JOIN cus_customer cc ON cc.cus_id = ccpc.cus_id
+        INNER JOIN city c ON c.city_id = cc.city_id
+        INNER JOIN st_store ss ON ss.store_id = cc.store_id
+        INNER JOIN emp_employee ee ON ee.emp_id = cc.sales_consult_id
+        INNER JOIN gds_goods gg ON gg.gid = ccpc.gid
+        LEFT JOIN gds_goods_category gc ON gg.cid = gc.cid
+        LEFT JOIN gds_goods_category ggc ON gc.p_cid = ggc.cid
+        LEFT JOIN gds_goods_brand ggb ON ggb.brd_id = gg.brd_id
+        LEFT JOIN gds_goods_type ggt ON ggt.gtid = gg.gtid
         WHERE
-        1=1
+        1 = 1
+        AND ori.coupon_type = 'PRODUCT_COUPON'
+        <if test=" null != productType and 'COMMON' == productType">
+            AND  ccpc.goods_sign = 'COMMON'
+        </if>
+        <if test=" null != productType and 'ZG' == productType">
+            AND ccpc.goods_sign != 'COMMON'
+        </if>
+        <if test="null != cityId and -1 != cityId">
+            AND c.city_id = #{cityId}
+        </if>
+        <if test="null != storeId and storeId != -1">
+            AND ss.store_id = #{storeId}
+        </if>
+        <if test="null != keywords and '' != keywords">
+            AND (cc.`name` LIKE concat(concat('%',#{keywords}),'%') or cc.mobile LIKE concat(concat('%',#{keywords}),'%'))
+        </if>
+        <if test="null != endTime and '' != endTime">
+            AND obi.create_time &lt;= #{endTime}
+        </if>
+        <if test="null != startTime and '' != startTime">
+            AND obi.create_time &gt;= #{startTime}
+        </if>
+        <if test="null == storeId and storeId == -1">
+            AND ss.store_id IN
+            <foreach collection="storeIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        UNION ALL
+        SELECT
+        c.`name` city,
+        ss.store_name store,
+        ee.`name` seller,
+        cc.`name` customer,
+        CASE
+        WHEN ccpc.get_type = 'BUY' THEN
+        ccpc.get_ord_no
+        ELSE
+        ''
+        END getOrderNumber,
+        gg.sku_name skuName,
+        gg.sku sku,
+        orbi.return_type changeType,
+        CASE
+        WHEN orbi.return_type = 'CANCEL_RETURN' THEN
+        '取消订单'
+        WHEN orbi.return_type = 'REFUSED_RETURN' THEN
+        '拒签退货'
+        WHEN orbi.return_type = 'NORMAL_RETURN' THEN
+        '正常退货'
+        END changeTypeDesc,
+        ccpc.get_time getTime,
+        orbi.return_time changeTime,
+        obi.ord_no orderNumber,
+        orbi.return_no returnNumber,
+        ccpc.buy_price buyPrice,
+        1 changeQty,
+        ggc.category_name classifyOne,
+        gg.category_name classifyTow,
+        ggb.brand_name brand,
+        gg.specification_type specification,
+        ggt.type_name type,
+        CASE
+        WHEN ccpc.goods_sign = 'COMMON' THEN
+        '普通'
+        WHEN ccpc.goods_sign = ''
+        OR ccpc.goods_sign IS NULL THEN
+        '后台发放'
+        ELSE
+        '专供'
+        END isZG
+        FROM
+        ord_return_product_coupon orpc
+        LEFT JOIN ord_return_base_info orbi ON orbi.roid = orpc.roid
+        LEFT JOIN ord_base_info obi ON obi.oid = orbi.oid
+        INNER JOIN cus_customer_product_coupon ccpc ON ccpc.id = orpc.pcid
+        INNER JOIN cus_customer cc ON cc.cus_id = ccpc.cus_id
+        INNER JOIN city c ON c.city_id = cc.city_id
+        INNER JOIN st_store ss ON ss.store_id = cc.store_id
+        INNER JOIN emp_employee ee ON ee.emp_id = cc.sales_consult_id
+        INNER JOIN gds_goods gg ON gg.gid = ccpc.gid
+        LEFT JOIN gds_goods_category gc ON gg.cid = gc.cid
+        LEFT JOIN gds_goods_category ggc ON gc.p_cid = ggc.cid
+        LEFT JOIN gds_goods_brand ggb ON ggb.brd_id = gg.brd_id
+        LEFT JOIN gds_goods_type ggt ON ggt.gtid = gg.gtid
+        WHERE
+        1 = 1
+        <if test=" null != productType and 'COMMON' == productType">
+            AND  ccpc.goods_sign = 'COMMON'
+        </if>
+        <if test=" null != productType and 'ZG' == productType">
+            AND ccpc.goods_sign != 'COMMON'
+        </if>
+        <if test="null != cityId and -1 != cityId">
+            AND c.city_id = #{cityId}
+        </if>
+        <if test="null != storeId and storeId != -1">
+            AND ss.store_id = #{storeId}
+        </if>
+        <if test="null != keywords and '' != keywords">
+            AND (cc.`name` LIKE concat(concat('%',#{keywords}),'%') or cc.mobile LIKE concat(concat('%',#{keywords}),'%'))
+        </if>
+        <if test="null != endTime and '' != endTime">
+            AND orbi.return_time &lt;= #{endTime}
+        </if>
+        <if test="null != startTime and '' != startTime">
+            AND orbi.return_time &gt;= #{startTime}
+        </if>
+        <if test="null == storeId and storeId == -1">
+            AND ss.store_id IN
+            <foreach collection="storeIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        UNION ALL
+        SELECT
+        c.`name` city,
+        ss.store_name store,
+        ee.`name` seller,
+        cc.`name` customer,
+        CASE
+        WHEN ccpc.get_type = 'BUY' THEN
+        ccpc.get_ord_no
+        ELSE
+        ''
+        END getOrderNumber,
+        gg.sku_name skuName,
+        gg.sku sku,
+        '' changeType,
+        '' changeTypeDesc,
+        ccpc.get_time getTime,
+        '' changeTime,
+        ccpc.use_ord_no orderNumber,
+        '' returnNumber,
+        ccpc.buy_price buyPrice,
+        - 1 changeQty,
+        ggc.category_name classifyOne,
+        gg.category_name classifyTow,
+        ggb.brand_name brand,
+        gg.specification_type specification,
+        ggt.type_name type,
+        CASE
+        WHEN ccpc.goods_sign = 'COMMON' THEN
+        '普通'
+        WHEN ccpc.goods_sign = ''
+        OR ccpc.goods_sign IS NULL THEN
+        '后台发放'
+        ELSE
+        '专供'
+        END isZG
+        FROM
+        ord_base_info obi
+        LEFT JOIN ord_goods_info ogi ON ogi.ord_no = obi.ord_no
+        LEFT JOIN cus_customer_product_coupon ccpc ON ccpc.goods_line_id = ogi.id
+        INNER JOIN cus_customer cc ON cc.cus_id = ccpc.cus_id
+        INNER JOIN city c ON c.city_id = cc.city_id
+        INNER JOIN st_store ss ON ss.store_id = cc.store_id
+        INNER JOIN emp_employee ee ON ee.emp_id = cc.sales_consult_id
+        INNER JOIN gds_goods gg ON gg.gid = ccpc.gid
+        LEFT JOIN gds_goods_category gc ON gg.cid = gc.cid
+        LEFT JOIN gds_goods_category ggc ON gc.p_cid = ggc.cid
+        LEFT JOIN gds_goods_brand ggb ON ggb.brd_id = gg.brd_id
+        LEFT JOIN gds_goods_type ggt ON ggt.gtid = gg.gtid
+        WHERE
+        obi.order_type = 'COUPON'
+        AND ccpc.is_used IS FALSE
+        AND ccpc.use_ord_no IS NULL
         <if test=" null != productType and 'COMMON' == productType">
             AND  ccpc.goods_sign = 'COMMON'
         </if>
@@ -3677,10 +3844,10 @@
             AND (cc.`name` LIKE concat(concat('%',#{keywords}),'%') or cc.mobile LIKE concat(concat('%',#{keywords}),'%'))
         </if>
         <if test="null != endTime and '' != endTime">
-            AND cpccl.use_time &lt;= #{endTime}
+            AND ccpc.get_time &lt;= #{endTime}
         </if>
         <if test="null != startTime and '' != startTime">
-            AND cpccl.use_time &gt;= #{startTime}
+            AND ccpc.get_time &gt;= #{startTime}
         </if>
         <if test="null == storeId and storeId == -1">
             AND ss.store_id IN
@@ -3688,8 +3855,6 @@
                 #{item}
             </foreach>
         </if>
-        ORDER BY
-            cpccl.use_time DESC
     </select>
     
     <select id="findStoreInventoryRealChangeLog" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.StInventoryRealChangeLogReportDO">
@@ -3727,5 +3892,102 @@
             </foreach>
         </if>
         ORDER BY srq.change_time DESC
+    </select>
+
+    <select id="findStoreInventorySummaryList" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.StInventoryRealSummaryReportDO">
+        SELECT
+            a.city '城市',
+            a.store '门店',
+            a.sku '商品编码',
+            a.skuName '商品名称',
+            a.changeType '变更类型',
+            a.changeTypeDesc '变更类型描述',
+            CASE
+            WHEN a.changeType = 'SELF_TAKE_ORDER_RETURN' THEN
+                a.changeQty
+            ELSE
+                0
+            END '自提单退货',
+            CASE
+            WHEN a.changeType = 'ORDER_DELIVERY' THEN
+                a.changeQty
+            ELSE
+                0
+            END '自提单发货',
+            CASE
+            WHEN a.changeType = 'STORE_IMPORT_GOODS' THEN
+                a.changeQty
+            ELSE
+                0
+            END '门店要货',
+            CASE
+            WHEN a.changeType = 'STORE_EXPORT_GOODS' THEN
+                a.changeQty
+            ELSE
+                0
+            END '门店要货退货',
+            CASE
+            WHEN a.changeType = 'STORE_ALLOCATE_INBOUND' THEN
+                a.changeQty
+            ELSE
+                0
+            END '门店调拨入库',
+            CASE
+            WHEN a.changeType = 'STORE_ALLOCATE_OUTBOUND' THEN
+                a.changeQty
+            ELSE
+                0
+            END '门店调拨出库',
+            CASE
+            WHEN a.changeType = 'STORE_INVENTORY_INBOUND' THEN
+                a.changeQty
+            ELSE
+                0
+            END '盘点入库',
+            c.after_change_qty - SUM(a.changeQty) '期初库存数',
+            c.after_change_qty '期末库存数'
+        FROM
+            (
+                SELECT
+                    srq.sku sku,
+                    srq.sku_name skuName,
+                    ss.store_name store,
+                    SUM(srq.change_qty) changeQty,
+                    srq.change_type_desc changeTypeDesc,
+                    srq.change_type changeType,
+                    ss.store_id,
+                    ss.city
+                FROM
+                    st_inventory_real_qty_change_log srq
+                    INNER JOIN st_store ss ON ss.store_id = srq.store_id
+                    LEFT JOIN ity_allocation ia ON srq.reference_number = ia.number
+                WHERE
+                    1 = 1
+                GROUP BY
+                    srq.store_id,
+                    srq.sku,
+                    srq.change_type
+            ) a
+            LEFT JOIN (
+                          SELECT
+                              MAX(b.id),
+                              b.after_change_qty,
+                              b.sku,
+                              b.store_id
+                          FROM
+                              st_inventory_real_qty_change_log b
+                          WHERE
+                              1 = 1
+                          GROUP BY
+                              b.store_id,
+                              b.gid
+                      ) c ON c.store_id = a.store_id
+                             AND c.sku = a.sku
+        WHERE
+            1 = 1
+        GROUP BY
+            a.store_id,
+            a.sku,
+            a.changeType
     </select>
 </mapper>
