@@ -130,16 +130,6 @@ public class MaStoreInventoryRestController extends BaseRestController {
         Integer page = getPage(offset, size);
         PageInfo<StoreInvoicingInf> invoicingVOPageInfo = maStoreInventoryService.queryInvoicingPage(page, size, keywords, structureCode, storeId,endDateTime,storeIds);
         List<StoreInvoicingInf>  storesGoodReturnListTrans = StoreInvoicingInf.transform(invoicingVOPageInfo.getList());
-        for(StoreInvoicingInf storeInvoicingInf:storesGoodReturnListTrans){
-            Integer changQtyTotal = storeInvoicingInf.getOrderDeliveryQty()+storeInvoicingInf.getSelfTakeOrderReturnQty()+storeInvoicingInf.getStoreOutputGoodsQty()+storeInvoicingInf.getStoreInputGoodsQty()+storeInvoicingInf.getStoreAllocateInboundQty()+storeInvoicingInf.getStoreAllocateOutboundQty()+
-                    storeInvoicingInf.getStoreExportGoodsQty()+storeInvoicingInf.getStoreImportGoodsQty();
-            Integer realQty = maStoreInventoryService.queryStoreInitialrealQty(storeInvoicingInf.getStoreCode(),storeInvoicingInf.getSku());
-            if(null ==realQty){
-                realQty = 0;
-            }
-            storeInvoicingInf.setInitialIty(realQty);
-            storeInvoicingInf.setSurplusInventory(realQty+changQtyTotal);
-        }
         return new GridDataVO<StoreInvoicingInfVO>().transform(StoreInvoicingInfVO.transform(storesGoodReturnListTrans), invoicingVOPageInfo.getTotal());
     }
 

@@ -3,11 +3,15 @@ package cn.com.leyizhuang.app.web.controller.views.reportDownload;
 import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import cn.com.leyizhuang.app.core.constant.OrderBillingPaymentType;
 import cn.com.leyizhuang.app.core.constant.StoreType;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
 import cn.com.leyizhuang.app.foundation.pojo.management.structure.SimpaleGroupStructureParam;
+import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.MaGroupStructureService;
+import cn.com.leyizhuang.app.foundation.service.MaStoreService;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +35,13 @@ public class MaReportDownloadViewController extends BaseController {
 
     @Resource
     private MaGroupStructureService  maGroupStructureService;
+
+    @Autowired
+    private AdminUserStoreService adminUserStoreService;
+
+    @Autowired
+    private MaStoreService maStoreService;
+
 
     /**
      * @title    收款报表
@@ -272,5 +283,23 @@ public class MaReportDownloadViewController extends BaseController {
     public String stInventoryRealChangeLogList(ModelMap map){
         map.addAttribute("storeTypes",StoreType.getStoreTypeList());
         return "/views/reportDownload/st_inventory_real_change_log";
+    }
+
+
+    /**
+     * 门店进销存报表
+     * @param
+     * @return
+     */
+    @GetMapping(value = "/storeInvoicing/list")
+    public String stInvoicingList(ModelMap model){
+        List<String> structureCodeList = new ArrayList<>();
+        structureCodeList.add("LYZ001|JZSYBM");
+        List<SimpaleGroupStructureParam>  structureList = maGroupStructureService.querySimpaleStructureListByFilter(structureCodeList);
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+        List<SimpleStoreParam> storesList = this.maStoreService.findStoresListByStoreId(storeIds);
+        model.addAttribute("structureList", structureList);
+        model.addAttribute("storeList", storesList);
+        return "/views/reportDownload/store_invoicing_page";
     }
 }

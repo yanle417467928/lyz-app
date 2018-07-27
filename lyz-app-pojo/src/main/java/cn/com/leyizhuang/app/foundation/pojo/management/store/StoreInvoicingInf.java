@@ -20,6 +20,10 @@ import java.util.List;
 public class StoreInvoicingInf {
 
     /**
+     * 分公司名称
+     */
+    private String structureName;
+    /**
      * 门店编码
      */
     private String storeCode;
@@ -99,6 +103,9 @@ public class StoreInvoicingInf {
                 if (null != storeInvoicingInf.getOrderDeliveryQty()) {
                     storeInvoicingInf.setOrderDeliveryQty(-storeInvoicingInf.getOrderDeliveryQty());
                 }
+                if (null != storeInvoicingInf.getStoreAllocateOutboundQty()) {
+                    storeInvoicingInf.setStoreAllocateOutboundQty(-storeInvoicingInf.getStoreAllocateOutboundQty());
+                }
                 if (null == storeInvoicingInf.getOrderDeliveryQty()) {
                     storeInvoicingInf.setOrderDeliveryQty(0);
                 }
@@ -123,6 +130,15 @@ public class StoreInvoicingInf {
                 if (null == storeInvoicingInf.getStoreOutputGoodsQty()) {
                     storeInvoicingInf.setStoreOutputGoodsQty(0);
                 }
+                if (null == storeInvoicingInf.getRealIty()) {
+                    storeInvoicingInf.setRealIty(0);
+                }
+                if (null == storeInvoicingInf.getInitialIty()) {
+                    storeInvoicingInf.setInitialIty(0);
+                }
+                Integer changQtyTotal = storeInvoicingInf.getOrderDeliveryQty()+storeInvoicingInf.getSelfTakeOrderReturnQty()+storeInvoicingInf.getStoreOutputGoodsQty()+storeInvoicingInf.getStoreInputGoodsQty()+storeInvoicingInf.getStoreAllocateInboundQty()+storeInvoicingInf.getStoreAllocateOutboundQty()+
+                        storeInvoicingInf.getStoreExportGoodsQty()+storeInvoicingInf.getStoreImportGoodsQty();
+                storeInvoicingInf.setSurplusInventory(storeInvoicingInf.getInitialIty()+changQtyTotal);
                 storeInvoicingInfListTrans.add(storeInvoicingInf);
             }
         } else {
