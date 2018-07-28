@@ -120,4 +120,7 @@ public interface MaReportDownloadDAO {
 
     List<StInventoryRealChangeLogReportDO> findStoreInventoryRealChangeLog(@Param("cityId")Long cityId,@Param("storeId")Long storeId,
                                                                            @Param("storeIds")List storeIds,@Param("endTime")String endTime,@Param("startTime")String startTime);
+
+    List<StInventoryRealSummaryReportDO> findStoreInventorySummaryList(@Param("cityId")Long cityId,@Param("storeId")Long storeId,
+                                                                           @Param("storeIds")List storeIds,@Param("endTime")String endTime,@Param("startTime")String startTime);
 }

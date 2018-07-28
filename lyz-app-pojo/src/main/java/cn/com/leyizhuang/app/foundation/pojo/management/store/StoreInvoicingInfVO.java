@@ -89,6 +89,9 @@ public class StoreInvoicingInfVO {
                 if (null != storeInvoicingInf.getOrderDeliveryQty()) {
                     storeInvoicingInf.setOrderDeliveryQty(storeInvoicingInf.getOrderDeliveryQty());
                 }
+                if (null != storeInvoicingInf.getStoreAllocateOutboundQty()) {
+                    storeInvoicingInf.setStoreAllocateOutboundQty(storeInvoicingInf.getStoreAllocateOutboundQty());
+                }
                 if (null == storeInvoicingInf.getOrderDeliveryQty()) {
                     storeInvoicingInf.setOrderDeliveryQty(0);
                 }
@@ -112,6 +115,12 @@ public class StoreInvoicingInfVO {
                 }
                 if (null == storeInvoicingInf.getStoreOutputGoodsQty()) {
                     storeInvoicingInf.setStoreOutputGoodsQty(0);
+                }
+                if (null == storeInvoicingInf.getRealIty()) {
+                    storeInvoicingInf.setRealIty(0);
+                }
+                if (null == storeInvoicingInf.getInitialIty()) {
+                    storeInvoicingInf.setInitialIty(0);
                 }
                 storeInvoicingInfVO.setOrderDeliveryQty(storeInvoicingInf.getOrderDeliveryQty());
                 storeInvoicingInfVO.setChangeTime(storeInvoicingInf.getChangeTime());

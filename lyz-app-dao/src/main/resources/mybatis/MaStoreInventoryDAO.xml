@@ -180,7 +180,7 @@
 
 
     <select id="queryInvoicingPage" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.StoreInvoicingInf">
-      select jxc_b.*,gg.sku_name,ss.store_name,si.real_ity from
+      select jxc_b.*,gg.sku_name,ss.store_name,si.real_ity,sii.real_ity as initialIty ,ss.company_name as structureName from
         (select
         jxc_a.store_code,
         jxc_a.sku,
@@ -236,6 +236,7 @@
         orli.delivery_type='RETURN_STORE'
         AND orbi.return_status ='FINISHED'
         AND obi.delivery_type !='PRODUCT_COUPON'
+        AND obi.delivery_type = 'SELF_TAKE'
         AND orl.post_status ='FINISHED'
         GROUP BY orgi.sku,orbi.store_code)
 
@@ -252,12 +253,13 @@
         (select '调拨出库' as type ,ss.store_code as store_code,iad.sku as sku,sum(iad.real_qty) as qty,max(ia.modify_time) as change_time
         from ity_allocation ia
         LEFT JOIN ity_allocation_detail iad on ia.id =iad.allocation_id
-        LEFT JOIN st_store ss on ia.allocation_to = ss.store_id
-        where ia.status ='ENTERED' GROUP BY  ia.allocation_to,iad.sku) ) jxc_a
+        LEFT JOIN st_store ss on ia.allocation_from = ss.store_id
+        where ia.status ='ENTERED' GROUP BY  ia.allocation_from,iad.sku) ) jxc_a
         GROUP BY jxc_a.store_code,jxc_a.sku ) jxc_b
         LEFT JOIN st_store ss on jxc_b.store_code =ss.store_code
         LEFT JOIN gds_goods gg on jxc_b.sku =gg.sku
         LEFT JOIN st_inventory si ON  si.sku = jxc_b.sku AND si.store_code = jxc_b.store_code
+        LEFT JOIN  st_inventory_initial sii ON  sii.sku = jxc_b.sku AND sii.store_code = jxc_b.store_code
         WHERE
         1=1
         <if test="null !=keywords and ''!=keywords">

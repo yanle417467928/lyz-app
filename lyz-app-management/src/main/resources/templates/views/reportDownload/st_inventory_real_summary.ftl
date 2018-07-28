@@ -50,44 +50,19 @@
                         <option value="-1">选择城市</option>
                     </select>
 
-                    <select name="storeType" id="storeType" class="form-control selectpicker" data-width="120px"
-                            style="width:auto;"
-                            onchange="findStorelist()" data-live-search="true">
-                        <option value="">选择门店类型</option>
-                    <#if storeTypes??>
-                        <#list storeTypes as storeType>
-                            <option value="${storeType.value}">${storeType.description}</option>
-                        </#list>
-                    </#if>
-                    </select>
-
                     <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px"
                             style="width:auto;"
                             onchange="findByCondition()" data-live-search="true">
                         <option value="-1">选择门店</option>
                     </select>
 
-                    <select name="productType" id="productType" class="form-control selectpicker" data-width="120px" style="width:auto;"
-                            data-live-search="true">
-                        <option value="NO">选择券类型</option>
-                        <option value="COMMON">普通</option>
-                        <option value="ZG">专供</option>
-                    </select>
-
                     <input name="startTime" onchange="findByCondition()" type="text" class="form-control datepicker"
                            id="startTime" style="width: 120px;" placeholder="开始时间">
-                    --
+
                     <input name="endTime" onchange="findByCondition()" type="text" class="form-control datepicker"
                            id="endTime" style="width: 120px;" placeholder="截止时间">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
                                     onclick="return findByCondition()">查找</button>
-
-                <#--<@shiro.hasPermission name="/views/admin/resource/add">-->
-                    <#--<button id="btn_add" type="button" class="btn btn-default pull-left" onclick="openBillModal()">-->
-                        <#--<i class="fa fa-download"></i>-->
-                        <#--下载报表-->
-                    <#--</button>-->
-                <#--</@shiro.hasPermission>-->
 
                 </div>
 
@@ -108,7 +83,7 @@
         findStorelist();
 
         //获取数据
-        initDateGird(null, null, null, null, 1);
+        initDateGird(null, null, null, null, null);
         //时间选择框样式
         $('.datepicker').datepicker({
             format: 'yyyy-mm-dd',
@@ -172,44 +147,25 @@
         });
     }
 
-    function initDateGird(startTime, endTime, storeId, storeType, cityId,productType) {
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/reportDownload/cus/productCoupon/chang/log', 'get', false, function (params) {
+    function initDateGird(endTime, storeId, cityId,startTime) {
+        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/reportDownload/st/inventory/summary', 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
                 storeId: storeId,
-                startTime: startTime,
                 endTime: endTime,
-                storeType: storeType,
                 cityId: cityId,
-                productType: productType
+                startTime:startTime
             }
         }, [ {
             field: 'city',
             title: '城市',
             align: 'center'
-        }, {
+        },{
             field: 'store',
-            title: '门店名称',
+            title: '门店',
             align: 'center'
         }, {
-            field: 'seller',
-            title: '导购',
-            align: 'center'
-        }, {
-            field: 'customer',
-            title: '顾客',
-            align: 'center'
-        }, {
-            field: 'getOrderNumber',
-            title: '获取券单号',
-            align: 'center',
-            visible: false
-        }, {
-            field: 'getTime',
-            title: '获取时间',
-            align: 'center'
-        },  {
             field: 'skuName',
             title: '商品名称',
             align: 'center'
@@ -217,42 +173,67 @@
             field: 'sku',
             title: '商品编码',
             align: 'center'
-        },{
-            field: 'buyPrice',
-            title: '购买价格',
-            align: 'center'
-        },{
+        }, {
+            field: 'changeType',
+            title: '变更类型',
+            align: 'center',
+            visible: false
+        }, {
             field: 'changeTypeDesc',
             title: '变更类型',
             align: 'center'
+//            visible: false
         }, {
-            field: 'changeTime',
-            title: '变更时间',
+            field: 'storeOrderQty',
+            title: '自提单退货',
+            align: 'center'
+        },  {
+            field: 'storeReturnQty',
+            title: '自提单发货',
             align: 'center'
         }, {
-            field: 'orderNumber',
-            title: '订单单号',
-            align: 'center',
-            visible: false
+            field: 'storeImportGoodsQty',
+            title: '门店要货',
+            align: 'center'
+        },{
+            field: 'storeExportGoodsQty',
+            title: '门店退货',
+            align: 'center'
+        },{
+            field: 'storeAllocateInBoundQty',
+            title: '调拨入库',
+            align: 'center'
         }, {
-            field: 'returnNumber',
-            title: '退单单号',
-            align: 'center',
-            visible: false
+            field: 'storeAllocateOutBoundQty',
+            title: '调拨出库',
+            align: 'center'
+        }, {
+            field: 'storeInventoryInboundQty',
+            title: '盘点入库',
+            align: 'center'
+        }, {
+            field: 'storeInventoryOutboundQty',
+            title: '盘点出库',
+            align: 'center'
+        }, {
+            field: 'interInventoryQty',
+            title: '期初库存',
+            align: 'center'
+        }, {
+            field: 'afterInventoryQty',
+            title: '期末库存',
+            align: 'center'
         }
         ]);
     }
 
     function findByCondition() {
         $("#dataGrid").bootstrapTable('destroy');
-        var startTime = $('#startTime').val();
         var endTime = $('#endTime').val();
         var storeId = $("#storeCode").val();
         var cityId = $('#cityCode').val();
-        var storeType = $('#storeType').val();
-        var productType = $('#productType').val();
-
-        initDateGird(startTime, endTime, storeId, storeType, cityId,productType);
+        var startTime = $('#startTime').val();
+        initDateGird(endTime, storeId, cityId,startTime);
     }
 
     function initSelect(select, optionName) {
@@ -267,11 +248,9 @@
         var storeId = $("#storeCode").val();
         var cityId = $('#cityCode').val();
         var storeType = $('#storeType').val();
-        var startTime = $('#startTime').val();
-        var productType = $('#productType').val();
 
-        var url = "/rest/reportDownload/cus/productCoupon/changeLog/excel?&storeId=" + storeId + "&startTime=" + startTime
-                + "&endTime=" + endTime + "&storeType=" + storeType + "&cityId=" + cityId + "&startTime"+startTime + "&productType" +productType;
+        var url = "/rest/reportDownload/st/inventory/summary/excel?&storeId=" + storeId + "&startTime=" + startTime
+                + "&endTime=" + endTime + "&storeType=" + storeType + "&cityId=" + cityId;
         var escapeUrl = url.replace(/\#/g, "%23");
         window.open(escapeUrl);
     }
