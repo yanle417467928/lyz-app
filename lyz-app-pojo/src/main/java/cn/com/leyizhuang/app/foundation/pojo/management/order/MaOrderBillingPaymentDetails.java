@@ -45,4 +45,6 @@ public class MaOrderBillingPaymentDetails {
     private String replyCode;
     //收款单号
     private String receiptNumber;
+    //备注
+    private String remarks;
 }

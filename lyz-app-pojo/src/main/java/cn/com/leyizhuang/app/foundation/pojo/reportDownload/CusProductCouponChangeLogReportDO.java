@@ -1,6 +1,5 @@
 package cn.com.leyizhuang.app.foundation.pojo.reportDownload;
 
-import cn.com.leyizhuang.app.core.constant.CustomerProductCouponChangeType;
 import lombok.*;
 
 /**
@@ -52,7 +51,7 @@ public class CusProductCouponChangeLogReportDO {
     /**
      * 变更类型
      */
-    public CustomerProductCouponChangeType changeType;
+    public String changeType;
 
     /**
      * 变更类型描述
