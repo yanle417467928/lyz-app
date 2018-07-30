@@ -416,4 +416,13 @@ public class MaStoreServiceImpl implements MaStoreService {
         return this.mastoreDAO.findStoresListByCompanyCodeAndStoreTypeForSale(companyCode, storeType, storeIds);
     }
 
+    @Override
+    public FitCreditMoneyChangeLogVO queryLastDecorativeCreditChange(Long storeId){
+        if (storeId == null){
+            return null;
+        }
+
+        return mastoreDAO.queryLastDecorativeCreditChange(storeId);
+    }
+
 }

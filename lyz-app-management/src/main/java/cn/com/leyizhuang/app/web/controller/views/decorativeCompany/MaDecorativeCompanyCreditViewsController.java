@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.core.constant.StoreCreditMoneyChangeType;
 import cn.com.leyizhuang.app.core.constant.StorePreDepositChangeType;
 import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyInfo;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
+import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.FitCreditMoneyChangeLogVO;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,12 +48,16 @@ public class MaDecorativeCompanyCreditViewsController extends BaseController {
     public String decorativeCreditEditPage(ModelMap map, @PathVariable(value = "id") Long id) {
         if (!id.equals(0L)) {
             DecorativeCompanyInfo decorativeCompanyInfo = this.maStoreService.queryDecorativeCompanyCreditById(id);
+            // 找到最近一条变更日志
+            FitCreditMoneyChangeLogVO log = this.maStoreService.queryLastDecorativeCreditChange(id);
+
             if (null == decorativeCompanyInfo) {
                 logger.warn("跳转修改资源页面失败，Resource(id = {}) == null", id);
                 error404();
                 return "/error/404";
             } else {
                 map.addAttribute("decorativeCompanyVO", decorativeCompanyInfo);
+                map.addAttribute("changeLog",log);
             }
         }
         return "/views/decorativeCompany/decorativeCompanyCredit_edit";

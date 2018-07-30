@@ -88,7 +88,7 @@
                                            value="<#if decorativeCompanyVO??&&decorativeCompanyVO.creditLastUpdateTime??>${decorativeCompanyVO.creditLastUpdateTime?string("yyyy-MM-dd HH:mm:ss")}</#if>" />
                                     <input name="credit" type="text" class="form-control" id="credit"
                                            placeholder="信用金余额"
-                                           value="${decorativeCompanyVO.credit!''}" />
+                                           value="${decorativeCompanyVO.credit!''}" readonly="readonly" />
                                 </div>
                             </div>
                         </div>
@@ -105,11 +105,56 @@
                                            value="<#if decorativeCompanyVO??&&decorativeCompanyVO.sponsorshipLastUpdateTime??>${decorativeCompanyVO.sponsorshipLastUpdateTime?string("yyyy-MM-dd HH:mm:ss")}</#if>"/>
                                     <input name="sponsorship" type="text" class="form-control" id="sponsorship"
                                            placeholder="赞助金余额"
-                                           value="<#if decorativeCompanyVO??>${decorativeCompanyVO.sponsorship!''}</#if>"/>
+                                           value="<#if decorativeCompanyVO??>${decorativeCompanyVO.sponsorship!''}</#if>" readonly="readonly"/>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group">
+                                <label for="credit">改变信用金额度
+                                    <i class="fa fa-question-circle i-tooltip hidden-xs" data-toggle="tooltip"
+                                       data-content="输入改变信用金额度"></i>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+                                    <input name="creditChangeAmount" type="number" class="form-control" id="creditChangeAmount"
+                                           placeholder="请输入修改信用金额度(正数增加、负数扣减)"
+                                           value="" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group">
+                                <label for="promotionMoney">改变赞助金额度
+                                    <i class="fa fa-question-circle i-tooltip hidden-xs" data-toggle="tooltip"
+                                       data-content="输入改变赞助金额度"></i>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+                                    <input name="sponsorshipChangeAmount" type="number" class="form-control" id="sponsorshipChangeAmount"
+                                           placeholder="请输入改变赞助金额度(正数增加、负数扣减)"
+                                           value=""/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group">
+                                <label for="cityName">变更原因
+                                    <i class="fa fa-question-circle i-tooltip hidden-xs"></i>
+                                </label>
+                                <div>
+                                    <textarea id="modifyReason" name="modifyReason" class="form-control" rows="3"
+                                              style="border-color:#808080">
+                                    </textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="row">
                         <div class="col-xs-12 col-md-8"></div>
                         <div class="col-xs-12 col-md-2">
@@ -123,6 +168,44 @@
                             </button>
                         </div>
                     </div>
+
+                    <div class="row" style="margin-top: 50px;">
+                        <div class="col-md-4 col-xs-12">
+                            <div class="form-group">
+                                <label for="credit">上一次变更时间
+
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+                                    <input type="datetime" class="form-control"
+                                           value="<#if changeLog??&&changeLog.createTime??>${changeLog.createTime!""}</#if>" disabled="disabled"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-xs-12">
+                            <div class="form-group">
+                                <label for="credit">上一次变更人
+
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+                                    <input type="text" class="form-control"
+                                           value="<#if changeLog??&&changeLog.operatorName??>${changeLog.operatorName!""}</#if>" disabled="disabled"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-xs-12">
+                            <div class="form-group">
+                                <label for="credit">上一次变金额
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+                                    <input type="text" class="form-control"  value="<#if changeLog??&&changeLog.changeAmount??>${changeLog.changeAmount!""}</#if>" disabled="disabled"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- =================================下面是弹框======================================= -->
                     <div class="modal modal-primary fade" id="modal-primary">
                         <div class="modal-dialog">
@@ -208,28 +291,35 @@
             },
             verbose: false,
             fields: {
-                credit: {
+                creditChangeAmount: {
                     message: '信用金校验失败',
                     validators: {
                        regexp: {
-                            regexp: /^((\d{1,3}(,\d{3})+?|\d+)(\.\d{1,2})?|(\.\d{1,2}))$/,
-                            message: '信用金只能为正实数(最多两位小数)'
+                            regexp: /(^(([1-9]+\d*)|(0{1}))(\.\d{1,2})?$)|(^-([1-9]+\d*(\.\d{1,2})?|0\.(0[1-9]{1}|[1-9]{1}\d?))$)/,
+                            message: '信用金变更额度有误'
                         }, stringLength: {
                             min: 1,
                             max: 10,
                             message: '信用金的长度必须在1~10位之间'
                         }
                     }
-                }, sponsorship: {
+                }, sponsorshipChangeAmount: {
                     message: '赞助金校验失败',
                     validators: {
                       regexp: {
-                            regexp: /^((\d{1,3}(,\d{3})+?|\d+)(\.\d{1,2})?|(\.\d{1,2}))$/,
-                            message: '赞助金只能为正实数(最多两位小数)'
+                            regexp: /(^(([1-9]+\d*)|(0{1}))(\.\d{1,2})?$)|(^-([1-9]+\d*(\.\d{1,2})?|0\.(0[1-9]{1}|[1-9]{1}\d?))$)/,
+                            message: '赞助金变更额度有误'
                         }, stringLength: {
                             min: 1,
                             max: 10,
                             message: '信用金的长度必须在1~10位之间'
+                        }
+                    }
+                }, modifyReason:{
+                    message: '变更原因校验失败',
+                    validators:{
+                        notEmpty: {
+                            message: '变更原因不能为空'
                         }
                     }
                 }
