@@ -30,6 +30,14 @@
             <input name="storeId" type="hidden" id="storeId" value="${storeId?c}" readonly>
             <input name="billNo" type="hidden" id="billNo" value="" readonly>
             <div class="col-xs-12">
+                <div class="col-sm-9" style="margin-left: 2%">
+                    <h3>
+                        <span>账单名称:</span>
+                        <span style="color: #0e78c9" id="billName"></span><br/>
+                    </h3>
+                </div>
+            </div>
+            <div class="col-xs-12">
                 <div class="col-sm-3" style="margin-left: 2%">
                     <h3>账单日期信息</h3>
                     <p>
@@ -70,6 +78,15 @@
                         <span style="color: red;font-weight:bold" id="remainAmount"></span>
                     </p>
                 </div>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-xs-12 col-md-10"></div>
+            <div class="col-xs-12 col-md-2">
+                <button type="button" id="btn_back" class="btn btn-danger footer-btn btn-cancel">
+                    <i class="fa fa-close"></i> 返回
+                </button>
             </div>
         </div>
         <hr>
@@ -488,7 +505,6 @@
             data: data,
             success: function (result) {
                 if (result.code == 0) {
-                    repaymentDeadlineDate
                     $("#billStartDate").html(result.content.billStartDate);
                     $("#billEndDate").html(result.content.billEndDate);
                     $("#repaymentDeadlineDate").html(result.content.repaymentDeadlineDate);
@@ -502,8 +518,11 @@
                     $("#billNo").val("" + result.content.billNo);
 //                    $("#remainAmount").html('￥' + accAdd(result.content.priorNotPaidInterestAmount, accAdd(result.content.currentUnpaidAmount, result.content.priorNotPaidBillAmount)));
                     var currentShouldReturn = parseFloat(result.content.billTotalAmount) - parseFloat(result.content.currentPaidAmount);
-                    currentShouldReturn = Math.round(currentShouldReturn * 100) / 100
+                    currentShouldReturn = Math.round(currentShouldReturn * 100) / 100;
                     $("#remainAmount").html('￥' + currentShouldReturn);
+                    $("#billName").html(result.content.billName);
+                } else {
+                    $notify.danger(result.message);
                 }
             },
             error: function () {

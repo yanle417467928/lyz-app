@@ -46,7 +46,7 @@ public interface MaStoreService {
 
     PageInfo<StoreDO> queryDecorativeCompanyPageVO(Integer page, Integer size);
 
-    PageInfo<StoreDO> queryDecorativeCompanyList(Integer page, Integer size,List<Long> storeIds,Long cityId,String keywords);
+    PageInfo<StoreDO> queryDecorativeCompanyList(Integer page, Integer size,List<Long> storeIds,Long cityId,String keywords, String fitCompayType);
 
     PageInfo<StoreDO> findDecorativeByCondition(Integer page, Integer size, String enabled, Long cityId);
 

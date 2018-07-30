@@ -49,7 +49,8 @@ public interface MaStoreDAO {
 
     List<StoreDO> queryDecorativeCompanyPageVO();
 
-    List<StoreDO> queryDecorativeCompanyList( @Param("list") List<Long> storeIds,@Param("cityId") Long cityId,@Param("keywords") String keywords);
+    List<StoreDO> queryDecorativeCompanyList( @Param("list") List<Long> storeIds,@Param("cityId") Long cityId,@Param("keywords") String keywords,
+            @Param("fitCompayType") String fitCompayType);
 
     List<StoreDO> findDecorativeByCondition(@Param("enabled") String enabled, @Param("cityId") Long cityId);
 
