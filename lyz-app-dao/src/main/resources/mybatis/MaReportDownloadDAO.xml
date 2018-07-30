@@ -636,7 +636,8 @@
         CASE obd.is_pay_up when 0 then '未结清' when 1 then '结清' end as isPayUp,
         if(og.goods_line_type = "PRODUCT_COUPON",IF(ccpc.get_type = "BUY",IF(og2.goods_line_type is not null,
         CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END,
-        if(oci.purchase_price is null Or oci.purchase_price = 0 , '赠品','本品')),'后台发放'),'') as productCouponType
+        if(oci.purchase_price is null Or oci.purchase_price = 0 , '赠品','本品')),'后台发放'),'') as productCouponType,
+        oci.coupon_id couponId
         FROM
         ord_base_info obi
         INNER JOIN st_store st ON st.store_id = obi.store_id
@@ -701,7 +702,8 @@
         CASE obd.is_pay_up when 0 then '未结清（退）' when 1 then '结清（退）' end as isPayUp,
         if(org.goods_line_type = "PRODUCT_COUPON",IF(ccpc.get_type = "BUY",IF(og2.goods_line_type is not null,
         CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END,
-        if(oci.purchase_price is null Or oci.purchase_price = 0 , '赠品','本品')),'后台发放'),'') as productCouponType
+        if(oci.purchase_price is null Or oci.purchase_price = 0 , '赠品','本品')),'后台发放'),'') as productCouponType,
+        oci.pcid couponId
         FROM ord_return_base_info orbi
         LEFT JOIN (SELECT DISTINCT return_no,post_status,operation_time from ord_return_lifecycle) rl ON orbi.return_no = rl.return_no
         LEFT JOIN st_store st ON st.store_id = orbi.store_id
