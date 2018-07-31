@@ -148,4 +148,6 @@ public interface MaStoreDAO {
     List<SimpleStoreParam> findStoresListByCompanyCodeAndStoreType(@Param("companyCode") String companyCode, @Param("storeType") String storeType, @Param("list") List<Long> storeIds);
 
     List<SimpleStoreParam> findStoresListByCompanyCodeAndStoreTypeForSale(@Param("companyCode") String companyCode, @Param("storeType") String storeType, @Param("list") List<Long> storeIds);
+
+    FitCreditMoneyChangeLogVO queryLastDecorativeCreditChange(@Param("storeId") Long storeId);
 }

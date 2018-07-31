@@ -14,6 +14,7 @@ import cn.com.leyizhuang.app.foundation.service.MaStoreService;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.FitCreditMoneyChangeLogVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
+import cn.com.leyizhuang.common.util.CountUtil;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -183,14 +185,26 @@ public class MaDecorativeCompanyCreditRestController extends BaseRestController 
      * @return
      */
     @PutMapping
-    public ResultDTO<String> updateDecorativeCompanyCredit(@Valid DecorativeCompanyInfo decorativeCompanyInfo, BindingResult result, HttpServletRequest request) {
+    public ResultDTO<String> updateDecorativeCompanyCredit(@Valid DecorativeCompanyInfo decorativeCompanyInfo,Double creditChangeAmount,
+                                                           Double sponsorshipChangeAmount,String modifyReason, BindingResult result, HttpServletRequest request) {
         logger.info("updateDecorativeCompanyCredit 编辑装饰公司信用金 ,入参 decorativeCompanyInfo:{}", decorativeCompanyInfo);
         try {
             if (!result.hasErrors()) {
-                if (null == decorativeCompanyInfo.getCredit() && null == decorativeCompanyInfo.getSponsorship()) {
+                if (null == creditChangeAmount && null == sponsorshipChangeAmount) {
                     return new ResultDTO<>(CommonGlobal.COMMON_FORBIDDEN_CODE,
                             "装饰公司信用金和赞助金不能同时为空", null);
                 }
+
+                if (creditChangeAmount != null){
+                   Double credit = decorativeCompanyInfo.getCredit() == null ? 0D : decorativeCompanyInfo.getCredit().doubleValue();
+                   decorativeCompanyInfo.setCredit(BigDecimal.valueOf(CountUtil.add(credit,creditChangeAmount)));
+                }
+
+                if (sponsorshipChangeAmount != null){
+                    Double sponsorship = decorativeCompanyInfo.getSponsorship() == null ? 0D : decorativeCompanyInfo.getSponsorship().doubleValue();
+                    decorativeCompanyInfo.setSponsorship(BigDecimal.valueOf(CountUtil.add(sponsorship,sponsorshipChangeAmount)));
+                }
+
                 ShiroUser shiroUser = this.getShiroUser();
                 Date date = new Date();
                 StoreCreditMoneyChangeLog storeCreditMoneyChangeLog = new StoreCreditMoneyChangeLog();
@@ -204,6 +218,7 @@ public class MaDecorativeCompanyCreditRestController extends BaseRestController 
                 storeCreditMoneyChangeLog.setOperatorType(AppIdentityType.ADMINISTRATOR);
                 storeCreditMoneyChangeLog.setOperatorId(shiroUser.getId());
                 storeCreditMoneyChangeLog.setOperatorIp(IpUtil.getIpAddress(request));
+                storeCreditMoneyChangeLog.setRemark(modifyReason);
                 this.maDecorativeCompanyCreditService.updateDecorativeCompanyCreditAndSubvention(decorativeCompanyInfo, storeCreditMoneyChangeLog);
                 logger.info("updateDecorativeCompanyCredit ,编辑装饰公司信用金成功");
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);

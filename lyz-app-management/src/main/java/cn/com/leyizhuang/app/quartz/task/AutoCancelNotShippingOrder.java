@@ -69,7 +69,6 @@ public class AutoCancelNotShippingOrder implements Job {
                         baseInfo.getOrderNumber(),"配送单超过7天未出货，自动取消","");
             }
         }
-
     }
 
     public void cancelOrder(Long userId, Integer identityType,

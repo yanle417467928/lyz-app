@@ -151,4 +151,6 @@ public interface MaStoreService {
     List<SimpleStoreParam> findStoresListByCompanyCodeAndStoreType(String companyCode,String storeType,List<Long> storeIds);
 
     List<SimpleStoreParam> findStoresListByCompanyCodeAndStoreTypeForSale(String companyCode,String storeType,List<Long> storeIds);
+
+    FitCreditMoneyChangeLogVO queryLastDecorativeCreditChange(Long storeId);
 }
