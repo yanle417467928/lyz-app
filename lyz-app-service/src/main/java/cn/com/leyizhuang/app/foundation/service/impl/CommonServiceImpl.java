@@ -869,6 +869,12 @@ public class CommonServiceImpl implements CommonService {
     @Transactional(rollbackFor = Exception.class)
     public void handleOrderRelevantBusinessAfterOnlinePayUp(String orderNumber, String tradeNo, String tradeStatus, OnlinePayType onlinePayType) throws IOException {
         if (StringUtils.isNotBlank(orderNumber)) {
+
+            List<PromotionSimpleInfo> promotionSimpleInfoList = orderService.findOrderPromotionIdByOrdNo(orderNumber);
+            Map<Long, Double> map = null;
+            if (null != promotionSimpleInfoList && promotionSimpleInfoList.size() > 0) {
+                map = actService.returnGcActIdAndJXDiscunt(promotionSimpleInfoList);
+            }
             //更新订单第三方支付信息
             List<PaymentDataDO> paymentDataList = paymentDataService.findByOrderNoAndTradeStatus(orderNumber, PaymentDataStatus.TRADE_SUCCESS);
             PaymentDataDO paymentData = paymentDataList.get(0);
@@ -1041,6 +1047,18 @@ public class CommonServiceImpl implements CommonService {
                                     customerProductCoupon.setDisableTime(null);
                                     customerProductCoupon.setGoodsLineId(goodsInfo.getId());
                                     customerProductCoupon.setGoodsSign(goodsInfo.getGoodsSign());
+                                    if (null == goodsInfo.getPromotionId()){
+                                        customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
+                                    }else {
+                                        Long actId = Long.valueOf(goodsInfo.getPromotionId());
+                                        if ( null != map && map.containsKey(actId)) {
+                                            Double gcDiscount = map.get(actId);
+                                            customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice() - gcDiscount);
+                                        } else {
+                                            customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
+                                        }
+                                    }
+                                    customerProductCoupon.setWholesalePrice(goodsInfo.getWholesalePrice());
                                     //保存产品券信息
                                     productCouponService.addCustomerProductCoupon(customerProductCoupon);
 
@@ -2276,6 +2294,12 @@ public class CommonServiceImpl implements CommonService {
         if (StringUtils.isNotBlank(orderNumber)) {
             OrderBaseInfo baseInfo = orderService.getOrderByOrderNumber(orderNumber);
 
+            List<PromotionSimpleInfo> promotionSimpleInfoList = orderService.findOrderPromotionIdByOrdNo(orderNumber);
+            Map<Long, Double> map = null;
+            if (null != promotionSimpleInfoList && promotionSimpleInfoList.size() > 0) {
+                map = actService.returnGcActIdAndJXDiscunt(promotionSimpleInfoList);
+            }
+
             //更新订单账单信息
             OrderBillingDetails billingDetails = orderService.getOrderBillingDetail(orderNumber);
 
@@ -2466,6 +2490,18 @@ public class CommonServiceImpl implements CommonService {
                                     customerProductCoupon.setDisableTime(null);
                                     customerProductCoupon.setGoodsLineId(goodsInfo.getId());
                                     customerProductCoupon.setGoodsSign(goodsInfo.getGoodsSign());
+                                    if (null == goodsInfo.getPromotionId()){
+                                        customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
+                                    }else {
+                                        Long actId = Long.valueOf(goodsInfo.getPromotionId());
+                                        if (map.containsKey(actId)) {
+                                            Double gcDiscount = map.get(actId);
+                                            customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice() - gcDiscount);
+                                        } else {
+                                            customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
+                                        }
+                                    }
+                                    customerProductCoupon.setWholesalePrice(goodsInfo.getWholesalePrice());
                                     //保存产品券信息
                                     productCouponService.addCustomerProductCoupon(customerProductCoupon);
 
@@ -2507,6 +2543,12 @@ public class CommonServiceImpl implements CommonService {
     public void handleOrderRelevantBusinessAfterPayCredit(String orderNumber, Long userId, Integer identityType, String payType, String ipAddress) throws IOException {
         if (StringUtils.isNotBlank(orderNumber)) {
             OrderBaseInfo baseInfo = orderService.getOrderByOrderNumber(orderNumber);
+
+            List<PromotionSimpleInfo> promotionSimpleInfoList = orderService.findOrderPromotionIdByOrdNo(orderNumber);
+            Map<Long, Double> map = null;
+            if (null != promotionSimpleInfoList && promotionSimpleInfoList.size() > 0) {
+                map = actService.returnGcActIdAndJXDiscunt(promotionSimpleInfoList);
+            }
 
             //更新订单账单信息
             OrderBillingDetails billingDetails = orderService.getOrderBillingDetail(orderNumber);
@@ -2784,6 +2826,18 @@ public class CommonServiceImpl implements CommonService {
                                     customerProductCoupon.setDisableTime(null);
                                     customerProductCoupon.setGoodsLineId(goodsInfo.getId());
                                     customerProductCoupon.setGoodsSign(goodsInfo.getGoodsSign());
+                                    if (null == goodsInfo.getPromotionId()){
+                                        customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
+                                    }else {
+                                        Long actId = Long.valueOf(goodsInfo.getPromotionId());
+                                        if (map.containsKey(actId)) {
+                                            Double gcDiscount = map.get(actId);
+                                            customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice() - gcDiscount);
+                                        } else {
+                                            customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
+                                        }
+                                    }
+                                    customerProductCoupon.setWholesalePrice(goodsInfo.getWholesalePrice());
                                     //保存产品券信息
                                     productCouponService.addCustomerProductCoupon(customerProductCoupon);
 

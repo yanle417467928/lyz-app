@@ -9,6 +9,7 @@ import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.PayhelperOrder;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -236,4 +237,6 @@ public interface OrderDAO {
     List<OrderBaseInfo> findOrderByStatusAndTypeAndCreateTime(@Param("status") AppOrderStatus status,
                                                               @Param("type") AppDeliveryType type,
                                                               @Param("endTime") LocalDateTime endTime);
+
+    List<PromotionSimpleInfo> findOrderPromotionIdByOrdNo(@Param("ordNo")String ordNo);
 }

@@ -18,6 +18,7 @@ import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.BillingSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
@@ -1415,5 +1416,10 @@ public class AppOrderServiceImpl implements AppOrderService {
     @Override
     public void updateOrderGoodsInfo(OrderGoodsInfo goodsInfo) {
         this.orderDAO.updateOrderGoodsInfo(goodsInfo);
+    }
+
+    @Override
+    public List<PromotionSimpleInfo> findOrderPromotionIdByOrdNo(String ordNo) {
+        return orderDAO.findOrderPromotionIdByOrdNo(ordNo);
     }
 }
