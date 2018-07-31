@@ -234,10 +234,10 @@
                     }
                 },
                 changeType: {
-                    message: '变更金额校验失败',
+                    message: '变更类型校验失败',
                     validators: {
                         notEmpty: {
-                            message: '变更金额不能为空'
+                            message: '变更类型不能为空'
                         }
                     }
                 }
