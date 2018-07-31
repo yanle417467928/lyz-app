@@ -84,6 +84,32 @@
     </div>
 </div>
 
+<div id="freightModal" class="modal fade" tabindex="-1" role="dialog" id="modalShow">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 50%; margin-left:35%;margin-top:20%; ">
+            <div class="modal-body">
+                <div class="user-block">
+                    <ul id="freightDetail" class="list-group list-group-unbordered" style="margin-top:10px;">
+                        <li class="list-group-item">
+                            <b>初始运费:</b> <a class="pull-right">￥${freightChange.freight}</a>
+                        </li>
+                        <if freightChanges??>
+                        <#list freightChanges as freight>
+                            <li class="list-group-item">
+                                <b>${freight.changeType}:</b> <a class="pull-right">￥${freight.changeAmount}</a>
+                            </li>
+                        </#list>
+                        </if>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="javascript:hideFreightModal();" role="button" class="btn btn-primary">关闭</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="wrapper">
     <section class="invoice">
@@ -265,6 +291,8 @@
                                 <th class="th1">运费</th>
                                 <td class="td1">¥<#if orderBillingDetail??>${orderBillingDetail.freight!'0.00'}<#else>
                                     0.00</#if></td>
+                                <td class="td1"><span style="padding-top: 4px;color: #1c94c4"
+                                                      onclick="openFreightModal()">点击查看运费明细</span></td>
                             </tr>
                             <tr>
                                 <th class="th1">优惠券折扣:</th>

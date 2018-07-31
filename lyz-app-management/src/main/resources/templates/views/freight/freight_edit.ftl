@@ -97,8 +97,7 @@
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="creatorPhone" type="text" class="form-control" id="creatorPhone"
-                                           readonly
-                                           value="${(orderFreightVO.creatorPhone)!''}">
+                                           readonly value="${(orderFreightVO.creatorPhone)!''}">
                                 </div>
                             </div>
                         </div>
@@ -109,7 +108,7 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="freight" type="text" class="form-control" id="freight"
+                                    <input name="freight" type="text" class="form-control" id="freight" readonly="readonly"
                                            value="<#if orderFreightVO??><#if orderFreightVO.simpleOrderBillingDetails??>${orderFreightVO.simpleOrderBillingDetails.freight!''}</#if></#if>">
                                 </div>
                             </div>
@@ -118,7 +117,36 @@
                     <div class="row">
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
-                                <label for="cityName">变更原因
+                                <label for="changeType">变更类型
+                                    <i class="fa fa-question-circle i-tooltip" data-toggle="tooltip"
+                                       data-content="选择变更类型"></i>
+                                </label>
+                                <select class="form-control select" name="changeType" id="changeType">
+                                    <option value="">选择变更类型</option>
+                                    <if freightChangeTypes??>
+                                    <#list freightChangeTypes as changeType>
+                                        <option value="${changeType.value}">${changeType.description}</option>
+                                    </#list>
+                                    </if>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group">
+                                <label for="changeAmount">变更运费金额(元)
+                                    <i class="fa fa-question-circle i-tooltip hidden-xs"></i>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+                                    <input name="changeAmount" type="text" class="form-control" id="changeAmount">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group">
+                                <label for="modifyReason">变更原因
                                     <i class="fa fa-question-circle i-tooltip hidden-xs"></i>
                                 </label>
                                 <div>
@@ -188,18 +216,28 @@
             },
             verbose: false,
             fields: {
-                originalFreight: {}, freight: {
-                    message: '运费校验失败',
+                changeAmount: {
+                    message: '变更金额校验失败',
                     validators: {
                         notEmpty: {
-                            message: '运费不能为空'
-                        }, different: {
-                            field: 'originalFreight',
-                            message: '运费未改变'
-                        },stringLength: {
+                            message: '变更金额不能为空'
+                        },
+                        regexp: {
+                            regexp: /^[-+]?\d*[.]?\d{0,2}$/,
+                            message: '请输入正确的金额'
+                        },
+                        stringLength: {
                             min: 1,
                             max: 10,
-                            message: '运费长度必须在1~10位之间'
+                            message: '金额的长度必须在1~10位之间'
+                        }
+                    }
+                },
+                changeType: {
+                    message: '变更类型校验失败',
+                    validators: {
+                        notEmpty: {
+                            message: '变更类型不能为空'
                         }
                     }
                 }
@@ -209,15 +247,22 @@
             var oid = parseFloat($('#oid').val().replace(/,/g, ''));
             var freight = $("#freight").val();
             var modifyReason = $("#modifyReason").val();
+            var changeAmount = $("#changeAmount").val();
+            var changeType = $("#changeType").find("option:selected").val();
+            if (parseFloat(freight) + parseFloat(changeAmount) < 0){
+                $notify.danger('运费金额不能小于0');
+                return;
+            }
             var data = {
                 "orderId": oid,
-                "freightChangeAfter": freight,
+                "freight": freight,
+                "changeAmount": changeAmount,
+                "changeType": changeType,
                 "modifyReason": modifyReason
             };
             if (null === $global.timer) {
                 $global.timer = setTimeout($loading.show, 2000);
                 var url = '/rest/orderFreight/update';
-
                 if (null !== data.storeId && 0 != data.storeId) {
                     data._method = 'PUT';
                 }

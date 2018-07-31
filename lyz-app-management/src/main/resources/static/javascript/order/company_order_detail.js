@@ -6,6 +6,15 @@ $(function () {
     });
 });
 
+
+function openFreightModal() {
+    $('#freightModal').modal('show');
+}
+
+function hideFreightModal() {
+    $('#freightModal').modal('hide');
+}
+
 var $page = {
     information: {
         show: function (orderNumber) {
