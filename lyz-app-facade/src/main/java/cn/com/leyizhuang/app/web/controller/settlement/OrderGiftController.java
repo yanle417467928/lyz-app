@@ -204,7 +204,7 @@ public class OrderGiftController {
 
                                     }
                                     message += "仓库库存不足，请更改购买数量!";
-//                                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该商品 '" + goodsDO.getSkuName()
+//                                  resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该商品 '" + goodsDO.getSkuName()
 //                                        + "' 库存不足，请更改购买数量!", null);
                                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, message, null);
                                     logger.info("materialListStepToGiftList OUT,下料清单跳转赠品列表失败，出参 resultDTO:{}", resultDTO);

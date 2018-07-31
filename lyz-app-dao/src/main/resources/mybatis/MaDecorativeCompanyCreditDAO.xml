@@ -70,4 +70,7 @@
         st_subvention(create_time,last_update_time,store_id,balance,balance_limit) VALUES (#{createTime},#{sponsorshipLastUpdateTime},#{storeId},#{sponsorship},#{sponsorship})
     </insert>
 
+    <select id="findStCreditRules" resultType="cn.com.leyizhuang.app.foundation.pojo.user.StCreditChangeRule">
+        SELECT  * from st_credit_money_repair_record
+    </select>
 </mapper>

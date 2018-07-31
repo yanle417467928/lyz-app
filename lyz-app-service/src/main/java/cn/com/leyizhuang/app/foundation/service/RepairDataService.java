@@ -11,4 +11,6 @@ public interface RepairDataService {
     void repairAllRuleScope(String flag);
 
     ResultDTO repairEmpCredit(Long empId, String flag);
+
+    void repairStCredit(String flag);
 }
