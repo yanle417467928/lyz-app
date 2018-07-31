@@ -39,6 +39,18 @@
                             onchange="findBillByCondition()">
                         <option value="-1">选择城市</option>
                     </select>
+                    <select name="fitCompayType" id="fitCompayType" class="form-control selectpicker" data-width="120px" style="width:auto;"
+                            onchange="findBillByCondition()" data-live-search="true">
+                        <option value="">选择门店类型</option>
+                    <#if fitCompayTypes??>
+                        <#list fitCompayTypes as fitCompayType>
+                            <option value="${fitCompayType.value}">
+                                <#if fitCompayType.value?? && fitCompayType.value == "CASH">小型装饰公司</#if>
+                                <#if fitCompayType.value?? && fitCompayType.value == "MONTHLY">大型装饰公司</#if>
+                            </option>
+                        </#list>
+                    </#if>
+                    </select>
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
                         <input type="text" name="info" id="info" class="form-control "
                                style="width:auto;" placeholder="请输入装饰公司名称或编码" onkeypress="findBykey()">
@@ -61,7 +73,7 @@
 
     $(function () {
         initDateGird('/rest/fitBill/notOut/page/grid');
-        findCitySelection()
+        findCitySelection();
         $('.datepicker').datepicker({
             format: 'yyyy-mm-dd',
             language: 'zh-CN',
@@ -77,7 +89,8 @@
                 offset: params.offset,
                 size: params.limit,
                 keywords: $("#info").val(),
-                cityId: $("#cityCode").val()
+                cityId: $("#cityCode").val(),
+                fitCompayType: $("#fitCompayType").val()
             }
         }, [{
             checkbox: true,
@@ -99,7 +112,7 @@
                 if (null == value) {
                     return '<a class="scan" href="#">' + '未知' + '</a>';
                 } else {
-                    return '<a class="scan" href="/views/admin/fit/bill/notOutBillDetail/'+ row.id+'" target="_blank">' + value + '</a>';
+                    return '<span style="color: #0e90d2" onclick="showDetails('+row.id+')">'  + value + '</span>';
                 }
             }
         }, {
@@ -114,7 +127,9 @@
         ]);
     }
 
-
+    function showDetails(id){
+        window.location.href = '/views/admin/fit/bill/notOutBillDetail/'+id;
+    }
 
     function findBillByCondition() {
         $("#dataGrid").bootstrapTable('destroy');

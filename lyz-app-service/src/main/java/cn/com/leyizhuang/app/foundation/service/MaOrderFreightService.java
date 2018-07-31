@@ -27,8 +27,12 @@ public interface MaOrderFreightService {
 
     void updateOrderBillingPrice(Long orderId, BigDecimal freight,BigDecimal changAmount);
 
-    PageInfo<OrderFreightChangeVO> queryOrderFreightChangeList(Integer page, Integer size);
+    PageInfo<OrderFreightChangeVO> queryOrderFreightChangeList(Integer page, Integer size, String keywords);
 
     void saveOrderFreightChange(OrderFreightChange orderFreightChange);
+
+    List<OrderFreightChange> queryOrderFreightChangeLogListByOid(Long oid);
+
+    OrderFreightChange queryOrderFreightChangeLogFirstByOid(Long oid);
 
 }

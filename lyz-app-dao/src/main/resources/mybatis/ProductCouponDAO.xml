@@ -311,7 +311,9 @@
         AND
         a.effective_end_time >= now()
         AND
-        <![CDATA[  DATE_SUB(a.effective_end_time, INTERVAL 7 DAY) <=now()]]>
+        <![CDATA[  (DATE_SUB(a.effective_end_time, INTERVAL 7 DAY) <=now()
+                OR DATE_FORMAT(DATE_SUB(a.effective_end_time, INTERVAL 15 DAY),'%Y-%m-%d') = DATE_FORMAT(now(),'%Y-%m-%d')
+				OR DATE_FORMAT(DATE_SUB(a.effective_end_time, INTERVAL 30 DAY),'%Y-%m-%d') = DATE_FORMAT(now(),'%Y-%m-%d'))]]>
         GROUP BY a.cus_id, sku_name, effective_end_time
     </select>
     <select id="findCustomerProductCouponByOrdNoAndSku" resultType="cn.com.leyizhuang.app.foundation.pojo.CustomerProductCoupon">

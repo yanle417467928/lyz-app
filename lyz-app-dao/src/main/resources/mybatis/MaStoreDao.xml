@@ -293,8 +293,9 @@
         LEFT  JOIN emp_employee ee ON  ee.emp_id = s.sales_manager
         WHERE
          s.store_type="ZS"
-         AND
-         s.fit_compay_type='CASH'
+        <if test="fitCompayType !=null and ''!=fitCompayType">
+          AND s.fit_compay_type = #{fitCompayType}
+        </if>
         <if test="keywords !=null and ''!=keywords">
           AND (
             s.store_code like CONCAT('%', #{keywords}, '%')

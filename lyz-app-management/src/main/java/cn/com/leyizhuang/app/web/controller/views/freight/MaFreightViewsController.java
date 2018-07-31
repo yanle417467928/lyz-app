@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.web.controller.views.freight;
 
 
 
+import cn.com.leyizhuang.app.core.constant.FreightChangeType;
 import cn.com.leyizhuang.app.foundation.service.MaOrderFreightService;
 import cn.com.leyizhuang.app.foundation.vo.management.freight.OrderFreightDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.freight.OrderFreightVO;
@@ -14,6 +15,9 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Controller
@@ -60,7 +64,9 @@ public class MaFreightViewsController extends BaseController {
             error404();
             return "/error/404";
         } else {
+            List<FreightChangeType> freightChangeTypes = FreightChangeType.getFreightChangeTypes();
             map.addAttribute("orderFreightVO",orderFreightVO);
+            map.addAttribute("freightChangeTypes",freightChangeTypes);
             return "/views/freight/freight_edit";
         }
    }
