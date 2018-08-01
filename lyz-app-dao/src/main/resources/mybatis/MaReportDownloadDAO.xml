@@ -3791,14 +3791,14 @@
         END getOrderNumber,
         gg.sku_name skuName,
         gg.sku sku,
-        '' changeType,
-        '' changeTypeDesc,
+        'BUY_COUPON' changeType,
+        '购买产品券' changeTypeDesc,
         ccpc.get_time getTime,
         '' changeTime,
         ccpc.use_ord_no orderNumber,
         '' returnNumber,
         ccpc.buy_price buyPrice,
-        - 1 changeQty,
+        1 changeQty,
         ggc.category_name classifyOne,
         gg.category_name classifyTow,
         ggb.brand_name brand,
@@ -3868,11 +3868,18 @@
             srq.change_qty changeQty,
             srq.after_change_qty afterChangeQty,
             srq.change_type_desc changeTypeDesc,
-            srq.reference_number referenceNumber,
+            CASE
+            WHEN srq.change_type = 'SELF_TAKE_ORDER_RETURN' THEN
+            orbi.ord_no
+            ELSE
+            srq.reference_number
+            END referenceNumber,
+            orbi.return_no returnNumber,
             srq.change_time changeTime
         FROM
             st_inventory_real_qty_change_log srq
             INNER JOIN st_store ss ON ss.store_id = srq.store_id
+            LEFT JOIN ord_return_base_info orbi ON srq.reference_number = orbi.return_no
         WHERE
         1=1
         <if test="null != cityId and -1 != cityId">
@@ -3898,141 +3905,164 @@
 
     <select id="findStoreInventorySummaryList" resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.StInventoryRealSummaryReportDO">
         SELECT
-            a.city city,
-            a.store store,
-            a.sku sku,
-            a.skuName skuName,
-            a.changeType changeType,
-            a.changeTypeDesc changeTypeDesc,
-            CASE
-            WHEN a.changeType = 'SELF_TAKE_ORDER_RETURN' THEN
-                a.changeQty
-            ELSE
-                0
-            END storeOrderQty,
-            CASE
-            WHEN a.changeType = 'ORDER_DELIVERY' THEN
-                a.changeQty
-            ELSE
-                0
-            END storeReturnQty,
-            CASE
-            WHEN a.changeType = 'STORE_IMPORT_GOODS' THEN
-                a.changeQty
-            ELSE
-                0
-            END storeImportGoodsQty,
-            CASE
-            WHEN a.changeType = 'STORE_EXPORT_GOODS' THEN
-                a.changeQty
-            ELSE
-                0
-            END storeExportGoodsQty,
-            CASE
-            WHEN a.changeType = 'STORE_ALLOCATE_INBOUND' THEN
-                a.changeQty
-            ELSE
-                0
-            END storeAllocateInBoundQty,
-            CASE
-            WHEN a.changeType = 'STORE_ALLOCATE_OUTBOUND' THEN
-                a.changeQty
-            ELSE
-                0
-            END storeAllocateOutBoundQty,
-            CASE
-            WHEN a.changeType = 'STORE_INVENTORY_INBOUND' THEN
-                a.changeQty
-            ELSE
-                0
-            END storeInventoryInboundQty,
-            CASE
-            WHEN a.changeType = 'STORE_INVENTORY_OUTBOUND' THEN
-            a.changeQty
-            ELSE
-            0
-            END storeInventoryOutboundQty,
-            c.after_change_qty - SUM(a.changeQty) interInventoryQty,
-            c.after_change_qty afterInventoryQty
+        x.city city,
+        x.store store,
+        x.sku sku,
+        x.skuName skuName,
+        SUM(x.storeOrderQty) storeOrderQty,
+        SUM(x.storeReturnQty) storeReturnQty,
+        SUM(x.storeImportGoodsQty) storeImportGoodsQty,
+        SUM(x.storeExportGoodsQty) storeExportGoodsQty,
+        SUM(x.storeAllocateInBoundQty) storeAllocateInBoundQty,
+        SUM(x.storeAllocateOutBoundQty) storeAllocateOutBoundQty,
+        SUM(x.storeInventoryInboundQty) storeInventoryInboundQty,
+        SUM(x.storeInventoryOutboundQty) storeInventoryOutboundQty,
+        x.afterInventoryQty - SUM(x.storeOrderQty) - SUM(x.storeReturnQty) - SUM(x.storeImportGoodsQty) - SUM(x.storeExportGoodsQty) - SUM(x.storeAllocateInBoundQty) - SUM(x.storeAllocateOutBoundQty) - SUM(x.storeInventoryInboundQty) - SUM(
+        x.storeInventoryOutboundQty
+        ) interInventoryQty,
+        x.afterInventoryQty afterInventoryQty
         FROM
-            (
-                SELECT
-                    srq.sku sku,
-                    srq.sku_name skuName,
-                    ss.store_name store,
-                    SUM(srq.change_qty) changeQty,
-                    srq.change_type_desc changeTypeDesc,
-                    srq.change_type changeType,
-                    ss.store_id,
-                    ss.city
-                FROM
-                    st_inventory_real_qty_change_log srq
-                    INNER JOIN st_store ss ON ss.store_id = srq.store_id
-                    LEFT JOIN ity_allocation ia ON srq.reference_number = ia.number
-                WHERE
-                    1 = 1
-                    <if test="null != cityId and -1 != cityId">
-                        AND ss.city_id = #{cityId}
-                    </if>
-                    <if test="null != storeId and -1 != storeId">
-                        AND ss.store_id = #{storeId}
-                    </if>
-                    <if test="null != endTime and '' != endTime">
-                        AND srq.change_time &lt;=  #{endTime}
-                    </if>
-                    <if test="null != startTime and '' != startTime">
-                        AND srq.change_time &gt;=  #{startTime}
-                    </if>
-                    <if test="null == storeId and storeId == -1">
-                        AND ss.store_id IN
-                        <foreach collection="storeIds" item="item" open="(" close=")" separator=",">
-                            #{item}
-                        </foreach>
-                    </if>
-                GROUP BY
-                    srq.store_id,
-                    srq.sku,
-                    srq.change_type
-            ) a
-            LEFT JOIN (
-                          SELECT
-                              MAX(b.id),
-                              b.after_change_qty,
-                              b.sku,
-                              b.store_id
-                          FROM
-                              st_inventory_real_qty_change_log b
-                          INNER JOIN st_store s ON s.store_id = b.store_id
-                          WHERE
-                              1 = 1
-                            <if test="null != cityId and -1 != cityId">
-                                AND s.city_id = #{cityId}
-                            </if>
-                            <if test="null != storeId and -1 != storeId">
-                                AND s.store_id = #{storeId}
-                            </if>
-                            <if test="null != endTime and '' != endTime">
-                                AND b.change_time &lt;=  #{endTime}
-                            </if>
-                            <if test="null != startTime and '' != startTime">
-                                AND b.change_time &gt;=  #{startTime}
-                            </if>
-                            <if test="null == storeId and storeId == -1">
-                                AND s.store_id IN
-                                <foreach collection="storeIds" item="item" open="(" close=")" separator=",">
-                                    #{item}
-                                </foreach>
-                            </if>
-                          GROUP BY
-                              b.store_id,
-                              b.gid
-                      ) c ON c.store_id = a.store_id
-                             AND c.sku = a.sku
+        (
+        SELECT
+        a.city city,
+        a.store store,
+        a.sku sku,
+        a.skuName skuName,
+        a.changeType changeType,
+        a.changeTypeDesc changeTypeDesc,
+        CASE
+        WHEN a.changeType = 'SELF_TAKE_ORDER_RETURN' THEN
+        a.changeQty
+        ELSE
+        0
+        END AS storeOrderQty,
+        CASE
+        WHEN a.changeType = 'ORDER_DELIVERY' THEN
+        a.changeQty
+        ELSE
+        0
+        END AS storeReturnQty,
+        CASE
+        WHEN a.changeType = 'STORE_IMPORT_GOODS' THEN
+        a.changeQty
+        ELSE
+        0
+        END AS storeImportGoodsQty,
+        CASE
+        WHEN a.changeType = 'STORE_EXPORT_GOODS' THEN
+        a.changeQty
+        ELSE
+        0
+        END AS storeExportGoodsQty,
+        CASE
+        WHEN a.changeType = 'STORE_ALLOCATE_INBOUND' THEN
+        a.changeQty
+        ELSE
+        0
+        END AS storeAllocateInBoundQty,
+        CASE
+        WHEN a.changeType = 'STORE_ALLOCATE_OUTBOUND' THEN
+        a.changeQty
+        ELSE
+        0
+        END AS storeAllocateOutBoundQty,
+        CASE
+        WHEN a.changeType = 'STORE_INVENTORY_INBOUND' THEN
+        a.changeQty
+        ELSE
+        0
+        END AS storeInventoryInboundQty,
+        CASE
+        WHEN a.changeType = 'STORE_INVENTORY_OUTBOUND' THEN
+        a.changeQty
+        ELSE
+        0
+        END AS storeInventoryOutboundQty,
+        c.after_change_qty - SUM(a.changeQty) interInventoryQty,
+        c.after_change_qty afterInventoryQty
+        FROM
+        (
+        SELECT
+        srq.sku sku,
+        srq.sku_name skuName,
+        ss.store_name store,
+        SUM(srq.change_qty) changeQty,
+        srq.change_type_desc changeTypeDesc,
+        srq.change_type changeType,
+        ss.store_id,
+        ss.city
+        FROM
+        st_inventory_real_qty_change_log srq
+        INNER JOIN st_store ss ON ss.store_id = srq.store_id
+        LEFT JOIN ity_allocation ia ON srq.reference_number = ia.number
         WHERE
-            1 = 1
+        1 = 1
+        <if test="null != cityId and -1 != cityId">
+            AND ss.city_id = #{cityId}
+        </if>
+        <if test="null != storeId and -1 != storeId">
+            AND ss.store_id = #{storeId}
+        </if>
+        <if test="null != endTime and '' != endTime">
+            AND srq.change_time &lt;=  #{endTime}
+        </if>
+        <if test="null != startTime and '' != startTime">
+            AND srq.change_time &gt;=  #{startTime}
+        </if>
+        <if test="null == storeId and storeId == -1">
+            AND ss.store_id IN
+            <foreach collection="storeIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
         GROUP BY
-            a.store_id,
-            a.sku,
-            a.changeType
+        srq.store_id,
+        srq.sku,
+        srq.change_type
+        ) a
+        LEFT JOIN (
+        SELECT
+        MAX(b.id),
+        b.after_change_qty,
+        b.sku,
+        b.store_id
+        FROM
+        st_inventory_real_qty_change_log b
+        INNER JOIN st_store s ON s.store_id = b.store_id
+        WHERE
+        1 = 1
+        <if test="null != cityId and -1 != cityId">
+            AND s.city_id = #{cityId}
+        </if>
+        <if test="null != storeId and -1 != storeId">
+            AND s.store_id = #{storeId}
+        </if>
+        <if test="null != endTime and '' != endTime">
+            AND b.change_time &lt;=  #{endTime}
+        </if>
+        <if test="null != startTime and '' != startTime">
+            AND b.change_time &gt;=  #{startTime}
+        </if>
+        <if test="null == storeId and storeId == -1">
+            AND s.store_id IN
+            <foreach collection="storeIds" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        GROUP BY
+        b.store_id,
+        b.gid
+        ) c ON c.store_id = a.store_id
+        AND c.sku = a.sku
+        WHERE
+        1 = 1
+        GROUP BY
+        a.store_id,
+        a.sku,
+        a.changeType
+        ) x
+        GROUP BY
+        x.store,
+        x.sku
     </select>
 </mapper>

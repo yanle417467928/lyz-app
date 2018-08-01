@@ -4403,9 +4403,9 @@ public class MaReportDownloadRestController extends BaseRestController {
                 //设置筛选条件
                 ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
                 //列宽
-                int[] columnView = {20, 30, 10, 10, 10, 10, 20,30,20};
+                int[] columnView = {20, 30, 10, 10, 10, 10, 20,30,30,20};
                 //列标题
-                String[] titles = {"门店名称","商品名称","商品编码","初始数量","变更数量","变更后数量","变更类型","相关订单号","变更时间"};
+                String[] titles = {"门店名称","商品名称","商品编码","初始数量","变更数量","变更后数量","变更类型","订单号","退单号","变更时间"};
                 //计算标题开始行号
                 int row = 1;
                 if (null != map && map.size() > 0) {
@@ -4431,7 +4431,8 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Number(5, j + row, itemsDO.getAfterChangeQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
                     ws.addCell(new Label(6, j + row, itemsDO.getChangeTypeDesc(), textFormat));
                     ws.addCell(new Label(7, j + row, itemsDO.getReferenceNumber(), textFormat));
-                    ws.addCell(new Label(8, j + row, itemsDO.getChangeTime(), textFormat));
+                    ws.addCell(new Label(8, j + row, itemsDO.getReturnNumber() == null?"":itemsDO.getReturnNumber(), textFormat));
+                    ws.addCell(new Label(9, j + row, itemsDO.getChangeTime(), textFormat));
                 }
             }
         } catch (Exception e) {
@@ -4641,7 +4642,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                 //列宽
                 int[] columnView = {10,20, 30, 10, 20, 20, 10, 10,10,10,10,10,10,10,10,10};
                 //列标题
-                String[] titles = {"城市","门店名称","商品名称","商品编码","变更类型","变更类型描述","自提单退货","自提单发货","门店要货",
+                String[] titles = {"城市","门店名称","商品名称","商品编码","自提单退货","订单发货","门店要货",
                         "门店要货退货","门店调拨入库","门店调拨出库","盘点入库","盘点出库","期初库存数","期末库存数"};
                 //计算标题开始行号
                 int row = 1;
@@ -4665,18 +4666,16 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Label(1, j + row, itemsDO.getStore(), textFormat));
                     ws.addCell(new Label(2, j + row, itemsDO.getSkuName(), textFormat));
                     ws.addCell(new Label(3, j + row, itemsDO.getSku(), textFormat));
-                    ws.addCell(new Label(4, j + row, itemsDO.getChangeType(), textFormat));
-                    ws.addCell(new Label(5, j + row, itemsDO.getChangeTypeDesc(), textFormat));
-                    ws.addCell(new Number(6, j + row, itemsDO.getStoreOrderQty() == null?0:itemsDO.getStoreOrderQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
-                    ws.addCell(new Number(7, j + row, itemsDO.getStoreReturnQty() == null?0:itemsDO.getStoreReturnQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
-                    ws.addCell(new Number(8, j + row, itemsDO.getStoreImportGoodsQty() == null?0:itemsDO.getStoreImportGoodsQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
-                    ws.addCell(new Number(9, j + row, itemsDO.getStoreExportGoodsQty() == null?0:itemsDO.getStoreExportGoodsQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
-                    ws.addCell(new Number(10, j + row, itemsDO.getStoreAllocateInBoundQty() == null?0:itemsDO.getStoreAllocateInBoundQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
-                    ws.addCell(new Number(11, j + row, itemsDO.getStoreAllocateOutBoundQty() == null?0:itemsDO.getStoreAllocateOutBoundQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
-                    ws.addCell(new Number(12, j + row, itemsDO.getStoreInventoryInboundQty() == null?0:itemsDO.getStoreInventoryInboundQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
-                    ws.addCell(new Number(13, j + row, itemsDO.getStoreInventoryOutboundQty() == null?0:itemsDO.getStoreInventoryOutboundQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
-                    ws.addCell(new Number(14, j + row, itemsDO.getInterInventoryQty() == null?0:itemsDO.getInterInventoryQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
-                    ws.addCell(new Number(15, j + row, itemsDO.getAfterInventoryQty() == null?0:itemsDO.getAfterInventoryQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(4, j + row, itemsDO.getStoreOrderQty() == null?0:itemsDO.getStoreOrderQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(5, j + row, itemsDO.getStoreReturnQty() == null?0:itemsDO.getStoreReturnQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(6, j + row, itemsDO.getStoreImportGoodsQty() == null?0:itemsDO.getStoreImportGoodsQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(7, j + row, itemsDO.getStoreExportGoodsQty() == null?0:itemsDO.getStoreExportGoodsQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(8, j + row, itemsDO.getStoreAllocateInBoundQty() == null?0:itemsDO.getStoreAllocateInBoundQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(9, j + row, itemsDO.getStoreAllocateOutBoundQty() == null?0:itemsDO.getStoreAllocateOutBoundQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(10, j + row, itemsDO.getStoreInventoryInboundQty() == null?0:itemsDO.getStoreInventoryInboundQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(11, j + row, itemsDO.getStoreInventoryOutboundQty() == null?0:itemsDO.getStoreInventoryOutboundQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(12, j + row, itemsDO.getInterInventoryQty() == null?0:itemsDO.getInterInventoryQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
+                    ws.addCell(new Number(13, j + row, itemsDO.getAfterInventoryQty() == null?0:itemsDO.getAfterInventoryQty(), new WritableCellFormat(textFont, new NumberFormat("0"))));
                 }
             }
         } catch (Exception e) {

@@ -29,14 +29,6 @@ public class StInventoryRealSummaryReportDO {
      */
     public String skuName;
     /**
-     *变更类型
-     */
-    public String changeType;
-    /**
-     *变更类型描述
-     */
-    public String changeTypeDesc;
-    /**
      *自提单退货
      */
     public Integer storeOrderQty;

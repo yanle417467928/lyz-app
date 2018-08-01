@@ -174,22 +174,12 @@
             title: '商品编码',
             align: 'center'
         }, {
-            field: 'changeType',
-            title: '变更类型',
-            align: 'center',
-            visible: false
-        }, {
-            field: 'changeTypeDesc',
-            title: '变更类型',
-            align: 'center'
-//            visible: false
-        }, {
             field: 'storeOrderQty',
             title: '自提单退货',
             align: 'center'
         },  {
             field: 'storeReturnQty',
-            title: '自提单发货',
+            title: '订单发货',
             align: 'center'
         }, {
             field: 'storeImportGoodsQty',
