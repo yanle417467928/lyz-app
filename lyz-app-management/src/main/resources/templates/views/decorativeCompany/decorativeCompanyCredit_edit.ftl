@@ -113,7 +113,7 @@
                     <div class="row">
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
-                                <label for="credit">改变信用金额度
+                                <label for="credit">增加/减少信用金额度
                                     <i class="fa fa-question-circle i-tooltip hidden-xs" data-toggle="tooltip"
                                        data-content="输入改变信用金额度"></i>
                                 </label>
