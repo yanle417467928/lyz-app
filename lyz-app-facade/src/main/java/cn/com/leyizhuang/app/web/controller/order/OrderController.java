@@ -1596,6 +1596,9 @@ public class OrderController {
                     customerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount() == null ? 0 : orderBillingDetails.getProductCouponDiscount());
                     customerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount() == null ? 0 : orderBillingDetails.getPromotionDiscount());
                     customerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice() == null ? 0 : orderBaseInfo.getTotalGoodsPrice());
+                    customerBillingDetailResponse.setCashMoney(CountUtil.add(orderBillingDetails.getStoreCash(), orderBillingDetails.getStoreOtherMoney(), orderBillingDetails.getDeliveryCash()));
+                    customerBillingDetailResponse.setPosMoney(CountUtil.add(orderBillingDetails.getStorePosMoney(), orderBillingDetails.getDeliveryPos()));
+
                     PayhelperOrder payhelperOrder = this.appOrderService.findPayhelperOrderByOrdNo(orderNumber);
                     if (null != payhelperOrder){
                         customerBillingDetailResponse.setPayForAnotherMoney(null == payhelperOrder.getPayhelperAmount() ? 0 : payhelperOrder.getPayhelperAmount());
@@ -1614,6 +1617,9 @@ public class OrderController {
                     managerBillingDetailResponse.setCreditMoney(orderBillingDetails.getStoreCreditMoney() == null ? 0 : orderBillingDetails.getStoreCreditMoney());
                     managerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount() == null ? 0 : orderBillingDetails.getPromotionDiscount());
                     managerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice() == null ? 0 : orderBaseInfo.getTotalGoodsPrice());
+                    managerBillingDetailResponse.setCashMoney(CountUtil.add(orderBillingDetails.getStoreCash(), orderBillingDetails.getStoreOtherMoney(), orderBillingDetails.getDeliveryCash()));
+                    managerBillingDetailResponse.setPosMoney(CountUtil.add(orderBillingDetails.getStorePosMoney(), orderBillingDetails.getDeliveryPos()));
+
                     PayhelperOrder payhelperOrder = this.appOrderService.findPayhelperOrderByOrdNo(orderNumber);
                     if (null != payhelperOrder){
                         managerBillingDetailResponse.setPayForAnotherMoney(null == payhelperOrder.getPayhelperAmount() ? 0 : payhelperOrder.getPayhelperAmount());
@@ -1631,6 +1637,10 @@ public class OrderController {
                     sellerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount() == null ? 0 : orderBillingDetails.getProductCouponDiscount());
                     sellerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount() == null ? 0 : orderBillingDetails.getPromotionDiscount());
                     sellerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice() == null ? 0 : orderBaseInfo.getTotalGoodsPrice());
+                    sellerBillingDetailResponse.setStoreCash(CountUtil.add(orderBillingDetails.getStoreCash(), orderBillingDetails.getStoreOtherMoney()));
+                    sellerBillingDetailResponse.setStorePosMoney(orderBillingDetails.getStorePosMoney());
+                    sellerBillingDetailResponse.setDeliveryCash( orderBillingDetails.getDeliveryCash());
+                    sellerBillingDetailResponse.setDeliveryPos(orderBillingDetails.getDeliveryPos());
 
                     //2018-04-02 generation 导购订单详情加查看代收款
                     sellerBillingDetailResponse.setCollectionAmount(null == orderBillingDetails.getCollectionAmount() ? 0D : orderBillingDetails.getCollectionAmount());

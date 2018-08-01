@@ -33,6 +33,7 @@ import cn.com.leyizhuang.common.util.CountUtil;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
@@ -1516,10 +1517,14 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             returnOrderBaseInfo.setSalesManagerId(orderBaseInfo.getSalesManagerId());
             returnOrderBaseInfo.setSalesManagerStoreId(orderBaseInfo.getSalesManagerStoreId());
             //保存退单头信息
-            returnOrderService.saveReturnOrderBaseInfo(returnOrderBaseInfo);
+            returnOrderDAO.saveRefusedReturnOrderBaseInfo(returnOrderBaseInfo);
             //获取退单头id
             Long returnOrderId = returnOrderBaseInfo.getRoid();
 
+            if (null == returnOrderId){
+                maps.put("code", "repeat");
+                return maps;
+            }
             Date date = new Date();
 
             List<ReturnOrderGoodsInfo> returnOrderGoodsInfos = new ArrayList<>(orderGoodsInfoList.size());

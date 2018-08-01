@@ -130,28 +130,28 @@
                     <div class="row">
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
-                                <label for="credit">改变信用金额度
+                                <label for="credit">增加/减少信用金额度
                                     <i class="fa fa-question-circle i-tooltip hidden-xs" data-toggle="tooltip"
-                                       data-content="输入改变信用金额度"></i>
+                                       data-content="输入增加/减少信用金额度"></i>
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="creditChangeAmount" type="number" class="form-control" id="creditChangeAmount"
-                                           placeholder="请输入修改信用金额度(正数增加、负数扣减)"
+                                           placeholder="请输入增加/减少信用金额度(正数增加、负数扣减)"
                                            value="" />
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
-                                <label for="promotionMoney">改变赞助金额度
+                                <label for="promotionMoney">增加/减少赞助金额度
                                     <i class="fa fa-question-circle i-tooltip hidden-xs" data-toggle="tooltip"
-                                       data-content="输入改变赞助金额度"></i>
+                                       data-content="输入增加/减少赞助金额度"></i>
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
                                     <input name="sponsorshipChangeAmount" type="number" class="form-control" id="sponsorshipChangeAmount"
-                                           placeholder="请输入改变赞助金额度(正数增加、负数扣减)"
+                                           placeholder="请输入增加/减少赞助金额度(正数增加、负数扣减)"
                                            value=""/>
                                 </div>
                             </div>
