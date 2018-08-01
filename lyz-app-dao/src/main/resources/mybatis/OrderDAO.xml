@@ -543,10 +543,12 @@
             is_owner_receiving,
             is_pay_up,
             pay_up_time,
-            store_cash,
-            seller_store_deposit,
-            store_other_money,
-            store_pos_money
+            IFNULL(store_cash, 0) store_cash,
+            IFNULL(seller_store_deposit, 0) seller_store_deposit,
+            IFNULL(store_other_money, 0) store_other_money,
+            IFNULL(store_pos_money, 0) store_pos_money,
+            IFNULL(delivery_cash, 0) delivery_cash,
+            IFNULL(delivery_pos, 0) delivery_pos
         FROM
             ord_billing_details
         WHERE

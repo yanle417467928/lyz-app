@@ -42,4 +42,26 @@ public class SellerBillingDetailResponse {
     
     //代收金额
     private Double collectionAmount;
+
+    /**
+     * 现金金额
+     */
+    private Double storeCash;
+
+    /**
+     * POS金额
+     */
+    private Double storePosMoney;
+
+
+    /**
+     *  配送现金
+     */
+    private Double deliveryCash;
+
+    /**
+     * 配送pos
+     */
+    private Double deliveryPos;
+
 }
