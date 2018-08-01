@@ -10,6 +10,9 @@
             <if test="null != credit">
                 credit_limit_available = #{credit},
             </if>
+            <if test="null != creditLimit">
+                credit_limit = #{creditLimit}
+            </if>
         </set>
         WHERE store_id = #{storeId}
         AND

@@ -77,6 +77,23 @@
                     <div class="row">
                         <div class="col-md-6 col-xs-12">
                             <div class="form-group">
+                                <label for="credit">签约信用金额度
+                                    <i class="fa fa-question-circle i-tooltip hidden-xs" data-toggle="tooltip"
+                                       data-content=""></i>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+                                   <input name="creditLimit" type="text" class="form-control" id="creditLimit"
+                                           placeholder=""
+                                           value="${decorativeCompanyVO.creditLimit!''}" readonly="readonly" />
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-xs-12">
+                            <div class="form-group">
                                 <label for="credit">信用金余额
                                     <i class="fa fa-question-circle i-tooltip hidden-xs" data-toggle="tooltip"
                                        data-content="输入信用金余额"></i>
@@ -332,6 +349,7 @@
             $.each(origin, function () {
                 data[this.name] = this.value;
             });
+            data['creditLimit'] = data.creditLimit.replace(/,/g, '');
             data['credit'] = data.credit.replace(/,/g, '');
             data['sponsorship'] = data.sponsorship.replace(/,/g, '');
             if (null === $global.timer) {

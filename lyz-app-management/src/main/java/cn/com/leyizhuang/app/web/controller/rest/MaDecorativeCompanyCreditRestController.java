@@ -198,6 +198,9 @@ public class MaDecorativeCompanyCreditRestController extends BaseRestController 
                 if (creditChangeAmount != null){
                    Double credit = decorativeCompanyInfo.getCredit() == null ? 0D : decorativeCompanyInfo.getCredit().doubleValue();
                    decorativeCompanyInfo.setCredit(BigDecimal.valueOf(CountUtil.add(credit,creditChangeAmount)));
+
+                   Double creditLimit = decorativeCompanyInfo.getCreditLimit() == null ? 0D : decorativeCompanyInfo.getCreditLimit().doubleValue();
+                   decorativeCompanyInfo.setCreditLimit(BigDecimal.valueOf(CountUtil.add(creditLimit,creditChangeAmount)));
                 }
 
                 if (sponsorshipChangeAmount != null){
@@ -218,7 +221,7 @@ public class MaDecorativeCompanyCreditRestController extends BaseRestController 
                 storeCreditMoneyChangeLog.setOperatorType(AppIdentityType.ADMINISTRATOR);
                 storeCreditMoneyChangeLog.setOperatorId(shiroUser.getId());
                 storeCreditMoneyChangeLog.setOperatorIp(IpUtil.getIpAddress(request));
-                storeCreditMoneyChangeLog.setRemark(modifyReason);
+                storeCreditMoneyChangeLog.setRemark(modifyReason.trim());
                 this.maDecorativeCompanyCreditService.updateDecorativeCompanyCreditAndSubvention(decorativeCompanyInfo, storeCreditMoneyChangeLog);
                 logger.info("updateDecorativeCompanyCredit ,编辑装饰公司信用金成功");
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);

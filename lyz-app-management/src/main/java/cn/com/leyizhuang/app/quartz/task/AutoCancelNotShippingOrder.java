@@ -50,7 +50,7 @@ public class AutoCancelNotShippingOrder implements Job {
         if (now.isAfter(dateTime)){
 
             // 找到 超过6个月未出货的自提单
-//        LocalDateTime sixMonthAfterTime = LocalDateTime.now().minusHours(6);
+ //       LocalDateTime sixMonthAfterTime = LocalDateTime.now().minusMonths(6);
 //        List<OrderBaseInfo> sixMonthNotShippingList = returnOrderService.findOrderByStatusAndTypeAndCreateTime(AppOrderStatus.PENDING_SHIPMENT,
 //                AppDeliveryType.SELF_TAKE,sixMonthAfterTime);
 //
