@@ -91,12 +91,12 @@
                 <div class="user-block">
                     <ul id="freightDetail" class="list-group list-group-unbordered" style="margin-top:10px;">
                         <li class="list-group-item">
-                            <b>初始运费:</b> <a class="pull-right">￥${freightChange.freight}</a>
+                            <b>初始运费</b> <a class="pull-right">￥${freightChange.freight}</a>
                         </li>
                         <if freightChanges??>
                         <#list freightChanges as freight>
                             <li class="list-group-item">
-                                <b>${freight.changeType}:</b> <a class="pull-right">￥${freight.changeAmount}</a>
+                                <b>${freight.changeType}</b> <a class="pull-right">￥${freight.changeAmount}</a>
                             </li>
                         </#list>
                         </if>

@@ -206,7 +206,11 @@
             align: 'center'
         }, {
             field: 'referenceNumber',
-            title: '相关订单号',
+            title: '订单号',
+            align: 'center'
+        }, {
+            field: 'returnNumber',
+            title: '退单号',
             align: 'center'
         },{
             field: 'changeTime',

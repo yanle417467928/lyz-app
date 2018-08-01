@@ -151,6 +151,10 @@
                 field: 'operatorName',
                 title: '变更人',
                 align: 'center'
+            },{
+                field: 'remark',
+                title: '备注',
+                align: 'left'
             }
         ]);
     }
