@@ -970,6 +970,7 @@
         ss.store_name as storeName ,
         ss.store_type as storeType,
         orbi.ord_no as ordNo,
+        orbi.return_no as returnNo,
         iwrobh.c_end_dt as operationTime,
         orbi.order_time as createTime,
         obi.customer_id as customerId,
@@ -1045,6 +1046,7 @@
         ss.store_name as storeName ,
         ss.store_type as storeType,
         orbi.ord_no as ordNo,
+        orbi.return_no as returnNo,
         iwrobh.c_end_dt as operationTime,
         orbi.order_time as createTime,
         obi.customer_id as customerId,
@@ -1119,6 +1121,7 @@
         ss.store_name as storeName,
         ss.store_type as storeType,
         orbi.ord_no as ordNo,
+        orbi.return_no as returnNo,
         orl.operation_time as operationTime,
         orbi.order_time as createTime,
         orbi.cus_id as customerId,
@@ -1160,6 +1163,8 @@
         orbi.return_status ='FINISHED'
         AND
         orl.post_status = 'FINISHED'
+        AND
+        obi.delivery_type !='PRODUCT_COUPON'
         <if test="null !=storeId">
             AND
             orbi.store_id =#{storeId}
@@ -1193,6 +1198,7 @@
         ss.store_name as storeName,
         ss.store_type as storeType,
         obi.ord_no as ordNo,
+        NULL as returnNo,
         wa.end_dt as operationTime,
         obi.create_time as createTime,
         obi.customer_id as customerId,
@@ -1266,6 +1272,7 @@
         ss.store_name as storeName,
         ss.store_type as storeType,
         obi.ord_no as ordNo,
+        NULL as returnNo,
         ol.operation_time as operationTime,
         obi.create_time as createTime,
         obi.customer_id as customerId,

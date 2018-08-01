@@ -29,6 +29,8 @@ public class ShipmentAndReturnGoods {
     private String orderType;
     //订单号
     private String ordNo;
+    //退单号
+    private String returnNo;
     //出退货时间
     private String operationTime;
     //订单日期
