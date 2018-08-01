@@ -403,7 +403,11 @@ public class ReturnOrderController {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
                     logger.info("refusedOrder OUT,拒签退货成功，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
-                } else {
+                } else if ("repeat".equals(code)){
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此单已拒签，不能重复拒签，请联系管理员！", null);
+                    logger.info("refusedOrder OUT,拒签退货失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }  else {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常，拒签退货失败，请联系管理员！", null);
                     logger.info("refusedOrder OUT,拒签退货失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;

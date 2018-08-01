@@ -85,7 +85,31 @@
         #{creatorId}, #{creatorName,}, #{creatorIdentityType},
         #{creatorPhone}, #{storeId}, #{storeCode}, #{storeStructureCode},
         #{customerId}, #{customerName}, #{customerPhone}, #{customerType}, #{reasonInfo},
-        #{returnPrice}, #{orderType}, #{returnStatus},#{isRecordSales},#{salesManagerId},#{salesManagerStoreId})
+        #{returnPic}, #{orderType}, #{returnStatus},#{isRecordSales},#{salesManagerId},#{salesManagerStoreId})
+    </insert>
+
+
+    <insert id="saveRefusedReturnOrderBaseInfo"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo"
+            useGeneratedKeys="true" keyProperty="roid">
+        INSERT INTO ord_return_base_info
+        (oid, ord_no, order_time, return_time, return_no, return_type, return_price, remarks_info, creator_id,
+        creator_name,
+        creator_identityType, creator_phone, store_id, store_code, store_structure_code, cus_id, cus_name, cus_phone,
+        cus_type, reason_info, return_pic, ord_type,
+        return_status,is_record_sales,sales_manager_id,sales_manager_store_id)
+        SELECT
+        #{orderId}, #{orderNo}, #{orderTime},
+        #{returnTime}, #{returnNo}, #{returnType},
+        #{returnPrice}, #{remarksInfo},
+        #{creatorId}, #{creatorName,}, #{creatorIdentityType},
+        #{creatorPhone}, #{storeId}, #{storeCode}, #{storeStructureCode},
+        #{customerId}, #{customerName}, #{customerPhone}, #{customerType}, #{reasonInfo},
+        #{returnPic}, #{orderType}, #{returnStatus},#{isRecordSales},#{salesManagerId},#{salesManagerStoreId}
+        FROM dual
+        WHERE NOT exists(SELECT 1
+                         FROM ord_return_base_info
+                         WHERE ord_no = #{orderNo})
     </insert>
 
     <update id="modifyReturnOrderBaseInfo"
