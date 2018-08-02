@@ -306,6 +306,9 @@ public class AppActServiceImpl implements AppActService {
             if (null != act.getIsMemberConference() && act.getIsMemberConference()){
                 List<ActMemberConference> actMemberConferenceList = actBaseDAO.findMemberConferenceByActId(act.getId());
                 if (null != actMemberConferenceList && actMemberConferenceList.size() > 0) {
+                    if (cusId == null){
+                        continue;
+                    }
                     for (ActMemberConference actMemberConference : actMemberConferenceList) {
                         if (cusId.equals(actMemberConference.getCusId())) {
                             a = Boolean.TRUE;

@@ -114,7 +114,7 @@ public class AutoCancelNotShippingOrder implements Job {
                 appOrderService.updateOrderStatusByOrderNo(orderBaseInfo);
 
                 System.out.println("取消订单提交成功，等待确认");
-            }else if (orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE) && AppOrderStatus.PENDING_SHIPMENT.equals(orderBaseInfo.getStatus())){
+            }else if (orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE) && AppOrderStatus.PENDING_RECEIVE.equals(orderBaseInfo.getStatus())){
                 //如果是待收货、门店自提单则需要返回第三方支付金额
                 if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.SELF_TAKE)) {
                     if (null != orderBillingDetails.getOnlinePayType()) {
