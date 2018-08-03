@@ -1,9 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.response.materialList;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -18,6 +15,7 @@ import java.io.Serializable;
 @Setter
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor
 public class UsedMoreProductCoupon implements Serializable {
 
     /**

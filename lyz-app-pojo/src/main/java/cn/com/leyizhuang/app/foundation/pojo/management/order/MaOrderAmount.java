@@ -45,6 +45,19 @@ public class MaOrderAmount {
      * 流水号
      */
     private String serialNumber;
+
+    /**
+     * 现金备注
+     */
+    public String cashRemarks;
+    /**
+     * pos备注
+     */
+    public String posRemarks;
+    /**
+     * 其它金额备注
+     */
+    public String otherRemarks;
     /**
      * 日期
      */

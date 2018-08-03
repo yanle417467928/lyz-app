@@ -78,7 +78,11 @@ public interface MaReportDownloadService {
 
     PageInfo<EmpCreditMoneyChangeReportDO> findEmployeeCreditMoneyReportDOAll(Long cityId, Long storeId, String storeType, String startTime, String endTime, List<Long> storeIds, Integer page, Integer size);
 
+    PageInfo<CompanyCreditMoneyChangeReportDO> findCompanyCreditMoneyReportDOAll(Long cityId, Long storeId, String storeType, String startTime, String endTime, List<Long> storeIds, Integer page, Integer size);
+
     List<EmpCreditMoneyChangeReportDO> employeeCreditMoneyDownload(Long cityId, Long storeId, String storeType, String startTime, String endTime, List<Long> storeIds);
+
+    List<CompanyCreditMoneyChangeReportDO> companyCreditMoneyDownload(Long cityId, Long storeId, String storeType, String startTime, String endTime, List<Long> storeIds);
 
     PageInfo<DistributionDO> findDistributionDOAll(Long cityId, String wareHouseNo, String deliveryClerkNo, String startTime, String endTime,
                                                              String keywords, Integer page, Integer size);
@@ -108,4 +112,20 @@ public interface MaReportDownloadService {
     List<EmpCreditDO> empCreditMoneySituation(Long cityId,String storeType,List<Long> storeIds,String keywords);
 
     List<StCreditDO> stCreditMoneySituation(Long cityId,List<Long> storeIds,String keywords);
+
+    PageInfo<CusProductCouponSummary> findCusProductCouponSummaryPage(Long cityId, Long storeId, List<Long> storeIds, Integer page, Integer size,String keywords, String endTime, String productType);
+
+    List<CusProductCouponSummary> findCusProductCouponSummaryList(Long cityId, Long storeId, List<Long> storeIds, String keywords, String endTime,String productType);
+
+    PageInfo<CusProductCouponChangeLogReportDO> findCusProductCouponChangeLogPage(Long cityId, Long storeId, List<Long> storeIds, Integer page, Integer size,String keywords,String endTime,String startTime, String productType);
+
+    List<CusProductCouponChangeLogReportDO> findCusProductCouponChangeLogList(Long cityId, Long storeId, List<Long> storeIds,String keywords,String endTime,String startTime, String productType);
+
+    PageInfo<StInventoryRealChangeLogReportDO> findStInventoryRealChangeLogPage(Long cityId, Long storeId, List<Long> storeIds, Integer page, Integer size,String endTime, String startTime);
+
+    List<StInventoryRealChangeLogReportDO> findStInventoryRealChangeLogList(Long cityId, Long storeId, List<Long> storeIds,String endTime, String startTime);
+
+    PageInfo<StInventoryRealSummaryReportDO> findStInventoryRealSummaryPage(Long cityId, Long storeId, List<Long> storeIds, Integer page, Integer size,String endTime, String startTime);
+
+    List<StInventoryRealSummaryReportDO> findStInventoryRealSummaryList(Long cityId, Long storeId, List<Long> storeIds,String endTime, String startTime);
 }

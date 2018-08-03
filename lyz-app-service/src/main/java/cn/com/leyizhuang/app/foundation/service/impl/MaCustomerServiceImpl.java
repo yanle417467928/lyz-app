@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppCustomerCreateType;
 import cn.com.leyizhuang.app.core.constant.AppCustomerLightStatus;
+import cn.com.leyizhuang.app.core.constant.AppCustomerType;
 import cn.com.leyizhuang.app.core.constant.LoanSubjectType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.MaCustomerDAO;
@@ -372,6 +373,13 @@ public class MaCustomerServiceImpl implements MaCustomerService {
                 this.maCustomerDAO.updatePayhelperInfoByCusId(payhelperInfo);
             }
         }
+
+        if (manageUpdateCustomerTypeResponse.getMemberType() != null && !manageUpdateCustomerTypeResponse.getMemberType().equals("")
+                && !manageUpdateCustomerTypeResponse.equals("COMMON")){
+            customer.setCustomerType(AppCustomerType.MEMBER);
+            appCustomerService.update(customer);
+        }
+
         if (null == cusRankDO){
             CusRankDO newCusRank = new CusRankDO();
             newCusRank.setCusId(manageUpdateCustomerTypeResponse.getCusId());

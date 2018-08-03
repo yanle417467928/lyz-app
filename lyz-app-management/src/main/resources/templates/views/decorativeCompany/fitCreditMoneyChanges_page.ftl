@@ -146,6 +146,15 @@
                 field: 'createTime',
                 title: '变更时间',
                 align: 'center'
+            },
+            {
+                field: 'operatorName',
+                title: '变更人',
+                align: 'center'
+            },{
+                field: 'remark',
+                title: '备注',
+                align: 'left'
             }
         ]);
     }

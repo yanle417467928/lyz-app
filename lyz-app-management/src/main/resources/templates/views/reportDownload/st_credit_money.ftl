@@ -30,7 +30,7 @@
             <li class="active">${selectedMenu.resourceName!'??'}</li>
         </ol>
         <#else>
-            <h1>装饰公司信用额度</h1>
+            <h1>装饰公司信用金余额</h1>
     </#if>
 </section>
 

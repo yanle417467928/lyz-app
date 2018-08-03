@@ -784,7 +784,7 @@
         left JOIN cus_customer_fx_store_relation cu2 on ob.store_code = cu2.fx_store_code
         where
         1=1
-        and ob.`status` IN ('FINISHED','REJECTED')
+        and (ob.`status` IN ('FINISHED') or (ob.status in ('REJECTED') and obd.is_pay_up = 1))
         <if test="null!=startTime">
             AND
             wro.c_end_dt > #{startTime}
@@ -955,6 +955,85 @@
         and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
         )
 
+        <!-- 之前结清 本月出货 -->
+        UNION ALL
+        (
+        SELECT
+        s.store_type as 'storeType',
+        s.city as 'cityName',
+        s.store_code as 'storeCode',
+        s.store_name as 'storeName',
+        e2.`name` as 'name',
+        ob.customer_name as 'customerName',
+        ob.ord_no as 'ordNo',
+        '配送' as 'orderType',
+        CASE ob.`status` WHEN 'PENDING_RECEIVE' THEN '待收货' WHEN 'FINISHED' THEN '已完成' end as 'orderStatus',
+        '' as 'selfTakeOrderTime',
+        ob.create_time as 'createTime',
+        CASE wa.end_dt WHEN null THEN '一代数据' ELSE wa.end_dt END as 'shippingDate',
+        CASE obd.is_pay_up WHEN 0 THEN '未结清' WHEN 1 THEN '结清' end as 'isPayUp',
+        CASE obd.is_pay_up WHEN 0 THEN null WHEN 1 THEN obd.pay_up_time end as 'payUpTime',
+        og.sku as 'sku',
+        og.sku_name as 'skuName',
+        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN '产品券' WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END as
+        'goodsType',
+        og.company_flag as 'companyFlag',
+        if(og.goods_line_type = "PRODUCT_COUPON" ,oci.purchase_price , (og.order_qty ) * og.return_price ) as
+        'financialSales',
+        if(og.goods_line_type = "PRODUCT_COUPON" ,
+        if(oci.purchase_price = 0,0,if(og2.goods_line_type = "GOODS",(oci.purchase_price - (og.settlement_price - og.wholesale_price)),oci.purchase_price)) ,
+        IF(og.goods_line_type = "GOODS" , (og.wholesale_price * og.order_qty) , 0)) as 'distributionSales',
+        if(og.goods_line_type = "GOODS", og.wholesale_price , if((og.goods_line_type = "PRESENT" OR oci.get_type = 'MANUAL_GRANT' or oci.purchase_price = 0),0,og.wholesale_price)) as 'wholesalePrice',
+        og.retail_price as 'retailPrice',
+        og.settlement_price as 'settlementPrice',
+        (og.retail_price - og.settlement_price) as 'memberDiscount',
+        og.promotion_share_price as 'promotionSharePrice',
+        og.cash_coupon_share_price as 'cashCouponSharePrice',
+        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty',
+        if(og.goods_line_type = "PRODUCT_COUPON",
+        IF(ccpc.get_type = "BUY",
+        IF(og2.goods_line_type is not null,CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END,
+        if(oci.purchase_price is null Or oci.purchase_price = 0 , '赠品','本品')),'后台发放'),'')  as 'couponType',
+        '' as 'returnNo',
+        CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
+        ob.customer_id as cusId,
+        CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType,
+        '' fxCkName
+        FROM
+        ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
+        LEFT JOIN st_store s on ob.store_id = s.store_id
+        LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
+        -- LEFT JOIN gds_goods_grade gp on og.sku = gp.sku
+        LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
+        LEFT JOIN (SELECT * from inter_wta_order_shipping_header where send_flag = 1 GROUP BY order_no) wa ON ob.ord_no = wa.order_no
+        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku  and og.goods_line_type = 'PRODUCT_COUPON'
+        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
+        LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
+        LEFT JOIN emp_employee e2 on e2.emp_id = ob.sales_manager_id
+        LEFT JOIN st_store st2 on st2.store_id = e2.store_id
+        left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
+        left JOIN cus_customer cc on cc.cus_id = ob.customer_id
+        WHERE
+        ob.`status` IN (
+        'PENDING_RECEIVE',
+        'FINISHED',
+        'REJECTED'
+        )
+        <if test="null!=startTime and ''!=startTime">
+            AND obd.pay_up_time >= #{startTime}
+        </if>
+        <if test="null!=endTime and ''!=endTime">
+            and
+            <![CDATA[obd.pay_up_time<= #{startTime}]]> and wa.end_dt &lt; #{endTime}
+        </if>
+        and obd.is_pay_up = 1
+        and ob.delivery_type = 'HOUSE_DELIVERY'
+        <if test="null!=companyCode and ''!=companyCode">
+            and s.store_structure_code like concat('%',#{companyCode},'%')
+        </if>
+        and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
+        )
+
         <!-- 配送 现结装饰公司退货-->
 
         UNION ALL
@@ -1019,7 +1098,7 @@
         left JOIN cus_customer cc on cc.cus_id = ob.customer_id
         where
         1=1
-        and ob.`status` IN ('FINISHED','REJECTED')
+        and (ob.`status` IN ('FINISHED') or (ob.status in ('REJECTED') and obd.is_pay_up = 1))
         <if test="null!=startTime">
             AND
             wro.c_end_dt > #{startTime}
@@ -1070,6 +1149,6 @@
         from
         (
         <include refid="SalesSql"/>
-        )ua where ua.emp_id = #{empId} GROUP BY ua.ordNo
+        )ua where ua.emp_id = #{empId} GROUP BY ua.ordNo,ua.returnNo
     </select>
 </mapper>

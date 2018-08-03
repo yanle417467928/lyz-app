@@ -103,7 +103,9 @@
         </if>
         <if test="null != queryInfo  and ''!= queryInfo">
             AND (a.item_code LIKE concat('%',#{queryInfo},'%')
-            OR c.sku_name  LIKE concat('%',#{queryInfo},'%') )
+            OR c.sku_name  LIKE concat('%',#{queryInfo},'%')
+            OR  a.trans_number LIKE concat('%',#{queryInfo},'%')
+            )
         </if>
         AND b.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
@@ -133,12 +135,156 @@
         </if>
         <if test="null != queryInfo  and ''!= queryInfo">
             AND (a.item_code LIKE concat('%',#{queryInfo},'%')
-            OR c.sku_name  LIKE concat('%',#{queryInfo},'%') )
+            OR c.sku_name  LIKE concat('%',#{queryInfo},'%')
+            OR  a.trans_number LIKE concat('%',#{queryInfo},'%')
+            )
         </if>
         AND b.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
+    </select>
+
+
+    <select id="queryStoresGoodCheckingPageVO"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.StoreReturnAndRequireGoodsInf">
+        SELECT
+        a.trans_type,
+        a.trans_number,
+        b.store_name,
+        a.ship_date,
+        a.item_code,
+        c.sku_name,
+        a.quantity
+        FROM inter_eta_store_goods_trans_inf a
+        LEFT JOIN  st_store b on a.diy_site_code =b.store_code
+        LEFT JOIN  gds_goods c on a.item_code = c.sku
+        WHERE (trans_type ='盘点出库' or trans_type ='盘点入库')
+        <if test="null != structureCode  and '-1'!= structureCode">
+            AND  b.store_structure_code LIKE concat('%',#{structureCode},'%')
+        </if>
+        <if test="null != storeId and  -1!= storeId">
+            AND b.store_id = #{storeId}
+        </if>
+        <if test="null != queryInfo  and ''!= queryInfo">
+            AND (a.item_code LIKE concat('%',#{queryInfo},'%')
+            OR c.sku_name  LIKE concat('%',#{queryInfo},'%')
+            OR  a.trans_number LIKE concat('%',#{queryInfo},'%')
+            )
+        </if>
+        AND b.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+
+    <select id="queryInvoicingPage" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.StoreInvoicingInf">
+      select jxc_b.*,gg.sku_name,ss.store_name,si.real_ity,sii.real_ity as initialIty ,ss.company_name as structureName from
+        (select
+        jxc_a.store_code,
+        jxc_a.sku,
+        MAX(case jxc_a.type WHEN '自提单发货' THEN jxc_a.qty else NULL end ) as 'orderDeliveryQty',
+        MAX(case jxc_a.type WHEN '退货到店'  THEN jxc_a.qty else NULL end ) as 'selfTakeOrderReturnQty',
+        MAX(case jxc_a.type WHEN '调拨入库'  THEN jxc_a.qty else NULL end ) as 'storeAllocateInboundQty',
+        MAX(case jxc_a.type WHEN '调拨出库'  THEN jxc_a.qty else NULL end ) as 'storeAllocateOutboundQty',
+        MAX(case jxc_a.type WHEN '门店要货'  THEN jxc_a.qty else NULL end ) as 'storeImportGoodsQty',
+        MAX(case jxc_a.type WHEN '门店退货'  THEN jxc_a.qty else NULL end ) as 'storeExportGoodsQty',
+        MAX(case jxc_a.type WHEN '盘点入库'  THEN jxc_a.qty else NULL end ) as 'storeInputGoodsQty',
+        MAX(case jxc_a.type WHEN '盘点出库'  THEN jxc_a.qty else NULL end ) as 'storeOutputGoodsQty',
+        MAX(jxc_a.change_time) as 'change_time'
+        from
+        ((SELECT trans_type as type,diy_site_code as store_code,item_code as sku,sum(quantity) as qty,max(ship_date) as change_time FROM
+        inter_eta_store_goods_trans_inf
+        WHERE
+        (trans_type ='门店要货' or trans_type ='门店退货')
+        GROUP BY item_code,trans_type,diy_site_code)
+
+        union all
+
+        (SELECT trans_type as type,diy_site_code as store_code,item_code as sku,sum(quantity) as qty,max(ship_date) as change_time FROM
+        inter_eta_store_goods_trans_inf
+        WHERE
+        (trans_type ='盘点入库' or trans_type ='盘点出库')
+        GROUP BY item_code,trans_type,diy_site_code)
+
+        union all
+
+        (select '自提单发货' as type ,store_code as store_code, sku as sku,sum(order_qty) as qty,max(shipping_time) as change_time from (SELECT
+        ogi.sku,ogi.sku_name,ogi.order_qty,obi.store_code,os.shipping_time
+        FROM
+        ord_base_info obi
+        LEFT JOIN ord_goods_info ogi ON obi.ord_no = ogi.ord_no
+        LEFT JOIN ord_shipping os ON obi.ord_no = os.ord_no
+        LEFT JOIN st_store s on obi.store_code = s.store_code
+        WHERE
+        obi.delivery_type = 'SELF_TAKE'
+        AND obi.`status`='FINISHED'
+        and s.store_type !='JM'
+        AND obi.create_time > '2018-04-01 00:00:00') d
+        group BY sku,store_code)
+
+        union all
+
+        (SELECT '退货到店' as type ,orbi.store_code as store_code,orgi.sku as sku,sum(orgi.return_qty) as qty,max(orl.operation_time) as change_time
+        FROM ord_return_base_info orbi
+        LEFT JOIN ord_return_logistic_info orli ON orbi.return_no =orli.return_no
+        LEFT JOIN ord_return_goods_info orgi on orbi.return_no = orgi.return_no
+        LEFT JOIN ord_return_lifecycle orl on orbi.return_no = orl.return_no
+        LEFT JOIN ord_base_info obi ON orbi.ord_no = obi.ord_no
+        where
+        orli.delivery_type='RETURN_STORE'
+        AND orbi.return_status ='FINISHED'
+        AND obi.delivery_type !='PRODUCT_COUPON'
+        AND obi.delivery_type = 'SELF_TAKE'
+        AND orl.post_status ='FINISHED'
+        GROUP BY orgi.sku,orbi.store_code)
+
+        union all
+
+        (select '调拨入库' as type ,ss.store_code as store_code,iad.sku as sku,sum(iad.real_qty) as qty,max(ia.modify_time) as change_time
+        from ity_allocation ia
+        LEFT JOIN ity_allocation_detail iad on ia.id =iad.allocation_id
+        LEFT JOIN st_store ss on ia.allocation_to = ss.store_id
+        where ia.status ='ENTERED' GROUP BY  ia.allocation_to,iad.sku)
+
+        union all
+
+        (select '调拨出库' as type ,ss.store_code as store_code,iad.sku as sku,sum(iad.real_qty) as qty,max(ia.modify_time) as change_time
+        from ity_allocation ia
+        LEFT JOIN ity_allocation_detail iad on ia.id =iad.allocation_id
+        LEFT JOIN st_store ss on ia.allocation_from = ss.store_id
+        where ia.status ='ENTERED' GROUP BY  ia.allocation_from,iad.sku) ) jxc_a
+        GROUP BY jxc_a.store_code,jxc_a.sku ) jxc_b
+        LEFT JOIN st_store ss on jxc_b.store_code =ss.store_code
+        LEFT JOIN gds_goods gg on jxc_b.sku =gg.sku
+        LEFT JOIN st_inventory si ON  si.sku = jxc_b.sku AND si.store_code = jxc_b.store_code
+        LEFT JOIN  st_inventory_initial sii ON  sii.sku = jxc_b.sku AND sii.store_code = jxc_b.store_code
+        WHERE
+        1=1
+        <if test="null !=keywords and ''!=keywords">
+           AND (jxc_b.sku like concat('%',#{keywords},'%') OR
+            gg.sku_name like concat('%',#{keywords},'%'))
+        </if>
+        <if test="null != structureCode and '-1'!=structureCode">
+            AND ss.store_structure_code like concat('%',#{structureCode},'%')
+        </if>
+        <if test="null !=storeId and -1!=storeId">
+            AND ss.store_id =#{storeId}
+        </if>
+        <if test="null !=endDateTime and ''!=endDateTime">
+            AND  <![CDATA[jxc_b.change_time <=#{endDateTime}]]>
+        </if>
+        AND
+        ss.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+          #{item}
+       </foreach>
+    </select>
+
+
+    <select id="queryStoreInitialrealQty" resultType="java.lang.Integer">
+        select real_ity from st_inventory_initial where sku =#{sku} AND store_code =#{storeCode}
     </select>
 
 </mapper>

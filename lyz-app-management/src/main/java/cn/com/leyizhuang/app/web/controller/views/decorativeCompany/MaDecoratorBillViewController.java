@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.web.controller.views.decorativeCompany;
 
+import cn.com.leyizhuang.app.core.constant.FitCompayType;
 import cn.com.leyizhuang.app.foundation.pojo.StorePreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillInfoResponse;
@@ -37,7 +38,8 @@ public class MaDecoratorBillViewController {
     private BillInfoService billInfoService;
 
     @RequestMapping(method = RequestMethod.GET, value = "/notOutList")
-    public String toNotOutBillPage() {
+    public String toNotOutBillPage(ModelMap map) {
+        map.addAttribute("fitCompayTypes", FitCompayType.values());
         return "/views/decorativeCompany/fit_company_notOutBill_page";
     }
 

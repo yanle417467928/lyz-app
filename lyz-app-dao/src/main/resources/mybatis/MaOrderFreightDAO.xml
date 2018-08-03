@@ -31,10 +31,11 @@
             <id property="id" column="id"/>
             <result property="modifier" column="modifier"/>
             <result property="modifyTime" column="modify_time"/>
-            <result property="freightChangeBefore" column="freight_change_before"/>
+            <result property="freight" column="freight_change_before"/>
             <result property="freightChangeAfter" column="freight_change_after"/>
-            <result property="freightChangeAmount" column="freight_change_amount"/>
+            <result property="changeAmount" column="freight_change_amount"/>
             <result property="modifyReason" column="modify_reason"/>
+            <result property="changeTypes" column="change_type"/>
         </association>
     </resultMap>
 
@@ -200,9 +201,9 @@
         ord_billing_details
         <set>
             <if test="null != changAmount">
-                order_amount_subtotal =order_amount_subtotal - #{changAmount},
-                arrearage =arrearage - #{changAmount},
-                amount_payable =amount_payable - #{changAmount},
+                order_amount_subtotal =order_amount_subtotal + #{changAmount},
+                arrearage =arrearage + #{changAmount},
+                amount_payable =amount_payable + #{changAmount},
             </if>
             <if test="null != freight">
                 freight = #{freight},
@@ -211,25 +212,42 @@
         WHERE oid = #{orderId}
     </update>
 
-    <select id="queryOrderFreightChangeList" resultMap="orderFreightChangeResultMap">
+    <select id="queryOrderFreightChangeList" parameterType="java.lang.String" resultMap="orderFreightChangeResultMap">
         SELECT
         obi.ord_no,obi.creator_name,obi.city_name,
         s.store_id,s.store_name,ofcl.modifier,ofcl.modify_time,
-        ofcl.freight_change_before,ofcl.freight_change_after,ofcl.freight_change_amount
+        ofcl.freight_change_before,ofcl.freight_change_after,ofcl.freight_change_amount, ofcl.change_type
         FROM
         ord_base_info obi
         LEFT JOIN  st_store s ON obi.store_id = s.store_id
         RIGHT JOIN ord_freight_change_log ofcl ON obi.oid = ofcl.oid
         WHERE
         obi.delivery_type="HOUSE_DELIVERY"
+        <if test="null != keywords and keywords != ''">
+            AND (obi.ord_no LIKE CONCAT('%',#{keywords},'%')
+            OR obi.creator_name LIKE CONCAT('%',#{keywords},'%')
+            OR obi.creator_phone LIKE CONCAT('%',#{keywords},'%'))
+        </if>
         ORDER BY ofcl.modify_time
         DESC
     </select>
 
     <insert id="saveOrderFreightChange" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.order.OrderFreightChange">
         insert into ord_freight_change_log
-        (oid,modifier,modify_time,modify_reason,freight_change_before,freight_change_after,freight_change_amount)
+        (oid,modifier,modify_time,modify_reason,freight_change_before,freight_change_after,freight_change_amount, change_type)
         values
-        (#{orderId},#{modifier},#{modifyTime},#{modifyReason},#{freightChangeBefore},#{freightChangeAfter},#{freightChangeAmount});
+        (#{orderId},#{modifier},#{modifyTime},#{modifyReason},#{freight},#{freightChangeAfter},#{changeAmount}, #{changeType});
     </insert>
+
+    <select id="queryOrderFreightChangeLogListByOid" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.management.order.OrderFreightChange">
+        SELECT IFNULL(change_type, 'OTHER') changeTypes, sum(freight_change_amount) changeAmount
+        FROM ord_freight_change_log
+        WHERE oid = #{oid}
+        GROUP BY change_type
+    </select>
+
+    <select id="queryOrderFreightChangeLogFirstByOid" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.management.order.OrderFreightChange">
+        SELECT freight_change_amount changeAmount, change_type changeTypes, freight_change_before freight, freight_change_after freightChangeAfter
+        FROM ord_freight_change_log WHERE oid = #{oid} HAVING MIN(id)
+    </select>
 </mapper>

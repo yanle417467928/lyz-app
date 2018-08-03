@@ -63,15 +63,16 @@ public class MaFitBillRestController extends BaseRestController {
      * @return 订单列表
      */
     @GetMapping(value = "/notOut/page/grid")
-    public GridDataVO<DecorativeCompanyDetailVO> restFitBillPageGird(Integer offset, Integer size, String keywords, Long cityId) {
-        logger.warn("restFitBillPageGird 后台分页获取所有装饰公司未出账单 ,入参offsetL:{}, size:{}, kewords:{}", offset, size, keywords,cityId);
+    public GridDataVO<DecorativeCompanyDetailVO> restFitBillPageGird(Integer offset, Integer size, String keywords, Long cityId, String fitCompayType) {
+        logger.warn("restFitBillPageGird 后台分页获取所有装饰公司未出账单 ,入参offsetL:{}, size:{}, kewords:{},fitCompayType:{}",
+                offset, size, keywords,cityId, fitCompayType);
         try {
             //查询登录用户门店权限的门店ID
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
             size = getSize(size);
             Integer page = getPage(offset, size);
             keywords = keywords.trim();
-            PageInfo<StoreDO> storePage = this.maStoreService.queryDecorativeCompanyList(page, size,storeIds,cityId,keywords);
+            PageInfo<StoreDO> storePage = this.maStoreService.queryDecorativeCompanyList(page, size,storeIds,cityId,keywords,fitCompayType);
             List<StoreDO> storesList = storePage.getList();
             List<DecorativeCompanyDetailVO> pageAllDecorativeCompanyList = DecorativeCompanyDetailVO.transform(storesList);
             logger.info("restDecorativeCompanyPageGird ,后台初始化装饰公司列表成功", pageAllDecorativeCompanyList.size());
@@ -195,6 +196,11 @@ public class MaFitBillRestController extends BaseRestController {
             BillInfoResponse billInfoResponse = billInfoService.lookBill(startTimeL, endTimeL, storeId, null, null);
             billInfoResponse.setNotPayOrderDetails(null);
             billInfoResponse.setPaidOrderDetails(null);
+            if (billInfoResponse.getBillNo() == null){
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "请联系管理员，创建账单规则！", null);
+                logger.info("restFitBillPageGird OUT,后台分页查询装饰公司未付账单明细失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,billInfoResponse );
             //map.addAttribute("billInfoResponse", billInfoResponse);
             //PageInfo<BillRepaymentGoodsInfoResponse>  billRepaymentGoodsInfoResponseList = maFitBillService.getNoPayOrderBillByBillNo( page,size,maFitBillVO.getStoreId(), startTime, endTime, orderNo);

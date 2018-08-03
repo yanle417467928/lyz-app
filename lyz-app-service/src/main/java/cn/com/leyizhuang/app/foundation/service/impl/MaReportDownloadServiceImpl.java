@@ -83,6 +83,19 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
     }
 
     @Override
+    public PageInfo<CompanyCreditMoneyChangeReportDO> findCompanyCreditMoneyReportDOAll(Long cityId, Long storeId, String storeType, String startTime, String endTime, List<Long> storeIds, Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        if (StringUtils.isNotBlank(startTime)) {
+            startTime += " 00:00:00";
+        }
+        if (StringUtils.isNotBlank(endTime)) {
+            endTime += " 23:59:59";
+        }
+        List<CompanyCreditMoneyChangeReportDO> companyCreditMoneyChangeReportDOS = maReportDownloadDAO.findCompanyCreditMoneyReportDOAll(cityId, storeId, storeType, startTime, endTime, storeIds);
+        return new PageInfo<>(companyCreditMoneyChangeReportDOS);
+    }
+
+    @Override
     public List<ReceiptsReportDO> downloadReceipts(Long cityId, Long storeId, String storeType, String startTime, String endTime, String payType, String keywords, List<Long> storeIds) {
         if (null != endTime && !("".equals(endTime))) {
             endTime += " 23:59:59";
@@ -125,6 +138,18 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
             endTime += " 23:59:59";
         }
         return maReportDownloadDAO.findEmployeeCreditMoneyReportDOAll(cityId, storeId, storeType, startTime, endTime, storeIds);
+
+    }
+
+    @Override
+    public List<CompanyCreditMoneyChangeReportDO> companyCreditMoneyDownload(Long cityId, Long storeId, String storeType, String startTime, String endTime, List<Long> storeIds) {
+        if (StringUtils.isNotBlank(startTime)) {
+            startTime += " 00:00:00";
+        }
+        if (StringUtils.isNotBlank(endTime)) {
+            endTime += " 23:59:59";
+        }
+        return maReportDownloadDAO.findCompanyCreditMoneyReportDOAll(cityId, storeId, storeType, startTime, endTime, storeIds);
 
     }
 
@@ -444,5 +469,78 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
         return this.maReportDownloadDAO.stCreditMoneySituation(cityId,storeIds,keywords);
     }
 
+    @Override
+    public PageInfo<CusProductCouponSummary> findCusProductCouponSummaryPage(Long cityId, Long storeId, List<Long> storeIds, Integer page, Integer size,String keywords,String endTime, String productType) {
+        if (null != endTime && !("".equals(endTime))) {
+            endTime += " 23:59:59";
+        }
+        PageHelper.startPage(page, size);
+        List<CusProductCouponSummary> itemsDOS = this.maReportDownloadDAO.findCusProductCouponSummaryList(cityId,storeId,storeIds,keywords,endTime,productType);
+        return new PageInfo<>(itemsDOS);
+
+    }
+
+    @Override
+    public List<CusProductCouponSummary> findCusProductCouponSummaryList(Long cityId, Long storeId, List<Long> storeIds,String keywords,String endTime, String productType) {
+        if (null != endTime && !("".equals(endTime))) {
+            endTime += " 23:59:59";
+        }
+        return this.maReportDownloadDAO.findCusProductCouponSummaryList(cityId,storeId,storeIds,keywords,endTime,productType);
+    }
+
+    @Override
+    public PageInfo<CusProductCouponChangeLogReportDO> findCusProductCouponChangeLogPage(Long cityId, Long storeId, List<Long> storeIds, Integer page, Integer size,String keywords,String endTime,String startTime, String productType) {
+        if (null != endTime && !("".equals(endTime))) {
+            endTime += " 23:59:59";
+        }
+        PageHelper.startPage(page, size);
+        List<CusProductCouponChangeLogReportDO> itemsDOS = this.maReportDownloadDAO.findCusProductCouponChangeLog(cityId,storeId,storeIds,keywords,endTime,startTime,productType);
+        return new PageInfo<>(itemsDOS);
+
+    }
+
+    @Override
+    public List<CusProductCouponChangeLogReportDO> findCusProductCouponChangeLogList(Long cityId, Long storeId, List<Long> storeIds,String keywords,String endTime, String startTime, String productType) {
+        if (null != endTime && !("".equals(endTime))) {
+            endTime += " 23:59:59";
+        }
+        return this.maReportDownloadDAO.findCusProductCouponChangeLog(cityId,storeId,storeIds,keywords,endTime,startTime,productType);
+    }
+
+    @Override
+    public PageInfo<StInventoryRealChangeLogReportDO> findStInventoryRealChangeLogPage(Long cityId, Long storeId, List<Long> storeIds, Integer page, Integer size, String endTime, String startTime) {
+        if (null != endTime && !("".equals(endTime))) {
+            endTime += " 23:59:59";
+        }
+        PageHelper.startPage(page, size);
+        List<StInventoryRealChangeLogReportDO> itemsDOS = this.maReportDownloadDAO.findStoreInventoryRealChangeLog(cityId,storeId,storeIds,endTime,startTime);
+        return new PageInfo<>(itemsDOS);
+    }
+
+    @Override
+    public List<StInventoryRealChangeLogReportDO> findStInventoryRealChangeLogList(Long cityId, Long storeId, List<Long> storeIds, String endTime, String startTime) {
+        if (null != endTime && !("".equals(endTime))) {
+            endTime += " 23:59:59";
+        }
+        return this.maReportDownloadDAO.findStoreInventoryRealChangeLog(cityId,storeId,storeIds,endTime,startTime);
+    }
+
+    @Override
+    public PageInfo<StInventoryRealSummaryReportDO> findStInventoryRealSummaryPage(Long cityId, Long storeId, List<Long> storeIds, Integer page, Integer size, String endTime, String startTime) {
+        if (null != endTime && !("".equals(endTime))) {
+            endTime += " 23:59:59";
+        }
+        PageHelper.startPage(page, size);
+        List<StInventoryRealSummaryReportDO> itemsDOS = this.maReportDownloadDAO.findStoreInventorySummaryList(cityId,storeId,storeIds,endTime,startTime);
+        return new PageInfo<>(itemsDOS);
+    }
+
+    @Override
+    public List<StInventoryRealSummaryReportDO> findStInventoryRealSummaryList(Long cityId, Long storeId, List<Long> storeIds, String endTime, String startTime) {
+        if (null != endTime && !("".equals(endTime))) {
+            endTime += " 23:59:59";
+        }
+        return this.maReportDownloadDAO.findStoreInventorySummaryList(cityId,storeId,storeIds,endTime,startTime);
+    }
 
 }

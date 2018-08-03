@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.dao;
 
+import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.core.constant.LogisticStatus;
@@ -8,6 +9,7 @@ import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
 import cn.com.leyizhuang.app.foundation.pojo.PayhelperOrder;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderGoodsInf;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -231,4 +233,10 @@ public interface OrderDAO {
     Boolean isReturnJxSubPrice(@Param("orderNo") String orderNo,@Param("sku") String sku,@Param("goodsLineType") String goodsLineType);
 
     Boolean isBuckleJxSubPrice(@Param("returnNo") String returnNo,@Param("sku") String sku,@Param("goodsLineType") String goodsLineType);
+
+    List<OrderBaseInfo> findOrderByStatusAndTypeAndCreateTime(@Param("status") AppOrderStatus status,
+                                                              @Param("type") AppDeliveryType type,
+                                                              @Param("endTime") LocalDateTime endTime);
+
+    List<PromotionSimpleInfo> findOrderPromotionIdByOrdNo(@Param("ordNo")String ordNo);
 }

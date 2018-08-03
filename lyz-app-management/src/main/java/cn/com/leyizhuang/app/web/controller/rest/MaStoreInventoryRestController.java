@@ -3,6 +3,8 @@ package cn.com.leyizhuang.app.web.controller.rest;
 import cn.com.leyizhuang.app.foundation.dao.ItyAllocationDAO;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.*;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.StoreInvoicingInf;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.StoreInvoicingInfVO;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.StoreReturnAndRequireGoodsInf;
 import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
@@ -111,4 +113,53 @@ public class MaStoreInventoryRestController extends BaseRestController {
         PageInfo<AllocationVO> allocationVOPageInfo = ityAllocationService.queryAllocationPage(page, size, keywords, company, outStore, inStore, selectStatus,startDateTime,endDateTime,storeIds);
         return new GridDataVO<AllocationVO>().transform(allocationVOPageInfo.getList(), allocationVOPageInfo.getTotal());
     }
+
+
+    /**
+     * 门店进销存查询
+     *
+     * @param offset
+     * @param size
+     * @param keywords
+     * @return
+     */
+    @GetMapping(value = "/invoicing/page/grid")
+    public GridDataVO<StoreInvoicingInfVO> dataInvoicingVOPageGridGet(Integer offset, Integer size, String keywords, String structureCode, Long storeId, String endDateTime) {
+        logger.info("dataInvoicingVOPageGridGet CREATE,门店进销存查询分页查询, 入参 offset:{},size:{},keywords:{},structureCode:{},storeId:{},endDateTime:{}", offset, size, keywords, structureCode, storeId, endDateTime);
+        List<Long> storeIds = adminUserStoreService.findStoreIdList();
+        Integer page = getPage(offset, size);
+        PageInfo<StoreInvoicingInf> invoicingVOPageInfo = maStoreInventoryService.queryInvoicingPage(page, size, keywords, structureCode, storeId,endDateTime,storeIds);
+        List<StoreInvoicingInf>  storesGoodReturnListTrans = StoreInvoicingInf.transform(invoicingVOPageInfo.getList());
+        return new GridDataVO<StoreInvoicingInfVO>().transform(StoreInvoicingInfVO.transform(storesGoodReturnListTrans), invoicingVOPageInfo.getTotal());
+    }
+
+    /**
+     * 初始门店盘点页面
+     *
+     * @param offset
+     * @param size
+     * @param keywords
+     * @return
+     */
+    @GetMapping(value = "/storeInventory/checking/page/grid")
+    public GridDataVO<StoreReturnAndRequireGoodsInf> restStoresGoodCheckingPageGird(Integer offset, Integer size, String keywords, String structureCode, Long storeId, String queryInfo) {
+        logger.info("restStoresPageGird 后台初始门店盘点列表 ,入参 offset:{},size:{},keywords:{},structureCode:{},storeCode:{},queryInfo:{}", offset, size, keywords, structureCode, storeId, queryInfo);
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            PageInfo<StoreReturnAndRequireGoodsInf> storePage = this.maStoreInventoryService.queryStoresGoodCheckingPageVO(page, size, structureCode, storeId, queryInfo, storeIds);
+            List<StoreReturnAndRequireGoodsInf> pageAllStoresList = storePage.getList();
+            logger.info("restStoresPageGird ,后台初始门店盘点列表成功", pageAllStoresList.size());
+            return new GridDataVO<StoreReturnAndRequireGoodsInf>().transform(pageAllStoresList, storePage.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("restStoresPageGird EXCEPTION,发生未知错误，后台初始门店盘点列表失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
 }
+
+

@@ -29,6 +29,8 @@ public class ShipmentAndReturnGoods {
     private String orderType;
     //订单号
     private String ordNo;
+    //退单号
+    private String returnNo;
     //出退货时间
     private String operationTime;
     //订单日期
@@ -80,6 +82,12 @@ public class ShipmentAndReturnGoods {
 
     //商品品牌
     private String brandName ;
+
+    //类型
+    private String typeName ;
+
+    //商品规格
+    private String specificationType ;
 
     public void setCustomerType(AppCustomerType appCustomerType) {
         this.customerType = appCustomerType.getDescription();

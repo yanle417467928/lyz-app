@@ -86,6 +86,9 @@ public interface MaReportDownloadDAO {
     List<EmpCreditMoneyChangeReportDO> findEmployeeCreditMoneyReportDOAll(@Param("cityId") Long cityId, @Param("storeId") Long storeId, @Param("storeType") String storeType,
                                                                           @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("list") List<Long> storeIds);
 
+    List<CompanyCreditMoneyChangeReportDO> findCompanyCreditMoneyReportDOAll(@Param("cityId") Long cityId, @Param("storeId") Long storeId, @Param("storeType") String storeType,
+                                                                          @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("list") List<Long> storeIds);
+
     List<DistributionDO> findDistributionDOAll(@Param("cityId") Long cityId, @Param("wareHouseNo") String wareHouseNo, @Param("deliveryClerkNo") String deliveryClerkNo,
                                                          @Param("startTime") String startTime, @Param("endTime") String endTime,
                                                          @Param("keywords") String keywords);
@@ -105,4 +108,19 @@ public interface MaReportDownloadDAO {
 
     List<StCreditDO> stCreditMoneySituation(@Param("city") Long cityId,@Param("storeIds") List<Long> storeIds,
                                             @Param("keywords") String keywords);
+
+
+    List<CusProductCouponSummary> findCusProductCouponSummaryList(@Param("cityId")Long cityId,@Param("storeId")Long storeId,
+                                                                  @Param("storeIds")List storeIds,@Param("keywords")String keywords,@Param("endTime")String endTime,@Param("productType") String productType);
+
+    List<CusProductCouponChangeLogReportDO> findCusProductCouponChangeLog(@Param("cityId")Long cityId,@Param("storeId")Long storeId,
+                                                                          @Param("storeIds")List storeIds,@Param("keywords")String keywords,
+                                                                          @Param("endTime")String endTime,@Param("startTime")String startTime,
+                                                                          @Param("productType")String productType);
+
+    List<StInventoryRealChangeLogReportDO> findStoreInventoryRealChangeLog(@Param("cityId")Long cityId,@Param("storeId")Long storeId,
+                                                                           @Param("storeIds")List storeIds,@Param("endTime")String endTime,@Param("startTime")String startTime);
+
+    List<StInventoryRealSummaryReportDO> findStoreInventorySummaryList(@Param("cityId")Long cityId,@Param("storeId")Long storeId,
+                                                                           @Param("storeIds")List storeIds,@Param("endTime")String endTime,@Param("startTime")String startTime);
 }

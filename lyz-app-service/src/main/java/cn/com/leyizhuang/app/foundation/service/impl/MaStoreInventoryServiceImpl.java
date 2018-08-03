@@ -1,10 +1,9 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.foundation.dao.MaStoreInventoryDAO;
-import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventory;
-import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventoryChange;
-import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreRealInventoryChange;
-import cn.com.leyizhuang.app.foundation.pojo.management.store.StoreReturnAndRequireGoodsInf;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.*;
+import cn.com.leyizhuang.app.foundation.pojo.management.structure.Structure;
+import cn.com.leyizhuang.app.foundation.service.MaGroupStructureService;
 import cn.com.leyizhuang.app.foundation.service.MaStoreInventoryService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -21,6 +20,14 @@ public class MaStoreInventoryServiceImpl implements MaStoreInventoryService {
 
     @Resource
     private MaStoreInventoryDAO maStoreInventoryDAO;
+
+    @Resource
+    private MaGroupStructureService maGroupStructureService;
+
+    @Resource
+    private MaStoreInventoryService maStoreInventoryService;
+
+
 
     @Override
     public void addInventoryChangeLog(MaStoreInventoryChange storeInventoryChange) {
@@ -80,5 +87,59 @@ public class MaStoreInventoryServiceImpl implements MaStoreInventoryService {
         PageHelper.startPage(page, size);
         List<StoreReturnAndRequireGoodsInf>  storesGoodReturnList = maStoreInventoryDAO.queryStoresGoodReturnPageVO(structureCode,storeId,queryInfo,storeIds);
         return  new PageInfo<>(storesGoodReturnList);
+    }
+
+    @Override
+    public PageInfo<StoreReturnAndRequireGoodsInf> queryStoresGoodCheckingPageVO(Integer page, Integer size,String structureCode, Long storeId, String queryInfo, List<Long> storeIds){
+        if(null == storeIds || storeIds.size() ==0){
+            return null;
+        }
+        if(null !=queryInfo){
+            queryInfo =queryInfo.trim();
+        }
+        PageHelper.startPage(page, size);
+        List<StoreReturnAndRequireGoodsInf>  storesGoodReturnList = maStoreInventoryDAO.queryStoresGoodCheckingPageVO(structureCode,storeId,queryInfo,storeIds);
+        return  new PageInfo<>(storesGoodReturnList);
+    }
+
+    @Override
+    public PageInfo<StoreInvoicingInf> queryInvoicingPage(Integer page, Integer size, String keywords, String structureCode, Long storeId, String endDateTime, List<Long> storeIds){
+        if(null == storeIds || storeIds.size() ==0){
+            return null;
+        }
+        if(null !=keywords){
+            keywords =keywords.trim();
+        }
+        if(null !=endDateTime && !"".equals(endDateTime)){
+            endDateTime +=" 23:59:59";
+        }
+        PageHelper.startPage(page, size);
+        List<StoreInvoicingInf>  storesGoodReturnList = maStoreInventoryDAO.queryInvoicingPage(keywords,structureCode,storeId,endDateTime,storeIds);
+        return  new PageInfo<>(storesGoodReturnList);
+    }
+
+    @Override
+    public List<StoreInvoicingInf> queryInvoicingList(String keywords, String structureCode, Long storeId, String endDateTime, List<Long> storeIds){
+        if(null == storeIds || storeIds.size() ==0){
+            return null;
+        }
+        if(null !=keywords){
+            keywords =keywords.trim();
+        }
+        if(null !=endDateTime && !"".equals(endDateTime)){
+            endDateTime +=" 23:59:59";
+        }
+        List<StoreInvoicingInf>  storesGoodReturnList = maStoreInventoryDAO.queryInvoicingPage(keywords,structureCode,storeId,endDateTime,storeIds);
+        List<StoreInvoicingInf>  storesGoodReturnListTrans = StoreInvoicingInf.transform(storesGoodReturnList);
+        return storesGoodReturnListTrans;
+    }
+
+    @Override
+    public Integer queryStoreInitialrealQty(String storeCode , String sku){
+        if(null ==storeCode||null==sku){
+           return  null;
+        }
+        Integer  storeInitialrealQty = maStoreInventoryDAO.queryStoreInitialrealQty(storeCode,sku);
+        return storeInitialrealQty;
     }
 }

@@ -1,9 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service;
 
-import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventory;
-import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreInventoryChange;
-import cn.com.leyizhuang.app.foundation.pojo.management.store.MaStoreRealInventoryChange;
-import cn.com.leyizhuang.app.foundation.pojo.management.store.StoreReturnAndRequireGoodsInf;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.*;
 import com.github.pagehelper.PageInfo;
 
 import java.util.Date;
@@ -27,5 +24,13 @@ public interface MaStoreInventoryService {
     PageInfo<StoreReturnAndRequireGoodsInf> queryStoresGoodRequirePageVO(Integer page, Integer size, String structureCode, Long storeId, String queryInfo, List<Long> storeIds);
 
     PageInfo<StoreReturnAndRequireGoodsInf> queryStoresGoodReturnPageVO(Integer page, Integer size,String structureCode, Long storeId, String queryInfo, List<Long> storeIds);
+
+    PageInfo<StoreInvoicingInf> queryInvoicingPage(Integer page, Integer size, String keywords, String structureCode, Long storeId, String endDateTime, List<Long> storeIds);
+
+    List<StoreInvoicingInf> queryInvoicingList(String keywords, String structureCode, Long storeId, String endDateTime, List<Long> storeIds);
+
+    Integer queryStoreInitialrealQty(String storeCode , String sku);
+
+    PageInfo<StoreReturnAndRequireGoodsInf> queryStoresGoodCheckingPageVO(Integer page, Integer size,String structureCode, Long storeId, String queryInfo, List<Long> storeIds);
 }
 

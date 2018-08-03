@@ -10,12 +10,14 @@ import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.deliveryFeeRule.DeliveryFeeRule;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.order.OrderFreightChange;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.*;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.remote.queue.SellDetailsSender;
 import cn.com.leyizhuang.app.remote.queue.SinkSender;
@@ -43,6 +45,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -129,6 +132,9 @@ public class OrderController {
 
     @Resource
     private AppEmployeeService employeeService;
+
+    @Autowired
+    private MaOrderFreightService freightService;
 
     /**
      * 创建订单方法
@@ -379,10 +385,42 @@ public class OrderController {
                 logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
             } else {
                 //判断是否可选择货到付款
-                final Boolean aBoolean = this.commonService.checkCashDelivery(orderGoodsInfoList, userId, AppIdentityType.getAppIdentityTypeByValue(identityType), orderBaseInfo.getDeliveryType());
-                Boolean isCashDelivery = aBoolean;
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                        new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), false, isCashDelivery));
+                Boolean isCashDelivery = this.commonService.checkCashDelivery(orderGoodsInfoList, userId, AppIdentityType.getAppIdentityTypeByValue(identityType), orderBaseInfo.getDeliveryType());
+
+                CreateOrderResponse createOrderResponse = new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), false, isCashDelivery);
+
+                //查询用户钱包余额（顾客：预存款，导购：信用额度、门店预存款，装饰公司：信用金、门店预存款）
+                if (AppIdentityType.CUSTOMER == AppIdentityType.getAppIdentityTypeByValue(identityType)) {
+                    //查询顾客预存款
+                    Double preDeposit = appCustomerService.findPreDepositBalanceByUserIdAndIdentityType(userId, identityType);
+                    if (preDeposit != null) {
+                        createOrderResponse.setPreDeposit(preDeposit);
+                    }
+                } else if (AppIdentityType.SELLER == AppIdentityType.getAppIdentityTypeByValue(identityType)) {
+                    //查询导购预存款和信用金
+                    SellerCreditMoneyResponse sellerCreditMoneyResponse = appEmployeeService.findCreditMoneyBalanceByUserIdAndIdentityType(userId, identityType);
+                    Double creditMoney = null != sellerCreditMoneyResponse ? sellerCreditMoneyResponse.getAvailableBalance() : 0D;
+                    //导购门店预存款
+                    Double storePreDeposit = appStoreService.findPreDepositBalanceByUserId(userId);
+                    if (storePreDeposit != null) {
+                        createOrderResponse.setStPreDeposit(storePreDeposit);
+                    }
+                    createOrderResponse.setCreditMoney(creditMoney);
+
+                } else if (AppIdentityType.DECORATE_MANAGER == AppIdentityType.getAppIdentityTypeByValue(identityType)) {
+                    //获取装饰公司门店预存款，信用金，现金返利。
+                    Double storePreDeposit = appStoreService.findPreDepositBalanceByUserId(userId);
+                    Double storeCreditMoney = appStoreService.findCreditMoneyBalanceByUserId(userId);
+                    if (storePreDeposit != null) {
+                        createOrderResponse.setStPreDeposit(storePreDeposit);
+                    }
+                    if (storeCreditMoney != null) {
+                        createOrderResponse.setStCreditMoney(storeCreditMoney);
+                    }
+
+                }
+
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, createOrderResponse);
                 logger.info("createOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
             }
             return resultDTO;
@@ -1419,6 +1457,37 @@ public class OrderController {
                     orderListResponse.setCustomerPhone(orderBaseInfo.getCustomerPhone());
                 }
 
+                //查询用户钱包余额（顾客：预存款，导购：信用额度、门店预存款，装饰公司：信用金、门店预存款）
+                if (AppIdentityType.CUSTOMER == AppIdentityType.getAppIdentityTypeByValue(identityType)) {
+                    //查询顾客预存款
+                    Double preDeposit = appCustomerService.findPreDepositBalanceByUserIdAndIdentityType(userID, identityType);
+                    if (preDeposit != null) {
+                        orderListResponse.setPreDeposit(preDeposit);
+                    }
+                } else if (AppIdentityType.SELLER == AppIdentityType.getAppIdentityTypeByValue(identityType)) {
+                    //查询导购预存款和信用金
+                    SellerCreditMoneyResponse sellerCreditMoneyResponse = appEmployeeService.findCreditMoneyBalanceByUserIdAndIdentityType(userID, identityType);
+                    Double creditMoney = null != sellerCreditMoneyResponse ? sellerCreditMoneyResponse.getAvailableBalance() : 0D;
+                    //导购门店预存款
+                    Double storePreDeposit = appStoreService.findPreDepositBalanceByUserId(userID);
+                    if (storePreDeposit != null) {
+                        orderListResponse.setStPreDeposit(storePreDeposit);
+                    }
+                    orderListResponse.setCreditMoney(creditMoney);
+
+                } else if (AppIdentityType.DECORATE_MANAGER == AppIdentityType.getAppIdentityTypeByValue(identityType)) {
+                    //获取装饰公司门店预存款，信用金，现金返利。
+                    Double storePreDeposit = appStoreService.findPreDepositBalanceByUserId(userID);
+                    Double storeCreditMoney = appStoreService.findCreditMoneyBalanceByUserId(userID);
+                    if (storePreDeposit != null) {
+                        orderListResponse.setStPreDeposit(storePreDeposit);
+                    }
+                    if (storeCreditMoney != null) {
+                        orderListResponse.setStCreditMoney(storeCreditMoney);
+                    }
+
+                }
+
                 //添加到返回类list中
                 orderListResponses.add(orderListResponse);
             }
@@ -1527,6 +1596,9 @@ public class OrderController {
                     customerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount() == null ? 0 : orderBillingDetails.getProductCouponDiscount());
                     customerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount() == null ? 0 : orderBillingDetails.getPromotionDiscount());
                     customerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice() == null ? 0 : orderBaseInfo.getTotalGoodsPrice());
+                    customerBillingDetailResponse.setCashMoney(CountUtil.add(orderBillingDetails.getStoreCash(), orderBillingDetails.getStoreOtherMoney(), orderBillingDetails.getDeliveryCash()));
+                    customerBillingDetailResponse.setPosMoney(CountUtil.add(orderBillingDetails.getStorePosMoney(), orderBillingDetails.getDeliveryPos()));
+
                     PayhelperOrder payhelperOrder = this.appOrderService.findPayhelperOrderByOrdNo(orderNumber);
                     if (null != payhelperOrder){
                         customerBillingDetailResponse.setPayForAnotherMoney(null == payhelperOrder.getPayhelperAmount() ? 0 : payhelperOrder.getPayhelperAmount());
@@ -1545,6 +1617,9 @@ public class OrderController {
                     managerBillingDetailResponse.setCreditMoney(orderBillingDetails.getStoreCreditMoney() == null ? 0 : orderBillingDetails.getStoreCreditMoney());
                     managerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount() == null ? 0 : orderBillingDetails.getPromotionDiscount());
                     managerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice() == null ? 0 : orderBaseInfo.getTotalGoodsPrice());
+                    managerBillingDetailResponse.setCashMoney(CountUtil.add(orderBillingDetails.getStoreCash(), orderBillingDetails.getStoreOtherMoney(), orderBillingDetails.getDeliveryCash()));
+                    managerBillingDetailResponse.setPosMoney(CountUtil.add(orderBillingDetails.getStorePosMoney(), orderBillingDetails.getDeliveryPos()));
+
                     PayhelperOrder payhelperOrder = this.appOrderService.findPayhelperOrderByOrdNo(orderNumber);
                     if (null != payhelperOrder){
                         managerBillingDetailResponse.setPayForAnotherMoney(null == payhelperOrder.getPayhelperAmount() ? 0 : payhelperOrder.getPayhelperAmount());
@@ -1562,6 +1637,10 @@ public class OrderController {
                     sellerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount() == null ? 0 : orderBillingDetails.getProductCouponDiscount());
                     sellerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount() == null ? 0 : orderBillingDetails.getPromotionDiscount());
                     sellerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice() == null ? 0 : orderBaseInfo.getTotalGoodsPrice());
+                    sellerBillingDetailResponse.setStoreCash(CountUtil.add(orderBillingDetails.getStoreCash(), orderBillingDetails.getStoreOtherMoney()));
+                    sellerBillingDetailResponse.setStorePosMoney(orderBillingDetails.getStorePosMoney());
+                    sellerBillingDetailResponse.setDeliveryCash( orderBillingDetails.getDeliveryCash());
+                    sellerBillingDetailResponse.setDeliveryPos(orderBillingDetails.getDeliveryPos());
 
                     //2018-04-02 generation 导购订单详情加查看代收款
                     sellerBillingDetailResponse.setCollectionAmount(null == orderBillingDetails.getCollectionAmount() ? 0D : orderBillingDetails.getCollectionAmount());
@@ -1569,7 +1648,16 @@ public class OrderController {
                     orderDetailsResponse.setSellerBillingDetailResponse(sellerBillingDetailResponse);
                 }
                 orderDetailsResponse.setGoodsList(appOrderService.getOrderGoodsList(orderNumber));
-
+                //获取运费明细
+                List<OrderFreightChange> freightChanges = this.freightService.queryOrderFreightChangeLogListByOid(orderBaseInfo.getId());
+                orderDetailsResponse.setFreightChanges(freightChanges);
+                //获取运费初始值
+                OrderFreightChange freightChange = this.freightService.queryOrderFreightChangeLogFirstByOid(orderBaseInfo.getId());
+                if (null == freightChange){
+                    freightChange = new OrderFreightChange();
+                    freightChange.setFreight(BigDecimal.valueOf(orderBillingDetails.getFreight()));
+                }
+                orderDetailsResponse.setFreightChange(freightChange);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, orderDetailsResponse);
                 logger.info("getOrderDetail OUT,用户获取订单详情成功，出参 resultDTO:{}", resultDTO);
 
@@ -2217,13 +2305,35 @@ public class OrderController {
                 }
                 orderDetailsResponse.setGoodsList(appOrderService.getOrderGoodsList(orderNumber));
                 if (orderBaseInfo.getOrderSubjectType() == AppOrderSubjectType.FIT){
-                    orderDetailsResponse.setIsUseEmpCredit(Boolean.FALSE);
+                    orderDetailsResponse.setIsUseEmpCredit(Boolean.TRUE);
                     orderDetailsResponse.setIsUseStorePre(Boolean.TRUE);
                 } else if (orderBaseInfo.getOrderSubjectType() == AppOrderSubjectType.STORE){
                     orderDetailsResponse.setIsUseEmpCredit(Boolean.TRUE);
                     orderDetailsResponse.setIsUseStorePre(Boolean.TRUE);
                 }
 
+                //查询用户钱包余额（顾客：预存款，导购：信用额度、门店预存款，装饰公司：信用金、门店预存款）
+                if (AppIdentityType.SELLER == AppIdentityType.getAppIdentityTypeByValue(identityType)) {
+                    //查询导购预存款和信用金
+                    SellerCreditMoneyResponse sellerCreditMoneyResponse = appEmployeeService.findCreditMoneyBalanceByUserIdAndIdentityType(userId, identityType);
+                    Double creditMoney = null != sellerCreditMoneyResponse ? sellerCreditMoneyResponse.getAvailableBalance() : 0D;
+                    //导购门店预存款
+                    Double storePreDeposit = appStoreService.findPreDepositBalanceByUserId(userId);
+                    if (storePreDeposit != null) {
+                        orderDetailsResponse.setStPreDeposit(storePreDeposit);
+                    }
+                    orderDetailsResponse.setCreditMoney(creditMoney);
+                }
+                //获取运费明细
+                List<OrderFreightChange> freightChanges = this.freightService.queryOrderFreightChangeLogListByOid(orderBaseInfo.getId());
+                orderDetailsResponse.setFreightChanges(freightChanges);
+                //获取运费初始值
+                OrderFreightChange freightChange = this.freightService.queryOrderFreightChangeLogFirstByOid(orderBaseInfo.getId());
+                if (null == freightChange){
+                    freightChange = new OrderFreightChange();
+                    freightChange.setFreight(BigDecimal.valueOf(orderBillingDetails.getFreight()));
+                }
+                orderDetailsResponse.setFreightChange(freightChange);
 
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, orderDetailsResponse);
                 logger.info("getPayForAnotherOrderDetail OUT,用户获取订单详情成功，出参 resultDTO:{}", resultDTO);
@@ -2571,11 +2681,42 @@ public class OrderController {
                         new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), true, false));
                 logger.info("createBuyCouponOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
             } else {
-                //判断是否可选择货到付款
-//                Boolean isCashDelivery = this.commonService.checkCashDelivery(orderGoodsInfoList, userId, AppIdentityType.getAppIdentityTypeByValue(identityType));
+
                 Boolean isCashDelivery = Boolean.FALSE;
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,
-                        new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), false, isCashDelivery));
+
+                CreateOrderResponse createOrderResponse = new CreateOrderResponse(orderBaseInfo.getOrderNumber(), Double.parseDouble(CountUtil.retainTwoDecimalPlaces(orderBillingDetails.getAmountPayable())), false, isCashDelivery);
+
+                //查询用户钱包余额（顾客：预存款，导购：信用额度、门店预存款，装饰公司：信用金、门店预存款）
+                if (AppIdentityType.CUSTOMER == AppIdentityType.getAppIdentityTypeByValue(identityType)) {
+                    //查询顾客预存款
+                    Double preDeposit = appCustomerService.findPreDepositBalanceByUserIdAndIdentityType(userId, identityType);
+                    if (preDeposit != null) {
+                        createOrderResponse.setPreDeposit(preDeposit);
+                    }
+                } else if (AppIdentityType.SELLER == AppIdentityType.getAppIdentityTypeByValue(identityType)) {
+                    //查询导购预存款和信用金
+                    SellerCreditMoneyResponse sellerCreditMoneyResponse = appEmployeeService.findCreditMoneyBalanceByUserIdAndIdentityType(userId, identityType);
+                    Double creditMoney = null != sellerCreditMoneyResponse ? sellerCreditMoneyResponse.getAvailableBalance() : 0D;
+                    //导购门店预存款
+                    Double storePreDeposit = appStoreService.findPreDepositBalanceByUserId(userId);
+                    if (storePreDeposit != null) {
+                        createOrderResponse.setStPreDeposit(storePreDeposit);
+                    }
+                    createOrderResponse.setCreditMoney(creditMoney);
+
+                } else if (AppIdentityType.DECORATE_MANAGER == AppIdentityType.getAppIdentityTypeByValue(identityType)) {
+                    //获取装饰公司门店预存款，信用金，现金返利。
+                    Double storePreDeposit = appStoreService.findPreDepositBalanceByUserId(userId);
+                    Double storeCreditMoney = appStoreService.findCreditMoneyBalanceByUserId(userId);
+                    if (storePreDeposit != null) {
+                        createOrderResponse.setStPreDeposit(storePreDeposit);
+                    }
+                    if (storeCreditMoney != null) {
+                        createOrderResponse.setStCreditMoney(storeCreditMoney);
+                    }
+
+                }
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, createOrderResponse);
                 logger.info("createBuyCouponOrder OUT,订单创建成功,出参 resultDTO:{}", resultDTO);
             }
             return resultDTO;
@@ -2610,7 +2751,7 @@ public class OrderController {
     }
 
     /**
-     * @title   处理信用额度支付的订单业务
+     * @title   处理余额支付的订单业务
      * @descripe
      * @param
      * @return
@@ -2622,41 +2763,45 @@ public class OrderController {
     public ResultDTO<Object> handleOrderRelevantBusinessAfterPayCredit(Long userId, Integer identityType, String orderNumber,
                                                                            String payType, HttpServletRequest request) {
         ResultDTO<Object> resultDTO;
-        logger.info("handleOrderRelevantBusinessAfterPayCredit CALLED,处理信用额度支付的订单业务，入参 userID:{}, identityType:{}, orderNumber{},payType{}",
+        logger.info("handleOrderRelevantBusinessAfterPayCredit CALLED,处理余额支付的订单业务，入参 userID:{}, identityType:{}, orderNumber:{},payType:{}",
                 userId, identityType, orderNumber, payType);
         //获取客户端ip地址
         String ipAddress = IpUtils.getIpAddress(request);
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空！", null);
-            logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理信用额度支付的订单业务失败，出参 resultDTO:{}", resultDTO);
+            logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理余额支付的订单业务失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空！", null);
-            logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理信用额度支付的订单业务失败，出参 resultDTO:{}", resultDTO);
+            logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理余额支付的订单业务失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (!StringUtils.isNotBlank(orderNumber)) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单信息不允许为空！", null);
-            logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理信用额度支付的订单业务失败，出参 resultDTO:{}", resultDTO);
+            logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理余额支付的订单业务失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (!StringUtils.isNotBlank(payType) && (OrderBillingPaymentType.EMP_CREDIT != OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)
-                || OrderBillingPaymentType.STORE_CREDIT_MONEY != OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType))) {
+                || OrderBillingPaymentType.STORE_CREDIT_MONEY != OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)
+                || OrderBillingPaymentType.CUS_PREPAY != OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)
+                || OrderBillingPaymentType.ST_PREPAY != OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType))) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "支付方式不允许为空！", null);
-            logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理信用额度支付的订单业务失败，出参 resultDTO:{}", resultDTO);
+            logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理余额支付的订单业务失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         try {
             OrderBaseInfo baseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
             if (AppOrderStatus.UNPAID != baseInfo.getStatus()){
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "订单操作错误！", null);
-                logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理信用额度支付的订单业务失败，订单状态错误，出参 resultDTO:{}", resultDTO);
+                logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理余额支付的订单业务失败，订单状态错误，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
-            if (baseInfo.getDeliveryType() == AppDeliveryType.PRODUCT_COUPON){
+            if (baseInfo.getDeliveryType() == AppDeliveryType.PRODUCT_COUPON
+                    && (OrderBillingPaymentType.EMP_CREDIT == OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)
+                    || OrderBillingPaymentType.STORE_CREDIT_MONEY == OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType))){
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "买卷订单不能使用信用额度！", null);
-                logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理信用额度支付的订单业务失败，订单状态错误，出参 resultDTO:{}", resultDTO);
+                logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理余额支付的订单业务失败，订单状态错误，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
             OrderBillingDetails billingDetails = appOrderService.getOrderBillingDetail(orderNumber);
@@ -2664,7 +2809,7 @@ public class OrderController {
                 EmpCreditMoney empCreditMoney = employeeService.findEmpCreditMoneyByEmpId(userId);
                 if (null == empCreditMoney || null == billingDetails || empCreditMoney.getCreditLimitAvailable() < billingDetails.getAmountPayable()) {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "信用额度不足，请更换支付方式！", null);
-                    logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理信用额度支付的订单业务失败，出参 resultDTO:{}", resultDTO);
+                    logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理余额支付的订单业务失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
             }
@@ -2672,7 +2817,23 @@ public class OrderController {
                 StoreCreditMoney storeCreditMoney = this.appStoreService.findStoreCreditMoneyByEmpId(userId);
                 if (null == storeCreditMoney || null == billingDetails || storeCreditMoney.getCreditLimitAvailable() < billingDetails.getAmountPayable()) {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "信用金余额不足，请更换支付方式！", null);
-                    logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理信用额度支付的订单业务失败，出参 resultDTO:{}", resultDTO);
+                    logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理余额支付的订单业务失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+            }
+            if (OrderBillingPaymentType.CUS_PREPAY == OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)) {
+                CustomerPreDeposit preDeposit = this.appCustomerService.findByCusId(userId);
+                if (null == preDeposit || null == billingDetails || preDeposit.getBalance() < billingDetails.getAmountPayable()) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "预存款余额不足，请更换支付方式！", null);
+                    logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理余额支付的订单业务失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }
+            }
+            if (OrderBillingPaymentType.ST_PREPAY == OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)) {
+                StorePreDeposit stPreDeposit = this.appStoreService.findStorePreDepositByUserIdAndIdentityType(userId, identityType);
+                if (null == stPreDeposit || null == billingDetails || stPreDeposit.getBalance() < billingDetails.getAmountPayable()) {
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "预存款余额不足，请更换支付方式！", null);
+                    logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理余额支付的订单业务失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
                 }
             }
@@ -2689,12 +2850,12 @@ public class OrderController {
             productCouponService.activateCusProductCoupon(orderNumber);
 
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
-            logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理信用额度支付的订单业务成功，出参 resultDTO:{}", resultDTO);
+            logger.info("handleOrderRelevantBusinessAfterPayCredit OUT,处理余额支付的订单业务成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         } catch (Exception e) {
             e.printStackTrace();
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，处理信用额度支付的订单业务失败", null);
-            logger.warn("handleOrderRelevantBusinessAfterPayCredit EXCEPTION,处理信用额度支付的订单业务失败，出参 resultDTO:{}", resultDTO);
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发生未知异常，处理余额支付的订单业务失败", null);
+            logger.warn("handleOrderRelevantBusinessAfterPayCredit EXCEPTION,处理余额支付的订单业务失败，出参 resultDTO:{}", resultDTO);
             logger.warn("{}", e);
             return resultDTO;
         }

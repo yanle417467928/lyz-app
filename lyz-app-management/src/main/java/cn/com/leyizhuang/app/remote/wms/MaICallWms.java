@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * @author Created on 2017-12-19 13:18
  **/
-@Service
+@Service("maICallWms")
 public class MaICallWms {
 
     @Resource

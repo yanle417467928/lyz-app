@@ -12,6 +12,7 @@
     <script src="https://cdn.bootcss.com/bootstrap-datepicker/1.6.4/locales/bootstrap-datepicker.zh-CN.min.js"></script>
     <link href="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/i18n/defaults-zh_CN.js"></script>
 </head>
 <body>
 
@@ -34,47 +35,35 @@
     <div class="row">
         <div class="col-xs-12">
             <div class="box box-primary">
-                <form class="form-horizontal" id="formSearch">
-                    <div id="" class="box-body form-inline">
-                        <div class="col-xs-2">
-                            <select size="5" name="city" id="city" class="form-control select" style="width:auto;"
-                                    title="选择城市" onchange="findStoreListByCity(this.value)">
-                                <option value="-1">选择城市</option>
-                            </select>
-                        </div>
-                        <div class="col-xs-2" style="margin-left: -2%">
-                            <select size="5" name="store" id="store" class="form-control selectpicker"
-                                    data-width="160px" data-live-search="true"
-                                    style="width:auto;" title="选择门店" onchange="changeStoreSelection()">
-                                <option value="-1">选择门店</option>
-                            </select>
-                        </div>
-                        <div class="col-xs-8" style="margin-left: -1%">
-                            <input name="startDateTime" type="text" class="form-control datepicker" id="startDateTime"
-                                   placeholder="开始时间">
-                            至
-                            <input name="endDateTime" type="text" class="form-control datepicker" id="endDateTime"
-                                   placeholder="结束时间">
-                            <button type="button" style="margin-left:50px" id="btn_query" class="btn btn-primary">
-                                <i class="fa fa-search"></i> 查询
-                            </button>
-                            <button type="reset" class="btn btn-default">
-                                <i class="fa fa-print"></i> 重置
-                            </button>
-                        </div>
+                <div id="toolbar" class="form-inline">
+                    <select name="structureCode" id="structureCode" class="form-control select" style="width:auto;"
+                            data-live-search="true" onchange="findByStructureCode()">
+                        <option value="-1">选择分公司</option>
+                    <#if structureList?? && structureList?size gt 0 >
+                        <#list structureList as structure>
+                            <option value="${structure.number!''}">${structure.structureName!''}</option>
+                        </#list>
+                    </#if>
+                    </select>
+                    <select name="storeCode" id="storeCode" class="form-control selectpicker" data-width="120px" onchange="findByCondition()" data-live-search="true">
+                        <option value="-1">选择门店</option>
+                    <#if storeList?? && storeList?size gt 0 >
+                        <#list storeList as store>
+                            <option value="${store.storeId!''}">${store.storeName!''}</option>
+                        </#list>
+                    </#if>
+                    </select>
+                    <input name="endDateTime" type="text" class="form-control datepicker" id="endDateTime"
+                           placeholder="截止日期">
+                    <div class="input-group col-md-3" style="margin-top:0px positon:relative">
+                        <input type="text" name="queryInfo" id="queryInfo" class="form-control "
+                               style="width:auto;" placeholder="请输入商品编码或名称" onkeypress="findBykey()">
+                        <span class="input-group-btn">
+                            <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
+                                    onclick="findByCondition()">查找</button>
+                        </span>
                     </div>
-                    <div id="toolbar" class="btn-group">
-                    <#--<button id="btn_add" type="button" class="btn btn-default">
-                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> 新增
-                        </button>
-                        <button id="btn_edit" type="button" class="btn btn-default">
-                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
-                        </button>
-                        <button id="btn_delete" type="button" class="btn btn-default">
-                            <span class="glyphicon glyphicon-minus" aria-hidden="true"></span> 删除
-                        </button>-->
-                    </div>
-                </form>
+                </div>
                 <div class="box-body table-reponsive">
                     <table id="dataGrid" class="table table-bordered table-hover">
 
@@ -154,104 +143,95 @@
             autoclose: true
         });
 
-        findCityList();
-        findStoreList();
+        $('.selectpicker').selectpicker({
+            size:'10'
+        });
+        initDateGird('/rest/invoicing/page/grid')
+    });
 
-        $grid.init($('#dataGrid'), $('#toolbar'), '/rest/inventory/log/page/grid', 'get', true, function (params) {
+    function initDateGird(url) {
+        var structureCode = $('#structureCode').val();
+        var storeCode = $('#storeCode').val();
+        var queryInfo = $('#queryInfo').val();
+        var endDateTime = $('#endDateTime').val();
+        $grid.init($('#dataGrid'), $('#toolbar'), url, 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
-                keywords: params.search
+                keywords: queryInfo,
+                structureCode: structureCode,
+                storeId: storeCode,
+                endDateTime: endDateTime
             }
         }, [{
             checkbox: true,
             title: '选择'
         }, {
-            field: 'id',
-            title: 'ID',
+            field: 'storeName',
+            title: '门店名称',
             align: 'center'
         }, {
-            field: 'changType',
-            title: '变动类型',
-            align: 'center'
-        }, {
-            field: 'changeTarget',
-            title: '门店/城市',
-            align: 'center'
-        }, {
-            field: 'goodsCode',
+            field: 'sku',
             title: '商品编码',
             align: 'center'
         }, {
-            field: 'goodsTitle',
+            field: 'skuName',
             title: '商品名称',
             align: 'center'
         }, {
-            field: 'changeValue',
-            title: '变动数量',
+            field: 'initialIty',
+            title: '期初',
+            align: 'center'
+        },{
+            field: 'orderDeliveryQty',
+            title: '出货数',
             align: 'center'
         }, {
-            field: 'changeDate',
-            title: '变动时间',
+            field: 'selfTakeOrderReturnQty',
+            title: '退货数',
             align: 'center'
         }, {
-            field: 'referenceOrder',
-            title: '关联单号',
+            field: 'storeAllocateInboundQty',
+            title: '调拨入库',
             align: 'center'
+        }, {
+            field: 'storeAllocateOutboundQty',
+            title: '调拨出库',
+            align: 'center'
+        }, {
+            field: 'storeGoodsQty',
+            title: '门店要/退货',
+            align: 'center'
+        }, {
+            field: 'storePutGoodsQty',
+            title: '盘盈/亏',
+            align: 'center'
+        },{
+            field: 'surplusInventory',
+            title: '本期库存',
+            align: 'center'
+        },{
+            field: 'realIty',
+            title: '门店库存',
+            align: 'center'
+        },{
+            field: 'changeTime',
+            title: '变更时间',
+            align: 'center',
         }]);
-
-        /* $('#btn_add').on('click', function () {
-             $grid.add('/views/admin/menu/add?parentMenuId=${(parentMenuId!'0')}
-
-                ');
-                        });
-
-                        $('#btn_edit').on('click', function() {
-                            $grid.modify($('#dataGrid'), '/views/admin/menu/edit/{id}?parentMenuId=${parentMenuId!'0'}
-
-                ')
-                        });
-
-                        $('#btn_delete').on('click', function() {
-                            $grid.remove($('#dataGrid'), '/rest/menu', 'delete');
-                        });*/
-
-        $('#btn_query').on('click', function () {
-            $grid.searchTable('dataGrid', 'formSearch');
-        });
-    });
-
-    function findCityList() {
-        var city = "";
-        var $city = $('#city');
-        $.ajax({
-            url: '/rest/citys/findCitylist',
-            method: 'GET',
-            error: function () {
-                clearTimeout($global.timer);
-                $loading.close();
-                $global.timer = null;
-                $notify.danger('网络异常，请稍后重试或联系管理员');
-            },
-            success: function (result) {
-                clearTimeout($global.timer);
-                $.each(result, function (i, item) {
-                    city += "<option value=" + item.cityId + ">" + item.name + "</option>";
-                });
-                $city.append(city);
-                $city.selectpicker('refresh');
-                $city.selectpicker('render');
-            }
-        });
     }
 
 
-    function findStoreList() {
+    function findStoreSelection() {
         var store = "";
-        var $store = $('#store');
+        var structureCode = $('#structureCode').val();
+        var data = {
+            "companyCode": structureCode
+        }
         $.ajax({
-            url: '/rest/stores/findStoresListByStoreId',
+            url: '/rest/stores/findStoresListByCompanyCodeAndStoreType',
             method: 'GET',
+            data: data,
             error: function () {
                 clearTimeout($global.timer);
                 $loading.close();
@@ -262,54 +242,32 @@
                 clearTimeout($global.timer);
                 $.each(result, function (i, item) {
                     store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
-                });
-                $store.append(store);
-                $store.selectpicker('refresh');
-                $store.selectpicker('render');
+                })
+                $("#storeCode").append(store);
+                $('#storeCode').selectpicker('refresh');
+                $('#storeCode').selectpicker('render');
             }
         });
     }
 
-    function changeStoreSelection() {
-        if ($("#store").val() == -1) {
-            $('#city').val('-1');
-            $('#city').selectpicker('refresh');
-            //$('#city').selectpicker('render');
-        }
+
+    function findByStructureCode() {
+        initSelect("#storeCode", "选择门店");
+        findStoreSelection();
+        $("#dataGrid").bootstrapTable('destroy');
+        initDateGird('/rest/invoicing/page/grid');
     }
 
-    function findStoreListByCity(cityId) {
-        initSelect("#store", "选择门店");
-        if (cityId == -1) {
-            findStoreList();
-            return false;
-        }
-        var store;
-        $.ajax({
-            url: '/rest/stores/findStoresListByCityIdAndStoreId/' + cityId,
-            method: 'GET',
-            error: function () {
-                clearTimeout($global.timer);
-                $loading.close();
-                $global.timer = null;
-                $notify.danger('网络异常，请稍后重试或联系管理员');
-            },
-            success: function (result) {
-                clearTimeout($global.timer);
-                $.each(result, function (i, item) {
-                    store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
-                });
-                $("#store").append(store);
-                $('#store').selectpicker('refresh');
-                $('#store').selectpicker('render');
-            }
-        });
-    }
 
     function initSelect(select, optionName) {
         $(select).empty();
         var selectOption = "<option value=-1>" + optionName + "</option>";
         $(select).append(selectOption);
+    }
+
+    function findByCondition() {
+        $("#dataGrid").bootstrapTable('destroy');
+        initDateGird('/rest/invoicing/page/grid');
     }
 
     var $page = {
@@ -413,5 +371,10 @@
         }
     }
 
+    function findBykey(){
+        if(event.keyCode==13){
+            findByCondition();
+        }
+    }
 </script>
 </body>

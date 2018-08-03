@@ -293,8 +293,9 @@
         LEFT  JOIN emp_employee ee ON  ee.emp_id = s.sales_manager
         WHERE
          s.store_type="ZS"
-         AND
-         s.fit_compay_type='CASH'
+        <if test="fitCompayType !=null and ''!=fitCompayType">
+          AND s.fit_compay_type = #{fitCompayType}
+        </if>
         <if test="keywords !=null and ''!=keywords">
           AND (
             s.store_code like CONCAT('%', #{keywords}, '%')
@@ -989,9 +990,19 @@
         l.remark,
         s.store_name,
         s.store_code,
-        s.fit_compay_type as storeType
+        s.fit_compay_type as storeType,
+        CASE l.operator_type
+        when 'DECORATE_MANAGER' then e.`name`
+        WHEN 'DECORATE_MANAGER' THEN e.`name`
+        WHEN 'DECORATE_EMPLOYEE' THEN e.`name`
+        WHEN 'SELLER' THEN e.`name`
+        when 'CUSTOMER' then cu.`name`
+        when 'ADMINISTRATOR' then au.`name` end as operatorName
         FROM st_credit_money_change_log l
         LEFT JOIN st_store s on l.store_id =s.store_id
+        LEFT JOIN admin_user au on au.uid = l.operator_id
+        LEFT JOIN cus_customer cu on cu.cus_id = l.operator_id
+        LEFT JOIN emp_employee e on e.emp_id = l.operator_id
         where
         l.store_id =#{storeId}
         <if test="null != keywords and ''!=keywords">
@@ -1001,6 +1012,40 @@
             AND change_type=#{changeType}
         </if>
         ORDER BY l.create_time DESC
+    </select>
+
+    <select id="queryLastDecorativeCreditChange"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.FitCreditMoneyChangeLogVO">
+        SELECT
+        l.store_id ,
+        l.create_time ,
+        l.change_amount ,
+        l.credit_limit_available_after_change ,
+        l.reference_number ,
+        l.change_type ,
+        l.change_type_desc ,
+        l.operator_id ,
+        l.operator_type ,
+        l.operator_ip ,
+        l.remark,
+        s.store_name,
+        s.store_code,
+        s.fit_compay_type as storeType,
+        CASE l.operator_type
+				when 'DECORATE_MANAGER' then e.`name`
+				WHEN 'DECORATE_MANAGER' THEN e.`name`
+                WHEN 'DECORATE_EMPLOYEE' THEN e.`name`
+                WHEN 'SELLER' THEN e.`name`
+				when 'CUSTOMER' then cu.`name`
+				when 'ADMINISTRATOR' then au.`name` end as operatorName
+        FROM st_credit_money_change_log l
+        LEFT JOIN st_store s on l.store_id =s.store_id
+        LEFT JOIN admin_user au on au.uid = l.operator_id
+        LEFT JOIN cus_customer cu on cu.cus_id = l.operator_id
+        LEFT JOIN emp_employee e on e.emp_id = l.operator_id
+        where
+        l.store_id =#{storeId}
+        ORDER BY l.create_time DESC limit 1
     </select>
 
 </mapper>

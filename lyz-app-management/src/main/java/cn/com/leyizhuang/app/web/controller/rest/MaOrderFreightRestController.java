@@ -131,7 +131,7 @@ public class MaOrderFreightRestController extends BaseRestController {
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<OrderFreightChangeVO> orderFreightChangeVOPage = this.maOrderFreightService.queryOrderFreightChangeList(page, size);
+            PageInfo<OrderFreightChangeVO> orderFreightChangeVOPage = this.maOrderFreightService.queryOrderFreightChangeList(page, size, keywords);
             List<OrderFreightChangeVO> orderFreightChangePageList = orderFreightChangeVOPage.getList();
             logger.info("queryOrderFreightChangeList ,后台查询订单运费变更信息成功", orderFreightChangePageList.size());
             return new GridDataVO<OrderFreightChangeVO>().transform(orderFreightChangePageList, orderFreightChangeVOPage.getTotal());

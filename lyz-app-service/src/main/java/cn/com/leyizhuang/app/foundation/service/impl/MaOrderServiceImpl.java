@@ -496,6 +496,7 @@ public class MaOrderServiceImpl implements MaOrderService {
             maOrderBillingPaymentDetails.setPayType(OrderBillingPaymentType.CASH);
             maOrderBillingPaymentDetails.setPayTypeDesc(OrderBillingPaymentType.CASH.getDescription());
             maOrderBillingPaymentDetails.setAmount(maOrderAmount.getCashAmount());
+            maOrderBillingPaymentDetails.setRemarks(maOrderAmount.getCashRemarks());
             this.saveOrderBillingPaymentDetails(maOrderBillingPaymentDetails);
         }
         if (maOrderAmount.getOtherAmount().compareTo(BigDecimal.ZERO) > 0) {
@@ -505,6 +506,7 @@ public class MaOrderServiceImpl implements MaOrderService {
             maOrderBillingPaymentDetails.setPayType(OrderBillingPaymentType.OTHER);
             maOrderBillingPaymentDetails.setPayTypeDesc(OrderBillingPaymentType.OTHER.getDescription());
             maOrderBillingPaymentDetails.setAmount(maOrderAmount.getOtherAmount());
+            maOrderBillingPaymentDetails.setRemarks(maOrderAmount.getOtherRemarks());
             this.saveOrderBillingPaymentDetails(maOrderBillingPaymentDetails);
         }
         if (maOrderAmount.getPosAmount().compareTo(BigDecimal.ZERO) > 0) {
@@ -514,6 +516,7 @@ public class MaOrderServiceImpl implements MaOrderService {
             maOrderBillingPaymentDetails.setPayType(OrderBillingPaymentType.POS);
             maOrderBillingPaymentDetails.setPayTypeDesc(OrderBillingPaymentType.POS.getDescription());
             maOrderBillingPaymentDetails.setAmount(maOrderAmount.getPosAmount());
+            maOrderBillingPaymentDetails.setRemarks(maOrderAmount.getPosRemarks());
             this.saveOrderBillingPaymentDetails(maOrderBillingPaymentDetails);
         }
 

@@ -543,10 +543,12 @@
             is_owner_receiving,
             is_pay_up,
             pay_up_time,
-            store_cash,
-            seller_store_deposit,
-            store_other_money,
-            store_pos_money
+            IFNULL(store_cash, 0) store_cash,
+            IFNULL(seller_store_deposit, 0) seller_store_deposit,
+            IFNULL(store_other_money, 0) store_other_money,
+            IFNULL(store_pos_money, 0) store_pos_money,
+            IFNULL(delivery_cash, 0) delivery_cash,
+            IFNULL(delivery_pos, 0) delivery_pos
         FROM
             ord_billing_details
         WHERE
@@ -707,7 +709,8 @@
          delivery_type, order_subject_type, creator_identity_type, creator_id, creator_name, creator_phone,
          store_id, store_code, store_structure_code, sales_consult_id, sales_consult_name, sales_consult_phone,
          customer_id, customer_name, customer_phone, total_goods_price, is_evaluated, audit_no,
-         remark, city_id, city_name, customer_type, store_org_id, sob_id, sales_number, is_record_sales
+         remark, city_id, city_name, customer_type, store_org_id, sob_id, sales_number, is_record_sales,
+         sales_manager_id, sales_manager_store_id
         ) VALUES (
             #{orderNumber},
             #{orderType},
@@ -741,7 +744,9 @@
             #{storeOrgId},
             #{sobId},
             #{salesNumber},
-            #{isRecordSales})
+            #{isRecordSales},
+            #{salesManagerId},
+            #{salesManagerStoreId})
 
     </insert>
 
@@ -837,7 +842,16 @@
                 is_evaluated = #{isEvaluated},
             </if>
             <if test="null != isRecordSales">
-                is_record_sales = #{isRecordSales}
+                is_record_sales = #{isRecordSales},
+            </if>
+            <if test="null != salesConsultId">
+                sales_consult_id = #{salesConsultId},
+            </if>
+            <if test="null != salesConsultName">
+                sales_consult_name = #{salesConsultName},
+            </if>
+            <if test="null != salesConsultPhone">
+                sales_consult_phone = #{salesConsultPhone}
             </if>
         </set>
         WHERE ord_no = #{orderNumber}
@@ -873,6 +887,12 @@
             </if>
             <if test="null != sellerStoreDeposit">
                 seller_store_deposit = #{sellerStoreDeposit},
+            </if>
+            <if test="null != stPreDeposit">
+                st_pre_deposit = #{stPreDeposit},
+            </if>
+            <if test="null != cusPreDeposit">
+                cus_pre_deposit = #{cusPreDeposit},
             </if>
             <if test="null != isPayUp  ">
                 is_pay_up = #{isPayUp}
@@ -1849,9 +1869,9 @@
         ob.delivery_type != "PRODUCT_COUPON"
          and s.store_type = 'JM'
         and ob.create_time > '2018-05-01 00:00:00'
-
         and ob.`status` = 'FINISHED'
-        and oj.ord_no is null;
+        and oj.ord_no is null
+        and oci.get_type = 'BUY';
     </select>
 
     <select id="getBpProductByOrderNo" resultType="java.lang.Integer">
@@ -1882,5 +1902,23 @@
         FROM ord_return_jx_price_difference_return_details
         WHERE
         return_no = #{returnNo} and sku = #{sku} and goods_line_type = #{goodsLineType} );
+    </select>
+
+    <!-- 根据时间 配送状态 查询 -->
+    <select id="findOrderByStatusAndTypeAndCreateTime" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo">
+        SELECT
+        <include refid="All_FIELD"/>
+        from ord_base_info ob
+        where status = #{status} and delivery_type = #{type} and create_time &lt; #{endTime};
+    </select>
+    
+    <select id="findOrderPromotionIdByOrdNo" resultType="cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo">
+        SELECT DISTINCT
+            promotion_id promotionId
+        FROM
+            ord_goods_info
+        WHERE
+            ord_no = #{ordNo}
+            AND promotion_id IS NOT NULL
     </select>
 </mapper>

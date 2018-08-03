@@ -175,4 +175,8 @@ public interface AppCustomerService {
     List<CustomerProductCoupon> findOverdueCustomerProductCoupon();
 
     void saveCustomerProductCouponTransferPreDepositRecord(CustomerProductCouponTransferPreDepositRecord record);
+
+    Integer findProductCouponAvailQtyByCustomerIdAndGid(Long userId, Long gid, Long sellerId);
+
+
 }

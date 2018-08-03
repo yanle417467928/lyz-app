@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
+import cn.com.leyizhuang.app.core.constant.AppDeliveryType;
+import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import cn.com.leyizhuang.app.core.constant.AppOrderType;
 import cn.com.leyizhuang.app.core.constant.AppReturnOrderStatus;
 import cn.com.leyizhuang.app.core.exception.OrderSaveException;
@@ -13,6 +15,7 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import com.github.pagehelper.PageInfo;
 import org.apache.commons.collections.map.HashedMap;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -276,4 +279,6 @@ public interface ReturnOrderService {
     ReturnOrderBilling getAllReturnPriceByOrderNo(String orderNo);
 
     List<ReturnOrderBaseInfo> getReturnBaseinfoByOrderNo(String ordNo);
+
+    List<OrderBaseInfo>  findOrderByStatusAndTypeAndCreateTime(AppOrderStatus status, AppDeliveryType type, LocalDateTime endTime);
 }

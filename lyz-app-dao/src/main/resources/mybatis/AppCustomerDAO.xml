@@ -884,4 +884,18 @@
                 #{transferDate})
     </insert>
 
+
+    <select id="findProductCouponAvailQtyByCustomerIdAndGid" resultType="java.lang.Integer">
+        SELECT sum(quantity)
+        FROM cus_customer_product_coupon
+        WHERE cus_id = #{userId} AND gid = #{gid}
+        <if test="null != sellerId">
+            AND seller_id = #{sellerId}
+        </if>
+        AND (is_used IS FALSE OR is_used IS NULL )
+        AND effective_start_time &lt; NOW() AND (
+        effective_end_time &gt; NOW() OR effective_end_time IS NULL)
+        GROUP BY cus_id, gid
+    </select>
+
 </mapper>

@@ -50,4 +50,10 @@ public class ManagerBillingDetailResponse {
     private String payType;
     //代收金额
     private Double collectionAmount;
+
+    //pos金额
+    private Double posMoney;
+
+    //现金金额
+    private Double cashMoney;
 }

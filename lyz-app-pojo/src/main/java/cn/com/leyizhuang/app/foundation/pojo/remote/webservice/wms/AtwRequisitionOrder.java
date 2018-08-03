@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBillingDetails;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderLogisticsInfo;
+import com.ibm.wsdl.util.StringUtils;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -171,6 +172,11 @@ public class AtwRequisitionOrder {
      */
     private Date sendTime;
 
+    /**
+     * wms出货单是否打印价格 Y 打印 N 不打印
+     */
+    private String isPrint = "Y";
+
     public static AtwRequisitionOrder transform(OrderBaseInfo orderBaseInfo, OrderLogisticsInfo logisticsInfo, AppStore store,
                                                 OrderBillingDetails orderBillingDetails, int goodsQuantity) {
         AtwRequisitionOrder requisitionOrder = new AtwRequisitionOrder();
@@ -227,6 +233,16 @@ public class AtwRequisitionOrder {
         requisitionOrder.setUnpayed(orderBillingDetails.getAmountPayable());
         requisitionOrder.setTotalGoodsPrice(orderBaseInfo.getTotalGoodsPrice());
         requisitionOrder.setAgencyFund(orderBillingDetails.getCollectionAmount());
+
+        String isPrint = "Y";
+        if (store.getIsDisplayPrice() != null){
+            if (store.getIsDisplayPrice()){
+                isPrint = "Y";
+            }else {
+                isPrint = "N";
+            }
+        }
+        requisitionOrder.setIsPrint(isPrint);
         return requisitionOrder;
     }
 }

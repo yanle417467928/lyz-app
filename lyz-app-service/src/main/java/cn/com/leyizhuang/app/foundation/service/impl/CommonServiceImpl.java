@@ -869,6 +869,12 @@ public class CommonServiceImpl implements CommonService {
     @Transactional(rollbackFor = Exception.class)
     public void handleOrderRelevantBusinessAfterOnlinePayUp(String orderNumber, String tradeNo, String tradeStatus, OnlinePayType onlinePayType) throws IOException {
         if (StringUtils.isNotBlank(orderNumber)) {
+
+            List<PromotionSimpleInfo> promotionSimpleInfoList = orderService.findOrderPromotionIdByOrdNo(orderNumber);
+            Map<Long, Double> map = null;
+            if (null != promotionSimpleInfoList && promotionSimpleInfoList.size() > 0) {
+                map = actService.returnGcActIdAndJXDiscunt(promotionSimpleInfoList);
+            }
             //更新订单第三方支付信息
             List<PaymentDataDO> paymentDataList = paymentDataService.findByOrderNoAndTradeStatus(orderNumber, PaymentDataStatus.TRADE_SUCCESS);
             PaymentDataDO paymentData = paymentDataList.get(0);
@@ -1041,6 +1047,18 @@ public class CommonServiceImpl implements CommonService {
                                     customerProductCoupon.setDisableTime(null);
                                     customerProductCoupon.setGoodsLineId(goodsInfo.getId());
                                     customerProductCoupon.setGoodsSign(goodsInfo.getGoodsSign());
+                                    if (null == goodsInfo.getPromotionId()){
+                                        customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
+                                    }else {
+                                        Long actId = Long.valueOf(goodsInfo.getPromotionId());
+                                        if ( null != map && map.containsKey(actId)) {
+                                            Double gcDiscount = map.get(actId);
+                                            customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice() - gcDiscount);
+                                        } else {
+                                            customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
+                                        }
+                                    }
+                                    customerProductCoupon.setWholesalePrice(goodsInfo.getWholesalePrice());
                                     //保存产品券信息
                                     productCouponService.addCustomerProductCoupon(customerProductCoupon);
 
@@ -2276,6 +2294,12 @@ public class CommonServiceImpl implements CommonService {
         if (StringUtils.isNotBlank(orderNumber)) {
             OrderBaseInfo baseInfo = orderService.getOrderByOrderNumber(orderNumber);
 
+            List<PromotionSimpleInfo> promotionSimpleInfoList = orderService.findOrderPromotionIdByOrdNo(orderNumber);
+            Map<Long, Double> map = null;
+            if (null != promotionSimpleInfoList && promotionSimpleInfoList.size() > 0) {
+                map = actService.returnGcActIdAndJXDiscunt(promotionSimpleInfoList);
+            }
+
             //更新订单账单信息
             OrderBillingDetails billingDetails = orderService.getOrderBillingDetail(orderNumber);
 
@@ -2466,6 +2490,18 @@ public class CommonServiceImpl implements CommonService {
                                     customerProductCoupon.setDisableTime(null);
                                     customerProductCoupon.setGoodsLineId(goodsInfo.getId());
                                     customerProductCoupon.setGoodsSign(goodsInfo.getGoodsSign());
+                                    if (null == goodsInfo.getPromotionId()){
+                                        customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
+                                    }else {
+                                        Long actId = Long.valueOf(goodsInfo.getPromotionId());
+                                        if (map.containsKey(actId)) {
+                                            Double gcDiscount = map.get(actId);
+                                            customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice() - gcDiscount);
+                                        } else {
+                                            customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
+                                        }
+                                    }
+                                    customerProductCoupon.setWholesalePrice(goodsInfo.getWholesalePrice());
                                     //保存产品券信息
                                     productCouponService.addCustomerProductCoupon(customerProductCoupon);
 
@@ -2507,6 +2543,12 @@ public class CommonServiceImpl implements CommonService {
     public void handleOrderRelevantBusinessAfterPayCredit(String orderNumber, Long userId, Integer identityType, String payType, String ipAddress) throws IOException {
         if (StringUtils.isNotBlank(orderNumber)) {
             OrderBaseInfo baseInfo = orderService.getOrderByOrderNumber(orderNumber);
+
+            List<PromotionSimpleInfo> promotionSimpleInfoList = orderService.findOrderPromotionIdByOrdNo(orderNumber);
+            Map<Long, Double> map = null;
+            if (null != promotionSimpleInfoList && promotionSimpleInfoList.size() > 0) {
+                map = actService.returnGcActIdAndJXDiscunt(promotionSimpleInfoList);
+            }
 
             //更新订单账单信息
             OrderBillingDetails billingDetails = orderService.getOrderBillingDetail(orderNumber);
@@ -2553,7 +2595,7 @@ public class CommonServiceImpl implements CommonService {
                 billingDetails.setEmpCreditMoney(billingDetails.getAmountPayable());
 //                billingDetails.setCollectionAmount(billingDetails.getEmpCreditMoney());
             } else if (OrderBillingPaymentType.STORE_CREDIT_MONEY == OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)) {
-                //扣减门店预存款
+                //扣减门店信用金
                 if (identityType == AppIdentityType.DECORATE_MANAGER.getValue()) {
                     if (null != billingDetails.getAmountPayable() && billingDetails.getAmountPayable() > 0) {
                         for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
@@ -2597,6 +2639,107 @@ public class CommonServiceImpl implements CommonService {
                             OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
                             details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.STORE_CREDIT_MONEY, billingDetails.getStoreCreditMoney(),
                                     PaymentSubjectType.SELLER, billingDetails.getOrderNumber(), OrderUtils.generateReceiptNumber(baseInfo.getCityId()));
+                            details.setOrderId(baseInfo.getId());
+                            details.setPaymentSubjectId(userId);
+                            orderService.saveOrderBillingPaymentDetail(details);
+                        }
+                    }
+                }
+            } else if (OrderBillingPaymentType.CUS_PREPAY == OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)) {
+                //扣减顾客预存款
+                if (identityType == AppIdentityType.CUSTOMER.getValue()) {
+                    if (null != billingDetails.getAmountPayable() && billingDetails.getAmountPayable() > 0) {
+                        for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                            CustomerPreDeposit preDeposit = customerService.findByCusId(userId);
+                            if (null != preDeposit) {
+                                if (preDeposit.getBalance() < billingDetails.getAmountPayable()) {
+                                    throw new LockCustomerPreDepositException("该客户预存款余额不足!");
+                                }
+                                Integer affectLine = customerService.lockCustomerDepositByUserIdAndDeposit(
+                                        userId, billingDetails.getAmountPayable(), preDeposit.getLastUpdateTime());
+                                if (affectLine > 0) {
+                                    CusPreDepositLogDO cusPreDepositLogDO = new CusPreDepositLogDO();
+                                    cusPreDepositLogDO.setCusId(userId);
+                                    cusPreDepositLogDO.setCreateTime(LocalDateTime.now());
+                                    cusPreDepositLogDO.setChangeMoney(billingDetails.getAmountPayable());
+                                    cusPreDepositLogDO.setBalance(preDeposit.getBalance() - billingDetails.getAmountPayable());
+                                    cusPreDepositLogDO.setOrderNumber(orderNumber);
+                                    cusPreDepositLogDO.setChangeType(CustomerPreDepositChangeType.PLACE_ORDER);
+                                    cusPreDepositLogDO.setChangeTypeDesc(CustomerPreDepositChangeType.PLACE_ORDER.getDescription());
+                                    cusPreDepositLogDO.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                                    cusPreDepositLogDO.setOperatorId(userId);
+                                    cusPreDepositLogDO.setOperatorIp(ipAddress);
+                                    customerService.addCusPreDepositLog(cusPreDepositLogDO);
+                                    break;
+                                } else {
+                                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                        throw new SystemBusyException("系统繁忙，请稍后再试!");
+                                    }
+                                }
+                            } else {
+                                throw new LockCustomerPreDepositException("没有找到该客户的预存款信息");
+                            }
+                        }
+                        billingDetails.setCusPreDeposit(CountUtil.add(billingDetails.getCusPreDeposit(), billingDetails.getAmountPayable()));
+                        billingDetails.setArrearage(CountUtil.sub(billingDetails.getArrearage(), billingDetails.getAmountPayable()));
+                        if (null != billingDetails.getCusPreDeposit() && billingDetails.getAmountPayable() > AppConstant.DOUBLE_ZERO) {
+                            OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
+                            details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.CUS_PREPAY, billingDetails.getCusPreDeposit(),
+                                    PaymentSubjectType.CUSTOMER, billingDetails.getOrderNumber(), OrderUtils.generateReceiptNumber(baseInfo.getCityId()));
+                            details.setOrderId(baseInfo.getId());
+                            details.setPaymentSubjectId(userId);
+                            orderService.saveOrderBillingPaymentDetail(details);
+                        }
+                    }
+                }
+            } else if (OrderBillingPaymentType.ST_PREPAY == OrderBillingPaymentType.getOrderBillingPaymentTypeByValue(payType)) {
+                //扣减门店信用金
+                if (identityType == AppIdentityType.DECORATE_MANAGER.getValue() || identityType == AppIdentityType.SELLER.getValue()) {
+                    if (null != billingDetails.getAmountPayable() && billingDetails.getAmountPayable() > 0) {
+                        for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
+                            StorePreDeposit preDeposit = storeService.findStorePreDepositByUserIdAndIdentityType(userId, identityType);
+                            if (null != preDeposit) {
+                                if (preDeposit.getBalance() < billingDetails.getAmountPayable()) {
+                                    throw new LockStorePreDepositException("预存款余额不足!");
+                                }
+                                int affectLine = storeService.updateStoreDepositByStoreIdAndStoreDeposit(
+                                        preDeposit.getStoreId(), billingDetails.getAmountPayable(), preDeposit.getLastUpdateTime());
+                                if (affectLine > 0) {
+                                    StPreDepositLogDO log = new StPreDepositLogDO();
+                                    log.setStoreId(preDeposit.getStoreId());
+                                    log.setChangeMoney(billingDetails.getAmountPayable());
+                                    log.setBalance(preDeposit.getBalance() - billingDetails.getAmountPayable());
+                                    log.setCreateTime(LocalDateTime.now());
+                                    log.setOrderNumber(orderNumber);
+                                    log.setOperatorId(userId);
+                                    log.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
+                                    log.setOperatorIp(ipAddress);
+                                    log.setChangeType(StorePreDepositChangeType.PLACE_ORDER);
+                                    log.setChangeTypeDesc(StorePreDepositChangeType.PLACE_ORDER.getDescription());
+                                    storeService.addStPreDepositLog(log);
+                                    break;
+                                } else {
+                                    if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                        throw new SystemBusyException("系统繁忙，请稍后再试!");
+                                    }
+                                }
+                            } else {
+                                throw new LockStorePreDepositException("没有找到该用户预存款信息!");
+                            }
+                        }
+                        billingDetails.setStPreDeposit(CountUtil.add(billingDetails.getStPreDeposit(), billingDetails.getAmountPayable()));
+                        billingDetails.setArrearage(CountUtil.sub(billingDetails.getArrearage(), billingDetails.getAmountPayable()));
+                        if (null != billingDetails.getAmountPayable() && billingDetails.getAmountPayable() > AppConstant.DOUBLE_ZERO) {
+                            OrderBillingPaymentDetails details = new OrderBillingPaymentDetails();
+                            details.generateOrderBillingPaymentDetails(OrderBillingPaymentType.ST_PREPAY, billingDetails.getAmountPayable(),
+                                    PaymentSubjectType.DECORATE_MANAGER, billingDetails.getOrderNumber(), OrderUtils.generateReceiptNumber(baseInfo.getCityId()));
+                            if (identityType == AppIdentityType.DECORATE_MANAGER.getValue()) {
+                                details.setPaymentSubjectType(PaymentSubjectType.DECORATE_MANAGER);
+                                details.setPaymentSubjectTypeDesc(PaymentSubjectType.DECORATE_MANAGER.getDescription());
+                            } else if (identityType == AppIdentityType.SELLER.getValue()){
+                                details.setPaymentSubjectType(PaymentSubjectType.SELLER);
+                                details.setPaymentSubjectTypeDesc(PaymentSubjectType.SELLER.getDescription());
+                            }
                             details.setOrderId(baseInfo.getId());
                             details.setPaymentSubjectId(userId);
                             orderService.saveOrderBillingPaymentDetail(details);
@@ -2683,6 +2826,18 @@ public class CommonServiceImpl implements CommonService {
                                     customerProductCoupon.setDisableTime(null);
                                     customerProductCoupon.setGoodsLineId(goodsInfo.getId());
                                     customerProductCoupon.setGoodsSign(goodsInfo.getGoodsSign());
+                                    if (null == goodsInfo.getPromotionId()){
+                                        customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
+                                    }else {
+                                        Long actId = Long.valueOf(goodsInfo.getPromotionId());
+                                        if (map.containsKey(actId)) {
+                                            Double gcDiscount = map.get(actId);
+                                            customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice() - gcDiscount);
+                                        } else {
+                                            customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
+                                        }
+                                    }
+                                    customerProductCoupon.setWholesalePrice(goodsInfo.getWholesalePrice());
                                     //保存产品券信息
                                     productCouponService.addCustomerProductCoupon(customerProductCoupon);
 

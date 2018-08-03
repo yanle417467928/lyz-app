@@ -496,6 +496,7 @@ public class MaOrderRestController extends BaseRestController {
             ShiroUser shiroUser = this.getShiroUser();
             //后台发货并返回插入接口表数据的id
             maOrderService.orderShipping(orderNumber, shiroUser, maOrderTempInfo);
+            Thread.sleep(2000);
             //发送门店自提单消息队列
             maSinkSender.sendStorePickUpReceivedToEBSAndRecord(orderNumber);
 
