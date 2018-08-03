@@ -546,6 +546,16 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
+    public List<UserGoodsResponse> findGoodsListByCustomerIdAndIdentityTypeAndUserRankListMa(Long userId, AppIdentityType identityType,
+                                                                                           String firstCategoryCode, Long secondCategoryId,
+                                                                                           Long brandId, Long typeId, String specification,
+                                                                                           String keywords) {
+        List<UserGoodsResponse> list = goodsDAO.findGoodsListByCustomerIdAndIdentityTypeAndUserRankMa(userId, identityType, keywords,firstCategoryCode, secondCategoryId,
+                brandId, typeId, specification);
+        return list;
+    }
+
+    @Override
     public PageInfo<GoodsDO> getGoodsBykeywordsAndCompanyAndBrandCodeAndCategoryCodeAndStoreId(Integer page, Integer size, String keywords, String companyCode, Long brandCode,
                                                                                                String categoryCode, Long storeId) {
         PageHelper.startPage(page, size);

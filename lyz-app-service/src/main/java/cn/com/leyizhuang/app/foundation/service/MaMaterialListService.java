@@ -22,7 +22,7 @@ public interface MaMaterialListService {
 
     List<MaterialListDO> findMaPhotoOrderMaterialListByPhotoNumber(String photoNo);
 
-    List<MaUpdateMaterialResponse> findMaAllMaterialListByPhotoNumber(String photoNo, String identityType);
+    List<MaUpdateMaterialResponse> findMaAllMaterialListByPhotoNumber(String photoNo, String identityType,String rankCode);
 
     void deleteMaterialListByUserIdAndIdentityTypeAndGoodsSku(Long userId,String identityType,String sku);
 

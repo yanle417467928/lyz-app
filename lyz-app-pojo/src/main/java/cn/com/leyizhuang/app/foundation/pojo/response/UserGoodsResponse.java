@@ -63,6 +63,8 @@ public class UserGoodsResponse implements Serializable {
     // 施工成不
     private String workCost;
 
+    private String typeName;
+
 //    public void setCoverImageUri(String coverImageUri){
 //        String[] urlArr = coverImageUri.split(",");
 //        if (urlArr != null || urlArr.length > 0){

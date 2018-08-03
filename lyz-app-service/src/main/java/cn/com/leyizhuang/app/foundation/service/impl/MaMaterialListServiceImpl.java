@@ -55,8 +55,8 @@ public class MaMaterialListServiceImpl implements MaMaterialListService {
     }
 
     @Override
-    public List<MaUpdateMaterialResponse> findMaAllMaterialListByPhotoNumber(String photoNo, String identityType) {
-        return maMaterialListDAO.findMaAllMaterialListByPhotoNumber(photoNo, identityType);
+    public List<MaUpdateMaterialResponse> findMaAllMaterialListByPhotoNumber(String photoNo, String identityType,String rankCode) {
+        return maMaterialListDAO.findMaAllMaterialListByPhotoNumber(photoNo, identityType, rankCode);
     }
 
     @Override
