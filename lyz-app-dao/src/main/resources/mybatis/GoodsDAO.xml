@@ -1463,6 +1463,63 @@
         </if>
     </select>
 
+
+    <select id="findGoodsListByCustomerIdAndIdentityTypeAndUserRankMa"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
+        <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
+            SELECT
+            g.sku,
+            g.cover_image_uri,
+            g.sku_name goods_name,
+            g.gid id,
+            g.goods_specification,
+            g.goods_unit,
+            p.vip_price,
+            p.retail_price,
+            g.cid category_id,
+            g.brd_id brand_id,
+            g.gtid type_id,
+            m.qty materialQty,
+            g.work_area,
+            g.work_cost,
+            g.type_name
+            FROM
+            cus_customer c
+            LEFT JOIN cus_rank cr ON cr.cus_id = c.cus_id
+            LEFT JOIN rank_classification rc ON cr.rank_id = rc.rank_id
+            INNER JOIN gds_goods_price p ON c.store_id = p.store_id
+            AND rc.rank_code = p.price_type
+            AND p.start_time &lt; NOW()
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+            LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId} AND m.material_list_type = 'NORMAL'
+            INNER JOIN gds_goods g ON p.gid = g.gid
+            INNER JOIN gds_goods_category gc ON g.cid = gc.cid
+            WHERE
+            c.cus_id = #{userId}
+            <if test="null != firstCategoryCode ">
+                AND gc.p_category_code = #{firstCategoryCode}
+            </if>
+            <if test="null != secondCategoryId ">
+                AND g.cid = #{secondCategoryId}
+            </if>
+            <if test="null != brandId ">
+                AND g.brd_id = #{brandId}
+            </if>
+            <if test="null != typeId ">
+                AND g.gtid = #{typeId}
+            </if>
+            <if test="null != specification and specification != ''">
+                AND g.specification_type = #{specification}
+            </if>
+            <if test="keywords != null and keywords != ''">
+                AND (g.sku_name LIKE concat('%', #{keywords}, '%')
+                OR g.sku LIKE concat('%', #{keywords}, '%'))
+            </if>
+            ORDER BY g.sort_id ASC
+        </if>
+    </select>
+
+
     <select id="getGoodsBykeywordsAndCompanyAndBrandCodeAndCategoryCodeAndStoreId"
             resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
         SELECT
