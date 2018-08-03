@@ -761,10 +761,11 @@ public class ReturnOrderController {
                 }
 
                 //买卷订单现金、POS支付退顾客预存款
-                if (AppOrderType.COUPON.equals(order.getOrderType()) && cashPosPrice > 0) {
-                    customerPrePay = CountUtil.add(customerPrePay,cashPosPrice);
-                    cashPosPrice = 0D;
-                }
+                //2018-08-03 买卷订单改回为原路退
+//                if (AppOrderType.COUPON.equals(order.getOrderType()) && cashPosPrice > 0) {
+//                    customerPrePay = CountUtil.add(customerPrePay,cashPosPrice);
+//                    cashPosPrice = 0D;
+//                }
 
                 //整单退,不退运费
                 if (totalGoodsQty == totalReturnQty) {
