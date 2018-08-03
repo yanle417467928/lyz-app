@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.management.employee;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import lombok.*;
 /**
  * Created with IntelliJ IDEA.
@@ -19,4 +20,6 @@ public class SimpleEmployeeParam {
     private Long id;
     //姓名
     private String name;
+    //身份类型
+    private AppIdentityType identityType;
 }

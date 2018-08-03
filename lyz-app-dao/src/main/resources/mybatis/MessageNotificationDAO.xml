@@ -5,30 +5,56 @@
 
     <select id="queryListByUserIdAndUserType"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.MessageNotificationListResponse">
-        SELECT id, title, create_time,is_read,detailed,picture_url
-        FROM message_notification
-        WHERE user_id = #{userId} AND identity_type = #{identityType}
-        AND create_time &gt;= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
-        ORDER BY create_time DESC
+        SELECT
+        mn.title AS title,
+        mn.detailed AS detailed,
+        mmc.create_time AS createTime,
+        mn.begin_time AS beginTime,
+        mn.end_time AS endTime,
+        mmc.message_id AS messageId,
+        mn. STATUS AS status,
+        mmc.is_read AS isRead,
+        mmc.identity_type AS identityType,
+        mmc.user_id AS userId
+        FROM
+        message_notification mn
+        LEFT JOIN message_member_conference mmc ON mn.id = mmc.message_id
+        WHERE
+        mmc.identity_type = #{identityType}
+        AND
+        mmc.user_id = #{userId}
+        AND
+        mmc.create_time >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+        ORDER BY
+	    mmc.create_time DESC
     </select>
 
     <select id="countUnreadNotifyMessage" resultType="java.lang.Integer">
-        SELECT COUNT(*)
-        FROM message_notification
-        WHERE user_id = #{userId}
-              AND identity_type = #{identityType}
-              AND create_time &gt;= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
-              AND is_read = FALSE
+        SELECT
+	    COUNT(mmc.is_read)
+        FROM
+	    message_notification mn
+        LEFT JOIN message_member_conference mmc ON mn.id = mmc.message_id
+        WHERE
+	    mmc.identity_type = #{identityType}
+        AND mmc.user_id = #{userId}
+        AND mmc.is_read=FALSE
+        AND mmc.create_time >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+        ORDER BY
+	    mmc.create_time DESC
     </select>
 
     <update id="modifyMessageNotification"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.response.MessageNotificationListResponse">
-        UPDATE message_notification
+        UPDATE message_member_conference
         <set>
             <if test="null != isRead">
                 is_read = #{isRead}
             </if>
         </set>
-        WHERE id = #{id}
+        WHERE
+        id = #{id}
+        AND identity_type=#{identityType}
+        AND message_id=#{messageId}
     </update>
 </mapper>

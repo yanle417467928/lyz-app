@@ -2,13 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.ActBaseDAO">
 
+
     <sql id="ALL_FIELDS">
         id, create_time, title, begin_time, end_time, city_id, city_name, act_target,
     base_type, promotion_type, condition_type, is_double, gift_choose_number, full_amount,
     full_number,is_returnable,sort_id,status,act_code,add_amount,is_gcorder,is_goods_optional_qty,is_gift_optional_qty,pic_url,rank_code,scope,is_member_conference
     </sql>
 
-    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO" useGeneratedKeys="true" keyProperty="id">
+    <insert id="save" parameterType=
+            "cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO act_base (
          create_time, title, begin_time, end_time, city_id, city_name,  act_target,
     base_type, promotion_type, condition_type, is_double, gift_choose_number, full_amount,
@@ -25,6 +27,7 @@
       #{actCode,jdbcType=VARCHAR},#{addAmount,jdbcType=DECIMAL},#{isGcOrder,jdbcType=BIT},#{isGoodsOptionalQty,jdbcType=BIT},#{isGiftOptionalQty,jdbcType=BIT}
       ,#{picUrl},#{rankCode},#{scope},#{isMemberConference}
         )
+
     </insert>
 
     <insert id="saveMemberConference" parameterType="cn.com.leyizhuang.app.foundation.pojo.activity.ActMemberConference" useGeneratedKeys="true" keyProperty="id">
