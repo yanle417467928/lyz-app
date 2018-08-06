@@ -312,7 +312,7 @@ public class MaReportDownloadRestController extends BaseRestController {
 
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
-        if ("ALL".equals(companyCode)) {
+        if ("ALL".equals(companyCode) || storeType.equals("CASH")) {
             // 不限分公司
         } else {
             if("JZSYBM".equals(companyCode)){
@@ -585,9 +585,9 @@ public class MaReportDownloadRestController extends BaseRestController {
                 //设置筛选条件
                 ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
                 //列宽
-                int[] columnView = {10, 13, 10, 15, 15, 20, 20, 12, 10, 30,10, 30, 15, 15, 15, 35,35, 25};
+                int[] columnView = {10, 13, 10, 15, 15, 20, 20, 12, 10, 30,10, 30, 15, 15, 15, 35,35, 25,5};
                 //列标题
-                String[] titles = {"城市", "门店名称", "门店类型", "导购姓名", "顾客姓名", "付款时间", "退款时间", "支付方式", "支付金额", "订单号","订单类型", "退单号", "第三方支付流水号","商户订单号", "pos交易流水单号"};
+                String[] titles = {"城市", "门店名称", "门店类型", "导购姓名", "顾客姓名", "付款时间", "退款时间", "支付方式", "支付金额", "订单号","订单类型", "退单号", "第三方支付流水号","商户订单号", "pos交易流水单号","是否货到付款"};
                 //计算标题开始行号
                 int row = 1;
                 if (null != map && map.size() > 0) {
@@ -665,6 +665,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Label(12, j + row, receiptsReportDO.getTradeNo() == null ? "" : receiptsReportDO.getTradeNo(), textFormat));
                     ws.addCell(new Label(13, j + row, receiptsReportDO.getOutTradeNo(), textFormat));
                     ws.addCell(new Label(14, j + row, receiptsReportDO.getRemarks(), textFormat));
+                    ws.addCell(new Label(15, j + row, receiptsReportDO.getIsCashOnDelivery(), textFormat));
 
                     if ("CUS_PREPAY".equals(receiptsReportDO.getPayTypes())) {
                         cusPrepay = CountUtil.add(cusPrepay, null == receiptsReportDO.getMoney() ? 0D : receiptsReportDO.getMoney());
@@ -1893,7 +1894,6 @@ public class MaReportDownloadRestController extends BaseRestController {
             shiroName = shiroUser.getName();
         }
 
-
         response.setContentType("text/html;charset=UTF-8");
         //创建名称
         String fileurl = "商品出退货明细报表-" + DateUtils.getCurrentTimeStr("yyyyMMddHHmmss") + ".xls"; //如  D:/xx/xx/xxx.xls
@@ -1958,7 +1958,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                 int[] columnView = {10, 40, 20, 20, 30, 30, 15, 15};
                 //列标题城市
 
-                String[] titles = {"城市", "门店名称", "门店类型", "项目", "订单号","退单号", "原订单类型", "退单类型", "出退货日期", "原订单日期", "客户编号", "客户电话", "客户姓名", "客户类型", "销顾姓名", "公司标识", "商品编码", "商品名称", "产品类型","主分类", "商品类型","商品品牌","规格","类型","数量", "成交单价", "成交总价", "仓库信息"};
+                String[] titles = {"城市", "门店名称", "门店类型", "项目", "订单号","退单号", "原订单类型", "退单类型", "出退货日期", "原订单日期", "客户编号", "客户电话", "客户姓名", "客户类型", "销顾姓名", "公司标识", "商品编码", "商品名称", "产品类型","主分类", "商品类型","商品品牌","规格","类型","数量", "成交单价", "成交总价", "仓库信息","楼盘信息"};
                 //计算标题开始行号
                 int row = 1;
                 if (null != map && map.size() > 0) {
@@ -2038,6 +2038,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                         ws.addCell(new Number(26, j + row, shipmentAndReturnGoods.getAmount().doubleValue(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     }
                     ws.addCell(new Label(27, j + row, shipmentAndReturnGoods.getWareHouse(), textFormat));
+                    ws.addCell(new Label(28, j + row, shipmentAndReturnGoods.getEstateInfo(), textFormat));
                 }
             }
         } catch (Exception e) {
@@ -2252,7 +2253,7 @@ public class MaReportDownloadRestController extends BaseRestController {
         }
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
-        if (companyCode.equals("ALL")) {
+        if (companyCode.equals("ALL") || storeType.equals("CASH")) {
             // 不限分公司
         } else {
             if("JZSYBM".equals(companyCode)){

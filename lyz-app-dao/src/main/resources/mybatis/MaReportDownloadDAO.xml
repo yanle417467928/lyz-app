@@ -10,7 +10,8 @@
         pd.out_trade_no as outTradeNo, pd.trade_no as tradeNo,obi.customer_name,
         CASE obi.delivery_type when 'SELF_TAKE'
         then '门店自提' when 'HOUSE_DELIVERY' then '送货上门'
-        when 'PRODUCT_COUPON' then '购买产品券' end as orderType
+        when 'PRODUCT_COUPON' then '购买产品券' end as orderType,
+        IF(obd.online_pay_type = 'CASH_DELIVERY','是','否') as isCashOnDelivery
         FROM
         ord_billing_payment_details obpd
         INNER JOIN ord_base_info obi ON obi.ord_no = obpd.ord_no
@@ -52,13 +53,16 @@
         NULL remarks, null paymentSubjectType,pd.out_trade_no as outTradeNo, pd.trade_no as tradeNo,obi.customer_name,
         CASE obi.delivery_type when 'SELF_TAKE'
         then '门店自提' when 'HOUSE_DELIVERY' then '送货上门'
-        when 'PRODUCT_COUPON' then '购买产品券' end as orderType
+        when 'PRODUCT_COUPON' then '购买产品券' end as orderType,
+        IF(obd.online_pay_type = 'CASH_DELIVERY','是','否') as isCashOnDelivery
         FROM ord_return_billing_detail orbd
         INNER JOIN ord_return_base_info orbi ON orbi.return_no = orbd.return_no
         INNER JOIN st_store st ON st.store_id = orbi.store_id
         INNER JOIN ord_base_info obi ON obi.ord_no = orbi.ord_no
+        LEFT JOIN ord_billing_details obd on obd.ord_no = obi.ord_no
         LEFT JOIN (SELECT * from payment_data where payment_type in ("ORDER") and trade_status = "REFUND_SUCCESS") pd
         on pd.ord_no = orbd.return_no and orbd.return_pay_type = pd.online_pay_type
+
         WHERE 1 = 1
         <if test="null != cityId and cityId != -1">
             AND obi.city_id = #{cityId}
@@ -967,7 +971,7 @@
         DISTINCT
         ss.city as cityName,
         orbi.store_id as store_id,
-        ss.store_name as storeName ,
+        ss.store_name as storeName,
         ss.store_type as storeType,
         orbi.ord_no as ordNo,
         orbi.return_no as returnNo,
@@ -994,7 +998,8 @@
         gg.category_name as categoryName,
         gg.brand_name as brandName,
         gg.type_name as typeName,
-        gg.specification_type as specificationType
+        gg.specification_type as specificationType,
+        oli.estate_info as estateInfo
         from ord_return_base_info orbi
         LEFT JOIN ord_return_goods_info orgi ON orgi.return_no =orbi.return_no
         LEFT JOIN ord_base_info obi ON orbi.ord_no=obi.ord_no
@@ -1008,6 +1013,7 @@
         LEFT JOIN gds_goods gg ON  orgi.sku=gg.sku
         LEFT JOIN gds_goods_category gc on gg.cid =gc.cid
         LEFT JOIN gds_goods_category ggc ON  gc.p_cid =ggc.cid
+        LEFT JOIN ord_logistics_info oli on oli.ord_no = obi.ord_no
         where
         orbi.return_type in ('REFUSED_RETURN','NORMAL_RETURN') and obi.delivery_type in ('HOUSE_DELIVERY')
         AND orbi.return_status ='FINISHED'
@@ -1071,7 +1077,8 @@
         gg.category_name as categoryName,
         gg.brand_name as brandName,
         gg.type_name as typeName,
-        gg.specification_type as specificationType
+        gg.specification_type as specificationType,
+        oli.estate_info as estateInfo
         from ord_return_base_info orbi
         LEFT JOIN ord_return_goods_info orgi ON orgi.return_no =orbi.return_no
         LEFT JOIN ord_base_info obi ON orbi.ord_no=obi.ord_no
@@ -1083,6 +1090,7 @@
         LEFT JOIN gds_goods gg ON  orgi.sku=gg.sku
         LEFT JOIN gds_goods_category gc on gg.cid =gc.cid
         LEFT JOIN gds_goods_category ggc ON  gc.p_cid =ggc.cid
+        LEFT JOIN ord_logistics_info oli on oli.ord_no = obi.ord_no
         where
         orbi.return_type in ('NORMAL_RETURN') and obi.delivery_type in ('SELF_TAKE')
         AND orbi.return_status ='FINISHED'
@@ -1145,7 +1153,8 @@
         gg.category_name as categoryName,
         gg.brand_name as brandName,
         gg.type_name as typeName,
-        gg.specification_type as specificationType
+        gg.specification_type as specificationType,
+        oli.estate_info as estateInfo
         from ord_base_info obi
         LEFT JOIN ord_goods_info ogi ON obi.ord_no =ogi.ord_no
         LEFT JOIN ord_delivery_info_details odid ON obi.ord_no = odid.order_no
@@ -1157,6 +1166,7 @@
         LEFT JOIN gds_goods gg ON  ogi.sku=gg.sku
         LEFT JOIN gds_goods_category gc on gg.cid =gc.cid
         LEFT JOIN gds_goods_category ggc ON  gc.p_cid =ggc.cid
+        LEFT JOIN ord_logistics_info oli on oli.ord_no = obi.ord_no
         where
         obi.delivery_type ='HOUSE_DELIVERY'
         AND odid.logistic_status='SEALED_CAR'
@@ -1219,7 +1229,8 @@
         gg.category_name as categoryName,
         gg.brand_name as brandName,
         gg.type_name as typeName,
-        gg.specification_type as specificationType
+        gg.specification_type as specificationType,
+        oli.estate_info as estateInfo
         from ord_base_info obi
         LEFT JOIN ord_goods_info ogi ON ogi.ord_no =obi.ord_no
         LEFT JOIN st_store ss ON obi.store_id = ss.store_id
@@ -1229,6 +1240,7 @@
         LEFT JOIN gds_goods gg ON  ogi.sku=gg.sku
         LEFT JOIN gds_goods_category gc on gg.cid =gc.cid
         LEFT JOIN gds_goods_category ggc ON  gc.p_cid =ggc.cid
+        LEFT JOIN ord_logistics_info oli on oli.ord_no = obi.ord_no
         where
         obi.delivery_type ='SELF_TAKE'
         AND

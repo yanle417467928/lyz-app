@@ -89,6 +89,9 @@ public class ShipmentAndReturnGoods {
     //商品规格
     private String specificationType ;
 
+    //楼盘信息
+    private String estateInfo;
+
     public void setCustomerType(AppCustomerType appCustomerType) {
         this.customerType = appCustomerType.getDescription();
     }
