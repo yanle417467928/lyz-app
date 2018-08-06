@@ -574,6 +574,10 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                             sb.append("|行ID为" + lineId + "的生效时间为空,请检查,价目表名称:" + priceListName + "产品编码：" + sku + " 价目表类型:" + priceType + "| ");
                         }
 
+                        if(sb.length()> a){
+                            continue;
+                        }
+
                         if (sb.length() <= a) {
                             startTime = startTime + " 00:00:00";
                             if (null != endTime) {
@@ -600,6 +604,10 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                             if (null == goodsDO) {
                                 logger.info("商品sku错误");
                                 sb.append("|行ID为" + lineId + ",sku为" + sku + "的商品不存在,请检查,价目表名称:" + priceListName + " 产品编码：" + sku + " 价目表类型:" + priceType + "| ");
+                            }
+
+                            if(sb.length()> a){
+                                continue;
                             }
 
                             if (sb.length() <= 0) {
@@ -648,6 +656,9 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                         logger.info("GetEBSInfo OUT,同步EbsToApp价目表同步失败 出参 e:{}", e);
                         return AppXmlUtil.resultStrXml(Integer.valueOf(1), "同步EbsToApp价目表同步失败!,价目表名称:" + priceListName + "| ");
                     }
+                }
+                if(sb.length() > 0){
+                    return AppXmlUtil.resultStrXml(Integer.valueOf(0), sb.toString());
                 }
                 return AppXmlUtil.resultStrXml(Integer.valueOf(0), "同步EbsToApp价目表同步成功");
             }
