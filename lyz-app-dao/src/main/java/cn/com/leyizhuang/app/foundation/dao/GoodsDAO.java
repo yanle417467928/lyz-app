@@ -256,5 +256,10 @@ public interface GoodsDAO {
             @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId, @Param(value = "categorySecond") String categorySecond,
             @Param(value = "specification") String specification, @Param(value = "goodsBrand") String goodsBrand, @Param("rankCode") String rankCode);
 
+    List<UserGoodsResponse> findGoodsListByCustomerIdAndIdentityTypeAndUserRankMa(@Param(value = "userId") Long userId,
+                                                                                @Param("identityType") AppIdentityType identityType,
+                                                                                @Param("keywords") String keywords, @Param(value = "firstCategoryCode") String firstCategoryCode,
+                                                                                @Param(value = "secondCategoryId") Long secondCategoryId, @Param(value = "brandId") Long brandId,
+                                                                                @Param(value = "typeId") Long typeId, @Param(value = "specification") String specification);
 
 }
