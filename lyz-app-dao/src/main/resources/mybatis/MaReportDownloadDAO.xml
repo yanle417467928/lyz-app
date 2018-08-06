@@ -1823,6 +1823,9 @@
                     and s.store_id =#{storeId}
                 </if>
             </when>
+            <when test="'CASH' == storeType">
+                and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
+            </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
                     and s.store_type =#{storeType}
@@ -1933,6 +1936,9 @@
                     <!--#{item}-->
                 <!--</foreach>-->
 
+            </when>
+            <when test="'CASH' == storeType">
+                and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
@@ -2054,6 +2060,9 @@
                     and s.store_id =#{storeId}
                 </if>
             </when>
+            <when test="'CASH' == storeType">
+                and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
+            </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
                     and s.store_type =#{storeType}
@@ -2174,6 +2183,9 @@
                     and s.store_id =#{storeId}
                 </if>
             </when>
+            <when test="'CASH' == storeType">
+                and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
+            </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
                     and s.store_type =#{storeType} and s.store_type != 'JM'
@@ -2281,6 +2293,9 @@
                 <if test="null!=storeId and ''!=storeId">
                     and s.store_id =#{storeId}
                 </if>
+            </when>
+            <when test="'CASH' == storeType">
+                and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
@@ -2390,6 +2405,9 @@
                     and s.store_id =#{storeId}
                 </if>
             </when>
+            <when test="'CASH' == storeType">
+                and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
+            </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
                     and s.store_type =#{storeType} and s.store_type != 'JM'
@@ -2498,6 +2516,9 @@
             <when test="'FXAll'==storeType">
                 and s.store_type = -1
             </when>
+            <when test="'CASH' == storeType">
+                and s.store_type = -1
+            </when>
             <otherwise>
                 and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
             </otherwise>
@@ -2603,6 +2624,9 @@
             <when test="'FXAll'==storeType">
                 and s.store_type = -1
             </when>
+            <when test="'CASH' == storeType">
+                and s.store_type = -1
+            </when>
             <otherwise>
                 and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
             </otherwise>
@@ -2706,6 +2730,9 @@
                 and s.store_type = -1
             </when>
             <when test="'FXAll'==storeType">
+                and s.store_type = -1
+            </when>
+            <when test="'CASH' == storeType">
                 and s.store_type = -1
             </when>
             <otherwise>
