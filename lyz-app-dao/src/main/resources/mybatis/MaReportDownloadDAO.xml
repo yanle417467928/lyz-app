@@ -1011,7 +1011,7 @@
         where
         orbi.return_type in ('REFUSED_RETURN','NORMAL_RETURN') and obi.delivery_type in ('HOUSE_DELIVERY')
         AND orbi.return_status ='FINISHED'
-        AND ordd.return_logistic_status='SEALED_CAR'
+        AND ordd.return_logistic_status='AGAIN_ON_SALE'
         <if test="null !=storeId">
             AND
             orbi.store_id =#{storeId}
@@ -1087,6 +1087,7 @@
         orbi.return_type in ('NORMAL_RETURN') and obi.delivery_type in ('SELF_TAKE')
         AND orbi.return_status ='FINISHED'
         AND orl.post_status = 'FINISHED'
+        and ss.store_type != 'JM'
         <if test="null !=storeId">
             AND
             orbi.store_id =#{storeId}
