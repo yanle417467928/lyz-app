@@ -1,9 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.user;
 
-import cn.com.leyizhuang.app.core.constant.AppCustomerCreateType;
-import cn.com.leyizhuang.app.core.constant.AppCustomerLightStatus;
-import cn.com.leyizhuang.app.core.constant.AppCustomerType;
-import cn.com.leyizhuang.app.core.constant.SexType;
+import cn.com.leyizhuang.app.core.constant.*;
 import lombok.*;
 
 import java.io.Serializable;
@@ -140,4 +137,7 @@ public class AppCustomer implements Serializable {
      * 临时字段 默认导购电话
      */
     private String salesPhone;
+
+
+    private AppIdentityType identityType;
 }

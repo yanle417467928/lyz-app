@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.ActBaseDAO">
 
+
     <sql id="ALL_FIELDS">
         id, create_time, title, begin_time, end_time, city_id, city_name, act_target,
     base_type, promotion_type, condition_type, is_double, gift_choose_number, full_amount,
@@ -9,7 +10,8 @@
     is_join_once,join_interval
     </sql>
 
-    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO" useGeneratedKeys="true" keyProperty="id">
+    <insert id="save" parameterType=
+            "cn.com.leyizhuang.app.foundation.pojo.activity.ActBaseDO" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO act_base (
          create_time, title, begin_time, end_time, city_id, city_name,  act_target,
     base_type, promotion_type, condition_type, is_double, gift_choose_number, full_amount,
@@ -27,6 +29,7 @@
       #{actCode,jdbcType=VARCHAR},#{addAmount,jdbcType=DECIMAL},#{isGcOrder,jdbcType=BIT},#{isGoodsOptionalQty,jdbcType=BIT},#{isGiftOptionalQty,jdbcType=BIT}
       ,#{picUrl},#{rankCode},#{scope},#{isMemberConference},#{isJoinOnce},#{joinInterval}
         )
+
     </insert>
 
     <insert id="saveMemberConference" parameterType="cn.com.leyizhuang.app.foundation.pojo.activity.ActMemberConference" useGeneratedKeys="true" keyProperty="id">

@@ -9,9 +9,11 @@ import cn.com.leyizhuang.app.foundation.pojo.response.MaCreateOrderPeopleRespons
 import cn.com.leyizhuang.app.foundation.pojo.response.ManageUpdateCustomerTypeResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.CusRankDO;
 import cn.com.leyizhuang.app.foundation.pojo.user.RankClassification;
+import cn.com.leyizhuang.app.foundation.vo.management.customer.CusPreDepositLogVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerLebiVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
+import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.FitCreditMoneyChangeLogVO;
 import com.github.pagehelper.PageInfo;
 import org.apache.ibatis.annotations.Param;
 
@@ -110,6 +112,9 @@ public interface MaCustomerService {
     PageInfo<MaCreateOrderPeopleResponse> maFindProxyCreatePeople(Integer page, Integer size,String keywords);
 
     PageInfo<MaCreateOrderPeopleResponse> maFindCreatePeopleByStoreId(Integer page, Integer size,Long storeId);
+
+
+    CusPreDepositLogVO queryLastDecorativeCreditChange(Long storeId);
 
 
 }

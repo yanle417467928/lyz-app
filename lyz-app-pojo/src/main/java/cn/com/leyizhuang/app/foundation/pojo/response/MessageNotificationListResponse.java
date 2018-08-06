@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -24,6 +25,17 @@ public class MessageNotificationListResponse {
     private Date createTime;
     //已读标记
     private Boolean isRead;
-    //活动图片
-    private String pictureUrl;
+    //身份类型
+    private AppIdentityType  identityType;
+    //开始时间
+    private  Date beginTime;
+    //结束时间
+    private  Date endTime;
+    //消息状态
+    private String status;
+    //消息Id
+    private Long messageId;
+
+
+
 }

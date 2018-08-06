@@ -162,7 +162,8 @@
     </select>
 
 
-    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO" useGeneratedKeys="true" keyProperty="cusId">
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO"
+            useGeneratedKeys="true" keyProperty="cusId">
     INSERT INTO
     cus_customer (
     city_id,store_id,sales_consult_id,name,mobile,birthday,status,sex,open_id,pic_url,nick_name,is_cash_on_delivery,create_time,light,create_type,customer_type,last_sign_time,binding_time)
@@ -558,15 +559,15 @@
             s.store_code storeCode,
             e.identity_type identityType
             FROM
-            emp_employee e LEFT JOIN st_store s ON  s.store_id = e.store_id
+            emp_employee e LEFT JOIN st_store s ON s.store_id = e.store_id
             WHERE
             1=1
             <if test="null != keywords and '' != keywords">
                 AND (e.`name` LIKE concat(concat('%',#{keywords}),'%')
                 OR e.mobile LIKE concat(concat('%',#{keywords}),'%'))
             </if>
-            AND (e.identity_type = 'DECORATE_MANAGER' OR  e.identity_type = 'DECORATE_EMPLOYEE')
-            <if test="null != storeId and -1 != storeId" >
+            AND (e.identity_type = 'DECORATE_MANAGER' OR e.identity_type = 'DECORATE_EMPLOYEE')
+            <if test="null != storeId and -1 != storeId">
                 AND s.store_id = #{storeId}
             </if>
         </if>
@@ -574,21 +575,21 @@
 
     <select id="maFindProxyCreatePeople"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.MaCreateOrderPeopleResponse">
-            SELECT
-            e.emp_id peopleId,
-            e.`name` `name`,
-            e.mobile phone,
-            s.store_name storeName,
-            s.store_code storeCode,
-            e.identity_type identityType
-            FROM
-            emp_employee e LEFT JOIN st_store s ON  s.store_id = e.store_id
-            WHERE
-            1=1
-            <if test="null != keywords and '' != keywords">
-                AND (e.`name` LIKE concat(concat('%',#{keywords}),'%')
-                OR e.mobile LIKE concat(concat('%',#{keywords}),'%'))
-            </if>
+        SELECT
+        e.emp_id peopleId,
+        e.`name` `name`,
+        e.mobile phone,
+        s.store_name storeName,
+        s.store_code storeCode,
+        e.identity_type identityType
+        FROM
+        emp_employee e LEFT JOIN st_store s ON s.store_id = e.store_id
+        WHERE
+        1=1
+        <if test="null != keywords and '' != keywords">
+            AND (e.`name` LIKE concat(concat('%',#{keywords}),'%')
+            OR e.mobile LIKE concat(concat('%',#{keywords}),'%'))
+        </if>
     </select>
 
     <select id="maFindCreatePeopleByStoreId"
@@ -677,4 +678,34 @@
              #{sellerManagerPhone},
              #{isOpenPayhepler})
     </insert>
+
+    <select id="queryLastDecorativeCreditChange"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.customer.CusPreDepositLogVO">
+            SELECT
+               *,
+            CASE l.operator_type
+            WHEN 'DECORATE_MANAGER' THEN
+                e.`name`
+            WHEN 'DECORATE_EMPLOYEE' THEN
+                e.`name`
+            WHEN 'SELLER' THEN
+                e.`name`
+            WHEN 'CUSTOMER' THEN
+                cu.`name`
+            WHEN 'ADMINISTRATOR' THEN
+                au.`name`
+            END AS operatorName
+            FROM
+                cus_pre_deposit_log l
+            LEFT JOIN st_store s ON l.cus_id = s.store_id
+            LEFT JOIN admin_user au ON au.uid = l.operator_id
+            LEFT JOIN cus_customer cu ON cu.cus_id = l.operator_id
+            LEFT JOIN emp_employee e ON e.emp_id = l.operator_id
+            WHERE
+                l.cus_id = #{userId}
+            ORDER BY
+                l.create_time DESC
+            LIMIT 1
+    </select>
+
 </mapper>

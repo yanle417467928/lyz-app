@@ -1009,85 +1009,9 @@
         LEFT JOIN gds_goods_category gc on gg.cid =gc.cid
         LEFT JOIN gds_goods_category ggc ON  gc.p_cid =ggc.cid
         where
-        orli.delivery_type='HOUSE_PICK'
-        AND
-        ordd.return_logistic_status='AGAIN_ON_SALE'
-        <if test="null !=storeId">
-            AND
-            orbi.store_id =#{storeId}
-        </if>
-        <if test="null !=cityId">
-            AND
-            ss.city_id =#{cityId}
-        </if>
-        <if test="null !=storeType and ''!=storeType">
-            AND
-            ss.store_type =#{storeType}
-        </if>
-        <if test="null !=startTime  and ''!=startTime">
-            AND
-            iwrobh.c_end_dt >= #{startTime}
-        </if>
-        <if test="null !=endTime  and ''!=endTime">
-            AND
-            <![CDATA[iwrobh.c_end_dt<= #{endTime}]]>
-        </if>
-        AND orbi.store_id IN
-        <foreach collection="list" item="item" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
-
-        UNION  ALL
-
-        select
-        DISTINCT
-        ss.city as cityName,
-        orbi.store_id as store_id,
-        ss.store_name as storeName ,
-        ss.store_type as storeType,
-        orbi.ord_no as ordNo,
-        orbi.return_no as returnNo,
-        iwrobh.c_end_dt as operationTime,
-        orbi.order_time as createTime,
-        obi.customer_id as customerId,
-        obi.customer_phone as customerPhone,
-        obi.customer_name as customerName,
-        obi.customer_type as customerType,
-        obi.sales_consult_name as salesConsultName,
-        orgi.company_flag as companyFlag,
-        orgi.sku as sku,
-        orgi.sku_name as skuName,
-        orgi.goods_line_type as goodsLineType,
-        orgi.return_qty as orderQty,
-        orgi.return_price as returnPrice,
-        orpc.purchase_price as purchasePrice,
-        orpc.qty as couponQty,
-        orbi.return_no as referenceNumber,
-        wh.wh_name as wareHouse,
-        orli.delivery_type as returnOrderDeliveryType,
-        obi.delivery_type as orderDeliveryType,
-        ggc.category_name as pcategoryName,
-        gg.category_name as categoryName,
-        gg.brand_name as brandName,
-        gg.type_name as typeName,
-        gg.specification_type as specificationType
-        from ord_return_base_info orbi
-        LEFT JOIN ord_return_goods_info orgi ON orgi.return_no =orbi.return_no
-        LEFT JOIN ord_base_info obi ON orbi.ord_no=obi.ord_no
-        LEFT JOIN ord_return_delivery_detail ordd ON orbi.return_no = ordd.return_no
-        LEFT JOIN (SELECT * from inter_wta_return_order_back_header GROUP  BY po_no) iwrobh ON orbi.return_no = iwrobh.po_no
-        LEFT JOIN st_store ss ON orbi.store_id = ss.store_id
-        LEFT JOIN ord_return_logistic_info orli on orli.return_no = orbi.return_no
-        LEFT JOIN (select return_no,purchase_price ,sum(qty) qty,sku from ord_return_product_coupon GROUP BY return_no,sku,purchase_price) orpc on orbi.return_no =orpc.return_no
-        AND orpc.sku = orgi.sku  AND orgi.goods_line_type='PRODUCT_COUPON'
-        LEFT JOIN warehouse wh on wh.wh_no = ordd.warehouse_no
-        LEFT JOIN gds_goods gg ON  orgi.sku=gg.sku
-        LEFT JOIN gds_goods_category gc on gg.cid =gc.cid
-        LEFT JOIN gds_goods_category ggc ON  gc.p_cid =ggc.cid
-        where
-        orbi.return_type='REFUSED_RETURN'
-        AND
-        ordd.return_logistic_status='AGAIN_ON_SALE'
+        orbi.return_type in ('REFUSED_RETURN','NORMAL_RETURN') and obi.delivery_type in ('HOUSE_DELIVERY')
+        AND orbi.return_status ='FINISHED'
+        AND ordd.return_logistic_status='SEALED_CAR'
         <if test="null !=storeId">
             AND
             orbi.store_id =#{storeId}
@@ -1113,7 +1037,9 @@
             #{item}
         </foreach>
 
-        UNION ALL
+
+        UNION
+
         select
         DISTINCT
         ss.city as cityName,
@@ -1150,7 +1076,7 @@
         LEFT JOIN ord_return_goods_info orgi ON orgi.return_no =orbi.return_no
         LEFT JOIN ord_base_info obi ON orbi.ord_no=obi.ord_no
         LEFT JOIN st_store ss ON orbi.store_id = ss.store_id
-        LEFT JOIN ord_return_lifecycle orl ON orbi.return_no = orl.return_no
+        LEFT JOIN ord_return_lifecycle orl ON orbi.return_no = orl.return_no and orl.operation = "NORMAL_RETURN" and orl.post_status = "FINISHED"
         LEFT JOIN ord_return_logistic_info orli on orli.return_no = orbi.return_no
         LEFT JOIN (select return_no,purchase_price ,sum(qty) qty,sku from ord_return_product_coupon GROUP BY return_no,sku,purchase_price) orpc on orbi.return_no =orpc.return_no
         AND orpc.sku = orgi.sku  AND orgi.goods_line_type='PRODUCT_COUPON'
@@ -1158,13 +1084,9 @@
         LEFT JOIN gds_goods_category gc on gg.cid =gc.cid
         LEFT JOIN gds_goods_category ggc ON  gc.p_cid =ggc.cid
         where
-        orli.delivery_type='RETURN_STORE'
-        AND
-        orbi.return_status ='FINISHED'
-        AND
-        orl.post_status = 'FINISHED'
-        AND
-        obi.delivery_type !='PRODUCT_COUPON'
+        orbi.return_type in ('NORMAL_RETURN') and obi.delivery_type in ('SELF_TAKE')
+        AND orbi.return_status ='FINISHED'
+        AND orl.post_status = 'FINISHED'
         <if test="null !=storeId">
             AND
             orbi.store_id =#{storeId}
@@ -1190,7 +1112,7 @@
             #{item}
         </foreach>
 
-        UNION ALL
+        UNION
         select
         DISTINCT
         obi.city_name as cityName,
@@ -1236,8 +1158,8 @@
         LEFT JOIN gds_goods_category ggc ON  gc.p_cid =ggc.cid
         where
         obi.delivery_type ='HOUSE_DELIVERY'
-        AND
-        odid.logistic_status='SEALED_CAR'
+        AND odid.logistic_status='SEALED_CAR'
+        and obi.`status` in ('PENDING_RECEIVE','FINISHED','REJECTED')
         <if test="null !=storeId">
             AND
             obi.store_id =#{storeId}
@@ -1263,7 +1185,7 @@
             #{item}
         </foreach>
 
-        UNION ALL
+        UNION
 
         select
         DISTINCT
@@ -1273,7 +1195,7 @@
         ss.store_type as storeType,
         obi.ord_no as ordNo,
         NULL as returnNo,
-        ol.operation_time as operationTime,
+        os.shipping_time as operationTime,
         obi.create_time as createTime,
         obi.customer_id as customerId,
         obi.customer_phone as customerPhone,
@@ -1300,7 +1222,7 @@
         from ord_base_info obi
         LEFT JOIN ord_goods_info ogi ON ogi.ord_no =obi.ord_no
         LEFT JOIN st_store ss ON obi.store_id = ss.store_id
-        LEFT JOIN ord_lifecycle ol ON obi.ord_no = ol.ord_no
+        LEFT JOIN ord_shipping os ON os.ord_no = obi.ord_no
         LEFT JOIN (select ord_no,purchase_price ,count(*) as qty,sku from ord_coupon_info GROUP BY sku,purchase_price,ord_no) oci ON obi.ord_no= oci.ord_no
         AND oci.sku = ogi.sku  AND ogi.goods_line_type='PRODUCT_COUPON'
         LEFT JOIN gds_goods gg ON  ogi.sku=gg.sku
@@ -1310,8 +1232,7 @@
         obi.delivery_type ='SELF_TAKE'
         AND
         obi.status ='FINISHED'
-        AND
-        ol.post_status = 'FINISHED'
+        and ss.store_type != 'JM'
         <if test="null !=storeId">
             AND
             obi.store_id =#{storeId}
@@ -1326,16 +1247,17 @@
         </if>
         <if test="null !=startTime  and ''!=startTime ">
             AND
-            ol.operation_time >= #{startTime}
+            os.shipping_time >= #{startTime}
         </if>
         <if test="null !=endTime and ''!=endTime">
             AND
-            <![CDATA[ol.operation_time<= #{endTime} ]]>
+            <![CDATA[os.shipping_time<= #{endTime} ]]>
         </if>
         AND obi.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
         </foreach>
+
     </select>
 
     <select id="getJxPriceByOrderNoAndSku"

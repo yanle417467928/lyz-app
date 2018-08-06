@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MessageBaseDao">
+
+    <sql id="ALL_FIELDS">
+    id,title,detailed,
+    identity_type,create_time,
+    city_id,begin_time,end_time,status,scope,message_type
+    </sql>
+
+    <select id="queryList" resultType="cn.com.leyizhuang.app.foundation.pojo.message.MessageListDO">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM message_notification
+    </select>
+
+    <select id="queryByKeywords" resultType="cn.com.leyizhuang.app.foundation.pojo.message.MessageListDO">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM message_notification
+        WHERE
+        1=1
+        <if test="keywords != null">
+            AND title LIKE concat("%",#{keywords},"%")
+        </if>
+        <if test="null != cityId and -1 !=cityId">
+            and city_id = #{cityId}
+        </if>
+        <if test="status == ''">
+            -- AND status != "INVALID"
+            ORDER BY create_time DESC
+        </if>
+
+        <if test="status == 'NEW'">
+            and status = #{status}
+            ORDER BY create_time DESC
+        </if>
+        <if test="status == 'PUBLISH'">
+            and status = #{status}
+            ORDER BY create_time DESC
+        </if>
+    </select>
+
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.message.MessageListDO"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO message_notification (
+        title,detailed,
+        identity_type,create_time,
+        city_id,begin_time,end_time,status,scope,message_type
+        )
+        VALUES
+        (
+        #{title,jdbcType=VARCHAR},
+        #{detailed,jdbcType=VARCHAR},
+        #{identityType,jdbcType=VARCHAR},
+        #{createTime,jdbcType=TIMESTAMP},
+        #{cityId,jdbcType=BIGINT},
+        #{beginTime,jdbcType=TIMESTAMP},
+        #{endTime,jdbcType=TIMESTAMP},
+        #{status,jdbcType=VARCHAR},
+        #{scope,jdbcType=VARCHAR},
+        #{messageType,jdbcType=VARCHAR}
+        )
+    </insert>
+
+
+    <insert id="saveMemberConference"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.message.MessageMemberConference"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO message_member_conference (identity_type,user_id,message_id,create_time,is_read,store_id)
+        VALUES ( #{identityType}, #{userId},#{messageId}, #{createTime},#{isRead},#{storeId})
+    </insert>
+
+
+    <select id="queryById" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.message.MessageListDO">
+        SELECT
+        <include refid="ALL_FIELDS"/>
+        FROM message_notification WHERE ID = #{id}
+    </select>
+
+    <update id="update" parameterType="cn.com.leyizhuang.app.foundation.pojo.message.MessageListDO">
+        UPDATE message_notification
+        <set>
+            <if test="detailed != null">
+                detailed = #{detailed,jdbcType=VARCHAR},
+            </if>
+            <if test="identityType != null">
+                identity_type = #{identityType,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="title != null">
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="beginTime != null">
+                begin_time = #{beginTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cityId != null">
+                city_id = #{cityId,jdbcType=BIGINT},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="scope != null">
+                scope = #{scope,jdbcType=VARCHAR},
+            </if>
+            <if test="messageType != null">
+                message_type = #{messageType,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+
+    <update id="editMessage" parameterType="cn.com.leyizhuang.app.foundation.pojo.message.MessageListDO">
+        UPDATE message_notification
+        <set>
+            <if test="detailed != null">
+                detailed = #{detailed,jdbcType=VARCHAR},
+            </if>
+            <if test="identityType != null">
+                identity_type = #{identityType,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="title != null">
+                title = #{title,jdbcType=VARCHAR},
+            </if>
+            <if test="beginTime != null">
+                begin_time = #{beginTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cityId != null">
+                city_id = #{cityId,jdbcType=BIGINT},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="scope != null">
+                scope = #{scope,jdbcType=VARCHAR},
+            </if>
+            <if test="messageType != null">
+                message_type = #{messageType,jdbcType=VARCHAR},
+            </if>
+        </set>
+        WHERE
+        id = #{id}
+    </update>
+
+
+    <select id="findCustomer" resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer">
+        SELECT
+        cc.cus_id cusId,
+        cc.`name` `name`,
+        cc.mobile mobile
+        FROM
+        cus_customer cc
+        LEFT JOIN message_member_conference mmc ON mmc.user_id = cc.cus_id
+        WHERE
+        mmc.message_id = #{messageId}
+    </select>
+
+    <select id="FindAllEmployeeId" resultType="cn.com.leyizhuang.app.foundation.pojo.management.employee.SimpleEmployeeParam">
+        SELECT
+        emp_id AS id , identity_type AS identityType
+        FROM
+        emp_employee
+    </select>
+    <select id="FindAllEmployeeIdOnlyPSY" resultType="cn.com.leyizhuang.app.foundation.pojo.management.employee.SimpleEmployeeParam">
+        SELECT
+        emp_id AS id, identity_type AS identityType
+        FROM
+        emp_employee
+        WHERE
+        identity_type = "DELIVERY_CLERK"
+    </select>
+    <select id="FindAllEmployeeIdOnlyDG" resultType="cn.com.leyizhuang.app.foundation.pojo.management.employee.SimpleEmployeeParam">
+        SELECT
+        emp_id AS id, identity_type AS identityType
+        FROM
+        emp_employee
+        WHERE
+        identity_type = "SELLER"
+    </select>
+    <select id="FindAllEmployeeIdOnlyYG" resultType="cn.com.leyizhuang.app.foundation.pojo.management.employee.SimpleEmployeeParam">
+        SELECT
+        emp_id AS id, identity_type AS identityType
+        FROM
+        emp_employee
+        WHERE
+        identity_type = "DECORATE_EMPLOYEE"
+    </select>
+    <select id="FindAllEmployeeIdOnlyJL" resultType="cn.com.leyizhuang.app.foundation.pojo.management.employee.SimpleEmployeeParam">
+        SELECT
+        emp_id AS id
+        identity_type AS identityType
+        FROM
+        emp_employee
+        WHERE
+        identity_type = "DECORATE_MANAGER"
+    </select>
+    <select id="FindAllStoreId" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.StoreDO">
+        SELECT
+        store_id
+        FROM
+        st_store
+    </select>
+
+    <select id="FindAllCustomerId" resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer">
+        SELECT
+        cus_id AS cusId
+        FROM
+        cus_customer
+    </select>
+
+
+    <select id="findStore" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
+        SELECT
+        ss.store_id, ss.store_name StoreName
+        FROM
+        st_store ss
+        LEFT JOIN message_member_conference mmc ON mmc.store_id = ss.store_id
+        WHERE
+        mmc.message_id = #{messgaeId}
+    </select>
+
+    <delete id="deleteMemberConferenceByMessageBaseId4Customer">
+        DELETE
+        FROM
+        message_member_conference
+        WHERE
+        message_id = #{id}
+        AND
+        store_id IS NULL
+        AND
+		identity_type="CUSTOMER"
+    </delete>
+
+    <delete id="deleteMemberConferenceByMessageBaseId4Stores">
+        DELETE
+        FROM
+        message_member_conference
+        WHERE
+        message_id = #{id}
+        AND
+        user_id IS NULL
+        AND
+        identity_type IS NULL
+    </delete>
+
+
+    <delete id="deleteMemberConferenceByMessageBaseIdAllYG">
+        DELETE
+        FROM
+        message_member_conference
+        WHERE
+        message_id = #{id}
+        AND
+        identity_type =#{identityType}
+
+    </delete>
+
+
+</mapper>
