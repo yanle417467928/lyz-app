@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo;
 
 import cn.com.leyizhuang.app.core.constant.CouponGetType;
+import cn.com.leyizhuang.app.core.constant.remote.ProductCouponSubjectType;
 import lombok.*;
 
 import java.io.Serializable;
@@ -131,4 +132,9 @@ public class CustomerProductCoupon implements Serializable {
      * 经销价
      */
     private Double wholesalePrice;
+
+    /**
+     * 产品券主体类型
+     */
+    private ProductCouponSubjectType productCouponSubjectType;
 }
