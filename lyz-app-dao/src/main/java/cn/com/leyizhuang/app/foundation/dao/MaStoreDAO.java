@@ -11,6 +11,7 @@ import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.StoreDO;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.FitCreditMoneyChangeLogVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositLogVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO;
 import org.apache.ibatis.annotations.Param;
@@ -150,4 +151,6 @@ public interface MaStoreDAO {
     List<SimpleStoreParam> findStoresListByCompanyCodeAndStoreTypeForSale(@Param("companyCode") String companyCode, @Param("storeType") String storeType, @Param("list") List<Long> storeIds);
 
     FitCreditMoneyChangeLogVO queryLastDecorativeCreditChange(@Param("storeId") Long storeId);
+
+    StorePreDepositLogVO queryLastStoreChange(@Param("storeId") Long storeId);
 }

@@ -70,6 +70,8 @@ public class CusPreDepositLogVO {
      */
     private String detailReason;
 
+    private String operatorName;
+
     public void setChangeType(CustomerPreDepositChangeType changeType){
         this.changeType = changeType.getDescription();
     }

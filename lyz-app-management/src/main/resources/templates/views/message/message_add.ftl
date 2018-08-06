@@ -141,7 +141,7 @@
 
             </div>
 
-                    <div class="row">
+                    <#--<div class="row">
                         <div class="col-xs-12 col-md-12">
                             <label for="title">
                             </label>
@@ -153,9 +153,9 @@
                                                 class="fa fa-plus"></i>
                                         </button>
                                     </div>
-                                    <!-- /.box-tools -->
+                                    <!-- /.box-tools &ndash;&gt;
                                 </div>
-                                <!-- /.box-header -->
+                                <!-- /.box-header &ndash;&gt;
                                 <div class="box-body">
                                     <div class="row">
                                         <div class="col-xs-12 col-md-2">
@@ -169,10 +169,10 @@
 
                                     </div>
                                 </div>
-                                <!-- /.box-body -->
+                                <!-- /.box-body &ndash;&gt;
                             </div>
                         </div>
-                    </div>
+                    </div>-->
 
 
 

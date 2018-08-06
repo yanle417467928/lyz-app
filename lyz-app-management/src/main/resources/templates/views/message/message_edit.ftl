@@ -179,7 +179,7 @@
                                     <#if customerList??>
                                         <#list customerList as item>
                                             <label id="people${item.cusId}" class='label label-success'
-                                                   style='margin-right: 6px;'>${item.name}-${item.mobile}&nbsp;
+                                                   style='margin-right: 6px;'>${item.name!''}-${item.mobile!''}&nbsp;
                                                 <span onclick="deleteHtml('people'+${item.cusId})">×</span>
                                             </label>
                                         </#list>
@@ -221,7 +221,7 @@
                                     <div id="stores" style="margin-top: 10px;">
                                     <#if stores??>
                                         <#list stores as item>
-                                            <label id="people${item.storeId}" class='label label-success'
+                                            <label id="stores${item.storeId}" class='label label-success'
                                                    style='margin-right: 6px;'>${item.storeName}
                                                 <span onclick="deleteHtml('people'+${item.storeId})">×</span>
                                             </label>
@@ -284,14 +284,7 @@
                                                         <div class="box-body table-reponsive">
                                                             <table id="peopleDataGrid"
                                                                    class="table table-bordered table-hover">
-                                                            <#if customerList??>
-                                                                <#list customerList as item>
-                                                                    <label id="people${item.cusId}" class='label label-success'
-                                                                           style='margin-right: 6px;'>${item.name}-${item.mobile}&nbsp;
-                                                                        <span onclick="deleteHtml('people'+${item.cusId})">×</span>
-                                                                    </label>
-                                                                </#list>
-                                                            </#if>
+
 
                                                             </table>
                                                         </div>

@@ -144,7 +144,8 @@ public class MessageBaseServieceImpl implements MessageBaseService {
                     messageMemberConference.setMessageId(messageListDO.getId());
                     messageMemberConference.setCreateTime(new Date());
                     messageMemberConference.setIsRead(false);
-                    messageMemberConference.setIdentityType(messageMemberConference.getIdentityType());
+                    messageMemberConference.setIdentityType(AllCusList.get(i).getIdentityType());
+
                     messageBaseDao.saveMemberConference(messageMemberConference);
                 }
 
@@ -188,7 +189,7 @@ public class MessageBaseServieceImpl implements MessageBaseService {
                     messageMemberConference.setMessageId(messageListDO.getId());
                     messageMemberConference.setCreateTime(new Date());
                     messageMemberConference.setIsRead(false);
-                    messageMemberConference.setIdentityType(messageMemberConference.getIdentityType());
+                    messageMemberConference.setIdentityType(AllEmployeePsyList.get(i).getIdentityType());
                     messageBaseDao.saveMemberConference(messageMemberConference);
 
 

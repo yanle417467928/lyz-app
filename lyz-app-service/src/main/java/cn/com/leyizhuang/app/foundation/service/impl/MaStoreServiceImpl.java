@@ -17,6 +17,7 @@ import cn.com.leyizhuang.app.foundation.service.MaStoreService;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorativeCompanyDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.FitCreditMoneyChangeLogVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositLogVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO;
 import cn.com.leyizhuang.common.core.exception.AppConcurrentExcp;
@@ -423,6 +424,15 @@ public class MaStoreServiceImpl implements MaStoreService {
         }
 
         return mastoreDAO.queryLastDecorativeCreditChange(storeId);
+    }
+
+    @Override
+    public StorePreDepositLogVO queryLastStoreChange(Long storeId){
+        if (storeId == null){
+            return null;
+        }
+
+        return mastoreDAO.queryLastStoreChange(storeId);
     }
 
 }
