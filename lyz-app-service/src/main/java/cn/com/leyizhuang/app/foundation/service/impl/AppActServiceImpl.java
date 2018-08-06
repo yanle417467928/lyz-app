@@ -1038,13 +1038,42 @@ public class AppActServiceImpl implements AppActService {
                                 giftList.add(gift);
                             }
 
+                            List<Long> gidList = new ArrayList<>();
+                            gidList.add(1464L);
+                            gidList.add(1519L);
+                            gidList.add(2417L);
+
+                            /**
+                             * 临时 加一套辅料 成都
+                             */
+                            if (appCustomer.getCityId().equals(1L)){
+
+                                List<GiftListResponseGoods> goodsListResponseGoods = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserIdAndIdentityType(
+                                        gidList, cusId, AppIdentityType.CUSTOMER);
+                                for (GiftListResponseGoods item : goodsListResponseGoods){
+                                    GiftListResponseGoods gift = new GiftListResponseGoods();
+
+                                    gift.setGoodsId(item.getGoodsId());
+                                    gift.setSku(item.getSku());
+                                    gift.setSkuName(item.getSkuName());
+                                    gift.setQty(1);
+                                    gift.setRetailPrice(0D);
+                                    gift.setCoverImageUri(item.getCoverImageUri());
+                                    gift.setGoodsUnit(item.getGoodsUnit());
+                                    gift.setGoodsType(AppGoodsLineType.PRESENT);
+                                    gift.setGoodsSpecification(item.getGoodsSpecification());
+                                    giftList.add(gift);
+                                }
+                            }
+
+
                             // 创建一个促销结果
                             PromotionsGiftListResponse response = new PromotionsGiftListResponse();
 
                             response.setPromotionId(actBaseDO.getId());
                             response.setPromotionTitle(actBaseDO.getTitle());
                             response.setIsGiftOptionalQty(actBaseDO.getIsGiftOptionalQty());
-                            response.setMaxChooseNumber(actBaseDO.getGiftChooseNumber() * enjoyActGoodsList.size());
+                            response.setMaxChooseNumber(actBaseDO.getGiftChooseNumber() * enjoyActGoodsList.size() + gidList.size());
                             response.setEnjoyTimes(enjoyActGoodsList.size());
                             response.setGiftList(giftList);
                             giftListResponseList.add(response);
