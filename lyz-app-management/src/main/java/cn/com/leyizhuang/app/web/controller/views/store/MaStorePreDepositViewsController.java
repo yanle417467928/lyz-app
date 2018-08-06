@@ -5,6 +5,8 @@ import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.foundation.service.BankService;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
 import cn.com.leyizhuang.app.foundation.vo.management.BankVO;
+import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.FitCreditMoneyChangeLogVO;
+import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositLogVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import cn.com.leyizhuang.app.web.controller.views.customer.MaCustomerPreDepositViewsController;
@@ -64,6 +66,7 @@ public class MaStorePreDepositViewsController extends BaseController {
     @GetMapping(value = "/edit/{storeId}")
     public String resourceEdit(ModelMap map, @PathVariable(value = "storeId") Long storeId) {
         StorePreDepositVO storePreDepositVO = this.maStoreService.queryStorePredepositByStoreId(storeId);
+        StorePreDepositLogVO log = this.maStoreService.queryLastStoreChange(storeId);
         if (null == storePreDepositVO) {
             logger.warn("跳转变更预存款页面失败，storePreDepositVO(storeId = {}) == null", storeId);
             error404();
@@ -79,6 +82,7 @@ public class MaStorePreDepositViewsController extends BaseController {
             map.addAttribute("storePreDepositVO", storePreDepositVO);
             List<BankVO> bankVOS = this.bankService.findBankByIsEnable();
             map.addAttribute("bankVOS", bankVOS);
+            map.addAttribute("changeLog",log);
         }
         return "/views/store/store_pre_deposit_edit";
     }

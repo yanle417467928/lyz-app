@@ -10,6 +10,7 @@ import cn.com.leyizhuang.app.foundation.pojo.user.CusRankDO;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerLeBi;
 import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.pojo.user.RankClassification;
+import cn.com.leyizhuang.app.foundation.vo.management.customer.CusPreDepositLogVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerLebiVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
 import org.apache.ibatis.annotations.Param;
@@ -162,4 +163,6 @@ public interface MaCustomerDAO {
     void updatePayhelperInfoByCusId(PayhelperInfo payhelperInfo);
 
     void addPayhelperInfo(PayhelperInfo payhelperInfo);
+
+    CusPreDepositLogVO queryLastDecorativeCreditChange(Long storeId);
 }

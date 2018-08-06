@@ -18,8 +18,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author GenerationRoad
- * @date 2017/10/10
+ * @author 王浩
+ * @date 2018/8/2
+ *
+ * 用户消息通知控制器
+ *
  */
 @RestController
 @RequestMapping("/app/user/message")
@@ -59,6 +62,8 @@ public class UserMessageNotificationController {
             logger.info("getMessageNotificationList OUT,获取消息通知列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
+
+
         List<MessageNotificationListResponse> messageNotificationListResponseList = this.messageNotificationService.queryListByUserIdAndUserType(userId, identityType);
         //将未读消息排在最前
         messageNotificationListResponseList.sort(Comparator.comparing(MessageNotificationListResponse::getIsRead).
@@ -104,10 +109,8 @@ public class UserMessageNotificationController {
             Map<String, Integer> returnMap = new HashMap<>(2);
 
             int countN = messageNotificationService.countUnreadNotifyMessage(userId, identityType);
-            int countL = orderDeliveryInfoDetailsService.countUnreadLogisticsMessage(userId, identityType);
 
             returnMap.put("notifyMsg", countN);
-            returnMap.put("logisticMsg", countL);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, returnMap);
             logger.info("getUserUnreadNotifyMessage OUT,获取用户通消息知数目成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
