@@ -1663,6 +1663,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         }
                     }
                 }
+
                 //返回门店预存款
                 if (null != returnOrderBilling.getStPreDeposit() && returnOrderBilling.getStPreDeposit() > AppConstant.PAY_UP_LIMIT) {
                     for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
@@ -1708,7 +1709,24 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                             }
                         }
                     }
-                }//装饰公司退门店信用额度
+                }
+
+                //如果是现金退款,直接记退款明细
+                if (null != returnOrderBilling.getCash() && returnOrderBilling.getCash() > AppConstant.PAY_UP_LIMIT) {
+                    Double cash = returnOrderBilling.getCash();
+                    ReturnOrderBillingDetail returnOrderBillingDetail = new ReturnOrderBillingDetail();
+                    returnOrderBillingDetail.setCreateTime(Calendar.getInstance().getTime());
+                    returnOrderBillingDetail.setRoid(returnOrderBaseInfo.getRoid());
+                    returnOrderBillingDetail.setReturnNo(returnOrderNumber);
+                    returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.CASH);
+                    returnOrderBillingDetail.setReturnMoney(cash);
+                    returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
+                    returnOrderBillingDetail.setReplyCode(null);
+                    returnOrderBillingDetail.setRefundNumber(OrderUtils.getRefundNumber());
+                    returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
+                }
+
+                //装饰公司退门店信用额度
                 if (null != returnOrderBilling.getStCreditMoney() && returnOrderBilling.getStCreditMoney() > AppConstant.PAY_UP_LIMIT) {
                     for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                         //查询门店信用金

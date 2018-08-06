@@ -1777,6 +1777,22 @@ public class CommonServiceImpl implements CommonService {
                 }
 
             }
+        } else if (orderBaseInfo.getDeliveryType() == AppDeliveryType.PRODUCT_COUPON) {
+            //顾客下单发送短信给导购
+            if (orderBaseInfo.getCreatorIdentityType() == AppIdentityType.CUSTOMER) {
+                SmsAccount account = smsAccountService.findOne();
+                String tips = "【乐易装】亲爱的用户,您的会员:"
+                        + orderBaseInfo.getCreatorName()
+                        + "在App下单了,订单号:"
+                        + orderBaseInfo.getOrderNumber() +
+                        ",请及时跟进。";
+                try {
+                    String code = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(),
+                            orderBaseInfo.getSalesConsultPhone(), URLEncoder.encode(tips, "GB2312"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return pickUpCode;
     }
@@ -2797,6 +2813,7 @@ public class CommonServiceImpl implements CommonService {
                 baseInfo.setStatus(AppOrderStatus.FINISHED);
                 //保存订单商品信息
                 if (null != orderGoodsInfoList && orderGoodsInfoList.size() > 0) {
+                    StringBuilder msg = new StringBuilder("您购买的");
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                         if (null != goodsInfo.getId() && baseInfo.getOrderType() == AppOrderType.COUPON && billingDetails.getIsPayUp()) {
                             if (null != goodsInfo.getOrderQuantity() && goodsInfo.getOrderQuantity() > 0) {
@@ -2861,7 +2878,13 @@ public class CommonServiceImpl implements CommonService {
 
                                 }
                             }
+                            msg.append(goodsInfo.getSkuName());
+                            msg.append("产品券");
+                            msg.append(goodsInfo.getOrderQuantity());
+                            msg.append("张,");
                         }
+                        msg.append("已存入您的钱包中，请在六个月内提取完毕，有任何问题，请洽询您的专属导购！");
+                        smsAccountService.commonSendGBKSms(baseInfo.getCustomerPhone(), msg.toString());
                     }
                 }
             }
