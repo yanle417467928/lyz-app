@@ -19,6 +19,8 @@ public interface GoodsPriceService {
 
     void update(GoodsPrice goodsPrice);
 
+    void updateByEbs(GoodsPrice goodsPrice);
+
     void delete(GoodsPrice goodsPrice);
 
     GoodsPrice findGoodsPrice(Long priceLineId);

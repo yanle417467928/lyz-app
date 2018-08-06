@@ -21,6 +21,8 @@ public interface GoodsPriceDAO {
 
     void update(GoodsPrice goodsPrice);
 
+    void updateByEbs(GoodsPrice goodsPrice);
+
     void delete(Long priceLineId);
 
     GoodsPrice findByPriceLineId(Long priceLineId);
@@ -52,7 +54,7 @@ public interface GoodsPriceDAO {
      */
     GoodsPrice findGoodsPriceByGoodsIDAndStoreIDAndEmpId(@Param("goodsID") Long goodsID, @Param("storeID") Long storeID,@Param("empId") Long empId);
 
-    GoodsPrice findGoodsPriceByTypeAndStoreIDAndSku(@Param("priceType") String priceType, @Param("storeID") Long storeID,@Param("sku") String sku);
+    GoodsPrice findGoodsPriceByTypeAndStoreIDAndSku(@Param("priceType") String priceType, @Param("storeId") Long storeID,@Param("sku") String sku);
 
     List<GiftListResponseGoods> findCustomerGoodsPriceListByGoodsIdsAndUserId(@Param(value = "list") List<Long> goodsIdList,
                                                                               @Param(value = "userId") Long userId);
