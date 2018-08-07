@@ -41,34 +41,14 @@
         </if>
     </select>
 
-    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.message.MessageListDO"
-            useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO message_notification (
-        title,detailed,
-        identity_type,create_time,
-        city_id,begin_time,end_time,status,scope,message_type
-        )
-        VALUES
-        (
-        #{title,jdbcType=VARCHAR},
-        #{detailed,jdbcType=VARCHAR},
-        #{identityType,jdbcType=VARCHAR},
-        #{createTime,jdbcType=TIMESTAMP},
-        #{cityId,jdbcType=BIGINT},
-        #{beginTime,jdbcType=TIMESTAMP},
-        #{endTime,jdbcType=TIMESTAMP},
-        #{status,jdbcType=VARCHAR},
-        #{scope,jdbcType=VARCHAR},
-        #{messageType,jdbcType=VARCHAR}
-        )
-    </insert>
+
 
 
     <insert id="saveMemberConference"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.message.MessageMemberConference"
             useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO message_member_conference (identity_type,user_id,message_id,create_time,is_read,store_id)
-        VALUES ( #{identityType}, #{userId},#{messageId}, #{createTime},#{isRead},#{storeId})
+        INSERT INTO message_member_conference (identity_type,user_id,message_id,create_time,is_read)
+        VALUES ( #{identityType}, #{userId},#{messageId}, #{createTime},#{isRead})
     </insert>
 
 
@@ -173,6 +153,8 @@
         emp_id AS id , identity_type AS identityType
         FROM
         emp_employee
+        WHERE
+        identity_type = #{identityType}
     </select>
     <select id="FindAllEmployeeIdOnlyPSY" resultType="cn.com.leyizhuang.app.foundation.pojo.management.employee.SimpleEmployeeParam">
         SELECT
@@ -222,7 +204,7 @@
     </select>
 
 
-    <select id="findStore" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
+   <!-- <select id="findStore" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
         SELECT
         ss.store_id, ss.store_name StoreName
         FROM
@@ -230,31 +212,16 @@
         LEFT JOIN message_member_conference mmc ON mmc.store_id = ss.store_id
         WHERE
         mmc.message_id = #{messgaeId}
-    </select>
+    </select>-->
 
-    <delete id="deleteMemberConferenceByMessageBaseId4Customer">
+    <delete id="delete4Message">
         DELETE
         FROM
         message_member_conference
         WHERE
-        message_id = #{id}
-        AND
-        store_id IS NULL
-        AND
-		identity_type="CUSTOMER"
+        message_id = #{messageId}
     </delete>
 
-    <delete id="deleteMemberConferenceByMessageBaseId4Stores">
-        DELETE
-        FROM
-        message_member_conference
-        WHERE
-        message_id = #{id}
-        AND
-        user_id IS NULL
-        AND
-        identity_type IS NULL
-    </delete>
 
 
     <delete id="deleteMemberConferenceByMessageBaseIdAllYG">
@@ -267,6 +234,73 @@
         identity_type =#{identityType}
 
     </delete>
+    <select id="FindCustomerByStoreId" resultType="cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer">
+        SELECT
+            cus_id AS cusId
+        FROM
+            cus_customer
+        WHERE
+        store_id=#{storeId}
+        AND
+        status IS TRUE
+
+    </select>
+    <select id="FindEmployeeByStoreId" resultType="cn.com.leyizhuang.app.foundation.pojo.management.employee.SimpleEmployeeParam">
+        SELECT
+        emp_id AS id,
+        identity_type AS identityType
+        FROM
+        emp_employee
+        WHERE
+        emp_id=#{storeId}
+        AND
+        status IS TRUE
+
+    </select>
+    <select id="FindEmployeeById" resultType="cn.com.leyizhuang.app.foundation.pojo.management.employee.SimpleEmployeeParam">
+        SELECT
+        emp_id AS id,
+        identity_type AS identityType
+        FROM
+        emp_employee
+        WHERE
+        emp_id=#{id}
+        AND
+        status IS TRUE
+
+    </select>
+
+
+    <insert id="save" parameterType="cn.com.leyizhuang.app.foundation.pojo.message.MessageListDO"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO message_notification (
+        title,detailed,
+        identity_type,create_time,
+        city_id,begin_time,end_time,status,scope,message_type
+        )
+        VALUES
+        (
+        #{title,jdbcType=VARCHAR},
+        #{detailed,jdbcType=VARCHAR},
+        #{identityType,jdbcType=VARCHAR},
+        #{createTime,jdbcType=TIMESTAMP},
+        #{cityId,jdbcType=BIGINT},
+        #{beginTime,jdbcType=TIMESTAMP},
+        #{endTime,jdbcType=TIMESTAMP},
+        #{status,jdbcType=VARCHAR},
+        #{scope,jdbcType=VARCHAR},
+        #{messageType,jdbcType=VARCHAR}
+        )
+    </insert>
+
+
+    <insert id="saveBatch">
+        INSERT INTO message_member_conference (identity_type,user_id,message_id,create_time,is_read)
+        VALUES
+        <foreach collection="list" item="i" separator=",">
+            ( #{i.identityType}, #{i.userId},#{i.messageId}, #{i.createTime},#{i.isRead})
+        </foreach>
+    </insert>
 
 
 </mapper>

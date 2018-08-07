@@ -38,6 +38,7 @@ public class MessageBaseServieceImpl implements MessageBaseService {
     @Autowired
     private MessageBaseDao messageBaseDao;
 
+
     @Override
     public List<MessageListDO> queryList() {
         return messageBaseDao.queryList();
@@ -51,185 +52,128 @@ public class MessageBaseServieceImpl implements MessageBaseService {
     }
 
     @Transactional
-    public void save(MessageListDO messageListDO, List<Long> storeList, ArrayList<Long> customerIds) {
-        {
-            messageListDO.setStatus(ActStatusType.NEW);
-            messageListDO.setCreateTime(LocalDateTime.now());
-            messageBaseDao.save(messageListDO);
-            //选择了会员的保存
-            if (null != customerIds && customerIds.size() > 0) {
-                for (Long userId : customerIds) {
-                    MessageMemberConference messageMemberConference = new MessageMemberConference();
-                    messageMemberConference.setUserId(userId);
-                    messageMemberConference.setMessageId(messageListDO.getId());
-                    messageMemberConference.setCreateTime(new Date());
-                    messageMemberConference.setIsRead(false);
-                    messageMemberConference.setIdentityType(messageMemberConference.getIdentityType());
-                    messageBaseDao.saveMemberConference(messageMemberConference);
+    public void save(MessageListDO messageListDO, ArrayList<Long> storeList, ArrayList<Long> customerIds, ArrayList<Long> employeeIds) {
+
+        List<MessageMemberConference> listAll = new ArrayList<MessageMemberConference>();
+        messageListDO.setStatus(ActStatusType.NEW);
+        messageListDO.setCreateTime(LocalDateTime.now());
+        messageBaseDao.save(messageListDO);
+        String[] strings = null;
+        //推送范围为全部的保存
+        if (messageListDO.getScope().equals("ALL")) {
+            if (messageListDO.getIdentityType() != null && !"".equals(messageListDO.getIdentityType())) {
+                String r = messageListDO.getIdentityType();
+                strings = r.split(",");
+            }
+            for (int j = 0; j < strings.length; j++) {
+                for (AppIdentityType appIdentityType : AppIdentityType.values()) {
+                    //保存全部员工 单选多选都可用
+                    if (appIdentityType.toString().equals(strings[j]) && appIdentityType != AppIdentityType.CUSTOMER) {
+                        List<SimpleEmployeeParam> AllEmployeeDgList = messageBaseDao.FindAllEmployeeId(appIdentityType.toString());
+
+                        if (AllEmployeeDgList != null && AllEmployeeDgList.size() > 0) {
+                            for (int i = 0; i < AllEmployeeDgList.size(); i++) {
+                                MessageMemberConference messageMemberConference = new MessageMemberConference();
+                                messageMemberConference.setUserId(AllEmployeeDgList.get(i).getId());
+                                messageMemberConference.setMessageId(messageListDO.getId());
+                                messageMemberConference.setCreateTime(new Date());
+                                messageMemberConference.setIsRead(false);
+                                messageMemberConference.setIdentityType(appIdentityType);
+                                //messageBaseDao.saveMemberConference(messageMemberConference);
+                                listAll.add(messageMemberConference);
+                            }
+                        }
+
+                    }//保存全部会员 单选多选都可用
+                    if (appIdentityType.toString().equals(strings[j]) && appIdentityType == AppIdentityType.CUSTOMER) {
+                        List<AppCustomer> appCustomers = messageBaseDao.FindAllCustomerId();
+
+                        if (appCustomers != null && appCustomers.size() > 0) {
+
+                            for (int i = 0; i < appCustomers.size(); i++) {
+                                MessageMemberConference messageMemberConference = new MessageMemberConference();
+                                messageMemberConference.setUserId(appCustomers.get(i).getCusId());
+                                messageMemberConference.setMessageId(messageListDO.getId());
+                                messageMemberConference.setCreateTime(new Date());
+                                messageMemberConference.setIsRead(false);
+                                messageMemberConference.setIdentityType(appIdentityType);
+                                // messageBaseDao.saveMemberConference(messageMemberConference);
+                                listAll.add(messageMemberConference);
+                            }
+                        }
+
+                    }
                 }
             }
-            // 选择了门店的保存
+        }
+        //推送范围为自定的
+        if (messageListDO.getScope().equals("ZDY")) {
+            if (messageListDO.getIdentityType().equals("") || messageListDO.getIdentityType() == null) {
+                //选择了会员的保存
+                if (null != customerIds && customerIds.size() > 0) {
+                    for (Long userId : customerIds) {
+                        MessageMemberConference messageMemberConference = new MessageMemberConference();
+                        messageMemberConference.setUserId(userId);
+                        messageMemberConference.setMessageId(messageListDO.getId());
+                        messageMemberConference.setCreateTime(new Date());
+                        messageMemberConference.setIsRead(false);
+                        messageMemberConference.setIdentityType(AppIdentityType.CUSTOMER);
+                        // messageBaseDao.saveMemberConference(messageMemberConference);
+                        listAll.add(messageMemberConference);
+                    }
+                }
+                // 选择了门店的保存
+                if (null != storeList && storeList.size() > 0) {
+                    for (Long storeId : storeList) {
+                        List<SimpleEmployeeParam> emlist = messageBaseDao.FindEmployeeByStoreId(storeId);
+                        MessageMemberConference messageMemberConference = new MessageMemberConference();
+                        for (int i = 0; i < emlist.size(); i++) {
+                            messageMemberConference.setUserId(emlist.get(i).getId());
+                            messageMemberConference.setMessageId(messageListDO.getId());
+                            messageMemberConference.setCreateTime(new Date());
+                            messageMemberConference.setIsRead(false);
+                            messageMemberConference.setIdentityType(emlist.get(i).getIdentityType());
+                            // messageBaseDao.saveMemberConference(messageMemberConference);
+                            listAll.add(messageMemberConference);
+                        }
 
-            if (null != storeList && storeList.size() > 0) {
-                for (Long storeId : storeList) {
-                    MessageMemberConference messageMemberConference = new MessageMemberConference();
-                    messageMemberConference.setStoreId(storeId);
-                    messageMemberConference.setMessageId(messageListDO.getId());
-                    messageMemberConference.setCreateTime(new Date());
-                    messageMemberConference.setIsRead(false);
-                    messageMemberConference.setIdentityType(messageMemberConference.getIdentityType());
-                    messageBaseDao.saveMemberConference(messageMemberConference);
+                        List<AppCustomer> cuslits = messageBaseDao.FindCustomerByStoreId(storeId);
+                        if (cuslits != null && cuslits.size() > 0) {
+                            for (int i = 0; i < cuslits.size(); i++) {
+                                messageMemberConference.setUserId(cuslits.get(i).getCusId());
+                                messageMemberConference.setMessageId(messageListDO.getId());
+                                messageMemberConference.setCreateTime(new Date());
+                                messageMemberConference.setIsRead(false);
+                                messageMemberConference.setIdentityType(AppIdentityType.CUSTOMER);
+                                // messageBaseDao.saveMemberConference(messageMemberConference);
+                                listAll.add(messageMemberConference);
+                            }
+                        }
+
+                    }
+                }
+                //选择了员工的保存
+                if (null != employeeIds && employeeIds.size() > 0) {
+                    for (Long employeeId : employeeIds) {
+                        MessageMemberConference messageMemberConference = new MessageMemberConference();
+                        List<SimpleEmployeeParam> emlist = messageBaseDao.FindEmployeeById(employeeId);
+                        for (int i = 0; i < emlist.size(); i++) {
+                            messageMemberConference.setUserId(emlist.get(i).getId());
+                            messageMemberConference.setMessageId(messageListDO.getId());
+                            messageMemberConference.setCreateTime(new Date());
+                            messageMemberConference.setIsRead(false);
+                            messageMemberConference.setIdentityType(emlist.get(i).getIdentityType());
+                            //  messageBaseDao.saveMemberConference(messageMemberConference);
+                            listAll.add(messageMemberConference);
+                        }
+                    }
                 }
             }
-            //选择全部的保存
-            if (messageListDO.getScope().equals("ALL")) {
-                //保存全部的会员
-                List<AppCustomer> AllCustomerList = messageBaseDao.FindAllCustomerId();
-                for (int i = 0; i < AllCustomerList.size(); i++) {
-                    MessageMemberConference messageMemberConference = new MessageMemberConference();
-                    messageMemberConference.setUserId(AllCustomerList.get(i).getCusId());
-                    messageMemberConference.setMessageId(messageListDO.getId());
-                    messageMemberConference.setCreateTime(new Date());
-                    messageMemberConference.setIsRead(false);
-                    messageMemberConference.setIdentityType(null);
-                    messageBaseDao.saveMemberConference(messageMemberConference);
-                }
-                //保存全部的门店
-                List<StoreDO> AllStoreList = messageBaseDao.FindAllStoreId();
-                for (int i = 0; i < AllStoreList.size(); i++) {
-                    MessageMemberConference messageMemberConference = new MessageMemberConference();
-                    messageMemberConference.setStoreId(AllStoreList.get(i).getStoreId());
-                    messageMemberConference.setMessageId(messageListDO.getId());
-                    messageMemberConference.setCreateTime(new Date());
-                    messageMemberConference.setIsRead(false);
-                    messageMemberConference.setIdentityType(null);
-                    messageBaseDao.saveMemberConference(messageMemberConference);
-                }
-
-                //保存全部的会员
-                List<SimpleEmployeeParam> AllEmployeeList = messageBaseDao.FindAllEmployeeId();
-                for (int i = 0; i < AllEmployeeList.size(); i++) {
-                    MessageMemberConference messageMemberConference = new MessageMemberConference();
-                    messageMemberConference.setStoreId(AllEmployeeList.get(i).getId());
-                    messageMemberConference.setMessageId(messageListDO.getId());
-                    messageMemberConference.setCreateTime(new Date());
-                    messageMemberConference.setIsRead(false);
-                    messageMemberConference.setIdentityType(null);
-                    messageBaseDao.saveMemberConference(messageMemberConference);
-                }
-
-
-            }
-            //只保存全部门店
-            if (messageListDO.getScope().equals("MD")) {
-                List<StoreDO> AllStoreList = messageBaseDao.FindAllStoreId();
-                for (int i = 0; i < AllStoreList.size(); i++) {
-                    MessageMemberConference messageMemberConference = new MessageMemberConference();
-                    messageMemberConference.setStoreId(AllStoreList.get(i).getStoreId());
-                    messageMemberConference.setMessageId(messageListDO.getId());
-                    messageMemberConference.setCreateTime(new Date());
-                    messageMemberConference.setIsRead(false);
-                    messageMemberConference.setIdentityType(null);
-                    messageBaseDao.saveMemberConference(messageMemberConference);
-                }
-
-            }
-
-            //选择了全部会员
-            if (messageListDO.getScope().equals("HY")) {
-                List<AppCustomer> AllCusList = messageBaseDao.FindAllCustomerId();
-                for (int i = 0; i < AllCusList.size(); i++) {
-                    MessageMemberConference messageMemberConference = new MessageMemberConference();
-                    messageMemberConference.setUserId(AllCusList.get(i).getCusId());
-                    messageMemberConference.setMessageId(messageListDO.getId());
-                    messageMemberConference.setCreateTime(new Date());
-                    messageMemberConference.setIsRead(false);
-                    messageMemberConference.setIdentityType(AllCusList.get(i).getIdentityType());
-
-                    messageBaseDao.saveMemberConference(messageMemberConference);
-                }
-
-            }
-
-            //选择了全部员工
-            if (messageListDO.getScope().equals("YG") && messageListDO.getIdentityType() == null) {
-                List<SimpleEmployeeParam> allEmployeeList = messageBaseDao.FindAllEmployeeId();
-                for (int i = 0; i < allEmployeeList.size(); i++) {
-                    MessageMemberConference messageMemberConference = new MessageMemberConference();
-                    messageMemberConference.setUserId(allEmployeeList.get(i).getId());
-                    messageMemberConference.setMessageId(messageListDO.getId());
-                    messageMemberConference.setCreateTime(new Date());
-                    messageMemberConference.setIsRead(false);
-                    messageMemberConference.setIdentityType(allEmployeeList.get(i).getIdentityType());
-                    messageBaseDao.saveMemberConference(messageMemberConference);
-                }
-            }
-            //选择了全部员工，再选择了身份类型为导购的
-            if (messageListDO.getScope().equals("YG") && messageListDO.getIdentityType().equals("SELLER")) {
-                List<SimpleEmployeeParam> AllEmployeeDgList = messageBaseDao.FindAllEmployeeIdOnlyDG();
-                for (int i = 0; i < AllEmployeeDgList.size(); i++) {
-                    MessageMemberConference messageMemberConference = new MessageMemberConference();
-                    messageMemberConference.setUserId(AllEmployeeDgList.get(i).getId());
-                    messageMemberConference.setMessageId(messageListDO.getId());
-                    messageMemberConference.setCreateTime(new Date());
-                    messageMemberConference.setIsRead(false);
-                    messageMemberConference.setIdentityType(AllEmployeeDgList.get(i).getIdentityType());
-                    messageBaseDao.saveMemberConference(messageMemberConference);
-
-
-                }
-
-            }
-
-            if (messageListDO.getScope().equals("YG") && messageListDO.getIdentityType().equals("DELIVERY_CLERK")) {
-                List<SimpleEmployeeParam> AllEmployeePsyList = messageBaseDao.FindAllEmployeeIdOnlyPSY();
-                for (int i = 0; i < AllEmployeePsyList.size(); i++) {
-                    MessageMemberConference messageMemberConference = new MessageMemberConference();
-                    messageMemberConference.setUserId(AllEmployeePsyList.get(i).getId());
-                    messageMemberConference.setMessageId(messageListDO.getId());
-                    messageMemberConference.setCreateTime(new Date());
-                    messageMemberConference.setIsRead(false);
-                    messageMemberConference.setIdentityType(AllEmployeePsyList.get(i).getIdentityType());
-                    messageBaseDao.saveMemberConference(messageMemberConference);
-
-
-                }
-
-            }
-            if (messageListDO.getScope().equals("YG") && messageListDO.getIdentityType().equals("DECORATE_MANAGER")) {
-                List<SimpleEmployeeParam> allEmployeeJlList = messageBaseDao.FindAllEmployeeIdOnlyJL();
-                for (int i = 0; i < allEmployeeJlList.size(); i++) {
-                    MessageMemberConference messageMemberConference = new MessageMemberConference();
-                    messageMemberConference.setUserId(allEmployeeJlList.get(i).getId());
-                    messageMemberConference.setMessageId(messageListDO.getId());
-                    messageMemberConference.setCreateTime(new Date());
-                    messageMemberConference.setIsRead(false);
-                    messageMemberConference.setIdentityType(allEmployeeJlList.get(i).getIdentityType());
-                    messageBaseDao.saveMemberConference(messageMemberConference);
-
-
-                }
-
-            }
-
-            if (messageListDO.getScope().equals("YG") && messageListDO.getIdentityType().equals("DECORATE_EMPLOYEE")) {
-                List<SimpleEmployeeParam> AllEmployeeYgList = messageBaseDao.FindAllEmployeeIdOnlyYG();
-                for (int i = 0; i < AllEmployeeYgList.size(); i++) {
-                    MessageMemberConference messageMemberConference = new MessageMemberConference();
-                    messageMemberConference.setUserId(AllEmployeeYgList.get(i).getId());
-                    messageMemberConference.setMessageId(messageListDO.getId());
-                    messageMemberConference.setCreateTime(new Date());
-                    messageMemberConference.setIsRead(false);
-                    messageMemberConference.setIdentityType(AllEmployeeYgList.get(i).getIdentityType());
-                    messageBaseDao.saveMemberConference(messageMemberConference);
-
-
-                }
-
-            }
+        }
+        if (listAll.size() > 0) {
+            messageBaseDao.saveBatch(listAll);
 
         }
-
     }
 
 
@@ -282,56 +226,143 @@ public class MessageBaseServieceImpl implements MessageBaseService {
         return null;
     }
 
-    @Override
+  /*  @Override
     public List<SimpleStoreParam> findStore(Long actId) {
         if (actId != null) {
             return messageBaseDao.findStore(actId);
         }
         return null;
     }
-
+*/
 
     @Transactional
-    public void edit(MessageListDO messageListDO, List<Long> storeList, ArrayList<Long> customerIds) {
-        {
-            messageBaseDao.editMessage(messageListDO);
+    public void edit(MessageListDO messageListDO, ArrayList<Long> storeList, ArrayList<Long> customerIds, ArrayList<Long> employeeIds) {
+        messageBaseDao.delete4Message(messageListDO.getId());
+        messageBaseDao.editMessage(messageListDO);
+        List<MessageMemberConference> listAll = new ArrayList<MessageMemberConference>();
+        messageListDO.setStatus(ActStatusType.NEW);
+        messageListDO.setCreateTime(LocalDateTime.now());
+        String[] strings = null;
+        //推送范围为全部的保存
+        if (messageListDO.getScope().equals("ALL")) {
+            if (messageListDO.getIdentityType() != null && !"".equals(messageListDO.getIdentityType())) {
+                String r = messageListDO.getIdentityType();
+                strings = r.split(",");
+            }
+            for (int j = 0; j < strings.length; j++) {
+                for (AppIdentityType appIdentityType : AppIdentityType.values()) {
+                    //保存全部员工 单选多选都可用
+                    if (appIdentityType.toString().equals(strings[j]) && appIdentityType != AppIdentityType.CUSTOMER) {
+                        List<SimpleEmployeeParam> AllEmployeeDgList = messageBaseDao.FindAllEmployeeId(appIdentityType.toString());
 
+                        if (AllEmployeeDgList != null && AllEmployeeDgList.size() > 0) {
 
-            //修改会员促销表，先删除旧记录在新增
+                            for (int i = 0; i < AllEmployeeDgList.size(); i++) {
+                                MessageMemberConference messageMemberConference = new MessageMemberConference();
+                                messageMemberConference.setUserId(AllEmployeeDgList.get(i).getId());
+                                messageMemberConference.setMessageId(messageListDO.getId());
+                                messageMemberConference.setCreateTime(new Date());
+                                messageMemberConference.setIsRead(false);
+                                messageMemberConference.setIdentityType(appIdentityType);
+                                //messageBaseDao.saveMemberConference(messageMemberConference);
+                                listAll.add(messageMemberConference);
+                            }
+                        }
 
-            if (null != customerIds && customerIds.size() > 0) {
-                messageBaseDao.deleteMemberConferenceByMessageBaseId4Customer(messageListDO.getId());
-                for (Long userId : customerIds) {
-                    MessageMemberConference messageMemberConference = new MessageMemberConference();
-                    messageMemberConference.setUserId(userId);
-                    messageMemberConference.setMessageId(messageListDO.getId());
-                    messageMemberConference.setCreateTime(new Date());
-                    messageMemberConference.setIsRead(false);
-                    messageMemberConference.setIdentityType(AppIdentityType.CUSTOMER);
-                    messageBaseDao.saveMemberConference(messageMemberConference);
+                    }//保存全部会员 单选多选都可用
+                    if (appIdentityType.toString().equals(strings[j]) && appIdentityType == AppIdentityType.CUSTOMER) {
+                        List<AppCustomer> appCustomers = messageBaseDao.FindAllCustomerId();
+                        if (appCustomers != null && appCustomers.size() > 0) {
+
+                            for (int i = 0; i < appCustomers.size(); i++) {
+                                MessageMemberConference messageMemberConference = new MessageMemberConference();
+                                messageMemberConference.setUserId(appCustomers.get(i).getCusId());
+                                messageMemberConference.setMessageId(messageListDO.getId());
+                                messageMemberConference.setCreateTime(new Date());
+                                messageMemberConference.setIsRead(false);
+                                messageMemberConference.setIdentityType(appIdentityType);
+                                // messageBaseDao.saveMemberConference(messageMemberConference);
+                                listAll.add(messageMemberConference);
+                            }
+                        }
+
+                    }
                 }
             }
+        }
+        //推送范围为自定的
+        if (messageListDO.getScope().equals("ZDY")) {
+            if (messageListDO.getIdentityType().equals("") || messageListDO.getIdentityType() == null) {
+                //选择了会员的保存
+                if (null != customerIds && customerIds.size() > 0) {
+                    for (Long userId : customerIds) {
+                        MessageMemberConference messageMemberConference = new MessageMemberConference();
+                        messageMemberConference.setUserId(userId);
+                        messageMemberConference.setMessageId(messageListDO.getId());
+                        messageMemberConference.setCreateTime(new Date());
+                        messageMemberConference.setIsRead(false);
+                        messageMemberConference.setIdentityType(AppIdentityType.CUSTOMER);
+                        // messageBaseDao.saveMemberConference(messageMemberConference);
+                        listAll.add(messageMemberConference);
+                    }
+                }
+                // 选择了门店的保存
+                if (null != storeList && storeList.size() > 0) {
+                    for (Long storeId : storeList) {
+                        List<SimpleEmployeeParam> emlist = messageBaseDao.FindEmployeeByStoreId(storeId);
+                        MessageMemberConference messageMemberConference = new MessageMemberConference();
+                        for (int i = 0; i < emlist.size(); i++) {
+                            messageMemberConference.setUserId(emlist.get(i).getId());
+                            messageMemberConference.setMessageId(messageListDO.getId());
+                            messageMemberConference.setCreateTime(new Date());
+                            messageMemberConference.setIsRead(false);
+                            messageMemberConference.setIdentityType(emlist.get(i).getIdentityType());
+                            // messageBaseDao.saveMemberConference(messageMemberConference);
+                            listAll.add(messageMemberConference);
+                        }
 
-            // 修改门店 先删除旧的记录
+                        List<AppCustomer> cuslits = messageBaseDao.FindCustomerByStoreId(storeId);
+                        if (cuslits != null && cuslits.size() > 0) {
+                            for (int i = 0; i < emlist.size(); i++) {
+                                messageMemberConference.setUserId(cuslits.get(i).getCusId());
+                                messageMemberConference.setMessageId(messageListDO.getId());
+                                messageMemberConference.setCreateTime(new Date());
+                                messageMemberConference.setIsRead(false);
+                                messageMemberConference.setIdentityType(AppIdentityType.CUSTOMER);
+                                // messageBaseDao.saveMemberConference(messageMemberConference);
+                                listAll.add(messageMemberConference);
+                            }
+                        }
 
-            if (null != storeList && storeList.size() > 0) {
-                messageBaseDao.deleteMemberConferenceByMessageBaseId4Stores(messageListDO.getId());
-                for (Long storeId : storeList) {
-                    MessageMemberConference messageMemberConference = new MessageMemberConference();
-                    messageMemberConference.setStoreId(storeId);
-                    messageMemberConference.setMessageId(messageListDO.getId());
-                    messageMemberConference.setCreateTime(new Date());
-                    messageMemberConference.setIsRead(false);
-                    messageMemberConference.setIdentityType(messageMemberConference.getIdentityType());
-                    messageMemberConference.setIdentityType(null);
-                    messageBaseDao.saveMemberConference(messageMemberConference);
+                    }
+                }
+                //选择了员工的保存
+                if (null != employeeIds && employeeIds.size() > 0) {
+                    for (Long employeeId : employeeIds) {
+                        MessageMemberConference messageMemberConference = new MessageMemberConference();
+                        List<SimpleEmployeeParam> emlist = messageBaseDao.FindEmployeeById(employeeId);
+                        for (int i = 0; i < emlist.size(); i++) {
+                            messageMemberConference.setUserId(emlist.get(i).getId());
+                            messageMemberConference.setMessageId(messageListDO.getId());
+                            messageMemberConference.setCreateTime(new Date());
+                            messageMemberConference.setIsRead(false);
+                            messageMemberConference.setIdentityType(emlist.get(i).getIdentityType());
+                            //  messageBaseDao.saveMemberConference(messageMemberConference);
+                            listAll.add(messageMemberConference);
+                        }
+                    }
                 }
             }
-
+        }
+        if (listAll.size() > 0) {
+            messageBaseDao.saveBatch(listAll);
 
         }
+
+
     }
-
-
 }
+
+
+
 

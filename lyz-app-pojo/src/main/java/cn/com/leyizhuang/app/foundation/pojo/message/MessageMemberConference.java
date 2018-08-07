@@ -28,5 +28,4 @@ public class MessageMemberConference {
     //身份类型
     private AppIdentityType identityType;
     //门店ID
-    private  Long storeId;
 }

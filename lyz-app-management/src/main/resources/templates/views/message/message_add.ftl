@@ -63,7 +63,7 @@
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
-                                    <input name="title" type="text" class="form-control" id="cusName"
+                                    <input name="title" type="text" class="form-control" id="title"
                                            placeholder="消息标题">
                                 </div>
                             </div>
@@ -112,10 +112,8 @@
                                     推送范围
                                 </label>
                                 <div class="input-group">
-                                    <input name="target" value="ALL" type="checkbox" class="flat-red">全部
-                                    <input name="target" value="ZDY" type="checkbox" class="flat-red">自定义
-                                    <input name="target" value="HY" type="checkbox" class="flat-red">会员
-                                    <input name="target" value="YG" type="checkbox" class="flat-red">员工
+                                    <input name="target" value="ALL" type="radio" class="flat-red">全部
+                                    <input name="target" value="ZDY" type="radio" class="flat-red">自定义
                                 </div>
                             </div>
                         </div>
@@ -131,17 +129,18 @@
                             身份类型
                         </label>
                         <div class="input-group">
-                            <input name="identityType" value="SELLER" type="radio" class="flat-red">导购
-                            <input name="identityType" value="DELIVERY_CLERK" type="radio" class="flat-red">配送员
-                            <input name="identityType" value="DECORATE_MANAGER" type="radio" class="flat-red">装饰公司经理
-                            <input name="identityType" value="DECORATE_EMPLOYEE" type="radio" class="flat-red">装饰公司员工
+                            <input name="identityType" value="SELLER" type="checkbox" class="flat-red">导购
+                            <input name="identityType" value="DELIVERY_CLERK" type="checkbox" class="flat-red">配送员
+                            <input name="identityType" value="DECORATE_MANAGER" type="checkbox" class="flat-red">装饰公司经理
+                            <input name="identityType" value="DECORATE_EMPLOYEE" type="checkbox" class="flat-red">装饰公司员工
+                            <input name="identityType" value="CUSTOMER" type="checkbox" class="flat-red">会员
                         </div>
                     </div>
                 </div>
 
             </div>
 
-                    <#--<div class="row">
+                    <div class="row">
                         <div class="col-xs-12 col-md-12">
                             <label for="title">
                             </label>
@@ -153,9 +152,9 @@
                                                 class="fa fa-plus"></i>
                                         </button>
                                     </div>
-                                    <!-- /.box-tools &ndash;&gt;
+                                    <!-- /.box-tools -->
                                 </div>
-                                <!-- /.box-header &ndash;&gt;
+                                <!-- /.box-header -->
                                 <div class="box-body">
                                     <div class="row">
                                         <div class="col-xs-12 col-md-2">
@@ -169,10 +168,10 @@
 
                                     </div>
                                 </div>
-                                <!-- /.box-body &ndash;&gt;
+                                <!-- /.box-body -->
                             </div>
                         </div>
-                    </div>-->
+                    </div>
 
 
 
