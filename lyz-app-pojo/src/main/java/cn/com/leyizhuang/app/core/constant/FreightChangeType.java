@@ -42,6 +42,7 @@ public enum FreightChangeType {
         freightChangeTypes.add(FreightChangeType.NIGHT);
         freightChangeTypes.add(FreightChangeType.MERGE);
         freightChangeTypes.add(FreightChangeType.OTHER);
+        freightChangeTypes.add(FreightChangeType.COLORING);
         return freightChangeTypes;
     }
 }
