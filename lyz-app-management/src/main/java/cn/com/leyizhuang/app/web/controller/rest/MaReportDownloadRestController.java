@@ -2303,7 +2303,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                 //筛选条件
                 Map<String, String> map = new HashMap<>();
 
-                if (null != companyCode && !"-1".equals(companyCode) && null != salesList && salesList.size() > 0) {
+                if (null != companyCode && !"-1".equals(companyCode) && null != salesList && salesList.size() > 0 && !storeType.equals("CASH")) {
                     map.put("城市", salesList.get(0).getCityName());
                 } else {
                     map.put("城市", "无");
