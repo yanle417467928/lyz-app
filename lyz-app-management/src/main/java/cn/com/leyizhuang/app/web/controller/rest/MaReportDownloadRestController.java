@@ -1339,10 +1339,10 @@ public class MaReportDownloadRestController extends BaseRestController {
                 //设置筛选条件
                 ws = this.setCondition(ws, map, titleFormat, shiroName, textFormat);
                 //列宽
-                int[] columnView = {10, 13, 10, 20, 30, 25, 15, 15, 10, 10, 20, 20, 50, 20, 20, 10, 10, 10, 10, 10,10, 10, 10, 15, 15, 15, 15, 15, 15, 15, 10, 5, 30, 30, 5,30};
+                int[] columnView = {10, 13, 10, 20, 30, 25, 15, 15, 10, 10, 20, 20, 50, 20, 20, 10, 10, 10, 10, 10,10, 10, 10,10, 15, 15, 15, 15, 15, 15, 15, 10, 5, 30, 30, 5,30};
                 //列标题
                 String[] titles = {"城市", "门店名称", "门店类型", "下单/反配上架时间", "订单号", "退单号", "顾客", "导购姓名", "配送/退货方式",
-                        "出/退货状态", "收货/退货人", "收货/退货人电话", "送/退货地址", "产品编码", "产品名称", "产品标识","主分类","类型","品牌","规格", "产品类型", "数量", "结算单价", "结算总价",
+                        "出/退货状态", "收货/退货人", "收货/退货人电话", "送/退货地址", "产品编码", "产品名称", "产品标识","主分类","类型","品牌","规格","类型2", "产品类型", "数量", "结算单价", "结算总价",
                         "成交单价", "成交总价", "经销单价", "总经销价", "单个产品经销差价", "总经销差价", "下单人", "单位", "备注", "楼盘信息", "是否结清","产品券类型"};
                 //计算标题开始行号
                 int row = 1;
@@ -1387,21 +1387,22 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Label(13, j + row, accountGoodsItemsDO.getSku(), textFormat));
                     ws.addCell(new Label(14, j + row, accountGoodsItemsDO.getSkuName(), textFormat));
                     ws.addCell(new Label(15, j + row, accountGoodsItemsDO.getCompanyFlag(), textFormat));
-                    ws.addCell(new Label(16, j + row, accountGoodsItemsDO.getGoodsLineType(), textFormat));
 
                     ws.addCell(new Label(16, j + row, accountGoodsItemsDO.getPcategoryName(), textFormat));
-                    ws.addCell(new Label(16, j + row, accountGoodsItemsDO.getCategoryName(), textFormat));
-                    ws.addCell(new Label(16, j + row, accountGoodsItemsDO.getBrandName(), textFormat));
-                    ws.addCell(new Label(16, j + row, accountGoodsItemsDO.getSpecificationType(), textFormat));
-                    ws.addCell(new Label(16, j + row, accountGoodsItemsDO.getTypeName(), textFormat));
+                    ws.addCell(new Label(17, j + row, accountGoodsItemsDO.getCategoryName(), textFormat));
+                    ws.addCell(new Label(18, j + row, accountGoodsItemsDO.getBrandName(), textFormat));
+                    ws.addCell(new Label(19, j + row, accountGoodsItemsDO.getSpecificationType(), textFormat));
+                    ws.addCell(new Label(20, j + row, accountGoodsItemsDO.getTypeName(), textFormat));
 
-                    ws.addCell(new Label(17, j + row, accountGoodsItemsDO.getQuantity().toString(), textFormat));
-                    ws.addCell(new Number(18, j + row, accountGoodsItemsDO.getSettlementPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                    ws.addCell(new Number(19, j + row, accountGoodsItemsDO.getSettlementTotlePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                    ws.addCell(new Number(20, j + row, accountGoodsItemsDO.getPromotionSharePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                    ws.addCell(new Number(21, j + row, accountGoodsItemsDO.getPromotionShareTotlePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                    ws.addCell(new Number(22, j + row, accountGoodsItemsDO.getJxPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                    ws.addCell(new Number(23, j + row, accountGoodsItemsDO.getTotalJxPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Label(21, j + row, accountGoodsItemsDO.getGoodsLineType(), textFormat));
+
+                    ws.addCell(new Label(22, j + row, accountGoodsItemsDO.getQuantity().toString(), textFormat));
+                    ws.addCell(new Number(23, j + row, accountGoodsItemsDO.getSettlementPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Number(24, j + row, accountGoodsItemsDO.getSettlementTotlePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Number(25, j + row, accountGoodsItemsDO.getPromotionSharePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Number(26, j + row, accountGoodsItemsDO.getPromotionShareTotlePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Number(27, j + row, accountGoodsItemsDO.getJxPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    ws.addCell(new Number(28, j + row, accountGoodsItemsDO.getTotalJxPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
 
                     if (StoreType.JM == accountGoodsItemsDO.getStoreTypes() || StoreType.FX == accountGoodsItemsDO.getStoreTypes()) {
                         if (accountGoodsItemsDO.getGoodsLineType().equals("本品") ||
@@ -1425,22 +1426,22 @@ public class MaReportDownloadRestController extends BaseRestController {
                             if (null == accountGoods) {
                                 accountGoods = new AccountGoodsItemsDO();
                             }
-                            ws.addCell(new Number(24, j + row, null == accountGoods.getWholesalePrice() ? 0D : accountGoods.getWholesalePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                            ws.addCell(new Number(25, j + row, null == accountGoods.getWholesalePrice() ? 0D : accountGoods.getWholesalePrice() * accountGoodsItemsDO.getQuantity(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                            ws.addCell(new Number(29, j + row, null == accountGoods.getWholesalePrice() ? 0D : accountGoods.getWholesalePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                            ws.addCell(new Number(30, j + row, null == accountGoods.getWholesalePrice() ? 0D : accountGoods.getWholesalePrice() * accountGoodsItemsDO.getQuantity(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                         } else {
-                            ws.addCell(new Number(24, j + row, 0D, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                            ws.addCell(new Number(25, j + row, 0D, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                            ws.addCell(new Number(29, j + row, 0D, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                            ws.addCell(new Number(30, j + row, 0D, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                         }
                     } else {
-                        ws.addCell(new Number(24, j + row, 0D, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                        ws.addCell(new Number(25, j + row, 0D, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                        ws.addCell(new Number(29, j + row, 0D, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                        ws.addCell(new Number(30, j + row, 0D, new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     }
-                    ws.addCell(new Label(26, j + row, accountGoodsItemsDO.getCreatorName(), textFormat));
-                    ws.addCell(new Label(27, j + row, accountGoodsItemsDO.getGoodsUnit(), textFormat));
-                    ws.addCell(new Label(28, j + row, accountGoodsItemsDO.getRemark(), textFormat));
-                    ws.addCell(new Label(29, j + row, accountGoodsItemsDO.getEstateInfo(), textFormat));
-                    ws.addCell(new Label(30, j + row, accountGoodsItemsDO.getIsPayUp(), textFormat));
-                    ws.addCell(new Label(31, j + row, accountGoodsItemsDO.getProductCouponType(), textFormat));
+                    ws.addCell(new Label(31, j + row, accountGoodsItemsDO.getCreatorName(), textFormat));
+                    ws.addCell(new Label(32, j + row, accountGoodsItemsDO.getGoodsUnit(), textFormat));
+                    ws.addCell(new Label(33, j + row, accountGoodsItemsDO.getRemark(), textFormat));
+                    ws.addCell(new Label(34, j + row, accountGoodsItemsDO.getEstateInfo(), textFormat));
+                    ws.addCell(new Label(35, j + row, accountGoodsItemsDO.getIsPayUp(), textFormat));
+                    ws.addCell(new Label(36, j + row, accountGoodsItemsDO.getProductCouponType(), textFormat));
                 }
             }
         } catch (Exception e) {
@@ -1606,12 +1607,12 @@ public class MaReportDownloadRestController extends BaseRestController {
                     ws.addCell(new Number(29, j + row, billingItemsDO.getStoreOtherMoney(), numberFormat));
                     ws.addCell(new Number(30, j + row, billingItemsDO.getStPreDeposit(), numberFormat));
                     ws.addCell(new Number(31, j + row, billingItemsDO.getCusPreDeposit(), numberFormat));
-                    ws.addCell(new Number(31, j + row, billingItemsDO.getEmpCredit(), numberFormat));
-                    ws.addCell(new Number(32, j + row, billingItemsDO.getStCredit(), numberFormat));
-                    ws.addCell(new Number(33, j + row, billingItemsDO.getTotalPay(), numberFormat));
-                    ws.addCell(new Number(34, j + row, billingItemsDO.getReturnStore(), numberFormat));
-                    ws.addCell(new Label(35, j + row, billingItemsDO.getOutTradeNo(), textFormat));
-                    ws.addCell(new Label(36, j + row, billingItemsDO.getTradeNo(), textFormat));
+                    ws.addCell(new Number(32, j + row, billingItemsDO.getEmpCredit(), numberFormat));
+                    ws.addCell(new Number(33, j + row, billingItemsDO.getStCredit(), numberFormat));
+                    ws.addCell(new Number(34, j + row, billingItemsDO.getTotalPay(), numberFormat));
+                    ws.addCell(new Number(35, j + row, billingItemsDO.getReturnStore(), numberFormat));
+                    ws.addCell(new Label(36, j + row, billingItemsDO.getOutTradeNo(), textFormat));
+                    ws.addCell(new Label(37, j + row, billingItemsDO.getTradeNo(), textFormat));
 
                 }
             }
