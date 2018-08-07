@@ -641,7 +641,12 @@
         if(og.goods_line_type = "PRODUCT_COUPON",IF(ccpc.get_type = "BUY",IF(og2.goods_line_type is not null,
         CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END,
         if(oci.purchase_price is null Or oci.purchase_price = 0 , '赠品','本品')),'后台发放'),'') as productCouponType,
-        oci.coupon_id couponId
+        oci.coupon_id couponId,
+        ggc.category_name as pcategoryName,
+        gg.category_name as categoryName,
+        gg.brand_name as brandName,
+        gg.type_name as typeName,
+        gg.specification_type as specificationType
         FROM
         ord_base_info obi
         INNER JOIN st_store st ON st.store_id = obi.store_id
@@ -649,6 +654,8 @@
         LEFT JOIN ord_logistics_info oli ON oli.ord_no = obi.ord_no
         LEFT JOIN ord_goods_info og ON og.ord_no = oli.ord_no
         LEFT JOIN gds_goods gg on og.gid = gg.gid
+        LEFT JOIN gds_goods_category gc on gg.cid =gc.cid
+        LEFT JOIN gds_goods_category ggc ON  gc.p_cid =ggc.cid
         LEFT JOIN ord_billing_details obd on obd.oid = obi.oid
         LEFT JOIN ord_coupon_info oci on oci.ord_no = og.ord_no and oci.sku = og.sku and og.goods_line_type = 'PRODUCT_COUPON'
         LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
@@ -707,7 +714,12 @@
         if(org.goods_line_type = "PRODUCT_COUPON",IF(ccpc.get_type = "BUY",IF(og2.goods_line_type is not null,
         CASE og2.goods_line_type WHEN 'GOODS' THEN '本品' WHEN 'PRESENT' THEN '赠品' END,
         if(oci.purchase_price is null Or oci.purchase_price = 0 , '赠品','本品')),'后台发放'),'') as productCouponType,
-        oci.pcid couponId
+        oci.pcid couponId,
+        ggc.category_name as pcategoryName,
+        gg.category_name as categoryName,
+        gg.brand_name as brandName,
+        gg.type_name as typeName,
+        gg.specification_type as specificationType
         FROM ord_return_base_info orbi
         LEFT JOIN (SELECT DISTINCT return_no,post_status,operation_time from ord_return_lifecycle) rl ON orbi.return_no = rl.return_no
         LEFT JOIN st_store st ON st.store_id = orbi.store_id
@@ -715,6 +727,8 @@
         LEFT JOIN ord_return_logistic_info orli ON orli.return_no = orbi.return_no
         LEFT JOIN ord_return_goods_info org ON org.return_no = orbi.return_no
         LEFT JOIN gds_goods gg on gg.gid = org.gid
+        LEFT JOIN gds_goods_category gc on gg.cid =gc.cid
+        LEFT JOIN gds_goods_category ggc ON  gc.p_cid =ggc.cid
         LEFT JOIN ord_billing_details obd on obd.oid = obi.oid
         LEFT JOIN ord_return_product_coupon oci on oci.return_no = org.return_no and oci.sku = org.sku and org.goods_line_type = 'PRODUCT_COUPON'
         LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.pcid
@@ -784,7 +798,9 @@
         WHEN 'CANCELING' THEN '取消中' end as orderStatus,
         pd.out_trade_no outTradeNo,
         pd.trade_no tradeNo,
-        CASE obd.is_pay_up when 0 then '未结清' when 1 then '结清' end as isPayUp
+        CASE obd.is_pay_up when 0 then '未结清' when 1 then '结清' end as isPayUp,
+        obd.emp_credit_money empCredit,
+        obd.st_credit_money stCredit
         FROM
         ord_base_info obi
         INNER JOIN st_store st ON st.store_id = obi.store_id
@@ -854,7 +870,9 @@
         WHEN 'CANCELING' THEN '取消中' end as orderStatus,
         '' as outTradeNo,
         '' as tradeNo,
-        CASE obd.is_pay_up when 0 then '未结清' when 1 then '结清' end as isPayUp
+        CASE obd.is_pay_up when 0 then '未结清' when 1 then '结清' end as isPayUp,
+        orb.credit_money empCredit,
+        orb.st_credit_money stCredit
         FROM ord_return_base_info orbi
         LEFT JOIN ord_return_lifecycle rl ON orbi.return_no = rl.return_no
         LEFT JOIN st_store st ON st.store_id = orbi.store_id

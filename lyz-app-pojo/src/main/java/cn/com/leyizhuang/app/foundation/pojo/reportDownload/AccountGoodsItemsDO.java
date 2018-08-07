@@ -102,6 +102,21 @@ public class AccountGoodsItemsDO {
     // 产品券类型
     private String productCouponType;
 
+    //主分类
+    private String pcategoryName ;
+
+    //商品类型
+    private String categoryName ;
+
+    //商品品牌
+    private String brandName ;
+
+    //类型
+    private String typeName ;
+
+    //商品规格
+    private String specificationType ;
+
     public void setGoodsLineType(AppGoodsLineType goodsLineType){
         this.goodsLineType = goodsLineType.getDescription();
     }
