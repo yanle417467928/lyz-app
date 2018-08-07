@@ -64,6 +64,31 @@
         gpid = #{gpid}
     </update>
 
+
+    <update id="updateByEbs" parameterType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
+        UPDATE gds_goods_price
+        <set>
+            <if test="null != VIPPrice">
+                vip_price = #{VIPPrice},
+            </if>
+            <if test="null != retailPrice">
+                retail_price = #{retailPrice},
+            </if>
+            <if test="null != wholesalePrice">
+                wholesale_price = #{wholesalePrice},
+            </if>
+            <if test="null != startTime">
+                start_time = #{startTime},
+            </if>
+            <if test="null != priceType">
+                price_type = #{priceType},
+            </if>
+            end_time = #{endTime},
+        </set>
+        WHERE
+        gpid = #{gpid}
+    </update>
+
     <delete id="delete" parameterType="java.lang.Long">
         DELETE FROM gds_goods_price
         WHERE price_line_id = #{priceLineId}

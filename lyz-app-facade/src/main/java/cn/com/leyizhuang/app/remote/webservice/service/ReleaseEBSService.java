@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.remote.webservice.service;
 
+import cn.com.leyizhuang.app.foundation.pojo.goods.EbsPriceInfo;
+
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
@@ -24,4 +26,7 @@ public interface ReleaseEBSService {
                       @WebParam(name = "STRTYPE") String type,
                       @WebParam(name = "XML") String xml);
 
+
+    @WebMethod
+    String GetEBSPriceInfo(@WebParam(name = "EbsPriceInfo") EbsPriceInfo ebsPriceInfo);
 }

@@ -42,6 +42,11 @@ public class GoodsPriceServiceImpl implements GoodsPriceService {
     }
 
     @Override
+    public void updateByEbs(GoodsPrice goodsPrice) {
+        this.goodsPriceDAO.updateByEbs(goodsPrice);
+    }
+
+    @Override
     public void delete(GoodsPrice goodsPrice) {
         this.goodsPriceDAO.delete(goodsPrice.getPriceLineId());
     }
