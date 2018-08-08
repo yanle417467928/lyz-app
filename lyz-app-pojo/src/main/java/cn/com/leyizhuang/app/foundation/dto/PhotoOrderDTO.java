@@ -94,4 +94,7 @@ public class PhotoOrderDTO implements Serializable {
 
     //收款信息
     private String billingMsg;
+
+    //产品券信息
+    private String productCouponGoodss;
 }
