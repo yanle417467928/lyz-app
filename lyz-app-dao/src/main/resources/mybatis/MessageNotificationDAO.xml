@@ -39,7 +39,7 @@
 	    mmc.identity_type = #{identityType}
 
         AND mmc.user_id = #{userId}
-        AND mn.is_read=FALSE
+        AND mmc.is_read=FALSE
         AND mn.create_time >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
         ORDER BY
 	    mn.create_time DESC
