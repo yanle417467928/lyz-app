@@ -1559,8 +1559,16 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             returnOrderBilling.setReturnNo(returnNumber);
             returnOrderBilling.setPreDeposit(orderBillingDetails.getCusPreDeposit() == null ? 0.00 : orderBillingDetails.getCusPreDeposit());
             returnOrderBilling.setCreditMoney(orderBillingDetails.getEmpCreditMoney() == null ? 0.00 : orderBillingDetails.getEmpCreditMoney());
-            returnOrderBilling.setStPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0.00 : orderBillingDetails.getStPreDeposit());
-            returnOrderBilling.setStCreditMoney(orderBillingDetails.getStoreCreditMoney() == null ? 0.00 : orderBillingDetails.getStoreCreditMoney());
+            AppStore store = this.appStoreService.findById(orderBaseInfo.getStoreId());
+            if (store != null && (store.getStoreType() == StoreType.ZS) && (orderBillingDetails.getIsPayUp() != null) && orderBillingDetails.getIsPayUp()){
+                Double stPreDeposit = orderBillingDetails.getStPreDeposit() == null ? 0.00 : orderBillingDetails.getStPreDeposit();
+                Double stCreditMoney = orderBillingDetails.getStoreCreditMoney() == null ? 0.00 : orderBillingDetails.getStoreCreditMoney();
+                returnOrderBilling.setStPreDeposit(CountUtil.add(stPreDeposit, stCreditMoney));
+                returnOrderBilling.setStCreditMoney(0D);
+            } else {
+                returnOrderBilling.setStPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0.00 : orderBillingDetails.getStPreDeposit());
+                returnOrderBilling.setStCreditMoney(orderBillingDetails.getStoreCreditMoney() == null ? 0.00 : orderBillingDetails.getStoreCreditMoney());
+            }
             returnOrderBilling.setStSubvention(orderBillingDetails.getStoreSubvention() == null ? 0.00 : orderBillingDetails.getStoreSubvention());
             returnOrderBilling.setOnlinePay(orderBillingDetails.getOnlinePayAmount() == null ? 0.00 : orderBillingDetails.getOnlinePayAmount());
             returnOrderBilling.setOnlinePayType(orderBillingDetails.getOnlinePayType());

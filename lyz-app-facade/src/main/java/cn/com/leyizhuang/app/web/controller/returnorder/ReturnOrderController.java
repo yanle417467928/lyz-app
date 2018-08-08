@@ -755,8 +755,14 @@ public class ReturnOrderController {
                     cashPosPrice = CountUtil.sub(cashPosPrice,billing.getCash());
                     onlinePayPrice = CountUtil.sub(onlinePayPrice,billing.getOnlinePay());
                     customerPrePay = CountUtil.sub(customerPrePay,billing.getPreDeposit());
-                    storePrePay = CountUtil.sub(storePrePay,billing.getStPreDeposit());
-                    storeCredit = CountUtil.sub(storeCredit,billing.getStPreDeposit());
+                    if ((store.getStoreType() == StoreType.ZS) && (billingDetails.getIsPayUp() != null) && billingDetails.getIsPayUp()){
+                        storePrePay = CountUtil.add(storePrePay, storeCredit);
+                        storePrePay = CountUtil.sub(storePrePay, billing.getStPreDeposit());
+                        storeCredit = 0D;
+                    } else {
+                        storePrePay = CountUtil.sub(storePrePay, billing.getStPreDeposit());
+                        storeCredit = CountUtil.sub(storeCredit, billing.getStCreditMoney());
+                    }
                     sellerStoreDeposit = CountUtil.sub(sellerStoreDeposit,billing.getSellerStoreDeposit());
                 }
 
