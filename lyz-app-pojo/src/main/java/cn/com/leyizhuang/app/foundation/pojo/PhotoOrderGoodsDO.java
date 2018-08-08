@@ -25,4 +25,6 @@ public class PhotoOrderGoodsDO {
     private String photoOrderNo;
     //是否生成订单
     private String isGenerateOrder;
+    //商品类型
+    private String goodsType;
 }

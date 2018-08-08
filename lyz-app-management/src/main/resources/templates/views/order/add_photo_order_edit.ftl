@@ -116,13 +116,18 @@
                         选择下单人
                     </button>
 
-                    <button type="button" class="btn btn-primary btn-xs"
-                            onclick="findProxyPeople()" style="width:100px;height:30px">
+                    <button type="button" class="btn btn-primary btn-xs" id="selectProxyPeopleButton"
+                            onclick="findProxyPeople()" style="width:100px;height:30px;position:absoulte;">
                         选择代下单人
                     </button>
+                    <button type="button" class="btn btn-danger footer-btn btn-cancel" id="cancelProxyPeopleButton"
+                            onclick="cancelProxyPeople()" style="width:100px;height:30px;display:none;margin-left: 120px;margin-top: -30px;">
+                        取消代下单人
+                    </button>
+                    <#--btn btn-danger footer-btn btn-cancel-->
                     <b>（注：产品会到代下单的下料清单中）</b>
                 </div>
-
+                <h2></h2>
                 <div class="row">
                     <div class="col-xs-12" style="margin-top: 5px">
                         <div class="col-xs-4">
@@ -216,6 +221,7 @@
                     </div>
                 </div>
             </div>
+            <h2></h2>
             <form id="form">
                 <div class="row">
                     <div class="col-xs-12 table-responsive">
@@ -253,8 +259,11 @@
                         <input id="guideId" name="guideId" type="hidden" value=""/>
                         <input id="peopleIdentityType" name="peopleIdentityType" type="hidden" value=""/>
                         <input id="rankCode" name="rankCode" type="hidden" value=""/>
+                        <input id="sellerType" name="sellerType" type="hidden" value=""/>
                         <input id="cusId" name="cusId" type="hidden" value=""/>
 
+                        <h2>
+                        </h2>
                         <div id="writeDeliveryAddress">
                             <div class="row">
                                 <div class="col-xs-12 col-md-3">
@@ -414,7 +423,44 @@
                         </button>
                     </div>
                 </div>
+
+                <h2 class="page-header">
+                </h2>
+
+                <div class="row">
+                    <div class="col-xs-12 col-md-12">
+                        <div class="col-xs-12 col-md-3">
+                            <button type="button" class="btn btn-success footer-btn" onclick="openProductCouponSelect()" style="margin-left: -15px;">
+                                产品券
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </form>
+            <h2></h2>
+            <!-- 产品券选择框 -->
+            <div class="box" id="productCouponList">
+                <div class="box-header">
+                    <h3 class="box-title">顾客产品券</h3>
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th width="10%">商品id</th>
+                        <th width="10%">商品编码</th>
+                        <th width="20%">商品名称</th>
+                        <th width="20%">生效起始时间</th>
+                        <th width="20%">失效时间</th>
+                        <th width="10%">剩余数量</th>
+                        <th width="10%">使用数量</th>
+                    </tr>
+                    </thead>
+                    <tbody id="productCouponGoodsList">
+
+
+                    </tbody>
+                </table>
+            </div>
 
 
             <!-- 库存检核框 -->
@@ -988,6 +1034,8 @@
                     $("#writeDeliveryAddress").hide();
                     $("#com").hide();
                     initFileInput('rotationImagefile');
+
+                    $("#productCouponList").hide();
                 });
 
                 function addDeliveryAddress() {
@@ -1928,9 +1976,9 @@
                         var proxyId = $('#proxyId').val();
                         var rankCode = $('#rankCode').val();
                         var isZg = isZGPriceType();
-                        if(null !=proxyId && null!=guideId && rankCode !='COMMON' && isZg==1){
-                                $notify.info("导购不能为顾客专供商品");
-                            $('#form').bootstrapValidator('disableSubmitButtons', false);
+                        if(null !=proxyId && -1 != proxyId && null!=guideId && rankCode !='COMMON' && isZg==1){
+                                $notify.info("有专供产品不可以到导购下料清单！");
+                                $('#form').bootstrapValidator('disableSubmitButtons', false);
                                 return false;
                         }
                         if (estateInfoLength > 50) {
@@ -2242,14 +2290,17 @@
                         $("#peopleIdentityType").val("顾客");
                         $("#identityType").val("顾客");
                         $("#rankCode").val(row.rankCode);
+                        $("#sellerType").val('');
                     } else if('DECORATE_EMPLOYEE' == row.identityType){
                         $("#peopleIdentityType").val("装饰公司员工");
                         $("#identityType").val("装饰公司员工");
                         $("#rankCode").val('');
+                        $("#sellerType").val(row.sellerType);
                     }else{
                         $("#peopleIdentityType").val("装饰公司经理");
                         $("#identityType").val("装饰公司经理");
                         $("#rankCode").val('');
+                        $("#sellerType").val(row.sellerType);
                     }
 //                document.getElementById("photoNo").va;
 //                document.getElementById("contactName").innerText = row.name;
@@ -2266,6 +2317,10 @@
                     $("#guideId").val(row.peopleId);
 
                     $('#selectCreateOrderPeopleGrid').modal('hide');
+
+                    $('#productCouponGoodsList').modal('hide');
+                    document.getElementById('productCouponGoodsList').innerHTML = "";
+                    document.getElementById('tbody').innerHTML = "";
                     findCategory("WATER");
                 }
 
@@ -2471,13 +2526,39 @@
                 function fillingProxy(row) {
                     $('#proxyId').val(row.peopleId);
                     $('#proxyName').val(row.name);
+                    var selectProxyPeopleButton = document.getElementById("selectProxyPeopleButton");
+                    var cancelProxyPeopleButton = document.getElementById("cancelProxyPeopleButton");
+                    selectProxyPeopleButton.style.display = "none"; //style中的display属性
+                    cancelProxyPeopleButton.style.display = "block"; //style中的display属性
                     $('#selectProxyCreateOrderPeopleGrid').modal('hide');
                 }
+                //取消代下单人
+                function cancelProxyPeople() {
+                    var selectProxyPeopleButton = document.getElementById("selectProxyPeopleButton");
+                    var cancelProxyPeopleButton = document.getElementById("cancelProxyPeopleButton");
+                    selectProxyPeopleButton.style.display = "block"; //style中的display属性
+                    cancelProxyPeopleButton.style.display = "none"; //style中的display属性
+//                    selectProxyPeopleButton.style.cssText = "margin-left: 120px;margin-top: -30px;";
+                    selectProxyPeopleButton.style.marginLeft = "120px";
+                    selectProxyPeopleButton.style.marginTop = "-30px";
+                    $('#proxyId').val(-1);
+                    $('#proxyName').val('');
+                }
+                
+                
 
                 //检验库存
                 function inspectionStock() {
+                    var productCouponGoodss = new Array();
+                    var b = cheackProductCouponGoodsDetail(productCouponGoodss, 'productCouponGoodsList');
+                    if (b == 1){
+                        $notify.warning("券使用数量大于可使用数量，请检查！");
+                        return;
+                    }
+
                     $("#selectedGoodsTable").empty();
                     var formData = new FormData($("#form")[0]);
+                    formData.append("productCouponGoodss",JSON.stringify(productCouponGoodss));
                     var identityType =  $("#identityType").val();
                     if ('' === identityType){
                         $notify.warning("请选择下单人！");
@@ -2614,7 +2695,12 @@
                     document.getElementById('subAmount_div').innerHTML = "";
                     $('#giftSelectionBox').modal('show');
                     var url = '/rest/order/photo/page/gifts';
+
+                    //获取产品券详情
+                    var productCouponGoodss = new Array();
+                    cheackProductCouponGoodsDetail(productCouponGoodss, 'productCouponGoodsList');
                     var formData = new FormData($("#form")[0]);
+                    formData.append("productCouponGoodss",productCouponGoodss);
                     $.ajax({
                         url: url,
                         method: 'POST',
@@ -2635,7 +2721,7 @@
                             if (0 === result.code) {
                                 var promotionsListResponse = result.content;
                                 if (null === promotionsListResponse) {
-                                    openOrderDetail();
+//                                    openOrderDetail();
                                     return;
                                 }
                                 var giftListResponse = promotionsListResponse.promotionGiftList;
@@ -2792,8 +2878,12 @@
                         $loading.close();
                         return;
                     }
+                    //获取产品券详情
+                    var productCouponGoodss = new Array();
+                    cheackProductCouponGoodsDetail(productCouponGoodss, 'productCouponGoodsList');
                     var formData = new FormData($("#form")[0]);
                     formData.append("giftDetails",JSON.stringify(giftDetails));
+                    formData.append("productCouponGoodss",JSON.stringify(productCouponGoodss));
 
                     $.ajax({
                         url: url,
@@ -3023,6 +3113,7 @@
                         }
                     }
 
+                    //收款信息
                     var billingMsgString = {
                         "stPreDeposit": usePreDeposit,
                         "storeCreditMoney": useCreditMoney,
@@ -3037,7 +3128,6 @@
                     var peopleIdentityType = $("#peopleIdentityType").val();
                     var rotationImg = $("#rotationImg").val();
 
-
                     var url = '/rest/order/photo/ma/photo/create';
                     //获取赠品详情
                     var giftDetails = new Array();
@@ -3046,9 +3136,15 @@
                         $loading.close();
                         return;
                     }
+
+                    //获取产品券详情
+                    var productCouponGoodss = new Array();
+                    cheackProductCouponGoodsDetail(productCouponGoodss, 'productCouponGoodsList');
+
                     var formData = new FormData($("#form")[0]);
                     formData.append("giftDetails",JSON.stringify(giftDetails));
                     formData.append("billingMsg",JSON.stringify(billingMsgString));
+                    formData.append("productCouponGoodss",JSON.stringify(productCouponGoodss));
                     formData.append("remark", remark);
                     formData.append("contactName", contactName);
                     formData.append("contactPhone", contactPhone);
@@ -3146,7 +3242,7 @@
                         }
                     });
                 }
-                
+
                 function isZGPriceType() {
                     var tbody = 0;
                     var tbody1 =  $("#tbody").find("tr");
@@ -3158,6 +3254,91 @@
                             }
                         });
                     return tbody;
+                }
+
+                function openProductCouponSelect() {
+                    var peopleIdentityType = $('#peopleIdentityType').val();
+                    var createPeopleId = $("#guideId").val();
+                    var sellerType = $("#sellerType").val();
+                    if ( null == peopleIdentityType || '' == peopleIdentityType || null == createPeopleId || '' == createPeopleId) {
+                        $notify.warning("请选择下单人！");
+                        return false;
+                    }
+                    var identityType ;
+                    if ('顾客' == peopleIdentityType){
+                        identityType = 6;
+                    }else if ('装饰公司经理' == peopleIdentityType && sellerType == 'SUPERVISOR'){
+                        identityType = 2;
+                    }else{
+                        $notify.warning("下单人类型非顾客或店长，不能使用产品券！")
+                        return false;
+                    }
+
+                    var productCoupon = '';
+                    $("#productCouponList").show();
+                    $.ajax({
+                        url: '/rest/order/photo/find/customer/productCoupon',
+                        method: 'GET',
+                        data: {
+                            createPeopleId: createPeopleId
+                        },
+                        error: function () {
+                            clearTimeout($global.timer);
+                            $loading.close();
+                            $global.timer = null;
+                            $notify.danger('网络异常，请稍后重试或联系管理员');
+                        },
+                        success: function (result) {
+                            clearTimeout($global.timer);
+                            $.each(result.content, function (i, item) {
+                                var effectiveStartTime = '-';
+                                var effectiveEndTime = '-';
+                                if (null != item.effectiveStartTime){
+                                    effectiveStartTime = item.effectiveStartTime;
+                                }
+                                if (null != item.effectiveEndTime){
+                                    effectiveEndTime = item.effectiveEndTime;
+                                }
+                                productCoupon += '<tr><td><input type="hidden" id="gid" value="' + item.goodsId + '" />' + item.goodsId + '</td>';
+                                productCoupon += '<td><input type="hidden" id="sku" value="' + item.goodsCode + '" />' + item.goodsCode + '</td>';
+                                productCoupon += '<td>' + item.goodsName + '</td><td>' + effectiveStartTime + '</td><td>' + effectiveEndTime + '</td>';
+                                productCoupon += '<td><input type="hidden" id="leftNumber" value="' + item.leftNumber + '" />'+item.leftNumber+'</td>';
+                                productCoupon += '<td ><input type="text" id="qty" min="0"  value="0" style="width:30%;" onkeyup="keyup(this)" onafterpaste="afterpaste(this)" onblur="setQuantity(this)"/></td></tr>';
+                            });
+                            $("#productCouponGoodsList").html(productCoupon);
+                        }
+                    });
+                }
+
+
+                /**
+                 * 获取产品券信息
+                 */
+                function cheackProductCouponGoodsDetail(details, tableId) {
+                    //商品sku
+                    var productCouponGoodsSkus = new Array();
+
+                    var trs = $("#" + tableId).find("tr");
+
+                    var b = 0;
+
+                    trs.each(function (i, n) {
+                        var id = $(n).find("#gid").val();
+                        var sku = $(n).find("#sku").val();
+                        var qty = $(n).find("#qty").val();
+                        var leftNumber = $(n).find("#leftNumber").val();
+                        if (Number(qty) > Number(leftNumber)){
+                            b = 1;
+                            return b;
+                        }
+                        if (Number(qty) > 0) {
+                            details.push({
+                               id:id,
+                               qty:qty
+                            });
+                        }
+                    });
+                    return b;
                 }
             </script>
     </section>

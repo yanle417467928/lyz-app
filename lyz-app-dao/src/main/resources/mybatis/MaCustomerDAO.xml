@@ -560,7 +560,8 @@
             e.mobile phone,
             s.store_name storeName,
             s.store_code storeCode,
-            e.identity_type identityType
+            e.identity_type identityType,
+            e.seller_type sellerType
             FROM
             emp_employee e LEFT JOIN st_store s ON s.store_id = e.store_id
             WHERE

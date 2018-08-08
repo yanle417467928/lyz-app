@@ -90,6 +90,7 @@
                   ggp.price_type =#{rankCode}
               </when>
               <otherwise>
+                  AND
                   ggp.price_type ='COMMON'
               </otherwise>
           </choose>

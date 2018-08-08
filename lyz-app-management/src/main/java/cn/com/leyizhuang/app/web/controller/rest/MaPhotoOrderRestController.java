@@ -53,6 +53,7 @@ import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.PageInfo;
+import com.mchange.v1.util.ArrayUtils;
 import com.sun.jdi.LongValue;
 import org.apache.http.HttpResponse;
 import org.apache.shiro.SecurityUtils;
@@ -1281,6 +1282,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
                     String cityName = deliveryAddressService.findAreaNameByCode(photoOrderDTO.getCity());
                     String countyName = deliveryAddressService.findAreaNameByCode(photoOrderDTO.getCounty());
                     AppEmployee decorateEmployee = employeeService.findById(photoOrderDTO.getGuideId());
+                    cityId = decorateEmployee.getCityId();
                     List<MaterialListDO> combList = photoOrderDTO.getCombList();
                     MaterialAuditSheet materialAuditSheet = new MaterialAuditSheet();
                     Long deliveryId = null;
@@ -1985,16 +1987,22 @@ public class MaPhotoOrderRestController extends BaseRestController {
     public Map<String, Object> inspectionStock(@Valid PhotoOrderDTO photoOrderDTO) {
         logger.info("inspectionStock 拍照下单检验库存，入参  photoOrderDTO:{}", photoOrderDTO);
         Map<String, Object> map = new HashMap<>(5);
-        if (null == photoOrderDTO.getCombList() || photoOrderDTO.getCombList().size() <= 0) {
-            map.put("code", -1);
-            map.put("message", "商品不能为空，请选择商品!");
-            return map;
-        }
-
-        try {
-
-            Long storeId = null;
-            Long userId = null;
+        try{
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+            JavaType productCouponSimpleInfo = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, ProductCouponSimpleInfo.class);
+            //产品券信息
+            List<ProductCouponSimpleInfo> productCouponList = new ArrayList<>();
+            if (StringUtils.isNotBlank(photoOrderDTO.getProductCouponGoodss())) {
+                productCouponList = objectMapper.readValue(photoOrderDTO.getProductCouponGoodss(), productCouponSimpleInfo);
+            }
+            if ((null == photoOrderDTO.getCombList() || photoOrderDTO.getCombList().size() <= 0) && (null == productCouponList || productCouponList.size() <= 0)){
+                map.put("code", -1);
+                map.put("message", "商品或产品券不能为空，请选择!");
+                return map;
+            }
+        Long storeId = null;
+        Long userId = null;
 
             if ("appPhotoOrder".equalsIgnoreCase(photoOrderDTO.getSource()) || "updatePhotoOrder".equals(photoOrderDTO.getSource())) {
                 //查询拍照订单信息
@@ -2042,78 +2050,109 @@ public class MaPhotoOrderRestController extends BaseRestController {
             }
 
 
-            //是否可以提交到购物车标志
-            final boolean[] submitFlag = {true};
-            AppStore store = storeService.findById(storeId);
-            List<MaterialListDO> combList = photoOrderDTO.getCombList();
-            List<Long> internalGidList = new ArrayList<>();
-            List<String> internalSkuList = new ArrayList<>();
-            for (MaterialListDO materialListDO : combList) {
-                if (null != materialListDO || null != materialListDO.getGid()) {
-                    internalGidList.add(materialListDO.getGid());
-                }
-            }
-            List<GoodsDO> goodsList = maGoodsService.findGoodsListByGidList(internalGidList);
 
-            for (GoodsDO goodsDO : goodsList) {
-                for (MaterialListDO materialListDO : photoOrderDTO.getCombList()) {
-                    if (goodsDO.getGid().equals(materialListDO.getGid())) {
-                        materialListDO.setSku(goodsDO.getSku());
-                        materialListDO.setSkuName(goodsDO.getSkuName());
+
+
+        //是否可以提交到购物车标志
+        final boolean[] submitFlag = {true};
+        AppStore store = storeService.findById(storeId);
+        List<MaterialListDO> combList =null;
+        if (null == photoOrderDTO.getCombList()){
+            combList = new ArrayList<>();
+        }else{
+            combList = photoOrderDTO.getCombList();
+        }
+        if (null != productCouponList && productCouponList.size() > 0){
+            for (ProductCouponSimpleInfo promotionSimpleInfo : productCouponList){
+                Boolean flag = true;
+                for (MaterialListDO materialListDO : combList){
+                    if (materialListDO.getGid().equals(promotionSimpleInfo.getId())){
+                        materialListDO.setQty(materialListDO.getQty() + promotionSimpleInfo.getQty());
+                        flag = false;
                     }
                 }
-                internalSkuList.add(goodsDO.getSku());
+                if (flag){
+                    MaterialListDO newMaterialListDO = new MaterialListDO();
+                    newMaterialListDO.setGid(promotionSimpleInfo.getId());
+                    newMaterialListDO.setQty(promotionSimpleInfo.getQty());
+                    combList.add(newMaterialListDO);
+                }
             }
-            List<CityInventory> cityInventoryList = new ArrayList<>(300);
-            List<GoodsPrice> goodsPriceList = new ArrayList<>(300);
-            if (null != store) {
-                //查询全部内部编码对应的城市可用量
-                cityInventoryList = cityInventoryService.findCityInventoryListByCityIdAndSkuList(store.getCityId(),
-                        internalSkuList);
-                //查询全部内部编码对应的门店价目表
-                goodsPriceList = goodsPriceService.findGoodsPriceListByStoreIdAndSkuList(store.getStoreId(), internalSkuList);
-            } else {
-                //todo
-                map.put("code", -1);
-                map.put("message", "找不到该门店信息");
-                return map;
+        }
+        List<Long> internalGidList = new ArrayList<>();
+        List<String> internalSkuList = new ArrayList<>();
+        for (MaterialListDO materialListDO : combList){
+            if (null != materialListDO && null != materialListDO.getGid() && materialListDO.getQty() > 0) {
+                internalGidList.add(materialListDO.getGid());
             }
+        }
+//        if (true) {
+//            map.put("code", -1);
+//            map.put("message", "发生未知异常，请联系管理员！");
+//            return map;
+//        }
+        List<GoodsDO> goodsList = maGoodsService.findGoodsListByGidList(internalGidList);
 
-            //页面返回对象
-            List<FitOrderExcelPageVO> pageVOList = new ArrayList<>();
-            List<CityInventory> finalCityInventoryList = cityInventoryList;
-            List<GoodsPrice> finalGoodsPriceList = goodsPriceList;
-            photoOrderDTO.getCombList().forEach(p -> {
-                if (null != p.getGid()) {
-                    FitOrderExcelPageVO pageVO = new FitOrderExcelPageVO();
-                    pageVO.setQty(p.getQty());
-                    pageVO.setInternalCode(p.getSku());
-                    pageVO.setInternalName(p.getSkuName());
-                    //设置内部商品是否存在
-                    if (StringUtils.isBlank(p.getSku())) {
-                        pageVO.setIsInternalCodeExists(false);
+        for (GoodsDO goodsDO : goodsList){
+
+            for (MaterialListDO materialListDO : combList){
+                if (goodsDO.getGid().equals(materialListDO.getGid())){
+                    materialListDO.setSku(goodsDO.getSku());
+                    materialListDO.setSkuName(goodsDO.getSkuName());
+                }
+            }
+            internalSkuList.add(goodsDO.getSku());
+        }
+        List<CityInventory> cityInventoryList = new ArrayList<>(300);
+        List<GoodsPrice> goodsPriceList = new ArrayList<>(300);
+        if (null != store) {
+            //查询全部内部编码对应的城市可用量
+            cityInventoryList = cityInventoryService.findCityInventoryListByCityIdAndSkuList(store.getCityId(),
+                    internalSkuList);
+            //查询全部内部编码对应的门店价目表
+            goodsPriceList = goodsPriceService.findGoodsPriceListByStoreIdAndSkuList(store.getStoreId(), internalSkuList);
+        } else {
+            //todo
+            map.put("code", -1);
+            map.put("message", "找不到该门店信息");
+            return map;
+        }
+
+        //页面返回对象
+        List<FitOrderExcelPageVO> pageVOList = new ArrayList<>();
+        List<CityInventory> finalCityInventoryList = cityInventoryList;
+        List<GoodsPrice> finalGoodsPriceList = goodsPriceList;
+        combList.forEach(p -> {
+            if (null != p.getGid()) {
+                FitOrderExcelPageVO pageVO = new FitOrderExcelPageVO();
+                pageVO.setQty(p.getQty());
+                pageVO.setInternalCode(p.getSku());
+                pageVO.setInternalName(p.getSkuName());
+                //设置内部商品是否存在
+                if (StringUtils.isBlank(p.getSku())) {
+                    pageVO.setIsInternalCodeExists(false);
+                } else {
+                    if (goodsList.stream().map(GoodsDO::getSku).collect(Collectors.toList()).contains(p.getSku())) {
+                        pageVO.setIsInternalCodeExists(true);
                     } else {
-                        if (goodsList.stream().map(GoodsDO::getSku).collect(Collectors.toList()).contains(p.getSku())) {
-                            pageVO.setIsInternalCodeExists(true);
-                        } else {
-                            pageVO.setIsInternalCodeExists(false);
-                        }
+                        pageVO.setIsInternalCodeExists(false);
                     }
-                    if (pageVO.getIsInternalCodeExists()) {
-                        //设置库存相关信息
-                        List<CityInventory> cityInventoryListTemp = finalCityInventoryList.stream().filter(q -> q.getSku().equals(p.getSku())).collect(Collectors.toList());
-                        if (AssertUtil.isNotEmpty(cityInventoryListTemp)) {
-                            pageVO.setInventory(cityInventoryListTemp.get(0).getAvailableIty() == null ? 0 : cityInventoryListTemp.get(0).getAvailableIty());
-                        } else {
-                            pageVO.setInventory(0);
-                        }
-                        if (pageVO.getInventory() >= pageVO.getQty()) {
-                            pageVO.setIsInvEnough(true);
-                            pageVO.setInvDifference(0);
-                        } else {
-                            pageVO.setIsInvEnough(false);
-                            pageVO.setInvDifference(pageVO.getInventory() - pageVO.getQty());
-                        }
+                }
+                if (pageVO.getIsInternalCodeExists()) {
+                    //设置库存相关信息
+                    List<CityInventory> cityInventoryListTemp = finalCityInventoryList.stream().filter(q -> q.getSku().equals(p.getSku())).collect(Collectors.toList());
+                    if (AssertUtil.isNotEmpty(cityInventoryListTemp)) {
+                        pageVO.setInventory(cityInventoryListTemp.get(0).getAvailableIty() == null ? 0 : cityInventoryListTemp.get(0).getAvailableIty());
+                    } else {
+                        pageVO.setInventory(0);
+                    }
+                    if (pageVO.getInventory() >= pageVO.getQty()) {
+                        pageVO.setIsInvEnough(true);
+                        pageVO.setInvDifference(0);
+                    } else {
+                        pageVO.setIsInvEnough(false);
+                        pageVO.setInvDifference(pageVO.getInventory() - pageVO.getQty());
+                    }
 
                         //设置价目表是否存在
                         List<GoodsPrice> goodsPriceListTemp = finalGoodsPriceList.stream().filter(t -> t.getSku().equals(p.getSku())).collect(Collectors.toList());
@@ -2143,6 +2182,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
         } catch (Exception e) {
             map.put("code", -1);
             map.put("message", "发生未知异常，请联系管理员！");
+            logger.info(e.getMessage());
             return map;
         }
     }
@@ -2152,14 +2192,19 @@ public class MaPhotoOrderRestController extends BaseRestController {
      *
      * @return
      */
-    @RequestMapping(value = "/page/gifts", method = RequestMethod.POST)
-    public ResultDTO<PromotionsListResponse> restGiftsPageBySellerId(@Valid PhotoOrderDTO photoOrderDTO) {
-        logger.info("restGiftsPageBySellerId 根据导购id查询门店赠品列表,入参 photoOrderDTO:{}", photoOrderDTO);
-        if (null == photoOrderDTO.getCombList() || photoOrderDTO.getCombList().size() <= 0) {
-            logger.warn("本品为空");
-            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "本品为空", null);
+    @RequestMapping(value = "/page/gifts",method = RequestMethod.POST)
+    public ResultDTO<PromotionsListResponse> restGiftsPageBySellerId(@Valid PhotoOrderDTO photoOrderDTO){
+        logger.info("restGiftsPageBySellerId 根据导购id查询门店赠品列表,入参 photoOrderDTO:{}",photoOrderDTO);
+        if ((null == photoOrderDTO.getCombList() || photoOrderDTO.getCombList().size() <= 0) && (StringUtils.isBlank(photoOrderDTO.getProductCouponGoodss()))){
+                logger.warn("商品信息为空");
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品信息为空", null);
         }
-        try {
+        if ((null == photoOrderDTO.getCombList() || photoOrderDTO.getCombList().size() <= 0) && (StringUtils.isNotBlank(photoOrderDTO.getProductCouponGoodss()))){
+            logger.warn("产品券提货无促销");
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "", null);
+        }
+
+        try{
             AppCustomer appCustomer = null;
             PhotoOrderVO photoOrderVO = null;
             Long userId = null;
@@ -2311,40 +2356,43 @@ public class MaPhotoOrderRestController extends BaseRestController {
             Long userId = null;
             Integer identityType = null;
             Long deliveryId = null;
-            if ("appPhotoOrder".equals(photoOrderDTO.getSource()) || "updatePhotoOrder".equals(photoOrderDTO.getSource())) {
-                //查询拍照订单信息
-                List<PhotoOrderStatus> status = new ArrayList<>();
-                status.add(PhotoOrderStatus.PENDING);
-                status.add(PhotoOrderStatus.PROCESSING);
-                status.add(PhotoOrderStatus.FINISH);
-                status.add(PhotoOrderStatus.CANCEL);
-                photoOrderVO = this.maPhotoOrderService.findByIdAndStatus(photoOrderDTO.getPhotoId(), status);
-                if (null != photoOrderVO) {
-                    if (null == photoOrderVO.getIdentityTypeValue() || photoOrderVO.getIdentityTypeValue() == AppIdentityType.SELLER
-                            || photoOrderVO.getIdentityTypeValue() == AppIdentityType.DELIVERY_CLERK
-                            || photoOrderVO.getIdentityTypeValue() == AppIdentityType.DECORATE_EMPLOYEE
-                            || photoOrderVO.getIdentityTypeValue() == AppIdentityType.ADMINISTRATOR) {
-                        logger.info("此下单人身份不支持后台创建订单，identity{}：", photoOrderVO.getIdentityTypeValue());
-                        return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此下单人身份不支持后台创建订单，后台拍照下单创建订单方法失败！", null);
+            Long cityId = null;
+            if ("appPhotoOrder".equals(photoOrderDTO.getSource()) || "updatePhotoOrder".equals(photoOrderDTO.getSource())){
+            //查询拍照订单信息
+            List<PhotoOrderStatus> status = new ArrayList<>();
+            status.add(PhotoOrderStatus.PENDING);
+            status.add(PhotoOrderStatus.PROCESSING);
+            status.add(PhotoOrderStatus.FINISH);
+            status.add(PhotoOrderStatus.CANCEL);
+            photoOrderVO = this.maPhotoOrderService.findByIdAndStatus(photoOrderDTO.getPhotoId(), status);
+            if (null != photoOrderVO){
+                if (null == photoOrderVO.getIdentityTypeValue() || photoOrderVO.getIdentityTypeValue() == AppIdentityType.SELLER
+                        || photoOrderVO.getIdentityTypeValue() == AppIdentityType.DELIVERY_CLERK
+                        || photoOrderVO.getIdentityTypeValue() == AppIdentityType.DECORATE_EMPLOYEE
+                        || photoOrderVO.getIdentityTypeValue() == AppIdentityType.ADMINISTRATOR   ){
+                    logger.info("此下单人身份不支持后台创建订单，identity{}：",photoOrderVO.getIdentityTypeValue());
+                    return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"此下单人身份不支持后台创建订单，后台拍照下单创建订单方法失败！",null);
 
+                }
+                if (null != photoOrderVO.getIdentityTypeValue() && photoOrderVO.getIdentityTypeValue() == AppIdentityType.CUSTOMER){
+                    appCustomer = customerService.findById(photoOrderVO.getUserId());
+                    if (null == appCustomer){
+                        logger.info("未查询到顾客信息，顾客id{}：",photoOrderVO.getUserId());
+                        return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"未查询到下单顾客信息，后台拍照下单创建订单方法失败！",null);
                     }
-                    if (null != photoOrderVO.getIdentityTypeValue() && photoOrderVO.getIdentityTypeValue() == AppIdentityType.CUSTOMER) {
-                        appCustomer = customerService.findById(photoOrderVO.getUserId());
-                        if (null == appCustomer) {
-                            logger.info("未查询到顾客信息，顾客id{}：", photoOrderVO.getUserId());
-                            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "未查询到下单顾客信息，后台拍照下单创建订单方法失败！", null);
-                        }
-                        customerId = appCustomer.getCusId();
-                        employee = employeeService.findById(appCustomer.getSalesConsultId());
-                        userId = appCustomer.getCusId();
-                        identityType = photoOrderVO.getIdentityTypeValue().getValue();
-                    } else if (null != photoOrderVO.getIdentityTypeValue() && photoOrderVO.getIdentityTypeValue() == AppIdentityType.DECORATE_MANAGER) {
-                        employee = employeeService.findById(photoOrderVO.getUserId());
-                        userId = employee.getEmpId();
-                        identityType = photoOrderVO.getIdentityTypeValue().getValue();
-                    } else {
-                        logger.info("下单人身份类型为空！：", photoOrderVO.getUserId());
-                        return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "下单人身份类型为空，后台拍照下单创建订单方法失败！", null);
+                    customerId = appCustomer.getCusId();
+                    employee = employeeService.findById(appCustomer.getSalesConsultId());
+                    userId = appCustomer.getCusId();
+                    cityId = appCustomer.getCityId();
+                    identityType = photoOrderVO.getIdentityTypeValue().getValue();
+                }else if (null != photoOrderVO.getIdentityTypeValue() && photoOrderVO.getIdentityTypeValue() == AppIdentityType.DECORATE_MANAGER){
+                    employee = employeeService.findById(photoOrderVO.getUserId());
+                    userId = employee.getEmpId();
+                    cityId = employee.getCityId();
+                    identityType = photoOrderVO.getIdentityTypeValue().getValue();
+                }else{
+                    logger.info("下单人身份类型为空！：",photoOrderVO.getUserId());
+                    return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE,"下单人身份类型为空，后台拍照下单创建订单方法失败！",null);
 
                     }
                 } else {
@@ -2353,6 +2401,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
             } else if ("addPhotoOrder".equals(photoOrderDTO.getSource())) {
                 if ("装饰公司经理".equals(photoOrderDTO.getPeopleIdentityType())) {
                     employee = employeeService.findById(photoOrderDTO.getGuideId());
+                    cityId = employee.getCityId();
                     userId = photoOrderDTO.getGuideId();
                     identityType = 2;
                 } else if ("顾客".equals(photoOrderDTO.getPeopleIdentityType())) {
@@ -2360,6 +2409,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
                     employee = employeeService.findById(appCustomer.getSalesConsultId());
                     userId = photoOrderDTO.getGuideId();
                     identityType = 6;
+                    cityId = appCustomer.getCityId();
                 }
             }
 //        Long userId = photoOrderVO.getUserId();
@@ -2369,16 +2419,16 @@ public class MaPhotoOrderRestController extends BaseRestController {
                 return resultDTO;
             }
 
-            if (null == identityType) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份类型不允许为空!", "");
-                logger.warn("maCreatePhotoOrder OUT,后台拍照下单创建订单方法失败,出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
-            if (null == photoOrderDTO.getCombList() || photoOrderDTO.getCombList().size() <= 0) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品信息不允许为空!", "");
-                logger.warn("maCreatePhotoOrder OUT,后台拍照下单创建订单方法失败,出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
+        if (null == identityType) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份类型不允许为空!", "");
+            logger.warn("maCreatePhotoOrder OUT,后台拍照下单创建订单方法失败,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
+        if ((null == photoOrderDTO.getCombList() || photoOrderDTO.getCombList().size() <= 0) && StringUtils.isBlank(photoOrderDTO.getProductCouponGoodss())) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品信息不允许为空!", "");
+            logger.warn("maCreatePhotoOrder OUT,后台拍照下单创建订单方法失败,出参 resultDTO:{}", resultDTO);
+            return resultDTO;
+        }
 
 
 //        //判断创单人身份是否合法
@@ -2393,7 +2443,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
             objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
 //            JavaType goodsSimpleInfo = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, GoodsSimpleInfo.class);
 //            JavaType cashCouponSimpleInfo = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, Long.class);
-//            JavaType productCouponSimpleInfo = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, ProductCouponSimpleInfo.class);
+            JavaType productCouponSimpleInfo = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, ProductCouponSimpleInfo.class);
             JavaType promotionSimpleInfo = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, PromotionSimpleInfo.class);
 
             //*************************** 转化前台提交过来的json类型参数 ************************
@@ -2401,16 +2451,17 @@ public class MaPhotoOrderRestController extends BaseRestController {
             //商品信息
             List<GoodsSimpleInfo> goodsList = new ArrayList<>();
 
-            for (MaterialListDO materialListDO : photoOrderDTO.getCombList()) {
-                if (null != materialListDO && null != materialListDO.getGid()) {
-                    GoodsSimpleInfo goodsSimpleInfo = new GoodsSimpleInfo();
-                    goodsSimpleInfo.setId(materialListDO.getGid());
-                    goodsSimpleInfo.setQty(materialListDO.getQty());
-                    goodsSimpleInfo.setGoodsLineType("GOODS");
-                    goodsList.add(goodsSimpleInfo);
+            if (null != photoOrderDTO.getCombList() && photoOrderDTO.getCombList().size() > 0) {
+                for (MaterialListDO materialListDO : photoOrderDTO.getCombList()) {
+                    if (null != materialListDO && null != materialListDO.getGid()) {
+                        GoodsSimpleInfo goodsSimpleInfo = new GoodsSimpleInfo();
+                        goodsSimpleInfo.setId(materialListDO.getGid());
+                        goodsSimpleInfo.setQty(materialListDO.getQty());
+                        goodsSimpleInfo.setGoodsLineType("GOODS");
+                        goodsList.add(goodsSimpleInfo);
+                    }
                 }
             }
-
             String provinceName = null;
             String cityName = null;
             String countyName = null;
@@ -2479,11 +2530,28 @@ public class MaPhotoOrderRestController extends BaseRestController {
 //            if (StringUtils.isNotBlank(orderParam.getCashCouponIds())) {
 //                cashCouponList = objectMapper.readValue(orderParam.getCashCouponIds(), cashCouponSimpleInfo);
 //            }
-//            //产品券信息
+            //产品券信息
             List<ProductCouponSimpleInfo> productCouponList = new ArrayList<>();
-//            if (StringUtils.isNotBlank(orderParam.getProductCouponInfo())) {
-//                productCouponList = objectMapper.readValue(orderParam.getProductCouponInfo(), productCouponSimpleInfo);
-//            }
+            //产品券信息
+            List<ProductCouponSimpleInfo> couponList = new ArrayList<>();
+            if (StringUtils.isNotBlank(photoOrderDTO.getProductCouponGoodss())) {
+                couponList = objectMapper.readValue(photoOrderDTO.getProductCouponGoodss(), productCouponSimpleInfo);
+                for (ProductCouponSimpleInfo coupon : couponList){
+                    Boolean flag = true;
+                    for (ProductCouponSimpleInfo materialListDO : productCouponList){
+                        if (materialListDO.getId().equals(coupon.getId())){
+                            materialListDO.setQty(materialListDO.getQty() + coupon.getQty());
+                            flag = false;
+                        }
+                    }
+                    if (flag){
+                        ProductCouponSimpleInfo newMaterialListDO = new ProductCouponSimpleInfo();
+                        newMaterialListDO.setId(coupon.getId());
+                        newMaterialListDO.setQty(coupon.getQty());
+                        productCouponList.add(newMaterialListDO);
+                    }
+                }
+            }
 //            //促销信息
             List<PromotionSimpleInfo> promotionSimpleInfoList = new ArrayList<>();
             if (6 == identityType) {
@@ -2542,7 +2610,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
             String orderNumberType = appOrderService.returnType(allGoodsList, userId, identityType);
 
             //******************* 创建订单基础信息 *****************
-            OrderBaseInfo orderBaseInfo = appOrderService.createOrderBaseInfo(employee.getCityId(), userId,
+            OrderBaseInfo orderBaseInfo = appOrderService.createOrderBaseInfo(cityId, userId,
                     identityType, customerId, deliverySimpleInfo.getDeliveryType(), photoOrderDTO.getRemark(), null);
             String oldOrderNumber = orderBaseInfo.getOrderNumber();
             oldOrderNumber = oldOrderNumber.replace("XN", orderNumberType);
@@ -2565,10 +2633,10 @@ public class MaPhotoOrderRestController extends BaseRestController {
 //                orderCouponInfoList.addAll(orderCashCouponInfoList);
 //            }
             //****************** 创建订单产品券信息 *****************
-//            List<OrderCouponInfo> orderProductCouponInfoList = commonService.createOrderProductCouponInfo(orderBaseInfo, support.getProductCouponGoodsList());
-//            if (null != orderProductCouponInfoList && orderProductCouponInfoList.size() > 0) {
-//                orderCouponInfoList.addAll(orderProductCouponInfoList);
-//            }
+            List<OrderCouponInfo> orderProductCouponInfoList = commonService.createOrderProductCouponInfo(orderBaseInfo, support.getProductCouponGoodsList());
+            if (null != orderProductCouponInfoList && orderProductCouponInfoList.size() > 0) {
+                orderCouponInfoList.addAll(orderProductCouponInfoList);
+            }
 
             //****************** 处理订单账单相关信息 ***************
             OrderBillingDetails orderBillingDetails = new OrderBillingDetails();
@@ -2622,10 +2690,9 @@ public class MaPhotoOrderRestController extends BaseRestController {
 
             //添加商品专供标志
             orderGoodsInfoList = this.commonService.addGoodsSign(orderGoodsInfoList, orderBaseInfo);
-            List<OrderCouponInfo> orderProductCouponInfoList = new ArrayList<>();
             //**************** 1、检查库存和与账单支付金额是否充足,如果充足就扣减相应的数量 ***********
             //**************** 2、持久化订单相关实体信息 ****************
-            transactionalSupportService.createOrderBusiness(deliverySimpleInfo, support.getInventoryCheckMap(), employee.getCityId(), identityType,
+            transactionalSupportService.createOrderBusiness(deliverySimpleInfo, support.getInventoryCheckMap(), cityId, identityType,
                     userId, customerId, cashCouponList, orderProductCouponInfoList, orderBillingDetails, orderBaseInfo,
                     orderLogisticsInfo, orderGoodsInfoList, orderCouponInfoList, paymentDetails, jxPriceDifferenceReturnDetailsList, null, promotionSimpleInfoList);
 
@@ -2662,16 +2729,51 @@ public class MaPhotoOrderRestController extends BaseRestController {
                 photoOrderDO.setProxyId(photoOrderDTO.getProxyId());
                 this.photoOrderServiceImpl.save(photoOrderDO);
                 List<PhotoOrderGoodsDO> photoOrderGoodsDOList = new ArrayList<>();
-                for (MaterialListDO materialListDO : photoOrderDTO.getCombList()) {
-                    if (null != materialListDO && null != materialListDO.getGid()) {
-                        GoodsDO goodsDO = maGoodsService.findGoodsById(materialListDO.getGid());
+                if (null != photoOrderDTO.getCombList() && photoOrderDTO.getCombList().size() > 0) {
+                    for (MaterialListDO materialListDO : photoOrderDTO.getCombList()) {
+                        if (null != materialListDO && null != materialListDO.getGid()) {
+                            GoodsDO goodsDO = maGoodsService.findGoodsById(materialListDO.getGid());
+                            if (null != goodsDO) {
+                                PhotoOrderGoodsDO photoOrderGoodsDO = new PhotoOrderGoodsDO();
+                                photoOrderGoodsDO.setGid(goodsDO.getGid());
+                                photoOrderGoodsDO.setSkuName(goodsDO.getSkuName());
+                                photoOrderGoodsDO.setGoodsQty(materialListDO.getQty());
+                                photoOrderGoodsDO.setPhotoOrderNo(orderNumber);
+                                photoOrderGoodsDO.setGoodsType("本品");
+                                photoOrderGoodsDOList.add(photoOrderGoodsDO);
+                            }
+                        }
+                    }
+                }
+                if (null != productCouponList && productCouponList.size() > 0){
+                    for (ProductCouponSimpleInfo simpleInfo : productCouponList){
+                        GoodsDO goodsDO = maGoodsService.findGoodsById(simpleInfo.getId());
                         if (null != goodsDO) {
                             PhotoOrderGoodsDO photoOrderGoodsDO = new PhotoOrderGoodsDO();
                             photoOrderGoodsDO.setGid(goodsDO.getGid());
                             photoOrderGoodsDO.setSkuName(goodsDO.getSkuName());
-                            photoOrderGoodsDO.setGoodsQty(materialListDO.getQty());
+                            photoOrderGoodsDO.setGoodsQty(simpleInfo.getQty());
                             photoOrderGoodsDO.setPhotoOrderNo(orderNumber);
+                            photoOrderGoodsDO.setGoodsType("产品券");
                             photoOrderGoodsDOList.add(photoOrderGoodsDO);
+                        }
+                    }
+                }
+                if (null != promotionSimpleInfoList && promotionSimpleInfoList.size() > 0){
+                    for (PromotionSimpleInfo simpleInfo : promotionSimpleInfoList){
+                        if (null != simpleInfo.getPresentInfo() && simpleInfo.getPresentInfo().size() > 0){
+                            for (GoodsIdQtyParam goodsIdQtyParam : simpleInfo.getPresentInfo()){
+                                GoodsDO goodsDO = maGoodsService.findGoodsById(goodsIdQtyParam.getId());
+                                if (null != goodsDO) {
+                                    PhotoOrderGoodsDO photoOrderGoodsDO = new PhotoOrderGoodsDO();
+                                    photoOrderGoodsDO.setGid(goodsDO.getGid());
+                                    photoOrderGoodsDO.setSkuName(goodsDO.getSkuName());
+                                    photoOrderGoodsDO.setGoodsQty(goodsIdQtyParam.getQty());
+                                    photoOrderGoodsDO.setPhotoOrderNo(orderNumber);
+                                    photoOrderGoodsDO.setGoodsType("赠品");
+                                    photoOrderGoodsDOList.add(photoOrderGoodsDO);
+                                }
+                            }
                         }
                     }
                 }
@@ -2751,11 +2853,11 @@ public class MaPhotoOrderRestController extends BaseRestController {
             String countyName = null;
             String street = null;
 
-            if (null == photoOrderDTO.getCombList() || photoOrderDTO.getCombList().size() <= 0) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品信息不能为空，跳转确认订单失败！", null);
-                logger.info("orderDetail EXCEPTION，商品信息不能为空，跳转确认订单失败，出参 ResultDTO:{}", resultDTO);
-                return resultDTO;
-            }
+        if ((null == photoOrderDTO.getCombList() || photoOrderDTO.getCombList().size() <= 0) && StringUtils.isBlank(photoOrderDTO.getProductCouponGoodss())){
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品信息不能为空，跳转确认订单失败！", null);
+            logger.info("orderDetail EXCEPTION，商品信息不能为空，跳转确认订单失败，出参 ResultDTO:{}", resultDTO);
+            return resultDTO;
+        }
 
             if (null == photoOrderDTO.getDeliveryId() || -1 == photoOrderDTO.getDeliveryId()) {
                 if (StringUtils.isBlank(photoOrderDTO.getReceiverName())) {
@@ -2831,16 +2933,21 @@ public class MaPhotoOrderRestController extends BaseRestController {
             Integer identityType = null;
 
             List<GoodsIdQtyParam> goodsList = new ArrayList<>();
-            for (MaterialListDO materialListDO : photoOrderDTO.getCombList()) {
-                if (null != materialListDO && null != materialListDO.getGid()) {
-                    GoodsIdQtyParam goodsIdQtyParam = new GoodsIdQtyParam();
-                    goodsIdQtyParam.setId(materialListDO.getGid());
-                    goodsIdQtyParam.setQty(materialListDO.getQty());
-                    goodsList.add(goodsIdQtyParam);
-                }
+            if (AssertUtil.isNotEmpty(photoOrderDTO.getCombList())){
+                for (MaterialListDO materialListDO : photoOrderDTO.getCombList()) {
+                    if (null != materialListDO && null != materialListDO.getGid()) {
+                        GoodsIdQtyParam goodsIdQtyParam = new GoodsIdQtyParam();
+                        goodsIdQtyParam.setId(materialListDO.getGid());
+                        goodsIdQtyParam.setQty(materialListDO.getQty());
+                        goodsList.add(goodsIdQtyParam);
+                    }
+             }
             }
             ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
             JavaType goodsSimpleInfo = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, PromotionSimpleInfo.class);
+            JavaType productCouponJavaType = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, GoodsIdQtyParam.class);
+
             List<PromotionSimpleInfo> giftList = objectMapper.readValue(photoOrderDTO.getGiftDetails(), goodsSimpleInfo);
 //            List<PromotionSimpleInfo> giftList = photoOrderDTO.getGiftDetails();
             if ("appPhotoOrder".equals(photoOrderDTO.getSource()) || "updatePhotoOrder".equals(photoOrderDTO.getSource())) {
@@ -2878,26 +2985,30 @@ public class MaPhotoOrderRestController extends BaseRestController {
 
 
 //        List<GoodsIdQtyParam> couponList = goodsSimpleRequest.getProductCouponList();
+
+
+
+        List<GoodsIdQtyParam> couponList = objectMapper.readValue(photoOrderDTO.getProductCouponGoodss(), productCouponJavaType);
 //                List<GoodsSkuQtyParam> maGoodsList = objectMapper.readValue(maOrderCalulatedAmountRequest.getGoodsList(), goodsSimpleInfo);
 //            List<GoodsSkuQtyParam> maGoodsList = maOrderCalulatedAmountRequest.getGoodsList();
             int goodsQty = 0;
             int giftQty = 0;
-//            int couponQty = 0;
-            Double totalPrice = 0.00;
-            Double memberDiscount = 0.00;
-            Double orderDiscount = 0.00;
-//            Double proCouponDiscount = 0D;
-            //运费暂时还没出算法
-            Double freight = 0.00;
-            Double totalOrderAmount = 0.00;
+            int couponQty = 0;
+                Double totalPrice = 0.00;
+                Double memberDiscount = 0.00;
+                Double orderDiscount = 0.00;
+            Double proCouponDiscount = 0D;
+                //运费暂时还没出算法
+                Double freight = 0.00;
+                Double totalOrderAmount = 0.00;
             List<Long> goodsIds = new ArrayList<Long>();
 //                List<String> goodsSkus = new ArrayList<String>();
             List<Long> giftIds = new ArrayList<Long>();
-//            List<Long> couponIds = new ArrayList<Long>();
+            List<Long> couponIds = new ArrayList<Long>();
             List<GoodsIdQtyParam> giftsList = new ArrayList<>();
             List<OrderGoodsSimpleResponse> goodsInfo = null;
             List<OrderGoodsSimpleResponse> giftsInfo = null;
-//            List<OrderGoodsSimpleResponse> productCouponInfo = null;
+            List<OrderGoodsSimpleResponse> productCouponInfo = null;
 //            List<CashCouponResponse> cashCouponResponseList = null;
 //            Map<String, Object> goodsSettlement = new HashMap<>();
             Long cityId = 0L;
@@ -2938,70 +3049,94 @@ public class MaPhotoOrderRestController extends BaseRestController {
                     }
                 }
             }
-//            //取出所有产品券商品的id和计算产品券商品数量
-//            if (AssertUtil.isNotEmpty(couponList)) {
-//                for (GoodsIdQtyParam couponSimpleInfo : couponList) {
-//                    couponIds.add(couponSimpleInfo.getId());
-//                    couponQty = couponQty + couponSimpleInfo.getQty();
-//                }
-//            }
+            //取出所有产品券商品的id和计算产品券商品数量
+            if (AssertUtil.isNotEmpty(couponList)) {
+                for (GoodsIdQtyParam couponSimpleInfo : couponList) {
+                    couponIds.add(couponSimpleInfo.getId());
+                    couponQty = couponQty + couponSimpleInfo.getQty();
+                }
+            }
+
             if (identityType == 6) {
                 //获取商品信息
                 goodsInfo = goodsService.findGoodsListByCustomerIdAndGoodsIdList(userId, goodsIds);
                 //获取赠品信息
                 giftsInfo = goodsService.findGoodsListByCustomerIdAndGoodsIdList(userId, giftIds);
                 //获取产品券信息
-//                productCouponInfo = goodsService.findGoodsListByCustomerIdAndGoodsIdList(userId, couponIds);
+                productCouponInfo = goodsService.findGoodsListByCustomerIdAndGoodsIdList(userId, couponIds);
             } else {
                 //获取商品信息
                 goodsInfo = goodsService.findGoodsListByEmployeeIdAndGoodsIdList(userId, goodsIds);
                 //获取赠品信息
                 giftsInfo = goodsService.findGoodsListByEmployeeIdAndGoodsIdList(userId, giftIds);
                 //获取产品券信息
-//                productCouponInfo = goodsService.findGoodsListByEmployeeIdAndGoodsIdList(userId, couponIds);
+                productCouponInfo = goodsService.findGoodsListByEmployeeIdAndGoodsIdList(userId, couponIds);
             }
 
-            if (null == goodsInfo) {
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品信息不能为空", null);
-                logger.info("orderDetail OUT,跳转确认订单失败，出参 resultDTO:{}", resultDTO);
-                return resultDTO;
-            }
+//                if (null == goodsInfo){
+//                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "商品信息不能为空", null);
+//                    logger.info("orderDetail OUT,跳转确认订单失败，出参 resultDTO:{}", resultDTO);
+//                    return resultDTO;
+//                }
 
-            List<MaPhotoOrderGoodsDetailResponse> maPhotoOrderGoodsDetailResponseList = new ArrayList<>();
-
-            for (OrderGoodsSimpleResponse orderGoodsSimpleResponse : goodsInfo) {
-                if (null != orderGoodsSimpleResponse && null != orderGoodsSimpleResponse.getId()) {
-                    for (GoodsIdQtyParam goodsIdQtyParam : goodsList) {
-                        if (goodsIdQtyParam.getId().equals(orderGoodsSimpleResponse.getId())) {
-                            orderGoodsSimpleResponse.setGoodsQty(goodsIdQtyParam.getQty());
+               List<MaPhotoOrderGoodsDetailResponse> maPhotoOrderGoodsDetailResponseList = new ArrayList<>();
+                if (null != goodsInfo && goodsInfo.size() >0) {
+                    for (OrderGoodsSimpleResponse orderGoodsSimpleResponse : goodsInfo) {
+                        if (null != orderGoodsSimpleResponse && null != orderGoodsSimpleResponse.getId()) {
+                            for (GoodsIdQtyParam goodsIdQtyParam : goodsList) {
+                                if (goodsIdQtyParam.getId().equals(orderGoodsSimpleResponse.getId())) {
+                                    orderGoodsSimpleResponse.setGoodsQty(goodsIdQtyParam.getQty());
+                                }
+                            }
+                            MaPhotoOrderGoodsDetailResponse maPhotoOrderGoodsDetailResponse = new MaPhotoOrderGoodsDetailResponse();
+                            maPhotoOrderGoodsDetailResponse.setGid(orderGoodsSimpleResponse.getId());
+                            maPhotoOrderGoodsDetailResponse.setSku(orderGoodsSimpleResponse.getSku());
+                            maPhotoOrderGoodsDetailResponse.setSkuName(orderGoodsSimpleResponse.getGoodsName());
+                            maPhotoOrderGoodsDetailResponse.setQty(orderGoodsSimpleResponse.getGoodsQty());
+                            maPhotoOrderGoodsDetailResponse.setRetailPrice(orderGoodsSimpleResponse.getRetailPrice());
+                            maPhotoOrderGoodsDetailResponse.setVipPrice(orderGoodsSimpleResponse.getVipPrice());
+                            maPhotoOrderGoodsDetailResponse.setGoodsType("本品");
+                            maPhotoOrderGoodsDetailResponseList.add(maPhotoOrderGoodsDetailResponse);
                         }
                     }
-                    MaPhotoOrderGoodsDetailResponse maPhotoOrderGoodsDetailResponse = new MaPhotoOrderGoodsDetailResponse();
-                    maPhotoOrderGoodsDetailResponse.setGid(orderGoodsSimpleResponse.getId());
-                    maPhotoOrderGoodsDetailResponse.setSku(orderGoodsSimpleResponse.getSku());
-                    maPhotoOrderGoodsDetailResponse.setSkuName(orderGoodsSimpleResponse.getGoodsName());
-                    maPhotoOrderGoodsDetailResponse.setQty(orderGoodsSimpleResponse.getGoodsQty());
-                    maPhotoOrderGoodsDetailResponse.setRetailPrice(orderGoodsSimpleResponse.getRetailPrice());
-                    maPhotoOrderGoodsDetailResponse.setVipPrice(orderGoodsSimpleResponse.getVipPrice());
-                    maPhotoOrderGoodsDetailResponse.setGoodsType("本品");
-                    maPhotoOrderGoodsDetailResponseList.add(maPhotoOrderGoodsDetailResponse);
                 }
-            }
-            if (null != giftsInfo && giftsInfo.size() > 0) {
-
-                for (OrderGoodsSimpleResponse orderGoodsSimpleResponse : giftsInfo) {
-                    Integer giftNum = 0;
-                    if (null != giftList && giftList.size() > 0) {
-                        for (PromotionSimpleInfo promotionSimpleInfo : giftList) {
-                            if (null != promotionSimpleInfo.getPresentInfo() && promotionSimpleInfo.getPresentInfo().size() > 0) {
-                                for (GoodsIdQtyParam goodsIdQtyParam : promotionSimpleInfo.getPresentInfo()) {
-                                    if (goodsIdQtyParam.getId().equals(orderGoodsSimpleResponse.getId())) {
-                                        giftNum += goodsIdQtyParam.getQty();
-                                        orderGoodsSimpleResponse.setGoodsQty(giftNum);
+                if (null != giftsInfo && giftsInfo.size() > 0) {
+                    for (OrderGoodsSimpleResponse orderGoodsSimpleResponse : giftsInfo) {
+                        Integer giftNum = 0;
+                        if (null != giftList && giftList.size() > 0){
+                            for (PromotionSimpleInfo promotionSimpleInfo : giftList){
+                                if (null != promotionSimpleInfo.getPresentInfo() && promotionSimpleInfo.getPresentInfo().size() > 0){
+                                    for (GoodsIdQtyParam goodsIdQtyParam : promotionSimpleInfo.getPresentInfo()){
+                                        if (goodsIdQtyParam.getId().equals(orderGoodsSimpleResponse.getId())){
+                                            giftNum += goodsIdQtyParam.getQty();
+                                            orderGoodsSimpleResponse.setGoodsQty(giftNum);
+                                        }
                                     }
                                 }
                             }
                         }
+                        MaPhotoOrderGoodsDetailResponse maPhotoOrderGoodsDetailResponse = new MaPhotoOrderGoodsDetailResponse();
+                        maPhotoOrderGoodsDetailResponse.setGid(orderGoodsSimpleResponse.getId());
+                        maPhotoOrderGoodsDetailResponse.setSku(orderGoodsSimpleResponse.getSku());
+                        maPhotoOrderGoodsDetailResponse.setSkuName(orderGoodsSimpleResponse.getGoodsName());
+                        maPhotoOrderGoodsDetailResponse.setQty(orderGoodsSimpleResponse.getGoodsQty());
+                        maPhotoOrderGoodsDetailResponse.setRetailPrice(orderGoodsSimpleResponse.getRetailPrice());
+                        maPhotoOrderGoodsDetailResponse.setVipPrice(orderGoodsSimpleResponse.getVipPrice());
+                        maPhotoOrderGoodsDetailResponse.setGoodsType("赠品");
+                        maPhotoOrderGoodsDetailResponseList.add(maPhotoOrderGoodsDetailResponse);
+                    }
+                }
+
+            if (null != productCouponInfo && productCouponInfo.size() > 0) {
+                for (OrderGoodsSimpleResponse orderGoodsSimpleResponse : productCouponInfo) {
+                    Integer giftNum = 0;
+                    if (null != couponList && couponList.size() > 0){
+                                for (GoodsIdQtyParam goodsIdQtyParam : couponList){
+                                    if (goodsIdQtyParam.getId().equals(orderGoodsSimpleResponse.getId())){
+                                        giftNum += goodsIdQtyParam.getQty();
+                                        orderGoodsSimpleResponse.setGoodsQty(giftNum);
+                                    }
+                                }
                     }
                     MaPhotoOrderGoodsDetailResponse maPhotoOrderGoodsDetailResponse = new MaPhotoOrderGoodsDetailResponse();
                     maPhotoOrderGoodsDetailResponse.setGid(orderGoodsSimpleResponse.getId());
@@ -3010,29 +3145,29 @@ public class MaPhotoOrderRestController extends BaseRestController {
                     maPhotoOrderGoodsDetailResponse.setQty(orderGoodsSimpleResponse.getGoodsQty());
                     maPhotoOrderGoodsDetailResponse.setRetailPrice(orderGoodsSimpleResponse.getRetailPrice());
                     maPhotoOrderGoodsDetailResponse.setVipPrice(orderGoodsSimpleResponse.getVipPrice());
-                    maPhotoOrderGoodsDetailResponse.setGoodsType("赠品");
+                    maPhotoOrderGoodsDetailResponse.setGoodsType("产品券");
                     maPhotoOrderGoodsDetailResponseList.add(maPhotoOrderGoodsDetailResponse);
                 }
             }
-            //加本品标识
-            if (AssertUtil.isNotEmpty(goodsInfo)) {
-                for (OrderGoodsSimpleResponse simpleResponse : goodsInfo) {
-                    for (GoodsIdQtyParam goodsIdQtyParam : goodsList) {
-                        if (simpleResponse.getId().equals(goodsIdQtyParam.getId())) {
-                            simpleResponse.setGoodsQty(goodsIdQtyParam.getQty());
-                            break;
+                //加本品标识
+                if (AssertUtil.isNotEmpty(goodsInfo)) {
+                    for (OrderGoodsSimpleResponse simpleResponse : goodsInfo) {
+                        for (GoodsIdQtyParam goodsIdQtyParam : goodsList) {
+                            if (simpleResponse.getId().equals(goodsIdQtyParam.getId())) {
+                                simpleResponse.setGoodsQty(goodsIdQtyParam.getQty());
+                                break;
+                            }
+                        }
+                        simpleResponse.setGoodsLineType(AppGoodsLineType.GOODS.getValue());
+                        //算总金额
+                        totalPrice = CountUtil.add(totalPrice, CountUtil.mul(simpleResponse.getRetailPrice(), simpleResponse.getGoodsQty()));
+                        //算会员折扣(先判断是否是会员还是零售会员)
+                        if (identityType == 2 || null != appCustomer.getCustomerType() && appCustomer.getCustomerType().equals(AppCustomerType.MEMBER)) {
+                            memberDiscount = CountUtil.add(memberDiscount, CountUtil.mul(CountUtil.sub(simpleResponse.getRetailPrice(),
+                                    simpleResponse.getVipPrice()), simpleResponse.getGoodsQty()));
                         }
                     }
-                    simpleResponse.setGoodsLineType(AppGoodsLineType.GOODS.getValue());
-                    //算总金额
-                    totalPrice = CountUtil.add(totalPrice, CountUtil.mul(simpleResponse.getRetailPrice(), simpleResponse.getGoodsQty()));
-                    //算会员折扣(先判断是否是会员还是零售会员)
-                    if (identityType == 2 || null != appCustomer.getCustomerType() && appCustomer.getCustomerType().equals(AppCustomerType.MEMBER)) {
-                        memberDiscount = CountUtil.add(memberDiscount, CountUtil.mul(CountUtil.sub(simpleResponse.getRetailPrice(),
-                                simpleResponse.getVipPrice()), simpleResponse.getGoodsQty()));
-                    }
                 }
-            }
             // 本品集合 用来计算立减促销
             List<OrderGoodsSimpleResponse> bGoodsList = ArrayListUtils.deepCopyList(goodsInfo);
 
@@ -3050,6 +3185,26 @@ public class MaPhotoOrderRestController extends BaseRestController {
                 }
                 //合并商品和赠品集合
                 goodsInfo.addAll(giftsInfo);
+            }
+            //产品券加标识
+            if (AssertUtil.isNotEmpty(productCouponInfo)) {
+                for (OrderGoodsSimpleResponse orderGoodsSimpleResponse : productCouponInfo) {
+                    for (GoodsIdQtyParam goodsIdQtyParam : couponList) {
+                        if (orderGoodsSimpleResponse.getId().equals(goodsIdQtyParam.getId())) {
+                            orderGoodsSimpleResponse.setGoodsQty(goodsIdQtyParam.getQty());
+                            break;
+                        }
+                    }
+                    orderGoodsSimpleResponse.setGoodsLineType(AppGoodsLineType.PRODUCT_COUPON.getValue());
+                    //算产品券总金额
+                    proCouponDiscount = CountUtil.add(proCouponDiscount, CountUtil.mul(orderGoodsSimpleResponse.getRetailPrice(), orderGoodsSimpleResponse.getGoodsQty()));
+                }
+                //合并商品和赠品集合
+                if (AssertUtil.isNotEmpty(goodsInfo)) {
+                    goodsInfo.addAll(productCouponInfo);
+                } else {
+                    goodsInfo = productCouponInfo;
+                }
             }
 
             //计算订单金额小计
@@ -3228,6 +3383,34 @@ public class MaPhotoOrderRestController extends BaseRestController {
             resultList.add(s);
         }
         return resultList;
+    }
+
+    /**
+     * 查询顾客产品券信息
+     *
+     * @return
+     */
+    @RequestMapping(value = "/find/customer/productCoupon",method = RequestMethod.GET)
+    public ResultDTO<Object> findCustomerProductCouponPageByCustomerId(Long createPeopleId){
+        logger.info("customerProductCoupon CALLED,获取顾客可用产品券，入参 cusId {}", createPeopleId);
+        try {
+            if (null == createPeopleId) {
+                logger.info("customerProductCoupon OUT,顾客id为空，获取顾客可用产品券失败，出参 cusId:{}", createPeopleId);
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "顾客id为空，获取顾客可用产品券失败！", null);
+            }
+
+                List<ProductCouponResponse> productCouponList = customerService.findProductCouponByCustomerId(createPeopleId);
+            if (null != productCouponList && productCouponList.size() >0) {
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "查询顾客产品券成功", productCouponList);
+            }else{
+                return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该顾客没有可使用产品券", productCouponList);
+            }
+
+        } catch (Exception e) {
+            logger.warn("customerProductCoupon EXCEPTION,获取顾客可用产品券失败，出参 resultDTO:{}");
+            logger.warn("{}", e);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常，查询顾客产品券信息失败！", null);
+        }
     }
 
 }
