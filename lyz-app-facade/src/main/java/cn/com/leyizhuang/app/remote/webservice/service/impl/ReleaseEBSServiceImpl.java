@@ -658,7 +658,7 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                     }
                 }
                 if(sb.length() > 0){
-                    return AppXmlUtil.resultStrXml(Integer.valueOf(0), sb.toString());
+                    return AppXmlUtil.resultStrXml(Integer.valueOf(1), sb.toString());
                 }
                 return AppXmlUtil.resultStrXml(Integer.valueOf(0), "同步EbsToApp价目表同步成功");
             }
