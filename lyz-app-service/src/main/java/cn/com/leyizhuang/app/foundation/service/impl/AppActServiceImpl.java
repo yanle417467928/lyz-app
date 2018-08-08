@@ -881,6 +881,7 @@ public class AppActServiceImpl implements AppActService {
         List<PromotionsGiftListResponse> giftListResponseList = new ArrayList<>();
         Long cityId = -1L;
         Long storeId = -1L;
+        int zgQty = 0;
         List<String> skus = new ArrayList<>();
         String rankCode = "";
 
@@ -988,6 +989,7 @@ public class AppActServiceImpl implements AppActService {
                         for (GiftListResponseGoods zgGoods : goodsZGList) {
                             // 判断此专供是否在促销范围下
                             if (scopeSkus.contains(zgGoods.getSku())) {
+                                zgQty ++;
                                 OrderGoodsSimpleResponse orderGoodsSimpleResponse = goodsPool.get(zgGoods.getSku());
                                 // 判断数量
                                 if (orderGoodsSimpleResponse.getGoodsQty() >= fullQty) {
@@ -1044,9 +1046,9 @@ public class AppActServiceImpl implements AppActService {
                             gidList.add(2417L);
 
                             /**
-                             * 临时 加一套辅料 成都
+                             * 临时 加一套辅料 成都 和 郑州
                              */
-                            if (appCustomer.getCityId().equals(1L)){
+                            if (appCustomer.getCityId().equals(1L) || (appCustomer.getCityId().equals(2L) && zgQty > 1)){
 
                                 List<GiftListResponseGoods> goodsListResponseGoods = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserIdAndIdentityType(
                                         gidList, cusId, AppIdentityType.CUSTOMER);

@@ -1019,10 +1019,10 @@
         'FINISHED',
         'REJECTED'
         )
-        <if test="null!=startTime and ''!=startTime">
+        <if test="null!=startTime">
             AND obd.pay_up_time >= #{startTime}
         </if>
-        <if test="null!=endTime and ''!=endTime">
+        <if test="null!=endTime">
             and
             <![CDATA[obd.pay_up_time<= #{startTime}]]> and wa.end_dt &lt; #{endTime}
         </if>

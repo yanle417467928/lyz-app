@@ -154,4 +154,18 @@ public interface TransferDAO {
     Boolean isExitTdReturnOrderGoodsLine(@Param("returnNo") String returnNo, @Param("gid") Long gid, @Param("goodsLineType") String value);
 
     void updateReturnTransferDate(@Param("date") Date date, @Param("returnNo") String returnNo);
+
+    List<TransferCusTemplate> findCusTem();
+
+    List<TransferCusPreDepositTemplate> findCusPreDepositTem();
+
+    List<TransferCusProductTemplate> findCusProductDepositTem();
+
+    void updateCusTem(TransferCusTemplate DO);
+
+    void updateCusPreDepositTemplate(TransferCusPreDepositTemplate DO);
+
+    void updateCusProductTemplate(TransferCusProductTemplate DO);
+
+
 }

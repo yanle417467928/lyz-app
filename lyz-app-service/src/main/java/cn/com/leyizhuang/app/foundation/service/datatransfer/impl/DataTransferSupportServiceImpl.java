@@ -4,6 +4,8 @@ import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.DataTransferErrorLog;
+import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TransferCusTemplate;
+import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
 import cn.com.leyizhuang.app.foundation.service.*;
@@ -211,4 +213,11 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
         transferDAO.updateReturnTransferDate(new Date(), returnOrderBaseInfo.getReturnNo());
 
     }
+
+    public void transferCustomerByTemplate(TransferCusTemplate template){
+        CustomerDO customerDO = new CustomerDO();
+
+
+
+    };
 }

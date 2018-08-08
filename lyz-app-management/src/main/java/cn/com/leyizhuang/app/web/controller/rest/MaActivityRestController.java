@@ -65,7 +65,7 @@ public class MaActivityRestController extends BaseRestController {
     }
 
     @PostMapping(value = "/save")
-    public ResultDTO<?> save(@Valid ActBaseDO baseDO, String goodsDetails, String giftDetails, String store,Double subAmount,Double discount,
+    public ResultDTO<?> save(@Valid ActBaseDO baseDO, String goodsDetails, String giftDetails, String stores,Double subAmount,Double discount,
                              BindingResult result,String people) throws IOException {
         if (!result.hasErrors()) {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -75,7 +75,7 @@ public class MaActivityRestController extends BaseRestController {
             JavaType javaType4 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class,Long.class);
             List<ActGoodsMappingDO> goodsList = objectMapper.readValue(goodsDetails, javaType1);
             List<ActGiftDetailsDO> giftList = objectMapper.readValue(giftDetails, javaType2);
-            List<ActStoreDO> storeList =  objectMapper.readValue(store, javaType3);
+            List<ActStoreDO> storeList =  objectMapper.readValue(stores, javaType3);
             ArrayList<Long> customerIds =  objectMapper.readValue(people, javaType4);
 
             if(goodsList == null){
