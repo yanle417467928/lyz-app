@@ -32,9 +32,7 @@ public interface MessageBaseDao {
 
     void saveMemberConference(MessageMemberConference messageMemberConference);
 
-
     MessageListDO queryById(@Param("id") Long id);
-
 
     void update(MessageListDO messageListDO);
 
@@ -42,32 +40,34 @@ public interface MessageBaseDao {
 
     List<AppCustomer> findCustomer(Long messageId);
 
-    List<SimpleStoreParam> findStore(Long messageId);
 
-    void deleteMemberConferenceByMessageBaseId4Customer(Long messageId);
-
-    void deleteMemberConferenceByMessageBaseId4Stores(Long messageId);
-
-    void deleteMemberConferenceByMessageBaseIdAllYG(Long messageId,String identityType);
+    void delete4Message(Long messageId);
 
     List<AppCustomer> FindAllCustomerId();
 
 
-    List<StoreDO> FindAllStoreId();
+    List<SimpleEmployeeParam> FindAllEmployeeId(String identityType);
 
-    List<SimpleEmployeeParam> FindAllEmployeeId();
+    //根据门店ID查员工
+    List<SimpleEmployeeParam> FindEmployeeByStoreId(Long id);
 
-    //只查询配送员ID
-    List<SimpleEmployeeParam> FindAllEmployeeIdOnlyPSY();
 
-    //只查询导购ID
-    List<SimpleEmployeeParam> FindAllEmployeeIdOnlyDG();
+    //根据门店ID查会员
+    List<AppCustomer> FindCustomerByStoreId(Long id);
 
-    //只查询装饰公司经理ID
-    List<SimpleEmployeeParam> FindAllEmployeeIdOnlyJL();
+    //根据Id查员工
+    List<SimpleEmployeeParam> FindEmployeeById(Long id);
 
-    //只查询装饰公司员工ID
-    List<SimpleEmployeeParam> FindAllEmployeeIdOnlyYG();
+    //批量保存
+
+    void saveBatch(@Param("list") List<MessageMemberConference> listAll);
+
+
+
+
+
+
+
 
 
 

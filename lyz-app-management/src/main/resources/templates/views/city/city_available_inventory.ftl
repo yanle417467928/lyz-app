@@ -27,8 +27,15 @@
 <section class="content">
     <div class="row">
         <div class="col-xs-12">
+
             <div class="box box-primary">
+
                 <div id="toolbar" class="btn-group">
+                    <select name="city" id="cityCode" class="form-control select" data-width="120px"
+                            style="width:auto;"
+                            onchange="statusChange()" data-live-search="true">
+                        <option value="-1">选择城市</option>
+                    </select>
                 </div>
                 <div class="box-body table-reponsive">
                     <table id="dataGrid" class="table table-bordered table-hover">
@@ -83,12 +90,87 @@
     </div>
 </div>
 <script>
+    function findCitylist() {
+        var city = "";
+        $.ajax({
+            url: '/rest/citys/findCitylist',
+            method: 'GET',
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    city += "<option value=" + item.cityId + ">" + item.name + "</option>";
+                });
+                $("#cityCode").append(city);
+            }
+        });
+    }
+    function statusChange() {
+        $("#dataGrid").bootstrapTable('destroy');
+        $(function () {
+            $grid.init($('#dataGrid'), $('#toolbar'), '/rest/cityInventory/page/grid', 'get', true, function (params) {
+                return {
+                    offset: params.offset,
+                    size: params.limit,
+                    keywords: params.search,
+                    cityId: $("#cityCode").val()
+                }
+            }, [{
+                checkbox: true,
+                title: '选择'
+            },
+                {
+                    field: 'cityId',
+                    title: '城市ID',
+                    align: 'center',
+                    visible: false
+                }, {
+                    field: 'code',
+                    title: '城市编码',
+                    align: 'center'
+                }, {
+                    field: 'name',
+                    title: '城市名称',
+                    align: 'center',
+                    events: {
+                        'click .scan': function (e, value, row) {
+                            $page.information.show(row.cityId);
+                        }
+                    },
+                    formatter: function (value) {
+                        return '<a class="scan" href="#">' + value + '</a>';
+                    }
+                }, {
+                    field: 'sku',
+                    title: '商品编码',
+                    align: 'center'
+                }, {
+                    field: 'skuName',
+                    title: '商品名称',
+                    align: 'center'
+                }, {
+                    field: 'availableIty',
+                    title: '城市可用量',
+                    align: 'center'
+                }
+            ]);
+        });
+    }
+
+
+
     $(function () {
         $grid.init($('#dataGrid'), $('#toolbar'), '/rest/cityInventory/page/grid', 'get', true, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
-                keywords: params.search
+                keywords: params.search,
+                cityId: $("#cityCode").val()
             }
         }, [{
             checkbox: true,
@@ -130,7 +212,7 @@
             }
         ]);
     });
-
+    findCitylist();
     var formatDateTime = function (date) {
         var dt = new Date(date);
         var y = dt.getFullYear();

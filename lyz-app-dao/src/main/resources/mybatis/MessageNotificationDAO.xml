@@ -37,11 +37,12 @@
         LEFT JOIN message_member_conference mmc ON mn.id = mmc.message_id
         WHERE
 	    mmc.identity_type = #{identityType}
+
         AND mmc.user_id = #{userId}
-        AND mmc.is_read=FALSE
-        AND mmc.create_time >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+        AND mn.is_read=FALSE
+        AND mn.create_time >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
         ORDER BY
-	    mmc.create_time DESC
+	    mn.create_time DESC
     </select>
 
     <update id="modifyMessageNotification"

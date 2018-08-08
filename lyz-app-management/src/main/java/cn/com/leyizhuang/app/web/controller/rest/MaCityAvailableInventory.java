@@ -40,12 +40,12 @@ public class MaCityAvailableInventory extends BaseRestController {
      * @return
      */
     @GetMapping(value = "/page/grid")
-    public GridDataVO<CityInventoryVO> restCityInventoryPageGird(Integer offset, Integer size, String keywords) {
+    public GridDataVO<CityInventoryVO> restCityInventoryPageGird(Integer offset, Integer size, String keywords,Long cityId) {
 
         logger.info("restCityInventoryPageGird CREATE,城市库存可用量分页查询, 入参 offset:{},size:{},keywords:{}", offset, size, keywords);
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<CityInventoryVO> cityPage = this.maCityAvailableItyService.queryPageVO(page, size, keywords);
+        PageInfo<CityInventoryVO> cityPage = this.maCityAvailableItyService.queryPageVO(page, size, keywords,cityId);
         List<CityInventoryVO> citysList = cityPage.getList();
         return new GridDataVO<CityInventoryVO>().transform(citysList, cityPage.getTotal());
 

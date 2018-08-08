@@ -10,7 +10,7 @@ $(function () {
     });
 
     $('#btn_publish').on('click', function () {
-        $modal.danger("发布", "确认发布此促销？", publish);
+        $modal.danger("发布", "确认发布此消息？", publish);
     });
 
     $('#btn_delete').on('click', function () {

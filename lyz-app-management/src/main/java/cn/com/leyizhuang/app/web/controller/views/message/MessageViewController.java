@@ -68,11 +68,11 @@ public class MessageViewController extends BaseController {
         // 城市下门店
         MessageListDO messageListDO = (MessageListDO) map.get("messageListDO");
         Long cityId = messageListDO.getCityId();
-        List<SimpleStoreParam> stores = messageBaseService.findStore(id);
+        //List<SimpleStoreParam> stores = messageBaseService.findStore(id);
         List<AppCustomer> customerList = messageBaseService.findCustomer(id);
 
 
-        map.addAttribute("stores",stores);
+        //map.addAttribute("stores",stores);
         map.addAttribute("customerList",customerList);
         // 获取专供类型
         List<RankClassification> rankClassificationList = maCustomerService.findRankAll();
