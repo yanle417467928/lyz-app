@@ -125,6 +125,14 @@
                                         <option value="-1">选择门店</option>
                                     </select>
                                 </div>
+                                <div class=" col-xs-3">
+                                    <select name="company" id="company" class="form-control select"
+                                            onchange="companyChange(this.value)">
+                                        <option value="">选择装饰公司类型</option>
+                                        <option value="MONTHLY">大型装饰公司</option>
+                                        <option value="CASH">小型装饰公司</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div class="col-xs-5">

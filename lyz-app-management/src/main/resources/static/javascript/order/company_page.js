@@ -20,7 +20,8 @@ function initDateGird(url) {
         return {
             offset: params.offset,
             size: params.limit,
-            keywords: params.search
+            keywords: params.search,
+            company: $("#company").val(),
         }
     }, [{
         checkbox: true,
@@ -209,6 +210,13 @@ var formatDateTime = function (date) {
     return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
 };
 
+
+
+function companyChange(val) {
+    $("#dataGrid").bootstrapTable('destroy');
+    initDateGird('/rest/company/order/page/grid');
+
+}
 function findBykey(){
     if(event.keyCode==13){
         findOrderByOrderNumber();

@@ -41,7 +41,7 @@ public class MaCompanyOrderRestController extends BaseRestController {
      * @return 订单列表
      */
     @GetMapping(value = "/page/grid")
-    public GridDataVO<MaOrderVO> restOrderPageGird(Integer offset, Integer size, String keywords) {
+    public GridDataVO<MaOrderVO> restOrderPageGird(Integer offset, Integer size, String keywords,String company) {
         logger.info("restOrderPageGird 后台分页查询装饰公司所有订单 ,入参offsetL:{}, size:{}, kewords:{}", offset, size, keywords);
         try {
 
@@ -51,7 +51,7 @@ public class MaCompanyOrderRestController extends BaseRestController {
             size = getSize(size);
             Integer page = getPage(offset, size);
             PageHelper.startPage(page, size);
-            List<MaOrderVO> maOrderVOList = this.maOrderService.findCompanyOrderAll(storeIds);
+            List<MaOrderVO> maOrderVOList = this.maOrderService.findCompanyOrderAll(storeIds,company);
             PageInfo<MaOrderVO> maOrderVOPageInfo = new PageInfo<>(maOrderVOList);
             List<MaOrderVO> orderVOList = maOrderVOPageInfo.getList();
             logger.info("restOrderPageGird ,后台分页查询装饰公司所有订单成功", orderVOList.size());
