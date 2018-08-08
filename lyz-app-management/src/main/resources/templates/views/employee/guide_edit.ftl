@@ -167,6 +167,44 @@
                         </button>
                     </div>
                 </div>
+                <div class="row" style="margin-top: 50px;">
+                    <div class="col-md-4 col-xs-12">
+                        <div class="form-group">
+                            <label for="credit">上一次变更时间
+
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+                                <input type="datetime" class="form-control"
+                                       value="<#if changeLog??&&changeLog.createTime??>${changeLog.createTime!""}</#if>" disabled="disabled"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-xs-12">
+                        <div class="form-group">
+                            <label for="credit">上一次变更人
+
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+                                <input type="text" class="form-control"
+                                       value="<#if changeLog??&&changeLog.operatorName??>${changeLog.operatorName!""}</#if>" disabled="disabled"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-xs-12">
+                        <div class="form-group">
+                            <label for="credit">上一次变金额
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-pencil"></i></span>
+                                <input type="text" class="form-control"  value="<#if changeLog??&&changeLog.changeMoney??>${changeLog.changeMoney!""}</#if>" disabled="disabled"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
         </form>
     </div>
 </section>

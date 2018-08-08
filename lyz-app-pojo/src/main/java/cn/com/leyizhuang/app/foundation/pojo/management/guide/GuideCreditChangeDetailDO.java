@@ -46,6 +46,7 @@ public class GuideCreditChangeDetailDO {
     private String operatorType;
     //操作人IP
     private String operatorIp;
+
     //修改原因
     private String changeReason;
 

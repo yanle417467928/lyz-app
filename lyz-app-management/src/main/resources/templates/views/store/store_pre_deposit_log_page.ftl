@@ -146,7 +146,9 @@
                         <li class="list-group-item">
                             <b>修改原因</b> <a class="pull-right" id="detailReason"></a>
                         </li>
-
+                        <li class="list-group-item">
+                            <b>变更人</b> <a class="pull-right" id="operatorName"></a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -261,6 +263,17 @@
             {
                 field: 'createTime',
                 title: '变更时间',
+                align: 'center'
+            }
+            ,
+            {
+                field: 'remarks',
+                title: '修改原因',
+                align: 'center'
+            },
+            {
+                field: 'operatorName',
+                title: '变更人',
                 align: 'center'
             }
         ]);
@@ -412,6 +425,9 @@
 
                                 if (null === data.detailReason) {
                                     data.detailReason = '-';
+                                }
+                                if (null === data.operatorName) {
+                                    data.operatorName = '-';
                                 }
                                 $('#detailReason').html(data.detailReason);
 

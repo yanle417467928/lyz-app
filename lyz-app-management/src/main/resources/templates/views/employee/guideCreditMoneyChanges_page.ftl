@@ -128,6 +128,11 @@
                 field: 'operatorName',
                 title: '变更人',
                 align: 'center'
+            },
+            {
+                field: 'changeReason',
+                title: '修改原因',
+                align: 'center'
             }
         ]);
     }
@@ -204,6 +209,11 @@
                 field: 'operatorName',
                 title: '变更人',
                 align: 'center'
+            },
+            {
+                field: 'changeReason',
+                title: '修改原因',
+                align: 'center'
             }
         ]);
     }
@@ -278,6 +288,11 @@
             {
                 field: 'operatorName',
                 title: '变更人',
+                align: 'center'
+            },
+            {
+                field: 'changeReason',
+                title: '修改原因',
                 align: 'center'
             }
         ]);
