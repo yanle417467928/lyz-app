@@ -785,7 +785,7 @@
         IFNULL(obd.cus_pre_deposit,0) cusPreDeposit,
         (IFNULL(obd.online_pay_amount,0) + IFNULL(obd.store_cash,0) + IFNULL(obd.store_pos_money,0)
         + IFNULL(obd.delivery_cash,0) + IFNULL(obd.delivery_pos,0) + IFNULL(obd.store_other_money,0)
-        + IFNULL(obd.st_pre_deposit,0) + IFNULL(obd.cus_pre_deposit,0)) totalPay,
+        + IFNULL(obd.st_pre_deposit,0) + IFNULL(obd.cus_pre_deposit,0) + IFNULL(obd.freight,0)) totalPay,
         IFNUll(obd.lebi_cash_discount,0) lbDiscount,
         IF(obd.collection_amount &gt; obd.order_amount_subtotal,IFNULL(obd.collection_amount - obd.order_amount_subtotal,0),0) returnStore,
         '' as returnStatus,
@@ -2912,7 +2912,8 @@
         IFNULL(p.amount,0) as 'payUpMoney',
         IF(b.is_pay_up = TRUE,'是','否') as 'isPayUp',
         IF(b.is_pay_up = TRUE, b.pay_up_time,null) as 'payUpTime',
-        CASE  d.status WHEN 'AUDITING' THEN '审核中' WHEN 'AUDIT_NO' THEN '审核不通过' WHEN 'AUDIT_PASSED' THEN '审核通过' END as auditStatus
+        CASE  d.status WHEN 'AUDITING' THEN '审核中' WHEN 'AUDIT_NO' THEN '审核不通过' WHEN 'AUDIT_PASSED' THEN '审核通过' END as auditStatus,
+        IF(b.online_pay_type = 'CASH_DELIVERY','是','否') as isCashOnDelivery
         FROM ord_base_info o
         LEFT JOIN ord_billing_details b ON b.ord_no = o.ord_no
         LEFT JOIN (SELECT SUM(amount) amount,ord_no FROM ord_billing_payment_details GROUP BY ord_no) p ON o.ord_no = p.ord_no
@@ -2976,7 +2977,8 @@
         IFNULL(p.amount,0) as 'payUpMoney',
         IF(b.is_pay_up = TRUE,'是','否') as 'isPayUp',
         IF(b.is_pay_up = TRUE, b.pay_up_time,null) as 'payUpTime',
-        CASE  d.status WHEN 'AUDITING' THEN '审核中' WHEN 'AUDIT_NO' THEN '审核不通过' WHEN 'AUDIT_PASSED' THEN '审核通过' END as auditStatus
+        CASE  d.status WHEN 'AUDITING' THEN '审核中' WHEN 'AUDIT_NO' THEN '审核不通过' WHEN 'AUDIT_PASSED' THEN '审核通过' END as auditStatus,
+        IF(b.online_pay_type = 'CASH_DELIVERY','是','否') as isCashOnDelivery
         FROM ord_base_info o
         LEFT JOIN ord_billing_details b ON b.ord_no = o.ord_no
         LEFT JOIN (SELECT SUM(amount) amount,ord_no FROM ord_billing_payment_details GROUP BY ord_no) p ON o.ord_no = p.ord_no

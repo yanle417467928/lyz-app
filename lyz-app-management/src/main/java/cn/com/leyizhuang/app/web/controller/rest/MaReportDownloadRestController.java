@@ -2156,10 +2156,10 @@ public class MaReportDownloadRestController extends BaseRestController {
 
 
                 //列宽
-                int[] columnView = {10, 20, 15, 10, 10, 30, 10, 10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15};
+                int[] columnView = {10, 20, 15, 10, 10, 30, 10, 10, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,15};
                 //列标题城市
 
-                String[] titles = {"城市", "门店编码", "门店", "导购名称", "会员名称", "订单号", "配送/自提", "订单状态", "自提提货日期", "订单日期", "出货时间", "审核状态", "订单小计", "订单使用额度", "订单欠款", "订单已支付总金额", "是否结清", "订单还清日期"
+                String[] titles = {"城市", "门店编码", "门店", "导购名称", "会员名称", "订单号", "配送/自提", "订单状态", "自提提货日期", "订单日期", "出货时间", "审核状态", "订单小计", "订单使用额度", "订单欠款", "订单已支付总金额", "是否结清", "订单还清日期","是否货到付款"
                 };
 
 
@@ -2214,6 +2214,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                     }
                     ws.addCell(new Label(16, j + row, arrearsReportDO.getIsPayUp(), textFormat));
                     ws.addCell(new Label(17, j + row, arrearsReportDO.getPayUpTime(), textFormat));
+                    ws.addCell(new Label(18, j + row, arrearsReportDO.getIsCashOnDelivery(), textFormat));
                 }
             }
         } catch (Exception e) {

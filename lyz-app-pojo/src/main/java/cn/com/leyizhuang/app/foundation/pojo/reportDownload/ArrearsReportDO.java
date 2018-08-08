@@ -55,5 +55,7 @@ public class ArrearsReportDO {
     private String payUpTime;
     //审核状态
     private String auditStatus;
+    //是否货到付款
+    private String isCashOnDelivery;
 
 }

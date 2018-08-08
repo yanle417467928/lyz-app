@@ -25,16 +25,16 @@ public class ScheduleTaskCommandLineRunner implements CommandLineRunner {
         }
 
         // 获取定时器规则
-        String cron = maClearTempCreditService.getCron(2L);
-        if (StringUtils.isNotBlank(cron)) {
-            try {
-                QuartzManager.addJob("sendSellDetails", "jobGroup2", "trigger2", "triggerGroup2", SendSellDetailsToHQTask.class, cron);
-            } catch (Exception e) {
-                log.info("销售明细传输到HQ任务未加入任务池！！！");
-            }
-        } else {
-            log.info("销售明细传输到HQ任务未加入任务池！！！");
-        }
+//        String cron = maClearTempCreditService.getCron(2L);
+//        if (StringUtils.isNotBlank(cron)) {
+//            try {
+//                QuartzManager.addJob("sendSellDetails", "jobGroup2", "trigger2", "triggerGroup2", SendSellDetailsToHQTask.class, cron);
+//            } catch (Exception e) {
+//                log.info("销售明细传输到HQ任务未加入任务池！！！");
+//            }
+//        } else {
+//            log.info("销售明细传输到HQ任务未加入任务池！！！");
+//        }
 
 
         String scanningUnpaidOrderCron = maClearTempCreditService.getCron(3L);
