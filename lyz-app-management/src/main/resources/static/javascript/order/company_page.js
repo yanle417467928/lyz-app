@@ -5,7 +5,6 @@ var rotationImage;
 $(function () {
     findCitylist()
     findStorelist();
-    initDateGird('/rest/company/order/page/grid');
 
     $('.datepicker').datepicker({
         format: 'yyyy-mm-dd',

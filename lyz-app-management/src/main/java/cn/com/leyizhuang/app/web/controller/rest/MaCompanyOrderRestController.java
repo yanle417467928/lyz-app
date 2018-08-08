@@ -38,6 +38,7 @@ public class MaCompanyOrderRestController extends BaseRestController {
      * @param offset   当前页
      * @param size     每页条数
      * @param keywords 不知
+     * @param company 公司类型（大型装饰公司、小型装饰公司）
      * @return 订单列表
      */
     @GetMapping(value = "/page/grid")
