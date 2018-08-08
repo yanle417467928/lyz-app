@@ -1968,7 +1968,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                 int[] columnView = {10, 40, 20, 20, 30, 30, 15, 15};
                 //列标题城市
 
-                String[] titles = {"城市", "门店名称", "门店类型", "项目", "订单号","退单号", "原订单类型", "退单类型", "出退货日期", "原订单日期", "客户编号", "客户电话", "客户姓名", "客户类型", "销顾姓名", "公司标识", "商品编码", "商品名称", "产品类型","主分类", "商品类型","商品品牌","规格","类型","数量", "成交单价", "成交总价", "仓库信息","楼盘信息"};
+                String[] titles = {"城市", "门店名称", "门店类型", "项目", "订单号","退单号", "原订单类型", "退单类型", "出退货日期", "原订单日期", "客户编号", "客户电话", "客户姓名", "客户类型", "销顾姓名", "公司标识", "商品编码", "商品名称", "产品类型","主分类", "商品类型","商品品牌","规格","类型","数量", "成交单价", "成交总价","会员价" ,"会员总价","仓库信息","楼盘信息"};
                 //计算标题开始行号
                 int row = 1;
                 if (null != map && map.size() > 0) {
@@ -2047,8 +2047,15 @@ public class MaReportDownloadRestController extends BaseRestController {
                     if (null != shipmentAndReturnGoods.getAmount()) {
                         ws.addCell(new Number(26, j + row, shipmentAndReturnGoods.getAmount().doubleValue(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                     }
-                    ws.addCell(new Label(27, j + row, shipmentAndReturnGoods.getWareHouse(), textFormat));
-                    ws.addCell(new Label(28, j + row, shipmentAndReturnGoods.getEstateInfo(), textFormat));
+                    if (null != shipmentAndReturnGoods.getVipPrice()){
+                        ws.addCell(new Number(27, j + row, shipmentAndReturnGoods.getVipPrice().doubleValue(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    }
+                    if (null != shipmentAndReturnGoods.getTotalVipPrice()){
+                        ws.addCell(new Number(28, j + row, shipmentAndReturnGoods.getTotalVipPrice().doubleValue(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                    }
+
+                    ws.addCell(new Label(29, j + row, shipmentAndReturnGoods.getWareHouse(), textFormat));
+                    ws.addCell(new Label(30, j + row, shipmentAndReturnGoods.getEstateInfo(), textFormat));
                 }
             }
         } catch (Exception e) {

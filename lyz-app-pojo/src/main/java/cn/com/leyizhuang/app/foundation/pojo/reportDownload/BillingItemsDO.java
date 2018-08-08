@@ -84,9 +84,9 @@ public class BillingItemsDO {
     //是否结清
     private String isPayUp;
     //信用额度
-    private Double empCredit;
+    private Double empCredit = 0.00;
     //信用金
-    private Double stCredit;
+    private Double stCredit = 0.00;
     /**
      * 商户订单号
      */

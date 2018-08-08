@@ -775,7 +775,7 @@
         IFNULL(obd.promotion_discount,0) promotionDiscount, IFNULL(obd.freight,0) freight,
         IFNULL(obd.cash_coupon_discount,0) cashCouponDiscount,
         IFNULL(obd.product_coupon_discount,0) productCouponDiscount,
-        IFNULL(obd.order_amount_subtotal,0)-IFNULL(obd.freight,0) amountPayable,
+        IFNULL(obd.order_amount_subtotal,0) amountPayable,
         (CASE WHEN obd.online_pay_type = 'WE_CHAT' THEN IFNULL(obd.online_pay_amount,0) ELSE 0 END) weChat,
         (CASE WHEN obd.online_pay_type = 'ALIPAY' THEN IFNULL(obd.online_pay_amount,0) ELSE 0 END) alipay,
         (CASE WHEN obd.online_pay_type = 'UNION_PAY' THEN IFNULL(obd.online_pay_amount,0) ELSE 0 END) unionPay,
@@ -785,7 +785,7 @@
         IFNULL(obd.cus_pre_deposit,0) cusPreDeposit,
         (IFNULL(obd.online_pay_amount,0) + IFNULL(obd.store_cash,0) + IFNULL(obd.store_pos_money,0)
         + IFNULL(obd.delivery_cash,0) + IFNULL(obd.delivery_pos,0) + IFNULL(obd.store_other_money,0)
-        + IFNULL(obd.st_pre_deposit,0) + IFNULL(obd.cus_pre_deposit,0) + IFNULL(obd.freight,0)) totalPay,
+        + IFNULL(obd.st_pre_deposit,0) + IFNULL(obd.cus_pre_deposit,0)) totalPay,
         IFNUll(obd.lebi_cash_discount,0) lbDiscount,
         IF(obd.collection_amount &gt; obd.order_amount_subtotal,IFNULL(obd.collection_amount - obd.order_amount_subtotal,0),0) returnStore,
         '' as returnStatus,
@@ -1017,7 +1017,9 @@
         gg.brand_name as brandName,
         gg.type_name as typeName,
         gg.specification_type as specificationType,
-        oli.estate_info as estateInfo
+        oli.estate_info as estateInfo,
+        orgi.settlement_price as vipPrice,
+        orgi.return_qty * orgi.settlement_price totalVipPrice
         from ord_return_base_info orbi
         LEFT JOIN ord_return_goods_info orgi ON orgi.return_no =orbi.return_no
         LEFT JOIN ord_base_info obi ON orbi.ord_no=obi.ord_no
@@ -1096,7 +1098,9 @@
         gg.brand_name as brandName,
         gg.type_name as typeName,
         gg.specification_type as specificationType,
-        oli.estate_info as estateInfo
+        oli.estate_info as estateInfo,
+        orgi.settlement_price as vipPrice,
+        orgi.return_qty * orgi.settlement_price totalVipPrice
         from ord_return_base_info orbi
         LEFT JOIN ord_return_goods_info orgi ON orgi.return_no =orbi.return_no
         LEFT JOIN ord_base_info obi ON orbi.ord_no=obi.ord_no
@@ -1172,8 +1176,11 @@
         gg.brand_name as brandName,
         gg.type_name as typeName,
         gg.specification_type as specificationType,
-        oli.estate_info as estateInfo
+        oli.estate_info as estateInfo,
+        ogi.settlement_price as vipPrice,
+        ogi.order_qty * ogi.settlement_price totalVipPrice
         from ord_base_info obi
+
         LEFT JOIN ord_goods_info ogi ON obi.ord_no =ogi.ord_no
         LEFT JOIN ord_delivery_info_details odid ON obi.ord_no = odid.order_no
         LEFT JOIN (SELECT * FROM inter_wta_order_shipping_header  WHERE send_flag = 1 GROUP BY order_no) wa ON obi.ord_no = wa.order_no
@@ -1248,7 +1255,9 @@
         gg.brand_name as brandName,
         gg.type_name as typeName,
         gg.specification_type as specificationType,
-        oli.estate_info as estateInfo
+        oli.estate_info as estateInfo,
+        ogi.settlement_price as vipPrice,
+        ogi.order_qty * ogi.settlement_price totalVipPrice
         from ord_base_info obi
         LEFT JOIN ord_goods_info ogi ON ogi.ord_no =obi.ord_no
         LEFT JOIN st_store ss ON obi.store_id = ss.store_id

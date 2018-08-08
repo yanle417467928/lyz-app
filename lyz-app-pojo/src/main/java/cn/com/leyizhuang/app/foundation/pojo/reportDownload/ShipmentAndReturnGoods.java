@@ -92,6 +92,10 @@ public class ShipmentAndReturnGoods {
     //楼盘信息
     private String estateInfo;
 
+    private Double vipPrice = 0D;
+
+    private Double totalVipPrice = 0D;
+
     public void setCustomerType(AppCustomerType appCustomerType) {
         this.customerType = appCustomerType.getDescription();
     }
