@@ -8,6 +8,7 @@ import cn.com.leyizhuang.app.foundation.pojo.message.MessageMemberConference;
 import cn.com.leyizhuang.app.foundation.pojo.message.MessageStoreDO;
 import cn.com.leyizhuang.app.foundation.service.MessageBaseService;
 import cn.com.leyizhuang.app.foundation.vo.MessageBaseVO;
+import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeVO;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.fasterxml.jackson.databind.JavaType;
@@ -69,14 +70,14 @@ public class MessageRestController extends BaseRestController {
 
 
     @PostMapping(value = "/save")
-    public ResultDTO<?> save(@Valid MessageListDO messageListDO,   String stores,BindingResult result,String people) throws IOException {
+    public ResultDTO<?> save(@Valid MessageListDO messageListDO,String stores,BindingResult result,String people,String employees) throws IOException {
         if (!result.hasErrors()) {
             ObjectMapper objectMapper = new ObjectMapper();
-            JavaType javaType3 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, Long.class);
-            JavaType javaType4 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class,Long.class);
-            ArrayList<Long> storeList =  objectMapper.readValue(stores, javaType3);
-            ArrayList<Long> customerIds =  objectMapper.readValue(people, javaType4);
-            messageBaseService.save(messageListDO,storeList,customerIds);
+            JavaType javaType = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, Long.class);
+            ArrayList<Long> storeList =  objectMapper.readValue(stores, javaType);
+            ArrayList<Long> customerIds =  objectMapper.readValue(people, javaType);
+            ArrayList<Long> employeeIds =  objectMapper.readValue(employees, javaType);
+            messageBaseService.save(messageListDO,storeList,customerIds,employeeIds);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "保存成功", null);
         } else {
             return actFor400(result,"提交的数据有误");
@@ -112,21 +113,23 @@ public class MessageRestController extends BaseRestController {
 
     }
 
+
+
     @PostMapping(value = "/edit")
-    public ResultDTO<?> edit(@Valid MessageListDO messageListDO,String stores,BindingResult result,String people) throws IOException {
+    public ResultDTO<?> edit(@Valid MessageListDO messageListDO,String stores,BindingResult result,String people,String employees) throws IOException {
         if (!result.hasErrors()) {
             ObjectMapper objectMapper = new ObjectMapper();
-            JavaType javaType3 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, Long.class);
-            JavaType javaType4 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class,Long.class);
-            ArrayList<Long> storeList =  objectMapper.readValue(stores, javaType3);
-            ArrayList<Long> customerIds =  objectMapper.readValue(people, javaType4);
-
+            JavaType javaType = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, Long.class);
+            ArrayList<Long> storeList =  objectMapper.readValue(stores, javaType);
+            ArrayList<Long> customerIds =  objectMapper.readValue(people, javaType);
+            ArrayList<Long> employeeIds =  objectMapper.readValue(employees, javaType);
+            messageBaseService.edit(messageListDO,storeList,customerIds,employeeIds);
 
             if(messageListDO.getStatus().equals(ActStatusType.PUBLISH.getValue())){
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "已经发布，不允许修改", null);
             }
 
-            messageBaseService.edit(messageListDO,storeList,customerIds);
+            messageBaseService.edit(messageListDO,storeList,customerIds,employeeIds);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "修改成功", null);
         } else {
             return actFor400(result,"提交的数据有误");

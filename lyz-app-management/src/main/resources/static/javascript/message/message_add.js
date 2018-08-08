@@ -9,9 +9,11 @@ $(function () {
 
     // 表单元素渲染
     //Flat red color scheme for iCheck
-    $('input[type="checkbox"].flat-red').iCheck({
-        checkboxClass: 'icheckbox_flat-green',
+    $('input[type="radio"].flat-red').iCheck({
         radioClass   : 'iradio_flat-green'
+    });
+    $('input[type="checkbox"].flat-red').iCheck({
+        checkboxClass: 'icheckbox_flat-green'
     });
     $(".select2").select2();
 
@@ -182,7 +184,7 @@ function formValidate() {
         var detailed = editor.html();
         // 目标对象
         var target = "";
-        $("input:checkbox[name='target']:checked").each(function (i) {
+        $("input:radio[name='target']:checked").each(function (i) {
             if (i == 0){
                 target += $(this).val();
             }else{
@@ -196,10 +198,23 @@ function formValidate() {
             return false;
         }
 
-        // 限制条件
-        var isReturnable = $("#isReturnable").prop("checked");
-        var isDouble = $("#isDouble").prop("checked");
-        var isGcOrder = $("#isGcOrder").prop("checked");
+
+
+        var identityType = "";
+        $("input:checkbox[name='identityType']:checked").each(function (i) {
+            if (i == 0){
+                identityType += $(this).val();
+            }else{
+                identityType += ","+$(this).val();
+            }
+
+        })
+
+        var title=$("#title").val();
+
+        var messageType=$("#messageType option:selected").val();
+
+
 
 
         // 已选会员
@@ -221,7 +236,7 @@ function formValidate() {
         })
         //已选员工
         var employees = new Array();
-        $("#stores > label[class='label label-success']").each(function () {
+        $("#employees > label[class='label label-success']").each(function () {
             employees.push(
 
                 $(this).prop("id").substring(9)
@@ -240,8 +255,12 @@ function formValidate() {
         $.each(origin, function () {
             data[this.name] = this.value;
         });
+
+        data["title"] = title;
+        data["messageType"] = messageType;
         data["detailed"] = detailed;
         data["scope"] = target;
+        data["identityType"] = identityType;
         data["stores"] = JSON.stringify(stores);
         data["people"] = JSON.stringify(people);
         data["employees"] = JSON.stringify(employees);
@@ -468,7 +487,7 @@ function chooseEmployees(tableId) {
 function openEmployeesModal() {
     openSelectEmployeesModel();
     $("#employeesModalConfirm").unbind('click').click(function(){
-        chooseEmployees('Employees');
+        chooseEmployees('employees');
     });
     $('#employeesModal').modal('show');
 }

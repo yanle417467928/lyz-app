@@ -9,9 +9,11 @@ $(function () {
 
     // 表单元素渲染
     //Flat red color scheme for iCheck
-    $('input[type="checkbox"].flat-red').iCheck({
-        checkboxClass: 'icheckbox_flat-green',
+    $('input[type="radio"].flat-red').iCheck({
         radioClass   : 'iradio_flat-green'
+    });
+    $('input[type="checkbox"].flat-red').iCheck({
+        checkboxClass: 'icheckbox_flat-green'
     });
     $(".select2").select2();
 
@@ -27,6 +29,19 @@ $(function () {
     });
     $('.switch').bootstrapSwitch();
     initFileInput("uploadQrcodeBtn",1);
+});
+
+
+//点击单选按钮后隐藏选项div
+$(function(){
+    $("input[type=radio][name=userType]").change(function(){
+        var v = $(this).val();
+        if (v =="0"){
+            $("#Owner").css({"display":"none"});
+        }else{
+            $("#Owner").css({"display":"block"});
+        }
+    });
 });
 
 function findCityList() {
@@ -103,6 +118,7 @@ function unCheckAllStore() {
 
 
 
+
 var editor;
 $(function () {
     //初始化编辑器
@@ -116,9 +132,6 @@ $(function () {
         allowFileManager: true
     });
 });
-
-
-
 
 
 /**
@@ -169,10 +182,9 @@ function formValidate() {
         var coverImg = $("#coverImg").val();
 
         var detailed = editor.html();
-
         // 目标对象
         var target = "";
-        $("input:checkbox[name='target']:checked").each(function (i) {
+        $("input:radio[name='target']:checked").each(function (i) {
             if (i == 0){
                 target += $(this).val();
             }else{
@@ -182,14 +194,27 @@ function formValidate() {
         })
         if (target == "" ){
             $('#activity_form').bootstrapValidator('disableSubmitButtons', false);
-            $notify.danger('请选择目标对象');
+            $notify.danger('请选择推送范围');
             return false;
         }
 
-        // 限制条件
-        var isReturnable = $("#isReturnable").prop("checked");
-        var isDouble = $("#isDouble").prop("checked");
-        var isGcOrder = $("#isGcOrder").prop("checked");
+
+
+        var identityType = "";
+        $("input:checkbox[name='identityType']:checked").each(function (i) {
+            if (i == 0){
+                identityType += $(this).val();
+            }else{
+                identityType += ","+$(this).val();
+            }
+
+        })
+
+        var title=$("#title").val();
+
+        var messageType=$("#messageType option:selected").val();
+
+
 
 
         // 已选会员
@@ -209,6 +234,15 @@ function formValidate() {
 
             );
         })
+        //已选员工
+        var employees = new Array();
+        $("#employees > label[class='label label-success']").each(function () {
+            employees.push(
+
+                $(this).prop("id").substring(9)
+
+            );
+        })
 
 
 
@@ -221,10 +255,15 @@ function formValidate() {
         $.each(origin, function () {
             data[this.name] = this.value;
         });
+
+        data["title"] = title;
+        data["messageType"] = messageType;
         data["detailed"] = detailed;
         data["scope"] = target;
+        data["identityType"] = identityType;
         data["stores"] = JSON.stringify(stores);
         data["people"] = JSON.stringify(people);
+        data["employees"] = JSON.stringify(employees);
         $http.POST(url, data, function (result) {
             if (0 === result.code) {
                 $notify.info(result.message);
@@ -286,8 +325,8 @@ function initFileInput(ctrlName, type) {
         showCaption: true,//是否显示标题
         browseClass: "btn btn-primary", //按钮样式
         dropZoneEnabled: false,//是否显示拖拽区域
-        minImageWidth: 300, //图片的最小宽度
-        minImageHeight:180,//图片的最小高度
+        minImageWidth: 100, //图片的最小宽度
+        minImageHeight:100,//图片的最小高度
         maxImageWidth: 400,//图片的最大宽度
         maxImageHeight: 220,//图片的最大高度
         maxFileSize:2048,//单位为kb，如果为0表示不限制文件大小
@@ -311,6 +350,156 @@ function initFileInput(ctrlName, type) {
         }
     });
 }
+
+
+
+
+function openSelectEmployeesModel() {
+    var employeesType = "员工";
+    // $('#peopleModal').modal('show');
+    var queryEmployeesInfo = $('#queryEmployeesInfo').val();
+    var url = '/rest/employees/select/seller';
+    $("#EmployeesDataGrid").bootstrapTable('destroy');
+    $grid.init($('#EmployeesDataGrid'), $('#toolbar3'), url, 'get', false, function (params) {
+        return {
+            offset: params.offset,
+            size: params.limit,
+            keywords: params.search,
+            employeesType: employeesType,
+            selectCreateOrdereEployeesTypeConditions: queryEmployeesInfo
+        }
+    }, [{
+        checkbox: true,
+        title: '选择'
+    },{
+        field: 'empId',
+        title: 'ID',
+        align: 'center'
+    }, {
+        field: 'name',
+        title: '员工人姓名',
+        align: 'center'
+    }, {
+        field: 'mobile',
+        title: '员工人电话',
+        align: 'center'
+    }, {
+        field: 'identityType',
+        title: '身份类型',
+        align: 'center'
+    }, {
+        field: 'storeName',
+        title: '员工归属门店名',
+        align: 'center'
+    }, {
+        field: 'storeCode',
+        title: '员工归属门店code',
+        align: 'center',
+        visible: false
+    }
+    ]);
+}
+
+function findEmployees() {
+
+    var employeesTypeType = "员工";
+    var selectCreateOrderEmployeesConditions = $('#queryEmployeesInfo').val();
+    var url = '/rest/order/photo/find/people';
+    $("#EmployeesDataGrid").bootstrapTable('destroy');
+    $grid.init($('#EmployeesDataGrid'), $('#toolbar3'), url, 'get', false, function (params) {
+        return {
+            offset: params.offset,
+            size: params.limit,
+            keywords: params.search,
+            employeesTypeType: employeesTypeType,
+            selectCreateOrderEmployeesTypeConditions: selectCreateOrderEmployeesConditions
+        }
+    }, [{
+        checkbox: true,
+        title: '选择'
+    },{
+        field: 'empId',
+        title: 'ID',
+        align: 'center'
+//                    visible:false
+    }, {
+        field: 'name',
+        title: '员工姓名',
+        align: 'center'
+    }, {
+        field: 'mobile',
+        title: '会员电话',
+        align: 'center'
+    }, {
+        field: 'identityType',
+        title: '身份类型',
+        align: 'center'
+    }, {
+        field: 'storeName',
+        title: '员工归属门店名',
+        align: 'center'
+    }, {
+        field: 'storeCode',
+        title: '员工归属门店code',
+        align: 'center',
+        visible: false
+    }
+    ]);
+}
+
+
+function chooseEmployees(tableId) {
+    var tableData = $('#EmployeesDataGrid').bootstrapTable('getSelections');
+
+    if (tableData.length == 0) {
+        $notify.warning('请先选择数据');
+    } else {
+        // alert(tableData);
+        var str = "";
+        for (var i = 0; i < tableData.length; i++) {
+            var item = tableData[i];
+
+            // 排除已选项
+            var trs = $("#" + tableId + item.empId).val();
+
+            var flag = true;
+            if (undefined != trs) {
+                flag = false;
+            }
+
+            if (flag) {
+                str += "<label id='employees" +item.empId+ "' style='margin-right: 6px;' class='label label-success'>"+item.name;
+                str +="-";
+                str +=item.mobile;
+                str += '&nbsp;<span onclick="deleteHtml(';
+                str += "'employees" +item.empId + "'";
+                str += ')"';
+                str += ">×</span></label>";
+            }
+        }
+        $("#" + tableId).append(str);
+        // 取消所以选中行
+        $('#EmployeesDataGrid').bootstrapTable("uncheckAll");
+    }
+}
+
+//选择员工
+function openEmployeesModal() {
+    openSelectEmployeesModel();
+    $("#employeesModalConfirm").unbind('click').click(function(){
+        chooseEmployees('employees');
+    });
+    $('#employeesModal').modal('show');
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -364,6 +553,8 @@ function openSelectPeopleModel() {
 function findPeople() {
     var peopleType = "会员";
     var selectCreateOrderPeopleConditions = $('#queryPeopleInfo').val();
+
+
     var url = '/rest/order/photo/find/people';
     $("#peopleDataGrid").bootstrapTable('destroy');
     $grid.init($('#peopleDataGrid'), $('#toolbar1'), url, 'get', false, function (params) {
@@ -426,7 +617,6 @@ function choosePeople(tableId) {
                 flag = false;
             }
 
-            // 此商品未添加过
             if (flag) {
                 str += "<label id='people" +item.peopleId+ "' style='margin-right: 6px;' class='label label-success'>"+item.name;
                 str +="-";
@@ -444,6 +634,7 @@ function choosePeople(tableId) {
     }
 }
 
+//选择会员
 function openPeopleModal() {
     openSelectPeopleModel();
     $("#peopleModalConfirm").unbind('click').click(function(){
@@ -451,6 +642,10 @@ function openPeopleModal() {
     });
     $('#peopleModal').modal('show');
 }
+
+
+
+
 
 function initStoreGrid(keywords,cityId,storeType){
 
@@ -528,7 +723,7 @@ function chooseStore(tableId) {
     if (tableData.length == 0) {
         $notify.warning('请先选择数据');
     } else {
-        //alert(tableData);
+        // alert(tableData);
         var str = "";
         for (var i = 0; i < tableData.length; i++) {
             var item = tableData[i];

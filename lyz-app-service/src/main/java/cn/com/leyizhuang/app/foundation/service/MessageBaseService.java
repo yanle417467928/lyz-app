@@ -20,7 +20,7 @@ public interface MessageBaseService {
 
     PageInfo<MessageListDO> queryPageVO(Integer page, Integer size , String keywords, String status, Long cityId);
 
-    void save (MessageListDO messageListDO, List<Long> storeList, ArrayList<Long> customerIds);
+    void save (MessageListDO messageListDO, ArrayList<Long> storeList, ArrayList<Long> customerIds,ArrayList<Long> employeeIds);
 
     //void save(ActBaseDO baseDO, List<ActGoodsMappingDO> goodsList, List<ActGiftDetailsDO> giftList, Double subAmount, List<ActStoreDO> storeList,Double discount, ArrayList<Long> customerIds);
 
@@ -36,7 +36,7 @@ public interface MessageBaseService {
 
     List<AppCustomer> findCustomer(Long actId);
 
-    List<SimpleStoreParam> findStore(Long messageId);
+   // List<SimpleStoreParam> findStore(Long messageId);
 
-    void edit (MessageListDO messageListDO, List<Long> storeList, ArrayList<Long> customerIds);
+    void edit (MessageListDO messageListDO, ArrayList<Long> storeList, ArrayList<Long> customerIds,ArrayList<Long> employeeIds);
 }

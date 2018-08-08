@@ -5,9 +5,9 @@
     <select id="findCityInventoryList" parameterType="java.lang.String"
             resultType="cn.com.leyizhuang.app.foundation.vo.management.city.CityInventoryVO">
         select
-        c.city_id cityId,
+        c.city_id,
         c.code code,
-        c.name name,
+        c.name,
         i.sku sku,
         i.sku_name skuName,
         i.available_ity availableIty
@@ -17,6 +17,10 @@
             WHERE i.sku LIKE concat('%', #{keywords}, '%')
             OR i.sku_name LIKE concat('%', #{keywords}, '%')
         </if>
+        <if test="null != cityId and -1 !=cityId">
+            and c.city_id = #{cityId}
+        </if>
+
         order by c.city_id asc
     </select>
 </mapper>

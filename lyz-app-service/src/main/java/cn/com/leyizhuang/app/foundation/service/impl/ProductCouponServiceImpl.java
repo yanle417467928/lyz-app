@@ -209,7 +209,7 @@ public class ProductCouponServiceImpl implements ProductCouponService {
         for(CusProductCouponMsgInfo cusProductCouponMsgInfo:ExpiringSoonProductCouponList){
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             String efTime =  sdf.format(cusProductCouponMsgInfo.getEffectiveEndTime()).toString();
-            String msg ="尊敬的顾客,您有"+ cusProductCouponMsgInfo.getQty() +"张的"+cusProductCouponMsgInfo.getSkuName()+"产品劵将于"+efTime+"到期，请及时至华润漆门店提货";
+            String msg ="尊敬的顾客,您有"+ cusProductCouponMsgInfo.getQty() +"张的"+cusProductCouponMsgInfo.getSkuName()+"产品劵将于"+efTime+"到期，请及时至华润漆门店提货,已提忽略";
             smsAccountService.commonSendGBKSms(cusProductCouponMsgInfo.getMobile(), msg);
         }
     }

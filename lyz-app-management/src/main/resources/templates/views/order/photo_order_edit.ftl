@@ -1814,6 +1814,16 @@
                     var residenceNameLength = getInputLength(residenceName);
                     var detailedAddressLength = getInputLength(detailedAddress);
 
+                    //判断代下单是否含有专供商品
+                    var proxyId = $('#proxyId').val();
+                    var rankCode = $('#rankCode').val();
+                    var isZg = isZGPriceType();
+                    if(null !=proxyId && null!=guideId && rankCode !='COMMON' && isZg==1){
+                        $notify.info("导购不能为顾客代下专供商品");
+                        $('#form').bootstrapValidator('disableSubmitButtons', false);
+                        return false;
+                    }
+
                     if (estateInfoLength > 50) {
                         $notify.danger('楼盘名称长度超长，请重新输入！');
                         $('#form').bootstrapValidator('disableSubmitButtons', false);
@@ -2783,6 +2793,19 @@
                         $("#distributionTime").selectpicker('refresh');
                     }
                 });
+            }
+
+            function isZGPriceType() {
+                var tbody = 0;
+                var tbody1 =  $("#tbody").find("tr");
+                tbody1.each(
+                        function (i,n) {
+                            var priceType = $(n).find("#priceType").val();
+                            if('专供'==priceType){
+                                tbody =1;
+                            }
+                        });
+                return tbody;
             }
         </script>
     </section>

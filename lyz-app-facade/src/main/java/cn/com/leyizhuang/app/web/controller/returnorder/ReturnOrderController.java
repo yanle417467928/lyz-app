@@ -749,14 +749,19 @@ public class ReturnOrderController {
                     }
                 }
 
+                if ((store.getStoreType() == StoreType.ZS) && (billingDetails.getIsPayUp() != null) && billingDetails.getIsPayUp()){
+                    storePrePay = CountUtil.add(storePrePay, storeCredit);
+                    storeCredit = 0D;
+                }
+
                 //多次退货计算退款方式,已退款的退款方式不再退
                 ReturnOrderBilling billing = this.returnOrderService.getAllReturnPriceByOrderNo(orderNo);
                 if (null != billing){
                     cashPosPrice = CountUtil.sub(cashPosPrice,billing.getCash());
                     onlinePayPrice = CountUtil.sub(onlinePayPrice,billing.getOnlinePay());
                     customerPrePay = CountUtil.sub(customerPrePay,billing.getPreDeposit());
-                    storePrePay = CountUtil.sub(storePrePay,billing.getStPreDeposit());
-                    storeCredit = CountUtil.sub(storeCredit,billing.getStPreDeposit());
+                    storePrePay = CountUtil.sub(storePrePay, billing.getStPreDeposit());
+                    storeCredit = CountUtil.sub(storeCredit, billing.getStCreditMoney());
                     sellerStoreDeposit = CountUtil.sub(sellerStoreDeposit,billing.getSellerStoreDeposit());
                 }
 

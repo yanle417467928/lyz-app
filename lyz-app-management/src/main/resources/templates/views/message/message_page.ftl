@@ -46,11 +46,7 @@
                     <button id="btn_delete" type="button" class="btn btn-default">
                         <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> 失效
                     </button>
-                    <select name="city" id="cityCode" class="form-control select" data-width="120px"
-                            style="width:auto;"
-                            onchange="statusChange()" data-live-search="true">
-                        <option value="-1">选择城市</option>
-                    </select>
+
                     <select name="status" id="status" class="form-control select"
                             onchange="statusChange(this.value)" >
                         <option value="">选择状态</option>

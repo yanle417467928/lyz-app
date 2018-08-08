@@ -8,7 +8,7 @@
         SELECT
         mn.title AS title,
         mn.detailed AS detailed,
-        mmc.create_time AS createTime,
+        mn.create_time AS createTime,
         mn.begin_time AS beginTime,
         mn.end_time AS endTime,
         mmc.message_id AS messageId,
@@ -24,9 +24,9 @@
         AND
         mmc.user_id = #{userId}
         AND
-        mmc.create_time >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+        mn.create_time >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
         ORDER BY
-	    mmc.create_time DESC
+	    mn.create_time DESC
     </select>
 
     <select id="countUnreadNotifyMessage" resultType="java.lang.Integer">
@@ -37,11 +37,12 @@
         LEFT JOIN message_member_conference mmc ON mn.id = mmc.message_id
         WHERE
 	    mmc.identity_type = #{identityType}
+
         AND mmc.user_id = #{userId}
         AND mmc.is_read=FALSE
-        AND mmc.create_time >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+        AND mn.create_time >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
         ORDER BY
-	    mmc.create_time DESC
+	    mn.create_time DESC
     </select>
 
     <update id="modifyMessageNotification"

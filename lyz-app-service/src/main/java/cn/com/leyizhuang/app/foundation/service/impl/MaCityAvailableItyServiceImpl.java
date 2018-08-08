@@ -24,9 +24,9 @@ public class MaCityAvailableItyServiceImpl implements MaCityAvailableItyService 
     private MaCityAvailableItyDAO maCityAvailableItyDAO;
 
     @Override
-    public PageInfo<CityInventoryVO> queryPageVO(Integer page, Integer size, String keywords) {
+    public PageInfo<CityInventoryVO> queryPageVO(Integer page, Integer size, String keywords,Long cityId) {
         PageHelper.startPage(page, size);
-        List<CityInventoryVO> cityList = maCityAvailableItyDAO.findCityInventoryList(keywords);
+        List<CityInventoryVO> cityList = maCityAvailableItyDAO.findCityInventoryList(keywords,cityId);
         return new PageInfo<>(cityList);
     }
 }
