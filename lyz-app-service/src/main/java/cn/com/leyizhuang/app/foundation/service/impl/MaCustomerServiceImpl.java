@@ -290,16 +290,55 @@ public class MaCustomerServiceImpl implements MaCustomerService {
         RankStore rankStore = this.maCustomerDAO.findRankStoreByStoreId(customer.getStoreId());
         PayhelperInfo payhelperInfo = this.maCustomerDAO.findPayhelperInfoByCusId(manageUpdateCustomerTypeResponse.getCusId());
 
-        if ("COMMON".equals(manageUpdateCustomerTypeResponse.getMemberType()) && null == cusRankDO && (null == payhelperInfo || payhelperInfo.getIsOpenPayhepler() == false)) {
-            return;
-        }
         if ("COMMON".equals(manageUpdateCustomerTypeResponse.getMemberType())) {
             if (null != cusRankDO) {
                 this.maCustomerDAO.deleteCusRankByCusId(manageUpdateCustomerTypeResponse.getCusId());
             }
-            if (null != payhelperInfo && payhelperInfo.getIsOpenPayhepler()) {
-                payhelperInfo.setIsOpenPayhepler(Boolean.FALSE);
-                this.maCustomerDAO.updatePayhelperInfoByCusId(payhelperInfo);
+            if (null == customer.getSalesConsultId() || !manageUpdateCustomerTypeResponse.getSellerId().equals(customer.getSalesConsultId())) {
+                AppEmployee employee = appEmployeeService.findById(manageUpdateCustomerTypeResponse.getSellerId());
+                AppStore store1 = appStoreService.findById(employee.getStoreId());
+                appCustomerService.updateCustomerSellerIdStoreIdByCusId(manageUpdateCustomerTypeResponse.getCusId(), employee.getStoreId(), employee.getEmpId(), new Date());
+                if (null == payhelperInfo) {
+                    payhelperInfo = new PayhelperInfo();
+                    payhelperInfo.setCreateTime(new Date());
+                    payhelperInfo.setLenderId(customer.getCusId());
+                    payhelperInfo.setLenderName(customer.getName());
+                    payhelperInfo.setLenderPhone(customer.getMobile());
+                    payhelperInfo.setLoanSubjectType(LoanSubjectType.ZG);
+                    payhelperInfo.setStoreCode(store1.getStoreCode());
+                    payhelperInfo.setSellerManagerId(employee.getEmpId());
+                    payhelperInfo.setSellerManagerName(employee.getName());
+                    payhelperInfo.setSellerManagerPhone(employee.getMobile());
+                    payhelperInfo.setIsOpenPayhepler(Boolean.TRUE);
+                    this.maCustomerDAO.addPayhelperInfo(payhelperInfo);
+                } else {
+                    payhelperInfo.setStoreCode(store1.getStoreCode());
+                    payhelperInfo.setSellerManagerId(employee.getEmpId());
+                    payhelperInfo.setSellerManagerName(employee.getName());
+                    payhelperInfo.setSellerManagerPhone(employee.getMobile());
+                    payhelperInfo.setIsOpenPayhepler(Boolean.TRUE);
+                    this.maCustomerDAO.updatePayhelperInfoByCusId(payhelperInfo);
+                }
+            } else {
+                if (null == payhelperInfo) {
+                    AppStore store = appStoreService.findById(customer.getStoreId());
+                    AppEmployee appEmployee = appEmployeeService.findById(customer.getSalesConsultId());
+                    payhelperInfo = new PayhelperInfo();
+                    payhelperInfo.setCreateTime(new Date());
+                    payhelperInfo.setLenderId(customer.getCusId());
+                    payhelperInfo.setLenderName(customer.getName());
+                    payhelperInfo.setLenderPhone(customer.getMobile());
+                    payhelperInfo.setLoanSubjectType(LoanSubjectType.ZG);
+                    payhelperInfo.setStoreCode(store.getStoreCode());
+                    payhelperInfo.setSellerManagerId(appEmployee.getEmpId());
+                    payhelperInfo.setSellerManagerName(appEmployee.getName());
+                    payhelperInfo.setSellerManagerPhone(appEmployee.getMobile());
+                    payhelperInfo.setIsOpenPayhepler(Boolean.TRUE);
+                    this.maCustomerDAO.addPayhelperInfo(payhelperInfo);
+                } else {
+                    payhelperInfo.setIsOpenPayhepler(Boolean.TRUE);
+                    this.maCustomerDAO.updatePayhelperInfoByCusId(payhelperInfo);
+                }
             }
             return;
         }
@@ -376,9 +415,11 @@ public class MaCustomerServiceImpl implements MaCustomerService {
         }
 
         if (manageUpdateCustomerTypeResponse.getMemberType() != null && !manageUpdateCustomerTypeResponse.getMemberType().equals("")
-                && !manageUpdateCustomerTypeResponse.equals("COMMON")) {
-            customer.setCustomerType(AppCustomerType.MEMBER);
-            appCustomerService.update(customer);
+                && !manageUpdateCustomerTypeResponse.equals("COMMON") && AppCustomerType.MEMBER != customer.getCustomerType()) {
+            AppCustomer appCustomer = new AppCustomer();
+            appCustomer.setCusId(customer.getCusId());
+            appCustomer.setCustomerType(AppCustomerType.MEMBER);
+            appCustomerService.update(appCustomer);
         }
 
         if (null == cusRankDO) {
