@@ -184,7 +184,7 @@ function formValidate() {
         var detailed = editor.html();
         // 目标对象
         var target = "";
-        $("select[name='target']:checked").each(function (i) {
+        $("#target option:selected").each(function (i) {
             if (i == 0){
                 target += $(this).val();
             }else{
