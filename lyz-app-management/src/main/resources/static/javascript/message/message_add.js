@@ -27,7 +27,7 @@ $(function () {
     $("select").each(function () {
         $(this).selectpicker('refresh');
     });
-    $('.switch').bootstrapSwitch();
+  /*  $('.switch').bootstrapSwitch();*/
     initFileInput("uploadQrcodeBtn",1);
 });
 

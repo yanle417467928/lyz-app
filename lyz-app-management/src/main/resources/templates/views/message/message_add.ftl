@@ -25,8 +25,7 @@
     <script src="/plugins/datetimepicker/js/bootstrap-datetimepicker.zh-CN.js"></script>
     <script src="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/js/bootstrapValidator.min.js"></script>
     <script type="text/javascript" charset="utf-8" src="/mag/js/kindeditor-min.js"></script>
-    //富文本框和时间控件冲突的js包
-    <script src="https://cdn.bootcss.com/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>
+ <#--   //富文本框和时间控件冲突的js包-->
     <script src="https://cdn.bootcss.com/select2/4.0.2/js/select2.full.min.js"></script>
 
     <script type="text/javascript" src="/javascript/message/message_add.js"></script>
