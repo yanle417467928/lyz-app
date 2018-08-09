@@ -211,11 +211,7 @@ var formatDateTime = function (date) {
 
 
 
-function companyChange(val) {
-    $("#dataGrid").bootstrapTable('destroy');
-    initDateGird('/rest/company/order/page/grid');
 
-}
 function findBykey(){
     if(event.keyCode==13){
         findOrderByOrderNumber();

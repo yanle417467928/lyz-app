@@ -281,9 +281,29 @@ function formValidate() {
 }
 
 
+function divClick() {
 
+    var show = "";
+    var apm = document.getElementsByName("target");
+    for (var i = 0; i < apm.length; i++) {
+        if (apm[i].checked)
+            show = apm[i].value;
+    }
 
-/**
+    switch (show) {
+        case 'ZDY':
+            document.getElementById("xzyg").style.display = "block";
+            document.getElementById("zxhy").style.display = "block";
+            document.getElementById("xzmd").style.display = "block";
+            break;
+        case 'ALL':
+            document.getElementById("xzyg").style.display = "none";
+            document.getElementById("zxhy").style.display = "none";
+            document.getElementById("xzmd").style.display = "none";
+            break;
+    }
+}
+    /**
  *开始时间 -- 结束时间 渲染方法
  */
 function starAndEndDatetimepiker(startDateId,endDateId){

@@ -415,13 +415,13 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     }
 
     @Override
-    public CusPreDepositLogVO queryLastDecorativeCreditChange(Long storeId) {
+    public CusPreDepositLogVO queryLastDecorativeCreditChange(Long id) {
 
-        if (storeId == null) {
+        if (id == null) {
             return null;
         }
 
-        return maCustomerDAO.queryLastDecorativeCreditChange(storeId);
+        return maCustomerDAO.queryLastDecorativeCreditChange(id);
     }
 }
 

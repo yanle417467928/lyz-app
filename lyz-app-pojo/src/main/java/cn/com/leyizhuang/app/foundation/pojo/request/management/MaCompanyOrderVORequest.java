@@ -51,6 +51,9 @@ public class MaCompanyOrderVORequest {
      */
     private String receiverPhone;
 
+    //公司类型
+    private String company;
+
     private List<Long> list;
 
     public static final MaCompanyOrderVORequest transformTime (MaCompanyOrderVORequest maCompanyOrderVORequest) {

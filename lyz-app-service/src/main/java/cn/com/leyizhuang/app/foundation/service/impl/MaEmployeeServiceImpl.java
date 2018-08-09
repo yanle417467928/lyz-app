@@ -11,6 +11,7 @@ import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.MaEmployeeService;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.DecorativeEmployeeDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeLogVo;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeVO;
 import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideVO;
 import com.github.pagehelper.PageHelper;
@@ -293,5 +294,15 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
     @Override
     public List<EmployeeDO> findEmpployeeByCityIdAndIdentityType(Long cityId, AppIdentityType type) {
         return this.maEmployeeDAO.findEmpployeeByCityIdAndIdentityType(cityId, type);
+    }
+
+    @Override
+    public EmployeeLogVo queryLastDecorativeCreditChange(Long id) {
+
+        if (id == null) {
+            return null;
+        }
+
+        return maEmployeeDAO.queryLastDecorativeCreditChange(id);
     }
 }

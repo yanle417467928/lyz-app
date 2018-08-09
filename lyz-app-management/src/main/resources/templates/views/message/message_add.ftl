@@ -112,8 +112,8 @@
                                     推送范围
                                 </label>
                                 <div class="input-group">
-                                    <input name="target" value="ALL" type="radio" class="flat-red">全部
-                                    <input name="target" value="ZDY" type="radio" class="flat-red">自定义
+                                    <input name="target" value="ALL" type="radio" class="flat-red" checked onclick="divClick();">全部
+                                    <input name="target" value="ZDY" type="radio" class="flat-red" onclick="divClick();">自定义
                                 </div>
                             </div>
                         </div>
@@ -140,7 +140,7 @@
 
             </div>
 
-                    <div class="row">
+                    <div class="row" style="display:none" id="xzyg">
                         <div class="col-xs-12 col-md-12">
                             <label for="title">
                             </label>
@@ -176,7 +176,7 @@
 
 
 
-                    <div class="row">
+                    <div class="row" style="display:none" id="xzhy">
                         <div class="col-xs-12 col-md-12">
                             <label for="title">
                             </label>
@@ -210,7 +210,7 @@
                     </div>
 
 
-                    <div class="row">
+                    <div class="row" style="display:none" id="xzmd">
                         <div class="col-xs-12 col-md-12">
                             <label for="title">
                             </label>

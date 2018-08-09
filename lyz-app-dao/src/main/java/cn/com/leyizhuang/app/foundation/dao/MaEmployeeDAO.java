@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.dao;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaEmployeeResponse;
+import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeLogVo;
 import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideVO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -67,5 +68,7 @@ public interface MaEmployeeDAO {
     List<GuideVO> queryGuideRepayment();
 
     List<EmployeeDO> findEmpployeeByCityIdAndIdentityType(@Param("cityId")Long cityId, @Param("type") AppIdentityType type);
+
+    EmployeeLogVo queryLastDecorativeCreditChange(Long id);
 
 }

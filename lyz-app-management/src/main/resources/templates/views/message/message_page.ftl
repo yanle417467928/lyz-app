@@ -25,7 +25,7 @@
         <li class="active">${selectedMenu.resourceName!'??'}</li>
     </ol>
 <#else>
-    <h1>促销管理</h1>
+    <h1>消息管理</h1>
 </#if>
 </section>
 
