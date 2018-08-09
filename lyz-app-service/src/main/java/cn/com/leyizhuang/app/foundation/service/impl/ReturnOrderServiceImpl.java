@@ -150,6 +150,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                     returnDeliveryInfo.getDeliveryStreet() +
                     returnDeliveryInfo.getResidenceName() +
                     returnDeliveryInfo.getDetailedAddress();
+            fullAddress = fullAddress.replaceAll("\\s","");
             returnOrderLogisticInfo.setReturnFullAddress(fullAddress.replace("null", "").trim());
         }
         return returnOrderLogisticInfo;
