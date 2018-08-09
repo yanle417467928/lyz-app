@@ -13,6 +13,7 @@ import cn.com.leyizhuang.app.foundation.pojo.management.store.StoreDO;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorativeCompanyDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.FitCreditMoneyChangeLogVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositLogVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO;
 import com.github.pagehelper.PageInfo;
@@ -46,7 +47,7 @@ public interface MaStoreService {
 
     PageInfo<StoreDO> queryDecorativeCompanyPageVO(Integer page, Integer size);
 
-    PageInfo<StoreDO> queryDecorativeCompanyList(Integer page, Integer size,List<Long> storeIds,Long cityId,String keywords);
+    PageInfo<StoreDO> queryDecorativeCompanyList(Integer page, Integer size,List<Long> storeIds,Long cityId,String keywords, String fitCompayType);
 
     PageInfo<StoreDO> findDecorativeByCondition(Integer page, Integer size, String enabled, Long cityId);
 
@@ -151,4 +152,10 @@ public interface MaStoreService {
     List<SimpleStoreParam> findStoresListByCompanyCodeAndStoreType(String companyCode,String storeType,List<Long> storeIds);
 
     List<SimpleStoreParam> findStoresListByCompanyCodeAndStoreTypeForSale(String companyCode,String storeType,List<Long> storeIds);
+
+    FitCreditMoneyChangeLogVO queryLastDecorativeCreditChange(Long storeId);
+
+
+    StorePreDepositLogVO queryLastStoreChange(Long storeId);
+
 }

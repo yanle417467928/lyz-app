@@ -95,6 +95,4 @@ public interface DataTransferService {
     void storeInventoryInfoTransfer();
 
     List<StoreDetailVO> findStorehasInventory();
-
-
 }

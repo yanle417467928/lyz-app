@@ -49,6 +49,11 @@ public class StInventoryRealChangeLogReportDO {
     public String referenceNumber;
 
     /**
+     * 退单单号
+     */
+    public String returnNumber;
+
+    /**
      * 变更时间
      */
     public String changeTime;

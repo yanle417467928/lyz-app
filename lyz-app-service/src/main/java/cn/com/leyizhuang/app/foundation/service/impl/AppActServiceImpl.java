@@ -306,6 +306,9 @@ public class AppActServiceImpl implements AppActService {
             if (null != act.getIsMemberConference() && act.getIsMemberConference()){
                 List<ActMemberConference> actMemberConferenceList = actBaseDAO.findMemberConferenceByActId(act.getId());
                 if (null != actMemberConferenceList && actMemberConferenceList.size() > 0) {
+                    if (cusId == null){
+                        continue;
+                    }
                     for (ActMemberConference actMemberConference : actMemberConferenceList) {
                         if (cusId.equals(actMemberConference.getCusId())) {
                             a = Boolean.TRUE;
@@ -878,6 +881,7 @@ public class AppActServiceImpl implements AppActService {
         List<PromotionsGiftListResponse> giftListResponseList = new ArrayList<>();
         Long cityId = -1L;
         Long storeId = -1L;
+        int zgQty = 0;
         List<String> skus = new ArrayList<>();
         String rankCode = "";
 
@@ -985,6 +989,7 @@ public class AppActServiceImpl implements AppActService {
                         for (GiftListResponseGoods zgGoods : goodsZGList) {
                             // 判断此专供是否在促销范围下
                             if (scopeSkus.contains(zgGoods.getSku())) {
+                                zgQty ++;
                                 OrderGoodsSimpleResponse orderGoodsSimpleResponse = goodsPool.get(zgGoods.getSku());
                                 // 判断数量
                                 if (orderGoodsSimpleResponse.getGoodsQty() >= fullQty) {
@@ -1035,13 +1040,42 @@ public class AppActServiceImpl implements AppActService {
                                 giftList.add(gift);
                             }
 
+                            List<Long> gidList = new ArrayList<>();
+                            gidList.add(1464L);
+                            gidList.add(1519L);
+                            gidList.add(2417L);
+
+                            /**
+                             * 临时 加一套辅料 成都 和 郑州
+                             */
+                            if (appCustomer.getCityId().equals(1L) || (appCustomer.getCityId().equals(2L) && zgQty > 1)){
+
+                                List<GiftListResponseGoods> goodsListResponseGoods = goodsPriceService.findGoodsPriceListByGoodsIdsAndUserIdAndIdentityType(
+                                        gidList, cusId, AppIdentityType.CUSTOMER);
+                                for (GiftListResponseGoods item : goodsListResponseGoods){
+                                    GiftListResponseGoods gift = new GiftListResponseGoods();
+
+                                    gift.setGoodsId(item.getGoodsId());
+                                    gift.setSku(item.getSku());
+                                    gift.setSkuName(item.getSkuName());
+                                    gift.setQty(1);
+                                    gift.setRetailPrice(0D);
+                                    gift.setCoverImageUri(item.getCoverImageUri());
+                                    gift.setGoodsUnit(item.getGoodsUnit());
+                                    gift.setGoodsType(AppGoodsLineType.PRESENT);
+                                    gift.setGoodsSpecification(item.getGoodsSpecification());
+                                    giftList.add(gift);
+                                }
+                            }
+
+
                             // 创建一个促销结果
                             PromotionsGiftListResponse response = new PromotionsGiftListResponse();
 
                             response.setPromotionId(actBaseDO.getId());
                             response.setPromotionTitle(actBaseDO.getTitle());
                             response.setIsGiftOptionalQty(actBaseDO.getIsGiftOptionalQty());
-                            response.setMaxChooseNumber(actBaseDO.getGiftChooseNumber() * enjoyActGoodsList.size());
+                            response.setMaxChooseNumber(actBaseDO.getGiftChooseNumber() * enjoyActGoodsList.size() + gidList.size());
                             response.setEnjoyTimes(enjoyActGoodsList.size());
                             response.setGiftList(giftList);
                             giftListResponseList.add(response);

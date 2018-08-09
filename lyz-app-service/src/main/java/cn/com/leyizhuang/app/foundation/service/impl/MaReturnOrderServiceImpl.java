@@ -703,6 +703,11 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
                 changeLog.setUseTime(new Date());
                 // 日志变更保存
                 productCouponService.addCustomerProductCouponChangeLog(changeLog);
+
+                //修改买券订单可退数量
+                if (StringUtils.isNotBlank(customerProductCoupon.getGetOrderNumber()) && (customerProductCoupon.getGetType() == CouponGetType.BUY || customerProductCoupon.getGetType() == CouponGetType.PRESENT)){
+                    returnOrderDAO.updateProductOrderReturnNableQty(customerProductCoupon.getGoodsLineId());
+                }
             }
         }
 

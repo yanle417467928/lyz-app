@@ -23,6 +23,12 @@ public interface ReturnOrderDAO {
      * @param returnOrderBaseInfo 退单基础信息类
      */
     void saveReturnOrderBaseInfo(ReturnOrderBaseInfo returnOrderBaseInfo);
+    /**
+     * 添加保存拒签退单基础信息
+     *
+     * @param returnOrderBaseInfo 拒签退单基础信息类
+     */
+    void saveRefusedReturnOrderBaseInfo(ReturnOrderBaseInfo returnOrderBaseInfo);
 
     /**
      * 修改退单基础信息

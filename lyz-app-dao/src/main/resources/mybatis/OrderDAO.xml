@@ -543,10 +543,12 @@
             is_owner_receiving,
             is_pay_up,
             pay_up_time,
-            store_cash,
-            seller_store_deposit,
-            store_other_money,
-            store_pos_money
+            IFNULL(store_cash, 0) store_cash,
+            IFNULL(seller_store_deposit, 0) seller_store_deposit,
+            IFNULL(store_other_money, 0) store_other_money,
+            IFNULL(store_pos_money, 0) store_pos_money,
+            IFNULL(delivery_cash, 0) delivery_cash,
+            IFNULL(delivery_pos, 0) delivery_pos
         FROM
             ord_billing_details
         WHERE
@@ -707,7 +709,8 @@
          delivery_type, order_subject_type, creator_identity_type, creator_id, creator_name, creator_phone,
          store_id, store_code, store_structure_code, sales_consult_id, sales_consult_name, sales_consult_phone,
          customer_id, customer_name, customer_phone, total_goods_price, is_evaluated, audit_no,
-         remark, city_id, city_name, customer_type, store_org_id, sob_id, sales_number, is_record_sales
+         remark, city_id, city_name, customer_type, store_org_id, sob_id, sales_number, is_record_sales,
+         sales_manager_id, sales_manager_store_id
         ) VALUES (
             #{orderNumber},
             #{orderType},
@@ -741,7 +744,9 @@
             #{storeOrgId},
             #{sobId},
             #{salesNumber},
-            #{isRecordSales})
+            #{isRecordSales},
+            #{salesManagerId},
+            #{salesManagerStoreId})
 
     </insert>
 
@@ -1000,8 +1005,8 @@
     </select>
 
     <insert id="saveOrderCouponInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo">
-        INSERT INTO ord_coupon_info (oid, ord_no, coupon_type, coupon_id, purchase_price, cost_price, get_type, sku, goods_sign)
-        VALUES (#{oid}, #{orderNumber}, #{couponType}, #{couponId}, #{purchasePrice}, #{costPrice}, #{getType}, #{sku}, #{goodsSign});
+        INSERT INTO ord_coupon_info (oid, ord_no, coupon_type, coupon_id, purchase_price, cost_price, get_type, sku, goods_sign, product_coupon_subject_type)
+        VALUES (#{oid}, #{orderNumber}, #{couponType}, #{couponId}, #{purchasePrice}, #{costPrice}, #{getType}, #{sku}, #{goodsSign}, #{productCouponSubjectType});
     </insert>
 
     <select id="getPendingEvaluationOrderListByUserIDAndIdentityType" resultMap="pendingEvaluationOrder">
@@ -1905,5 +1910,15 @@
         <include refid="All_FIELD"/>
         from ord_base_info ob
         where status = #{status} and delivery_type = #{type} and create_time &lt; #{endTime};
+    </select>
+    
+    <select id="findOrderPromotionIdByOrdNo" resultType="cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo">
+        SELECT DISTINCT
+            promotion_id promotionId
+        FROM
+            ord_goods_info
+        WHERE
+            ord_no = #{ordNo}
+            AND promotion_id IS NOT NULL
     </select>
 </mapper>

@@ -30,7 +30,7 @@ public interface MaMaterialListDAO {
 
     List<MaterialListDO> findMaPhotoOrderMaterialListByPhotoNumber(@Param("photoNo")String photoNo);
 
-    List<MaUpdateMaterialResponse> findMaAllMaterialListByPhotoNumber(@Param("photoNo")String photoNo, @Param("identityType")String identityType);
+    List<MaUpdateMaterialResponse> findMaAllMaterialListByPhotoNumber(@Param("photoNo")String photoNo, @Param("identityType")String identityType,@Param("rankCode")String rankCode);
 
     void deleteMaterialListByUserIdAndIdentityTypeAndGoodsSku(@Param(value = "userId") Long userId,
                                                               @Param(value = "identityType") String identityType,

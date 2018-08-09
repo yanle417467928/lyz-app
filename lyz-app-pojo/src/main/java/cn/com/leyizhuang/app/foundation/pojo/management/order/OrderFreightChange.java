@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.management.order;
 
+import cn.com.leyizhuang.app.core.constant.FreightChangeType;
 import lombok.*;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -22,11 +23,17 @@ public class OrderFreightChange {
     //修改时间
     private Date modifyTime;
     //运费修改前价格
-    private BigDecimal freightChangeBefore;
+    private BigDecimal freight;
     //运费改变后价格
     private BigDecimal freightChangeAfter;
     //运费改变量
-    private BigDecimal freightChangeAmount;
+    private BigDecimal changeAmount;
     //修改原因
     private String modifyReason;
+    //变更类型
+    private String changeType;
+
+    public void setChangeTypes(FreightChangeType changeTypes){
+        this.changeType = changeTypes.getDescription();
+    }
 }

@@ -27,6 +27,8 @@ public interface MaStoreInventoryService {
 
     PageInfo<StoreInvoicingInf> queryInvoicingPage(Integer page, Integer size, String keywords, String structureCode, Long storeId, String endDateTime, List<Long> storeIds);
 
+    List<StoreInvoicingInf> queryInvoicingList(String keywords, String structureCode, Long storeId, String endDateTime, List<Long> storeIds);
+
     Integer queryStoreInitialrealQty(String storeCode , String sku);
 
     PageInfo<StoreReturnAndRequireGoodsInf> queryStoresGoodCheckingPageVO(Integer page, Integer size,String structureCode, Long storeId, String queryInfo, List<Long> storeIds);

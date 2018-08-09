@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.AppCustomerCreateType;
 import cn.com.leyizhuang.app.core.constant.AppCustomerLightStatus;
+import cn.com.leyizhuang.app.core.constant.AppCustomerType;
 import cn.com.leyizhuang.app.core.constant.LoanSubjectType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.MaCustomerDAO;
@@ -17,6 +18,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.MaCreateOrderPeopleRespons
 import cn.com.leyizhuang.app.foundation.pojo.response.ManageUpdateCustomerTypeResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.*;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.foundation.vo.management.customer.CusPreDepositLogVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerLebiVO;
 import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerPreDepositVO;
@@ -55,7 +57,6 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     private AppEmployeeService appEmployeeService;
 
 
-
     @Override
     public PageInfo<CustomerDO> queryPageVO(Integer page, Integer size, List<Long> storeIds) {
         PageHelper.startPage(page, size);
@@ -73,9 +74,9 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     }
 
     @Override
-    public PageInfo<CustomerDO> queryCustomerVOByCityId(Integer page, Integer size, Long cityId,List<Long> storeIds) {
+    public PageInfo<CustomerDO> queryCustomerVOByCityId(Integer page, Integer size, Long cityId, List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<CustomerDO> CustmoerList = maCustomerDAO.queryCustomerVOByCityId(cityId,storeIds);
+        List<CustomerDO> CustmoerList = maCustomerDAO.queryCustomerVOByCityId(cityId, storeIds);
         return new PageInfo<>(CustmoerList);
     }
 
@@ -95,30 +96,30 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     }
 
     @Override
-    public PageInfo<CustomerDO> queryCustomerVOByPhone(Integer page, Integer size, Long queryCusInfo,List<Long> storeIds) {
+    public PageInfo<CustomerDO> queryCustomerVOByPhone(Integer page, Integer size, Long queryCusInfo, List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<CustomerDO> CustmoerList = maCustomerDAO.queryCustomerVOByPhone(queryCusInfo,storeIds);
+        List<CustomerDO> CustmoerList = maCustomerDAO.queryCustomerVOByPhone(queryCusInfo, storeIds);
         return new PageInfo<>(CustmoerList);
     }
 
     @Override
-    public PageInfo<CustomerDO> queryCustomerVOByName(Integer page, Integer size, String queryCusInfo,List<Long> storeIds) {
+    public PageInfo<CustomerDO> queryCustomerVOByName(Integer page, Integer size, String queryCusInfo, List<Long> storeIds) {
         PageHelper.startPage(page, size);
-        List<CustomerDO> CustmoerList = maCustomerDAO.queryCustomerVOByName(queryCusInfo,storeIds);
+        List<CustomerDO> CustmoerList = maCustomerDAO.queryCustomerVOByName(queryCusInfo, storeIds);
         return new PageInfo<>(CustmoerList);
     }
 
     @Override
-    public void saveCustomer(CustomerDetailVO customer){
-        if(null!=customer){
+    public void saveCustomer(CustomerDetailVO customer) {
+        if (null != customer) {
             Date date = new Date();
             customer.setCreateTime(date);
             customer.setLight(AppCustomerLightStatus.GREEN);
             customer.setCreateType(AppCustomerCreateType.ADMIN_CREATE);
-            if(null!=customer.getSalesConsultId()){
+            if (null != customer.getSalesConsultId()) {
                 customer.setBindingTime(date);
             }
-            CustomerDO customerDO =CustomerDO.transform(customer);
+            CustomerDO customerDO = CustomerDO.transform(customer);
             maCustomerDAO.save(customerDO);
 
             CustomerLeBi leBi = new CustomerLeBi();
@@ -134,20 +135,21 @@ public class MaCustomerServiceImpl implements MaCustomerService {
 
 
     @Override
-    public void updateCustomer(CustomerDetailVO customer){
-        if(null!=customer){
+    public void updateCustomer(CustomerDetailVO customer) {
+        if (null != customer) {
             CustomerDO customerDO = CustomerDO.transform(customer);
             maCustomerDAO.updateCustomer(customerDO);
         }
     }
+
     @Override
     public Boolean isExistPhoneNumber(Long moblie) {
         return maCustomerDAO.isExistPhoneNumber(moblie);
     }
 
     @Override
-    public Boolean isExistPhoneNumberByCusId(Long mobile,Long cusId) {
-        return maCustomerDAO.isExistPhoneNumberByCusId(mobile,cusId);
+    public Boolean isExistPhoneNumberByCusId(Long mobile, Long cusId) {
+        return maCustomerDAO.isExistPhoneNumberByCusId(mobile, cusId);
     }
 
     @Override
@@ -196,7 +198,7 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     }
 
     @Override
-    public void changeCusLebiByCusId(CusLebiDTO cusLebiDTO) throws Exception{
+    public void changeCusLebiByCusId(CusLebiDTO cusLebiDTO) throws Exception {
         Long userId = cusLebiDTO.getCusId();
         Integer quantity = cusLebiDTO.getChangeNum();
         CustomerLeBi customerLeBi = this.maCustomerDAO.findLebiByCusId(userId);
@@ -224,10 +226,10 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     @Override
     public List<CustomerDO> findCustomerByCityIdAndStoreIdAndCustomerNameAndCustomerPhone(String customerQueryConditions, List<Long> storeIds) {
         List<CustomerDO> customerDOList = null;
-        if (customerQueryConditions.matches("[0-9]{11}")){
+        if (customerQueryConditions.matches("[0-9]{11}")) {
             customerDOList = this.maCustomerDAO.findCustomerByCustomerPhone(customerQueryConditions);
-        }else {
-            customerDOList = this.maCustomerDAO.findCustomerByCityIdAndStoreIdAndCustomerNameAndCustomerPhone(customerQueryConditions,storeIds);
+        } else {
+            customerDOList = this.maCustomerDAO.findCustomerByCityIdAndStoreIdAndCustomerNameAndCustomerPhone(customerQueryConditions, storeIds);
         }
         return customerDOList;
     }
@@ -239,7 +241,7 @@ public class MaCustomerServiceImpl implements MaCustomerService {
 
 
     @Override
-    public void saveCusPreDepositLog( MaCustomerPreDeposit customerPreDeposit) {
+    public void saveCusPreDepositLog(MaCustomerPreDeposit customerPreDeposit) {
         this.maCustomerDAO.saveCusPreDepositLog(customerPreDeposit);
     }
 
@@ -252,7 +254,7 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     public ManageUpdateCustomerTypeResponse queryCustomerById(Long id) {
         if (null != id) {
             return this.maCustomerDAO.findCustomerById(id);
-        }else{
+        } else {
             return null;
         }
 
@@ -260,7 +262,7 @@ public class MaCustomerServiceImpl implements MaCustomerService {
 
     @Override
     public List<RankClassification> findRankAll() {
-        List<RankClassification> rankClassificationList =this.maCustomerDAO.findRankAll();
+        List<RankClassification> rankClassificationList = this.maCustomerDAO.findRankAll();
         RankClassification rankClassification = new RankClassification();
         rankClassification.setRankCode("COMMON");
         rankClassification.setRankName("一般会员");
@@ -272,9 +274,9 @@ public class MaCustomerServiceImpl implements MaCustomerService {
     @Override
     public Boolean findRankStoreByStoreId(Long storeId) {
         RankStore rankStore = this.maCustomerDAO.findRankStoreByStoreId(storeId);
-        if (null == rankStore){
+        if (null == rankStore) {
             return false;
-        }else{
+        } else {
             return true;
         }
     }
@@ -288,25 +290,64 @@ public class MaCustomerServiceImpl implements MaCustomerService {
         RankStore rankStore = this.maCustomerDAO.findRankStoreByStoreId(customer.getStoreId());
         PayhelperInfo payhelperInfo = this.maCustomerDAO.findPayhelperInfoByCusId(manageUpdateCustomerTypeResponse.getCusId());
 
-        if ("COMMON".equals(manageUpdateCustomerTypeResponse.getMemberType()) && null == cusRankDO && (null == payhelperInfo || payhelperInfo.getIsOpenPayhepler() == false)){
-            return;
-        }
-        if ("COMMON".equals(manageUpdateCustomerTypeResponse.getMemberType())){
+        if ("COMMON".equals(manageUpdateCustomerTypeResponse.getMemberType())) {
             if (null != cusRankDO) {
                 this.maCustomerDAO.deleteCusRankByCusId(manageUpdateCustomerTypeResponse.getCusId());
             }
-            if (null != payhelperInfo && payhelperInfo.getIsOpenPayhepler()){
-                payhelperInfo.setIsOpenPayhepler(Boolean.FALSE);
-                this.maCustomerDAO.updatePayhelperInfoByCusId(payhelperInfo);
+            if (null == customer.getSalesConsultId() || !manageUpdateCustomerTypeResponse.getSellerId().equals(customer.getSalesConsultId())) {
+                AppEmployee employee = appEmployeeService.findById(manageUpdateCustomerTypeResponse.getSellerId());
+                AppStore store1 = appStoreService.findById(employee.getStoreId());
+                appCustomerService.updateCustomerSellerIdStoreIdByCusId(manageUpdateCustomerTypeResponse.getCusId(), employee.getStoreId(), employee.getEmpId(), new Date());
+                if (null == payhelperInfo) {
+                    payhelperInfo = new PayhelperInfo();
+                    payhelperInfo.setCreateTime(new Date());
+                    payhelperInfo.setLenderId(customer.getCusId());
+                    payhelperInfo.setLenderName(customer.getName());
+                    payhelperInfo.setLenderPhone(customer.getMobile());
+                    payhelperInfo.setLoanSubjectType(LoanSubjectType.ZG);
+                    payhelperInfo.setStoreCode(store1.getStoreCode());
+                    payhelperInfo.setSellerManagerId(employee.getEmpId());
+                    payhelperInfo.setSellerManagerName(employee.getName());
+                    payhelperInfo.setSellerManagerPhone(employee.getMobile());
+                    payhelperInfo.setIsOpenPayhepler(Boolean.TRUE);
+                    this.maCustomerDAO.addPayhelperInfo(payhelperInfo);
+                } else {
+                    payhelperInfo.setStoreCode(store1.getStoreCode());
+                    payhelperInfo.setSellerManagerId(employee.getEmpId());
+                    payhelperInfo.setSellerManagerName(employee.getName());
+                    payhelperInfo.setSellerManagerPhone(employee.getMobile());
+                    payhelperInfo.setIsOpenPayhepler(Boolean.TRUE);
+                    this.maCustomerDAO.updatePayhelperInfoByCusId(payhelperInfo);
+                }
+            } else {
+                if (null == payhelperInfo) {
+                    AppStore store = appStoreService.findById(customer.getStoreId());
+                    AppEmployee appEmployee = appEmployeeService.findById(customer.getSalesConsultId());
+                    payhelperInfo = new PayhelperInfo();
+                    payhelperInfo.setCreateTime(new Date());
+                    payhelperInfo.setLenderId(customer.getCusId());
+                    payhelperInfo.setLenderName(customer.getName());
+                    payhelperInfo.setLenderPhone(customer.getMobile());
+                    payhelperInfo.setLoanSubjectType(LoanSubjectType.ZG);
+                    payhelperInfo.setStoreCode(store.getStoreCode());
+                    payhelperInfo.setSellerManagerId(appEmployee.getEmpId());
+                    payhelperInfo.setSellerManagerName(appEmployee.getName());
+                    payhelperInfo.setSellerManagerPhone(appEmployee.getMobile());
+                    payhelperInfo.setIsOpenPayhepler(Boolean.TRUE);
+                    this.maCustomerDAO.addPayhelperInfo(payhelperInfo);
+                } else {
+                    payhelperInfo.setIsOpenPayhepler(Boolean.TRUE);
+                    this.maCustomerDAO.updatePayhelperInfoByCusId(payhelperInfo);
+                }
             }
             return;
         }
-        if (null == customer.getSalesConsultId() || !manageUpdateCustomerTypeResponse.getSellerId().equals(customer.getSalesConsultId())){
+        if (null == customer.getSalesConsultId() || !manageUpdateCustomerTypeResponse.getSellerId().equals(customer.getSalesConsultId())) {
             AppEmployee employee = appEmployeeService.findById(manageUpdateCustomerTypeResponse.getSellerId());
-            appCustomerService.updateCustomerSellerIdStoreIdByCusId(manageUpdateCustomerTypeResponse.getCusId(),employee.getStoreId(),employee.getEmpId(),new Date());
+            appCustomerService.updateCustomerSellerIdStoreIdByCusId(manageUpdateCustomerTypeResponse.getCusId(), employee.getStoreId(), employee.getEmpId(), new Date());
             RankStore rankStore2 = this.maCustomerDAO.findRankStoreByStoreId(employee.getStoreId());
             AppStore store1 = appStoreService.findById(employee.getStoreId());
-            if (null == rankStore2){
+            if (null == rankStore2) {
                 RankStore newRankStore1 = new RankStore();
                 newRankStore1.setStoreId(store1.getStoreId());
                 newRankStore1.setStoreCode(store1.getStoreCode());
@@ -318,7 +359,7 @@ public class MaCustomerServiceImpl implements MaCustomerService {
                 newRankStore1.setCreateTime(new Date());
                 maCustomerDAO.saveRankStore(newRankStore1);
             }
-            if (null == payhelperInfo){
+            if (null == payhelperInfo) {
                 payhelperInfo = new PayhelperInfo();
                 payhelperInfo.setCreateTime(new Date());
                 payhelperInfo.setLenderId(customer.getCusId());
@@ -331,7 +372,7 @@ public class MaCustomerServiceImpl implements MaCustomerService {
                 payhelperInfo.setSellerManagerPhone(employee.getMobile());
                 payhelperInfo.setIsOpenPayhepler(Boolean.TRUE);
                 this.maCustomerDAO.addPayhelperInfo(payhelperInfo);
-            }else {
+            } else {
                 payhelperInfo.setStoreCode(store1.getStoreCode());
                 payhelperInfo.setSellerManagerId(employee.getEmpId());
                 payhelperInfo.setSellerManagerName(employee.getName());
@@ -339,10 +380,10 @@ public class MaCustomerServiceImpl implements MaCustomerService {
                 payhelperInfo.setIsOpenPayhepler(Boolean.TRUE);
                 this.maCustomerDAO.updatePayhelperInfoByCusId(payhelperInfo);
             }
-        }else{
+        } else {
             AppStore store = appStoreService.findById(customer.getStoreId());
             AppEmployee appEmployee = appEmployeeService.findById(customer.getSalesConsultId());
-            if (null == rankStore){
+            if (null == rankStore) {
                 RankStore newRankStore = new RankStore();
                 newRankStore.setStoreId(store.getStoreId());
                 newRankStore.setStoreCode(store.getStoreCode());
@@ -354,7 +395,7 @@ public class MaCustomerServiceImpl implements MaCustomerService {
                 newRankStore.setCreateTime(new Date());
                 maCustomerDAO.saveRankStore(newRankStore);
             }
-            if (null == payhelperInfo){
+            if (null == payhelperInfo) {
                 payhelperInfo = new PayhelperInfo();
                 payhelperInfo.setCreateTime(new Date());
                 payhelperInfo.setLenderId(customer.getCusId());
@@ -367,43 +408,64 @@ public class MaCustomerServiceImpl implements MaCustomerService {
                 payhelperInfo.setSellerManagerPhone(appEmployee.getMobile());
                 payhelperInfo.setIsOpenPayhepler(Boolean.TRUE);
                 this.maCustomerDAO.addPayhelperInfo(payhelperInfo);
-            }else {
+            } else {
                 payhelperInfo.setIsOpenPayhepler(Boolean.TRUE);
                 this.maCustomerDAO.updatePayhelperInfoByCusId(payhelperInfo);
             }
         }
-        if (null == cusRankDO){
+
+        if (manageUpdateCustomerTypeResponse.getMemberType() != null && !manageUpdateCustomerTypeResponse.getMemberType().equals("")
+                && !manageUpdateCustomerTypeResponse.equals("COMMON") && AppCustomerType.MEMBER != customer.getCustomerType()) {
+            AppCustomer appCustomer = new AppCustomer();
+            appCustomer.setCusId(customer.getCusId());
+            appCustomer.setCustomerType(AppCustomerType.MEMBER);
+            appCustomerService.update(appCustomer);
+        }
+
+        if (null == cusRankDO) {
             CusRankDO newCusRank = new CusRankDO();
             newCusRank.setCusId(manageUpdateCustomerTypeResponse.getCusId());
             newCusRank.setRankId(rankClassification.getRankId());
             newCusRank.setNumber(null);
             newCusRank.setCreateTime(new Date());
             maCustomerDAO.saveCusRank(newCusRank);
-        }else{
-            maCustomerDAO.updateMemberTypeByRankIdAndCusId(rankClassification.getRankId(),manageUpdateCustomerTypeResponse.getCusId());
+        } else {
+            maCustomerDAO.updateMemberTypeByRankIdAndCusId(rankClassification.getRankId(), manageUpdateCustomerTypeResponse.getCusId());
         }
     }
 
     @Override
-    public PageInfo<MaCreateOrderPeopleResponse> maFindCreatePeople(Integer page, Integer size,String keywords,String peopleType,Long storeId) {
+    public PageInfo<MaCreateOrderPeopleResponse> maFindCreatePeople(Integer page, Integer size, String keywords, String peopleType, Long storeId) {
         PageHelper.startPage(page, size);
-        List<MaCreateOrderPeopleResponse> maCreateOrderPeopleResponseList =maCustomerDAO.maFindCreatePeople(keywords,peopleType,storeId);
+        List<MaCreateOrderPeopleResponse> maCreateOrderPeopleResponseList = maCustomerDAO.maFindCreatePeople(keywords, peopleType, storeId);
         return new PageInfo<>(maCreateOrderPeopleResponseList);
     }
 
     @Override
-    public PageInfo<MaCreateOrderPeopleResponse> maFindProxyCreatePeople(Integer page, Integer size,String keywords) {
+    public PageInfo<MaCreateOrderPeopleResponse> maFindProxyCreatePeople(Integer page, Integer size, String keywords) {
         PageHelper.startPage(page, size);
-        List<MaCreateOrderPeopleResponse> maCreateOrderPeopleResponseList =maCustomerDAO.maFindProxyCreatePeople(keywords);
+        List<MaCreateOrderPeopleResponse> maCreateOrderPeopleResponseList = maCustomerDAO.maFindProxyCreatePeople(keywords);
         return new PageInfo<>(maCreateOrderPeopleResponseList);
     }
 
     @Override
-    public PageInfo<MaCreateOrderPeopleResponse> maFindCreatePeopleByStoreId(Integer page, Integer size,Long storeId) {
+    public PageInfo<MaCreateOrderPeopleResponse> maFindCreatePeopleByStoreId(Integer page, Integer size, Long storeId) {
         PageHelper.startPage(page, size);
-        List<MaCreateOrderPeopleResponse> maCreateOrderPeopleResponseList =maCustomerDAO.maFindCreatePeopleByStoreId(storeId);
+        List<MaCreateOrderPeopleResponse> maCreateOrderPeopleResponseList = maCustomerDAO.maFindCreatePeopleByStoreId(storeId);
         return new PageInfo<>(maCreateOrderPeopleResponseList);
     }
 
+    @Override
+    public CusPreDepositLogVO queryLastDecorativeCreditChange(Long storeId) {
+
+        if (storeId == null) {
+            return null;
+        }
+
+        return maCustomerDAO.queryLastDecorativeCreditChange(storeId);
+    }
 }
+
+
+
 

@@ -496,6 +496,7 @@ public class MaOrderRestController extends BaseRestController {
             ShiroUser shiroUser = this.getShiroUser();
             //后台发货并返回插入接口表数据的id
             maOrderService.orderShipping(orderNumber, shiroUser, maOrderTempInfo);
+            Thread.sleep(5000);
             //发送门店自提单消息队列
             maSinkSender.sendStorePickUpReceivedToEBSAndRecord(orderNumber);
 
@@ -783,11 +784,11 @@ public class MaOrderRestController extends BaseRestController {
         }
         //获取订单基本信息
         OrderBaseInfo orderBaseInfo = appOrderService.getOrderByOrderNumber(orderNumber);
-        if (orderBaseInfo != null && "装饰公司".equals(orderBaseInfo.getOrderSubjectType().getDescription())) {
+        /*if (orderBaseInfo != null && "装饰公司".equals(orderBaseInfo.getOrderSubjectType().getDescription())) {
             logger.info("欠款审核单信息错误！ ,该订单为装饰公司审核单");
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "欠款审核单信息错误！,该订单为装饰公司审核单",
                     null);
-        }
+        }*/
         try {
             String receiptNumber = this.maOrderService.auditOrderStatus(orderNumber, status, auditId);
             if (null != receiptNumber) {

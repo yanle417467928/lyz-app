@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
 import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
+import cn.com.leyizhuang.app.foundation.pojo.management.order.OrderFreightChange;
 import cn.com.leyizhuang.app.foundation.pojo.request.CustomerSimpleInfo;
 import lombok.*;
 
@@ -151,6 +152,8 @@ public class OrderDetailsResponse {
 
     //门店预存款余额
     private Double stPreDeposit = 0D;
-
-
+    //获取运费明细
+    private List<OrderFreightChange> freightChanges;
+    //获取运费初始值
+    private OrderFreightChange freightChange;
 }

@@ -437,7 +437,7 @@ public class MaCustomerRestController extends BaseRestController {
         try {
             if (!result.hasErrors()) {
                 this.maCustomerService.updateMemberType(manageUpdateCustomerTypeResponse);
-                logger.info("restUpdateCustomerMemberTypeVO ,修改顾客会员类型");
+                logger.info("restUpdateCustomerMemberTypeVO ,修改顾客会员类型成功");
                 return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
             } else {
                 List<ObjectError> allErrors = result.getAllErrors();

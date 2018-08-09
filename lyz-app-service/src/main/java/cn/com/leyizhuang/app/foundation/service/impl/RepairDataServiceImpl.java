@@ -5,8 +5,12 @@ import cn.com.leyizhuang.app.core.exception.LockStorePreDepositException;
 import cn.com.leyizhuang.app.core.exception.SystemBusyException;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.AppEmployeeDAO;
+import cn.com.leyizhuang.app.foundation.dao.MaDecorativeCompanyCreditDAO;
 import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
 import cn.com.leyizhuang.app.foundation.pojo.*;
+import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyCredit;
+import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanyInfo;
+import cn.com.leyizhuang.app.foundation.pojo.management.decorativeCompany.DecorativeCompanySubvention;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.order.OrderJxPriceDifferenceReturnDetails;
@@ -16,6 +20,7 @@ import cn.com.leyizhuang.app.foundation.pojo.response.SellerCreditMoneyResponse;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.ReturnOrderBaseInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.pojo.user.EmpCreditChangeRule;
+import cn.com.leyizhuang.app.foundation.pojo.user.StCreditChangeRule;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import cn.com.leyizhuang.common.util.CountUtil;
@@ -26,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -57,6 +63,14 @@ public class RepairDataServiceImpl implements RepairDataService {
 
     @Resource
     private AppEmployeeService employeeService;
+
+    @Autowired
+    private MaStoreService maStoreService;
+    @Autowired
+    private MaDecorativeCompanyCreditService maDecorativeCompanyCreditService;
+
+    @Autowired
+    private MaDecorativeCompanyCreditDAO maDecorativeCompanyCreditDAO;
 
     /**
      * 未返还经销差价的 买券订单经销差价返还 以及扣除
@@ -371,5 +385,47 @@ public class RepairDataServiceImpl implements RepairDataService {
         }
 
         return null;
+    }
+
+
+    public void repairStCredit(String flag){
+        List<StCreditChangeRule> ruleList = new ArrayList<>();
+        ruleList = maDecorativeCompanyCreditDAO.findStCreditRules();
+        if (ruleList == null || ruleList.size() == 0){
+            System.out.println("没有规则");
+        }
+        for (StCreditChangeRule rule : ruleList){
+            Double credit = rule.getRepairCredit();
+            if (null != credit) {
+
+            Date date = new Date();
+            DecorativeCompanyInfo decorativeCompanyInfo = maStoreService.queryDecorativeCompanyCreditById(rule.getStoreId());
+
+            if (decorativeCompanyInfo == null){
+                System.out.println(rule.getStoreId()+" 号装饰公司信用金账户不存在！");
+                continue;
+            }
+            Double oldCredit = decorativeCompanyInfo.getCredit() == null ? 0D : decorativeCompanyInfo.getCredit().doubleValue();
+            decorativeCompanyInfo.setCredit(BigDecimal.valueOf(credit));
+
+            StoreCreditMoneyChangeLog storeCreditMoneyChangeLog = new StoreCreditMoneyChangeLog();
+            storeCreditMoneyChangeLog.setChangeType(StoreCreditMoneyChangeType.ADMIN_RECHARGE);
+            storeCreditMoneyChangeLog.setChangeTypeDesc(StoreCreditMoneyChangeType.ADMIN_RECHARGE.getDescription());
+            storeCreditMoneyChangeLog.setCreateTime(date);
+            storeCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(credit);
+
+            storeCreditMoneyChangeLog.setStoreId(rule.getStoreId());
+            storeCreditMoneyChangeLog.setOperatorType(AppIdentityType.ADMINISTRATOR);
+            storeCreditMoneyChangeLog.setOperatorId(1L);
+            storeCreditMoneyChangeLog.setOperatorIp("");
+            storeCreditMoneyChangeLog.setRemark("经财务财务同意，决定变更信用金");
+
+            System.out.println(decorativeCompanyInfo.getStoreName()+" 原始金额："+oldCredit +" 刷新为："+credit);
+
+            if (flag.equals("go")){
+                this.maDecorativeCompanyCreditService.updateDecorativeCompanyCreditAndSubvention(decorativeCompanyInfo, storeCreditMoneyChangeLog);
+            }
+            }
+        }
     }
 }

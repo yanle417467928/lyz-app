@@ -17,6 +17,7 @@ import cn.com.leyizhuang.app.foundation.service.MaStoreService;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorativeCompanyDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.FitCreditMoneyChangeLogVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositLogVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StorePreDepositVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO;
 import cn.com.leyizhuang.common.core.exception.AppConcurrentExcp;
@@ -128,9 +129,9 @@ public class MaStoreServiceImpl implements MaStoreService {
     }
 
     @Override
-    public PageInfo<StoreDO> queryDecorativeCompanyList(Integer page, Integer size,List<Long> storeIds,Long cityId,String keywords) {
+    public PageInfo<StoreDO> queryDecorativeCompanyList(Integer page, Integer size,List<Long> storeIds,Long cityId,String keywords, String fitCompayType) {
         PageHelper.startPage(page, size);
-        List<StoreDO> pageStoreList = this.mastoreDAO.queryDecorativeCompanyList(storeIds,cityId,keywords);
+        List<StoreDO> pageStoreList = this.mastoreDAO.queryDecorativeCompanyList(storeIds,cityId,keywords, fitCompayType);
         return new PageInfo<>(pageStoreList);
     }
 
@@ -414,6 +415,24 @@ public class MaStoreServiceImpl implements MaStoreService {
             companyCode="|JZC001|";
         }
         return this.mastoreDAO.findStoresListByCompanyCodeAndStoreTypeForSale(companyCode, storeType, storeIds);
+    }
+
+    @Override
+    public FitCreditMoneyChangeLogVO queryLastDecorativeCreditChange(Long storeId){
+        if (storeId == null){
+            return null;
+        }
+
+        return mastoreDAO.queryLastDecorativeCreditChange(storeId);
+    }
+
+    @Override
+    public StorePreDepositLogVO queryLastStoreChange(Long storeId){
+        if (storeId == null){
+            return null;
+        }
+
+        return mastoreDAO.queryLastStoreChange(storeId);
     }
 
 }

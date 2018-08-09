@@ -63,4 +63,16 @@ public class repairDataController {
 
         return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "修复完成", null);
     }
+
+
+    /**
+     * 修复信用金
+     */
+    @GetMapping(value =  "/st/credit/change/all")
+    public ResultDTO repairStCreditAll(String flag){
+
+        repairDataService.repairStCredit(flag);
+
+        return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "修复完成", null);
+    }
 }

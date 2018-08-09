@@ -20,5 +20,5 @@ public interface MaCityAvailableItyService {
      * @param keywords
      * @return
      */
-    PageInfo<CityInventoryVO> queryPageVO(Integer page, Integer size, String keywords);
+    PageInfo<CityInventoryVO> queryPageVO(Integer page, Integer size, String keywords,Long cityId);
 }

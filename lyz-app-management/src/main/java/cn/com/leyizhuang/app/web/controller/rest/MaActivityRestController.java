@@ -116,7 +116,6 @@ public class MaActivityRestController extends BaseRestController {
             return actFor400(result,"提交的数据有误");
         }
     }
-
     /**
      * 返回促销相关枚举类型
      * @return

@@ -54,6 +54,9 @@ public class ReceiptsReportDO {
     //订单类型
     private String orderType;
 
+    //是否货到付款
+    private String isCashOnDelivery;
+
     public void setPayType(OrderBillingPaymentType payType){
         this.payType = payType.getDescription();
     }

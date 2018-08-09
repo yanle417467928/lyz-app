@@ -31,4 +31,8 @@ public interface DataTransferSupportService {
                                      List<ReturnOrderJxPriceDifferenceRefundDetails> jxPriceDifferenceRefundDetails,
                                      List<Map<String, Object>> returnOrderProductCouponsMapList, ReturnOrderBilling returnOrderBilling,
                                      ReturnOrderDeliveryDetail returnOrderDeliveryDetail);
+
+    Integer transferAllCustomerByTemplate();
+
+    Integer transferAllProductByTemplate();
 }

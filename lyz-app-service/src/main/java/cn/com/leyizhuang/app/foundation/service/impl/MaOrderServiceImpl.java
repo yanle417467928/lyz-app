@@ -425,11 +425,15 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Override
     public void sendOrderReceiveInfAndRecord(String orderNumber) {
         if (null == orderNumber) {
-            throw new RuntimeException("发送接口失败，订单ID为空");
+            throw new RuntimeException("发送接口失败，订单号为空");
         }
         MaOrderReceiveInf maOrderReceiveInf = this.queryOrderReceiveInf(orderNumber);
         //调用ebsSenderService接口传ebs
-        this.ebsSenderService.sendOrderReceiveInfAndRecord(maOrderReceiveInf);
+        if(null !=maOrderReceiveInf){
+            this.ebsSenderService.sendOrderReceiveInfAndRecord(maOrderReceiveInf);
+        }else{
+            throw new RuntimeException("发送接口失败，查询接口表失败");
+        }
     }
 
 
@@ -496,6 +500,7 @@ public class MaOrderServiceImpl implements MaOrderService {
             maOrderBillingPaymentDetails.setPayType(OrderBillingPaymentType.CASH);
             maOrderBillingPaymentDetails.setPayTypeDesc(OrderBillingPaymentType.CASH.getDescription());
             maOrderBillingPaymentDetails.setAmount(maOrderAmount.getCashAmount());
+            maOrderBillingPaymentDetails.setRemarks(maOrderAmount.getCashRemarks());
             this.saveOrderBillingPaymentDetails(maOrderBillingPaymentDetails);
         }
         if (maOrderAmount.getOtherAmount().compareTo(BigDecimal.ZERO) > 0) {
@@ -505,6 +510,7 @@ public class MaOrderServiceImpl implements MaOrderService {
             maOrderBillingPaymentDetails.setPayType(OrderBillingPaymentType.OTHER);
             maOrderBillingPaymentDetails.setPayTypeDesc(OrderBillingPaymentType.OTHER.getDescription());
             maOrderBillingPaymentDetails.setAmount(maOrderAmount.getOtherAmount());
+            maOrderBillingPaymentDetails.setRemarks(maOrderAmount.getOtherRemarks());
             this.saveOrderBillingPaymentDetails(maOrderBillingPaymentDetails);
         }
         if (maOrderAmount.getPosAmount().compareTo(BigDecimal.ZERO) > 0) {
@@ -514,6 +520,7 @@ public class MaOrderServiceImpl implements MaOrderService {
             maOrderBillingPaymentDetails.setPayType(OrderBillingPaymentType.POS);
             maOrderBillingPaymentDetails.setPayTypeDesc(OrderBillingPaymentType.POS.getDescription());
             maOrderBillingPaymentDetails.setAmount(maOrderAmount.getPosAmount());
+            maOrderBillingPaymentDetails.setRemarks(maOrderAmount.getPosRemarks());
             this.saveOrderBillingPaymentDetails(maOrderBillingPaymentDetails);
         }
 

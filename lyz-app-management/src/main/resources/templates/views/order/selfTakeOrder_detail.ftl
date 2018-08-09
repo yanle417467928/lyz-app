@@ -399,16 +399,25 @@
                                 <label for="name">现金(元)</label>
                                 <input type="text" class="form-control" id="cashAmount"
                                        name="cashAmount">
+                                <label for="name">备注</label>
+                                <input type="text" class="form-control" id="cashRemarks"
+                                       name="cashRemarks">
                             </div>
                             <div class="form-group">
                                 <label for="name">POS金额(元)</label>
                                 <input type="text" class="form-control" id="posAmount"
                                        name="posAmount">
+                                <label for="name">备注</label>
+                                <input type="text" class="form-control" id="posRemarks"
+                                       name="posRemarks">
                             </div>
                             <div class="form-group">
                                 <label for="name">其他金额(元)</label>
                                 <input type="text" class="form-control" id="otherAmount"
                                        name="otherAmount">
+                                <label for="name">备注</label>
+                                <input type="text" class="form-control" id="otherRemarks"
+                                       name="otherRemarks">
                             </div>
                             <div class="form-group">
                                 <label for="name">POS交易流水号</label>

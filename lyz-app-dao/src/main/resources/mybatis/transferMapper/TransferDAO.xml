@@ -792,4 +792,121 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TdReturnSmall">
 
     </select>
+
+    <select id="findCusTem" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TransferCusTemplate">
+        SELECT  * from transfer_cus_template where status = false;
+    </select>
+
+    <select id="findCusPreDepositTem" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TransferCusPreDepositTemplate">
+        SELECT  * from transfer_cus_pre_deposit_template where status = false;
+    </select>
+
+    <select id="findCusProductDepositTem" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TransferCusProductTemplate">
+        SELECT  *from transfer_cus_product_template where status = false;
+    </select>
+
+    <update id="updateCusTem" parameterType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TransferCusTemplate" >
+        update transfer_cus_template
+        <set >
+            <if test="storeName != null" >
+                store_name = #{storeName,jdbcType=VARCHAR},
+            </if>
+            <if test="storeId != null" >
+                store_id = #{storeId,jdbcType=BIGINT},
+            </if>
+            <if test="cusCode != null" >
+                cus_code = #{cusCode,jdbcType=VARCHAR},
+            </if>
+            <if test="cusName != null" >
+                cus_name = #{cusName,jdbcType=VARCHAR},
+            </if>
+            <if test="cusType != null" >
+                cus_type = #{cusType,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null" >
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="cusMobile != null" >
+                cus_mobile = #{cusMobile,jdbcType=VARCHAR},
+            </if>
+            <if test="empCode != null" >
+                emp_code = #{empCode,jdbcType=VARCHAR},
+            </if>
+            <if test="empName != null" >
+                emp_name = #{empName,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null" >
+                status = #{status,jdbcType=BIT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateCusPreDepositTemplate" parameterType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TransferCusPreDepositTemplate" >
+        update transfer_cus_pre_deposit_template
+        <set >
+            <if test="cusName != null" >
+                cus_name = #{cusName,jdbcType=VARCHAR},
+            </if>
+            <if test="cusCode != null" >
+                cus_code = #{cusCode,jdbcType=VARCHAR},
+            </if>
+            <if test="cusPreDepost != null" >
+                cus_pre_depost = #{cusPreDepost,jdbcType=DECIMAL},
+            </if>
+            <if test="status != null" >
+                status = #{status,jdbcType=BIT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateCusProductTemplate" parameterType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TransferCusProductTemplate">
+        update transfer_cus_product_template
+        <set>
+            <if test="cusCode != null">
+                cus_code = #{cusCode,jdbcType=VARCHAR},
+            </if>
+            <if test="cusName != null">
+                cus_name = #{cusName,jdbcType=VARCHAR},
+            </if>
+            <if test="empCode != null">
+                emp_code = #{empCode,jdbcType=VARCHAR},
+            </if>
+            <if test="empName != null">
+                emp_name = #{empName,jdbcType=VARCHAR},
+            </if>
+            <if test="storeName != null">
+                store_name = #{storeName,jdbcType=VARCHAR},
+            </if>
+            <if test="storeCode != null">
+                store_code = #{storeCode,jdbcType=VARCHAR},
+            </if>
+            <if test="sku != null">
+                sku = #{sku,jdbcType=VARCHAR},
+            </if>
+            <if test="quantity != null">
+                quantity = #{quantity,jdbcType=INTEGER},
+            </if>
+            <if test="isGift != null">
+                is_gift = #{isGift,jdbcType=BIT},
+            </if>
+            <if test="buyTime != null">
+                buy_time = #{buyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="buyPrice != null">
+                buy_price = #{buyPrice,jdbcType=DECIMAL},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=BIT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="findCusPreDeposit" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TransferCusPreDepositTemplate">
+          SELECT cp.* from transfer_cus_template c
+        INNER JOIN transfer_cus_pre_deposit_template cp on cp.cus_code = c.cus_code
+        where c.cus_mobile = #{mobile};
+    </select>
 </mapper>

@@ -256,5 +256,35 @@ public interface GoodsDAO {
             @Param(value = "categoryCode") String categoryCode, @Param(value = "userId") Long userId, @Param(value = "categorySecond") String categorySecond,
             @Param(value = "specification") String specification, @Param(value = "goodsBrand") String goodsBrand, @Param("rankCode") String rankCode);
 
+    List<UserGoodsResponse> findGoodsListByCustomerIdAndIdentityTypeAndUserRankMa(@Param(value = "userId") Long userId,
+                                                                                @Param("identityType") AppIdentityType identityType,
+                                                                                @Param("keywords") String keywords, @Param(value = "firstCategoryCode") String firstCategoryCode,
+                                                                                @Param(value = "secondCategoryId") Long secondCategoryId, @Param(value = "brandId") Long brandId,
+                                                                                @Param(value = "typeId") Long typeId, @Param(value = "specification") String specification);
+
+    List<GoodsBrandResponse> findZsGoodsBrandListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(
+            @Param(value = "categoryCode") String categoryCode,  @Param(value = "categorySecond") String categorySecond,
+            @Param(value = "specification") String specification, @Param("rankCode") String rankCode,@Param(value = "goodsType") String goodsType,
+            @Param("storeId") Long storeId,@Param("cityId") Long cityId);
+
+    List<GoodsCategoryResponse> findZsGoodsCategoryByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(
+            @Param(value = "categoryCode") String categoryCode,  @Param(value = "categorySecond") String categorySecond,
+            @Param(value = "specification") String specification, @Param("rankCode") String rankCode,@Param(value = "goodsType") String goodsType,
+            @Param("storeId") Long storeId,@Param("cityId") Long cityId);
+
+    List<GoodsSpecificationResponse> findZsGoodsSpecificationListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(
+            @Param(value = "categoryCode") String categoryCode,  @Param(value = "categorySecond") String categorySecond,
+            @Param(value = "specification") String specification, @Param("rankCode") String rankCode,@Param(value = "goodsType") String goodsType,
+            @Param("storeId") Long storeId,@Param("cityId") Long cityId);
+
+    List<GoodsTypeResponse> findZsGoodsTypeListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(
+            @Param(value = "categoryCode") String categoryCode,  @Param(value = "categorySecond") String categorySecond,
+            @Param(value = "specification") String specification, @Param("rankCode") String rankCode,@Param(value = "goodsType") String goodsType,
+            @Param("storeId") Long storeId,@Param("cityId") Long cityId);
+
+    List<UserGoodsResponse> findZsGoodsListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(
+            @Param(value = "firstCategoryCode") String firstCategoryCode,  @Param(value = "secondCategoryId") Long secondCategoryId,
+            @Param(value = "specification") String specification, @Param("rankCode") String rankCode,@Param(value = "typeId") Long typeId,
+            @Param("brandId") Long brandId,@Param("userId") Long userId,@Param("cityId") Long cityId);
 
 }

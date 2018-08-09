@@ -78,6 +78,9 @@ public class StorePreDepositLogVO {
      */
     private String storeType;
 
+
+    private String operatorName;
+
     public void setChangeType(StorePreDepositChangeType changeType){
         this.changeType = changeType.getDescription();
     }

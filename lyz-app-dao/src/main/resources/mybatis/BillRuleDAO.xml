@@ -13,6 +13,17 @@
         FROM bill_rule
     </select>
 
+    <select id="findBillRuleLogVO" resultType="cn.com.leyizhuang.app.foundation.vo.management.BillRuleLogVO">
+        SELECT a.bill_date,a.repayment_deadline_date,a.interest_rate,a.store_id,a.update_time,s.store_name,c.name as updateUserName
+        FROM bill_rule_log a
+        INNER JOIN st_store s ON s.store_id = a.store_id
+        LEFT JOIN  admin_user c on a.update_user_id = c.uid
+        WHERE
+        1=1
+        AND
+        store_id = #{storeId}
+    </select>
+
     <select id="findAllBillRuleVO" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.management.BillRuleVO">
         SELECT r.id, r.bill_date, r.repayment_deadline_date, r.interest_rate, r.store_id,
         r.create_time, s.store_name, s.store_code, c.name cityName

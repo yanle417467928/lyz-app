@@ -525,4 +525,22 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
         return this.maReportDownloadDAO.findStoreInventoryRealChangeLog(cityId,storeId,storeIds,endTime,startTime);
     }
 
+    @Override
+    public PageInfo<StInventoryRealSummaryReportDO> findStInventoryRealSummaryPage(Long cityId, Long storeId, List<Long> storeIds, Integer page, Integer size, String endTime, String startTime) {
+        if (null != endTime && !("".equals(endTime))) {
+            endTime += " 23:59:59";
+        }
+        PageHelper.startPage(page, size);
+        List<StInventoryRealSummaryReportDO> itemsDOS = this.maReportDownloadDAO.findStoreInventorySummaryList(cityId,storeId,storeIds,endTime,startTime);
+        return new PageInfo<>(itemsDOS);
+    }
+
+    @Override
+    public List<StInventoryRealSummaryReportDO> findStInventoryRealSummaryList(Long cityId, Long storeId, List<Long> storeIds, String endTime, String startTime) {
+        if (null != endTime && !("".equals(endTime))) {
+            endTime += " 23:59:59";
+        }
+        return this.maReportDownloadDAO.findStoreInventorySummaryList(cityId,storeId,storeIds,endTime,startTime);
+    }
+
 }

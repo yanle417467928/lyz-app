@@ -345,7 +345,9 @@
             s.store_name
         FROM st_store s
             LEFT JOIN city c ON c.code = s.city_code
-        WHERE c.city_id = #{cityId} AND s.store_type != #{storeType} ORDER BY s.store_type DESC;
+        WHERE c.city_id = #{cityId} AND s.store_type not in ('ZS','FX','FXCK')
+        and s.store_id NOT IN (291,459,550, 551,552,563,585,625,627)
+     ORDER BY s.store_type DESC;
     </select>
 
     <update id="updateStoreInventoryByStoreIdAndGoodsIdAndInventory">

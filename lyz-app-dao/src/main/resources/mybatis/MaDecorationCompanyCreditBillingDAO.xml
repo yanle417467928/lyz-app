@@ -195,7 +195,7 @@
         <if test="null != endTime and '' != endTime">
             AND create_time &lt; #{endTime}
         </if>
-        <if test="null != isPayOff and '' != isPayOff">
+        <if test="null != isPayOff">
             AND is_pay_off = #{isPayOff}
         </if>
         <if test="null != keywords and '' != keywords">

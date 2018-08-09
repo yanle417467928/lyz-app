@@ -230,18 +230,15 @@
             title: '变更时间',
             align: 'center'
         }, {
-            field: 'changeNumber',
-            title: '变更相关单号',
+            field: 'orderNumber',
+            title: '订单单号',
             align: 'center',
             visible: false
         }, {
-            field: 'isUse',
-            title: '是否使用',
-            align: 'center'
-        }, {
-            field: 'status',
-            title: '券状态',
-            align: 'center'
+            field: 'returnNumber',
+            title: '退单单号',
+            align: 'center',
+            visible: false
         }
         ]);
     }

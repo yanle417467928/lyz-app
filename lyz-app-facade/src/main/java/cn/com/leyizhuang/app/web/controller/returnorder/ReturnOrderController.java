@@ -403,7 +403,11 @@ public class ReturnOrderController {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
                     logger.info("refusedOrder OUT,拒签退货成功，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
-                } else {
+                } else if ("repeat".equals(code)){
+                    resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此单已拒签，不能重复拒签，请联系管理员！", null);
+                    logger.info("refusedOrder OUT,拒签退货失败，出参 resultDTO:{}", resultDTO);
+                    return resultDTO;
+                }  else {
                     resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常，拒签退货失败，请联系管理员！", null);
                     logger.info("refusedOrder OUT,拒签退货失败，出参 resultDTO:{}", resultDTO);
                     return resultDTO;
@@ -745,22 +749,28 @@ public class ReturnOrderController {
                     }
                 }
 
+                if ((store.getStoreType() == StoreType.ZS) && (billingDetails.getIsPayUp() != null) && billingDetails.getIsPayUp()){
+                    storePrePay = CountUtil.add(storePrePay, storeCredit);
+                    storeCredit = 0D;
+                }
+
                 //多次退货计算退款方式,已退款的退款方式不再退
                 ReturnOrderBilling billing = this.returnOrderService.getAllReturnPriceByOrderNo(orderNo);
                 if (null != billing){
                     cashPosPrice = CountUtil.sub(cashPosPrice,billing.getCash());
                     onlinePayPrice = CountUtil.sub(onlinePayPrice,billing.getOnlinePay());
                     customerPrePay = CountUtil.sub(customerPrePay,billing.getPreDeposit());
-                    storePrePay = CountUtil.sub(storePrePay,billing.getStPreDeposit());
-                    storeCredit = CountUtil.sub(storeCredit,billing.getStPreDeposit());
+                    storePrePay = CountUtil.sub(storePrePay, billing.getStPreDeposit());
+                    storeCredit = CountUtil.sub(storeCredit, billing.getStCreditMoney());
                     sellerStoreDeposit = CountUtil.sub(sellerStoreDeposit,billing.getSellerStoreDeposit());
                 }
 
                 //买卷订单现金、POS支付退顾客预存款
-                if (AppOrderType.COUPON.equals(order.getOrderType()) && cashPosPrice > 0) {
-                    customerPrePay = CountUtil.add(customerPrePay,cashPosPrice);
-                    cashPosPrice = 0D;
-                }
+                //2018-08-03 买卷订单改回为原路退
+//                if (AppOrderType.COUPON.equals(order.getOrderType()) && cashPosPrice > 0) {
+//                    customerPrePay = CountUtil.add(customerPrePay,cashPosPrice);
+//                    cashPosPrice = 0D;
+//                }
 
                 //整单退,不退运费
                 if (totalGoodsQty == totalReturnQty) {

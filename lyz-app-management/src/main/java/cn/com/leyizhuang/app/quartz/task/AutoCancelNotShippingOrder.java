@@ -50,14 +50,14 @@ public class AutoCancelNotShippingOrder implements Job {
         if (now.isAfter(dateTime)){
 
             // 找到 超过6个月未出货的自提单
-//        LocalDateTime sixMonthAfterTime = LocalDateTime.now().minusHours(6);
-//        List<OrderBaseInfo> sixMonthNotShippingList = returnOrderService.findOrderByStatusAndTypeAndCreateTime(AppOrderStatus.PENDING_SHIPMENT,
-//                AppDeliveryType.SELF_TAKE,sixMonthAfterTime);
+//            LocalDateTime sixMonthAfterTime = LocalDateTime.now().minusMonths(6);
+//            List<OrderBaseInfo> sixMonthNotShippingList = returnOrderService.findOrderByStatusAndTypeAndCreateTime(AppOrderStatus.PENDING_RECEIVE,
+//                    AppDeliveryType.SELF_TAKE,sixMonthAfterTime);
 //
-//        for (OrderBaseInfo baseInfo : sixMonthNotShippingList){
-//            this.cancelOrder(baseInfo.getCreatorId(),baseInfo.getCreatorIdentityType().getValue(),
-//                    baseInfo.getOrderNumber(),"自提单超过6个月未提货，自动取消","");
-//        }
+//            for (OrderBaseInfo baseInfo : sixMonthNotShippingList){
+//                this.cancelOrder(baseInfo.getCreatorId(),baseInfo.getCreatorIdentityType().getValue(),
+//                        baseInfo.getOrderNumber(),"自提单超过6个月未提货，自动取消","");
+//            }
 
             // 找到 超过7天没有出货的配送单
             LocalDateTime sevenDayAfterTime = LocalDateTime.now().minusDays(7);
@@ -69,7 +69,6 @@ public class AutoCancelNotShippingOrder implements Job {
                         baseInfo.getOrderNumber(),"配送单超过7天未出货，自动取消","");
             }
         }
-
     }
 
     public void cancelOrder(Long userId, Integer identityType,
@@ -115,7 +114,7 @@ public class AutoCancelNotShippingOrder implements Job {
                 appOrderService.updateOrderStatusByOrderNo(orderBaseInfo);
 
                 System.out.println("取消订单提交成功，等待确认");
-            }else if (orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE) && AppOrderStatus.PENDING_SHIPMENT.equals(orderBaseInfo.getStatus())){
+            }else if (orderBaseInfo.getDeliveryType().equals(AppDeliveryType.SELF_TAKE) && AppOrderStatus.PENDING_RECEIVE.equals(orderBaseInfo.getStatus())){
                 //如果是待收货、门店自提单则需要返回第三方支付金额
                 if (orderBaseInfo.getDeliveryStatus().equals(AppDeliveryType.SELF_TAKE)) {
                     if (null != orderBillingDetails.getOnlinePayType()) {

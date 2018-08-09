@@ -75,7 +75,6 @@ public class ActBaseVO {
     public static final ActBaseVO transform(ActBaseDO actBaseDO) {
         if (actBaseDO != null) {
             ActBaseVO actBaseVO = new ActBaseVO();
-
             actBaseVO.setId(actBaseDO.getId());
             actBaseVO.setActCode(actBaseDO.getActCode());
             actBaseVO.setCreateTime(actBaseDO.getCreateTime());
@@ -83,14 +82,11 @@ public class ActBaseVO {
             actBaseVO.setBeginTime(actBaseDO.getBeginTime());
             actBaseVO.setEndTime(actBaseDO.getEndTime());
             actBaseVO.setCityName(actBaseDO.getCityName());
-
             String target = actBaseDO.getActTarget();
             target = target.replace("0", "导购")
                     .replace("2", "装饰公司经理")
                     .replace("6", "顾客");
-
             actBaseVO.setActTarget(target);
-
             actBaseVO.setBaseType(actBaseDO.getBaseType());
             actBaseVO.setPromotionType(actBaseDO.getPromotionType());
             actBaseVO.setConditionType(actBaseDO.getConditionType());

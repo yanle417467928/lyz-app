@@ -67,6 +67,10 @@ public class FitCreditMoneyChangeLogVO {
      */
     private String operatorId;
     /**
+     * 操作人名称
+     */
+    private String operatorName;
+    /**
      * 操作人员类型
      */
     private String operatorType;
@@ -74,6 +78,7 @@ public class FitCreditMoneyChangeLogVO {
      * 操作人员ip
      */
     private String operatorIp;
+    private String remark;
 
     public void setChangeType(StoreCreditMoneyChangeType changeType){
         this.changeType = changeType.getDescription();

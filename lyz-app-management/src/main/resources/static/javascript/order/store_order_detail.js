@@ -4,6 +4,13 @@ $(function () {
         history.go(-1);
     });
 });
+function openFreightModal() {
+    $('#freightModal').modal('show');
+}
+
+function hideFreightModal() {
+    $('#freightModal').modal('hide');
+}
 
 var $page = {
     information: {

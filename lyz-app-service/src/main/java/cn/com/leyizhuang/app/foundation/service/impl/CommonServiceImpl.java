@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.constant.remote.ProductCouponSubjectType;
 import cn.com.leyizhuang.app.core.exception.*;
 import cn.com.leyizhuang.app.core.utils.*;
 import cn.com.leyizhuang.app.core.utils.csrf.EncryptUtils;
@@ -366,6 +367,7 @@ public class CommonServiceImpl implements CommonService {
                         changeLog.setOperatorIp(ipAddress);
                         changeLog.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
                         changeLog.setUseTime(new Date());
+                        changeLog.setProductCouponSubjectType(couponInfo.getProductCouponSubjectType() == null?ProductCouponSubjectType.CUSTOMER_PRODUCT_COUPON : couponInfo.getProductCouponSubjectType());
 
                         productCouponService.addCustomerProductCouponChangeLog(changeLog);
                     } else {
@@ -787,6 +789,7 @@ public class CommonServiceImpl implements CommonService {
                                     customerProductCoupon.setDisableTime(null);
                                     customerProductCoupon.setGoodsLineId(goodsInfo.getId());
                                     customerProductCoupon.setGoodsSign(goodsInfo.getGoodsSign());
+                                    customerProductCoupon.setProductCouponSubjectType(ProductCouponSubjectType.CUSTOMER_PRODUCT_COUPON);
                                     if (null == goodsInfo.getPromotionId()){
                                         customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
                                     }else {
@@ -814,6 +817,7 @@ public class CommonServiceImpl implements CommonService {
                                         customerProductCouponChangeLog.setOperatorId(null);
                                         customerProductCouponChangeLog.setOperatorIp(null);
                                         customerProductCouponChangeLog.setRemark(null);
+                                        customerProductCouponChangeLog.setProductCouponSubjectType(ProductCouponSubjectType.CUSTOMER_PRODUCT_COUPON);
 
                                         productCouponService.addCustomerProductCouponChangeLog(customerProductCouponChangeLog);
                                     } else {
@@ -869,6 +873,12 @@ public class CommonServiceImpl implements CommonService {
     @Transactional(rollbackFor = Exception.class)
     public void handleOrderRelevantBusinessAfterOnlinePayUp(String orderNumber, String tradeNo, String tradeStatus, OnlinePayType onlinePayType) throws IOException {
         if (StringUtils.isNotBlank(orderNumber)) {
+
+            List<PromotionSimpleInfo> promotionSimpleInfoList = orderService.findOrderPromotionIdByOrdNo(orderNumber);
+            Map<Long, Double> map = null;
+            if (null != promotionSimpleInfoList && promotionSimpleInfoList.size() > 0) {
+                map = actService.returnGcActIdAndJXDiscunt(promotionSimpleInfoList);
+            }
             //更新订单第三方支付信息
             List<PaymentDataDO> paymentDataList = paymentDataService.findByOrderNoAndTradeStatus(orderNumber, PaymentDataStatus.TRADE_SUCCESS);
             PaymentDataDO paymentData = paymentDataList.get(0);
@@ -1041,6 +1051,18 @@ public class CommonServiceImpl implements CommonService {
                                     customerProductCoupon.setDisableTime(null);
                                     customerProductCoupon.setGoodsLineId(goodsInfo.getId());
                                     customerProductCoupon.setGoodsSign(goodsInfo.getGoodsSign());
+                                    if (null == goodsInfo.getPromotionId()){
+                                        customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
+                                    }else {
+                                        Long actId = Long.valueOf(goodsInfo.getPromotionId());
+                                        if ( null != map && map.containsKey(actId)) {
+                                            Double gcDiscount = map.get(actId);
+                                            customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice() - gcDiscount);
+                                        } else {
+                                            customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
+                                        }
+                                    }
+                                    customerProductCoupon.setWholesalePrice(goodsInfo.getWholesalePrice());
                                     //保存产品券信息
                                     productCouponService.addCustomerProductCoupon(customerProductCoupon);
 
@@ -1192,6 +1214,7 @@ public class CommonServiceImpl implements CommonService {
                         couponInfo.setGoodsLineId(productCoupon.getGoodsLineId());
                         couponInfo.setGetOrderNumber(productCoupon.getGetOrderNumber());
                         couponInfo.setGoodsSign(productCoupon.getGoodsSign());
+                        couponInfo.setProductCouponSubjectType(productCoupon.getProductCouponSubjectType() == null?ProductCouponSubjectType.CUSTOMER_PRODUCT_COUPON:productCoupon.getProductCouponSubjectType());
                         orderCouponInfoList.add(couponInfo);
                     }
                 }
@@ -1759,6 +1782,22 @@ public class CommonServiceImpl implements CommonService {
                 }
 
             }
+        } else if (orderBaseInfo.getDeliveryType() == AppDeliveryType.PRODUCT_COUPON) {
+            //顾客下单发送短信给导购
+            if (orderBaseInfo.getCreatorIdentityType() == AppIdentityType.CUSTOMER) {
+                SmsAccount account = smsAccountService.findOne();
+                String tips = "【乐易装】亲爱的用户,您的会员:"
+                        + orderBaseInfo.getCreatorName()
+                        + "在App下单了,订单号:"
+                        + orderBaseInfo.getOrderNumber() +
+                        ",请及时跟进。";
+                try {
+                    String code = SmsUtils.sendMessageQrCode(account.getEncode(), account.getEnpass(), account.getUserName(),
+                            orderBaseInfo.getSalesConsultPhone(), URLEncoder.encode(tips, "GB2312"));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return pickUpCode;
     }
@@ -2276,6 +2315,12 @@ public class CommonServiceImpl implements CommonService {
         if (StringUtils.isNotBlank(orderNumber)) {
             OrderBaseInfo baseInfo = orderService.getOrderByOrderNumber(orderNumber);
 
+            List<PromotionSimpleInfo> promotionSimpleInfoList = orderService.findOrderPromotionIdByOrdNo(orderNumber);
+            Map<Long, Double> map = null;
+            if (null != promotionSimpleInfoList && promotionSimpleInfoList.size() > 0) {
+                map = actService.returnGcActIdAndJXDiscunt(promotionSimpleInfoList);
+            }
+
             //更新订单账单信息
             OrderBillingDetails billingDetails = orderService.getOrderBillingDetail(orderNumber);
 
@@ -2466,6 +2511,18 @@ public class CommonServiceImpl implements CommonService {
                                     customerProductCoupon.setDisableTime(null);
                                     customerProductCoupon.setGoodsLineId(goodsInfo.getId());
                                     customerProductCoupon.setGoodsSign(goodsInfo.getGoodsSign());
+                                    if (null == goodsInfo.getPromotionId()){
+                                        customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
+                                    }else {
+                                        Long actId = Long.valueOf(goodsInfo.getPromotionId());
+                                        if (map.containsKey(actId)) {
+                                            Double gcDiscount = map.get(actId);
+                                            customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice() - gcDiscount);
+                                        } else {
+                                            customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
+                                        }
+                                    }
+                                    customerProductCoupon.setWholesalePrice(goodsInfo.getWholesalePrice());
                                     //保存产品券信息
                                     productCouponService.addCustomerProductCoupon(customerProductCoupon);
 
@@ -2507,6 +2564,12 @@ public class CommonServiceImpl implements CommonService {
     public void handleOrderRelevantBusinessAfterPayCredit(String orderNumber, Long userId, Integer identityType, String payType, String ipAddress) throws IOException {
         if (StringUtils.isNotBlank(orderNumber)) {
             OrderBaseInfo baseInfo = orderService.getOrderByOrderNumber(orderNumber);
+
+            List<PromotionSimpleInfo> promotionSimpleInfoList = orderService.findOrderPromotionIdByOrdNo(orderNumber);
+            Map<Long, Double> map = null;
+            if (null != promotionSimpleInfoList && promotionSimpleInfoList.size() > 0) {
+                map = actService.returnGcActIdAndJXDiscunt(promotionSimpleInfoList);
+            }
 
             //更新订单账单信息
             OrderBillingDetails billingDetails = orderService.getOrderBillingDetail(orderNumber);
@@ -2755,6 +2818,7 @@ public class CommonServiceImpl implements CommonService {
                 baseInfo.setStatus(AppOrderStatus.FINISHED);
                 //保存订单商品信息
                 if (null != orderGoodsInfoList && orderGoodsInfoList.size() > 0) {
+                    StringBuilder msg = new StringBuilder("您购买的");
                     for (OrderGoodsInfo goodsInfo : orderGoodsInfoList) {
                         if (null != goodsInfo.getId() && baseInfo.getOrderType() == AppOrderType.COUPON && billingDetails.getIsPayUp()) {
                             if (null != goodsInfo.getOrderQuantity() && goodsInfo.getOrderQuantity() > 0) {
@@ -2784,6 +2848,18 @@ public class CommonServiceImpl implements CommonService {
                                     customerProductCoupon.setDisableTime(null);
                                     customerProductCoupon.setGoodsLineId(goodsInfo.getId());
                                     customerProductCoupon.setGoodsSign(goodsInfo.getGoodsSign());
+                                    if (null == goodsInfo.getPromotionId()){
+                                        customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
+                                    }else {
+                                        Long actId = Long.valueOf(goodsInfo.getPromotionId());
+                                        if (map.containsKey(actId)) {
+                                            Double gcDiscount = map.get(actId);
+                                            customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice() - gcDiscount);
+                                        } else {
+                                            customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
+                                        }
+                                    }
+                                    customerProductCoupon.setWholesalePrice(goodsInfo.getWholesalePrice());
                                     //保存产品券信息
                                     productCouponService.addCustomerProductCoupon(customerProductCoupon);
 
@@ -2807,7 +2883,13 @@ public class CommonServiceImpl implements CommonService {
 
                                 }
                             }
+                            msg.append(goodsInfo.getSkuName());
+                            msg.append("产品券");
+                            msg.append(goodsInfo.getOrderQuantity());
+                            msg.append("张,");
                         }
+                        msg.append("已存入您的钱包中，请在六个月内提取完毕，有任何问题，请洽询您的专属导购！");
+                        smsAccountService.commonSendGBKSms(baseInfo.getCustomerPhone(), msg.toString());
                     }
                 }
             }
