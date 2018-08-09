@@ -1,7 +1,6 @@
 <head>
     <link href="/stylesheet/devkit.css" rel="stylesheet">
     <link href="/plugins/iCheck/all.css" rel="stylesheet">
-    <link type="text/css" rel="stylesheet" href="/plugins/bootstrap-fileinput-master/css/fileinput.css"/>
     <link href="https://cdn.bootcss.com/bootstrap-select/1.12.2/css/bootstrap-select.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/css/bootstrapValidator.min.css"
           rel="stylesheet">
@@ -13,9 +12,6 @@
     <link type="text/css" rel="stylesheet" href="/plugins/bootstrap-fileinput-master/css/fileinput.css"/>
     <link href="https://cdn.bootcss.com/admin-lte/2.3.11/css/AdminLTE.min.css" rel="stylesheet">
     <link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
-    <script type="text/javascript" src="/plugins/bootstrap-fileinput-master/js/fileinput.js"></script>
-    <script type="text/javascript" src="/plugins/bootstrap-fileinput-master/js/locales/zh.js"></script>
-    <script type="text/javascript" charset="utf-8" src="/mag/js/kindeditor-min.js"></script>
 
     <script type="text/javascript" src="/plugins/bootstrap-fileinput-master/js/fileinput.js"></script>
     <script type="text/javascript" src="/plugins/bootstrap-fileinput-master/js/locales/zh.js"></script>
@@ -28,6 +24,8 @@
     <script src="/plugins/datetimepicker/js/bootstrap-datetimepicker.js"></script>
     <script src="/plugins/datetimepicker/js/bootstrap-datetimepicker.zh-CN.js"></script>
     <script src="https://cdn.bootcss.com/jquery.bootstrapvalidator/0.5.3/js/bootstrapValidator.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="/mag/js/kindeditor-min.js"></script>
+    //富文本框和时间控件冲突的js包
     <script src="https://cdn.bootcss.com/bootstrap-switch/3.3.4/js/bootstrap-switch.min.js"></script>
     <script src="https://cdn.bootcss.com/select2/4.0.2/js/select2.full.min.js"></script>
 
@@ -111,10 +109,11 @@
                                 <label for="title">
                                     推送范围
                                 </label>
-                                <div class="input-group">
-                                    <input name="target" value="ALL" type="radio" class="flat-red" checked onclick="divClick();">全部
-                                    <input name="target" value="ZDY" type="radio" class="flat-red" onclick="divClick();">自定义
-                                </div>
+
+                                <select name="target" id="target" class="form-control select" onchange="divClick();" data-width="120px">
+                                    <option value="ALL">全部</option>
+                                    <option value="ZDY">自定义</option>
+                                </select>
                             </div>
                         </div>
 
@@ -122,7 +121,7 @@
 
 
             </div>
-            <div class="row">
+            <div class="row" id="sflx">
                 <div class="col-xs-12 col-md-6">
                     <div class="form-group">
                         <label for="title">
