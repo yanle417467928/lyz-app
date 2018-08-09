@@ -45,7 +45,7 @@ public interface MaOrderDAO {
      * @param cityId 城市id
      * @return 订单列表
      */
-    List<MaOrderVO> findMaOrderVOByCityId(@Param("cityId") Long cityId,@Param("list") List<Long> storeIds);
+    List<MaOrderVO> findMaOrderVOByCityId(@Param("cityId") Long cityId, @Param("list") List<Long> storeIds);
 
     /**
      * 分页查看门店订单
@@ -88,7 +88,7 @@ public interface MaOrderDAO {
      *
      * @return 订单列表
      */
-    List<MaOrderVO> findCompanyOrderAll(@Param("list") List<Long> storeIds);
+    List<MaOrderVO> findCompanyOrderAll(@Param("list") List<Long> storeIds, @Param("company") String company);
 
     /**
      * 根据订单号模糊查询装饰公司订单
@@ -175,20 +175,20 @@ public interface MaOrderDAO {
 
     List<MaSelfTakeOrderVO> findSelfTakeOrderList(@Param("list") List<Long> storeIds);
 
-    List<MaSelfTakeOrderVO> findSelfTakeOrderListByScreen(@Param("cityId")Long cityId,@Param("storeId")Long storeId,@Param("status")Integer status,@Param("isPayUp")Integer isPayUp,@Param("list") List<Long> storeIds);
+    List<MaSelfTakeOrderVO> findSelfTakeOrderListByScreen(@Param("cityId") Long cityId, @Param("storeId") Long storeId, @Param("status") Integer status, @Param("isPayUp") Integer isPayUp, @Param("list") List<Long> storeIds);
 
 
-    List<MaSelfTakeOrderVO> findSelfTakeOrderListByInfo(@Param("info") String info,@Param("list") List<Long> storeIds);
+    List<MaSelfTakeOrderVO> findSelfTakeOrderListByInfo(@Param("info") String info, @Param("list") List<Long> storeIds);
 
     List<MaSelfTakeOrderVO> findSelfTakeOrderListByCondition(MaOrderVORequest maOrderVORequest);
 
     MaOrderTempInfo getOrderInfoByOrderNo(String orderNo);
 
-    void updateOrderStatus(@Param(value = "orderNo")String orderNo,@Param(value = "status")String status);
+    void updateOrderStatus(@Param(value = "orderNo") String orderNo, @Param(value = "status") String status);
 
     void updateOrderReceivablesStatus(MaOrderAmount maOrderAmount);
 
-    List<MaOrderGoodsInfo> findOrderGoodsList(@Param(value = "orderNo") String orderNo,@Param(value = "storeId") Long storeId);
+    List<MaOrderGoodsInfo> findOrderGoodsList(@Param(value = "orderNo") String orderNo, @Param(value = "storeId") Long storeId);
 
     Boolean isPayUp(String orderNo);
 
@@ -196,25 +196,26 @@ public interface MaOrderDAO {
 
     void saveOrderShipping(OrderShipping orderShipping);
 
-    void saveOrderBillingPaymentDetails ( MaOrderBillingPaymentDetails maOrderBillingPaymentDetails);
+    void saveOrderBillingPaymentDetails(MaOrderBillingPaymentDetails maOrderBillingPaymentDetails);
 
-    void saveAppToEbsOrderReceiveInf (MaOrderReceiveInf maOrderReceiveInf);
+    void saveAppToEbsOrderReceiveInf(MaOrderReceiveInf maOrderReceiveInf);
 
     MaOrderReceiveInf queryOrderReceiveInf(String orderNumber);
 
     List<MaAgencyAndArrearsOrderVO> findArrearsAndAgencyOrderList(@Param("list") List<Long> storeIds);
 
 
-    List<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByScreen(@Param("cityId")Long cityId,@Param("storeId")Long storeId,@Param("status")Integer status,@Param("isPayUp")Integer isPayUp,@Param("list") List<Long> storeIds);
+    List<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByScreen(@Param("cityId") Long cityId, @Param("storeId") Long storeId, @Param("status") Integer status, @Param("isPayUp") Integer isPayUp, @Param("list") List<Long> storeIds);
 
-    List<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByInfo(@Param("info") String info,@Param("list") List<Long> storeIds);
+    List<MaAgencyAndArrearsOrderVO> findMaAgencyAndArrearsOrderListByInfo(@Param("info") String info, @Param("list") List<Long> storeIds);
 
-    void auditOrderStatus(@Param(value = "orderNumber")String orderNumber,@Param(value = "status")String status,@Param(value = "auditId") Long auditId);
+    void auditOrderStatus(@Param(value = "orderNumber") String orderNumber, @Param(value = "status") String status, @Param(value = "auditId") Long auditId);
 
     Long querySellerIdByOrderNumber(String orderNumber);
 
     /**
      * 定时查找待付款订单
+     *
      * @return
      */
     List<OrderBaseInfo> scanningUnpaidOrder(@Param(value = "findDate") String findDate);
@@ -225,7 +226,7 @@ public interface MaOrderDAO {
 
     MaOrderArrearsAudit getArrearsAuditInfoById(Long id);
 
-    void  updateOrderArrearsAudit(@Param(value = "orderNumber") String orderNumber,@Param(value = "repaymentTime") Date repaymentTime);
+    void updateOrderArrearsAudit(@Param(value = "orderNumber") String orderNumber, @Param(value = "repaymentTime") Date repaymentTime);
 
 
     /**
@@ -240,7 +241,7 @@ public interface MaOrderDAO {
      *
      * @return 订单列表
      */
-    List<FitOrderVO> findFitOrderListByScreen(@Param("cityId")Long cityId,@Param("storeId")Long storeId,@Param("list") List<Long> storeIds);
+    List<FitOrderVO> findFitOrderListByScreen(@Param("cityId") Long cityId, @Param("storeId") Long storeId, @Param("list") List<Long> storeIds);
 
 
     /**
@@ -248,7 +249,7 @@ public interface MaOrderDAO {
      *
      * @return 订单列表
      */
-    List<FitOrderVO> findFitOrderListByInfo(@Param("info")String info,@Param("list") List<Long> storeIds);
+    List<FitOrderVO> findFitOrderListByInfo(@Param("info") String info, @Param("list") List<Long> storeIds);
 
     /**
      * 据条件信息筛选装饰公司订单
@@ -263,8 +264,8 @@ public interface MaOrderDAO {
      *
      * @return 订单列表
      */
-    DetailFitOrderVO findFitOrderByOrderNumber(@Param("ordNumber")String ordNumber);
+    DetailFitOrderVO findFitOrderByOrderNumber(@Param("ordNumber") String ordNumber);
 
     List<OrderGoodsVO> findMaOrderGoodsVOListByEmpIdAndGoodsSkus(@Param(value = "userId") Long userId,
-                                                              @Param(value = "goodsSkuSet") Set<String> goodsSkuSet);
+                                                                 @Param(value = "goodsSkuSet") Set<String> goodsSkuSet);
 }

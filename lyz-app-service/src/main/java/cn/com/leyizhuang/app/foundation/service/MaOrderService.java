@@ -90,7 +90,7 @@ public interface MaOrderService {
      *
      * @return 订单列表
      */
-    List<MaOrderVO> findCompanyOrderAll(List<Long> storeIds);
+    List<MaOrderVO> findCompanyOrderAll(List<Long> storeIds,String company);
 
     /**
      * 根据订单号模糊查询装饰公司订单

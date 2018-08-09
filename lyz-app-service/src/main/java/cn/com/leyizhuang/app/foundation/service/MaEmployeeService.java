@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeType;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaEmployeeResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.DecorativeEmployeeDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeDetailVO;
+import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeLogVo;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeVO;
 import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideVO;
 import com.github.pagehelper.PageInfo;
@@ -74,4 +75,6 @@ public interface MaEmployeeService {
     List<EmployeeVO> findSellerListByStoreId(Long storeId);
 
     List<EmployeeDO> findEmpployeeByCityIdAndIdentityType(Long cityId, AppIdentityType type);
+
+    EmployeeLogVo queryLastDecorativeCreditChange(Long id);
 }

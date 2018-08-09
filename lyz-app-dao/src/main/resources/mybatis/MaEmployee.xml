@@ -432,4 +432,34 @@
         AND status IS TRUE
     </select>
 
+
+    <select id="queryLastDecorativeCreditChange"
+            resultType="cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeLogVo">
+        SELECT
+        *,
+        CASE l.operator_type
+        WHEN 'DECORATE_MANAGER' THEN
+        e.`name`
+        WHEN 'DECORATE_EMPLOYEE' THEN
+        e.`name`
+        WHEN 'SELLER' THEN
+        e.`name`
+        WHEN 'CUSTOMER' THEN
+        cu.`name`
+        WHEN 'ADMINISTRATOR' THEN
+        au.`name`
+        END AS operatorName
+        FROM
+        emp_credit_money_change_log l
+        LEFT JOIN st_store s ON l.emp_id = s.store_id
+        LEFT JOIN admin_user au ON au.uid = l.operator_id
+        LEFT JOIN cus_customer cu ON cu.cus_id = l.operator_id
+        LEFT JOIN emp_employee e ON e.emp_id = l.operator_id
+        WHERE
+        l.emp_id = #{id}
+        ORDER BY
+        l.create_time DESC
+        LIMIT 1
+    </select>
+
 </mapper>

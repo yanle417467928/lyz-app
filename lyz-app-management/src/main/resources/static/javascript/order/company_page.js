@@ -5,7 +5,6 @@ var rotationImage;
 $(function () {
     findCitylist()
     findStorelist();
-    initDateGird('/rest/company/order/page/grid');
 
     $('.datepicker').datepicker({
         format: 'yyyy-mm-dd',
@@ -20,7 +19,8 @@ function initDateGird(url) {
         return {
             offset: params.offset,
             size: params.limit,
-            keywords: params.search
+            keywords: params.search,
+            company: $("#company").val(),
         }
     }, [{
         checkbox: true,
@@ -208,6 +208,9 @@ var formatDateTime = function (date) {
     second = second < 10 ? ('0' + second) : second;
     return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
 };
+
+
+
 
 function findBykey(){
     if(event.keyCode==13){

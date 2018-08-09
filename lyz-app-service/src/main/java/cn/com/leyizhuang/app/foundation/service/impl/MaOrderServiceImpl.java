@@ -193,8 +193,8 @@ public class MaOrderServiceImpl implements MaOrderService {
     }
 
     @Override
-    public List<MaOrderVO> findCompanyOrderAll(List<Long> storeIds) {
-        List<MaOrderVO> maOrderVOList = maOrderDAO.findCompanyOrderAll(storeIds);
+    public List<MaOrderVO> findCompanyOrderAll(List<Long> storeIds,String company) {
+        List<MaOrderVO> maOrderVOList = maOrderDAO.findCompanyOrderAll(storeIds,company);
 //        for (int i = 0;i<maOrderVOList.size();i++){
 //            for (int j =0;j<storeIds.size();j++){
 //                if (maOrderVOList.get(i).equals(storeIds.get(j))){

@@ -4,6 +4,7 @@ package cn.com.leyizhuang.app.web.controller.views.employee;
 import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoney;
 import cn.com.leyizhuang.app.foundation.service.MaClearTempCreditService;
 import cn.com.leyizhuang.app.foundation.service.MaEmployeeService;
+import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeLogVo;
 import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideVO;
 import cn.com.leyizhuang.app.web.controller.BaseController;
 import org.slf4j.Logger;
@@ -52,14 +53,18 @@ public class MaGuideViewsController extends BaseController {
     public String creditEditPage(ModelMap map, @PathVariable(value = "id") Long id) {
         if (!id.equals(0L)) {
             GuideVO guideVO = this.maEmployeeService.queryGuideVOById(id);
-            if (null ==guideVO.getGuideCreditMoney()){
+            EmployeeLogVo log = this.maEmployeeService.queryLastDecorativeCreditChange(id);
+            if (null == guideVO.getGuideCreditMoney()) {
                 GuideCreditMoney guideCreditMoney = new GuideCreditMoney();
                 guideCreditMoney.setCreditLimitAvailable(BigDecimal.ZERO);
                 guideCreditMoney.setTempCreditLimit(BigDecimal.ZERO);
                 guideCreditMoney.setCreditLimit(BigDecimal.ZERO);
                 guideVO.setGuideCreditMoney(guideCreditMoney);
+
+
             }
             map.addAttribute("guideVO", guideVO);
+            map.addAttribute("changeLog", log);
         }
         return "/views/employee/guide_edit";
     }

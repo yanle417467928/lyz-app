@@ -242,15 +242,27 @@
         obd.amount_payable orderPrice,
         s.store_id storeId,
         obi.customer_name customerName,
-        obi.customer_phone customerPhone
+        obi.customer_phone customerPhone,
+        s.fit_compay_type company
         FROM
         ord_base_info AS obi
         LEFT JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
         LEFT JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
         LEFT JOIN st_store AS s ON s.store_code = obi.store_code
         WHERE
+        1=1
+        <if test="company == ''">
+            -- AND status != "INVALID"
+        </if>
+
+        <if test="company == 'MONTHLY'">
+            and s.fit_compay_type = #{company}
+        </if>
+        <if test="company == 'CASH'">
+            and s.fit_compay_type = #{company}
+        </if>
+        AND
              s.store_type='ZS'
-        AND s.fit_compay_type != 'CASH'
         <if test="list != null">
             AND s.store_id IN
             <foreach collection="list" item="item" open="(" close=")" separator=",">
@@ -301,16 +313,27 @@
         obd.amount_payable orderPrice,
         s.store_id storeId,
         obi.customer_name customerName,
-        obi.customer_phone customerPhone
+        obi.customer_phone customerPhone,
+        s.fit_compay_type company
         FROM
         ord_base_info AS obi
         LEFT JOIN ord_billing_details AS obd ON obi.ord_no = obd.ord_no
         LEFT JOIN ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
         LEFT JOIN st_store AS s ON s.store_code = obi.store_code
         WHERE
-          s.store_type='ZS'
+        1=1
+        <if test="company == ''">
+            -- AND status != "INVALID"
+        </if>
+
+        <if test="company == 'MONTHLY'">
+            and s.fit_compay_type = #{company}
+        </if>
+        <if test="company == 'CASH'">
+            and s.fit_compay_type = #{company}
+        </if>
         AND
-        s.fit_compay_type != 'CASH'
+        s.store_type='ZS'
         <if test="cityId != null and cityId != -1">
             AND obi.city_id = #{cityId}
         </if>

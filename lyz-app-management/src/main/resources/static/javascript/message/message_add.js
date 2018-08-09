@@ -9,9 +9,9 @@ $(function () {
 
     // 表单元素渲染
     //Flat red color scheme for iCheck
-    $('input[type="radio"].flat-red').iCheck({
+ /*   $('input[type="radio"].flat-red').iCheck({
         radioClass   : 'iradio_flat-green'
-    });
+    });*/
     $('input[type="checkbox"].flat-red').iCheck({
         checkboxClass: 'icheckbox_flat-green'
     });
@@ -27,7 +27,7 @@ $(function () {
     $("select").each(function () {
         $(this).selectpicker('refresh');
     });
-    $('.switch').bootstrapSwitch();
+  /*  $('.switch').bootstrapSwitch();*/
     initFileInput("uploadQrcodeBtn",1);
 });
 
@@ -184,7 +184,7 @@ function formValidate() {
         var detailed = editor.html();
         // 目标对象
         var target = "";
-        $("input:radio[name='target']:checked").each(function (i) {
+        $("select[name='target']:checked").each(function (i) {
             if (i == 0){
                 target += $(this).val();
             }else{
@@ -281,9 +281,27 @@ function formValidate() {
 }
 
 
+function divClick() {
+
+    var show = $("#target option:selected").val();
 
 
-/**
+    switch (show) {
+        case 'ZDY':
+            document.getElementById("xzyg").style.display = "block";
+            document.getElementById("xzhy").style.display = "block";
+            document.getElementById("xzmd").style.display = "block";
+            document.getElementById("sflx").style.display = "none";
+            break;
+        case 'ALL':
+            document.getElementById("xzyg").style.display = "none";
+            document.getElementById("xzhy").style.display = "none";
+            document.getElementById("xzmd").style.display = "none";
+            document.getElementById("sflx").style.display = "block";
+            break;
+    }
+}
+    /**
  *开始时间 -- 结束时间 渲染方法
  */
 function starAndEndDatetimepiker(startDateId,endDateId){

@@ -13,6 +13,7 @@
         <result property="changeType" column="change_type"/>
         <result property="operatorId" column="operator_id"/>
         <result property="operatorName" column="operator_name"/>
+        <result property="changeReason" column="change_reason"/>
         <association property="tempCreditChangeId" javaType="GuideTempCreditChange">
             <id property="id" column="id"/>
             <result property="tempCreditLimitChangeAmount" column="temp_credit_limit_change_amount"/>
@@ -93,7 +94,8 @@
             ea.credit_limit_available_change_amount,
             ea.credit_limit_available_after_change,
             ecmcl.operator_id,
-            ecmcl.operator_name
+            ecmcl.operator_name,
+            ecmcl.change_reason
       FROM emp_credit_money_change_log ecmcl
       RIGHT JOIN emp_available_credit_change_log ea ON
        ecmcl.available_credit_change_id=ea.id

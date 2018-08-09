@@ -114,7 +114,7 @@ public interface MaCustomerService {
     PageInfo<MaCreateOrderPeopleResponse> maFindCreatePeopleByStoreId(Integer page, Integer size,Long storeId);
 
 
-    CusPreDepositLogVO queryLastDecorativeCreditChange(Long storeId);
+    CusPreDepositLogVO queryLastDecorativeCreditChange(Long id);
 
 
 }
