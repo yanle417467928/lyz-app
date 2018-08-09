@@ -53,7 +53,7 @@ public class MaGuideViewsController extends BaseController {
     public String creditEditPage(ModelMap map, @PathVariable(value = "id") Long id) {
         if (!id.equals(0L)) {
             GuideVO guideVO = this.maEmployeeService.queryGuideVOById(id);
-            EmployeeLogVo log = this.maEmployeeService.queryLastDecorativeCreditChange(id);
+           // EmployeeLogVo log = this.maEmployeeService.queryLastDecorativeCreditChange(id);
             if (null == guideVO.getGuideCreditMoney()) {
                 GuideCreditMoney guideCreditMoney = new GuideCreditMoney();
                 guideCreditMoney.setCreditLimitAvailable(BigDecimal.ZERO);
@@ -64,7 +64,7 @@ public class MaGuideViewsController extends BaseController {
 
             }
             map.addAttribute("guideVO", guideVO);
-            map.addAttribute("changeLog", log);
+           // map.addAttribute("changeLog", log);
         }
         return "/views/employee/guide_edit";
     }
