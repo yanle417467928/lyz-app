@@ -9,6 +9,7 @@ import cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferService;
+import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferSupportService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.OrderBillingTransferService;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.OrderGoodsTransferService;
 import lombok.extern.slf4j.Slf4j;
@@ -55,6 +56,8 @@ public class DataTransferController {
     @Resource
     private TransferDAO transferDAO;
 
+    @Resource
+    private DataTransferSupportService dataTransferSupportService;
 
     private static final Date JOB_END_TIME;
 
@@ -299,5 +302,28 @@ public class DataTransferController {
         int seconds = (int) ((to - from) / (1000));
         log.info("导入耗时: {} 秒", seconds);
         return "退单导入完成,耗时: {} 秒" + seconds + "\n错误信息如下:\n" + queue.toString();
+    }
+
+    /**
+     * transfer_cus_template + transfer_cus_product_template 转 顾客信息以及预存款
+     */
+    @RequestMapping(value = "/transfer/customer", method = RequestMethod.GET)
+    public String dataTransferCustomerAndPreDesposit(){
+        log.info("开始转换顾客信息");
+        dataTransferSupportService.transferAllCustomerByTemplate();
+        log.info("转换完毕");
+        return "转换完毕";
+    }
+
+    /**
+     * transfer_cus_product_template 转 顾客产品券
+     * @return
+     */
+    @RequestMapping(value = "/transfer/product/coupon",method = RequestMethod.GET)
+    public String dataTransferCusProductCoupon(){
+        log.info("开始转换未提货产品券信息");
+        dataTransferSupportService.transferAllProductByTemplate();
+        log.info("转换完毕");
+        return "转换完毕";
     }
 }

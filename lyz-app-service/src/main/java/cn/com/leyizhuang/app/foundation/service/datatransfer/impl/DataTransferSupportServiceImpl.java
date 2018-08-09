@@ -1,20 +1,38 @@
 package cn.com.leyizhuang.app.foundation.service.datatransfer.impl;
 
+import cn.com.leyizhuang.app.core.constant.*;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
+import cn.com.leyizhuang.app.foundation.dao.AppCustomerDAO;
+import cn.com.leyizhuang.app.foundation.dao.ProductCouponDAO;
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.DataTransferErrorLog;
+import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TransferCusPreDepositTemplate;
+import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TransferCusProductTemplate;
 import cn.com.leyizhuang.app.foundation.pojo.datatransfer.TransferCusTemplate;
+import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.city.SimpleCityParam;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.employee.SimpleEmployeeParam;
+import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
 import cn.com.leyizhuang.app.foundation.pojo.order.*;
 import cn.com.leyizhuang.app.foundation.pojo.returnorder.*;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.user.CustomerPreDeposit;
 import cn.com.leyizhuang.app.foundation.service.*;
 import cn.com.leyizhuang.app.foundation.service.datatransfer.DataTransferSupportService;
+import cn.com.leyizhuang.app.foundation.vo.management.customer.CustomerDetailVO;
+import cn.com.leyizhuang.common.core.exception.AppConcurrentExcp;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.io.UnsupportedEncodingException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -45,6 +63,24 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
     private ReturnOrderDeliveryDetailsService returnOrderDeliveryDetailsService;
     @Resource
     private AppCustomerService appCustomerService;
+
+    @Resource
+    private MaCustomerService maCustomerService;
+
+    @Resource
+    private MaStoreService maStoreService;
+
+    @Resource
+    private AppEmployeeService appEmployeeService;
+
+    @Resource
+    private AppCustomerDAO customerDAO;
+
+    @Resource
+    private GoodsService goodsService;
+
+    @Resource
+    private ProductCouponDAO productCouponDAO;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -214,10 +250,180 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
 
     }
 
-    public void transferCustomerByTemplate(TransferCusTemplate template){
-        CustomerDO customerDO = new CustomerDO();
+    public Integer transferAllCustomerByTemplate(){
+        // 查询所以未转换的模板
+         List<TransferCusTemplate> transferCusTemplateList = transferDAO.findCusTem();
+
+        for (TransferCusTemplate template : transferCusTemplateList){
+            try{
+                this.transferCustomerByTemplate(template);
+            }catch (Exception e){
+                e.printStackTrace();
+                log.info(e.getMessage());
+                log.info(template.getCusName()+" " + template.getCusMobile()+"转换出现异常");
+            }
+        }
+        return null;
+    }
+
+    public Integer transferAllProductByTemplate(){
+        // 查询所有未转换模板
+        List<TransferCusProductTemplate> templateList = transferDAO.findCusProductDepositTem();
+
+        for (TransferCusProductTemplate template : templateList){
+            try{
+                this.transferCusProduct(template);
+            }catch (Exception e){
+                e.printStackTrace();
+                log.info(e.getMessage());
+                log.info(template.getCusName()+" " + template.getSku()+"产品全转换出现异常");
+            }
+
+        }
+
+        return null;
+    }
+
+    @Transactional
+    public int transferCustomerByTemplate(TransferCusTemplate template){
+        CustomerDetailVO customerDO = new CustomerDetailVO();
+
+        customerDO.setName(template.getCusName());
+        SimpleCityParam cityParam = new SimpleCityParam();
+        cityParam.setCityId(template.getCityId());
+        customerDO.setCity(cityParam);
+
+        SimpleStoreParam storeParam = new SimpleStoreParam();
+        storeParam.setStoreId(template.getStoreId());
+        storeParam.setStoreName(template.getStoreName());
+        customerDO.setStore(storeParam);
+
+        customerDO.setMobile(template.getCusMobile());
+        customerDO.setStatus(true);
+        customerDO.setSex("SECRET");
+        customerDO.setIsCashOnDelivery(false);
+        customerDO.setCreateType(AppCustomerCreateType.IMPORT);
+        customerDO.setCustomerType(AppCustomerType.MEMBER.getValue());
+
+        AppEmployee employee = appEmployeeService.findByLoginName(template.getEmpCode());
+
+        if (employee == null) {
+            log.info("编码为 "+ template.getEmpCode() + "导购找不到");
+            return  0;
+        }
+        SimpleEmployeeParam employeeParam = new SimpleEmployeeParam();
+        employeeParam.setId(employee.getEmpId());
+        employeeParam.setIdentityType(AppIdentityType.SELLER);
+        employeeParam.setName(employee.getName());
+        customerDO.setSalesConsultId(employeeParam);
+
+        maCustomerService.saveCustomer(customerDO);
+
+        AppCustomer customer = new AppCustomer();
+
+        try {
+            customer = appCustomerService.findByMobile(template.getCusMobile());
+            template.setStatus(true);
+            transferDAO.updateCusTem(template);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        if (template.getCusMobile() != null && customer != null){
+            // 设置预存款
+            log.info("顾客 "+customer.getMobile() + "转换成功！");
+
+            TransferCusPreDepositTemplate preDepositTemplate = transferDAO.findCusPreDeposit(template.getCusMobile());
+
+            if (preDepositTemplate == null){
+                return 0;
+            }
+            Double preDeposit = preDepositTemplate.getCusPreDepost() == null ? 0D : preDepositTemplate.getCusPreDepost();
+
+            if (preDeposit > 0.00){
+                // 更新
+
+                CustomerPreDeposit customerPreDeposit = this.customerDAO.findByCusId(customer.getCusId());
+                if (null == customerPreDeposit) {
+                    customerPreDeposit = new CustomerPreDeposit();
+                    customerPreDeposit.setBalance(preDeposit);
+                    customerPreDeposit.setCusId(customer.getCusId());
+                    customerPreDeposit.setCreateTime(new Date());
+                    customerPreDeposit.setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
+                    this.customerDAO.savePreDeposit(customerPreDeposit);
+                } else {
+                    int row = this.customerDAO.updateDepositByUserIdAndLastUpdateTime(customer.getCusId(), preDeposit, new Timestamp(System.currentTimeMillis()), customerPreDeposit.getLastUpdateTime());
+                    if (1 != row) {
+                        throw new AppConcurrentExcp("账号余额信息过期！");
+                    }else {
+                        log.info(template.getCusMobile()+" 预存款初始成功！"+preDeposit+"元");
+                        preDepositTemplate.setStatus(true);
+                        transferDAO.updateCusPreDepositTemplate(preDepositTemplate);
+                    }
+                }
+
+            }
+        }else {
+            log.info("手机号为："+template.getCusMobile()+"顾客保存失败！");
+        }
+
+        return 1;
+    }
+
+    @Transactional
+    public int transferCusProduct(TransferCusProductTemplate template){
+
+        AppCustomer customer = new AppCustomer();
+        try {
+            customer = appCustomerService.findByMobile(template.getCusMobile());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            log.info("手机号为 "+ template.getCusMobile() + "的顾客找不到");
+        }
+
+        GoodsDO goodsDO = goodsService.findBySku(template.getSku());
+
+        if (goodsDO == null){
+            log.info("sku: "+ template.getSku() + "找不到");
+            return 0;
+        }
+        // 创建一张券
+        CustomerProductCoupon customerProductCoupon = new CustomerProductCoupon();
+        customerProductCoupon.setCustomerId(customer.getCusId());
+        customerProductCoupon.setGoodsId(goodsDO.getGid());
+        customerProductCoupon.setQuantity(1);
+        if (template.getIsGift()){
+            customerProductCoupon.setGetType(CouponGetType.PRESENT);
+        }else {
+            customerProductCoupon.setGetType(CouponGetType.BUY);
+        }
 
 
+        Date now = new Date();
+        customerProductCoupon.setGetTime(now);
+        customerProductCoupon.setEffectiveStartTime(now);
 
-    };
+        Calendar c = Calendar.getInstance();//获得一个日历的实例
+        c.setTime(now);//设置日历时间
+        c.add(Calendar.MONTH,6);
+        customerProductCoupon.setEffectiveEndTime(c.getTime());
+
+        customerProductCoupon.setIsUsed(false);
+        customerProductCoupon.setGetOrderNumber(template.getOrdNo());
+        customerProductCoupon.setBuyPrice(template.getBuyPrice());
+
+        AppEmployee employee = appEmployeeService.findByLoginName(template.getEmpCode());
+
+        customerProductCoupon.setStoreId(employee.getStoreId());
+        customerProductCoupon.setSellerId(employee.getEmpId());
+        customerProductCoupon.setStatus(true);
+        customerProductCoupon.setGoodsSign("COMMON");
+
+        for (int i = 0;i < template.getQuantity() ; i++){
+            productCouponDAO.addCustomerProductCoupon(customerProductCoupon);
+        }
+
+        template.setStatus(true);
+        transferDAO.updateCusProductTemplate(template);
+        return 1;
+    }
 }

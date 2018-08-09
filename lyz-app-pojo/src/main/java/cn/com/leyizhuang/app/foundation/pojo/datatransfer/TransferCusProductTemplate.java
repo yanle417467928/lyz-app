@@ -19,11 +19,15 @@ public class TransferCusProductTemplate {
 
     private String cusCode;
 
+    private String cusMobile;
+
     private String cusName;
 
     private String empCode;
 
     private String empName;
+
+    private Long storeId;
 
     private String storeName;
 
@@ -41,4 +45,5 @@ public class TransferCusProductTemplate {
 
     private Boolean status;
 
+    private String ordNo;
 }

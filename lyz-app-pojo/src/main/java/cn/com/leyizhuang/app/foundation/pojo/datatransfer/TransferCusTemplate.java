@@ -35,4 +35,6 @@ public class TransferCusTemplate {
     private String empName;
 
     private Boolean status;
+
+    private Long cityId;
 }
