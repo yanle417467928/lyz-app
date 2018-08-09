@@ -167,5 +167,5 @@ public interface TransferDAO {
 
     void updateCusProductTemplate(TransferCusProductTemplate DO);
 
-
+    TransferCusPreDepositTemplate findCusPreDeposit(String mobile);
 }
