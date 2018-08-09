@@ -45,4 +45,5 @@ public class TransferCusProductTemplate {
 
     private Boolean status;
 
+    private String ordNo;
 }

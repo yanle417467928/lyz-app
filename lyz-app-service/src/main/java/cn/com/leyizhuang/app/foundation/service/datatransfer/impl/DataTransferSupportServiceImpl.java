@@ -252,10 +252,16 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
 
     public Integer transferAllCustomerByTemplate(){
         // 查询所以未转换的模板
-        List<TransferCusTemplate> transferCusTemplateList = transferDAO.findCusTem();
+         List<TransferCusTemplate> transferCusTemplateList = transferDAO.findCusTem();
 
         for (TransferCusTemplate template : transferCusTemplateList){
-            this.transferCustomerByTemplate(template);
+            try{
+                this.transferCustomerByTemplate(template);
+            }catch (Exception e){
+                e.printStackTrace();
+                log.info(e.getMessage());
+                log.info(template.getCusName()+" " + template.getCusMobile()+"转换出现异常");
+            }
         }
         return null;
     }
@@ -265,7 +271,14 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
         List<TransferCusProductTemplate> templateList = transferDAO.findCusProductDepositTem();
 
         for (TransferCusProductTemplate template : templateList){
+            try{
                 this.transferCusProduct(template);
+            }catch (Exception e){
+                e.printStackTrace();
+                log.info(e.getMessage());
+                log.info(template.getCusName()+" " + template.getSku()+"产品全转换出现异常");
+            }
+
         }
 
         return null;
@@ -279,13 +292,15 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
         SimpleCityParam cityParam = new SimpleCityParam();
         cityParam.setCityId(template.getCityId());
         customerDO.setCity(cityParam);
-        SimpleStoreParam storeParam = new SimpleStoreParam();
 
+        SimpleStoreParam storeParam = new SimpleStoreParam();
         storeParam.setStoreId(template.getStoreId());
         storeParam.setStoreName(template.getStoreName());
+        customerDO.setStore(storeParam);
+
         customerDO.setMobile(template.getCusMobile());
         customerDO.setStatus(true);
-        customerDO.setSex(SexType.SECRET.getValue());
+        customerDO.setSex("SECRET");
         customerDO.setIsCashOnDelivery(false);
         customerDO.setCreateType(AppCustomerCreateType.IMPORT);
         customerDO.setCustomerType(AppCustomerType.MEMBER.getValue());
@@ -318,6 +333,10 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
             log.info("顾客 "+customer.getMobile() + "转换成功！");
 
             TransferCusPreDepositTemplate preDepositTemplate = transferDAO.findCusPreDeposit(template.getCusMobile());
+
+            if (preDepositTemplate == null){
+                return 0;
+            }
             Double preDeposit = preDepositTemplate.getCusPreDepost() == null ? 0D : preDepositTemplate.getCusPreDepost();
 
             if (preDeposit > 0.00){
@@ -372,7 +391,12 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
         customerProductCoupon.setCustomerId(customer.getCusId());
         customerProductCoupon.setGoodsId(goodsDO.getGid());
         customerProductCoupon.setQuantity(1);
-        customerProductCoupon.setGetType(CouponGetType.BUY);
+        if (template.getIsGift()){
+            customerProductCoupon.setGetType(CouponGetType.PRESENT);
+        }else {
+            customerProductCoupon.setGetType(CouponGetType.BUY);
+        }
+
 
         Date now = new Date();
         customerProductCoupon.setGetTime(now);
@@ -384,9 +408,11 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
         customerProductCoupon.setEffectiveEndTime(c.getTime());
 
         customerProductCoupon.setIsUsed(false);
+        customerProductCoupon.setGetOrderNumber(template.getOrdNo());
         customerProductCoupon.setBuyPrice(template.getBuyPrice());
 
         AppEmployee employee = appEmployeeService.findByLoginName(template.getEmpCode());
+
         customerProductCoupon.setStoreId(employee.getStoreId());
         customerProductCoupon.setSellerId(employee.getEmpId());
         customerProductCoupon.setStatus(true);
