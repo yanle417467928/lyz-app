@@ -425,11 +425,15 @@ public class MaOrderServiceImpl implements MaOrderService {
     @Override
     public void sendOrderReceiveInfAndRecord(String orderNumber) {
         if (null == orderNumber) {
-            throw new RuntimeException("发送接口失败，订单ID为空");
+            throw new RuntimeException("发送接口失败，订单号为空");
         }
         MaOrderReceiveInf maOrderReceiveInf = this.queryOrderReceiveInf(orderNumber);
         //调用ebsSenderService接口传ebs
-        this.ebsSenderService.sendOrderReceiveInfAndRecord(maOrderReceiveInf);
+        if(null !=maOrderReceiveInf){
+            this.ebsSenderService.sendOrderReceiveInfAndRecord(maOrderReceiveInf);
+        }else{
+            throw new RuntimeException("发送接口失败，查询接口表失败");
+        }
     }
 
 
