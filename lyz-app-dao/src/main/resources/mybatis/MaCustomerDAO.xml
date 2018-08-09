@@ -685,31 +685,38 @@
 
     <select id="queryLastDecorativeCreditChange"
             resultType="cn.com.leyizhuang.app.foundation.vo.management.customer.CusPreDepositLogVO">
-            SELECT
-               *,
-            CASE l.operator_type
-            WHEN 'DECORATE_MANAGER' THEN
-                e.`name`
-            WHEN 'DECORATE_EMPLOYEE' THEN
-                e.`name`
-            WHEN 'SELLER' THEN
-                e.`name`
-            WHEN 'CUSTOMER' THEN
-                cu.`name`
-            WHEN 'ADMINISTRATOR' THEN
-                au.`name`
-            END AS operatorName
-            FROM
-                cus_pre_deposit_log l
-            LEFT JOIN st_store s ON l.cus_id = s.store_id
-            LEFT JOIN admin_user au ON au.uid = l.operator_id
-            LEFT JOIN cus_customer cu ON cu.cus_id = l.operator_id
-            LEFT JOIN emp_employee e ON e.emp_id = l.operator_id
-            WHERE
-                l.cus_id = #{userId}
-            ORDER BY
-                l.create_time DESC
-            LIMIT 1
+        SELECT
+        l.create_time ,
+        l.change_money ,
+        l.change_type ,
+        l.change_type_desc ,
+        l.operator_id ,
+        l.operator_type ,
+        l.operator_ip ,
+
+        CASE l.operator_type
+        WHEN 'DECORATE_MANAGER' THEN
+        e.`name`
+        WHEN 'DECORATE_EMPLOYEE' THEN
+        e.`name`
+        WHEN 'SELLER' THEN
+        e.`name`
+        WHEN 'CUSTOMER' THEN
+        cu.`name`
+        WHEN 'ADMINISTRATOR' THEN
+        au.`name`
+        END AS operatorName
+        FROM
+        cus_pre_deposit_log l
+
+        LEFT JOIN admin_user au ON au.uid = l.operator_id
+        LEFT JOIN cus_customer cu ON cu.cus_id = l.operator_id
+        LEFT JOIN emp_employee e ON e.emp_id = l.operator_id
+        WHERE
+        l.cus_id = #{cusId}
+        ORDER BY
+        l.create_time DESC
+        LIMIT 1
     </select>
 
 </mapper>

@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.vo.management.employee;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.CustomerPreDepositChangeType;
+import cn.com.leyizhuang.app.core.constant.EmpCreditMoneyChangeType;
 import cn.com.leyizhuang.common.util.TimeTransformUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -74,7 +75,7 @@ public class EmployeeLogVo {
 
     private String operatorName;
 
-    public void setChangeType(CustomerPreDepositChangeType changeType){
+    public void setChangeType(EmpCreditMoneyChangeType changeType){
         this.changeType = changeType.getDescription();
     }
     public void setCreateTime(LocalDateTime createTime){

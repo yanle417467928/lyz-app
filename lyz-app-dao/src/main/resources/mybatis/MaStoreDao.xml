@@ -1061,7 +1061,6 @@
         l.operator_ip ,
         s.store_name,
         s.store_code,
-        s.fit_compay_type as storeType,
         CASE l.operator_type
         WHEN 'DECORATE_MANAGER' THEN
         e.`name`
