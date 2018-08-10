@@ -117,6 +117,12 @@ public class AccountGoodsItemsDO {
     //商品规格
     private String specificationType ;
 
+    //仓库名称
+    private String warehouse;
+
+    //配送员姓名
+    private String deliveryName;
+
     public void setGoodsLineType(AppGoodsLineType goodsLineType){
         this.goodsLineType = goodsLineType.getDescription();
     }
