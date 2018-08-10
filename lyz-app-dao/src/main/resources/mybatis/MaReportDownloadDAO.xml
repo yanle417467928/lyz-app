@@ -646,7 +646,9 @@
         gg.category_name as categoryName,
         gg.brand_name as brandName,
         gg.type_name as typeName,
-        gg.specification_type as specificationType
+        gg.specification_type as specificationType,
+        w.wh_name as warehouse,
+        oli.delivery_clerk_name as deliveryName
         FROM
         ord_base_info obi
         INNER JOIN st_store st ON st.store_id = obi.store_id
@@ -660,6 +662,7 @@
         LEFT JOIN ord_coupon_info oci on oci.ord_no = og.ord_no and oci.sku = og.sku and og.goods_line_type = 'PRODUCT_COUPON'
         LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
+        LEFT JOIN warehouse w ON w.wh_no = oli.warehouse
         WHERE obi.`status` != 'UNPAID' AND  obi.`status` != 'CANCELED'
         AND (ol.post_status = 'PENDING_SHIPMENT' OR (ol.post_status = 'PENDING_RECEIVE' AND obi.delivery_type =
         'SELF_TAKE'))
@@ -719,7 +722,9 @@
         gg.category_name as categoryName,
         gg.brand_name as brandName,
         gg.type_name as typeName,
-        gg.specification_type as specificationType
+        gg.specification_type as specificationType,
+        w.wh_name as warehouse,
+        orli.delivery_clerk_name as deliveryName
         FROM ord_return_base_info orbi
         LEFT JOIN (SELECT DISTINCT return_no,post_status,operation_time from ord_return_lifecycle) rl ON orbi.return_no = rl.return_no
         LEFT JOIN st_store st ON st.store_id = orbi.store_id
@@ -733,6 +738,8 @@
         LEFT JOIN ord_return_product_coupon oci on oci.return_no = org.return_no and oci.sku = org.sku and org.goods_line_type = 'PRODUCT_COUPON'
         LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.pcid
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
+        LEFT JOIN ord_return_delivery_detail ordd ON ordd.return_no = orbi.return_no AND ordd.return_logistic_status = 'PICKING_GOODS'
+        LEFT JOIN warehouse w ON w.wh_no = ordd.warehouse_no
         WHERE orbi.return_status = 'FINISHED' AND rl.post_status = 'FINISHED' AND orbi.return_type != 'CANCEL_RETURN'
         AND (obi.delivery_type = 'HOUSE_DELIVERY' OR (obi.delivery_type = 'SELF_TAKE' AND st.store_type != 'JM'))
         <if test="null != cityId and cityId != -1">
