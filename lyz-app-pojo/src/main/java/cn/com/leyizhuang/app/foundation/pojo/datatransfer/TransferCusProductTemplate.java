@@ -37,7 +37,7 @@ public class TransferCusProductTemplate {
 
     private Integer quantity;
 
-    private Boolean isGift;
+    private String isGift;
 
     private Date buyTime;
 

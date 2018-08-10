@@ -283,7 +283,12 @@ public class AppEmployeeServiceImpl implements cn.com.leyizhuang.app.foundation.
 
     @Override
     public List<StoreRankClassification> getStoreRankClassification(Long userId, AppIdentityType identityType) {
-        return employeeDAO.getStoreRankClassification(userId, identityType);
+        if (identityType.equals(AppIdentityType.SELLER)){
+            return employeeDAO.getStoreRankClassification(userId, identityType);
+        }else if (identityType.equals(AppIdentityType.DECORATE_MANAGER) || identityType.equals(AppIdentityType.DECORATE_EMPLOYEE)){
+            return employeeDAO.getStoreRankClassificationByCityId(userId,identityType);
+        }
+        return null;
     }
 
     @Override

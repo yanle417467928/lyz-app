@@ -263,6 +263,9 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
                 log.info(template.getCusName()+" " + template.getCusMobile()+"转换出现异常");
             }
         }
+
+        this.transferCusPreDepost();
+
         return null;
     }
 
@@ -323,47 +326,65 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
 
         try {
             customer = appCustomerService.findByMobile(template.getCusMobile());
-            template.setStatus(true);
-            transferDAO.updateCusTem(template);
+            if (customer != null){
+                template.setStatus(true);
+                transferDAO.updateCusTem(template);
+            }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        if (template.getCusMobile() != null && customer != null){
-            // 设置预存款
-            log.info("顾客 "+customer.getMobile() + "转换成功！");
+        return 1;
+    }
 
-            TransferCusPreDepositTemplate preDepositTemplate = transferDAO.findCusPreDeposit(template.getCusMobile());
+    public int transferCusPreDepost(){
 
-            if (preDepositTemplate == null){
-                return 0;
-            }
-            Double preDeposit = preDepositTemplate.getCusPreDepost() == null ? 0D : preDepositTemplate.getCusPreDepost();
+        List<TransferCusPreDepositTemplate> productTemplateList = transferDAO.findCusPreDepositTem();
 
-            if (preDeposit > 0.00){
-                // 更新
+        for (TransferCusPreDepositTemplate preDepositTemplate : productTemplateList){
+            TransferCusTemplate template = transferDAO.findCusTemByCusCode(preDepositTemplate.getCusCode());
 
-                CustomerPreDeposit customerPreDeposit = this.customerDAO.findByCusId(customer.getCusId());
-                if (null == customerPreDeposit) {
-                    customerPreDeposit = new CustomerPreDeposit();
-                    customerPreDeposit.setBalance(preDeposit);
-                    customerPreDeposit.setCusId(customer.getCusId());
-                    customerPreDeposit.setCreateTime(new Date());
-                    customerPreDeposit.setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
-                    this.customerDAO.savePreDeposit(customerPreDeposit);
-                } else {
-                    int row = this.customerDAO.updateDepositByUserIdAndLastUpdateTime(customer.getCusId(), preDeposit, new Timestamp(System.currentTimeMillis()), customerPreDeposit.getLastUpdateTime());
-                    if (1 != row) {
-                        throw new AppConcurrentExcp("账号余额信息过期！");
-                    }else {
-                        log.info(template.getCusMobile()+" 预存款初始成功！"+preDeposit+"元");
-                        preDepositTemplate.setStatus(true);
-                        transferDAO.updateCusPreDepositTemplate(preDepositTemplate);
-                    }
+            if (template != null && template.getCusMobile() != null ){
+                // 设置预存款
+                AppCustomer customer = new AppCustomer();
+
+                try {
+                    customer = appCustomerService.findByMobile(template.getCusMobile());
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
                 }
 
+                if (preDepositTemplate == null || customer == null){
+                    log.info("顾客编码："+preDepositTemplate.getCusCode()+"的顾客不存在");
+                    return 0;
+                }
+                Double preDeposit = preDepositTemplate.getCusPreDepost() == null ? 0D : preDepositTemplate.getCusPreDepost();
+
+                if (preDeposit > 0.00){
+                    // 更新
+
+                    CustomerPreDeposit customerPreDeposit = this.customerDAO.findByCusId(customer.getCusId());
+                    if (null == customerPreDeposit) {
+                        customerPreDeposit = new CustomerPreDeposit();
+                        customerPreDeposit.setBalance(preDeposit);
+                        customerPreDeposit.setCusId(customer.getCusId());
+                        customerPreDeposit.setCreateTime(new Date());
+                        customerPreDeposit.setLastUpdateTime(new Timestamp(System.currentTimeMillis()));
+                        this.customerDAO.savePreDeposit(customerPreDeposit);
+                    } else {
+                        int row = this.customerDAO.updateDepositByUserIdAndLastUpdateTime(customer.getCusId(), preDeposit, new Timestamp(System.currentTimeMillis()), customerPreDeposit.getLastUpdateTime());
+                        if (1 != row) {
+                            throw new AppConcurrentExcp("账号余额信息过期！");
+                        }else {
+                            log.info(template.getCusMobile()+" 预存款初始成功！"+preDeposit+"元");
+                            preDepositTemplate.setStatus(true);
+                            transferDAO.updateCusPreDepositTemplate(preDepositTemplate);
+                        }
+                    }
+
+                }
+            }else {
+                log.info("顾客编码："+preDepositTemplate.getCusCode()+"的顾客不存在");
             }
-        }else {
-            log.info("手机号为："+template.getCusMobile()+"顾客保存失败！");
         }
 
         return 1;
@@ -380,6 +401,11 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
             log.info("手机号为 "+ template.getCusMobile() + "的顾客找不到");
         }
 
+        if (customer == null || customer.getMobile() == null){
+            log.info("手机号为 "+ template.getCusMobile() + "的顾客找不到");
+            return 0;
+        }
+
         GoodsDO goodsDO = goodsService.findBySku(template.getSku());
 
         if (goodsDO == null){
@@ -391,7 +417,7 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
         customerProductCoupon.setCustomerId(customer.getCusId());
         customerProductCoupon.setGoodsId(goodsDO.getGid());
         customerProductCoupon.setQuantity(1);
-        if (template.getIsGift()){
+        if (template.getIsGift().equals("1")){
             customerProductCoupon.setGetType(CouponGetType.PRESENT);
         }else {
             customerProductCoupon.setGetType(CouponGetType.BUY);
@@ -413,6 +439,10 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
 
         AppEmployee employee = appEmployeeService.findByLoginName(template.getEmpCode());
 
+        if (employee == null){
+            log.info("导购: "+ template.getEmpCode() + "找不到");
+            return 0;
+        }
         customerProductCoupon.setStoreId(employee.getStoreId());
         customerProductCoupon.setSellerId(employee.getEmpId());
         customerProductCoupon.setStatus(true);

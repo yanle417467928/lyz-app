@@ -1340,7 +1340,7 @@ public class OrderController {
      * @return
      */
     @PostMapping(value = "/list/sellerManager/payFor", produces = "application/json;charset=UTF-8")
-    public ResultDTO<Object> getPayForOrderList(Long userId, Integer identityType, Integer page, Integer size) {
+    public ResultDTO<Object> getPayForOrderList(Long userId, Integer identityType,String keywords, Integer page, Integer size) {
         ResultDTO<Object> resultDTO;
         logger.info("getPayForOrderList CALLED,客户经理查看自己支付的订单，入参 userID:{}, identityType:{}", userId, identityType);
         if (null == userId) {
@@ -1367,7 +1367,7 @@ public class OrderController {
         }
         try {
             //获取装饰经理支付订单订单列表
-            PageInfo<OrderPageInfoVO> orderListResponsePageInfo = appOrderService.findSellerManagerPayForOrderList(userId, page, size);
+            PageInfo<OrderPageInfoVO> orderListResponsePageInfo = appOrderService.findSellerManagerPayForOrderList(userId, page, size,keywords);
 
             //创建一个返回对象list
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,

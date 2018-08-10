@@ -1130,7 +1130,7 @@
         (
         <include refid="newSaleSql"/>
         )ua
-        group by ua.emp_id
+        group by ua.emp_idy
     </select>
 
     <select id="findSalesOrderList" resultType="cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsOrderRespons">

@@ -102,6 +102,8 @@ public interface AppEmployeeDAO {
 
     List<StoreRankClassification> getStoreRankClassification(@Param("userId") Long userId, @Param("type") AppIdentityType identityType);
 
+    List<StoreRankClassification> getStoreRankClassificationByCityId(@Param("userId") Long userId, @Param("type") AppIdentityType identityType);
+
     String getSalesManagerSupportHotline(@Param("storeCode") String storeCode);
 
     List<EmpAvailableCreditMoneyChangeLog> getEmpAvailableCreditMoneyChangeLogByEmpId(@Param("empId") Long empId);

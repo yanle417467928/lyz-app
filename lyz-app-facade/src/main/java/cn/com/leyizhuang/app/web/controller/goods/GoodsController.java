@@ -537,7 +537,7 @@ public class GoodsController {
             return resultDTO;
         }
         //只有顾客身份才能购买专供商品
-        if (null == identityType || identityType != 6) {
+        if (null == identityType ) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此用户身份不支持此功能！", null);
             logger.info("getZsRankGoodsListByUserIdAndIdentityType OUT,获取会员专供商品列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -555,7 +555,7 @@ public class GoodsController {
             return resultDTO;
         }
         try {
-            if (identityType.equals(AppIdentityType.DECORATE_MANAGER) || identityType.equals(AppIdentityType.DECORATE_EMPLOYEE)){
+            if (identityType.equals(AppIdentityType.DECORATE_MANAGER.getValue()) || identityType.equals(AppIdentityType.DECORATE_EMPLOYEE.getValue())){
                 // 装饰公司查看专供产品
             }else {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此用户身份不支持此功能！", null);

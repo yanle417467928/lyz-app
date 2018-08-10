@@ -1332,11 +1332,11 @@ public class AppOrderServiceImpl implements AppOrderService {
     }
 
     @Override
-    public PageInfo<OrderPageInfoVO> findSellerManagerPayForOrderList(Long userId, Integer page, Integer size) {
+    public PageInfo<OrderPageInfoVO> findSellerManagerPayForOrderList(Long userId, Integer page, Integer size,String keywords) {
         if (userId != null) {
 
             PageHelper.startPage(page, size);
-            List<OrderPageInfoVO> orderPageInfoVOList = orderDAO.findSellerManagerPayForOrderList(userId);
+            List<OrderPageInfoVO> orderPageInfoVOList = orderDAO.findSellerManagerPayForOrderList(userId,keywords);
 
             orderPageInfoVOList.forEach(p -> {
                 List<String> goodsImgList = p.getOrderGoodsInfoList().stream().map(OrderGoodsInfo::getCoverImageUri).collect(Collectors.toList());
