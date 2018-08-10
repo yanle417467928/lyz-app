@@ -5,6 +5,8 @@ import cn.com.leyizhuang.app.foundation.dao.AppEmployeeDAO;
 import cn.com.leyizhuang.app.foundation.dao.MaEmployeeDAO;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeType;
+import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditChangeDetailDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditChangeDetailDO4Simple;
 import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditMoney;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaEmployeeResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
@@ -297,7 +299,7 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
     }
 
     @Override
-    public EmployeeLogVo queryLastDecorativeCreditChange(Long id) {
+    public GuideCreditChangeDetailDO4Simple queryLastDecorativeCreditChange(Long id) {
 
         if (id == null) {
             return null;

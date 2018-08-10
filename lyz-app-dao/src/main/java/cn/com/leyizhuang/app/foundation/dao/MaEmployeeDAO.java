@@ -2,6 +2,8 @@ package cn.com.leyizhuang.app.foundation.dao;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditChangeDetailDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditChangeDetailDO4Simple;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaEmployeeResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeLogVo;
 import cn.com.leyizhuang.app.foundation.vo.management.guide.GuideVO;
@@ -69,6 +71,6 @@ public interface MaEmployeeDAO {
 
     List<EmployeeDO> findEmpployeeByCityIdAndIdentityType(@Param("cityId")Long cityId, @Param("type") AppIdentityType type);
 
-    EmployeeLogVo queryLastDecorativeCreditChange(Long id);
+    GuideCreditChangeDetailDO4Simple queryLastDecorativeCreditChange(Long id);
 
 }
