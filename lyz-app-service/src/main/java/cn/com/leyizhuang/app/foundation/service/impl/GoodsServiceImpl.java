@@ -548,7 +548,7 @@ public class GoodsServiceImpl implements GoodsService {
         List<UserGoodsResponse> list = new ArrayList<>();
         PageHelper.startPage(page, size);
         if (identityType.equals(AppIdentityType.DECORATE_MANAGER) || identityType.equals(AppIdentityType.DECORATE_EMPLOYEE)){
-            list = this.findZsGoodsListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(firstCategoryCode,userId,identityType.getValue(),secondCategoryId,specification,typeId,brandId);
+            list = this.findZsGoodsListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(firstCategoryCode,userId,identityType.getValue(),secondCategoryId,specification,typeId,brandId,keywords);
         }else {
             list = goodsDAO.findGoodsListByCustomerIdAndIdentityTypeAndUserRank(userId, identityType, keywords,firstCategoryCode, secondCategoryId,
                     brandId, typeId, specification);
@@ -796,7 +796,7 @@ public class GoodsServiceImpl implements GoodsService {
 
     public List<UserGoodsResponse> findZsGoodsListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(String categoryCode, Long userId,
                                                                                                           Integer identityType, Long categorySecond,
-                                                                                                          String specification, Long  goodTypeId,Long brandId
+                                                                                                          String specification, Long  goodTypeId,Long brandId,String keywords
                                                                                                           ) {
         if (identityType == AppIdentityType.DECORATE_MANAGER.getValue() || identityType == AppIdentityType.DECORATE_EMPLOYEE.getValue()){
             AppEmployee appEmployee = appEmployeeService.findById(userId);
@@ -813,7 +813,7 @@ public class GoodsServiceImpl implements GoodsService {
                 }
 
                 if (cityId != null && storeId != null && rankCode != null){
-                    return goodsDAO.findZsGoodsListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(categoryCode,categorySecond,specification,rankCode,goodTypeId,brandId,userId,cityId);
+                    return goodsDAO.findZsGoodsListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(categoryCode,categorySecond,specification,rankCode,goodTypeId,brandId,userId,cityId,keywords);
                 }
             }
         }

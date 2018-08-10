@@ -516,7 +516,7 @@ public class GoodsController {
         }
     }
     /**
-     * @title   获取会员专供商品列表
+     * @title   获取装饰公司商品专供商品列表
      * @descripe
      * @param
      * @return
@@ -529,29 +529,29 @@ public class GoodsController {
                                                                              String firstCategoryCode, Long categoryId, Long brandId, Long typeId,
                                                                              String specification,Integer page, Integer size) {
         ResultDTO<Object> resultDTO;
-        logger.info("getZsRankGoodsListByUserIdAndIdentityType CALLED,获取会员专供商品列表，入参userId:{},identityType:{},page:{},size:{}", userId, identityType,page,size);
+        logger.info("getZsRankGoodsListByUserIdAndIdentityType CALLED,获取装饰公司商品专供商品列表，入参userId:{},identityType:{},page:{},size:{}", userId, identityType,page,size);
 
         if (null == userId) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户id不能为空", null);
-            logger.info("getZsRankGoodsListByUserIdAndIdentityType OUT,获取会员专供商品列表失败，出参 resultDTO:{}", resultDTO);
+            logger.info("getZsRankGoodsListByUserIdAndIdentityType OUT,获取装饰公司商品专供商品列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         //只有顾客身份才能购买专供商品
         if (null == identityType ) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此用户身份不支持此功能！", null);
-            logger.info("getZsRankGoodsListByUserIdAndIdentityType OUT,获取会员专供商品列表失败，出参 resultDTO:{}", resultDTO);
+            logger.info("getZsRankGoodsListByUserIdAndIdentityType OUT,获取装饰公司商品专供商品列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == page) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "页码不能为空",
                     null);
-            logger.info("getZsRankGoodsListByUserIdAndIdentityType OUT,获取会员专供商品列表失败，出参 resultDTO:{}", resultDTO);
+            logger.info("getZsRankGoodsListByUserIdAndIdentityType OUT,获取装饰公司商品专供商品列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == size) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "单页显示条数不能为空",
                     null);
-            logger.info("getZsRankGoodsListByUserIdAndIdentityType OUT,获取会员专供商品列表失败，出参 resultDTO:{}", resultDTO);
+            logger.info("getZsRankGoodsListByUserIdAndIdentityType OUT,获取装饰公司商品专供商品列表失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         try {

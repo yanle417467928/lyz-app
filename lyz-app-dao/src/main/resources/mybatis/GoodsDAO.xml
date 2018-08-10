@@ -2059,8 +2059,8 @@
         g.gid id,
         g.goods_specification,
         g.goods_unit,
-        p.vip_price,
-        p.retail_price,
+        gp.vip_price,
+        gp.retail_price,
         g.cid category_id,
         g.brd_id brand_id,
         g.gtid type_id,
@@ -2068,15 +2068,15 @@
         g.work_area,
         g.work_cost,
         g.type_name
-        from cus_customer c
-        INNER JOIN gds_goods_price gp on gp.gid = c.store_id
+        from emp_employee e
+        INNER JOIN gds_goods_price gp on gp.store_id = e.store_id
         LEFT JOIN gds_goods g on g.gid = gp.gid
         LEFT JOIN gds_goods_category gc ON g.cid = gc.cid
         LEFT JOIN gds_goods_brand b ON g.brd_id = b.brd_id
         LEFT JOIN gds_goods_type ggt ON ggt.gtid =g.gtid
         INNER JOIN (SELECT ggp.gid,ggp.price_type from gds_goods_price ggp LEFT JOIN st_store s on s.store_id = ggp.store_id
         where s.city_id = #{cityId} and ggp.price_type = #{rankCode} GROUP BY gid) gid on gid.gid = g.gid
-        LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId} AND m.material_list_type = 'NORMAL'
+        LEFT JOIN material_list m ON m.gid = gp.gid AND m.user_id = #{userId} AND m.material_list_type = 'NORMAL'
         WHERE e.emp_id = #{userId}
         <if test="null != firstCategoryCode ">
             AND gc.p_category_code = #{firstCategoryCode}
