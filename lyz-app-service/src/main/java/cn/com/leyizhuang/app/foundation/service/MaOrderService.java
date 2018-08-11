@@ -190,7 +190,7 @@ public interface MaOrderService {
 
     MaOrderTempInfo getOrderInfoByOrderNo(String orderNo);
 
-    void orderShipping(String orderNumber, ShiroUser shiroUser, MaOrderTempInfo maOrderTempInfo);
+    void orderShipping(String orderNumber, ShiroUser shiroUser, MaOrderTempInfo maOrderTempInfo) throws Exception;
 
     void saveOrderShipping(OrderShipping orderShipping);
 
