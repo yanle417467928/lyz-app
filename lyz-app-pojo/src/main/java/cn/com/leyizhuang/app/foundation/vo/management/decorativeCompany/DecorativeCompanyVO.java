@@ -46,7 +46,15 @@ public class DecorativeCompanyVO {
             decorativeCompanyVO.setStoreName(storeDO.getStoreName());
             decorativeCompanyVO.setEnable(storeDO.getEnable());
             decorativeCompanyVO.setStoreCode(storeDO.getStoreCode());
-            decorativeCompanyVO.setCompany(storeDO.getCompany());
+
+
+            if (storeDO.getCompany()!=null){
+                String company = storeDO.getCompany();
+                company = company.replace("MONTHLY", "大型装饰公司")
+                        .replace("CASH", "小型装饰公司");
+                decorativeCompanyVO.setCompany(company);
+            }
+
             return decorativeCompanyVO;
         } else {
             return null;
