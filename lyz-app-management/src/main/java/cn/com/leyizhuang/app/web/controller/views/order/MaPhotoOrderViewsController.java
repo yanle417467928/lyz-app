@@ -3,8 +3,10 @@ package cn.com.leyizhuang.app.web.controller.views.order;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.MaterialListDO;
+import cn.com.leyizhuang.app.foundation.pojo.response.CustomerRankInfoResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.DeliveryAddressResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.materialList.MaUpdateMaterialResponse;
+import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.MaMaterialListService;
 import cn.com.leyizhuang.app.foundation.service.MaPhotoOrderService;
 import cn.com.leyizhuang.app.foundation.vo.management.order.PhotoOrderVO;
@@ -40,6 +42,9 @@ public class MaPhotoOrderViewsController extends BaseController {
 
     @Resource
     private MaMaterialListService maMaterialListService;
+
+    @Autowired
+    private AppCustomerService appCustomerService;
     /**
      * @title   跳转拍照下单列表
      * @descripe
@@ -81,6 +86,10 @@ public class MaPhotoOrderViewsController extends BaseController {
             error404();
             return "/error/404";
         } else {
+            if("顾客".equals(photoOrderVO.getIdentityType().toString())){
+                CustomerRankInfoResponse customerRankInfoResponse = appCustomerService.findCusRankinfoByCusId(photoOrderVO.getUserId());
+                map.addAttribute("cusRank", customerRankInfoResponse);
+            }
             this.maPhotoOrderService.updateStatus(id, PhotoOrderStatus.PROCESSING);
             map.addAttribute("photoOrderVO", photoOrderVO);
         }
@@ -97,7 +106,10 @@ public class MaPhotoOrderViewsController extends BaseController {
         logger.info("updatePhotoOrderGoods 入参 photoNo:{}",photoNo);
 
         PhotoOrderVO photoOrderVO = this.maPhotoOrderService.findByPhotoOrderNo(photoNo);
-
+        if("顾客".equals(photoOrderVO.getIdentityType().toString())){
+            CustomerRankInfoResponse customerRankInfoResponse = appCustomerService.findCusRankinfoByCusId(photoOrderVO.getUserId());
+            map.addAttribute("cusRank", customerRankInfoResponse);
+        }
         map.addAttribute("photoOrderVO",photoOrderVO);
         return "/views/order/photo_order_update";
     }

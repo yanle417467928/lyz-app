@@ -31,4 +31,10 @@ public class MaCreateOrderPeopleResponse {
     //下单人归属门店code
     private String storeCode;
 
+    //下单人会员等级
+    private String rankCode;
+
+    //下单导购类型
+    private String sellerType;
+
 }

@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.pojo;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.CustomerCashCouponChangeType;
 import cn.com.leyizhuang.app.core.constant.CustomerProductCouponChangeType;
+import cn.com.leyizhuang.app.core.constant.remote.ProductCouponSubjectType;
 import lombok.*;
 
 import java.util.Date;
@@ -61,4 +62,9 @@ public class CustomerProductCouponChangeLog {
      * 备注
      */
     private String remark;
+
+    /**
+     * 产品券主体类型
+     */
+    private ProductCouponSubjectType productCouponSubjectType;
 }

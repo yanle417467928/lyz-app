@@ -623,7 +623,7 @@ public class EmployeeController {
             logger.info("getStoreRankClassification OUT,获取导购门店所有专供类型失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
-        if (null == identityType || identityType != 0) {
+        if (null == identityType) {
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此用户身份不支持此功能！",
                     null);
             logger.info("getStoreRankClassification OUT,获取导购门店所有专供类型失败，出参 resultDTO:{}", resultDTO);

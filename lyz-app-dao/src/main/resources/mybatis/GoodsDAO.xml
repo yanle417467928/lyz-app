@@ -1463,6 +1463,63 @@
         </if>
     </select>
 
+
+    <select id="findGoodsListByCustomerIdAndIdentityTypeAndUserRankMa"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
+        <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
+            SELECT
+            g.sku,
+            g.cover_image_uri,
+            g.sku_name goods_name,
+            g.gid id,
+            g.goods_specification,
+            g.goods_unit,
+            p.vip_price,
+            p.retail_price,
+            g.cid category_id,
+            g.brd_id brand_id,
+            g.gtid type_id,
+            m.qty materialQty,
+            g.work_area,
+            g.work_cost,
+            g.type_name
+            FROM
+            cus_customer c
+            LEFT JOIN cus_rank cr ON cr.cus_id = c.cus_id
+            LEFT JOIN rank_classification rc ON cr.rank_id = rc.rank_id
+            INNER JOIN gds_goods_price p ON c.store_id = p.store_id
+            AND rc.rank_code = p.price_type
+            AND p.start_time &lt; NOW()
+            AND (p.end_time IS NULL OR p.end_time &gt; NOW())
+            LEFT JOIN material_list m ON m.gid = p.gid AND m.user_id = #{userId} AND m.material_list_type = 'NORMAL'
+            INNER JOIN gds_goods g ON p.gid = g.gid
+            INNER JOIN gds_goods_category gc ON g.cid = gc.cid
+            WHERE
+            c.cus_id = #{userId}
+            <if test="null != firstCategoryCode ">
+                AND gc.p_category_code = #{firstCategoryCode}
+            </if>
+            <if test="null != secondCategoryId ">
+                AND g.cid = #{secondCategoryId}
+            </if>
+            <if test="null != brandId ">
+                AND g.brd_id = #{brandId}
+            </if>
+            <if test="null != typeId ">
+                AND g.gtid = #{typeId}
+            </if>
+            <if test="null != specification and specification != ''">
+                AND g.specification_type = #{specification}
+            </if>
+            <if test="keywords != null and keywords != ''">
+                AND (g.sku_name LIKE concat('%', #{keywords}, '%')
+                OR g.sku LIKE concat('%', #{keywords}, '%'))
+            </if>
+            ORDER BY g.sort_id ASC
+        </if>
+    </select>
+
+
     <select id="getGoodsBykeywordsAndCompanyAndBrandCodeAndCategoryCodeAndStoreId"
             resultType="cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO">
         SELECT
@@ -1665,6 +1722,8 @@
         </if>
         ORDER BY b.sort_id ASC
     </select>
+
+
 
     <select id="findGoodsBrandListByCategoryCodeAndEmployeeIdAndUserRank"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsBrandResponse">
@@ -1890,4 +1949,155 @@
         ORDER BY t.sort_id ASC
     </select>
 
+    <select id="findZsGoodsBrandListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsBrandResponse">
+        SELECT DISTINCT
+        b.brd_id brand_id,
+        b.brand_name brand_name from gds_goods g
+        INNER JOIN gds_goods_price gp on gp.gid = g.gid
+        LEFT JOIN gds_goods_category gc ON g.cid = gc.cid
+        LEFT JOIN gds_goods_brand b ON g.brd_id = b.brd_id
+        LEFT JOIN gds_goods_type ggt ON ggt.gtid =g.gtid
+        INNER JOIN (SELECT ggp.gid,ggp.price_type from gds_goods_price ggp LEFT JOIN st_store s on s.store_id = ggp.store_id
+        where s.city_id = #{cityId} and ggp.price_type = #{rankCode} GROUP BY gid) gid on gid.gid = g.gid
+        WHERE gp.store_id = #{storeId}
+        AND gc.p_category_code = #{categoryCode}
+        <if test="null !=categorySecond and ''!= categorySecond ">
+            AND gc.category_name =#{categorySecond}
+        </if>
+        <if test="null !=specification and ''!= specification ">
+            AND g.specification_type=#{specification}
+        </if>
+        <if test="null !=goodsType and ''!= goodsType ">
+            AND ggt.type_name=#{goodsType}
+        </if>
+    </select>
+
+    <select id="findZsGoodsCategoryByCategoryCodeAndUserIdAndIdentityTypeAndUserRank"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsCategoryResponse">
+        SELECT DISTINCT
+        DISTINCT
+        gc.cid category_id,
+        gc.category_name
+        from gds_goods g
+        INNER JOIN gds_goods_price gp on gp.gid = g.gid
+        LEFT JOIN gds_goods_category gc ON g.cid = gc.cid
+        LEFT JOIN gds_goods_brand b ON g.brd_id = b.brd_id
+        LEFT JOIN gds_goods_type ggt ON ggt.gtid =g.gtid
+        INNER JOIN (SELECT ggp.gid,ggp.price_type from gds_goods_price ggp LEFT JOIN st_store s on s.store_id = ggp.store_id
+        where s.city_id = #{cityId} and ggp.price_type = #{rankCode} GROUP BY gid) gid on gid.gid = g.gid
+        WHERE gp.store_id = #{storeId}
+        AND gc.p_category_code = #{categoryCode}
+        <if test="null !=categorySecond and ''!= categorySecond ">
+            AND gc.category_name =#{categorySecond}
+        </if>
+        <if test="null !=specification and ''!= specification ">
+            AND g.specification_type=#{specification}
+        </if>
+        <if test="null !=goodsType and ''!= goodsType ">
+            AND ggt.type_name=#{goodsType}
+        </if>
+    </select>
+
+    <select id="findZsGoodsSpecificationListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsSpecificationResponse">
+        SELECT DISTINCT
+        DISTINCT
+        g.specification_type  specificationName
+        from gds_goods g
+        INNER JOIN gds_goods_price gp on gp.gid = g.gid
+        LEFT JOIN gds_goods_category gc ON g.cid = gc.cid
+        LEFT JOIN gds_goods_brand b ON g.brd_id = b.brd_id
+        LEFT JOIN gds_goods_type ggt ON ggt.gtid =g.gtid
+        INNER JOIN (SELECT ggp.gid,ggp.price_type from gds_goods_price ggp LEFT JOIN st_store s on s.store_id = ggp.store_id
+        where s.city_id = #{cityId} and ggp.price_type = #{rankCode} GROUP BY gid) gid on gid.gid = g.gid
+        WHERE gp.store_id = #{storeId}
+        AND gc.p_category_code = #{categoryCode}
+        <if test="null !=categorySecond and ''!= categorySecond ">
+            AND gc.category_name =#{categorySecond}
+        </if>
+        <if test="null !=specification and ''!= specification ">
+            AND g.specification_type=#{specification}
+        </if>
+        <if test="null !=goodsType and ''!= goodsType ">
+            AND ggt.type_name=#{goodsType}
+        </if>
+    </select>
+
+    <select id="findZsGoodsTypeListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsTypeResponse">
+        SELECT DISTINCT
+        DISTINCT
+        t.gtid type_id,
+        t.type_name
+        from gds_goods g
+        INNER JOIN gds_goods_price gp on gp.gid = g.gid
+        LEFT JOIN gds_goods_category gc ON g.cid = gc.cid
+        LEFT JOIN gds_goods_brand b ON g.brd_id = b.brd_id
+        LEFT JOIN gds_goods_type ggt ON ggt.gtid =g.gtid
+        INNER JOIN (SELECT ggp.gid,ggp.price_type from gds_goods_price ggp LEFT JOIN st_store s on s.store_id = ggp.store_id
+        where s.city_id = #{cityId} and ggp.price_type = #{rankCode} GROUP BY gid) gid on gid.gid = g.gid
+        WHERE gp.store_id = #{storeId}
+        AND gc.p_category_code = #{categoryCode}
+        <if test="null !=categorySecond and ''!= categorySecond ">
+            AND gc.category_name =#{categorySecond}
+        </if>
+        <if test="null !=specification and ''!= specification ">
+            AND g.specification_type=#{specification}
+        </if>
+        <if test="null !=goodsType and ''!= goodsType ">
+            AND ggt.type_name=#{goodsType}
+        </if>
+    </select>
+
+    <select id="findZsGoodsListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.UserGoodsResponse">
+        SELECT DISTINCT
+        g.sku,
+        g.cover_image_uri,
+        g.sku_name goods_name,
+        g.gid id,
+        g.goods_specification,
+        g.goods_unit,
+        gp.vip_price,
+        gp.retail_price,
+        g.cid category_id,
+        g.brd_id brand_id,
+        g.gtid type_id,
+        m.qty materialQty,
+        g.work_area,
+        g.work_cost,
+        g.type_name
+        from emp_employee e
+        INNER JOIN gds_goods_price gp on gp.store_id = e.store_id
+        LEFT JOIN gds_goods g on g.gid = gp.gid
+        LEFT JOIN gds_goods_category gc ON g.cid = gc.cid
+        LEFT JOIN gds_goods_brand b ON g.brd_id = b.brd_id
+        LEFT JOIN gds_goods_type ggt ON ggt.gtid =g.gtid
+        INNER JOIN (SELECT ggp.gid,ggp.price_type from gds_goods_price ggp LEFT JOIN st_store s on s.store_id = ggp.store_id
+        where s.city_id = #{cityId} and ggp.price_type = #{rankCode} GROUP BY gid) gid on gid.gid = g.gid
+        LEFT JOIN material_list m ON m.gid = gp.gid AND m.user_id = #{userId} AND m.material_list_type = 'NORMAL'
+        WHERE e.emp_id = #{userId}
+        <if test="null != firstCategoryCode ">
+            AND gc.p_category_code = #{firstCategoryCode}
+        </if>
+        <if test="null != secondCategoryId ">
+            AND g.cid = #{secondCategoryId}
+        </if>
+        <if test="null != brandId ">
+            AND g.brd_id = #{brandId}
+        </if>
+        <if test="null != typeId ">
+            AND g.gtid = #{typeId}
+        </if>
+        <if test="null != specification and specification != ''">
+            AND g.specification_type = #{specification}
+        </if>
+        <if test="keywords != null and keywords != ''">
+            AND (g.sku_name LIKE concat('%', #{keywords}, '%')
+            OR g.sku LIKE concat('%', #{keywords}, '%'))
+        </if>
+        ORDER BY g.sort_id ASC
+
+    </select>
 </mapper>

@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.core.constant.remote.ProductCouponSubjectType;
 import cn.com.leyizhuang.app.core.exception.*;
 import cn.com.leyizhuang.app.core.utils.*;
 import cn.com.leyizhuang.app.core.utils.csrf.EncryptUtils;
@@ -366,6 +367,7 @@ public class CommonServiceImpl implements CommonService {
                         changeLog.setOperatorIp(ipAddress);
                         changeLog.setOperatorType(AppIdentityType.getAppIdentityTypeByValue(identityType));
                         changeLog.setUseTime(new Date());
+                        changeLog.setProductCouponSubjectType(couponInfo.getProductCouponSubjectType() == null?ProductCouponSubjectType.CUSTOMER_PRODUCT_COUPON : couponInfo.getProductCouponSubjectType());
 
                         productCouponService.addCustomerProductCouponChangeLog(changeLog);
                     } else {
@@ -787,6 +789,7 @@ public class CommonServiceImpl implements CommonService {
                                     customerProductCoupon.setDisableTime(null);
                                     customerProductCoupon.setGoodsLineId(goodsInfo.getId());
                                     customerProductCoupon.setGoodsSign(goodsInfo.getGoodsSign());
+                                    customerProductCoupon.setProductCouponSubjectType(ProductCouponSubjectType.CUSTOMER_PRODUCT_COUPON);
                                     if (null == goodsInfo.getPromotionId()){
                                         customerProductCoupon.setSettlementPrice(goodsInfo.getSettlementPrice());
                                     }else {
@@ -814,6 +817,7 @@ public class CommonServiceImpl implements CommonService {
                                         customerProductCouponChangeLog.setOperatorId(null);
                                         customerProductCouponChangeLog.setOperatorIp(null);
                                         customerProductCouponChangeLog.setRemark(null);
+                                        customerProductCouponChangeLog.setProductCouponSubjectType(ProductCouponSubjectType.CUSTOMER_PRODUCT_COUPON);
 
                                         productCouponService.addCustomerProductCouponChangeLog(customerProductCouponChangeLog);
                                     } else {
@@ -1210,6 +1214,7 @@ public class CommonServiceImpl implements CommonService {
                         couponInfo.setGoodsLineId(productCoupon.getGoodsLineId());
                         couponInfo.setGetOrderNumber(productCoupon.getGetOrderNumber());
                         couponInfo.setGoodsSign(productCoupon.getGoodsSign());
+                        couponInfo.setProductCouponSubjectType(productCoupon.getProductCouponSubjectType() == null?ProductCouponSubjectType.CUSTOMER_PRODUCT_COUPON:productCoupon.getProductCouponSubjectType());
                         orderCouponInfoList.add(couponInfo);
                     }
                 }

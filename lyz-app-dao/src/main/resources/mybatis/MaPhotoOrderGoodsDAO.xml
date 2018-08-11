@@ -3,9 +3,9 @@
 <mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaPhotoOrderGoodsDAO">
 
     <insert id="batchSave" >
-        INSERT INTO photo_order_goods (gid, sku_name, goods_qty, photo_order_no)
+        INSERT INTO photo_order_goods (gid, sku_name, goods_qty, photo_order_no,goods_type)
         VALUES <foreach collection="list" item="item" separator=",">
-                  (#{item.gid}, #{item.skuName}, #{item.goodsQty}, #{item.photoOrderNo})
+                  (#{item.gid}, #{item.skuName}, #{item.goodsQty}, #{item.photoOrderNo}, #{item.goodsType})
                 </foreach>
     </insert>
 

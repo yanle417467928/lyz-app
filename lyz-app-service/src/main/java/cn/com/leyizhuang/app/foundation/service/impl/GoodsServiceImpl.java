@@ -10,7 +10,9 @@ import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsBrand;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
+import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
+import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
 import cn.com.leyizhuang.app.foundation.service.MaGoodsBrandService;
 import cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO;
@@ -26,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -47,6 +50,9 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Autowired
     private AppCustomerService appCustomerService;
+
+    @Autowired
+    private AppEmployeeService appEmployeeService;
 
     /**
      * @param page
@@ -539,10 +545,25 @@ public class GoodsServiceImpl implements GoodsService {
                                                                                            String firstCategoryCode, Long secondCategoryId,
                                                                                            Long brandId, Long typeId, String specification,
                                                                                            String keywords, Integer page, Integer size) {
+        List<UserGoodsResponse> list = new ArrayList<>();
         PageHelper.startPage(page, size);
-        List<UserGoodsResponse> list = goodsDAO.findGoodsListByCustomerIdAndIdentityTypeAndUserRank(userId, identityType, keywords,firstCategoryCode, secondCategoryId,
-                brandId, typeId, specification);
+        if (identityType.equals(AppIdentityType.DECORATE_MANAGER) || identityType.equals(AppIdentityType.DECORATE_EMPLOYEE)){
+            list = this.findZsGoodsListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(firstCategoryCode,userId,identityType.getValue(),secondCategoryId,specification,typeId,brandId,keywords);
+        }else {
+            list = goodsDAO.findGoodsListByCustomerIdAndIdentityTypeAndUserRank(userId, identityType, keywords,firstCategoryCode, secondCategoryId,
+                    brandId, typeId, specification);
+        }
         return new PageInfo<>(list);
+    }
+
+    @Override
+    public List<UserGoodsResponse> findGoodsListByCustomerIdAndIdentityTypeAndUserRankListMa(Long userId, AppIdentityType identityType,
+                                                                                           String firstCategoryCode, Long secondCategoryId,
+                                                                                           Long brandId, Long typeId, String specification,
+                                                                                           String keywords) {
+        List<UserGoodsResponse> list = goodsDAO.findGoodsListByCustomerIdAndIdentityTypeAndUserRankMa(userId, identityType, keywords,firstCategoryCode, secondCategoryId,
+                brandId, typeId, specification);
+        return list;
     }
 
     @Override
@@ -639,7 +660,9 @@ public class GoodsServiceImpl implements GoodsService {
         if (null != categoryCode && null != userId && null != identityType) {
             if (identityType == 6) {
                 return goodsDAO.findGoodsBrandListByCategoryCodeAndCustomerIdAndUserRank(categoryCode, userId, categorySecond, specification, goodType);
-            } else {
+            } else if(identityType == AppIdentityType.DECORATE_MANAGER.getValue() || identityType == AppIdentityType.DECORATE_EMPLOYEE.getValue()){
+                return this.findZsGoodsBrandListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(categoryCode,userId,identityType,categorySecond,specification,goodType,rankCode);
+            }else {
                 return goodsDAO.findGoodsBrandListByCategoryCodeAndEmployeeIdAndUserRank(categoryCode, userId, categorySecond, specification, goodType, rankCode);
             }
         }
@@ -651,7 +674,9 @@ public class GoodsServiceImpl implements GoodsService {
         if (null != categoryCode && null != userId && null != identityType) {
             if (identityType == 6) {
                 return goodsDAO.findGoodsSpecificationListByCategoryCodeAndCustomerIdAndUserRank(categoryCode, userId, categorySecond, goodsBrand, goodType);
-            } else {
+            } else if(identityType == AppIdentityType.DECORATE_MANAGER.getValue() || identityType == AppIdentityType.DECORATE_EMPLOYEE.getValue()){
+                return this.findZsGoodsSpecificationListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(categoryCode,userId,identityType,categorySecond,null,goodType,rankCode);
+            }else {
                 return goodsDAO.findGoodsSpecificationListByCategoryCodeAndEmployeeIdAndUserRank(categoryCode, userId, categorySecond, goodsBrand, goodType, rankCode);
             }
         }
@@ -664,7 +689,9 @@ public class GoodsServiceImpl implements GoodsService {
         if (null != categoryCode && null != userId && null != identityType) {
             if (identityType == 6) {
                 return goodsDAO.findGoodsCategoryListByCategoryCodeAndCustomerIdAndUserRank(categoryCode, userId, goodsBrand, specification, goodsType);
-            } else {
+            } else if(identityType == AppIdentityType.DECORATE_MANAGER.getValue() || identityType == AppIdentityType.DECORATE_EMPLOYEE.getValue()){
+                return this.findZsGoodsCategoryByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(categoryCode,userId,identityType,null,specification,null,rankCode);
+            }else {
                 return goodsDAO.findGoodsCategoryListByCategoryCodeAndEmployeeIdAndUserRank(categoryCode, userId, goodsBrand, specification, goodsType, rankCode);
             }
         }
@@ -677,11 +704,120 @@ public class GoodsServiceImpl implements GoodsService {
         if (null != categoryCode && null != userId && null != identityType) {
             if (identityType == 6) {
                 return goodsDAO.findGoodsTypeListByCategoryCodeAndCustomerIdAndUserRank(categoryCode, userId, categorySecond, specification, goodsBrand);
-            } else {
+            } else if(identityType == AppIdentityType.DECORATE_MANAGER.getValue() || identityType == AppIdentityType.DECORATE_EMPLOYEE.getValue()){
+                return this.findZsGoodsTypeListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(categoryCode,userId,identityType,categorySecond,specification,null,rankCode);
+            }else {
                 return goodsDAO.findGoodsTypeListByCategoryCodeAndEmployeeIdAndUserRank(categoryCode, userId, categorySecond, specification, goodsBrand, rankCode);
             }
         }
         return null;
     }
 
+
+    public List<GoodsBrandResponse> findZsGoodsBrandListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(String categoryCode, Long userId,
+                                                                                                 Integer identityType, String categorySecond,
+                                                                                                 String specification, String goodType,
+                                                                                                 String rankCode) {
+        if (identityType == AppIdentityType.DECORATE_MANAGER.getValue() || identityType == AppIdentityType.DECORATE_EMPLOYEE.getValue()){
+            AppEmployee appEmployee = appEmployeeService.findById(userId);
+
+            if (appEmployee != null){
+                Long cityId = appEmployee.getCityId();
+                Long storeId = appEmployee.getStoreId();
+
+                if (cityId != null && storeId != null && rankCode != null){
+                    return goodsDAO.findZsGoodsBrandListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(categoryCode,categorySecond,specification,rankCode,goodType,storeId,cityId);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public List<GoodsCategoryResponse> findZsGoodsCategoryByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(String categoryCode, Long userId,
+                                                                                                          Integer identityType, String categorySecond,
+                                                                                                          String specification, String goodType,
+                                                                                                          String rankCode) {
+        if (identityType == AppIdentityType.DECORATE_MANAGER.getValue() || identityType == AppIdentityType.DECORATE_EMPLOYEE.getValue()){
+            AppEmployee appEmployee = appEmployeeService.findById(userId);
+
+            if (appEmployee != null){
+                Long cityId = appEmployee.getCityId();
+                Long storeId = appEmployee.getStoreId();
+
+                if (cityId != null && storeId != null && rankCode != null){
+                    return goodsDAO.findZsGoodsCategoryByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(categoryCode,categorySecond,specification,rankCode,goodType,storeId,cityId);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public List<GoodsSpecificationResponse> findZsGoodsSpecificationListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(String categoryCode, Long userId,
+                                                                                                          Integer identityType, String categorySecond,
+                                                                                                          String specification, String goodType,
+                                                                                                          String rankCode) {
+        if (identityType == AppIdentityType.DECORATE_MANAGER.getValue() || identityType == AppIdentityType.DECORATE_EMPLOYEE.getValue()){
+            AppEmployee appEmployee = appEmployeeService.findById(userId);
+
+            if (appEmployee != null){
+                Long cityId = appEmployee.getCityId();
+                Long storeId = appEmployee.getStoreId();
+
+                if (cityId != null && storeId != null && rankCode != null){
+                    return goodsDAO.findZsGoodsSpecificationListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(categoryCode,categorySecond,specification,rankCode,goodType,storeId,cityId);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public List<GoodsTypeResponse> findZsGoodsTypeListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(String categoryCode, Long userId,
+                                                                                                          Integer identityType, String categorySecond,
+                                                                                                          String specification, String goodType,
+                                                                                                          String rankCode) {
+        if (identityType == AppIdentityType.DECORATE_MANAGER.getValue() || identityType == AppIdentityType.DECORATE_EMPLOYEE.getValue()){
+            AppEmployee appEmployee = appEmployeeService.findById(userId);
+
+            if (appEmployee != null){
+                Long cityId = appEmployee.getCityId();
+                Long storeId = appEmployee.getStoreId();
+
+                if (cityId != null && storeId != null && rankCode != null){
+                    return goodsDAO.findZsGoodsTypeListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(categoryCode,categorySecond,specification,rankCode,goodType,storeId,cityId);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public List<UserGoodsResponse> findZsGoodsListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(String categoryCode, Long userId,
+                                                                                                          Integer identityType, Long categorySecond,
+                                                                                                          String specification, Long  goodTypeId,Long brandId,String keywords
+                                                                                                          ) {
+        if (identityType == AppIdentityType.DECORATE_MANAGER.getValue() || identityType == AppIdentityType.DECORATE_EMPLOYEE.getValue()){
+            AppEmployee appEmployee = appEmployeeService.findById(userId);
+
+            if (appEmployee != null){
+                Long cityId = appEmployee.getCityId();
+                Long storeId = appEmployee.getStoreId();
+                String rankCode = "";
+
+                if (cityId.equals(1L)){
+                    rankCode = "A";
+                } if (cityId.equals(2L)){
+                    rankCode = "B";
+                }
+
+                if (cityId != null && storeId != null && rankCode != null){
+                    return goodsDAO.findZsGoodsListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(categoryCode,categorySecond,specification,rankCode,goodTypeId,brandId,userId,cityId,keywords);
+                }
+            }
+        }
+
+        return null;
+    }
 }

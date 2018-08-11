@@ -432,7 +432,13 @@ typeHandler=org.apache.ibatis.type.EnumTypeHandler},
         GROUP BY r.rank_code
     </select>
 
-
+    <select id="getStoreRankClassificationByCityId" resultType="cn.com.leyizhuang.app.foundation.pojo.response.StoreRankClassification">
+        SELECT r.rank_name, r.rank_code, r.rank_url
+        FROM rank_classification r
+        inner JOIN  emp_employee e on e.city_id = r.city_id
+        where e.emp_id = #{userId}
+        order BY r.rank_id limit 1;
+    </select>
     <select id="getSalesManagerSupportHotline" resultType="java.lang.String">
     select mobile
     from emp_employee

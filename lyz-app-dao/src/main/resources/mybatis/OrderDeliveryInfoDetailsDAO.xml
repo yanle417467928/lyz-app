@@ -8,7 +8,7 @@
         FROM ord_delivery_info_details
         WHERE
             order_no = #{orderNumber}
-        ORDER BY create_time DESC
+        ORDER BY create_time DESC, id DESC
     </select>
 
     <select id="queryByOrderNumberAndOperatorNumber"

@@ -2,6 +2,7 @@ package cn.com.leyizhuang.app.foundation.pojo.order;
 
 import cn.com.leyizhuang.app.core.constant.CouponGetType;
 import cn.com.leyizhuang.app.core.constant.OrderCouponType;
+import cn.com.leyizhuang.app.core.constant.remote.ProductCouponSubjectType;
 import lombok.*;
 
 /**
@@ -75,4 +76,9 @@ public class OrderCouponInfo {
      * 商品标志（普通、专供）
      */
     private String goodsSign = "COMMON";
+
+    /**
+     * 产品券主体类型
+     */
+    private ProductCouponSubjectType productCouponSubjectType;
 }

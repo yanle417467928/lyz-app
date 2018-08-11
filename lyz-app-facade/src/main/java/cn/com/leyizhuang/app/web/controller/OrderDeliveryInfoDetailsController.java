@@ -100,7 +100,13 @@ public class OrderDeliveryInfoDetailsController {
             //配送员编号
             String deliveryNumber = null;
             if (null != orderDeliveryInfoDetailsList && orderDeliveryInfoDetailsList.size() > 0) {
-                deliveryNumber = orderDeliveryInfoDetailsList.get(0).getOperatorNo();
+                for (OrderDeliveryInfoDetails deliveryInfoDetails : orderDeliveryInfoDetailsList) {
+                    if (LogisticStatus.SEALED_CAR == deliveryInfoDetails.getLogisticStatus()
+                            || LogisticStatus.CONFIRM_ARRIVAL == deliveryInfoDetails.getLogisticStatus()) {
+                        deliveryNumber = deliveryInfoDetails.getOperatorNo();
+                        break;
+                    }
+                }
             } else {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "没有物流记录", null);
                 logger.info("getOrderDelivery OUT,获取物流详情失败，出参 resultDTO:{}", resultDTO);

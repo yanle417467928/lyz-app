@@ -1005,8 +1005,8 @@
     </select>
 
     <insert id="saveOrderCouponInfo" parameterType="cn.com.leyizhuang.app.foundation.pojo.order.OrderCouponInfo">
-        INSERT INTO ord_coupon_info (oid, ord_no, coupon_type, coupon_id, purchase_price, cost_price, get_type, sku, goods_sign)
-        VALUES (#{oid}, #{orderNumber}, #{couponType}, #{couponId}, #{purchasePrice}, #{costPrice}, #{getType}, #{sku}, #{goodsSign});
+        INSERT INTO ord_coupon_info (oid, ord_no, coupon_type, coupon_id, purchase_price, cost_price, get_type, sku, goods_sign, product_coupon_subject_type)
+        VALUES (#{oid}, #{orderNumber}, #{couponType}, #{couponId}, #{purchasePrice}, #{costPrice}, #{getType}, #{sku}, #{goodsSign}, #{productCouponSubjectType});
     </insert>
 
     <select id="getPendingEvaluationOrderListByUserIDAndIdentityType" resultMap="pendingEvaluationOrder">
@@ -1751,6 +1751,12 @@
         LEFT JOIN st_store s on s.store_id = obi.store_id
         WHERE
         por.payhelper_id = #{userId}
+        <if test="keywords != null and keywords != ''">
+            AND (obi.ord_no LIKE concat(concat('%',#{keywords}),'%') OR oli.shipping_address LIKE
+            concat(concat('%',#{keywords}),'%')
+            OR oli.receiver LIKE concat(concat('%',#{keywords}),'%')
+            OR oli.receiver_phone LIKE concat(concat('%',#{keywords}),'%'))
+        </if>
         /*AND creator_identity_type = 'DECORATE_MANAGER'*/
         ORDER BY obi.create_time DESC
     </select>

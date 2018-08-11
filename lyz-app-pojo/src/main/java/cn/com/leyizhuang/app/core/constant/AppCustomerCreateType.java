@@ -10,7 +10,7 @@ import java.util.Objects;
  **/
 public enum AppCustomerCreateType {
 
-    APP_REGISTRY("APP_REGISTRY", "APP注册"), ADMIN_CREATE("ADMIN_CREATE", "后台创建"),QRCODE_REGISTRY("QRCODE_REGISTRY","扫码注册");
+    APP_REGISTRY("APP_REGISTRY", "APP注册"), ADMIN_CREATE("ADMIN_CREATE", "后台创建"),QRCODE_REGISTRY("QRCODE_REGISTRY","扫码注册"),IMPORT("IMPORT","导入");
 
     private String value;
 

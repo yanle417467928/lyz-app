@@ -740,6 +740,7 @@ public class UserSettingController {
             }
             storeSeller.setSellerList(this.employeeService.findSellerByStoreIdAndIdentityType(appCustomer.getStoreId(), AppIdentityType.getAppIdentityTypeByValue(0)));
         }
+        
         storeSeller.setStoreList(this.storeService.findStoreByCityIdAndNotStoreType(cityId, StoreType.ZS));
         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, storeSeller);
         logger.info("getStoreSeller OUT,获取客户归属门店和导购成功，出参 resultDTO:{}", resultDTO);

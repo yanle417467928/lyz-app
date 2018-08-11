@@ -180,8 +180,11 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                         OrderGoodsInfo orderGoodsInfo = orderGoodsInfoMap.get(goods.getSku());
 
                         if (orderGoodsInfo == null){
-                            //  抛异常
-                            throw new DutchException("分摊异常，找不到本品");
+                            if (goods.getCompanyFlag().equals("HR")){
+                                //  抛异常
+                                throw new DutchException("分摊异常，找不到本品");
+                            }
+
                         }else {
                             Integer remainQty = orderGoodsInfo.getOrderQuantity() - fullQty;
 

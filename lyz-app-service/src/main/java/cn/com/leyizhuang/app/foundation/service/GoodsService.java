@@ -148,6 +148,8 @@ public interface GoodsService {
 
     PageInfo<UserGoodsResponse> findGoodsListByCustomerIdAndIdentityTypeAndUserRank(Long userId, AppIdentityType identityType, String firstCategoryCode, Long secondCategoryId,
                                                                                     Long brandId, Long typeId, String specification,String keywords, Integer page, Integer size);
+    List<UserGoodsResponse> findGoodsListByCustomerIdAndIdentityTypeAndUserRankListMa(Long userId, AppIdentityType identityType, String firstCategoryCode, Long secondCategoryId,
+                                                               Long brandId, Long typeId, String specification,String keywords);
 
     PageInfo<GoodsDO> getGoodsBykeywordsAndCompanyAndBrandCodeAndCategoryCodeAndStoreId(Integer page, Integer size, String keywords,String companyCode, Long brandCode,
                                                                                           String categoryCode, Long storeId);

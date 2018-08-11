@@ -1019,10 +1019,10 @@
         'FINISHED',
         'REJECTED'
         )
-        <if test="null!=startTime and ''!=startTime">
+        <if test="null!=startTime">
             AND obd.pay_up_time >= #{startTime}
         </if>
-        <if test="null!=endTime and ''!=endTime">
+        <if test="null!=endTime">
             and
             <![CDATA[obd.pay_up_time<= #{startTime}]]> and wa.end_dt &lt; #{endTime}
         </if>
@@ -1128,7 +1128,7 @@
         as finishSales
         from
         (
-        <include refid="SalesSql"/>
+        <include refid="newSaleSql"/>
         )ua
         group by ua.emp_id
     </select>
@@ -1148,7 +1148,288 @@
         as price
         from
         (
-        <include refid="SalesSql"/>
+        <include refid="newSaleSql"/>
         )ua where ua.emp_id = #{empId} GROUP BY ua.ordNo,ua.returnNo
     </select>
+
+
+    <sql id="psSql">
+        SELECT
+        e.emp_id,
+        s.store_type as 'storeType',
+        e.`name` as 'name',
+        ob.ord_no as 'ordNo',
+        og.sku as 'sku',
+        CASE wa.end_dt WHEN null THEN '' ELSE wa.end_dt END as 'shippingDate',
+        if(og.goods_line_type = "PRODUCT_COUPON" ,oci.purchase_price , (og.order_qty ) * og.return_price ) as
+        'financialSales',
+        if(og.goods_line_type = "PRODUCT_COUPON" ,
+        if(oci.purchase_price = 0,0,if(og2.goods_line_type = "GOODS",(oci.purchase_price - (og.settlement_price - og.wholesale_price)),oci.purchase_price)) ,
+        IF(og.goods_line_type = "GOODS" , (og.wholesale_price * og.order_qty) , 0) ) as 'distributionSales',
+        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty',
+        '' as 'returnNo'
+        FROM
+        ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
+        LEFT JOIN st_store s on ob.store_id = s.store_id
+        LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
+        -- LEFT JOIN gds_goods_grade gp on og.sku = gp.sku
+        LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
+        LEFT JOIN (SELECT * from inter_wta_order_shipping_header where send_flag = 1 GROUP BY order_no) wa ON ob.ord_no = wa.order_no
+        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku  and og.goods_line_type = 'PRODUCT_COUPON'
+        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
+        LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
+        WHERE
+        ob.`status` IN (
+        'PENDING_RECEIVE',
+        'FINISHED',
+        'REJECTED'
+        )
+        and obd.is_pay_up = 1
+        and ob.delivery_type = 'HOUSE_DELIVERY'
+    </sql>
+
+    <sql id="ztSql">
+        SELECT
+        e.emp_id,
+        s.store_type as 'storeType',
+        e.`name` as 'name',
+        ob.ord_no as 'ordNo',
+        og.sku as 'sku',
+        CASE os.shipping_time WHEN null THEN '' ELSE os.shipping_time END as 'shippingDate',
+        if(og.goods_line_type = "PRODUCT_COUPON" ,purchase_price , (og.order_qty ) * og.return_price )
+        as 'financialSales',
+        if(og.goods_line_type = "PRODUCT_COUPON" ,
+        if(oci.purchase_price = 0,0,if(og2.goods_line_type = "GOODS",(oci.purchase_price - (og.settlement_price - og.wholesale_price)),oci.purchase_price)),
+        IF(og.goods_line_type = "GOODS" , (og.wholesale_price * og.order_qty) , 0) ) as
+        'distributionSales',
+        CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty',
+        '' as 'returnNo'
+
+        FROM
+        ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
+        LEFT JOIN st_store s on ob.store_id = s.store_id
+        LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
+        LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
+        LEFT JOIN ord_shipping os on ob.oid = os.oid
+        LEFT JOIN ord_coupon_info oci on ob.oid = oci.oid and og.sku = oci.sku  and og.goods_line_type = 'PRODUCT_COUPON'
+        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.coupon_id
+        LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
+        WHERE
+        ob.`status` IN (
+        'FINISHED'
+        )
+        AND ob.delivery_type = 'SELF_TAKE'
+        and obd.is_pay_up = 1
+        and s.store_type != 'JM'
+    </sql>
+
+    <sql id="psthSql">
+        SELECT
+        e.emp_id,
+        s.store_type as 'storeType',
+        e.`name` as 'name',
+        ob.ord_no as 'ordNo',
+        org.sku as 'sku',
+        wro.c_end_dt as 'shippingDate',
+        if(org.goods_line_type = "PRODUCT_COUPON" ,-ABS(oci.purchase_price),-ABS(org.return_price * org.return_qty)) as 'financialSales',
+        if(org.goods_line_type = "PRODUCT_COUPON" ,
+        if(oci.purchase_price = 0,0,-ABS(if(og2.goods_line_type = "GOODS",(oci.purchase_price - (org.settlement_price - org.wholesale_price)),oci.purchase_price) * org.return_qty)) ,
+        -ABS(IF(org.goods_line_type = "GOODS" , (org.wholesale_price * org.return_qty) , 0))) as 'distributionSales',
+        CASE org.goods_line_type WHEN 'PRODUCT_COUPON' THEN -1 ELSE -ABS(org.return_qty) END as 'orderQty',
+        orb.return_no as 'returnNo'
+        FROM
+        ord_return_base_info orb
+        LEFT JOIN ord_base_info ob on orb.oid = ob.oid
+        LEFT JOIN ord_return_goods_info org on orb.roid = org.roid
+        LEFT JOIN st_store s on ob.store_id = s.store_id
+        LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
+        LEFT JOIN (SELECT * from inter_wta_return_order_back_header GROUP  BY po_no) wro ON wro.po_no = orb.return_no
+        LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
+        LEFT JOIN ord_return_product_coupon oci on orb.roid = oci.roid and org.sku = oci.sku and org.goods_line_type = 'PRODUCT_COUPON'
+        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.pcid
+        LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
+        where
+        1=1
+        and ob.`status` IN ('FINISHED','REJECTED')
+    </sql>
+
+    <sql id="ztthSql">
+        SELECT
+        e.emp_id,
+        s.store_type as 'storeType',
+        e.`name` as 'name',
+        ob.ord_no as 'ordNo',
+        org.sku as 'sku',
+        orl.operation_time as 'shippingDate',
+        if(org.goods_line_type = "PRODUCT_COUPON" ,-ABS(oci.purchase_price),-ABS(org.return_price * org.return_qty)) as 'financialSales',
+        if(org.goods_line_type = "PRODUCT_COUPON" ,
+        if(oci.purchase_price = 0,0,-ABS(if(og2.goods_line_type = "GOODS",(oci.purchase_price - (org.settlement_price - org.wholesale_price)),oci.purchase_price) * org.return_qty)) ,
+        -ABS(IF(org.goods_line_type = "GOODS" , (org.wholesale_price * org.return_qty) , 0))) as 'distributionSales',
+        CASE org.goods_line_type WHEN 'PRODUCT_COUPON' THEN -1 ELSE -ABS(org.return_qty) END as 'orderQty',
+        orb.return_no as 'returnNo'
+        FROM
+        ord_return_base_info orb
+        LEFT JOIN ord_base_info ob on orb.oid = ob.oid
+        LEFT JOIN ord_return_goods_info org on orb.roid = org.roid
+        LEFT JOIN st_store s on ob.store_id = s.store_id
+        LEFT JOIN emp_employee e on ob.sales_consult_id = e.emp_id
+        LEFT JOIN ord_billing_details obd on ob.oid = obd.oid
+        LEFT JOIN ord_return_product_coupon oci on orb.roid = oci.roid and org.sku = oci.sku and org.goods_line_type = 'PRODUCT_COUPON'
+        LEFT JOIN cus_customer_product_coupon ccpc on ccpc.id = oci.pcid
+        LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
+        LEFT JOIN ord_return_lifecycle orl on orl.return_no = orb.return_no and orl.operation = "NORMAL_RETURN" and orl.post_status = "FINISHED"
+        where
+        1=1
+        AND ob.delivery_type = 'SELF_TAKE' and orb.return_type = 'NORMAL_RETURN'
+        and orb.return_status = 'FINISHED'
+        and s.store_type != 'JM'
+    </sql>
+
+
+    <sql id="newSaleSql">
+        <!-- 配送 -->
+        (
+            <include refid="psSql"/>
+            <if test="null!=startTime">
+                AND obd.pay_up_time >= #{startTime}
+            </if>
+            <if test="null!=endTime">
+                and
+                <![CDATA[ obd.pay_up_time <= #{endTime} ]]> and wa.end_dt &lt; #{endTime}
+            </if>
+            <if test="null!=companyCode and ''!=companyCode">
+                and s.store_structure_code like concat('%',#{companyCode},'%')
+            </if>
+        )
+        UNION ALL
+        <!-- 自提 -->
+        (
+            <include refid="ztSql"/>
+            <if test="null!=startTime">
+                AND obd.pay_up_time >= #{startTime}
+            </if>
+            <if test="null!=endTime">
+                and   <![CDATA[ obd.pay_up_time <= #{endTime}]]> and os.shipping_time &lt; #{endTime}
+            </if>
+            <if test="null!=companyCode and ''!=companyCode">
+                and s.store_structure_code like concat('%',#{companyCode},'%')
+            </if>
+        )
+        UNION ALL
+        <!-- 配送 之前结清本月出货 -->
+        (
+            <include refid="psSql"/>
+            <if test="null!=startTime">
+                AND wa.end_dt >= #{startTime}
+            </if>
+            <if test="null!=endTime">
+                and
+                <![CDATA[wa.end_dt <= #{endTime} ]]>
+            </if>
+
+            <if test="null!=startTime">
+                and
+                <![CDATA[ obd.pay_up_time < #{startTime} ]]>
+            </if>
+            <if test="null!=companyCode and ''!=companyCode">
+                and s.store_structure_code like concat('%',#{companyCode},'%')
+            </if>
+        )
+
+        UNION ALL
+
+        <!-- 自提 之前结清本月出货 -->
+        (
+            <include refid="ztSql"/>
+            <if test="null!=startTime">
+                AND os.shipping_time >= #{startTime}
+            </if>
+            <if test="null!=endTime">
+                and
+                <![CDATA[ os.shipping_time <= #{endTime} ]]>
+            </if>
+            <if test="null!=startTime ">
+                and  <![CDATA[ obd.pay_up_time < #{startTime}]]>
+            </if>
+            <if test="null!=companyCode and ''!=companyCode">
+                and s.store_structure_code like concat('%',#{companyCode},'%')
+            </if>
+        )
+
+        UNION ALL
+
+        <!-- 配送 退货 -->
+        (
+            <include refid="psthSql"/>
+            <if test="null!=startTime">
+                AND
+                wro.c_end_dt > #{startTime}
+            </if>
+            <if test="null!=endTime ">
+                and
+                <![CDATA[ wro.c_end_dt <= #{endTime} ]]>
+            </if>
+            <if test="null!=companyCode and ''!=companyCode">
+                and s.store_structure_code like concat('%',#{companyCode},'%')
+            </if>
+        )
+
+        UNION  ALL
+
+        <!-- 自提 退货 -->
+        (
+            <include refid="ztthSql"/>
+            <if test="null!=startTime">
+                AND
+                orl.operation_time > #{startTime}
+            </if>
+            <if test="null!=endTime">
+                and
+                <![CDATA[ orl.operation_time <= #{endTime} ]]>
+            </if>
+            <if test="null!=companyCode and ''!=companyCode">
+                and s.store_structure_code like concat('%',#{companyCode},'%')
+            </if>
+
+        )
+
+        <!-- 配送 现结装饰公司销量 -->
+
+        UNION ALL
+        (
+            <include refid="psSql"/>
+            <if test="null!=startTime ">
+                AND obd.pay_up_time >= #{startTime}
+            </if>
+            <if test="null!=endTime">
+                and
+                <![CDATA[obd.pay_up_time <= #{endTime}]]> and wa.end_dt &lt; #{endTime}
+            </if>
+            <if test="null!=companyCode and ''!=companyCode">
+                and s.store_structure_code like concat('%',#{companyCode},'%')
+            </if>
+            and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
+        )
+
+        <!-- 配送 现结装饰公司退货-->
+
+        UNION ALL
+
+        (
+            <include refid="psthSql"/>
+            <if test="null!=startTime">
+                AND
+                wro.c_end_dt > #{startTime}
+            </if>
+            <if test="null!=endTime">
+                and
+                <![CDATA[ wro.c_end_dt <= #{endTime} ]]>
+            </if>
+            <if test="null!=companyCode and ''!=companyCode">
+                and s.store_structure_code like concat('%',#{companyCode},'%')
+            </if>
+            and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
+        )
+
+    </sql>
 </mapper>

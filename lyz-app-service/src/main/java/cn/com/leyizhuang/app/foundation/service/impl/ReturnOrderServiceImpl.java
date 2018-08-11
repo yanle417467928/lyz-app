@@ -150,6 +150,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                     returnDeliveryInfo.getDeliveryStreet() +
                     returnDeliveryInfo.getResidenceName() +
                     returnDeliveryInfo.getDetailedAddress();
+            fullAddress = fullAddress.replaceAll("\\s","");
             returnOrderLogisticInfo.setReturnFullAddress(fullAddress.replace("null", "").trim());
         }
         return returnOrderLogisticInfo;
@@ -543,15 +544,15 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             if (orderBillingDetails.getLebiQuantity() != null && orderBillingDetails.getLebiQuantity() > 0) {
                 for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                     //获取顾客当前乐币数量
-                    CustomerLeBi customerLeBi = appCustomerService.findCustomerLebiByCustomerId(userId);
+                    CustomerLeBi customerLeBi = appCustomerService.findCustomerLebiByCustomerId(orderBaseInfo.getCustomerId());
                     //返还乐币后顾客乐币数量
                     Integer lebiTotal = (customerLeBi.getQuantity() + orderBillingDetails.getLebiQuantity());
                     //更改顾客乐币数量
-                    Integer affectLine = leBiVariationLogService.updateLeBiQtyByUserId(lebiTotal, customerLeBi.getLastUpdateTime(), userId);
+                    Integer affectLine = leBiVariationLogService.updateLeBiQtyByUserId(lebiTotal, customerLeBi.getLastUpdateTime(), orderBaseInfo.getCustomerId());
                     if (affectLine > 0) {
                         //记录乐币日志
                         CustomerLeBiVariationLog leBiVariationLog = new CustomerLeBiVariationLog();
-                        leBiVariationLog.setCusId(userId);
+                        leBiVariationLog.setCusId(orderBaseInfo.getCustomerId());
                         leBiVariationLog.setVariationQuantity(orderBillingDetails.getLebiQuantity());
                         leBiVariationLog.setAfterVariationQuantity(lebiTotal);
                         leBiVariationLog.setVariationTime(date);
@@ -572,11 +573,11 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             if (orderBillingDetails.getCusPreDeposit() != null && orderBillingDetails.getCusPreDeposit() > 0) {
                 for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                     //获取顾客预存款
-                    CustomerPreDeposit customerPreDeposit = appCustomerService.findByCusId(userId);
+                    CustomerPreDeposit customerPreDeposit = appCustomerService.findByCusId(orderBaseInfo.getCustomerId());
                     //返还预存款后顾客预存款金额
                     Double cusPreDeposit = CountUtil.add(customerPreDeposit.getBalance(), orderBillingDetails.getCusPreDeposit());
                     //更改顾客预存款金额
-                    Integer affectLine = appCustomerService.updateDepositByUserIdAndVersion(userId, orderBillingDetails.getCusPreDeposit(), customerPreDeposit.getLastUpdateTime());
+                    Integer affectLine = appCustomerService.updateDepositByUserIdAndVersion(orderBaseInfo.getCustomerId(), orderBillingDetails.getCusPreDeposit(), customerPreDeposit.getLastUpdateTime());
                     if (affectLine > 0) {
                         //记录预存款日志
                         CusPreDepositLogDO cusPreDepositLogDO = new CusPreDepositLogDO();
@@ -585,7 +586,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                         cusPreDepositLogDO.setOrderNumber(orderNumber);
                         cusPreDepositLogDO.setChangeType(CustomerPreDepositChangeType.CANCEL_ORDER);
                         cusPreDepositLogDO.setChangeTypeDesc(CustomerPreDepositChangeType.CANCEL_ORDER.getDescription());
-                        cusPreDepositLogDO.setCusId(userId);
+                        cusPreDepositLogDO.setCusId(orderBaseInfo.getCustomerId());
                         cusPreDepositLogDO.setOperatorId(userId);
                         cusPreDepositLogDO.setOperatorType(AppIdentityType.CUSTOMER);
                         cusPreDepositLogDO.setBalance(cusPreDeposit);
@@ -664,15 +665,15 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             if (orderBillingDetails.getEmpCreditMoney() != null && orderBillingDetails.getEmpCreditMoney() > 0 && orderBillingDetails.getIsPayUp().equals(false)) {
                 for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                     //获取导购信用金
-                    EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(userId);
+                    EmpCreditMoney empCreditMoney = appEmployeeService.findEmpCreditMoneyByEmpId(orderBaseInfo.getSalesConsultId());
                     //返还信用金后导购信用金额度
                     Double creditMoney = CountUtil.add(empCreditMoney.getCreditLimitAvailable(), orderBillingDetails.getEmpCreditMoney());
                     //修改导购信用额度
-                    Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(userId, orderBillingDetails.getEmpCreditMoney(), empCreditMoney.getLastUpdateTime());
+                    Integer affectLine = appEmployeeService.unlockGuideCreditByUserIdAndGuideCreditAndVersion(orderBaseInfo.getSalesConsultId(), orderBillingDetails.getEmpCreditMoney(), empCreditMoney.getLastUpdateTime());
                     if (affectLine > 0) {
                         //记录导购信用金变更日志
                         EmpCreditMoneyChangeLog empCreditMoneyChangeLog = new EmpCreditMoneyChangeLog();
-                        empCreditMoneyChangeLog.setEmpId(userId);
+                        empCreditMoneyChangeLog.setEmpId(orderBaseInfo.getSalesConsultId());
                         empCreditMoneyChangeLog.setCreateTime(date);
                         empCreditMoneyChangeLog.setCreditLimitAvailableChangeAmount(orderBillingDetails.getEmpCreditMoney());
                         empCreditMoneyChangeLog.setCreditLimitAvailableAfterChange(creditMoney);
@@ -695,11 +696,11 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             if (orderBillingDetails.getStoreCreditMoney() != null && orderBillingDetails.getStoreCreditMoney() > 0) {
                 for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                     //查询门店信用金
-                    StoreCreditMoney storeCreditMoney = storeCreditMoneyLogService.findStoreCreditMoneyByUserId(userId);
+                    StoreCreditMoney storeCreditMoney = storeCreditMoneyLogService.findStoreCreditMoneyByUserId(orderBaseInfo.getCreatorId());
                     //返还后门店信用金额度
                     Double creditMoney = CountUtil.add(storeCreditMoney.getCreditLimitAvailable(), orderBillingDetails.getStoreCreditMoney());
                     //修改门店可用信用金
-                    Integer affectLine = appStoreService.updateStoreCreditByUserIdAndVersion(userId, orderBillingDetails.getStoreCreditMoney(), storeCreditMoney.getLastUpdateTime());
+                    Integer affectLine = appStoreService.updateStoreCreditByUserIdAndVersion(orderBaseInfo.getCreatorId(), orderBillingDetails.getStoreCreditMoney(), storeCreditMoney.getLastUpdateTime());
                     if (affectLine > 0) {
                         //记录门店信用金变更日志
                         StoreCreditMoneyChangeLog storeCreditMoneyChangeLog = new StoreCreditMoneyChangeLog();
@@ -740,11 +741,11 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             if (orderBillingDetails.getStoreSubvention() != null && orderBillingDetails.getStoreSubvention() > 0) {
                 for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                     //获取门店现金返利
-                    StoreSubvention storeSubvention = appStoreService.findStoreSubventionByEmpId(userId);
+                    StoreSubvention storeSubvention = appStoreService.findStoreSubventionByEmpId(orderBaseInfo.getCreatorId());
                     //返还后门店现金返利余额
                     Double subvention = CountUtil.add(storeSubvention.getBalance(), orderBillingDetails.getStoreSubvention());
                     //修改门店现金返利
-                    Integer affectLine = appStoreService.updateStoreSubventionByUserIdAndVersion(orderBillingDetails.getStoreSubvention(), userId, storeSubvention.getLastUpdateTime());
+                    Integer affectLine = appStoreService.updateStoreSubventionByUserIdAndVersion(orderBillingDetails.getStoreSubvention(), orderBaseInfo.getCreatorId(), storeSubvention.getLastUpdateTime());
                     if (affectLine > 0) {
                         //记录门店现金返利变更日志
                         StoreSubventionChangeLog storeSubventionChangeLog = new StoreSubventionChangeLog();
@@ -905,7 +906,7 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                 }
             }
             //********************************退经销差价退还*************************
-            AppStore appStore = appStoreService.findStoreByUserIdAndIdentityType(userId, identityType);
+            AppStore appStore = appStoreService.findStoreByUserIdAndIdentityType(orderBaseInfo.getCreatorId(), orderBaseInfo.getCreatorIdentityType().getValue());
 
             if (AssertUtil.isNotEmpty(appStore) && appStore.getStoreType().equals(StoreType.FX) || appStore.getStoreType().equals(StoreType.JM)) {
                 commonService.deductionOrderJxPriceDifferenceRefund(returnOrderBaseInfo, orderBaseInfo, returnOrderGoodsInfos);
@@ -1559,8 +1560,16 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             returnOrderBilling.setReturnNo(returnNumber);
             returnOrderBilling.setPreDeposit(orderBillingDetails.getCusPreDeposit() == null ? 0.00 : orderBillingDetails.getCusPreDeposit());
             returnOrderBilling.setCreditMoney(orderBillingDetails.getEmpCreditMoney() == null ? 0.00 : orderBillingDetails.getEmpCreditMoney());
-            returnOrderBilling.setStPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0.00 : orderBillingDetails.getStPreDeposit());
-            returnOrderBilling.setStCreditMoney(orderBillingDetails.getStoreCreditMoney() == null ? 0.00 : orderBillingDetails.getStoreCreditMoney());
+            AppStore store = this.appStoreService.findById(orderBaseInfo.getStoreId());
+            if (store != null && (store.getStoreType() == StoreType.ZS) && (orderBillingDetails.getIsPayUp() != null) && orderBillingDetails.getIsPayUp()){
+                Double stPreDeposit = orderBillingDetails.getStPreDeposit() == null ? 0.00 : orderBillingDetails.getStPreDeposit();
+                Double stCreditMoney = orderBillingDetails.getStoreCreditMoney() == null ? 0.00 : orderBillingDetails.getStoreCreditMoney();
+                returnOrderBilling.setStPreDeposit(CountUtil.add(stPreDeposit, stCreditMoney));
+                returnOrderBilling.setStCreditMoney(0D);
+            } else {
+                returnOrderBilling.setStPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0.00 : orderBillingDetails.getStPreDeposit());
+                returnOrderBilling.setStCreditMoney(orderBillingDetails.getStoreCreditMoney() == null ? 0.00 : orderBillingDetails.getStoreCreditMoney());
+            }
             returnOrderBilling.setStSubvention(orderBillingDetails.getStoreSubvention() == null ? 0.00 : orderBillingDetails.getStoreSubvention());
             returnOrderBilling.setOnlinePay(orderBillingDetails.getOnlinePayAmount() == null ? 0.00 : orderBillingDetails.getOnlinePayAmount());
             returnOrderBilling.setOnlinePayType(orderBillingDetails.getOnlinePayType());
@@ -3120,7 +3129,8 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
                 else if (null != returnOrderBilling.getStPreDeposit() && returnOrderBilling.getStPreDeposit() > AppConstant.PAY_UP_LIMIT) {
                     for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                         //获取门店预存款
-                        StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(returnOrderBaseInfo.getCreatorId());
+//                        StorePreDeposit storePreDeposit = storePreDepositLogService.findStoreByUserId(returnOrderBaseInfo.getCreatorId());
+                        StorePreDeposit storePreDeposit = appStoreService.findStorePreDepositByStoreId(orderBaseInfo.getStoreId());
                         //返还预存款后门店预存款金额
                         Double stPreDeposit = CountUtil.add(storePreDeposit.getBalance(), returnOrderBilling.getStPreDeposit());
                         //修改门店预存款
