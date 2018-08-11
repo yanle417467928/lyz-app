@@ -59,6 +59,7 @@
         <result property="detailedAddress" column="detailed_address"/>
         <result property="isSelfDelivery" column="is_self_delivery"/>
         <result property="salesManager" column="sales_manager"/>
+        <result property="company" column="fit_compay_type"/>
         <association property="cityCode" javaType="SimpleCityParam">
             <id property="cityId" column="city_id"/>
             <result property="name" column="name"/>
@@ -335,11 +336,24 @@
         s.enable,
         s.store_type,
         s.store_id,
-        c.name
+        c.name,
+        s.fit_compay_type
         FROM
         st_store s
         LEFT JOIN city c ON s.city_code = c.code
         WHERE
+        1=1
+        <if test="company == ''">
+            -- AND status != "INVALID"
+        </if>
+
+        <if test="company == 'MONTHLY'">
+            and s.fit_compay_type = #{company}
+        </if>
+        <if test="company == 'CASH'">
+            and s.fit_compay_type = #{company}
+        </if>
+        AND
         s.store_type="ZS"
         <if test="null != cityId">
             AND

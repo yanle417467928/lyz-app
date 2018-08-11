@@ -35,6 +35,9 @@ public class DecorativeCompanyVO {
     private Boolean enable;
 
 
+    private  String company;
+
+
     public static final DecorativeCompanyVO transform(StoreDO storeDO) {
         if (null != storeDO) {
             DecorativeCompanyVO decorativeCompanyVO = new DecorativeCompanyVO();
@@ -43,6 +46,7 @@ public class DecorativeCompanyVO {
             decorativeCompanyVO.setStoreName(storeDO.getStoreName());
             decorativeCompanyVO.setEnable(storeDO.getEnable());
             decorativeCompanyVO.setStoreCode(storeDO.getStoreCode());
+            decorativeCompanyVO.setCompany(storeDO.getCompany());
             return decorativeCompanyVO;
         } else {
             return null;

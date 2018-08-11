@@ -89,4 +89,7 @@ public class EmployeeLogVo {
     public void setOperatorType(AppIdentityType appIdentityType){
         this.operatorType = appIdentityType.getDescription();
     }
+
+
+
 }

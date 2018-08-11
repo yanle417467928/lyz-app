@@ -137,7 +137,7 @@ public class MaStoreServiceImpl implements MaStoreService {
 
 
     @Override
-    public PageInfo<StoreDO> findDecorativeByCondition(Integer page, Integer size, String enabled, Long cityId) {
+    public PageInfo<StoreDO> findDecorativeByCondition(Integer page, Integer size, String enabled, Long cityId,String company) {
         PageHelper.startPage(page, size);
         if ("-1".equals(enabled)) {
             enabled = null;
@@ -145,7 +145,7 @@ public class MaStoreServiceImpl implements MaStoreService {
         if (-1 == cityId) {
             cityId = null;
         }
-        List<StoreDO> pageStoreList = this.mastoreDAO.findDecorativeByCondition(enabled, cityId);
+        List<StoreDO> pageStoreList = this.mastoreDAO.findDecorativeByCondition(enabled, cityId,company);
         return new PageInfo<>(pageStoreList);
     }
 

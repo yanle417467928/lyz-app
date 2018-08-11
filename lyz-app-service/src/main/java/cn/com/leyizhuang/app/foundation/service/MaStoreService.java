@@ -49,7 +49,7 @@ public interface MaStoreService {
 
     PageInfo<StoreDO> queryDecorativeCompanyList(Integer page, Integer size,List<Long> storeIds,Long cityId,String keywords, String fitCompayType);
 
-    PageInfo<StoreDO> findDecorativeByCondition(Integer page, Integer size, String enabled, Long cityId);
+    PageInfo<StoreDO> findDecorativeByCondition(Integer page, Integer size, String enabled, Long cityId,String company);
 
     PageInfo<StoreDO> findDecorativeByInfo(Integer page, Integer size,String queryDecorativeInfo);
 

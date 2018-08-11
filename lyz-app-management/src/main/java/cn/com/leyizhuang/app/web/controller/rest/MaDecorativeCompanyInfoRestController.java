@@ -65,12 +65,12 @@ public class MaDecorativeCompanyInfoRestController extends BaseRestController {
      * @return
      */
     @GetMapping(value = "/findDecorativeByCondition")
-    public GridDataVO<DecorativeCompanyVO> findDecorativeCompanyByCondition(@RequestParam("enabled") String enabled, @RequestParam("cityId") Long cityId, Integer offset, Integer size, String keywords) {
+    public GridDataVO<DecorativeCompanyVO> findDecorativeCompanyByCondition(@RequestParam("enabled") String enabled, @RequestParam("cityId") Long cityId, Integer offset, Integer size, String keywords,String company) {
         logger.info("findDecorativeCompanyByCondition 后台根据下拉框筛选装饰公司列表 ,入参 offset:{}, size:{}, kewords:{},enabled{},cityId{}", offset, size, keywords, enabled, cityId);
         try {
             size = getSize(size);
             Integer page = getPage(offset, size);
-            PageInfo<StoreDO> storePage = this.maStoreService.findDecorativeByCondition(page, size, enabled, cityId);
+            PageInfo<StoreDO> storePage = this.maStoreService.findDecorativeByCondition(page, size, enabled, cityId,company);
             List<StoreDO> storesList = storePage.getList();
             List<DecorativeCompanyVO> pageDecorativeCompanyList = DecorativeCompanyVO.transform(storesList);
             logger.info("findDecorativeCompanyByCondition ,后台根据下拉框筛选装饰公司列表成功", pageDecorativeCompanyList.size());

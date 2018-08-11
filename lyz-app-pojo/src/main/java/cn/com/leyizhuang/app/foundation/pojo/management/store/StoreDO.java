@@ -68,6 +68,9 @@ public class StoreDO {
     // 销售经理
     private String salesManager;
 
+    //装饰公司类型
+    private  String company;
+
 
 
 }
