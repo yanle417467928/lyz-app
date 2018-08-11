@@ -376,6 +376,7 @@
         s.enable,
         s.store_type,
         s.store_id,
+        fit_compay_type,
         c.name
         FROM
         st_store s
