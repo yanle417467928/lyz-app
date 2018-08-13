@@ -7,10 +7,12 @@ import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
 import cn.com.leyizhuang.app.foundation.pojo.interfaceResend.EbsAllocationResendInfo;
 import cn.com.leyizhuang.app.foundation.pojo.interfaceResend.EbsOrderResendInfo;
 import cn.com.leyizhuang.app.foundation.pojo.interfaceResend.EbsReturnOrderResendInfo;
+import cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.OrderBaseInf;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.ebs.ReturnOrderBaseInf;
 import cn.com.leyizhuang.app.foundation.service.AppSeparateOrderService;
 import cn.com.leyizhuang.app.foundation.service.MaInterfaceResendService;
+import cn.com.leyizhuang.app.foundation.service.MaOrderService;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
 import com.github.pagehelper.PageInfo;
@@ -34,7 +36,10 @@ public class MaInterfaceResendRestController extends BaseRestController {
 
     @Resource
     private MaInterfaceResendService maInterfaceResendService;
-
+    @Resource
+    private AppSeparateOrderService separateOrderService;
+    @Resource
+    private MaOrderService maOrderService;
 
 
     @GetMapping(value = "/ebs/order/page")
@@ -149,6 +154,12 @@ public class MaInterfaceResendRestController extends BaseRestController {
         ShiroUser user = this.getShiroUser();
         String ip = IpUtil.getIpAddress(request);
         try {
+            Boolean isExist = separateOrderService.isOrderExist(orderNumber);
+            if (isExist) {
+                logger.info("该订单已拆单，不能重复拆单!");
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该订单已拆单，不能重复拆单!", null);
+                return resultDTO;
+            }
             maInterfaceResendService.generateEbsOrderInfo(orderNumber,user,ip);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "生成接口成功!", null);
             logger.info("generateEbsOrderInfo OUT,EBS生成订单头和商品数据成功，出参 resultDTO:{}", resultDTO);
@@ -204,6 +215,12 @@ public class MaInterfaceResendRestController extends BaseRestController {
         ShiroUser user = this.getShiroUser();
         String ip = IpUtil.getIpAddress(request);
         try {
+            Boolean isExist = separateOrderService.isReturnOrderExist(returnNo);
+            if (isExist) {
+                logger.info("该退单已拆单，不能重复拆单!");
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "该退单已拆单，不能重复拆单!", null);
+                return resultDTO;
+            }
             maInterfaceResendService.generateEbsReturnOrderInfo(returnNo,user,ip);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "生成接口成功!", null);
             logger.info("generateEbsReturnOrderInfo OUT,EBS生成退单头和商品数据失败，出参 resultDTO:{}", resultDTO);
