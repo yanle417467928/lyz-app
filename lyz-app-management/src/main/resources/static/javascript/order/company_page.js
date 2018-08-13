@@ -21,6 +21,7 @@ function initDateGird(url) {
             size: params.limit,
             keywords: params.search,
             company: $("#company").val(),
+            status: $("#status").val(),
         }
     }, [{
         checkbox: true,
@@ -230,6 +231,8 @@ function findOrderByOrderNumber() {
     var receiverPhone = $("#receiverPhone").val();
     var cityId = $('#cityCode').val();
     var storeId = $('#storeCode').val();
+    var status = $('#status').val();
+    var company = $('#company').val();
     $("#dataGrid").bootstrapTable('destroy');
     if (orderNumber != null && orderNumber != "") {
         initDateGird('/rest/company/order/page/byOrderNumber/' + orderNumber);
