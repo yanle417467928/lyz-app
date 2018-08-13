@@ -72,9 +72,11 @@
         and obi.create_time > '2018-04-01 00:00:00'
         AND (iaobi.send_flag = 'N' or send_flag is null)
         AND iaobi.product_type !='XQ'
+        AND iaobi.order_header_id is NOT null
         <if test="null != keywords and ''!=keywords">
             AND obi.ord_no like concat('%',#{keywords},'%')
         </if>
+        GROUP BY obi.ord_no
         )
 
 
@@ -98,9 +100,11 @@
         and ss.store_type != 'JM'
         AND (iaobi.send_flag = 'N' or iaobi.send_flag is null)
         AND iaobi.product_type !='XQ'
+        AND iaobi.order_header_id is NOT null
         <if test="null != keywords and ''!=keywords">
             AND obi.ord_no like concat('%',#{keywords},'%')
         </if>
+        GROUP BY obi.ord_no
         )
     </select>
 
@@ -180,10 +184,12 @@
         AND orbi.return_status ='FINISHED'
         and orbi.return_time > '2018-04-01 00:00:00'
         AND (iarobi.send_flag = 'N' or iarobi.send_flag is null)
+        AND iarobi.rt_header_id is NOT null
         AND iarobi.return_number  NOT like '%XQ%'
         <if test="null != keywords and ''!=keywords">
             AND orbi.return_no like concat('%',#{keywords},'%')
         </if>
+        GROUP BY orbi.return_no
         )
 
         UNION
@@ -208,10 +214,12 @@
         and ss.store_type != 'JM'
         and orbi.return_time > '2018-04-01 00:00:00'
         AND (iarobi.send_flag = 'N' or iarobi.send_flag is null)
+        AND iarobi.rt_header_id is NOT null
         AND iarobi.return_number  NOT like '%XQ%'
         <if test="null != keywords and ''!=keywords">
             AND orbi.return_no like concat('%',#{keywords},'%')
         </if>
+        GROUP BY orbi.return_no
         )
     </select>
 
