@@ -48,12 +48,13 @@ public class UserVO implements Serializable {
 
     private String phone;
 
-    private List<Role> rolesList;
+    private String rolesList;
 
     private Long roleIds[];
 
     private Date createdateStart;
     private Date createdateEnd;
+
 
     /**
      * 比较vo和数据库中的用户是否同一个user，采用id比较

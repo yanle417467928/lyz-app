@@ -219,13 +219,6 @@
                 align: 'center',
                 title: '角色',
                 sortable: true,
-                formatter: function (value, row) {
-                    var roles = [];
-                    for (var p in value) {
-                        roles.push(value[p].name);
-                    }
-                    return (roles.join('\n'));
-                }
             }, {
                 field: 'userType',
                 title: '用户类型',
