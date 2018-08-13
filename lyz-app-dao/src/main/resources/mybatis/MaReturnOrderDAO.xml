@@ -231,7 +231,8 @@
         sob_id,
         main_order_number,
         return_number,
-        return_date
+        return_date,
+        send_flag
         FROM inter_ate_return_order_retmd_inf
         WHERE return_number = #{returnNumber}
         ORDER BY  return_date DESC

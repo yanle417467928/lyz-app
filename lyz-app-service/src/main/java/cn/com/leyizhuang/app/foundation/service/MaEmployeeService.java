@@ -3,6 +3,8 @@ package cn.com.leyizhuang.app.foundation.service;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeType;
+import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditChangeDetailDO;
+import cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditChangeDetailDO4Simple;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaEmployeeResponse;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.DecorativeEmployeeDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeDetailVO;
@@ -76,5 +78,5 @@ public interface MaEmployeeService {
 
     List<EmployeeDO> findEmpployeeByCityIdAndIdentityType(Long cityId, AppIdentityType type);
 
-    EmployeeLogVo queryLastDecorativeCreditChange(Long id);
+    GuideCreditChangeDetailDO4Simple queryLastDecorativeCreditChange(Long id);
 }

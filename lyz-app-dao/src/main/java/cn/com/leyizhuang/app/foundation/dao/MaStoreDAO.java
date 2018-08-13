@@ -53,7 +53,7 @@ public interface MaStoreDAO {
     List<StoreDO> queryDecorativeCompanyList( @Param("list") List<Long> storeIds,@Param("cityId") Long cityId,@Param("keywords") String keywords,
             @Param("fitCompayType") String fitCompayType);
 
-    List<StoreDO> findDecorativeByCondition(@Param("enabled") String enabled, @Param("cityId") Long cityId);
+    List<StoreDO> findDecorativeByCondition(@Param("enabled") String enabled, @Param("cityId") Long cityId,@Param("company") String company);
 
     List<StoreDO> findDecorativeByInfo(String queryDecorativeInfo);
 
@@ -119,6 +119,10 @@ public interface MaStoreDAO {
     List<StoreVO> findAllStoreVO(@Param("cityId") Long cityId, @Param("keywords") String keywords, @Param("storeType") String storeType);
 
     List<SimpleStoreParam> findStoresListByCityIdAndStoreId(@Param("cityId") Long cityId, @Param("list") List<Long> storeIds);
+
+    List<SimpleStoreParam> findSmallFitAndStoresListByCityIdAndStoreId(@Param("cityId") Long cityId, @Param("list") List<Long> storeIds);
+
+    List<SimpleStoreParam> findSmallFitStoresListByStoreIdNotBillRule(@Param("list") List<Long> storeIds);
 
     List<SimpleStoreParam> findStoresListByStoreId(@Param("list") List<Long> storeIds);
 

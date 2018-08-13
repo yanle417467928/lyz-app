@@ -49,7 +49,7 @@ public interface MaStoreService {
 
     PageInfo<StoreDO> queryDecorativeCompanyList(Integer page, Integer size,List<Long> storeIds,Long cityId,String keywords, String fitCompayType);
 
-    PageInfo<StoreDO> findDecorativeByCondition(Integer page, Integer size, String enabled, Long cityId);
+    PageInfo<StoreDO> findDecorativeByCondition(Integer page, Integer size, String enabled, Long cityId,String company);
 
     PageInfo<StoreDO> findDecorativeByInfo(Integer page, Integer size,String queryDecorativeInfo);
 
@@ -120,6 +120,10 @@ public interface MaStoreService {
     PageInfo<StoreVO> queryPageVO(Integer page, Integer size, Long cityId, String keywords, String storeType);
 
     List<SimpleStoreParam> findStoresListByCityIdAndStoreId(Long cityId, List<Long> storeIds);
+
+    List<SimpleStoreParam> findSmallFitAndStoresListByCityIdAndStoreId(Long cityId, List<Long> storeIds);
+
+    List<SimpleStoreParam> findSmallFitStoresListByStoreIdNotBillRule(List<Long> storeIds);
 
     List<SimpleStoreParam> findStoresListByStoreId(List<Long> storeIds);
 

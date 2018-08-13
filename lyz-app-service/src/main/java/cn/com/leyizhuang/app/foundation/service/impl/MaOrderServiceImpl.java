@@ -329,7 +329,7 @@ public class MaOrderServiceImpl implements MaOrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void orderShipping(String orderNumber, ShiroUser shiroUser, MaOrderTempInfo maOrderTempInfo) throws RuntimeException {
+    public void orderShipping(String orderNumber, ShiroUser shiroUser, MaOrderTempInfo maOrderTempInfo) throws Exception {
         if (null == maOrderTempInfo || null == maOrderTempInfo.getStoreId()) {
             throw new RuntimeException("该订单门店ID为空,无法更新门店库存");
         }

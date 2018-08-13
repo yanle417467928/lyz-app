@@ -59,6 +59,7 @@
         <result property="detailedAddress" column="detailed_address"/>
         <result property="isSelfDelivery" column="is_self_delivery"/>
         <result property="salesManager" column="sales_manager"/>
+        <result property="company" column="fit_compay_type"/>
         <association property="cityCode" javaType="SimpleCityParam">
             <id property="cityId" column="city_id"/>
             <result property="name" column="name"/>
@@ -335,11 +336,24 @@
         s.enable,
         s.store_type,
         s.store_id,
-        c.name
+        c.name,
+        s.fit_compay_type
         FROM
         st_store s
         LEFT JOIN city c ON s.city_code = c.code
         WHERE
+        1=1
+        <if test="company == ''">
+            -- AND status != "INVALID"
+        </if>
+
+        <if test="company == 'MONTHLY'">
+            and s.fit_compay_type = #{company}
+        </if>
+        <if test="company == 'CASH'">
+            and s.fit_compay_type = #{company}
+        </if>
+        AND
         s.store_type="ZS"
         <if test="null != cityId">
             AND
@@ -676,6 +690,103 @@
         <if test="null != cityId and cityId != -1">
             AND c.city_id = #{cityId}
         </if>
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+
+    <select id="findSmallFitAndStoresListByCityIdAndStoreId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
+        SELECT
+        ss.store_id,
+        ss.store_name
+        FROM
+        st_store ss
+        LEFT JOIN city c ON ss.city_code = c.CODE
+        WHERE
+        ss.store_type ='ZY'
+        <if test="null != cityId and cityId != -1">
+            AND c.city_id = #{cityId}
+        </if>
+        AND ss.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+
+        UNION
+
+        SELECT
+        ss.store_id,
+        ss.store_name
+        FROM
+        st_store ss
+        LEFT JOIN city c ON ss.city_code = c.CODE
+        WHERE
+        ss.store_type ='JM'
+        <if test="null != cityId and cityId != -1">
+            AND c.city_id = #{cityId}
+        </if>
+        AND ss.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+
+        UNION
+
+        SELECT
+        ss.store_id,
+        ss.store_name
+        FROM
+        st_store ss
+        LEFT JOIN city c ON ss.city_code = c.CODE
+        WHERE
+        ss.store_type ='ZS'
+        AND
+        ss.fit_compay_type ='CASH'
+        <if test="null != cityId and cityId != -1">
+            AND c.city_id = #{cityId}
+        </if>
+        AND ss.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+
+        UNION
+
+        SELECT
+        ss.store_id,
+        ss.store_name
+        FROM
+        st_store ss
+        LEFT JOIN city c ON ss.city_code = c.CODE
+        WHERE
+        ss.store_type ='FX'
+        <if test="null != cityId and cityId != -1">
+            AND c.city_id = #{cityId}
+        </if>
+        AND ss.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+
+    </select>
+
+
+    <select id="findSmallFitStoresListByStoreIdNotBillRule"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
+        SELECT
+        s.store_id,
+        s.store_name
+        FROM
+        st_store s
+        LEFT JOIN
+        bill_rule br ON  s.store_id = br.store_id
+        WHERE
+        s.store_type ='ZS'
+        AND  s.fit_compay_type ='CASH'
+        AND br.id is NULL
         AND s.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
