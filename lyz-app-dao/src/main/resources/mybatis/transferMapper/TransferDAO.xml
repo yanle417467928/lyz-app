@@ -911,7 +911,7 @@
     </select>
 
     <select id="findCusTemByCusCode" resultType="cn.com.leyizhuang.app.foundation.pojo.datatransfer.TransferCusTemplate">
-        SELECT cp.* from transfer_cus_pre_deposit_template cp
+        SELECT c.* from transfer_cus_pre_deposit_template cp
         LEFT JOIN transfer_cus_template c on c.cus_code = cp.cus_code
         where cp.cus_code = #{cusCode}
     </select>
