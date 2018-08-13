@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.constant.AppConstant;
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.dao.GoodsDAO;
+import cn.com.leyizhuang.app.foundation.dao.MaCustomerDAO;
 import cn.com.leyizhuang.app.foundation.dto.GoodsDTO;
 import cn.com.leyizhuang.app.foundation.pojo.GoodsPrice;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
@@ -11,6 +12,7 @@ import cn.com.leyizhuang.app.foundation.pojo.management.goods.GoodsBrand;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
+import cn.com.leyizhuang.app.foundation.pojo.user.RankClassification;
 import cn.com.leyizhuang.app.foundation.service.AppCustomerService;
 import cn.com.leyizhuang.app.foundation.service.AppEmployeeService;
 import cn.com.leyizhuang.app.foundation.service.GoodsService;
@@ -54,6 +56,8 @@ public class GoodsServiceImpl implements GoodsService {
     @Autowired
     private AppEmployeeService appEmployeeService;
 
+    @Autowired
+    private MaCustomerDAO maCustomerDAO;
     /**
      * @param page
      * @param size
@@ -718,6 +722,8 @@ public class GoodsServiceImpl implements GoodsService {
                                                                                                  Integer identityType, String categorySecond,
                                                                                                  String specification, String goodType,
                                                                                                  String rankCode) {
+
+
         if (identityType == AppIdentityType.DECORATE_MANAGER.getValue() || identityType == AppIdentityType.DECORATE_EMPLOYEE.getValue()){
             AppEmployee appEmployee = appEmployeeService.findById(userId);
 
@@ -725,7 +731,16 @@ public class GoodsServiceImpl implements GoodsService {
                 Long cityId = appEmployee.getCityId();
                 Long storeId = appEmployee.getStoreId();
 
-                if (cityId != null && storeId != null && rankCode != null){
+                if (cityId != null && storeId != null ){
+                    if (StringUtils.isBlank(rankCode)){
+                        List<RankClassification> rankClassification = maCustomerDAO.findRankByCityId(cityId);
+                        if (rankClassification != null && rankClassification.size() > 0){
+                            rankCode = rankClassification.get(0).getRankCode();
+                        }else {
+                            return  null;
+                        }
+                    }
+
                     return goodsDAO.findZsGoodsBrandListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(categoryCode,categorySecond,specification,rankCode,goodType,storeId,cityId);
                 }
             }
@@ -745,7 +760,15 @@ public class GoodsServiceImpl implements GoodsService {
                 Long cityId = appEmployee.getCityId();
                 Long storeId = appEmployee.getStoreId();
 
-                if (cityId != null && storeId != null && rankCode != null){
+                if (cityId != null && storeId != null ){
+                    if (StringUtils.isBlank(rankCode)){
+                        List<RankClassification> rankClassification = maCustomerDAO.findRankByCityId(cityId);
+                        if (rankClassification != null && rankClassification.size() > 0){
+                            rankCode = rankClassification.get(0).getRankCode();
+                        }else {
+                            return  null;
+                        }
+                    }
                     return goodsDAO.findZsGoodsCategoryByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(categoryCode,categorySecond,specification,rankCode,goodType,storeId,cityId);
                 }
             }
@@ -765,7 +788,16 @@ public class GoodsServiceImpl implements GoodsService {
                 Long cityId = appEmployee.getCityId();
                 Long storeId = appEmployee.getStoreId();
 
-                if (cityId != null && storeId != null && rankCode != null){
+                if (cityId != null && storeId != null ){
+                    if (StringUtils.isBlank(rankCode)){
+                        List<RankClassification> rankClassification = maCustomerDAO.findRankByCityId(cityId);
+                        if (rankClassification != null && rankClassification.size() > 0){
+                            rankCode = rankClassification.get(0).getRankCode();
+                        }else {
+                            return  null;
+                        }
+                    }
+
                     return goodsDAO.findZsGoodsSpecificationListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(categoryCode,categorySecond,specification,rankCode,goodType,storeId,cityId);
                 }
             }
@@ -785,7 +817,16 @@ public class GoodsServiceImpl implements GoodsService {
                 Long cityId = appEmployee.getCityId();
                 Long storeId = appEmployee.getStoreId();
 
-                if (cityId != null && storeId != null && rankCode != null){
+                if (cityId != null && storeId != null ){
+                    if (StringUtils.isBlank(rankCode)){
+                        List<RankClassification> rankClassification = maCustomerDAO.findRankByCityId(cityId);
+                        if (rankClassification != null && rankClassification.size() > 0){
+                            rankCode = rankClassification.get(0).getRankCode();
+                        }else {
+                            return  null;
+                        }
+                    }
+
                     return goodsDAO.findZsGoodsTypeListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(categoryCode,categorySecond,specification,rankCode,goodType,storeId,cityId);
                 }
             }
@@ -806,13 +847,16 @@ public class GoodsServiceImpl implements GoodsService {
                 Long storeId = appEmployee.getStoreId();
                 String rankCode = "";
 
-                if (cityId.equals(1L)){
-                    rankCode = "A";
-                } if (cityId.equals(2L)){
-                    rankCode = "B";
-                }
+                if (cityId != null && storeId != null ){
+                    if (StringUtils.isBlank(rankCode)){
+                        List<RankClassification> rankClassification = maCustomerDAO.findRankByCityId(cityId);
+                        if (rankClassification != null && rankClassification.size() > 0){
+                            rankCode = rankClassification.get(0).getRankCode();
+                        }else {
+                            return  null;
+                        }
+                    }
 
-                if (cityId != null && storeId != null && rankCode != null){
                     return goodsDAO.findZsGoodsListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(categoryCode,categorySecond,specification,rankCode,goodTypeId,brandId,userId,cityId,keywords);
                 }
             }
