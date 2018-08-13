@@ -268,7 +268,8 @@
         s.enable,
         s.store_id,
         c.name,
-        s.create_time
+        s.create_time,
+        s.fit_compay_type
         FROM
         st_store s
         LEFT JOIN city c ON s.city_code = c.code
