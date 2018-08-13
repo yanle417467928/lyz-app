@@ -59,6 +59,10 @@ public class MaOrderVORequest {
      * 收货人电话
      */
     private String receiverPhone;
+    /**
+     * 订单状态
+     */
+    private String orderStatus;
 
     private List<Long> list;
 

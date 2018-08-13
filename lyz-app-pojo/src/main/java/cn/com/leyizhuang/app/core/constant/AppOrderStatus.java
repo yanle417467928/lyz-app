@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.core.constant;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -68,4 +70,16 @@ public enum AppOrderStatus {
         return null;
     }
 
+    public static List<AppOrderStatus> getAppOrderStatusList() {
+        List<AppOrderStatus> appOrderStatus = new ArrayList<>();
+        appOrderStatus.add(AppOrderStatus.UNPAID);
+        appOrderStatus.add(AppOrderStatus.PENDING_SHIPMENT);
+        appOrderStatus.add(AppOrderStatus.PENDING_RECEIVE);
+        appOrderStatus.add(AppOrderStatus.FINISHED);
+        appOrderStatus.add(AppOrderStatus.CLOSED);
+        appOrderStatus.add(AppOrderStatus.CANCELED);
+        appOrderStatus.add(AppOrderStatus.REJECTED);
+        appOrderStatus.add(AppOrderStatus.CANCELING);
+        return appOrderStatus;
+    }
 }

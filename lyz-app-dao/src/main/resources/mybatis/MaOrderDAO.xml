@@ -194,6 +194,9 @@
         <if test="storeId != null and storeId != -1">
             AND obi.store_id = #{storeId}
         </if>
+        <if test="orderStatus != null and orderStatus != '-1'">
+            AND obi.status = #{orderStatus}
+        </if>
         <if test="beginTime != null and beginTime != ''">
             AND obi.create_time &gt;= #{beginTime}
         </if>
@@ -885,7 +888,8 @@
      order_number,
      receive_date,
      sob_id,
-     init_date
+     init_date,
+     send_flag
      FROM
      inter_ate_order_receive_inf
      WHERE
