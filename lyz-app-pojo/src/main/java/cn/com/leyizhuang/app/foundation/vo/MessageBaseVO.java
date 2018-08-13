@@ -22,14 +22,14 @@ public class MessageBaseVO {
     private Long id;
 
     //消息标题
-    private  String title;
+    private String title;
 
     //消息详情
-    private  String detailed;
+    private String detailed;
 
 
     //身份类型
-    private  String identityType;
+    private String identityType;
 
 
     //创建时间
@@ -63,7 +63,6 @@ public class MessageBaseVO {
             messageBaseVO.setId(messageListDO.getId());
             messageBaseVO.setTitle(messageListDO.getTitle());
             messageBaseVO.setDetailed(messageListDO.getDetailed());
-            messageBaseVO.setIdentityType(messageListDO.getIdentityType());
             if (messageListDO.getStatus() != null) {
                 if (LocalDateTime.now().isAfter(messageListDO.getEndTime())) {
                     // 促销过期
@@ -78,14 +77,32 @@ public class MessageBaseVO {
             messageBaseVO.setCityId(messageListDO.getCityId());
             messageBaseVO.setBeginTime(messageListDO.getBeginTime());
             messageBaseVO.setEndTime(messageListDO.getEndTime());
-            messageBaseVO.setScope(messageListDO.getScope());
-            messageBaseVO.setMessageType(messageListDO.getMessageType());
+            String target = messageListDO.getScope();
+            target = target.replace("ALL", "全部")
+                    .replace("ZDY", "自定义");
+            messageBaseVO.setScope(target);
+
+            String messaeType = messageListDO.getMessageType();
+            messaeType = messaeType.replace("TZ", "通知")
+                    .replace("YH", "优惠")
+                    .replace("JG", "警告");
+            messageBaseVO.setMessageType(messaeType);
+
+
+            String identityType = messageListDO.getIdentityType();
+            identityType = identityType.replace("SELLER", "导购")
+                    .replace("DELIVERY_CLERK", "配送员")
+                    .replace("DECORATE_MANAGER", "装饰公司经理")
+                    .replace("DECORATE_EMPLOYEE", "装饰公司员工")
+                    .replace("CUSTOMER", "会员");
+            messageBaseVO.setIdentityType(identityType);
             return messageBaseVO;
         } else {
             return null;
         }
 
     }
+
     public static final List<MessageBaseVO> transform(List<MessageListDO> list) {
         List<MessageBaseVO> vOList;
         if (null != list && list.size() > 0) {

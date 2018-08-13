@@ -32,6 +32,10 @@ public interface AppSeparateOrderService {
 
     void sendOrderBaseInfAndOrderGoodsInf(String orderNumber);
 
+    void sendNotXQOrderBaseInfAndOrderGoodsInf(String orderNumber);
+
+    List<OrderBaseInf> getPendingSendOrderBaseInf(String orderNumber);
+
     void sendOrderBaseInfAndOrderNotXQGoodsInf(String orderNumber);
 
     void sendOrderReceiptInf(String orderNumber);
@@ -85,6 +89,10 @@ public interface AppSeparateOrderService {
     void saveReturnOrderRefundInf(ReturnOrderRefundInf p);
 
     void sendReturnOrderBaseInfAndReturnOrderGoodsInf(String returnNumber);
+
+    void sendNotXQReturnOrderBaseInfAndReturnOrderGoodsInf(String returnNumber);
+
+    List<ReturnOrderBaseInf> getReturnOrderBaseInfByReturnNumber(String returnNumber);
 
     void updateReturnOrderBaseInf(String returnNumber, AppWhetherFlag flag, String errorMsg, Date sendTime);
 

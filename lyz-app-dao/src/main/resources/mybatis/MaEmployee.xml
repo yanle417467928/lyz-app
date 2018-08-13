@@ -419,47 +419,42 @@
         </if>
     </select>
 
-    <select id="findEmpployeeByCityIdAndIdentityType" resultType="cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO">
+    <select id="findEmpployeeByCityIdAndIdentityType"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.employee.EmployeeDO">
         SELECT emp_id, name,delivery_clerk_no,mobile
         FROM emp_employee
         WHERE 1 = 1
         <if test="null != cityId and cityId != -1">
-          AND city_id = #{cityId}
+            AND city_id = #{cityId}
         </if>
         <if test="null != type and type.toString() != ''">
-          AND identity_type = #{type}
+            AND identity_type = #{type}
         </if>
         AND status IS TRUE
     </select>
 
 
     <select id="queryLastDecorativeCreditChange"
-            resultType="cn.com.leyizhuang.app.foundation.vo.management.employee.EmployeeLogVo">
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.guide.GuideCreditChangeDetailDO4Simple">
         SELECT
-        *,
-        CASE l.operator_type
-        WHEN 'DECORATE_MANAGER' THEN
-        e.`name`
-        WHEN 'DECORATE_EMPLOYEE' THEN
-        e.`name`
-        WHEN 'SELLER' THEN
-        e.`name`
-        WHEN 'CUSTOMER' THEN
-        cu.`name`
-        WHEN 'ADMINISTRATOR' THEN
-        au.`name`
-        END AS operatorName
-        FROM
-        emp_credit_money_change_log l
-        LEFT JOIN st_store s ON l.emp_id = s.store_id
-        LEFT JOIN admin_user au ON au.uid = l.operator_id
-        LEFT JOIN cus_customer cu ON cu.cus_id = l.operator_id
-        LEFT JOIN emp_employee e ON e.emp_id = l.operator_id
-        WHERE
-        l.emp_id = #{id}
-        ORDER BY
-        l.create_time DESC
-        LIMIT 1
+            ecmcl.id,
+            ecmcl.create_time,
+            ecmcl.reference_number,
+            ea.change_type,
+            ea.change_type_desc,
+            ea.credit_limit_available_change_amount,
+            ea.credit_limit_available_after_change AS changeMoney,
+            ecmcl.operator_id,
+            ecmcl.operator_name,
+            ecmcl.change_reason
+            FROM emp_credit_money_change_log ecmcl
+             RIGHT JOIN emp_available_credit_change_log ea ON
+            ecmcl.available_credit_change_id=ea.id
+            WHERE
+           ecmcl.emp_id=#{id}
+           ORDER BY
+           create_time DESC
+            LIMIT 1
     </select>
 
 </mapper>

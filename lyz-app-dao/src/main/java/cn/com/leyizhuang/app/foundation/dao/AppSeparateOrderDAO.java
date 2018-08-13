@@ -43,6 +43,8 @@ public interface AppSeparateOrderDAO {
 
     List<OrderBaseInf> getPendingSendOrderBaseInf(String orderNumber);
 
+    List<OrderBaseInf> getNotXQPendingSendOrderBaseInf(String orderNumber);
+
     List<OrderGoodsInf> getOrderGoodsInfByOrderNumber(String orderNumber);
 
     List<OrderBillingPaymentDetails> getOrderBillingPaymentDetailsByOrderNumber(String orderNumber);
@@ -127,6 +129,8 @@ public interface AppSeparateOrderDAO {
     void saveReturnOrderRefundInf(ReturnOrderRefundInf returnOrderRefundInf);
 
     List<ReturnOrderBaseInf> getReturnOrderBaseInfByReturnNumber(String returnNumber);
+
+    List<ReturnOrderBaseInf> getNotReturnOrderBaseInfByReturnNumber(String returnNumber);
 
     List<ReturnOrderGoodsInf> getReturnOrderGoodsInfByReturnNumber(String returnNumber);
 

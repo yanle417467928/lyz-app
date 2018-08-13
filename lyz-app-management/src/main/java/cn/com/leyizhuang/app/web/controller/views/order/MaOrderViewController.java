@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.views.order;
 
+import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
+import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.core.utils.StringUtils;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.MaOrderArrearsAudit;
 import cn.com.leyizhuang.app.foundation.pojo.management.order.OrderFreightChange;
@@ -60,7 +62,8 @@ public class MaOrderViewController {
      * @return 门店订单页面
      */
     @GetMapping(value = "/store/list")
-    public String storePage() {
+    public String storePage(ModelMap map) {
+        map.addAttribute("orderStatusList", AppOrderStatus.getAppOrderStatusList());
         return "/views/order/store_page";
     }
 

@@ -40,6 +40,13 @@
                         <option value="0">否</option>
                     </select>
 
+                        <select name="company" id="company" class="form-control select" style="width:auto;"
+                                data-live-search="true" onchange="findDecorativeByCondition()">
+                            <option value="">选择装饰公司类型</option>
+                            <option value="MONTHLY">大型装饰公司</option>
+                            <option value="CASH">小型装饰公司</option>
+                        </select>
+
                     <div class="input-group col-md-3" style="margin-top:0px positon:relative">
                         <input type="text" name="queryDecorativeInfo" id="queryDecorativeInfo" class="form-control "
                                style="width:auto;" placeholder="请输入公司名称或公司编码.." onkeypress="findBykey()">
@@ -92,6 +99,9 @@
                         </li>
                         <li class="list-group-item">
                             <b>创建时间</b> <a class="pull-right" id="createTime"></a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>转售给</b> <a class="pull-right" id="createTime"></a>
                         </li>
                     </ul>
                 </div>
@@ -162,7 +172,12 @@
             field: 'cityCode.name',
             title: '所属城市',
             align: 'center'
-        }, {
+        },
+            {
+                field: 'company',
+                title: '装饰公司类型',
+                align: 'center'
+            }, {
             field: 'enable',
             title: '是否启用',
             align: 'center',
@@ -281,7 +296,8 @@
         $("#dataGrid").bootstrapTable('destroy');
         var cityId = $("#cityCode").val();
         var enabled = $("#enabled").val();
-        initDateGird('/rest/decorativeInfo/findDecorativeByCondition?enabled=' + enabled + '&cityId=' + cityId);
+        var company = $("#company").val();
+        initDateGird('/rest/decorativeInfo/findDecorativeByCondition?enabled=' + enabled + '&cityId=' + cityId+ '&company=' + company);
     }
 
     function findBykey(){
@@ -294,6 +310,7 @@
         var queryDecorativeInfo = $("#queryDecorativeInfo").val();
         $('#cityCode').val("-1");
         $('#enabled').val("-1");
+        $('#company').val("");
         if (null == queryDecorativeInfo || "" == queryDecorativeInfo) {
             $("#dataGrid").bootstrapTable('destroy');
             initDateGird('/rest/decorativeInfo/page/grid');

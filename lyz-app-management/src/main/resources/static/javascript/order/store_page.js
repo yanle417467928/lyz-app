@@ -4,7 +4,7 @@ var rotationImage;
 $(function () {
     findCitylist()
     findStorelist();
-    initDateGird('/rest/order/page/grid');
+    //initDateGird('/rest/order/page/grid');
 
     $('.datepicker').datepicker({
         format: 'yyyy-mm-dd',
@@ -150,8 +150,9 @@ function findCitylist() {
 //获取门店列表
 function findStorelist() {
     var store = "";
+    var cityCode = $("#cityCode").val();
     $.ajax({
-        url: '/rest/stores/findStoresListByStoreId',
+        url: '/rest/stores/findSmallFitAndStoresListByCityIdAndStoreId/'+cityCode,
         method: 'GET',
         error: function () {
             clearTimeout($global.timer);
@@ -184,7 +185,7 @@ function findStoreByCity(cityId) {
 
     var store;
     $.ajax({
-        url: '/rest/stores/findStoresListByCityIdAndStoreId/' + cityId,
+        url: '/rest/stores/findSmallFitAndStoresListByCityIdAndStoreId/' + cityId,
         method: 'GET',
         error: function () {
             clearTimeout($global.timer);
@@ -230,25 +231,26 @@ function findBykey(){
 
 //根据订单号查询订单
 function findOrderByOrderNumber() {
-    var orderNumber = $("#orderNumber").val();
+    var orderNumber = $("#orderNumber").val().trim();
     var beginTime = $("#beginTime").val();
     var endTime = $("#endTime").val();
-    var memberName = $("#memberName").val();
-    var shippingAddress = $("#shippingAddress").val();
-    var sellerName = $("#sellerName").val();
-    var memberPhone = $("#memberPhone").val();
-    var receiverName = $("#receiverName").val();
-    var receiverPhone = $("#receiverPhone").val();
+    var memberName = $("#memberName").val().trim();
+    var shippingAddress = $("#shippingAddress").val().trim();
+    var sellerName = $("#sellerName").val().trim();
+    var memberPhone = $("#memberPhone").val().trim();
+    var receiverName = $("#receiverName").val().trim();
+    var receiverPhone = $("#receiverPhone").val().trim();
     var cityId = $('#cityCode').val();
     var storeId = $('#storeCode').val();
     var deliveryType = $('#deliveryType').val();
+    var orderStatus = $('#orderStatus').val();
     $("#dataGrid").bootstrapTable('destroy');
     if (orderNumber != null && orderNumber != "") {
         initDateGird('/rest/order/page/byOrderNumber/' + orderNumber);
     } else {
         initDateGird('/rest/order/page/condition?cityId=' + cityId + '&storeId=' + storeId + '&deliveryType=' + deliveryType
             + '&beginTime=' + beginTime + '&endTime=' + endTime + '&memberName=' + memberName + '&shippingAddress=' + shippingAddress
-            + '&sellerName=' + sellerName + '&memberPhone=' + memberPhone + '&receiverName=' + receiverName + '&receiverPhone=' + receiverPhone);
+            + '&sellerName=' + sellerName + '&memberPhone=' + memberPhone + '&receiverName=' + receiverName + '&receiverPhone=' + receiverPhone+'&orderStatus='+orderStatus);
     }
 }
 

@@ -119,41 +119,46 @@
                 </div>
                 <div class="row">
                     <div class="col-xs-12" style="margin-top: 5px">
-                        <div class="col-xs-7">
-                            <div class="col-xs-12">
-                                <div class=" col-xs-3">
-                                    <select name="city" id="cityCode" class="form-control select"
-                                            onchange="findStoreByCity(this.value)">
-                                        <option value="-1">选择城市</option>
-                                    </select>
-                                </div>
-                                <div class=" col-xs-6">
-                                    <select name="store" id="storeCode" class="selectpicker"
-                                            onchange="findOrderByOrderNumber()" data-live-search="true">
-                                        <option value="-1">选择门店</option>
-                                    </select>
-                                </div>
-                                <div class=" col-xs-3">
-                                    <select name="deliveryType" id="deliveryType" class="form-control select"
-                                            style="width:auto;" onchange="findOrderByOrderNumber()">
-                                        <option value="-1">配送方式</option>
-                                        <option value="HOUSE_DELIVERY">送货上门</option>
-                                        <option value="SELF_TAKE">门店自提</option>
-                                        <option value="PRODUCT_COUPON">购买产品券</option>
-                                    </select>
-                                </div>
-                            </div>
+                        <div class=" col-xs-1" style="margin-left: 2%">
+                            <select name="city" id="cityCode" class="form-control select"
+                                    onchange="findStoreByCity(this.value)">
+                                <option value="-1">选择城市</option>
+                            </select>
                         </div>
-                        <div class="col-xs-5">
-                            <div class="col-xs-12">
-                                <input type="text" name="orderNumber" id="orderNumber" class="form-control"
-                                       style="width:auto;"
-                                       placeholder="请输订单号" onkeypress="findBykey()">
-                                <span class="">
+                        <div class=" col-xs-3" style="margin-left: 2%">
+                            <select  name="store" id="storeCode" class="selectpicker" style="padding: 2%"
+                                    onchange="findOrderByOrderNumber()" data-live-search="true">
+                                <option value="-1">选择门店</option>
+                            </select>
+                        </div>
+                        <div class=" col-xs-2" style="margin-left: -3.5%">
+                            <select name="orderStatus" id="orderStatus" class="form-control select"
+                                    onchange="findOrderByOrderNumber()">
+                                <option value="-1">选择订单状态</option>
+                            <#if orderStatusList?? && orderStatusList?size gt 0 >
+                                <#list orderStatusList as orderStatus>
+                                    <option value="${orderStatus.value!''}">${orderStatus.description!''}</option>
+                                </#list>
+                            </#if>
+                            </select>
+                        </div>
+                        <div class=" col-xs-2" style="margin-left: -3.5%">
+                            <select name="deliveryType" id="deliveryType" class="form-control select"
+                                    onchange="findOrderByOrderNumber()">
+                                <option value="-1">配送方式</option>
+                                <option value="HOUSE_DELIVERY">送货上门</option>
+                                <option value="SELF_TAKE">门店自提</option>
+                                <option value="PRODUCT_COUPON">购买产品券</option>
+                            </select>
+                        </div>
+                        <div class="col-xs-4"style="margin-left: -5%">
+                            <input type="text" name="orderNumber" id="orderNumber" class="form-control"
+                                   style="width:auto;"
+                                   placeholder="请输订单号" onkeypress="findBykey()">
+                            <span class="">
                                 <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
                                         onclick="return findOrderByOrderNumber()">查找</button>
                         </span>
-                            </div>
                         </div>
                     </div>
                 </div>

@@ -93,6 +93,9 @@
                             <b>是否是默认门店</b> <a class="pull-right" id="isDefault"></a>
                         </li>
                         <li class="list-group-item">
+                            <b>装饰公司类型</b> <a class="pull-right" id="company"></a>
+                        </li>
+                        <li class="list-group-item">
                             <b>门店类型</b> <a class="pull-right" id="storeType"></a>
                         </li>
                         <li class="list-group-item">
@@ -119,6 +122,7 @@
                         <li class="list-group-item">
                             <b>门店电话</b> <a class="pull-right" id="phone"></a>
                         </li>
+
                     </ul>
                 </div>
             </div>
@@ -266,6 +270,16 @@
                                     data.storeId = '-';
                                 }
                                 $('#storeId').html(data.storeId);
+
+
+
+
+                                if (null === data.company) {
+                                    data.company = '-';
+                                }
+                                $('#company').html(data.company);
+
+
 
                                 if (null === data.storeOrgId) {
                                     data.storeOrgId = '-';

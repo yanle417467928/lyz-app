@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.com.leyizhuang.app.foundation.dao.MaInterfaceResendDAO">
+
+    <select id="queryNotSendEbsOrder"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.interfaceResend.EbsOrderResendInfo">
+         (SELECT
+         obi.oid as id,
+         obi.ord_no as orderNumber,
+         obi.status,
+         FALSE AS isGenerate,
+         FALSE AS isSend,
+         NULL  AS  errorMsg,
+         NULL  AS  createTime
+        FROM ord_base_info obi
+        LEFT JOIN  st_store ss on obi.store_code =ss.store_code
+        LEFT JOIN  ord_delivery_info_details odid ON obi.ord_no = odid.order_no
+        LEFT JOIN  inter_ate_order_base_inf iaobi on obi.ord_no = iaobi.main_order_number
+        WHERE
+        obi.delivery_type ='HOUSE_DELIVERY'
+        AND odid.logistic_status='SEALED_CAR'
+        AND obi.`status` in ('PENDING_RECEIVE','FINISHED','REJECTED')
+        and obi.create_time > '2018-04-01 00:00:00'
+        AND iaobi.order_header_id is null
+        <if test="null != keywords and ''!=keywords">
+            AND obi.ord_no like concat('%',#{keywords},'%')
+        </if>
+        )
+
+        UNION
+
+        (SELECT
+         obi.oid as id,
+         obi.ord_no as orderNumber,
+         obi.status,
+         FALSE AS isGenerate,
+         FALSE AS isSend,
+         NULL  AS  errorMsg,
+         NULL  AS  createTime
+        FROM ord_base_info obi
+        LEFT JOIN  st_store ss on obi.store_code =ss.store_code
+        LEFT JOIN  inter_ate_order_base_inf iaobi on obi.ord_no = iaobi.main_order_number
+        WHERE
+         obi.delivery_type ='SELF_TAKE'
+        AND obi.status ='FINISHED'
+        and ss.store_type != 'JM'
+        and obi.create_time > '2018-04-01 00:00:00'
+        AND iaobi.order_header_id is null
+        <if test="null != keywords and ''!=keywords">
+            AND obi.ord_no like concat('%',#{keywords},'%')
+        </if>
+        )
+
+        UNION
+
+          (SELECT
+         obi.oid as id,
+         obi.ord_no as orderNumber,
+         obi.status,
+         TRUE AS isGenerate,
+         FALSE AS isSend,
+         iaobi.error_msg   AS  errorMsg,
+         iaobi.create_time  AS  createTime
+        FROM ord_base_info obi
+        LEFT JOIN  st_store ss on obi.store_code =ss.store_code
+        LEFT JOIN ord_delivery_info_details odid ON obi.ord_no = odid.order_no
+        LEFT JOIN  inter_ate_order_base_inf iaobi on obi.ord_no = iaobi.main_order_number
+        WHERE
+        obi.delivery_type ='HOUSE_DELIVERY'
+        AND odid.logistic_status='SEALED_CAR'
+        AND obi.`status` in ('PENDING_RECEIVE','FINISHED','REJECTED')
+        and obi.create_time > '2018-04-01 00:00:00'
+        AND (iaobi.send_flag = 'N' or send_flag is null)
+        AND iaobi.product_type !='XQ'
+        <if test="null != keywords and ''!=keywords">
+            AND obi.ord_no like concat('%',#{keywords},'%')
+        </if>
+        )
+
+
+      UNION
+
+      (SELECT
+         obi.oid as id,
+         obi.ord_no as orderNumber,
+         obi.status,
+         TRUE AS isGenerate,
+         FALSE AS isSend,
+         iaobi.error_msg   AS  errorMsg,
+         iaobi.create_time  AS  createTime
+        FROM ord_base_info obi
+        LEFT JOIN  st_store ss on obi.store_code =ss.store_code
+        LEFT JOIN  inter_ate_order_base_inf iaobi on obi.ord_no = iaobi.main_order_number
+        WHERE
+         obi.delivery_type ='SELF_TAKE'
+        AND obi.status ='FINISHED'
+        and obi.create_time > '2018-04-01 00:00:00'
+        and ss.store_type != 'JM'
+        AND (iaobi.send_flag = 'N' or iaobi.send_flag is null)
+        AND iaobi.product_type !='XQ'
+        <if test="null != keywords and ''!=keywords">
+            AND obi.ord_no like concat('%',#{keywords},'%')
+        </if>
+        )
+    </select>
+
+
+    <select id="queryNotSendEbsReturnOrder"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.interfaceResend.EbsReturnOrderResendInfo">
+        (SELECT
+        orbi.oid as id,
+        orbi.return_no ,
+        orbi.return_status ,
+        FALSE AS isGenerate,
+        FALSE AS isSend,
+        NULL  AS  errorMsg,
+        NULL  AS  createTime
+        FROM ord_return_base_info orbi
+        LEFT JOIN  st_store ss on orbi.store_code =ss.store_code
+        LEFT JOIN  inter_ate_return_order_base_inf iarobi on orbi.return_no = iarobi.main_return_number
+        LEFT JOIN  ord_base_info obi on obi.ord_no = orbi.ord_no
+        LEFT JOIN ord_return_delivery_detail ordd ON orbi.return_no = ordd.return_no
+        WHERE
+        orbi.return_type in ('REFUSED_RETURN','NORMAL_RETURN')
+        and obi.delivery_type in ('HOUSE_DELIVERY')
+        AND ordd.return_logistic_status='AGAIN_ON_SALE'
+        AND orbi.return_status ='FINISHED'
+        and orbi.return_time > '2018-04-01 00:00:00'
+        AND iarobi.rt_header_id is null
+        <if test="null != keywords and ''!=keywords">
+            AND orbi.return_no like concat('%',#{keywords},'%')
+        </if>
+        )
+
+        UNION
+
+      (SELECT
+        orbi.oid as id,
+        orbi.return_no  ,
+         orbi.return_status ,
+        FALSE AS isGenerate,
+        FALSE AS isSend,
+        NULL  AS  errorMsg,
+        NULL  AS  createTime
+        FROM ord_return_base_info orbi
+        LEFT JOIN  st_store ss on orbi.store_code =ss.store_code
+        LEFT JOIN  inter_ate_return_order_base_inf iarobi on orbi.return_no = iarobi.main_return_number
+        LEFT JOIN  ord_base_info obi on obi.ord_no = orbi.ord_no
+        WHERE
+        orbi.return_type = 'NORMAL_RETURN'
+        and obi.delivery_type ='SELF_TAKE'
+        AND orbi.return_status ='FINISHED'
+        and ss.store_type != 'JM'
+        and orbi.return_time > '2018-04-01 00:00:00'
+        AND iarobi.rt_header_id is null
+        <if test="null != keywords and ''!=keywords">
+            AND orbi.return_no like concat('%',#{keywords},'%')
+        </if>
+        )
+
+            UNION
+
+      (SELECT
+        orbi.oid as id,
+        orbi.return_no  ,
+         orbi.return_status ,
+        TRUE AS isGenerate,
+        FALSE AS isSend,
+         iarobi.error_msg   AS  errorMsg,
+         iarobi.create_time  AS createTime
+        FROM ord_return_base_info orbi
+        LEFT JOIN  st_store ss on orbi.store_code =ss.store_code
+        LEFT JOIN  inter_ate_return_order_base_inf iarobi on orbi.return_no = iarobi.main_return_number
+        LEFT JOIN  ord_base_info obi on obi.ord_no = orbi.ord_no
+        LEFT JOIN ord_return_delivery_detail ordd ON orbi.return_no = ordd.return_no
+        WHERE
+        orbi.return_type in ('REFUSED_RETURN','NORMAL_RETURN')
+        and obi.delivery_type in ('HOUSE_DELIVERY')
+        AND ordd.return_logistic_status='AGAIN_ON_SALE'
+        AND orbi.return_status ='FINISHED'
+        and orbi.return_time > '2018-04-01 00:00:00'
+        AND (iarobi.send_flag = 'N' or iarobi.send_flag is null)
+        AND iarobi.return_number  NOT like '%XQ%'
+        <if test="null != keywords and ''!=keywords">
+            AND orbi.return_no like concat('%',#{keywords},'%')
+        </if>
+        )
+
+        UNION
+
+       (SELECT
+        orbi.oid as id,
+        orbi.return_no  ,
+        orbi.return_status  ,
+        TRUE AS isGenerate,
+        FALSE AS isSend,
+         iarobi.error_msg   AS  errorMsg,
+         iarobi.create_time  AS  createTime
+        FROM ord_return_base_info orbi
+        LEFT JOIN  st_store ss on orbi.store_code =ss.store_code
+        LEFT JOIN  inter_ate_return_order_base_inf iarobi on orbi.return_no = iarobi.main_return_number
+        LEFT JOIN  ord_base_info obi on obi.ord_no = orbi.ord_no
+        LEFT JOIN ord_return_delivery_detail ordd ON orbi.return_no = ordd.return_no
+        WHERE
+        orbi.return_type = 'NORMAL_RETURN'
+        and obi.delivery_type ='SELF_TAKE'
+        AND orbi.return_status ='FINISHED'
+        and ss.store_type != 'JM'
+        and orbi.return_time > '2018-04-01 00:00:00'
+        AND (iarobi.send_flag = 'N' or iarobi.send_flag is null)
+        AND iarobi.return_number  NOT like '%XQ%'
+        <if test="null != keywords and ''!=keywords">
+            AND orbi.return_no like concat('%',#{keywords},'%')
+        </if>
+        )
+    </select>
+
+    <insert id="addResendEbsInterfaceLog"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.interfaceResend.InterfaceResendLog">
+        INSERT interface_resend_log
+        (create_time,send_system,reference_number,change_type,change_type_desc,message,operator_id,operator,operator_ip,remark,is_success)
+        VALUES
+        (#{createTime},#{sendSystem},#{referenceNumber},#{changeType},#{changeTypeDesc},#{message},#{operatorId},#{operator},#{operatorIp},#{remark},#{isSuccess})
+    </insert>
+
+    <select id="queryNotSendAllocation"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.interfaceResend.EbsAllocationResendInfo">
+        select * from
+        (SELECT
+        a.id,
+        a.number ,
+        b.status ,
+        TRUE AS isGenerate,
+        FALSE AS isSend,
+        a.msg AS errorMsg,
+        a.created_time AS createTime
+        from inter_ate_allocation_inf a
+        LEFT JOIN ity_allocation b ON a.number = b.number
+        where a.status =1
+        AND
+        <if test="null !=type and ''!=type">
+            a.type =#{type}
+        </if>
+        <if test="null != keywords and ''!=keywords">
+            AND a.numbe like concat('%',#{keywords},'%')
+        </if>
+        ORDER BY a.created_time DESC) c
+        GROUP BY c.number
+    </select>
+
+
+    <select id="findAllocationInfByTypeAndNumber"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationInf">
+        SELECT * from inter_ate_allocation_inf where type = #{type} AND status =1  AND number = #{number} ORDER BY created_time DESC limit 1
+    </select>
+
+    <select id="findAllocationInfAllByTypeAndNumber"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.inventory.allocation.AllocationInf">
+        SELECT * from inter_ate_allocation_inf where type = #{type} AND status =1  AND number = #{number}
+    </select>
+
+
+    <update id="updateAllocationStatus">
+        UPDATE inter_ate_allocation_inf
+        <set>
+            <if test="null != status">
+                status = #{status},
+            </if>
+            msg = #{msg}
+        </set>
+        WHERE
+        1=1
+        <if test="null != type and  ''!=type">
+            AND type = #{type}
+        </if>
+        <if test="null != number and  ''!=number">
+            AND number = #{number}
+        </if>
+    </update>
+
+    <select id="queryNotSendSelfTakeOrder"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.interfaceResend.EbsOrderResendInfo">
+       ( select
+         a.oid as id,
+         a.ord_no as orderNumber,
+         a.status,
+         FALSE AS isGenerate,
+         FALSE AS isSend,
+         NULL  AS  errorMsg,
+         NULL  AS  createTime
+        from ord_base_info a
+        left join st_store b on a.store_code = b.store_code
+        left join inter_ate_order_receive_inf c on a.ord_no = c.order_number
+        where
+        a.delivery_type ='SELF_TAKE'
+        AND b.store_type !='JM'
+        AND a.`status` = 'FINISHED'
+        and c.id is null
+        and a.create_time > '2018-04-01 00:00:00'
+        <if test="null != keywords and ''!=keywords">
+            AND a.ord_no like concat('%',#{keywords},'%')
+        </if>
+        )
+        UNION
+         ( select
+         a.oid as id,
+         a.ord_no as orderNumber,
+         a.status,
+         TRUE AS isGenerate,
+         FALSE AS isSend,
+         c.error_msg   AS  errorMsg,
+         c.init_date  AS  createTime
+        from ord_base_info a
+        left join st_store b on a.store_code = b.store_code
+        LEFT JOIN inter_ate_order_receive_inf c on a.ord_no = c.order_number
+        where
+        a.delivery_type ='SELF_TAKE' AND b.store_type !='JM'
+        AND a.`status` = 'FINISHED' and a.create_time > '2018-04-01 00:00:00'
+        and c.id is not null
+        AND (c.send_flag ='N' or c.send_flag is null )
+        <if test="null != keywords and ''!=keywords">
+            AND a.ord_no like concat('%',#{keywords},'%')
+        </if>
+        )
+    </select>
+
+
+    <select id="queryNotSendEbsReturnStoreOrder"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.interfaceResend.EbsReturnOrderResendInfo">
+
+    (SELECT
+        orbi.oid as id,
+        orbi.return_no  ,
+        orbi.return_status ,
+        FALSE AS isGenerate,
+        FALSE AS isSend,
+        NULL  AS  errorMsg,
+        NULL  AS  createTime
+        FROM ord_return_base_info orbi
+        LEFT JOIN  st_store ss on orbi.store_code =ss.store_code
+        LEFT JOIN  ord_base_info obi on obi.ord_no = orbi.ord_no
+        LEFT JOIN  inter_ate_return_order_retmd_inf iarori ON iarori.return_number = orbi.return_no
+        WHERE
+        orbi.return_type = 'NORMAL_RETURN'
+        and obi.delivery_type ='SELF_TAKE'
+        AND orbi.return_status ='FINISHED'
+        and ss.store_type != 'JM'
+        and orbi.return_time > '2018-04-01 00:00:00'
+        AND iarori.id is null
+        <if test="null != keywords and ''!=keywords">
+            AND orbi.return_no like concat('%',#{keywords},'%')
+        </if>
+        )
+
+      UNION
+
+      ( SELECT
+        orbi.oid as id,
+        orbi.return_no  ,
+        orbi.return_status  ,
+        TRUE AS isGenerate,
+        FALSE AS isSend,
+         iarori.error_msg   AS  errorMsg,
+         iarori.return_date  AS  createTime
+        FROM ord_return_base_info orbi
+        LEFT JOIN  st_store ss on orbi.store_code =ss.store_code
+        LEFT JOIN  inter_ate_return_order_retmd_inf iarori ON iarori.return_number = orbi.return_no
+        LEFT JOIN  ord_base_info obi on obi.ord_no = orbi.ord_no
+        LEFT JOIN ord_return_delivery_detail ordd ON orbi.return_no = ordd.return_no
+        WHERE
+        orbi.return_type = 'NORMAL_RETURN'
+        and obi.delivery_type ='SELF_TAKE'
+        AND orbi.return_status ='FINISHED'
+        and ss.store_type != 'JM'
+        and orbi.return_time > '2018-04-01 00:00:00'
+        AND (iarori.send_flag = 'N' or iarori.send_flag is null)
+        <if test="null != keywords and ''!=keywords">
+            AND orbi.return_no like concat('%',#{keywords},'%')
+        </if>
+        )
+    </select>
+
+
+</mapper>
