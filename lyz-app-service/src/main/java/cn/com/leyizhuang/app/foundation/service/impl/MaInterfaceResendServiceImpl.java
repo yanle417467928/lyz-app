@@ -98,7 +98,7 @@ public class MaInterfaceResendServiceImpl implements MaInterfaceResendService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void generateEbsOrderInfo(String orderNumber, ShiroUser user,String ip){
-        separateOrderService.separateOrderAndGoodsInf(orderNumber);
+        separateOrderService.separateOrder(orderNumber);
         this.addResendEbsInterfaceLog( orderNumber,user,InterfaceResendChangeType.EBS_ORER_GENERATE,Boolean.TRUE,"生成接口成功",ip,"EBS");
     }
 
@@ -118,7 +118,7 @@ public class MaInterfaceResendServiceImpl implements MaInterfaceResendService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void generateEbsReturnOrderInfo(String returnNo, ShiroUser user,String ip){
-        separateOrderService.separateReturnOrderAndGoodsInf(returnNo);
+        separateOrderService.separateReturnOrder(returnNo);
         this.addResendEbsInterfaceLog( returnNo,user,InterfaceResendChangeType.EBS_ORER_GENERATE,Boolean.TRUE,"生成接口成功",ip,"EBS");
 
     }
@@ -224,7 +224,6 @@ public class MaInterfaceResendServiceImpl implements MaInterfaceResendService {
             maOrderReceiveInf.setInitDate(maOrderTempInfo.getCreateTime());
             maOrderReceiveInf.setHeaderId(maOrderTempInfo.getId());
             maOrderService.saveAppToEbsOrderReceiveInf(maOrderReceiveInf);
-            separateOrderService.separateOrderAndGoodsInf(orderNumber);
             this.addResendEbsInterfaceLog( orderNumber,user,InterfaceResendChangeType.EBS_SELFTAKE_ORER_GENERATE,Boolean.TRUE,"生成接口成功",ip,"EBS");
         }else {
             throw new RuntimeException("订单状态错误,不能生成接口信息");
