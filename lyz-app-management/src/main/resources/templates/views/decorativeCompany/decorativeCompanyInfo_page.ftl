@@ -101,7 +101,7 @@
                             <b>创建时间</b> <a class="pull-right" id="createTime"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>装饰公司类型</b> <a class="pull-right" id="company"></a>
+                            <b>转售给</b> <a class="pull-right" id="createTime"></a>
                         </li>
                     </ul>
                 </div>
@@ -251,10 +251,6 @@
                                     data.storeName = '-';
                                 }
                                 $('#storeName').html(data.storeName);
-                                if (null === data.company) {
-                                    data.company = '-';
-                                }
-                                $('#company').html(data.company);
 
 
                                 if (true === data.enable) {

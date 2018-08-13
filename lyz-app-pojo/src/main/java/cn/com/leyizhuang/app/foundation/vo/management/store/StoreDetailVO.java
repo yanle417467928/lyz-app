@@ -70,6 +70,9 @@ public class StoreDetailVO {
     // 门店组织id
     private Long storeOrgId;
 
+    //装饰公司类型
+    private String company;
+
 /*    //城市ID
     private CityVO cityId;*/
 }
