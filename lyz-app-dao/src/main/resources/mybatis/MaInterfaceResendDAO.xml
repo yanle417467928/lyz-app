@@ -373,6 +373,7 @@
         AND orbi.return_status ='FINISHED'
         and ss.store_type != 'JM'
         and orbi.return_time > '2018-04-01 00:00:00'
+        AND iarori.id is not null
         AND (iarori.send_flag = 'N' or iarori.send_flag is null)
         <if test="null != keywords and ''!=keywords">
             AND orbi.return_no like concat('%',#{keywords},'%')
