@@ -158,7 +158,7 @@
         u.CREATE_TIME CREATE_TIME,
         u.mobile PHONE,
         r.rid AS ROLE_ID,
-        r.NAME AS ROLE_NAME
+        r.NAME AS rolesList
         FROM
         admin_user u
         LEFT JOIN admin_user_role ur ON u.uid = ur.uid

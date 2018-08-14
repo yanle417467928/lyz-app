@@ -401,16 +401,6 @@ public class MaOrderServiceImpl implements MaOrderService {
                 }
             }
         }
-        //生成ebs接口表数据
-        MaOrderReceiveInf maOrderReceiveInf = new MaOrderReceiveInf();
-        maOrderReceiveInf.setDeliverTypeTitle(AppDeliveryType.SELF_TAKE);
-        maOrderReceiveInf.setOrderNumber(orderNumber);
-        maOrderReceiveInf.setReceiveDate(date);
-        maOrderReceiveInf.setSobId(maOrderTempInfo.getSobId());
-        maOrderReceiveInf.setInitDate(maOrderTempInfo.getCreateTime());
-        maOrderReceiveInf.setHeaderId(maOrderTempInfo.getId());
-        //maOrderReceiveInf.setSendTime(new Date());
-        this.saveAppToEbsOrderReceiveInf(maOrderReceiveInf);
         //记录销量
         //statisticsSellDetailsService.addOrderSellDetails(orderNumber);
     }
@@ -427,12 +417,23 @@ public class MaOrderServiceImpl implements MaOrderService {
         if (null == orderNumber) {
             throw new RuntimeException("发送接口失败，订单号为空");
         }
-        MaOrderReceiveInf maOrderReceiveInf = this.queryOrderReceiveInf(orderNumber);
+        MaOrderTempInfo maOrderTempInfo = this.getOrderInfoByOrderNo(orderNumber);
         //调用ebsSenderService接口传ebs
-        if(null !=maOrderReceiveInf){
+        if(null !=maOrderTempInfo){
+            //生成ebs接口表数据
+            Date date = new Date();
+            MaOrderReceiveInf maOrderReceiveInf = new MaOrderReceiveInf();
+            maOrderReceiveInf.setDeliverTypeTitle(AppDeliveryType.SELF_TAKE);
+            maOrderReceiveInf.setOrderNumber(orderNumber);
+            maOrderReceiveInf.setReceiveDate(date);
+            maOrderReceiveInf.setSobId(maOrderTempInfo.getSobId());
+            maOrderReceiveInf.setInitDate(maOrderTempInfo.getCreateTime());
+            maOrderReceiveInf.setHeaderId(maOrderTempInfo.getId());
+            //maOrderReceiveInf.setSendTime(new Date());
+            this.saveAppToEbsOrderReceiveInf(maOrderReceiveInf);
             this.ebsSenderService.sendOrderReceiveInfAndRecord(maOrderReceiveInf);
         }else{
-            throw new RuntimeException("发送接口失败，查询接口表失败");
+            throw new RuntimeException("发送接口失败,原订单不存在");
         }
     }
 
