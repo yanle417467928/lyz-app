@@ -113,6 +113,7 @@ public interface MaCustomerDAO {
      */
     List<RankClassification> findRankAll();
 
+    List<RankClassification> findRankByCityId(Long cityId);
     /**
      * 查询专供门店
      */

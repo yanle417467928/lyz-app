@@ -459,7 +459,6 @@ public class MaOrderRestController extends BaseRestController {
      * @param orderNumber
      * @return
      */
-    @Transactional
     @GetMapping(value = "/orderShipping")
     public ResultDTO<Object> orderShipping(@RequestParam(value = "orderNumber") String orderNumber, @RequestParam(value = "code") String code) {
         logger.warn("orderShipping 后台自提单单发货 ,入参orderNumber:{} code:{}", orderNumber, code);

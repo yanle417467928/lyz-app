@@ -1241,6 +1241,27 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
         }
     }
 
+
+    @Override
+    public void sendNotXQOrderBaseInfAndOrderGoodsInf(String orderNumber) {
+        if (null != orderNumber) {
+            //发送订单头、商品行(不包括喜鹊)
+            List<OrderBaseInf> pendingSendOrderBaseInfs = separateOrderDAO.getNotXQPendingSendOrderBaseInf(orderNumber);
+            for (OrderBaseInf baseInf : pendingSendOrderBaseInfs) {
+                List<OrderGoodsInf> orderGoodsInfList = separateOrderDAO.getOrderGoodsInfByOrderNumber(baseInf.getOrderNumber());
+                ebsSenderService.sendOrderAndGoodsToEbsAndRecord(baseInf, orderGoodsInfList);
+            }
+
+        }
+    }
+
+    @Override
+    public  List<OrderBaseInf> getPendingSendOrderBaseInf(String orderNumber) {
+        List<OrderBaseInf> pendingSendOrderBaseInfs = separateOrderDAO.getPendingSendOrderBaseInf(orderNumber);
+        return pendingSendOrderBaseInfs;
+    }
+
+
     @Override
     public void sendOrderBaseInfAndOrderNotXQGoodsInf(String orderNumber) {
         if (null != orderNumber) {
@@ -1848,8 +1869,26 @@ public class AppSeparateOrderServiceImpl implements AppSeparateOrderService {
                 List<ReturnOrderGoodsInf> returnOrderGoodsInfList = separateOrderDAO.getReturnOrderGoodsInfByReturnNumber(baseInf.getReturnNumber());
                 ebsSenderService.sendReturnOrderAndReturnGoodsToEbsAndRecord(baseInf, returnOrderGoodsInfList);
             }
+        }
+    }
+
+    @Override
+    public void sendNotXQReturnOrderBaseInfAndReturnOrderGoodsInf(String returnNumber) {
+        if (null != returnNumber) {
+            //发送退单头、商品行(不包含喜鹊)
+            List<ReturnOrderBaseInf> returnOrderBaseInfList = separateOrderDAO.getNotReturnOrderBaseInfByReturnNumber(returnNumber);
+            for (ReturnOrderBaseInf baseInf : returnOrderBaseInfList) {
+                List<ReturnOrderGoodsInf> returnOrderGoodsInfList = separateOrderDAO.getReturnOrderGoodsInfByReturnNumber(baseInf.getReturnNumber());
+                ebsSenderService.sendReturnOrderAndReturnGoodsToEbsAndRecord(baseInf, returnOrderGoodsInfList);
+            }
 
         }
+    }
+
+    @Override
+    public  List<ReturnOrderBaseInf> getReturnOrderBaseInfByReturnNumber(String returnNumber) {
+        List<ReturnOrderBaseInf> ReturnOrderBaseInfList = separateOrderDAO.getReturnOrderBaseInfByReturnNumber(returnNumber);
+        return ReturnOrderBaseInfList;
     }
 
     @Override

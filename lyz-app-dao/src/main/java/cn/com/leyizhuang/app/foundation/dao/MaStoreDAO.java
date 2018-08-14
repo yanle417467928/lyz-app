@@ -120,6 +120,10 @@ public interface MaStoreDAO {
 
     List<SimpleStoreParam> findStoresListByCityIdAndStoreId(@Param("cityId") Long cityId, @Param("list") List<Long> storeIds);
 
+    List<SimpleStoreParam> findSmallFitAndStoresListByCityIdAndStoreId(@Param("cityId") Long cityId, @Param("list") List<Long> storeIds);
+
+    List<SimpleStoreParam> findSmallFitStoresListByStoreIdNotBillRule(@Param("list") List<Long> storeIds);
+
     List<SimpleStoreParam> findStoresListByStoreId(@Param("list") List<Long> storeIds);
 
     List<SimpleStoreParam> findFitAndStoresListByStoreId(@Param("cityId")Long cityId,@Param("storeType")String storeType,@Param("list") List<Long> storeIds);

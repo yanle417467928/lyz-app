@@ -892,6 +892,17 @@ public class AppActServiceImpl implements AppActService {
             // 非专供会员 不能参与专供促销
             return null;
         }
+        // 判断成为专供时间 是否超过1个月
+        Date becomeZgTime = customerRankInfoResponse.getCreateTime();
+        Calendar c = Calendar.getInstance();//获得一个日历的实例
+        c.setTime(becomeZgTime);//设置日历时间
+        c.add(Calendar.MONTH,1);//在日历的月份上增加1个月
+        Date now = new Date();
+        if (now.after(c.getTime())){
+            logger.info("计算专供促销，顾客id:" + cusId + "成为专供会员时间超过1个月");
+            return giftListResponseList;
+        }
+
         try {
             appCustomer = appCustomerService.findById(cusId);
 

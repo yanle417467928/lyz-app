@@ -459,6 +459,20 @@
                 rank_classification
     </select>
 
+    <select id="findRankByCityId" resultType="cn.com.leyizhuang.app.foundation.pojo.user.RankClassification">
+        SELECT
+        rank_id rankId,
+        rank_name rankName,
+        rank_code rankCode,
+        rank_url rankUrl,
+        create_time createTime,
+        city_id cityId
+        FROM
+        rank_classification
+        where city_id = #{cityId}
+        ORDER BY rank_id
+    </select>
+
     <select id="findRankStoreByStoreId" parameterType="java.lang.Long"
             resultType="cn.com.leyizhuang.app.foundation.pojo.RankStore">
         SELECT

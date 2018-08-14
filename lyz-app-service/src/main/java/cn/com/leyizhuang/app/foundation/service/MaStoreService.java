@@ -121,6 +121,10 @@ public interface MaStoreService {
 
     List<SimpleStoreParam> findStoresListByCityIdAndStoreId(Long cityId, List<Long> storeIds);
 
+    List<SimpleStoreParam> findSmallFitAndStoresListByCityIdAndStoreId(Long cityId, List<Long> storeIds);
+
+    List<SimpleStoreParam> findSmallFitStoresListByStoreIdNotBillRule(List<Long> storeIds);
+
     List<SimpleStoreParam> findStoresListByStoreId(List<Long> storeIds);
 
     List<SimpleStoreParam> findFitAndStoresListByStoreId(Long cityId,String storeType,List<Long> storeIds);

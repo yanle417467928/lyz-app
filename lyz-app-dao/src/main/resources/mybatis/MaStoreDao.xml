@@ -710,6 +710,103 @@
         </foreach>
     </select>
 
+
+    <select id="findSmallFitAndStoresListByCityIdAndStoreId"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
+        SELECT
+        ss.store_id,
+        ss.store_name
+        FROM
+        st_store ss
+        LEFT JOIN city c ON ss.city_code = c.CODE
+        WHERE
+        ss.store_type ='ZY'
+        <if test="null != cityId and cityId != -1">
+            AND c.city_id = #{cityId}
+        </if>
+        AND ss.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+
+        UNION
+
+        SELECT
+        ss.store_id,
+        ss.store_name
+        FROM
+        st_store ss
+        LEFT JOIN city c ON ss.city_code = c.CODE
+        WHERE
+        ss.store_type ='JM'
+        <if test="null != cityId and cityId != -1">
+            AND c.city_id = #{cityId}
+        </if>
+        AND ss.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+
+        UNION
+
+        SELECT
+        ss.store_id,
+        ss.store_name
+        FROM
+        st_store ss
+        LEFT JOIN city c ON ss.city_code = c.CODE
+        WHERE
+        ss.store_type ='ZS'
+        AND
+        ss.fit_compay_type ='CASH'
+        <if test="null != cityId and cityId != -1">
+            AND c.city_id = #{cityId}
+        </if>
+        AND ss.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+
+        UNION
+
+        SELECT
+        ss.store_id,
+        ss.store_name
+        FROM
+        st_store ss
+        LEFT JOIN city c ON ss.city_code = c.CODE
+        WHERE
+        ss.store_type ='FX'
+        <if test="null != cityId and cityId != -1">
+            AND c.city_id = #{cityId}
+        </if>
+        AND ss.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+
+    </select>
+
+
+    <select id="findSmallFitStoresListByStoreIdNotBillRule"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
+        SELECT
+        s.store_id,
+        s.store_name
+        FROM
+        st_store s
+        LEFT JOIN
+        bill_rule br ON  s.store_id = br.store_id
+        WHERE
+        s.store_type ='ZS'
+        AND  s.fit_compay_type ='CASH'
+        AND br.id is NULL
+        AND s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
     <select id="findStoresListByStoreId"
             resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
         SELECT
