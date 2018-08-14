@@ -18,6 +18,11 @@ import java.util.List;
 public class MessageNotificationServiceImpl implements MessageNotificationService {
     private MessageNotificationDAO messageNotificationDAO;
 
+    @Override
+    public MessageNotificationListResponse findNotification(Long userId, Integer identityType, Long messageId) {
+        return this.messageNotificationDAO.findNotification(userId,AppIdentityType.getAppIdentityTypeByValue(identityType),messageId);
+    }
+
     public MessageNotificationServiceImpl(MessageNotificationDAO messageNotificationDAO) {
         this.messageNotificationDAO = messageNotificationDAO;
     }
