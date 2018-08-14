@@ -107,6 +107,17 @@
                                 </div>
                             </div>
                         </div>
+                        <div class=" col-xs-3">
+                            <select name="status" id="status" class="form-control select"
+                                    onchange="findOrderByOrderNumber()">
+                                <option value="">选择订单状态</option>
+                            <#if orderStatusList?? && orderStatusList?size gt 0 >
+                                <#list orderStatusList as orderStatus>
+                                    <option value="${orderStatus.value!''}">${orderStatus.description!''}</option>
+                                </#list>
+                            </#if>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -125,6 +136,7 @@
                                         <option value="-1">选择门店</option>
                                     </select>
                                 </div>
+
                                 <div class=" col-xs-3">
                                     <select name="company" id="company" class="form-control select"
                                             onchange="findOrderByOrderNumber()">

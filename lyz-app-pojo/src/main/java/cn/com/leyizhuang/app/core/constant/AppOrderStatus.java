@@ -82,4 +82,5 @@ public enum AppOrderStatus {
         appOrderStatus.add(AppOrderStatus.CANCELING);
         return appOrderStatus;
     }
+
 }

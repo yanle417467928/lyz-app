@@ -342,11 +342,15 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
 
         for (TransferCusPreDepositTemplate preDepositTemplate : productTemplateList){
             TransferCusTemplate template = transferDAO.findCusTemByCusCode(preDepositTemplate.getCusCode());
-
+            if (preDepositTemplate.getCusCode().equals("M1510060331CQ")){
+                System.out.println("111");
+            }
             if (template != null && template.getCusMobile() != null ){
                 // 设置预存款
                 AppCustomer customer = new AppCustomer();
-
+                if (template.getCusCode().equals("M1510060331CQ")){
+                    System.out.println("111");
+                }
                 try {
                     customer = appCustomerService.findByMobile(template.getCusMobile());
                 } catch (UnsupportedEncodingException e) {

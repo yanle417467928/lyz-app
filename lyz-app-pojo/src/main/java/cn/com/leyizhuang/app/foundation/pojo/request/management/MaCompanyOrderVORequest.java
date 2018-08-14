@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.request.management;
 
+import cn.com.leyizhuang.app.core.constant.AppOrderStatus;
 import lombok.*;
 
 import java.util.List;
@@ -53,6 +54,11 @@ public class MaCompanyOrderVORequest {
 
     //公司类型
     private String company;
+
+    //订单状态
+    private String status;
+
+
 
     private List<Long> list;
 

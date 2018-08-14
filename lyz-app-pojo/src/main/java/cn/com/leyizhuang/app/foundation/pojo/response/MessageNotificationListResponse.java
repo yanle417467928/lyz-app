@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo.response;
 
 import cn.com.leyizhuang.app.core.constant.AppIdentityType;
+import com.hp.hpl.sparta.xpath.ThisNodeTest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -35,6 +36,11 @@ public class MessageNotificationListResponse {
     private String status;
     //消息Id
     private Long messageId;
+    //通知类型
+    private String messageType;
+
+
+
 
 
 
