@@ -90,23 +90,23 @@ public class UserMessageNotificationController {
      * @date 2017/10/10
      */
     @PostMapping(value = "/notification", produces = "application/json;charset=UTF-8")
-    public ResultDTO<List> getMessageNotification(Long userId, Integer identityType, Long messageId) {
+    public ResultDTO getMessageNotification(Long userId, Integer identityType, Long messageId) {
         logger.info("getMessageNotificationList CALLED, 获取消息通知列表，入参 userId {},identityType{}", userId, identityType);
 
-        ResultDTO<List> resultDTO;
+        ResultDTO resultDTO;
         if (userId == null) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+            resultDTO = new ResultDTO(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
             logger.info("getMessageNotificationList OUT, 获取消息通知失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == identityType) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空",
+            resultDTO = new ResultDTO(CommonGlobal.COMMON_CODE_FAILURE, "用户类型不能为空",
                     null);
             logger.info("getMessageNotificationList OUT,获取消息通知失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
         }
         if (null == messageId) {
-            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "messageId不能为空",
+            resultDTO = new ResultDTO(CommonGlobal.COMMON_CODE_FAILURE, "messageId不能为空",
                     null);
             logger.info("getMessageNotificationList OUT,获取消息通知失败，出参 resultDTO:{}", resultDTO);
             return resultDTO;
