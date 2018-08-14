@@ -86,4 +86,6 @@ public class SalesReportDO {
     private String cusType;
     // 分析仓库名称
     private String fxCkName;
+    // 是否为工程单
+    private String isGcOrder;
 }

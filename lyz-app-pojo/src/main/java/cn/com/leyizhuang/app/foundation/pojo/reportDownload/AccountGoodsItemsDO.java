@@ -123,6 +123,12 @@ public class AccountGoodsItemsDO {
     //配送员姓名
     private String deliveryName;
 
+    // 促销折扣
+    private Double discount = 0D;
+
+    // 工程单
+    private String isGcOrder;
+
     public void setGoodsLineType(AppGoodsLineType goodsLineType){
         this.goodsLineType = goodsLineType.getDescription();
     }
