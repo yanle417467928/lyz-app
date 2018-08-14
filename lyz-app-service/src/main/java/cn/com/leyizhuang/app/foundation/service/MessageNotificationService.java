@@ -30,5 +30,5 @@ public interface MessageNotificationService {
     void modifyMessageNotification(MessageNotificationListResponse messageNotificationListResponse);
 
 
-    MessageNotificationListResponse findNotification(Long userId,Integer identityType,Long messageId);
+    MessageNotificationListResponse findNotification(Long userId, Integer identityType,Long messageId);
 }
