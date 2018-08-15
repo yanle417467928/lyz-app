@@ -2182,7 +2182,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
         } catch (Exception e) {
             map.put("code", -1);
             map.put("message", "发生未知异常，请联系管理员！");
-            logger.info(e.getMessage());
+            e.printStackTrace();
             return map;
         }
     }
@@ -2679,7 +2679,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
             support.setOrderGoodsInfoList(orderGoodsInfoList);
 
             //****************** 创建订单经销差价返还明细 ***********
-            List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetailsList = commonService.createOrderJxPriceDifferenceReturnDetails(orderBaseInfo, support.getOrderGoodsInfoList(), promotionSimpleInfoList);
+            List<OrderJxPriceDifferenceReturnDetails> jxPriceDifferenceReturnDetailsList = commonService.createOrderJxPriceDifferenceReturnDetails(orderBaseInfo, support.getOrderGoodsInfoList(), promotionSimpleInfoList,orderProductCouponInfoList);
             if (null != jxPriceDifferenceReturnDetailsList && jxPriceDifferenceReturnDetailsList.size() > 0) {
                 orderBillingDetails.setJxPriceDifferenceAmount(jxPriceDifferenceReturnDetailsList.stream().mapToDouble(OrderJxPriceDifferenceReturnDetails::getAmount).sum());
             }

@@ -59,8 +59,9 @@
         <result property="area" column="area"/>
         <result property="detailedAddress" column="detailed_address"/>
         <result property="isSelfDelivery" column="is_self_delivery"/>
-        <result property="salesManager" column="sales_manager"/>
+        <result property="salesManager" column="sales_manager_name"/>
         <result property="company" column="fit_compay_type"/>
+        <result property="seller" column="emp.name"/>
         <association property="cityCode" javaType="SimpleCityParam">
             <id property="cityId" column="city_id"/>
             <result property="name" column="name"/>
@@ -261,18 +262,22 @@
         WHERE store_id = #{storeId}
     </update>
 
-    <select id="queryDecorativeCompanyPageVO" resultMap="storeDOResultMap">
+    <select id="queryDecorativeCompanyPageVO" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.StoreDO">
         SELECT
         s.store_code,
         s.store_name,
         s.enable,
         s.store_id,
-        c.name,
+        c.name AS city,
         s.create_time,
-        s.fit_compay_type
+        s.fit_compay_type,
+		s.sales_manager_name as salesManager,
+	    emp.name as seller,
+	    s.fit_compay_type AS company
         FROM
         st_store s
         LEFT JOIN city c ON s.city_code = c.code
+		LEFT JOIN emp_employee emp  ON s.store_id=emp.store_id
         WHERE
         s.store_type="ZS"
         ORDER BY
@@ -331,18 +336,22 @@
         DESC
     </select>
 
-    <select id="findDecorativeByCondition" resultMap="storeDOResultMap">
+    <select id="findDecorativeByCondition" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.StoreDO">
         SELECT
         s.store_code,
         s.store_name,
         s.enable,
-        s.store_type,
         s.store_id,
-        c.name,
-        s.fit_compay_type
+        c.name AS city,
+        s.create_time,
+        s.fit_compay_type,
+        s.sales_manager_name as salesManager,
+        emp.name as seller,
+        s.fit_compay_type AS company
         FROM
         st_store s
         LEFT JOIN city c ON s.city_code = c.code
+        LEFT JOIN emp_employee emp  ON s.store_id=emp.store_id
         WHERE
         1=1
         <if test="company == ''">
@@ -391,20 +400,22 @@
          DESC
     </select>
 
-    <select id="findDecorativeById" parameterType="java.lang.Long" resultMap="storeDOResultMap">
+    <select id="findDecorativeById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.StoreDO">
         SELECT
         s.store_code,
         s.store_name,
         s.enable,
-        s.store_type,
         s.store_id,
+        c.name AS city,
         s.create_time,
-        c.name,
-        ee.name sales_manager
+        s.fit_compay_type,
+		s.sales_manager_name as salesManager,
+	    ee.name as seller,
+	    s.fit_compay_type AS company
         FROM
         st_store s
         LEFT JOIN city c ON s.city_code = c.code
-        LEFT  JOIN emp_employee ee ON  ee.emp_id = s.sales_manager
+        LEFT JOIN emp_employee ee ON ee.store_id = s.store_id
         WHERE s.store_id=#{storeId}
         AND
          s.store_type="ZS"

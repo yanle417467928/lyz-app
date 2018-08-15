@@ -41,6 +41,13 @@ public class MaEmployeeServiceImpl implements MaEmployeeService{
     }
 
     @Override
+    public PageInfo<MaEmployeeResponse> queryPageVO4Message(Integer page, Integer size,String keywords) {
+        PageHelper.startPage(page, size);
+        List<MaEmployeeResponse> pageEmployeeList = this.maEmployeeDAO.findAllEmployee4Message(keywords);
+        return new PageInfo<>(pageEmployeeList);
+    }
+
+    @Override
     public EmployeeDetailVO queryEmployeeById(Long id){
         EmployeeDO employeeDO = this.maEmployeeDAO.queryEmployeeById(id);
         EmployeeDetailVO employeeVO=  EmployeeDetailVO.transform(employeeDO);

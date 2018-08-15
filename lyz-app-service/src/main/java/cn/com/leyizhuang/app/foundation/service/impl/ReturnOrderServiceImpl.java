@@ -421,9 +421,14 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
             returnOrderBaseInfo.setOrderType(orderBaseInfo.getOrderType());
             returnOrderBaseInfo.setReturnStatus(AppReturnOrderStatus.FINISHED);
             //保存退单头信息
-            returnOrderService.saveReturnOrderBaseInfo(returnOrderBaseInfo);
+            returnOrderDAO.saveRefusedReturnOrderBaseInfo(returnOrderBaseInfo);
             //获取退单头id
             Long returnOrderId = returnOrderBaseInfo.getRoid();
+
+            if (null == returnOrderId){
+                maps.put("code", "repeat");
+                return maps;
+            }
 
             Date date = new Date();
 

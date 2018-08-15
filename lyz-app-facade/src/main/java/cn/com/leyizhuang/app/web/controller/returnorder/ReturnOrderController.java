@@ -237,7 +237,11 @@ public class ReturnOrderController {
                         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, null);
                         logger.info("cancelOrder OUT,取消订单成功，出参 resultDTO:{}", resultDTO);
                         return resultDTO;
-                    } else {
+                    }else if ("repeat".equals(code)) {
+                        resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "此单已取消，不能重复取消，请联系管理员！", null);
+                        logger.info("refusedOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
+                        return resultDTO;
+                    }else {
                         resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "取消订单失败，请联系管理员！", null);
                         logger.info("cancelOrder OUT,取消订单失败，出参 resultDTO:{}", resultDTO);
                         return resultDTO;

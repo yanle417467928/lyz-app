@@ -417,21 +417,26 @@ public class MaOrderServiceImpl implements MaOrderService {
         if (null == orderNumber) {
             throw new RuntimeException("发送接口失败，订单号为空");
         }
+        Date date = new Date();
         MaOrderTempInfo maOrderTempInfo = this.getOrderInfoByOrderNo(orderNumber);
         //调用ebsSenderService接口传ebs
         if(null !=maOrderTempInfo){
-            //生成ebs接口表数据
-            Date date = new Date();
-            MaOrderReceiveInf maOrderReceiveInf = new MaOrderReceiveInf();
-            maOrderReceiveInf.setDeliverTypeTitle(AppDeliveryType.SELF_TAKE);
-            maOrderReceiveInf.setOrderNumber(orderNumber);
-            maOrderReceiveInf.setReceiveDate(date);
-            maOrderReceiveInf.setSobId(maOrderTempInfo.getSobId());
-            maOrderReceiveInf.setInitDate(maOrderTempInfo.getCreateTime());
-            maOrderReceiveInf.setHeaderId(maOrderTempInfo.getId());
-            //maOrderReceiveInf.setSendTime(new Date());
-            this.saveAppToEbsOrderReceiveInf(maOrderReceiveInf);
-            this.ebsSenderService.sendOrderReceiveInfAndRecord(maOrderReceiveInf);
+            MaOrderReceiveInf maOrderReceiveInfO= this.queryOrderReceiveInf(orderNumber);
+            if(null ==maOrderReceiveInfO){
+                //生成ebs接口表数据
+                MaOrderReceiveInf maOrderReceiveInf = new MaOrderReceiveInf();
+                maOrderReceiveInf.setDeliverTypeTitle(AppDeliveryType.SELF_TAKE);
+                maOrderReceiveInf.setOrderNumber(orderNumber);
+                maOrderReceiveInf.setReceiveDate(date);
+                maOrderReceiveInf.setSobId(maOrderTempInfo.getSobId());
+                maOrderReceiveInf.setInitDate(maOrderTempInfo.getCreateTime());
+                maOrderReceiveInf.setHeaderId(maOrderTempInfo.getId());
+                //maOrderReceiveInf.setSendTime(new Date());
+                this.saveAppToEbsOrderReceiveInf(maOrderReceiveInf);
+                this.ebsSenderService.sendOrderReceiveInfAndRecord(maOrderReceiveInf);
+            }else{
+                this.ebsSenderService.sendOrderReceiveInfAndRecord(maOrderReceiveInfO);
+            }
         }else{
             throw new RuntimeException("发送接口失败,原订单不存在");
         }

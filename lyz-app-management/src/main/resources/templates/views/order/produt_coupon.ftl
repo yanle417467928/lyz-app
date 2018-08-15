@@ -163,13 +163,13 @@
                                         <table class="table table-hover">
                                             <thead>
                                             <tr>
-                                                <th>ID</th>
-                                                <th>sku</th>
-                                                <th>商品名</th>
-                                                <th>零售价</th>
-                                                <th>会员价</th>
-                                                <th>数量</th>
-                                                <th>操作</th>
+                                                <th style="width: 7%">ID</th>
+                                                <th style="width: 18%">sku</th>
+                                                <th style="width: 35%">商品名</th>
+                                                <th style="width: 10%">零售价</th>
+                                                <th style="width: 10%">会员价</th>
+                                                <th style="width: 10%">数量</th>
+                                                <th style="width: 10%">操作</th>
                                             </tr>
                                             </thead>
                                             <tbody id="selectedGoodsTable">
