@@ -84,16 +84,6 @@
         INNER JOIN gds_goods gg ON gg.gid = ggp.gid
         WHERE
             po.photo_order_no = #{photoNo}
-          <choose>
-              <when test="rankCode !=null and rankCode != ''">
-                  AND
-                  ggp.price_type =#{rankCode}
-              </when>
-              <otherwise>
-                  AND
-                  ggp.price_type ='COMMON'
-              </otherwise>
-          </choose>
       </if>
       <if test="null != identityType and 'OTHER' == identityType">
           SELECT
