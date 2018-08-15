@@ -9,7 +9,7 @@ import java.util.List;
  * @date 2018/7/25
  */
 public enum FreightChangeType {
-    URGENT("URGENT", "加急费"), NIGHT("NIGHT", "夜间配送费"), MERGE("MERGE", "合并订单"), COLORING("COLORING", "调色费"), OTHER("OTHER", "其它");
+    URGENT("URGENT", "加急费"), NIGHT("NIGHT", "夜间配送费"), MERGE("MERGE", "合并订单"), COLORING("COLORING", "深色调色费"), OTHER("OTHER", "其它");
 
     private final String value;
     private final String description;
