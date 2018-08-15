@@ -733,4 +733,15 @@
         LIMIT 1
     </select>
 
+    <select id="findCustomerByStoreId" resultType="cn.com.leyizhuang.app.foundation.pojo.management.customer.MaSimpleCustomerParam">
+        SELECT
+            cus_id cusId,
+            `name` cusName
+        FROM
+            cus_customer
+        WHERE
+            store_id = #{storeId}
+        AND `status` IS TRUE
+    </select>
+
 </mapper>

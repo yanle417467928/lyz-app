@@ -55,6 +55,8 @@ public interface CityService {
 
     Integer updateCityInventoryByEmployeeIdAndGoodsIdAndInventoryAndVersion(Long userId, Long index, Integer integer, Date version);
 
+    Integer updateCityInventoryByCityIdAndGoodsIdAndInventoryAndVersion(Long cityId, Long index, Integer integer, Date version);
+
     CityInventory findCityInventoryByCityCodeAndSku(String cityCode, String sku);
 
     Integer lockCityInventoryByCityCodeAndSkuAndInventory(String cityCode, String sku, Integer inventory, Timestamp lastUpdateTime);

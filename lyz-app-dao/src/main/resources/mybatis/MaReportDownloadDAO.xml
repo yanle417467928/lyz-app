@@ -41,6 +41,9 @@
         <if test="null != keywords and keywords != ''">
             AND obi.ord_no LIKE concat(concat('%',#{keywords}),'%')
         </if>
+        <if test="null != cusId and cusId != -1">
+            AND obi.customer_id = #{cusId}
+        </if>
         AND obi.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
@@ -84,6 +87,9 @@
         </if>
         <if test="null != keywords and keywords != ''">
             AND orbi.return_no LIKE concat(concat('%',#{keywords}),'%')
+        </if>
+        <if test="null != cusId and cusId != -1">
+            AND obi.customer_id = #{cusId}
         </if>
         AND orbi.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">

@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.dto.CusPreDepositDTO;
 import cn.com.leyizhuang.app.foundation.pojo.RankStore;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.MaCustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.management.customer.MaSimpleCustomerParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.MaCreateOrderPeopleResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ManageUpdateCustomerTypeResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.CusRankDO;
@@ -115,6 +116,8 @@ public interface MaCustomerService {
 
 
     CusPreDepositLogVO queryLastDecorativeCreditChange(Long id);
+
+    List<MaSimpleCustomerParam> findCustomerByStoreId(Long storeId);
 
 
 }

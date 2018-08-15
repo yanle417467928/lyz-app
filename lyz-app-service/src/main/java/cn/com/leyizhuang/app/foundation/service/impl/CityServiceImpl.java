@@ -183,6 +183,14 @@ public class CityServiceImpl implements cn.com.leyizhuang.app.foundation.service
     }
 
     @Override
+    public Integer updateCityInventoryByCityIdAndGoodsIdAndInventoryAndVersion(Long cityId, Long index, Integer integer, Date version) {
+        if (null != cityId && null != index && null != integer) {
+            return cityDAO.updateCityInventoryByCityIdAndGoodsIdAndInventoryAndVersion(cityId, index, integer, version);
+        }
+        return null;
+    }
+
+    @Override
     public CityInventory findCityInventoryByCityCodeAndSku(String cityCode, String sku) {
         if (StringUtils.isNotBlank(cityCode) && StringUtils.isNotBlank(sku)) {
             return cityDAO.findCityInventoryByCityCodeAndSku(cityCode, sku);

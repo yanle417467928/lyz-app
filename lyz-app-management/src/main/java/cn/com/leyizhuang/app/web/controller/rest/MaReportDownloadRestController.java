@@ -92,13 +92,13 @@ public class MaReportDownloadRestController extends BaseRestController {
      */
     @GetMapping(value = "/receipts/page/grid")
     public GridDataVO<ReceiptsReportDO> restReceiptsReportDOPageGird(Integer offset, Integer size, Long cityId, Long storeId, String storeType,
-                                                                     String startTime, String endTime, String payType, String keywords) {
+                                                                     String startTime, String endTime, String payType, String keywords,Long customerId) {
         size = getSize(size);
         Integer page = getPage(offset, size);
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
         PageInfo<ReceiptsReportDO> receiptsReportDOPageInfo = this.maReportDownloadService.findReceiptsReportDOAll(cityId, storeId, storeType, startTime,
-                endTime, payType, keywords, storeIds, page, size);
+                endTime, payType, keywords, storeIds, page, size, customerId);
         return new GridDataVO<ReceiptsReportDO>().transform(receiptsReportDOPageInfo.getList(), receiptsReportDOPageInfo.getTotal());
     }
 
@@ -508,12 +508,12 @@ public class MaReportDownloadRestController extends BaseRestController {
      */
     @GetMapping(value = "/receipts/download")
     public void downloadReceipts(HttpServletRequest request, HttpServletResponse response, Long cityId, Long storeId, String storeType, String startTime, String endTime,
-                                 String payType, String keywords) {
+                                 String payType, String keywords, Long cusId) {
 
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
         List<ReceiptsReportDO> receiptsReportDOS = this.maReportDownloadService.downloadReceipts(cityId, storeId, storeType, startTime,
-                endTime, payType, keywords, storeIds);
+                endTime, payType, keywords, storeIds, cusId);
         ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
         String shiroName = "";
         if (null != shiroUser) {
