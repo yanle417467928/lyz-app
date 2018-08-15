@@ -71,6 +71,9 @@ public class StoreDO {
     //装饰公司类型
     private  String company;
 
+    //销售员
+    private  String seller;
+
 
 
 }

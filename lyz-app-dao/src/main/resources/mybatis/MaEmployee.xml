@@ -55,23 +55,23 @@
 
 
     <select id="findAllEmployee" resultMap="employeeResultMap">
-        select e.emp_id,e.login_name,e.name,e.identity_type,e.status,c.city_id,c.name
-        cname,s.store_id,s.store_name,e.qr_code
-        from emp_employee e
-        LEFT JOIN city c on e.city_id = c.city_id
-        LEFT JOIN st_store s
-        ON e.store_id = s.store_id
-        WHERE
-        e.identity_type!='DECORATE_MANAGER'
-        AND
-        e.identity_type!='DECORATE_EMPLOYEE'
-        AND
-        s.store_id IN
-        <foreach collection="list" item="item" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
-        order by emp_id asc
-    </select>
+    select e.emp_id,e.login_name,e.name,e.identity_type,e.status,c.city_id,c.name
+    cname,s.store_id,s.store_name,e.qr_code
+    from emp_employee e
+    LEFT JOIN city c on e.city_id = c.city_id
+    LEFT JOIN st_store s
+    ON e.store_id = s.store_id
+    WHERE
+    e.identity_type!='DECORATE_MANAGER'
+    AND
+    e.identity_type!='DECORATE_EMPLOYEE'
+    AND
+    s.store_id IN
+    <foreach collection="list" item="item" open="(" close=")" separator=",">
+        #{item}
+    </foreach>
+    order by emp_id asc
+</select>
 
     <select id="queryEmployeeById" resultMap="employeeResultMap">
         select e.*,c.city_id,c.name cname,s.store_id,s.store_name
@@ -80,6 +80,32 @@
         LEFT  JOIN  st_store s ON e.store_id = s.store_id
         where e.emp_id = #{id}
         order by  emp_id asc
+    </select>
+
+    <select id="findAllEmployee4Message" resultType="cn.com.leyizhuang.app.foundation.pojo.management.order.MaEmployeeResponse">
+        SELECT
+        e.emp_id,
+        e.login_name,
+        e. NAME,
+        e.identity_type,
+        e. STATUS,
+        c.city_id,
+        c. NAME cname,
+        s.store_id,
+        e.qr_code,
+        e.mobile,
+        s.store_name AS storeName
+        FROM
+        emp_employee e
+        LEFT JOIN city c ON e.city_id = c.city_id
+        LEFT JOIN st_store s ON e.store_id = s.store_id
+        WHERE
+        e.name LIKE CONCAT('%' ,#{keywords},'%')
+        OR
+        e.mobile LIKE CONCAT('%' ,#{keywords},'%')
+        OR
+        e.login_name LIKE CONCAT('%' ,#{keywords},'%')
+        order by e.emp_id asc
     </select>
 
     <select id="findGuideListById" parameterType="java.lang.Long" resultMap="employeeResultMap">

@@ -1318,7 +1318,7 @@ public class MaOrderServiceImpl implements MaOrderService {
                             affectLine = cityService.updateCityInventoryByEmployeeIdAndGoodsIdAndInventoryAndVersion(orderBaseInfo.getCreatorId(), orderGoodsInfo.getGid(), orderGoodsInfo.getOrderQuantity(), cityInventory.getLastUpdateTime());
                         } else {
                             //退还城市库存量
-                            affectLine = cityService.updateCityInventoryByEmployeeIdAndGoodsIdAndInventoryAndVersion(orderBaseInfo.getSalesConsultId(), orderGoodsInfo.getGid(), orderGoodsInfo.getOrderQuantity(), cityInventory.getLastUpdateTime());
+                            affectLine = cityService.updateCityInventoryByCityIdAndGoodsIdAndInventoryAndVersion(orderBaseInfo.getCityId(), orderGoodsInfo.getGid(), orderGoodsInfo.getOrderQuantity(), cityInventory.getLastUpdateTime());
                         }
                         if (affectLine > 0) {
                             //记录城市库存变更日志
@@ -1870,7 +1870,7 @@ public class MaOrderServiceImpl implements MaOrderService {
             appOrderService.updateOrderStatusAndDeliveryStatusByOrderNo(AppOrderStatus.CANCELED, null, orderBaseInfo.getOrderNumber());
             return returnNumber;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
             System.out.println("异常错误，待付款超时订单处理失败，订单号：" + orderBaseInfo.getOrderNumber());
             if (null == timingTaskErrorMessageDO) {
                 timingTaskErrorMessageDO = new TimingTaskErrorMessageDO();

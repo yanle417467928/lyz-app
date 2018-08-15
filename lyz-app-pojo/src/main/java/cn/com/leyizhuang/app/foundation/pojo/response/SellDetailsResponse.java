@@ -63,6 +63,16 @@ public class SellDetailsResponse {
     private Double finishSales;
 
     /**
+     * lyz 目标销量
+     */
+    private Double lyzTargetSales = 0D;
+
+    /**
+     * lyz 完成销量
+     */
+    private Double lyzFinishSales;
+
+    /**
      * 订单详情
      */
     private List<SellDetailsOrderRespons> orderList;

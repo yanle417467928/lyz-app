@@ -19,6 +19,9 @@ public class SellDetailsOrderRespons {
     // 单号类型 order / return
     private  String orderType;
 
-    // 价格
+    // hr 价值
     private Double price;
+
+    // lyz 价值
+    private Double lyzPrice;
 }

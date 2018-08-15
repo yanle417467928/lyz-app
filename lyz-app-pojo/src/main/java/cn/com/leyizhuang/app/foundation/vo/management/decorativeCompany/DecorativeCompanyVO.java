@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.print.DocFlavor;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,8 +35,17 @@ public class DecorativeCompanyVO {
     // 是否生效
     private Boolean enable;
 
+    // 销售经理
+    private String salesManager;
 
+    //装饰公司类型
     private  String company;
+
+    //销售员
+    private  String seller;
+
+    //所属城市
+    private String city;
 
 
     public static final DecorativeCompanyVO transform(StoreDO storeDO) {
@@ -46,6 +56,9 @@ public class DecorativeCompanyVO {
             decorativeCompanyVO.setStoreName(storeDO.getStoreName());
             decorativeCompanyVO.setEnable(storeDO.getEnable());
             decorativeCompanyVO.setStoreCode(storeDO.getStoreCode());
+            decorativeCompanyVO.setSalesManager(storeDO.getSalesManager());
+            decorativeCompanyVO.setSeller(storeDO.getSeller());
+            decorativeCompanyVO.setCity(storeDO.getCity());
 
 
             if (storeDO.getCompany()!=null){
