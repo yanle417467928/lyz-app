@@ -18,6 +18,8 @@ import java.util.List;
 public interface MaEmployeeService {
     PageInfo<EmployeeDO> queryPageVO(Integer page, Integer size, List<Long> storeIds);
 
+    PageInfo<MaEmployeeResponse> queryPageVO4Message(Integer page, Integer size,String keywords);
+
     EmployeeDetailVO queryEmployeeById(Long id);
 
 

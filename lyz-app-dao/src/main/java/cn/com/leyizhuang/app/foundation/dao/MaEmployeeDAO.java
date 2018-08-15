@@ -17,6 +17,8 @@ public interface MaEmployeeDAO {
 
     List<EmployeeDO> findAllEmployee(@Param("list") List<Long> storeIds);
 
+    List<MaEmployeeResponse> findAllEmployee4Message(@Param("keywords")String keywords);
+
     EmployeeDO queryEmployeeById(Long id);
 
 

@@ -41,6 +41,12 @@ public class DecorativeCompanyDetailVO {
     // 销售经理
     private String salesManager;
 
+    //销售员
+    private String seller;
+
+    //城市
+    private  String city;
+
 
 
     public static final DecorativeCompanyDetailVO transform(StoreDO storeDO) {
@@ -53,6 +59,8 @@ public class DecorativeCompanyDetailVO {
             decorativeCompanyVO.setEnable(storeDO.getEnable());
             decorativeCompanyVO.setStoreCode(storeDO.getStoreCode());
             decorativeCompanyVO.setSalesManager(storeDO.getSalesManager());
+            decorativeCompanyVO.setSeller(storeDO.getSeller());
+            decorativeCompanyVO.setCity(storeDO.getCity());
             return decorativeCompanyVO;
         } else {
             return null;

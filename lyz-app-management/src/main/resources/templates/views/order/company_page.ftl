@@ -107,17 +107,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class=" col-xs-3">
-                            <select name="status" id="status" class="form-control select"
-                                    onchange="findOrderByOrderNumber()">
-                                <option value="">选择订单状态</option>
-                            <#if orderStatusList?? && orderStatusList?size gt 0 >
-                                <#list orderStatusList as orderStatus>
-                                    <option value="${orderStatus.value!''}">${orderStatus.description!''}</option>
-                                </#list>
-                            </#if>
-                            </select>
-                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -130,7 +119,18 @@
                                         <option value="-1">选择城市</option>
                                     </select>
                                 </div>
-                                <div class=" col-xs-6">
+                                <div class=" col-xs-3">
+                                    <select name="status" id="status" class="form-control select"
+                                            onchange="findOrderByOrderNumber()">
+                                        <option value="">选择订单状态</option>
+                                    <#if orderStatusList?? && orderStatusList?size gt 0 >
+                                        <#list orderStatusList as orderStatus>
+                                            <option value="${orderStatus.value!''}">${orderStatus.description!''}</option>
+                                        </#list>
+                                    </#if>
+                                    </select>
+                                </div>
+                                <div class=" col-xs-3">
                                     <select name="store" id="storeCode" class="form-control selectpicker"
                                             onchange="findOrderByOrderNumber()" data-live-search="true">
                                         <option value="-1">选择门店</option>

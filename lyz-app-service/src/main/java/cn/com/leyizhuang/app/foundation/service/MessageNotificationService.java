@@ -28,4 +28,7 @@ public interface MessageNotificationService {
      * @param messageNotificationListResponse 推送消息返回对象
      */
     void modifyMessageNotification(MessageNotificationListResponse messageNotificationListResponse);
+
+
+    MessageNotificationListResponse findNotification(Long userId, Integer identityType,Long messageId);
 }
