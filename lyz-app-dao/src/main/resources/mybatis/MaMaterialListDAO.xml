@@ -64,6 +64,7 @@
     <select id="findMaAllMaterialListByPhotoNumber" resultType="cn.com.leyizhuang.app.foundation.pojo.response.materialList.MaUpdateMaterialResponse">
       <if test="null != identityType and 'CUSTOMER' == identityType">
        SELECT
+          DISTINCT
             ml.user_id,
             ml.identity_type,
             ml.gid,
