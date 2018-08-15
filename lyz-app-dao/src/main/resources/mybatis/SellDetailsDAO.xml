@@ -21,12 +21,12 @@
         insert into sell_details_single (id, create_time, updata_time,
         seller_id, seller_name, target_qty,
         finish_qty, finish_chance, flag,
-        structure_id, structure_code, structure_name,year, month,target_sales,finish_sales)
+        structure_id, structure_code, structure_name,year, month,target_sales,finish_sales,lyz_finish_sales)
         values (#{id,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
         #{sellerId,jdbcType=BIGINT}, #{sellerName,jdbcType=VARCHAR}, #{targetQty,jdbcType=INTEGER},
         #{finishQty,jdbcType=INTEGER}, #{finishChance,jdbcType=DECIMAL}, #{flag,jdbcType=VARCHAR},
         #{structureId,jdbcType=BIGINT}, #{structureCode,jdbcType=VARCHAR}, #{structureName,jdbcType=VARCHAR},
-        #{year,jdbcType=INTEGER}, #{month,jdbcType=INTEGER},#{targetSales},#{finishSales})
+        #{year,jdbcType=INTEGER}, #{month,jdbcType=INTEGER},#{targetSales},#{finishSales},#{lyzFinishSales})
     </insert>
 
     <insert id="addSellDetailsWeekFinish" parameterType="cn.com.leyizhuang.app.foundation.pojo.response.SellDetailsWeekFinishResponse" >
@@ -148,6 +148,9 @@
             <if test="finishSales != null">
                 finish_sales = #{finishSales},
             </if>
+            <if test="lyzFinishSales != null">
+                lyz_finish_sales = #{lyzFinishSales},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
@@ -248,7 +251,8 @@
         finish_chance finishChance,
         flag flag,
         target_sales,
-        finish_sales
+        finish_sales,
+        lyz_finish_sales
         from sell_details_single
         where `year` = #{year} and `month` = #{month} and flag = #{flag} and seller_id = #{sellerId}
     </select>
@@ -1125,7 +1129,15 @@
         when 'FXCK' then sum(ua.financialSales)
         when 'ZS' then sum(ua.financialSales)
         end
-        as finishSales
+        as finishSales,
+        CASE ua.storeType
+        when 'ZY' then sum(ua.lyzFinancialSales)
+        when 'JM' then sum(ua.lyzDistributionSales)
+        when 'FX' then sum(ua.lyzDistributionSales)
+        when 'FXCK' then sum(ua.lyzFinancialSales)
+        when 'ZS' then sum(ua.lyzFinancialSales)
+        end
+        as lyzFinishSales
         from
         (
         <include refid="newSaleSql"/>
@@ -1145,7 +1157,15 @@
         when 'FXCK' then sum(ua.financialSales)
         when 'ZS' then sum(ua.financialSales)
         end
-        as price
+        as price,
+        CASE ua.storeType
+        when 'ZY' then sum(ua.lyzFinancialSales)
+        when 'JM' then sum(ua.lyzDistributionSales)
+        when 'FX' then sum(ua.lyzDistributionSales)
+        when 'FXCK' then sum(ua.lyzFinancialSales)
+        when 'ZS' then sum(ua.lyzFinancialSales)
+        end
+        as lyzPrice
         from
         (
         <include refid="newSaleSql"/>
@@ -1161,11 +1181,20 @@
         ob.ord_no as 'ordNo',
         og.sku as 'sku',
         CASE wa.end_dt WHEN null THEN '' ELSE wa.end_dt END as 'shippingDate',
-        if(og.goods_line_type = "PRODUCT_COUPON" ,oci.purchase_price , (og.order_qty ) * og.return_price ) as
+        if(og.company_flag = "HR",
+        if(og.goods_line_type = "PRODUCT_COUPON" ,oci.purchase_price , (og.order_qty ) * og.return_price ) , 0)as
         'financialSales',
+        if(og.company_flag = "HR",
         if(og.goods_line_type = "PRODUCT_COUPON" ,
         if(oci.purchase_price = 0,0,if(og2.goods_line_type = "GOODS",(oci.purchase_price - (og.settlement_price - og.wholesale_price)),oci.purchase_price)) ,
-        IF(og.goods_line_type = "GOODS" , (og.wholesale_price * og.order_qty) , 0) ) as 'distributionSales',
+        IF(og.goods_line_type = "GOODS" , (og.wholesale_price * og.order_qty) , 0) ), 0) as 'distributionSales',
+        if(og.company_flag != "HR",
+        if(og.goods_line_type = "PRODUCT_COUPON" ,oci.purchase_price , (og.order_qty ) * og.return_price ) , 0)as
+        'lyzFinancialSales',
+        if(og.company_flag != "HR",
+        if(og.goods_line_type = "PRODUCT_COUPON" ,
+        if(oci.purchase_price = 0,0,if(og2.goods_line_type = "GOODS",(oci.purchase_price - (og.settlement_price - og.wholesale_price)),oci.purchase_price)) ,
+        IF(og.goods_line_type = "GOODS" , (og.wholesale_price * og.order_qty) , 0) ), 0) as 'lyzDistributionSales',
         CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty',
         '' as 'returnNo'
         FROM
@@ -1196,12 +1225,20 @@
         ob.ord_no as 'ordNo',
         og.sku as 'sku',
         CASE os.shipping_time WHEN null THEN '' ELSE os.shipping_time END as 'shippingDate',
-        if(og.goods_line_type = "PRODUCT_COUPON" ,purchase_price , (og.order_qty ) * og.return_price )
-        as 'financialSales',
+        if(og.company_flag = "HR",
+        if(og.goods_line_type = "PRODUCT_COUPON" ,oci.purchase_price , (og.order_qty ) * og.return_price ) , 0)as
+        'financialSales',
+        if(og.company_flag = "HR",
         if(og.goods_line_type = "PRODUCT_COUPON" ,
-        if(oci.purchase_price = 0,0,if(og2.goods_line_type = "GOODS",(oci.purchase_price - (og.settlement_price - og.wholesale_price)),oci.purchase_price)),
-        IF(og.goods_line_type = "GOODS" , (og.wholesale_price * og.order_qty) , 0) ) as
-        'distributionSales',
+        if(oci.purchase_price = 0,0,if(og2.goods_line_type = "GOODS",(oci.purchase_price - (og.settlement_price - og.wholesale_price)),oci.purchase_price)) ,
+        IF(og.goods_line_type = "GOODS" , (og.wholesale_price * og.order_qty) , 0) ), 0) as 'distributionSales',
+        if(og.company_flag != "HR",
+        if(og.goods_line_type = "PRODUCT_COUPON" ,oci.purchase_price , (og.order_qty ) * og.return_price ) , 0)as
+        'lyzFinancialSales',
+        if(og.company_flag != "HR",
+        if(og.goods_line_type = "PRODUCT_COUPON" ,
+        if(oci.purchase_price = 0,0,if(og2.goods_line_type = "GOODS",(oci.purchase_price - (og.settlement_price - og.wholesale_price)),oci.purchase_price)) ,
+        IF(og.goods_line_type = "GOODS" , (og.wholesale_price * og.order_qty) , 0) ), 0) as 'lyzDistributionSales',
         CASE og.goods_line_type WHEN 'PRODUCT_COUPON' THEN 1 ELSE og.order_qty END as 'orderQty',
         '' as 'returnNo'
 
@@ -1231,10 +1268,18 @@
         ob.ord_no as 'ordNo',
         org.sku as 'sku',
         wro.c_end_dt as 'shippingDate',
-        if(org.goods_line_type = "PRODUCT_COUPON" ,-ABS(oci.purchase_price),-ABS(org.return_price * org.return_qty)) as 'financialSales',
+        if(org.company_flag = "HR",
+        if(org.goods_line_type = "PRODUCT_COUPON" ,-ABS(oci.purchase_price),-ABS(org.return_price * org.return_qty)),0) as 'financialSales',
+        if(org.company_flag = "HR",
         if(org.goods_line_type = "PRODUCT_COUPON" ,
         if(oci.purchase_price = 0,0,-ABS(if(og2.goods_line_type = "GOODS",(oci.purchase_price - (org.settlement_price - org.wholesale_price)),oci.purchase_price) * org.return_qty)) ,
-        -ABS(IF(org.goods_line_type = "GOODS" , (org.wholesale_price * org.return_qty) , 0))) as 'distributionSales',
+        -ABS(IF(org.goods_line_type = "GOODS" , (org.wholesale_price * org.return_qty) , 0))),0) as 'distributionSales',
+        if(org.company_flag != "HR",
+        if(org.goods_line_type = "PRODUCT_COUPON" ,-ABS(oci.purchase_price),-ABS(org.return_price * org.return_qty)),0) as 'lyzFinancialSales',
+        if(org.company_flag != "HR",
+        if(org.goods_line_type = "PRODUCT_COUPON" ,
+        if(oci.purchase_price = 0,0,-ABS(if(og2.goods_line_type = "GOODS",(oci.purchase_price - (org.settlement_price - org.wholesale_price)),oci.purchase_price) * org.return_qty)) ,
+        -ABS(IF(org.goods_line_type = "GOODS" , (org.wholesale_price * org.return_qty) , 0))),0) as 'lyzDistributionSales',
         CASE org.goods_line_type WHEN 'PRODUCT_COUPON' THEN -1 ELSE -ABS(org.return_qty) END as 'orderQty',
         orb.return_no as 'returnNo'
         FROM
@@ -1261,10 +1306,18 @@
         ob.ord_no as 'ordNo',
         org.sku as 'sku',
         orl.operation_time as 'shippingDate',
-        if(org.goods_line_type = "PRODUCT_COUPON" ,-ABS(oci.purchase_price),-ABS(org.return_price * org.return_qty)) as 'financialSales',
+        if(org.company_flag = "HR",
+        if(org.goods_line_type = "PRODUCT_COUPON" ,-ABS(oci.purchase_price),-ABS(org.return_price * org.return_qty)),0) as 'financialSales',
+        if(org.company_flag = "HR",
         if(org.goods_line_type = "PRODUCT_COUPON" ,
         if(oci.purchase_price = 0,0,-ABS(if(og2.goods_line_type = "GOODS",(oci.purchase_price - (org.settlement_price - org.wholesale_price)),oci.purchase_price) * org.return_qty)) ,
-        -ABS(IF(org.goods_line_type = "GOODS" , (org.wholesale_price * org.return_qty) , 0))) as 'distributionSales',
+        -ABS(IF(org.goods_line_type = "GOODS" , (org.wholesale_price * org.return_qty) , 0))),0) as 'distributionSales',
+        if(org.company_flag != "HR",
+        if(org.goods_line_type = "PRODUCT_COUPON" ,-ABS(oci.purchase_price),-ABS(org.return_price * org.return_qty)),0) as 'lyzFinancialSales',
+        if(org.company_flag != "HR",
+        if(org.goods_line_type = "PRODUCT_COUPON" ,
+        if(oci.purchase_price = 0,0,-ABS(if(og2.goods_line_type = "GOODS",(oci.purchase_price - (org.settlement_price - org.wholesale_price)),oci.purchase_price) * org.return_qty)) ,
+        -ABS(IF(org.goods_line_type = "GOODS" , (org.wholesale_price * org.return_qty) , 0))),0) as 'lyzDistributionSales',
         CASE org.goods_line_type WHEN 'PRODUCT_COUPON' THEN -1 ELSE -ABS(org.return_qty) END as 'orderQty',
         orb.return_no as 'returnNo'
         FROM
