@@ -119,7 +119,7 @@ public class OrderDeliveryInfoDetailsController {
                 logisticsDetailResponse.setCreateTime(sdf.format(orderDeliveryInfoDetails.getCreateTime()));
                 logisticsDetailResponse.setDescribe(orderDeliveryInfoDetails.getDescription());
                 logisticsDetailResponse.setLogisticsType(orderDeliveryInfoDetails.getLogisticStatus().getDescription());
-
+                logisticsDetailResponse.setPictures(orderDeliveryInfoDetails.getPictures());
                 logisticsDetailResponseList.add(logisticsDetailResponse);
             }
             LogisticsInformationResponse logisticsInformationResponse1;

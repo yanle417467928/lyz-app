@@ -24,6 +24,8 @@ public class PreDepositLogResponse {
     private String orderNumber;
     //变更类型
     private String type;
+    //备注
+    private String remarks;
 
     public void setType(CustomerPreDepositChangeType type) {
         this.type = type.getDescription();
