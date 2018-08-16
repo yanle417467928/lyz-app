@@ -14,6 +14,7 @@ import cn.com.leyizhuang.app.foundation.pojo.PayhelperInfo;
 import cn.com.leyizhuang.app.foundation.pojo.RankStore;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.CustomerDO;
 import cn.com.leyizhuang.app.foundation.pojo.management.customer.MaCustomerPreDeposit;
+import cn.com.leyizhuang.app.foundation.pojo.management.customer.MaSimpleCustomerParam;
 import cn.com.leyizhuang.app.foundation.pojo.response.MaCreateOrderPeopleResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.ManageUpdateCustomerTypeResponse;
 import cn.com.leyizhuang.app.foundation.pojo.user.*;
@@ -463,6 +464,14 @@ public class MaCustomerServiceImpl implements MaCustomerService {
         }
 
         return maCustomerDAO.queryLastDecorativeCreditChange(id);
+    }
+
+    @Override
+    public List<MaSimpleCustomerParam> findCustomerByStoreId(Long storeId) {
+        if (null == storeId) {
+            return null;
+        }
+        return maCustomerDAO.findCustomerByStoreId(storeId);
     }
 }
 

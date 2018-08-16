@@ -41,6 +41,9 @@
         <if test="null != keywords and keywords != ''">
             AND obi.ord_no LIKE concat(concat('%',#{keywords}),'%')
         </if>
+        <if test="null != cusId and cusId != -1">
+            AND obi.customer_id = #{cusId}
+        </if>
         AND obi.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
@@ -84,6 +87,9 @@
         </if>
         <if test="null != keywords and keywords != ''">
             AND orbi.return_no LIKE concat(concat('%',#{keywords}),'%')
+        </if>
+        <if test="null != cusId and cusId != -1">
+            AND obi.customer_id = #{cusId}
         </if>
         AND orbi.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
@@ -1819,7 +1825,8 @@
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId,
         CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType,
-        cu2.cus_store_name fxCkName
+        cu2.cus_store_name fxCkName,
+        if(og.goods_line_type = "PRODUCT_COUPON",if(ab2.is_gcorder,'工程单',''),if(ab1.is_gcorder,'工程单','')) as isGcOrder
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -1833,6 +1840,8 @@
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
         left JOIN cus_customer cc on cc.cus_id = ob.customer_id
         left JOIN cus_customer_fx_store_relation cu2 on ob.store_code = cu2.fx_store_code
+        LEFT JOIN act_base ab1 on og.promotion_id = ab1.id
+        LEFT JOIN act_base ab2 on og2.promotion_id = ab2.id
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
@@ -1937,7 +1946,8 @@
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId,
         CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType,
-        cu2.cus_store_name fxCkName
+        cu2.cus_store_name fxCkName,
+        if(og.goods_line_type = "PRODUCT_COUPON",if(ab2.is_gcorder,'工程单',''),if(ab1.is_gcorder,'工程单','')) as isGcOrder
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -1950,6 +1960,8 @@
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
         left JOIN cus_customer cc on cc.cus_id = ob.customer_id
         left JOIN cus_customer_fx_store_relation cu2 on ob.store_code = cu2.fx_store_code
+        LEFT JOIN act_base ab1 on og.promotion_id = ab1.id
+        LEFT JOIN act_base ab2 on og2.promotion_id = ab2.id
         WHERE
         ob.`status` IN (
         'FINISHED'
@@ -2052,7 +2064,8 @@
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId,
         CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType,
-        cu2.cus_store_name fxCkName
+        cu2.cus_store_name fxCkName,
+        if(og.goods_line_type = "PRODUCT_COUPON",if(ab2.is_gcorder,'工程单',''),if(ab1.is_gcorder,'工程单','')) as isGcOrder
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -2065,6 +2078,8 @@
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
         left JOIN cus_customer cc on cc.cus_id = ob.customer_id
         left JOIN cus_customer_fx_store_relation cu2 on ob.store_code = cu2.fx_store_code
+        LEFT JOIN act_base ab1 on og.promotion_id = ab1.id
+        LEFT JOIN act_base ab2 on og2.promotion_id = ab2.id
         WHERE
         ob.`status` IN (
         'PENDING_RECEIVE',
@@ -2179,7 +2194,8 @@
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId,
         CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType,
-        '' fxCkName
+        '' fxCkName,
+        if(og.goods_line_type = "PRODUCT_COUPON",if(ab2.is_gcorder,'工程单',''),if(ab1.is_gcorder,'工程单','')) as isGcOrder
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -2191,6 +2207,8 @@
         LEFT JOIN ord_goods_info og2 on og2.id = ccpc.goods_line_id
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
         left JOIN cus_customer cc on cc.cus_id = ob.customer_id
+        LEFT JOIN act_base ab1 on og.promotion_id = ab1.id
+        LEFT JOIN act_base ab2 on og2.promotion_id = ab2.id
         WHERE
         ob.`status` IN (
         'FINISHED'
@@ -2293,7 +2311,8 @@
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId,
         CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType,
-        cu2.cus_store_name fxCkName
+        cu2.cus_store_name fxCkName,
+        if(og.goods_line_type = "PRODUCT_COUPON",if(ab2.is_gcorder,'工程单',''),if(ab1.is_gcorder,'工程单','')) as isGcOrder
         FROM
         ord_return_base_info orb
         LEFT JOIN ord_base_info ob on orb.oid = ob.oid
@@ -2308,6 +2327,9 @@
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
         left JOIN cus_customer cc on cc.cus_id = ob.customer_id
         left JOIN cus_customer_fx_store_relation cu2 on ob.store_code = cu2.fx_store_code
+        LEFT JOIN ord_goods_info og on og.id = org.order_goods_id
+        LEFT JOIN act_base ab1 on og.promotion_id = ab1.id
+        LEFT JOIN act_base ab2 on og2.promotion_id = ab2.id
         where
         1=1
         and (ob.`status` IN ('FINISHED') or (ob.status in ('REJECTED') and obd.is_pay_up = 1))
@@ -2404,7 +2426,8 @@
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId,
         CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType,
-        '' fxCkName
+        '' fxCkName,
+        if(og.goods_line_type = "PRODUCT_COUPON",if(ab2.is_gcorder,'工程单',''),if(ab1.is_gcorder,'工程单','')) as isGcOrder
         FROM
         ord_return_base_info orb
         LEFT JOIN ord_base_info ob on orb.oid = ob.oid
@@ -2418,6 +2441,9 @@
         LEFT JOIN ord_return_lifecycle orl on orl.return_no = orb.return_no and orl.operation = "NORMAL_RETURN" and orl.post_status = "FINISHED"
         left JOIN cus_customer_fx_store_relation cu on ob.customer_id = cu.cus_id
         left JOIN cus_customer cc on cc.cus_id = ob.customer_id
+        LEFT JOIN ord_goods_info og on og.id = org.order_goods_id
+        LEFT JOIN act_base ab1 on og.promotion_id = ab1.id
+        LEFT JOIN act_base ab2 on og2.promotion_id = ab2.id
         where
         1=1
         AND ob.delivery_type = 'SELF_TAKE' and orb.return_type = 'NORMAL_RETURN'
@@ -2517,7 +2543,8 @@
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId,
         CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType,
-        '' fxCkName
+        '' fxCkName,
+        '' as isGcOrder
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -2625,7 +2652,8 @@
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId,
         CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType,
-        '' fxCkName
+        '' fxCkName,
+        '' as isGcOrder
         FROM
         ord_base_info ob LEFT JOIN ord_goods_info og on og.oid = ob.oid
         LEFT JOIN st_store s on ob.store_id = s.store_id
@@ -2736,7 +2764,8 @@
         CASE s.store_type WHEN 'FX' THEN s.store_code WHEN 'FXCK' THEN cu.fx_store_code END as 'fxStoreCode',
         ob.customer_id as cusId,
         CASE cc.customer_type WHEN 'MEMBER' THEN '会员' WHEN 'RETAIL' then '零售' end as cusType,
-        '' fxCkName
+        '' fxCkName,
+        '' as isGcOrder
         FROM
         ord_return_base_info orb
         LEFT JOIN ord_base_info ob on orb.oid = ob.oid
