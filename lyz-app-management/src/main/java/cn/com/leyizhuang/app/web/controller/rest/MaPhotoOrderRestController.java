@@ -3239,7 +3239,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
             // 运费计算
             //2018-04-01 generation 产品卷金额加进运费计算
 //                freight = deliveryFeeRuleService.countDeliveryFee(identityType, cityId, CountUtil.add(totalOrderAmount, 0), goodsInfo);
-            freight = this.deliveryFeeRuleService.countDeliveryFeeNew(identityType, cityId, totalOrderAmount, goodsInfo, countyName);
+            freight = this.deliveryFeeRuleService.countDeliveryFeeNew(identityType, cityId, CountUtil.add(totalOrderAmount,proCouponDiscount), goodsInfo, countyName);
             totalOrderAmount = CountUtil.add(totalOrderAmount, freight);
 
             MaOrderCalulatedAmountResponse maOrderCalulatedAmountResponse = new MaOrderCalulatedAmountResponse();
