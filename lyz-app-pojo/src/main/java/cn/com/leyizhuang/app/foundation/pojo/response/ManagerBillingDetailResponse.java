@@ -32,7 +32,7 @@ public class ManagerBillingDetailResponse {
     private Double upstairsFee;
 
     //信用额度抵扣
-    private Double creditMoney;
+    private Double empCreditMoney;
     //信用金抵扣
     private Double storeCreditMoney;
     //额度使用合计
@@ -75,5 +75,7 @@ public class ManagerBillingDetailResponse {
     private Double preDeposit;
     //应付款
     private Double amountPayable;
+    //信用额度抵扣
+    private Double creditMoney;
 
 }

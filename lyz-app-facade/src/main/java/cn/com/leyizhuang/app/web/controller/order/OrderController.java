@@ -1648,9 +1648,9 @@ public class OrderController {
                     managerBillingDetailResponse.setOrderAmountSubtotal(orderBillingDetails.getOrderAmountSubtotal() == null ? 0 : orderBillingDetails.getOrderAmountSubtotal());
 
                     managerBillingDetailResponse.setUpstairsFee(orderBillingDetails.getUpstairsFee() == null ? 0 : orderBillingDetails.getUpstairsFee());
-                    managerBillingDetailResponse.setCreditMoney(orderBillingDetails.getEmpCreditMoney() == null ? 0 : orderBillingDetails.getEmpCreditMoney());
+                    managerBillingDetailResponse.setEmpCreditMoney(orderBillingDetails.getEmpCreditMoney() == null ? 0 : orderBillingDetails.getEmpCreditMoney());
                     managerBillingDetailResponse.setStoreCreditMoney(orderBillingDetails.getStoreCreditMoney() == null ? 0 : orderBillingDetails.getStoreCreditMoney());
-                    managerBillingDetailResponse.setTotalCreditMoney(CountUtil.add(managerBillingDetailResponse.getCreditMoney(), managerBillingDetailResponse.getStoreCreditMoney()));
+                    managerBillingDetailResponse.setTotalCreditMoney(CountUtil.add(managerBillingDetailResponse.getEmpCreditMoney(), managerBillingDetailResponse.getStoreCreditMoney()));
 
                     managerBillingDetailResponse.setCashMoney(orderBillingDetails.getStoreCash());
                     managerBillingDetailResponse.setStoreOtherMoney(orderBillingDetails.getStoreOtherMoney());
@@ -1685,6 +1685,7 @@ public class OrderController {
                     managerBillingDetailResponse.setIsPayUp(orderBillingDetails.getIsPayUp());
 
                     managerBillingDetailResponse.setPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0 : orderBillingDetails.getStPreDeposit());
+                    managerBillingDetailResponse.setCreditMoney(orderBillingDetails.getStoreCreditMoney() == null ? 0 : orderBillingDetails.getStoreCreditMoney());
 
                     PayhelperOrder payhelperOrder = this.appOrderService.findPayhelperOrderByOrdNo(orderNumber);
                     if (null != payhelperOrder){
@@ -2374,9 +2375,9 @@ public class OrderController {
                     managerBillingDetailResponse.setOrderAmountSubtotal(orderBillingDetails.getOrderAmountSubtotal() == null ? 0 : orderBillingDetails.getOrderAmountSubtotal());
 
                     managerBillingDetailResponse.setUpstairsFee(orderBillingDetails.getUpstairsFee() == null ? 0 : orderBillingDetails.getUpstairsFee());
-                    managerBillingDetailResponse.setCreditMoney(orderBillingDetails.getEmpCreditMoney() == null ? 0 : orderBillingDetails.getEmpCreditMoney());
+                    managerBillingDetailResponse.setEmpCreditMoney(orderBillingDetails.getEmpCreditMoney() == null ? 0 : orderBillingDetails.getEmpCreditMoney());
                     managerBillingDetailResponse.setStoreCreditMoney(orderBillingDetails.getStoreCreditMoney() == null ? 0 : orderBillingDetails.getStoreCreditMoney());
-                    managerBillingDetailResponse.setTotalCreditMoney(CountUtil.add(managerBillingDetailResponse.getCreditMoney(), managerBillingDetailResponse.getStoreCreditMoney()));
+                    managerBillingDetailResponse.setTotalCreditMoney(CountUtil.add(managerBillingDetailResponse.getEmpCreditMoney(), managerBillingDetailResponse.getStoreCreditMoney()));
 
                     managerBillingDetailResponse.setCashMoney(orderBillingDetails.getStoreCash());
                     managerBillingDetailResponse.setStoreOtherMoney(orderBillingDetails.getStoreOtherMoney());
@@ -2411,6 +2412,7 @@ public class OrderController {
                     managerBillingDetailResponse.setIsPayUp(orderBillingDetails.getIsPayUp());
 
                     managerBillingDetailResponse.setPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0 : orderBillingDetails.getStPreDeposit());
+                    managerBillingDetailResponse.setCreditMoney(orderBillingDetails.getStoreCreditMoney() == null ? 0 : orderBillingDetails.getStoreCreditMoney());
 
                     if (null != payhelperOrder) {
                         managerBillingDetailResponse.setPayForAnotherMoney(null == payhelperOrder.getPayhelperAmount() ? 0 : payhelperOrder.getPayhelperAmount());
