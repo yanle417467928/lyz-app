@@ -78,11 +78,12 @@ public class CashCouponServiceImpl implements CashCouponService{
     @Transactional
     public void saveCashCouponTemplate(CashCoupon cashCoupon, List<String> cashCouponCompanies,
                                        List<String> cashCouponBrands, List<CashCouponGoods> cashCouponGoods,
-                                       List<CashCouponStore> cashCouponStores){
+                                       List<CashCouponStore> cashCouponStores,Long optId){
 
         AppCashCouponType type = cashCoupon.getType();
         cashCoupon.setCreateTime(new Date());
         cashCoupon.setRemainingQuantity(cashCoupon.getInitialQuantity());
+        cashCoupon.setOptUserid(optId);
         cashCouponDAO.addCashCoupon(cashCoupon);
 
         if (type.equals(AppCashCouponType.GENERAL)){

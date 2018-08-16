@@ -43,7 +43,7 @@ public interface CashCouponService {
      */
     void saveCashCouponTemplate(CashCoupon cashCoupon, List<String> cashCouponCompanys,
                                 List<String> cashCouponBrands, List<CashCouponGoods> cashCouponGoods,
-                                List<CashCouponStore> cashCouponStores);
+                                List<CashCouponStore> cashCouponStores,Long optId);
 
 
     /**
