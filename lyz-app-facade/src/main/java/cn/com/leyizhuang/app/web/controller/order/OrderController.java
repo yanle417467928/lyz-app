@@ -1592,13 +1592,44 @@ public class OrderController {
                     customerBillingDetailResponse.setFreight(orderBillingDetails.getFreight() == null ? 0 : orderBillingDetails.getFreight());
                     customerBillingDetailResponse.setLeBiCashDiscount(orderBillingDetails.getLebiCashDiscount() == null ? 0 : orderBillingDetails.getLebiCashDiscount());
                     customerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount() == null ? 0 : orderBillingDetails.getMemberDiscount());
-                    customerBillingDetailResponse.setPreDeposit(orderBillingDetails.getCusPreDeposit() == null ? 0 : orderBillingDetails.getCusPreDeposit());
                     customerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount() == null ? 0 : orderBillingDetails.getProductCouponDiscount());
                     customerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount() == null ? 0 : orderBillingDetails.getPromotionDiscount());
                     customerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice() == null ? 0 : orderBaseInfo.getTotalGoodsPrice());
-                    customerBillingDetailResponse.setCashMoney(CountUtil.add(orderBillingDetails.getStoreCash(), orderBillingDetails.getStoreOtherMoney(), orderBillingDetails.getDeliveryCash()));
-                    customerBillingDetailResponse.setPosMoney(CountUtil.add(orderBillingDetails.getStorePosMoney(), orderBillingDetails.getDeliveryPos()));
+                    customerBillingDetailResponse.setOrderAmountSubtotal(orderBillingDetails.getOrderAmountSubtotal() == null ? 0 : orderBillingDetails.getOrderAmountSubtotal());
 
+                    customerBillingDetailResponse.setUpstairsFee(orderBillingDetails.getUpstairsFee() == null ? 0 : orderBillingDetails.getUpstairsFee());
+                    customerBillingDetailResponse.setEmpCreditMoney(orderBillingDetails.getEmpCreditMoney() == null ? 0 : orderBillingDetails.getEmpCreditMoney());
+                    customerBillingDetailResponse.setTotalCreditMoney(customerBillingDetailResponse.getEmpCreditMoney());
+
+                    customerBillingDetailResponse.setPreDeposit(orderBillingDetails.getCusPreDeposit() == null ? 0 : orderBillingDetails.getCusPreDeposit());
+                    customerBillingDetailResponse.setStPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0 : orderBillingDetails.getStPreDeposit());
+                    customerBillingDetailResponse.setCashMoney(orderBillingDetails.getStoreCash());
+                    customerBillingDetailResponse.setStoreOtherMoney(orderBillingDetails.getStoreOtherMoney());
+                    customerBillingDetailResponse.setPosMoney(orderBillingDetails.getStorePosMoney());
+                    customerBillingDetailResponse.setDeliveryCash( orderBillingDetails.getDeliveryCash());
+                    customerBillingDetailResponse.setDeliveryPos(orderBillingDetails.getDeliveryPos());
+                    if (orderBillingDetails.getOnlinePayType() != null && orderBillingDetails.getOnlinePayType() == OnlinePayType.ALIPAY){
+                        customerBillingDetailResponse.setAlipayMoney(orderBillingDetails.getOnlinePayAmount() == null ? 0 : orderBillingDetails.getOnlinePayAmount());
+                        customerBillingDetailResponse.setWechatpayMoney(0D);
+                        customerBillingDetailResponse.setUnionpayMoney(0D);
+                    } else if (orderBillingDetails.getOnlinePayType() != null && orderBillingDetails.getOnlinePayType() == OnlinePayType.WE_CHAT){
+                        customerBillingDetailResponse.setAlipayMoney(0D);
+                        customerBillingDetailResponse.setWechatpayMoney(orderBillingDetails.getOnlinePayAmount() == null ? 0 : orderBillingDetails.getOnlinePayAmount());
+                        customerBillingDetailResponse.setUnionpayMoney(0D);
+                    } else if (orderBillingDetails.getOnlinePayType() != null && orderBillingDetails.getOnlinePayType() == OnlinePayType.UNION_PAY){
+                        customerBillingDetailResponse.setAlipayMoney(0D);
+                        customerBillingDetailResponse.setWechatpayMoney(0D);
+                        customerBillingDetailResponse.setUnionpayMoney(orderBillingDetails.getOnlinePayAmount() == null ? 0 : orderBillingDetails.getOnlinePayAmount());
+                    } else {
+                        customerBillingDetailResponse.setAlipayMoney(0D);
+                        customerBillingDetailResponse.setWechatpayMoney(0D);
+                        customerBillingDetailResponse.setUnionpayMoney(0D);
+                    }
+                    customerBillingDetailResponse.setTotalPay(CountUtil.add(customerBillingDetailResponse.getPreDeposit(), customerBillingDetailResponse.getStPreDeposit(),
+                            customerBillingDetailResponse.getCashMoney(), customerBillingDetailResponse.getPosMoney(), customerBillingDetailResponse.getStoreOtherMoney(),
+                            customerBillingDetailResponse.getDeliveryCash(), customerBillingDetailResponse.getDeliveryPos(), customerBillingDetailResponse.getAlipayMoney(),
+                            customerBillingDetailResponse.getWechatpayMoney(), customerBillingDetailResponse.getUnionpayMoney()));
+                    customerBillingDetailResponse.setIsPayUp(orderBillingDetails.getIsPayUp());
                     PayhelperOrder payhelperOrder = this.appOrderService.findPayhelperOrderByOrdNo(orderNumber);
                     if (null != payhelperOrder){
                         customerBillingDetailResponse.setPayForAnotherMoney(null == payhelperOrder.getPayhelperAmount() ? 0 : payhelperOrder.getPayhelperAmount());
@@ -1611,14 +1642,50 @@ public class OrderController {
                     managerBillingDetailResponse.setCouponDiscount(orderBillingDetails.getCashCouponDiscount() == null ? 0 : orderBillingDetails.getCashCouponDiscount());
                     managerBillingDetailResponse.setFreight(orderBillingDetails.getFreight() == null ? 0 : orderBillingDetails.getFreight());
                     managerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount() == null ? 0 : orderBillingDetails.getMemberDiscount());
-                    managerBillingDetailResponse.setSubvention(orderBillingDetails.getStoreSubvention() == null ? 0 : orderBillingDetails.getStoreSubvention());
                     managerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount() == null ? 0 : orderBillingDetails.getProductCouponDiscount());
+                    managerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice() == null ? 0 : orderBaseInfo.getTotalGoodsPrice());
+                    managerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount() == null ? 0 : orderBillingDetails.getPromotionDiscount());
+                    managerBillingDetailResponse.setOrderAmountSubtotal(orderBillingDetails.getOrderAmountSubtotal() == null ? 0 : orderBillingDetails.getOrderAmountSubtotal());
+
+                    managerBillingDetailResponse.setUpstairsFee(orderBillingDetails.getUpstairsFee() == null ? 0 : orderBillingDetails.getUpstairsFee());
+                    managerBillingDetailResponse.setEmpCreditMoney(orderBillingDetails.getEmpCreditMoney() == null ? 0 : orderBillingDetails.getEmpCreditMoney());
+                    managerBillingDetailResponse.setStoreCreditMoney(orderBillingDetails.getStoreCreditMoney() == null ? 0 : orderBillingDetails.getStoreCreditMoney());
+                    managerBillingDetailResponse.setTotalCreditMoney(CountUtil.add(managerBillingDetailResponse.getEmpCreditMoney(), managerBillingDetailResponse.getStoreCreditMoney()));
+
+                    managerBillingDetailResponse.setCashMoney(orderBillingDetails.getStoreCash());
+                    managerBillingDetailResponse.setStoreOtherMoney(orderBillingDetails.getStoreOtherMoney());
+                    managerBillingDetailResponse.setPosMoney(orderBillingDetails.getStorePosMoney());
+                    managerBillingDetailResponse.setDeliveryCash( orderBillingDetails.getDeliveryCash());
+                    managerBillingDetailResponse.setDeliveryPos(orderBillingDetails.getDeliveryPos());managerBillingDetailResponse.setSubvention(orderBillingDetails.getStoreSubvention() == null ? 0 : orderBillingDetails.getStoreSubvention());
+                    managerBillingDetailResponse.setSubvention(orderBillingDetails.getStoreSubvention() == null ? 0 : orderBillingDetails.getStoreSubvention());
+                    managerBillingDetailResponse.setSellerStoreDeposit(orderBillingDetails.getSellerStoreDeposit());
+                    managerBillingDetailResponse.setStPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0 : orderBillingDetails.getStPreDeposit());
+                    if (orderBillingDetails.getOnlinePayType() != null && orderBillingDetails.getOnlinePayType() == OnlinePayType.ALIPAY){
+                        managerBillingDetailResponse.setAlipayMoney(orderBillingDetails.getOnlinePayAmount() == null ? 0 : orderBillingDetails.getOnlinePayAmount());
+                        managerBillingDetailResponse.setWechatpayMoney(0D);
+                        managerBillingDetailResponse.setUnionpayMoney(0D);
+                    } else if (orderBillingDetails.getOnlinePayType() != null && orderBillingDetails.getOnlinePayType() == OnlinePayType.WE_CHAT){
+                        managerBillingDetailResponse.setAlipayMoney(0D);
+                        managerBillingDetailResponse.setWechatpayMoney(orderBillingDetails.getOnlinePayAmount() == null ? 0 : orderBillingDetails.getOnlinePayAmount());
+                        managerBillingDetailResponse.setUnionpayMoney(0D);
+                    } else if (orderBillingDetails.getOnlinePayType() != null && orderBillingDetails.getOnlinePayType() == OnlinePayType.UNION_PAY){
+                        managerBillingDetailResponse.setAlipayMoney(0D);
+                        managerBillingDetailResponse.setWechatpayMoney(0D);
+                        managerBillingDetailResponse.setUnionpayMoney(orderBillingDetails.getOnlinePayAmount() == null ? 0 : orderBillingDetails.getOnlinePayAmount());
+                    } else {
+                        managerBillingDetailResponse.setAlipayMoney(0D);
+                        managerBillingDetailResponse.setWechatpayMoney(0D);
+                        managerBillingDetailResponse.setUnionpayMoney(0D);
+                    }
+                    managerBillingDetailResponse.setTotalPay(CountUtil.add(managerBillingDetailResponse.getStPreDeposit(),
+                            managerBillingDetailResponse.getCashMoney(), managerBillingDetailResponse.getPosMoney(), managerBillingDetailResponse.getStoreOtherMoney(),
+                            managerBillingDetailResponse.getDeliveryCash(), managerBillingDetailResponse.getDeliveryPos(), managerBillingDetailResponse.getAlipayMoney(),
+                            managerBillingDetailResponse.getWechatpayMoney(), managerBillingDetailResponse.getUnionpayMoney(), managerBillingDetailResponse.getSellerStoreDeposit(),
+                            managerBillingDetailResponse.getSubvention()));
+                    managerBillingDetailResponse.setIsPayUp(orderBillingDetails.getIsPayUp());
+
                     managerBillingDetailResponse.setPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0 : orderBillingDetails.getStPreDeposit());
                     managerBillingDetailResponse.setCreditMoney(orderBillingDetails.getStoreCreditMoney() == null ? 0 : orderBillingDetails.getStoreCreditMoney());
-                    managerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount() == null ? 0 : orderBillingDetails.getPromotionDiscount());
-                    managerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice() == null ? 0 : orderBaseInfo.getTotalGoodsPrice());
-                    managerBillingDetailResponse.setCashMoney(CountUtil.add(orderBillingDetails.getStoreCash(), orderBillingDetails.getStoreOtherMoney(), orderBillingDetails.getDeliveryCash()));
-                    managerBillingDetailResponse.setPosMoney(CountUtil.add(orderBillingDetails.getStorePosMoney(), orderBillingDetails.getDeliveryPos()));
 
                     PayhelperOrder payhelperOrder = this.appOrderService.findPayhelperOrderByOrdNo(orderNumber);
                     if (null != payhelperOrder){
@@ -1630,18 +1697,49 @@ public class OrderController {
                     SellerBillingDetailResponse sellerBillingDetailResponse = new SellerBillingDetailResponse();
                     sellerBillingDetailResponse.setAmountPayable(orderBillingDetails.getAmountPayable() == null ? 0 : orderBillingDetails.getAmountPayable());
                     sellerBillingDetailResponse.setCouponDiscount(orderBillingDetails.getCashCouponDiscount() == null ? 0 : orderBillingDetails.getCashCouponDiscount());
-                    sellerBillingDetailResponse.setCreditMoney(orderBillingDetails.getEmpCreditMoney() == null ? 0 : orderBillingDetails.getEmpCreditMoney());
                     sellerBillingDetailResponse.setFreight(orderBillingDetails.getFreight() == null ? 0 : orderBillingDetails.getFreight());
                     sellerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount() == null ? 0 : orderBillingDetails.getMemberDiscount());
-                    sellerBillingDetailResponse.setPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0 : orderBillingDetails.getStPreDeposit());
                     sellerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount() == null ? 0 : orderBillingDetails.getProductCouponDiscount());
                     sellerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount() == null ? 0 : orderBillingDetails.getPromotionDiscount());
                     sellerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice() == null ? 0 : orderBaseInfo.getTotalGoodsPrice());
-                    sellerBillingDetailResponse.setStoreCash(CountUtil.add(orderBillingDetails.getStoreCash(), orderBillingDetails.getStoreOtherMoney()));
+                    sellerBillingDetailResponse.setOrderAmountSubtotal(orderBillingDetails.getOrderAmountSubtotal() == null ? 0 : orderBillingDetails.getOrderAmountSubtotal());
+                    sellerBillingDetailResponse.setUpstairsFee(orderBillingDetails.getUpstairsFee() == null ? 0 : orderBillingDetails.getUpstairsFee());
+                    sellerBillingDetailResponse.setCreditMoney(orderBillingDetails.getEmpCreditMoney() == null ? 0 : orderBillingDetails.getEmpCreditMoney());
+                    sellerBillingDetailResponse.setStoreCreditMoney(orderBillingDetails.getStoreCreditMoney() == null ? 0 : orderBillingDetails.getStoreCreditMoney());
+                    sellerBillingDetailResponse.setTotalCreditMoney(CountUtil.add(sellerBillingDetailResponse.getCreditMoney(), sellerBillingDetailResponse.getStoreCreditMoney()));
+
+                    sellerBillingDetailResponse.setPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0 : orderBillingDetails.getStPreDeposit());
+                    sellerBillingDetailResponse.setStPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0 : orderBillingDetails.getStPreDeposit());
+                    sellerBillingDetailResponse.setStoreOtherMoney(orderBillingDetails.getStoreOtherMoney());
+                    sellerBillingDetailResponse.setStoreCash(orderBillingDetails.getStoreCash());
                     sellerBillingDetailResponse.setStorePosMoney(orderBillingDetails.getStorePosMoney());
                     sellerBillingDetailResponse.setDeliveryCash( orderBillingDetails.getDeliveryCash());
                     sellerBillingDetailResponse.setDeliveryPos(orderBillingDetails.getDeliveryPos());
-
+                    sellerBillingDetailResponse.setSubvention(orderBillingDetails.getStoreSubvention() == null ? 0 : orderBillingDetails.getStoreSubvention());
+                    sellerBillingDetailResponse.setSellerStoreDeposit(orderBillingDetails.getSellerStoreDeposit());
+                    if (orderBillingDetails.getOnlinePayType() != null && orderBillingDetails.getOnlinePayType() == OnlinePayType.ALIPAY){
+                        sellerBillingDetailResponse.setAlipayMoney(orderBillingDetails.getOnlinePayAmount() == null ? 0 : orderBillingDetails.getOnlinePayAmount());
+                        sellerBillingDetailResponse.setWechatpayMoney(0D);
+                        sellerBillingDetailResponse.setUnionpayMoney(0D);
+                    } else if (orderBillingDetails.getOnlinePayType() != null && orderBillingDetails.getOnlinePayType() == OnlinePayType.WE_CHAT){
+                        sellerBillingDetailResponse.setAlipayMoney(0D);
+                        sellerBillingDetailResponse.setWechatpayMoney(orderBillingDetails.getOnlinePayAmount() == null ? 0 : orderBillingDetails.getOnlinePayAmount());
+                        sellerBillingDetailResponse.setUnionpayMoney(0D);
+                    } else if (orderBillingDetails.getOnlinePayType() != null && orderBillingDetails.getOnlinePayType() == OnlinePayType.UNION_PAY){
+                        sellerBillingDetailResponse.setAlipayMoney(0D);
+                        sellerBillingDetailResponse.setWechatpayMoney(0D);
+                        sellerBillingDetailResponse.setUnionpayMoney(orderBillingDetails.getOnlinePayAmount() == null ? 0 : orderBillingDetails.getOnlinePayAmount());
+                    } else {
+                        sellerBillingDetailResponse.setAlipayMoney(0D);
+                        sellerBillingDetailResponse.setWechatpayMoney(0D);
+                        sellerBillingDetailResponse.setUnionpayMoney(0D);
+                    }
+                    sellerBillingDetailResponse.setTotalPay(CountUtil.add(sellerBillingDetailResponse.getPreDeposit(), sellerBillingDetailResponse.getStPreDeposit(),
+                            sellerBillingDetailResponse.getStoreCash(), sellerBillingDetailResponse.getStorePosMoney(), sellerBillingDetailResponse.getStoreOtherMoney(),
+                            sellerBillingDetailResponse.getDeliveryCash(), sellerBillingDetailResponse.getDeliveryPos(), sellerBillingDetailResponse.getAlipayMoney(),
+                            sellerBillingDetailResponse.getWechatpayMoney(), sellerBillingDetailResponse.getUnionpayMoney(), sellerBillingDetailResponse.getSellerStoreDeposit(),
+                            sellerBillingDetailResponse.getSubvention()));
+                    sellerBillingDetailResponse.setIsPayUp(orderBillingDetails.getIsPayUp());
                     //2018-04-02 generation 导购订单详情加查看代收款
                     sellerBillingDetailResponse.setCollectionAmount(null == orderBillingDetails.getCollectionAmount() ? 0D : orderBillingDetails.getCollectionAmount());
 
@@ -2271,13 +2369,51 @@ public class OrderController {
                     managerBillingDetailResponse.setCouponDiscount(orderBillingDetails.getCashCouponDiscount() == null ? 0 : orderBillingDetails.getCashCouponDiscount());
                     managerBillingDetailResponse.setFreight(orderBillingDetails.getFreight() == null ? 0 : orderBillingDetails.getFreight());
                     managerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount() == null ? 0 : orderBillingDetails.getMemberDiscount());
-                    managerBillingDetailResponse.setSubvention(orderBillingDetails.getStoreSubvention() == null ? 0 : orderBillingDetails.getStoreSubvention());
                     managerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount() == null ? 0 : orderBillingDetails.getProductCouponDiscount());
+                    managerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice() == null ? 0 : orderBaseInfo.getTotalGoodsPrice());
+                    managerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount() == null ? 0 : orderBillingDetails.getPromotionDiscount());
+                    managerBillingDetailResponse.setOrderAmountSubtotal(orderBillingDetails.getOrderAmountSubtotal() == null ? 0 : orderBillingDetails.getOrderAmountSubtotal());
+
+                    managerBillingDetailResponse.setUpstairsFee(orderBillingDetails.getUpstairsFee() == null ? 0 : orderBillingDetails.getUpstairsFee());
+                    managerBillingDetailResponse.setEmpCreditMoney(orderBillingDetails.getEmpCreditMoney() == null ? 0 : orderBillingDetails.getEmpCreditMoney());
+                    managerBillingDetailResponse.setStoreCreditMoney(orderBillingDetails.getStoreCreditMoney() == null ? 0 : orderBillingDetails.getStoreCreditMoney());
+                    managerBillingDetailResponse.setTotalCreditMoney(CountUtil.add(managerBillingDetailResponse.getEmpCreditMoney(), managerBillingDetailResponse.getStoreCreditMoney()));
+
+                    managerBillingDetailResponse.setCashMoney(orderBillingDetails.getStoreCash());
+                    managerBillingDetailResponse.setStoreOtherMoney(orderBillingDetails.getStoreOtherMoney());
+                    managerBillingDetailResponse.setPosMoney(orderBillingDetails.getStorePosMoney());
+                    managerBillingDetailResponse.setDeliveryCash( orderBillingDetails.getDeliveryCash());
+                    managerBillingDetailResponse.setDeliveryPos(orderBillingDetails.getDeliveryPos());managerBillingDetailResponse.setSubvention(orderBillingDetails.getStoreSubvention() == null ? 0 : orderBillingDetails.getStoreSubvention());
+                    managerBillingDetailResponse.setSubvention(orderBillingDetails.getStoreSubvention() == null ? 0 : orderBillingDetails.getStoreSubvention());
+                    managerBillingDetailResponse.setSellerStoreDeposit(orderBillingDetails.getSellerStoreDeposit());
+                    managerBillingDetailResponse.setStPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0 : orderBillingDetails.getStPreDeposit());
+                    if (orderBillingDetails.getOnlinePayType() != null && orderBillingDetails.getOnlinePayType() == OnlinePayType.ALIPAY){
+                        managerBillingDetailResponse.setAlipayMoney(orderBillingDetails.getOnlinePayAmount() == null ? 0 : orderBillingDetails.getOnlinePayAmount());
+                        managerBillingDetailResponse.setWechatpayMoney(0D);
+                        managerBillingDetailResponse.setUnionpayMoney(0D);
+                    } else if (orderBillingDetails.getOnlinePayType() != null && orderBillingDetails.getOnlinePayType() == OnlinePayType.WE_CHAT){
+                        managerBillingDetailResponse.setAlipayMoney(0D);
+                        managerBillingDetailResponse.setWechatpayMoney(orderBillingDetails.getOnlinePayAmount() == null ? 0 : orderBillingDetails.getOnlinePayAmount());
+                        managerBillingDetailResponse.setUnionpayMoney(0D);
+                    } else if (orderBillingDetails.getOnlinePayType() != null && orderBillingDetails.getOnlinePayType() == OnlinePayType.UNION_PAY){
+                        managerBillingDetailResponse.setAlipayMoney(0D);
+                        managerBillingDetailResponse.setWechatpayMoney(0D);
+                        managerBillingDetailResponse.setUnionpayMoney(orderBillingDetails.getOnlinePayAmount() == null ? 0 : orderBillingDetails.getOnlinePayAmount());
+                    } else {
+                        managerBillingDetailResponse.setAlipayMoney(0D);
+                        managerBillingDetailResponse.setWechatpayMoney(0D);
+                        managerBillingDetailResponse.setUnionpayMoney(0D);
+                    }
+                    managerBillingDetailResponse.setTotalPay(CountUtil.add(managerBillingDetailResponse.getStPreDeposit(),
+                            managerBillingDetailResponse.getCashMoney(), managerBillingDetailResponse.getPosMoney(), managerBillingDetailResponse.getStoreOtherMoney(),
+                            managerBillingDetailResponse.getDeliveryCash(), managerBillingDetailResponse.getDeliveryPos(), managerBillingDetailResponse.getAlipayMoney(),
+                            managerBillingDetailResponse.getWechatpayMoney(), managerBillingDetailResponse.getUnionpayMoney(), managerBillingDetailResponse.getSellerStoreDeposit(),
+                            managerBillingDetailResponse.getSubvention()));
+                    managerBillingDetailResponse.setIsPayUp(orderBillingDetails.getIsPayUp());
+
                     managerBillingDetailResponse.setPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0 : orderBillingDetails.getStPreDeposit());
                     managerBillingDetailResponse.setCreditMoney(orderBillingDetails.getStoreCreditMoney() == null ? 0 : orderBillingDetails.getStoreCreditMoney());
-                    managerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount() == null ? 0 : orderBillingDetails.getPromotionDiscount());
-                    managerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice() == null ? 0 : orderBaseInfo.getTotalGoodsPrice());
-                    managerBillingDetailResponse.setCollectionAmount(orderBillingDetails.getCollectionAmount() == null ? 0 : orderBillingDetails.getCollectionAmount());
+
                     if (null != payhelperOrder) {
                         managerBillingDetailResponse.setPayForAnotherMoney(null == payhelperOrder.getPayhelperAmount() ? 0 : payhelperOrder.getPayhelperAmount());
                         managerBillingDetailResponse.setPayType(payhelperOrder.getPayType().getDescription());
@@ -2292,11 +2428,45 @@ public class OrderController {
                     customerBillingDetailResponse.setFreight(orderBillingDetails.getFreight() == null ? 0 : orderBillingDetails.getFreight());
                     customerBillingDetailResponse.setLeBiCashDiscount(orderBillingDetails.getLebiCashDiscount() == null ? 0 : orderBillingDetails.getLebiCashDiscount());
                     customerBillingDetailResponse.setMemberDiscount(orderBillingDetails.getMemberDiscount() == null ? 0 : orderBillingDetails.getMemberDiscount());
-                    customerBillingDetailResponse.setPreDeposit(orderBillingDetails.getCusPreDeposit() == null ? 0 : orderBillingDetails.getCusPreDeposit());
                     customerBillingDetailResponse.setProductCouponDiscount(orderBillingDetails.getProductCouponDiscount() == null ? 0 : orderBillingDetails.getProductCouponDiscount());
                     customerBillingDetailResponse.setPromotionDiscount(orderBillingDetails.getPromotionDiscount() == null ? 0 : orderBillingDetails.getPromotionDiscount());
                     customerBillingDetailResponse.setTotalPrice(orderBaseInfo.getTotalGoodsPrice() == null ? 0 : orderBaseInfo.getTotalGoodsPrice());
-                    customerBillingDetailResponse.setCollectionAmount(orderBillingDetails.getCollectionAmount() == null ? 0 : orderBillingDetails.getCollectionAmount());
+                    customerBillingDetailResponse.setOrderAmountSubtotal(orderBillingDetails.getOrderAmountSubtotal() == null ? 0 : orderBillingDetails.getOrderAmountSubtotal());
+
+                    customerBillingDetailResponse.setUpstairsFee(orderBillingDetails.getUpstairsFee() == null ? 0 : orderBillingDetails.getUpstairsFee());
+                    customerBillingDetailResponse.setEmpCreditMoney(orderBillingDetails.getEmpCreditMoney() == null ? 0 : orderBillingDetails.getEmpCreditMoney());
+                    customerBillingDetailResponse.setTotalCreditMoney(customerBillingDetailResponse.getEmpCreditMoney());
+
+                    customerBillingDetailResponse.setPreDeposit(orderBillingDetails.getCusPreDeposit() == null ? 0 : orderBillingDetails.getCusPreDeposit());
+                    customerBillingDetailResponse.setStPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0 : orderBillingDetails.getStPreDeposit());
+                    customerBillingDetailResponse.setCashMoney(orderBillingDetails.getStoreCash());
+                    customerBillingDetailResponse.setStoreOtherMoney(orderBillingDetails.getStoreOtherMoney());
+                    customerBillingDetailResponse.setPosMoney(orderBillingDetails.getStorePosMoney());
+                    customerBillingDetailResponse.setDeliveryCash( orderBillingDetails.getDeliveryCash());
+                    customerBillingDetailResponse.setDeliveryPos(orderBillingDetails.getDeliveryPos());
+                    if (orderBillingDetails.getOnlinePayType() != null && orderBillingDetails.getOnlinePayType() == OnlinePayType.ALIPAY){
+                        customerBillingDetailResponse.setAlipayMoney(orderBillingDetails.getOnlinePayAmount() == null ? 0 : orderBillingDetails.getOnlinePayAmount());
+                        customerBillingDetailResponse.setWechatpayMoney(0D);
+                        customerBillingDetailResponse.setUnionpayMoney(0D);
+                    } else if (orderBillingDetails.getOnlinePayType() != null && orderBillingDetails.getOnlinePayType() == OnlinePayType.WE_CHAT){
+                        customerBillingDetailResponse.setAlipayMoney(0D);
+                        customerBillingDetailResponse.setWechatpayMoney(orderBillingDetails.getOnlinePayAmount() == null ? 0 : orderBillingDetails.getOnlinePayAmount());
+                        customerBillingDetailResponse.setUnionpayMoney(0D);
+                    } else if (orderBillingDetails.getOnlinePayType() != null && orderBillingDetails.getOnlinePayType() == OnlinePayType.UNION_PAY){
+                        customerBillingDetailResponse.setAlipayMoney(0D);
+                        customerBillingDetailResponse.setWechatpayMoney(0D);
+                        customerBillingDetailResponse.setUnionpayMoney(orderBillingDetails.getOnlinePayAmount() == null ? 0 : orderBillingDetails.getOnlinePayAmount());
+                    } else {
+                        customerBillingDetailResponse.setAlipayMoney(0D);
+                        customerBillingDetailResponse.setWechatpayMoney(0D);
+                        customerBillingDetailResponse.setUnionpayMoney(0D);
+                    }
+                    customerBillingDetailResponse.setTotalPay(CountUtil.add(customerBillingDetailResponse.getPreDeposit(), customerBillingDetailResponse.getStPreDeposit(),
+                            customerBillingDetailResponse.getCashMoney(), customerBillingDetailResponse.getPosMoney(), customerBillingDetailResponse.getStoreOtherMoney(),
+                            customerBillingDetailResponse.getDeliveryCash(), customerBillingDetailResponse.getDeliveryPos(), customerBillingDetailResponse.getAlipayMoney(),
+                            customerBillingDetailResponse.getWechatpayMoney(), customerBillingDetailResponse.getUnionpayMoney()));
+                    customerBillingDetailResponse.setIsPayUp(orderBillingDetails.getIsPayUp());
+
                     if (null != payhelperOrder) {
                         customerBillingDetailResponse.setPayForAnotherMoney(null == payhelperOrder.getPayhelperAmount() ? 0 : payhelperOrder.getPayhelperAmount());
                         customerBillingDetailResponse.setPayType(payhelperOrder.getPayType().getDescription());

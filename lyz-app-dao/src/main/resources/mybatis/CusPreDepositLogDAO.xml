@@ -5,7 +5,8 @@
 
     <select id="findByUserIdAndType" resultType="cn.com.leyizhuang.app.foundation.pojo.response.PreDepositLogResponse">
         SELECT
-        id, change_type type, create_time, change_money, order_number
+        id, change_type type, create_time, change_money, order_number,
+        IF(change_type = 'ADMIN_CHANGE', remarks, '') remarks
         FROM cus_pre_deposit_log
         WHERE cus_id = #{userId}
         AND change_type in
