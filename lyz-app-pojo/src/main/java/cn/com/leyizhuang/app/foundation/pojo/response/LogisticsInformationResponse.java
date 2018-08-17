@@ -50,6 +50,10 @@ public class LogisticsInformationResponse {
                     // 等待物流接受
                     rep.setDescribe("等待服务中心接收");
                     rep.setLogisticsType("等待接收");
+                }else if (rep.getLogisticsType().equals(LogisticStatus.RECEIVED.getDescription())){
+                    // 已经接受
+                    rep.setDescribe("服务中心已接收");
+                    rep.setLogisticsType("已接收");
                 }else if (rep.getLogisticsType().equals(LogisticStatus.ALREADY_POSITIONED.getDescription())){
                     // 已经定位
                     rep.setDescribe("已领料");

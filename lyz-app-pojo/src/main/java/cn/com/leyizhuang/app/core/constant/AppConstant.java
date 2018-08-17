@@ -90,7 +90,7 @@ public class AppConstant {
     /**
      * app 服务类商品companyFlag
      */
-    public static final String FW_COMPANY_FLAG = "SRV|CVR|ART";
+    public static final String FW_COMPANY_FLAG = "SRV|CVR|ART|BJ";
 
 
     /******************************** 银联支付相关 *************************/

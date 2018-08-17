@@ -312,7 +312,7 @@ public class MaReportDownloadRestController extends BaseRestController {
 
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
-        if ("ALL".equals(companyCode) || storeType.equals("CASH")) {
+        if ("ALL".equals(companyCode) || storeType.equals("CASH") || storeType.equals("GCORDER")) {
             // 不限分公司
         } else {
             if("JZSYBM".equals(companyCode)){
@@ -2274,7 +2274,7 @@ public class MaReportDownloadRestController extends BaseRestController {
         }
         //查询登录用户门店权限的门店ID
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
-        if (companyCode.equals("ALL") || storeType.equals("CASH")) {
+        if (companyCode.equals("ALL") || storeType.equals("CASH") || storeType.equals("GCORDER")) {
             // 不限分公司
         } else {
             if("JZSYBM".equals(companyCode)){
@@ -2324,7 +2324,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                 //筛选条件
                 Map<String, String> map = new HashMap<>();
 
-                if (null != companyCode && !"-1".equals(companyCode) && null != salesList && salesList.size() > 0 && !storeType.equals("CASH")) {
+                if (null != companyCode && !"-1".equals(companyCode) && null != salesList && salesList.size() > 0 && !storeType.equals("CASH") && !storeType.equals("GCORDER") ) {
                     map.put("城市", salesList.get(0).getCityName());
                 } else {
                     map.put("城市", "无");
@@ -2334,6 +2334,8 @@ public class MaReportDownloadRestController extends BaseRestController {
                         map.put("门店类型","分销(总)");
                     }else if ("CASH".equals(storeType)){
                         map.put("门店类型","小型装饰公司");
+                    }else if ("GCORDER".equals(storeType)){
+                        map.put("门店类型","工程单");
                     }else{
                         map.put("门店类型", StoreType.getStoreTypeByValue(storeType).getDescription());
                     }
@@ -2727,57 +2729,74 @@ public class MaReportDownloadRestController extends BaseRestController {
                     WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.NO_BOLD, false,
                             UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
                     //填写表体数据
+                    int k = 0;
                     for (int j = 0; j < maxRowNum; j++) {
+                        k++;
                         if (j + i * maxRowNum >= maxSize) {
                             break;
                         }
                         SalesReportDO salesReportDO = salesList.get(j + i * maxRowNum);
 
-                        ws.addCell(new Label(0, j + row, salesReportDO.getCityName(), textFormat));
-                        ws.addCell(new Label(1, j + row, salesReportDO.getStoreName(), textFormat));
-                        ws.addCell(new Label(2, j + row, salesReportDO.getStoreCode(), textFormat));
-                        ws.addCell(new Label(3, j + row, salesReportDO.getName(), textFormat));
-                        ws.addCell(new Label(4, j + row, salesReportDO.getCustomerName(), textFormat));
-                        ws.addCell(new Label(5, j + row, salesReportDO.getOrdNo(), textFormat));
-                        ws.addCell(new Label(6, j + row, salesReportDO.getReturnNo(), textFormat));
-                        ws.addCell(new Label(7, j + row, salesReportDO.getOrderType(), textFormat));
-                        ws.addCell(new Label(8, j + row, salesReportDO.getOrderStatus(), textFormat));
-                        ws.addCell(new Label(9, j + row, salesReportDO.getCreateTime(), textFormat));
-                        ws.addCell(new Label(10, j + row, salesReportDO.getShippingDate(), textFormat));
-                        ws.addCell(new Label(11, j + row, salesReportDO.getIsPayUp(), textFormat));
-                        ws.addCell(new Label(12, j + row, salesReportDO.getPayUpTime(), textFormat));
-                        ws.addCell(new Label(13, j + row, salesReportDO.getSku(), textFormat));
-                        ws.addCell(new Label(14, j + row, salesReportDO.getSkuName(), textFormat));
-                        ws.addCell(new Label(15, j + row, salesReportDO.getCompanyFlag(), textFormat));
-                        if (null != salesReportDO.getOrderQty()) {
-                            ws.addCell(new Number(16, j + row, salesReportDO.getOrderQty(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
-                        }
-                        if (null != salesReportDO.getGoodsType()) {
-                            ws.addCell(new Label(17, j + row, salesReportDO.getGoodsType().toString(), textFormat));
+                        if (storeType.equals("GCORDER") && !salesReportDO.getIsGcOrder().equals("工程单")){
+                            k--;
+                            continue;
                         }
 
-                        ws.addCell(new Number(18, j + row, Double.parseDouble(salesReportDO.getFinancialSales()), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                        ws.addCell(new Label(0, k + row, salesReportDO.getCityName(), textFormat));
+                        ws.addCell(new Label(1, k + row, salesReportDO.getStoreName(), textFormat));
+                        ws.addCell(new Label(2, k + row, salesReportDO.getStoreCode(), textFormat));
+                        ws.addCell(new Label(3, k + row, salesReportDO.getName(), textFormat));
+                        ws.addCell(new Label(4, k + row, salesReportDO.getCustomerName(), textFormat));
+                        ws.addCell(new Label(5, k + row, salesReportDO.getOrdNo(), textFormat));
+                        ws.addCell(new Label(6, k + row, salesReportDO.getReturnNo(), textFormat));
+                        ws.addCell(new Label(7, k + row, salesReportDO.getOrderType(), textFormat));
+                        ws.addCell(new Label(8, k + row, salesReportDO.getOrderStatus(), textFormat));
+                        ws.addCell(new Label(9, k + row, salesReportDO.getCreateTime(), textFormat));
+                        ws.addCell(new Label(10, k + row, salesReportDO.getShippingDate(), textFormat));
+                        ws.addCell(new Label(11, k + row, salesReportDO.getIsPayUp(), textFormat));
+                        ws.addCell(new Label(12, k + row, salesReportDO.getPayUpTime(), textFormat));
+                        ws.addCell(new Label(13, k + row, salesReportDO.getSku(), textFormat));
+                        ws.addCell(new Label(14, k + row, salesReportDO.getSkuName(), textFormat));
+                        ws.addCell(new Label(15, k + row, salesReportDO.getCompanyFlag(), textFormat));
+                        if (null != salesReportDO.getOrderQty()) {
+                            ws.addCell(new Number(16, k + row, salesReportDO.getOrderQty(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                        }
+                        if (null != salesReportDO.getGoodsType()) {
+                            ws.addCell(new Label(17, k + row, salesReportDO.getGoodsType().toString(), textFormat));
+                        }
+
+                        if(storeType.equals("GCORDER")){
+                            String lineStoreType = salesReportDO.getStoreType();
+
+                            if (lineStoreType.equals("加盟") || lineStoreType.equals("分销")){
+                                ws.addCell(new Number(18, k + row, Double.parseDouble(salesReportDO.getDistributionSales()), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                            }else {
+                                ws.addCell(new Number(18, k + row, Double.parseDouble(salesReportDO.getFinancialSales()), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                            }
+                        }else {
+                            ws.addCell(new Number(18, k + row, Double.parseDouble(salesReportDO.getFinancialSales()), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                        }
                         if (null != salesReportDO.getRetailPrice()) {
-                            ws.addCell(new Number(19, j + row, salesReportDO.getRetailPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                            ws.addCell(new Number(19, k + row, salesReportDO.getRetailPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                         }
                         if (null != salesReportDO.getSettlementPrice()) {
-                            ws.addCell(new Number(20, j + row, salesReportDO.getSettlementPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                            ws.addCell(new Number(20, k + row, salesReportDO.getSettlementPrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                         }
                         if (null != salesReportDO.getMemberDiscount()) {
-                            ws.addCell(new Number(21, j + row, salesReportDO.getMemberDiscount(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                            ws.addCell(new Number(21, k + row, salesReportDO.getMemberDiscount(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                         }
                         if (null != salesReportDO.getPromotionSharePrice()) {
-                            ws.addCell(new Number(22, j + row, salesReportDO.getPromotionSharePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                            ws.addCell(new Number(22, k + row, salesReportDO.getPromotionSharePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                         }
                         if (null != salesReportDO.getCashCouponSharePrice()) {
-                            ws.addCell(new Number(23, j + row, salesReportDO.getCashCouponSharePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
+                            ws.addCell(new Number(23, k + row, salesReportDO.getCashCouponSharePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                         }
                         if (null != salesReportDO.getCouponType()) {
-                            ws.addCell(new Label(24, j + row, salesReportDO.getCouponType().toString(), textFormat));
+                            ws.addCell(new Label(24, k + row, salesReportDO.getCouponType().toString(), textFormat));
                         }
-                        ws.addCell(new Label(25, j + row, salesReportDO.getCusId().toString(), textFormat));
-                        ws.addCell(new Label(26, j + row, salesReportDO.getCusType(), textFormat));
-                        ws.addCell(new Label(27, j + row, salesReportDO.getIsGcOrder(), textFormat));
+                        ws.addCell(new Label(25, k + row, salesReportDO.getCusId().toString(), textFormat));
+                        ws.addCell(new Label(26, k + row, salesReportDO.getCusType(), textFormat));
+                        ws.addCell(new Label(27, k + row, salesReportDO.getIsGcOrder(), textFormat));
                     }
 
                 }

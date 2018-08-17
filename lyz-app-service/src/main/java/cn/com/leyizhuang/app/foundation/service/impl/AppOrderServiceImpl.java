@@ -1249,6 +1249,8 @@ public class AppOrderServiceImpl implements AppOrderService {
                         msg += "遮蔽 ";
                     } else if (cf.equals("ART")) {
                         msg += "艺术漆 ";
+                    } else if (cf.equals("BJ")){
+                        msg += "毕加";
                     }
                 }
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, msg + "服务类商品请单独下单，一单一类", null);
