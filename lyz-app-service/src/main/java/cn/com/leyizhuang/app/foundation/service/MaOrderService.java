@@ -186,7 +186,7 @@ public interface MaOrderService {
 
     PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderListByInfo(Integer page, Integer size, String info, List<Long> storeIds);
 
-    PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderByCondition(Integer page, Integer size, MaOrderVORequest maOrderVORequest);
+    PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderByCondition(Integer page, Integer size, MaOrderVORequest maOrderVORequest, List<Long> storeIds);
 
     MaOrderTempInfo getOrderInfoByOrderNo(String orderNo);
 

@@ -343,7 +343,8 @@ public class MaOrderViewController {
      * @return
      */
     @RequestMapping(value = "/selfTakeOrder/list")
-    public String selfTakeOrderShippingListPage() {
+    public String selfTakeOrderShippingListPage(ModelMap map) {
+        map.addAttribute("orderStatusList", AppOrderStatus.getSelfTakeOrderStatusList());
         return "/views/order/selfTakeOrder_page";
     }
 

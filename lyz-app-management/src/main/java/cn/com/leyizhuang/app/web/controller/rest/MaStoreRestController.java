@@ -468,6 +468,33 @@ public class MaStoreRestController extends BaseRestController {
      * @param
      * @return
      * @throws
+     * @title 根据城市和门店权限查询门店列表(不包括装饰公司)
+     * @descripe
+     * @author GenerationRoad
+     * @date 2018/2/28
+     */
+    @GetMapping(value = "/findStoresListByCityIdAndStoreIdList/{cityId}")
+    public List<SimpleStoreParam> findStoresListByCityIdAndStoreIdList(@PathVariable(value = "cityId") Long cityId) {
+        logger.info("findStoresListByCityIdAndStoreIdList 后台查询该城市ID的门店列表(下拉框) 入参 cityId:{}", cityId);
+        try {
+            //查询登录用户门店权限的门店ID
+            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            List<SimpleStoreParam> storesList = this.maStoreService.findStoresListByCityIdAndStoreIdList(cityId, storeIds);
+            logger.info("findStoresListByCityIdAndStoreIdList ,后台查询该城市ID的门店列表(下拉框)成功", storesList);
+            return storesList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("findStoresListByCityIdAndStoreIdList EXCEPTION,发生未知错误，后台查询该城市ID的门店列表(下拉框)失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
+
+    /**
+     * @param
+     * @return
+     * @throws
      * @title 查询未生成规则的装饰公司
      * @descripe
      * @author GenerationRoad
