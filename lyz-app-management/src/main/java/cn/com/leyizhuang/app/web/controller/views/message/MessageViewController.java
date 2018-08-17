@@ -75,6 +75,7 @@ public class MessageViewController extends BaseController {
         //map.addAttribute("stores",stores);
         map.addAttribute("customerList",customerList);
         // 获取专供类型
+
         List<RankClassification> rankClassificationList = maCustomerService.findRankAll();
         map.addAttribute("rankScopeList",rankClassificationList);
         return "/views/message/message_edit";

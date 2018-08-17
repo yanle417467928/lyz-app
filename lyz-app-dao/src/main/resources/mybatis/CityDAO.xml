@@ -234,6 +234,15 @@
             AND last_update_time = #{version}
     </update>
 
+    <update id="updateCityInventoryByCityIdAndGoodsIdAndInventoryAndVersion">
+        UPDATE city_inventory
+        SET available_ity = available_ity + #{qty}
+        WHERE
+        gid = #{gid}
+        AND city_id = #{cityId}
+        AND last_update_time = #{version}
+    </update>
+
     <insert id="saveCityInventory"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.inventory.CityInventory">
         INSERT INTO city_inventory (create_time, last_update_time, city_id, city_code, city_name, gid, sku, sku_name, available_ity)

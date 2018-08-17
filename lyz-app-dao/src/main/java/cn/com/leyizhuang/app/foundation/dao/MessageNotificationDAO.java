@@ -32,4 +32,13 @@ public interface MessageNotificationDAO {
      * @param messageNotificationListResponse 推送消息返回对象
      */
     void modifyMessageNotification(MessageNotificationListResponse messageNotificationListResponse);
+
+    /**
+     *  列表出来后，具体的详情查询
+     * @param userId
+     * @param identityType
+     * @param messageId
+     * @return
+     */
+    MessageNotificationListResponse findNotification(@Param("userId") Long userId, @Param("identityType") AppIdentityType identityType,@Param("messageId") Long messageId);
 }

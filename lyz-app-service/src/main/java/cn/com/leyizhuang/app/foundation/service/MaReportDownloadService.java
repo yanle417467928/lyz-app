@@ -15,10 +15,10 @@ import java.util.List;
 public interface MaReportDownloadService {
 
     PageInfo<ReceiptsReportDO> findReceiptsReportDOAll(Long cityId, Long storeId, String storeType, String startTime, String endTime, String payType,
-                                                       String keywords, List<Long> storeIds, Integer page, Integer size);
+                                                       String keywords, List<Long> storeIds, Integer page, Integer size,Long cusId);
 
     List<ReceiptsReportDO> downloadReceipts(Long cityId, Long storeId, String storeType, String startTime, String endTime, String payType,
-                                                       String keywords, List<Long> storeIds);
+                                                       String keywords, List<Long> storeIds,Long cusId);
 
     PageInfo<NotPickGoodsReportDO> findNotPickGoodsReportDOAll(Long cityId, Long storeId, String storeType, String startTime, String endTime, String pickType, List<Long> storeIds, Integer page, Integer size);
 

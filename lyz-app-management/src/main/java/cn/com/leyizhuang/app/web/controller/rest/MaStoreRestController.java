@@ -3,9 +3,11 @@ package cn.com.leyizhuang.app.web.controller.rest;
 import cn.com.leyizhuang.app.core.constant.StoreType;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
+import cn.com.leyizhuang.app.foundation.pojo.management.customer.MaSimpleCustomerParam;
 import cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam;
 import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.AppStoreService;
+import cn.com.leyizhuang.app.foundation.service.MaCustomerService;
 import cn.com.leyizhuang.app.foundation.service.MaStoreService;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreDetailVO;
 import cn.com.leyizhuang.app.foundation.vo.management.store.StoreVO;
@@ -37,6 +39,9 @@ public class MaStoreRestController extends BaseRestController {
 
     @Resource
     private AppStoreService storeService;
+
+    @Resource
+    private MaCustomerService maCustomerService;
 
     /**
      * 初始门店页面
@@ -686,6 +691,30 @@ public class MaStoreRestController extends BaseRestController {
         } catch (Exception e) {
             e.printStackTrace();
             logger.warn("findStoresListByCityIdAndStoreType EXCEPTION,发生未知错误，后台查询该城市ID和门店类型的门店列表(下拉框)失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+    /**
+     * @param
+     * @return
+     * @throws
+     * @title 后台根据门店id查询门店顾客
+     * @descripe
+     * @date 2018/8/15
+     */
+    @GetMapping(value = "/findCustomerByStoreId")
+    public List<MaSimpleCustomerParam> findCustomerByStoreId(Long storeId) {
+        logger.info("findCustomerByStoreId 后台根据门店id查询门店顾客(下拉框) 入参 storeId:{}", storeId);
+        try {
+            //查询登录用户门店权限的门店ID
+//            List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+            List<MaSimpleCustomerParam> storesList = this.maCustomerService.findCustomerByStoreId(storeId);
+            logger.info("findCustomerByStoreId ,后台根据门店id查询门店顾客(下拉框)成功", storesList);
+            return storesList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("findCustomerByStoreId EXCEPTION,发生未知错误，后台根据门店id查询门店顾客(下拉框)失败");
             logger.warn("{}", e);
             return null;
         }

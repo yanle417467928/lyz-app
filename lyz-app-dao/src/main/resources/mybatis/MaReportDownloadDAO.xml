@@ -41,6 +41,9 @@
         <if test="null != keywords and keywords != ''">
             AND obi.ord_no LIKE concat(concat('%',#{keywords}),'%')
         </if>
+        <if test="null != cusId and cusId != -1">
+            AND obi.customer_id = #{cusId}
+        </if>
         AND obi.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
             #{item}
@@ -84,6 +87,9 @@
         </if>
         <if test="null != keywords and keywords != ''">
             AND orbi.return_no LIKE concat(concat('%',#{keywords}),'%')
+        </if>
+        <if test="null != cusId and cusId != -1">
+            AND obi.customer_id = #{cusId}
         </if>
         AND orbi.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
@@ -1026,7 +1032,7 @@
         gg.specification_type as specificationType,
         oli.estate_info as estateInfo,
         orgi.settlement_price as vipPrice,
-        orgi.return_qty * orgi.settlement_price totalVipPrice
+        -ABS(orgi.return_qty * orgi.settlement_price) totalVipPrice
         from ord_return_base_info orbi
         LEFT JOIN ord_return_goods_info orgi ON orgi.return_no =orbi.return_no
         LEFT JOIN ord_base_info obi ON orbi.ord_no=obi.ord_no
@@ -1107,7 +1113,7 @@
         gg.specification_type as specificationType,
         oli.estate_info as estateInfo,
         orgi.settlement_price as vipPrice,
-        orgi.return_qty * orgi.settlement_price totalVipPrice
+        -ABS(orgi.return_qty * orgi.settlement_price) totalVipPrice
         from ord_return_base_info orbi
         LEFT JOIN ord_return_goods_info orgi ON orgi.return_no =orbi.return_no
         LEFT JOIN ord_base_info obi ON orbi.ord_no=obi.ord_no

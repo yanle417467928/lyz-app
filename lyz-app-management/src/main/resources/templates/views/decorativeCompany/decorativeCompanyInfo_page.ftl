@@ -86,13 +86,16 @@
                             <b>装饰公司编码</b> <a class="pull-right" id="storeCode"></a>
                         </li>
                         <li class="list-group-item">
-                            <b>所属城市</b> <a class="pull-right" id="cityName"></a>
+                            <b>所属城市</b> <a class="pull-right" id="city"></a>
                         </li>
                         <li class="list-group-item">
                             <b>公司名称</b> <a class="pull-right" id="storeName"></a>
                         </li>
                         <li class="list-group-item">
                             <b>销售经理</b> <a class="pull-right" id="salesManager"></a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>销售员</b> <a class="pull-right" id="seller"></a>
                         </li>
                         <li class="list-group-item">
                             <b>是否启用</b> <a class="pull-right" id="enable"></a>
@@ -169,15 +172,22 @@
                 return '<a class="scan" href="#">' + value + '</a>';
             }
         }, {
-            field: 'cityCode.name',
+            field: 'city',
             title: '所属城市',
             align: 'center'
-        },
-            {
-                field: 'company',
-                title: '装饰公司类型',
-                align: 'center'
-            }, {
+        }, {
+            field: 'seller',
+            title: '所属导购',
+            align: 'center'
+        }, {
+            field: 'salesManager',
+            title: '所属经理',
+            align: 'center'
+        },{
+            field: 'company',
+            title: '装饰公司类型',
+            align: 'center'
+        },{
             field: 'enable',
             title: '是否启用',
             align: 'center',
@@ -242,15 +252,21 @@
                                 }
                                 $('#storeCode').html(data.storeCode);
 
-                                if (null === data.cityCode.name) {
-                                    data.cityCode.name = '-';
+                                if (null === data.city) {
+                                    data.city = '-';
                                 }
-                                $('#cityName').html(data.cityCode.name);
+                                $('#city').html(data.city);
 
                                 if (null === data.storeName) {
                                     data.storeName = '-';
                                 }
                                 $('#storeName').html(data.storeName);
+
+
+                                if (null === data.salesManager) {
+                                    data.salesManager = '-';
+                                }
+                                $('#salesManager').html(data.salesManager);
 
 
                                 if (true === data.enable) {
@@ -269,10 +285,10 @@
                                     $('#createTime').html(formatDateTime(data.createTime));
                                 }
 
-                                if (null === data.salesManager) {
-                                    $('#salesManager').html('-');
+                                if (null === data.seller) {
+                                    $('#seller').html('-');
                                 } else {
-                                    $('#salesManager').html(data.salesManager);
+                                    $('#seller').html(data.seller);
                                 }
 
 
@@ -297,6 +313,7 @@
         var cityId = $("#cityCode").val();
         var enabled = $("#enabled").val();
         var company = $("#company").val();
+        var salesManager = $("#salesManager").val();
         initDateGird('/rest/decorativeInfo/findDecorativeByCondition?enabled=' + enabled + '&cityId=' + cityId+ '&company=' + company);
     }
 

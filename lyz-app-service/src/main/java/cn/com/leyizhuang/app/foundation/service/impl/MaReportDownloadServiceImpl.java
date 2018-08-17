@@ -31,12 +31,12 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
     private MaStoreService maStoreService;
 
     @Override
-    public PageInfo<ReceiptsReportDO> findReceiptsReportDOAll(Long cityId, Long storeId, String storeType, String startTime, String endTime, String payType, String keywords, List<Long> storeIds, Integer page, Integer size) {
+    public PageInfo<ReceiptsReportDO> findReceiptsReportDOAll(Long cityId, Long storeId, String storeType, String startTime, String endTime, String payType, String keywords, List<Long> storeIds, Integer page, Integer size, Long cusId) {
         PageHelper.startPage(page, size);
         if (null != endTime && !("".equals(endTime))) {
             endTime += " 23:59:59";
         }
-        List<ReceiptsReportDO> receiptsReportDOS = this.maReportDownloadDAO.findReceiptsReportDOAll(cityId, storeId, storeType, startTime, endTime, payType, keywords, storeIds);
+        List<ReceiptsReportDO> receiptsReportDOS = this.maReportDownloadDAO.findReceiptsReportDOAll(cityId, storeId, storeType, startTime, endTime, payType, keywords, storeIds, cusId);
         return new PageInfo<>(receiptsReportDOS);
     }
 
@@ -96,11 +96,12 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
     }
 
     @Override
-    public List<ReceiptsReportDO> downloadReceipts(Long cityId, Long storeId, String storeType, String startTime, String endTime, String payType, String keywords, List<Long> storeIds) {
+    public List<ReceiptsReportDO> downloadReceipts(Long cityId, Long storeId, String storeType, String startTime, String endTime, String payType, String keywords, List<Long> storeIds,Long cusId) {
         if (null != endTime && !("".equals(endTime))) {
             endTime += " 23:59:59";
         }
-        return this.maReportDownloadDAO.findReceiptsReportDOAll(cityId, storeId, storeType, startTime, endTime, payType, keywords, storeIds);
+        List<ReceiptsReportDO> receiptsReportDOAll = this.maReportDownloadDAO.findReceiptsReportDOAll(cityId, storeId, storeType, startTime, endTime, payType, keywords, storeIds, cusId);
+        return receiptsReportDOAll;
     }
 
     @Override

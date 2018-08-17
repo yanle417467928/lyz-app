@@ -34,7 +34,7 @@ public class ScanningUnpaidOrderTask implements Job {
         String findDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime());
 
         //获取所有待付款订单
-        List<OrderBaseInfo> orderBaseInfoList = maOrderService.scanningUnpaidOrder(findDate);
+        List<OrderBaseInfo> orderBaseInfoList = maOrderService.scanningUnpaidOrder("2018-04-01 00:00:00");
         if (null != orderBaseInfoList && orderBaseInfoList.size() > 0) {
             for (OrderBaseInfo orderBaseInfo : orderBaseInfoList) {
                 if (date.after(orderBaseInfo.getEffectiveEndTime())) {

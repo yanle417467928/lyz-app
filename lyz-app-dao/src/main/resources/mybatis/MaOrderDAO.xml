@@ -916,7 +916,7 @@
     </insert>
 
 
-    <insert id="saveAppToEbsOrderReceiveInf"
+    <insert id="saveAppToEbsOrderReceiveInf" useGeneratedKeys="true" keyProperty="id"
             parameterType="cn.com.leyizhuang.app.foundation.pojo.management.webservice.ebs.MaOrderReceiveInf">
         INSERT INTO inter_ate_order_receive_inf (deliver_type_title, header_id, order_number, receive_date, sob_id, error_msg, send_flag,send_time,init_date)
         VALUES

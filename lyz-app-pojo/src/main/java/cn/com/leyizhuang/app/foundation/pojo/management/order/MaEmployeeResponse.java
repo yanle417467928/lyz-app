@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.pojo.management.order;
 
+import cn.com.leyizhuang.app.core.constant.AppIdentityType;
 import cn.com.leyizhuang.app.core.constant.StoreType;
 import lombok.*;
 
@@ -51,4 +52,11 @@ public class MaEmployeeResponse {
      * 员工登录名
      */
     private String loginName;
+
+
+    private String identityType;
+
+    public void setIdentityType(AppIdentityType identityType){
+        this.identityType=identityType.getDescription();
+    }
 }

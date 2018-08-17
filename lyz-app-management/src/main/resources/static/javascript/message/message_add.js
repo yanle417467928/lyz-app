@@ -376,15 +376,13 @@ function openSelectEmployeesModel() {
     var employeesType = "员工";
     // $('#peopleModal').modal('show');
     var queryEmployeesInfo = $('#queryEmployeesInfo').val();
-    var url = '/rest/employees/select/seller';
+    var url = '/rest/employees/page/message';
     $("#EmployeesDataGrid").bootstrapTable('destroy');
     $grid.init($('#EmployeesDataGrid'), $('#toolbar3'), url, 'get', false, function (params) {
         return {
             offset: params.offset,
             size: params.limit,
-            keywords: params.search,
-            employeesType: employeesType,
-            selectCreateOrdereEployeesTypeConditions: queryEmployeesInfo
+            keywords: queryEmployeesInfo
         }
     }, [{
         checkbox: true,
@@ -421,16 +419,14 @@ function openSelectEmployeesModel() {
 function findEmployees() {
 
     var employeesTypeType = "员工";
-    var selectCreateOrderEmployeesConditions = $('#queryEmployeesInfo').val();
-    var url = '/rest/order/photo/find/people';
+    var keywords = $('#queryEmployeesInfo').val();
+    var url = '/rest/employees/page/message';
     $("#EmployeesDataGrid").bootstrapTable('destroy');
     $grid.init($('#EmployeesDataGrid'), $('#toolbar3'), url, 'get', false, function (params) {
         return {
             offset: params.offset,
             size: params.limit,
-            keywords: params.search,
-            employeesTypeType: employeesTypeType,
-            selectCreateOrderEmployeesTypeConditions: selectCreateOrderEmployeesConditions
+            keywords: keywords
         }
     }, [{
         checkbox: true,

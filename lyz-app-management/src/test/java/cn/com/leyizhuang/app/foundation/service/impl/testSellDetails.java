@@ -2,6 +2,8 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 
 import cn.com.leyizhuang.app.core.constant.DataTransferExceptionType;
 import cn.com.leyizhuang.app.core.exception.DataTransferException;
+import cn.com.leyizhuang.app.core.wechat.refund.MaOnlinePayRefundService;
+import cn.com.leyizhuang.app.core.wechat.sign.WechatPrePay;
 import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
 import cn.com.leyizhuang.app.foundation.dao.SellDetailsDAO;
 import cn.com.leyizhuang.app.foundation.dao.transferdao.TransferDAO;
@@ -23,9 +25,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -61,6 +65,9 @@ public class testSellDetails {
 
     @Resource
     private ProductCouponService productCouponService;
+
+    @Resource
+    private MaOnlinePayRefundService maOnlinePayRefundService;
 
     @Test
     public void testInsert(){
@@ -114,5 +121,14 @@ public class testSellDetails {
     @Test
     public void test(){
         productCouponService.activateCusProductCoupon("CD_XN20180502165632256553");
+    }
+
+
+    @Test
+    public void returnMoney(){
+        Map<String, Object> resultMap = WechatPrePay.wechatRefundSign(
+                "20180811105108711466710", "T20180811150053541", new BigDecimal(2824), new BigDecimal(2824));
+        System.out.println(resultMap.get("return_code").toString());
+        System.out.println(resultMap.get("result_code").toString());
     }
 }

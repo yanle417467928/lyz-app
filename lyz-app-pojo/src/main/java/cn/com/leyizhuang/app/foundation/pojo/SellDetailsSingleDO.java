@@ -76,13 +76,24 @@ public class SellDetailsSingleDO {
     private String flag;
 
     /**
-     * 目标销量
+     * hr 目标销量
      */
     private Double targetSales;
 
     /**
-     * 完成销量
+     * hr 完成销量
      */
     private Double finishSales;
+
+    /**
+     * lyz 目标销量
+     */
+    private Double lyzTargetSales;
+
+    /**
+     * lyz 完成销量
+     */
+    private Double lyzFinishSales;
+
 
 }

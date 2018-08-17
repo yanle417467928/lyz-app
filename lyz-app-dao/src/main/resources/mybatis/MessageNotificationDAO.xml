@@ -7,7 +7,6 @@
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.MessageNotificationListResponse">
         SELECT
         mn.title AS title,
-        mn.detailed AS detailed,
         mn.create_time AS createTime,
         mn.begin_time AS beginTime,
         mn.end_time AS endTime,
@@ -15,7 +14,9 @@
         mn. STATUS AS status,
         mmc.is_read AS isRead,
         mmc.identity_type AS identityType,
-        mmc.user_id AS userId
+        mmc.user_id AS userId,
+        mn.message_type AS messageType
+
         FROM
         message_notification mn
         LEFT JOIN message_member_conference mmc ON mn.id = mmc.message_id
@@ -23,6 +24,8 @@
         mmc.identity_type = #{identityType}
         AND
         mmc.user_id = #{userId}
+        AND
+        mn.status ='PUBLISH'
         AND
         mn.create_time >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
         ORDER BY
@@ -58,4 +61,36 @@
         AND identity_type=#{identityType}
         AND message_id=#{messageId}
     </update>
+
+
+    <select id="findNotification"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.response.MessageNotificationListResponse">
+        SELECT
+        mn.title AS title,
+        mn.create_time AS createTime,
+        mn.begin_time AS beginTime,
+        mn.end_time AS endTime,
+        mmc.message_id AS messageId,
+        mn. STATUS AS status,
+        mmc.is_read AS isRead,
+        mmc.identity_type AS identityType,
+        mmc.user_id AS userId,
+		mn.detailed AS detailed,
+		mn.message_type AS messageType
+        FROM
+        message_notification mn
+        LEFT JOIN message_member_conference mmc ON mn.id = mmc.message_id
+        WHERE
+        mmc.identity_type = #{identityType}
+        AND
+        mmc.user_id = #{userId}
+		AND
+		mmc.message_id = #{messageId}
+        AND
+        mn.status ='PUBLISH'
+        AND
+        mn.create_time >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+        ORDER BY
+        mn.create_time DESC
+    </select>
 </mapper>

@@ -84,6 +84,26 @@ public class MaEmployeeRestController extends BaseRestController {
     }
 
 
+    @GetMapping(value = "/page/message")
+    public GridDataVO<MaEmployeeResponse> restEmployeesPageGird4Message(Integer offset, Integer size, String keywords) {
+        logger.info("restEmployeesPageGird 后台获取所有员工信息列表 ,入参 offset:{},size:{},keywords:{},id:{}", offset, size, keywords);
+        try {
+            size = getSize(size);
+            Integer page = getPage(offset, size);
+
+            PageInfo<MaEmployeeResponse> employeeDOListPage = this.maEmployeeService.queryPageVO4Message(page, size,keywords);
+            List<MaEmployeeResponse> employeeDOList = employeeDOListPage.getList();
+            logger.warn("selectSeller ,后台购买产品券选择导购成功", employeeDOList.size());
+            return new GridDataVO<MaEmployeeResponse>().transform(employeeDOList, employeeDOListPage.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("selectSeller EXCEPTION,发生未知错误，后台购买产品券选择导购失败");
+            logger.warn("{}", e);
+            return null;
+        }
+    }
+
+
     /**
      * 查询该id下的员工详情信息
      *

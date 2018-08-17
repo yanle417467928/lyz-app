@@ -55,8 +55,13 @@
                     </select>
 
                     <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px" style="width:auto;"
-                            <#--onchange="findByCondition()"--> data-live-search="true">
+                            onchange="findCustomerByStrore()" data-live-search="true">
                         <option value="-1">选择门店</option>
+                    </select>
+
+                    <select name="customerId" id="customerId" class="form-control selectpicker" data-width="120px" style="width:auto;"
+                    <#--onchange="findByCondition()"--> data-live-search="true">
+                        <option value="-1">选择顾客</option>
                     </select>
 
                     <select name="paymentType" id="paymentType" class="form-control selectpicker" data-width="120px" style="width:auto;"
@@ -170,7 +175,7 @@
         });
     }
 
-    function initDateGird(keywords,startTime,endTime,storeId,storeType,cityId,payType) {
+    function initDateGird(keywords,startTime,endTime,storeId,storeType,cityId,payType,customerId) {
         $grid.init($('#dataGrid'), $('#toolbar'), '/rest/reportDownload/receipts/page/grid', 'get', false, function (params) {
             return {
                 offset: params.offset,
@@ -181,7 +186,8 @@
                 endTime: endTime,
                 storeType: storeType,
                 cityId: cityId,
-                payType: payType
+                payType: payType,
+                customerId:customerId
             }
         }, [{
             checkbox: true,
@@ -241,17 +247,32 @@
         ]);
     }
 
-    function findByCondition() {
-        $("#queryCusInfo").val('');
-        $("#dataGrid").bootstrapTable('destroy');
-        var keywords = $('#queryCusInfo').val();
-        var startTime = $('#startTime').val();
-        var endTime = $('#endTime').val();
+    function findCustomerByStrore() {
         var storeId = $("#storeCode").val();
-        var cityId = $('#cityCode').val();
-        var storeType = $('#storeType').val();
-        var paymentType = $('#paymentType').val();
-        initDateGird(keywords,startTime,endTime,storeId,storeType,cityId,paymentType);
+        var customer = '';
+        $.ajax({
+            url: '/rest/stores/findCustomerByStoreId',
+            method: 'GET',
+            data:{
+                storeId: storeId
+            },
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    customer += "<option value=" + item.cusId + ">" + item.cusName + "</option>";
+                });
+                $("#customerId").append(customer);
+                $('#customerId').selectpicker('refresh');
+                $('#customerId').selectpicker('render');
+//                findByCondition();
+            }
+        });
     }
 
     function findByOrderNumber() {
@@ -277,7 +298,8 @@
         var cityId = $('#cityCode').val();
         var storeType = $('#storeType').val();
         var paymentType = $('#paymentType').val();
-        initDateGird(queryCusInfo,startTime,endTime,storeId,storeType,cityId,paymentType);
+        var customerId = $('#customerId').val();
+        initDateGird(queryCusInfo,startTime,endTime,storeId,storeType,cityId,paymentType,customerId);
     }
 
     function initSelect(select, optionName) {
@@ -294,9 +316,10 @@
         var cityId = $('#cityCode').val();
         var storeType = $('#storeType').val();
         var payType = $('#paymentType').val();
+        var cusId = $('#customerId').val();
 
         var url = "/rest/reportDownload/receipts/download?keywords="+ keywords + "&storeId=" + storeId + "&startTime=" + startTime
-                + "&endTime=" + endTime + "&storeType=" + storeType + "&cityId=" + cityId + "&payType=" + payType;
+                + "&endTime=" + endTime + "&storeType=" + storeType + "&cityId=" + cityId + "&payType=" + payType + "&cusId=" + cusId;
         var escapeUrl=url.replace(/\#/g,"%23");
         window.open(escapeUrl);
 

@@ -18,7 +18,7 @@ public interface MaReportDownloadDAO {
 
     List<ReceiptsReportDO> findReceiptsReportDOAll(@Param("cityId") Long cityId, @Param("storeId") Long storeId, @Param("storeType") String storeType,
                                                    @Param("startTime") String startTime, @Param("endTime") String endTime, @Param("payType") String payType,
-                                                   @Param("keywords") String keywords, @Param("list") List<Long> storeIds);
+                                                   @Param("keywords") String keywords, @Param("list") List<Long> storeIds,@Param("cusId") Long cusId);
 
 
     List<NotPickGoodsReportDO> findNotPickGoodsReportDOAll(@Param("cityId") Long cityId, @Param("storeId") Long storeId, @Param("storeType") String storeType,
