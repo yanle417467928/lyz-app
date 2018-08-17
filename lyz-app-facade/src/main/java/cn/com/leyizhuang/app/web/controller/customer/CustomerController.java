@@ -19,6 +19,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.time.DateUtils;
+import org.apache.ibatis.jdbc.Null;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -455,13 +456,19 @@ public class CustomerController {
                 return resultDTO;
             }
             if (identityType == 6) {
-                List<ProductCouponResponse> productCouponList = customerService.findProductCouponByCustomerId(userId);
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, productCouponList);
+                Map<String,Object> map = new HashMap();
+                List<ProductCouponResponse> productNotUsedCoupons = customerService.findAllNotUsedCouponsDetails(userId);
+                List<ProductCouponResponse> productUsedCoupons = customerService.findAllUsedCouponsDetails(userId);
+                List<ProductCouponResponse> productOverdueCoupons = customerService.findAllOverdueCouponsDetails(userId);
+                map.put("productNotUsedCoupons",productNotUsedCoupons);
+                map.put("productUsedCoupons",productUsedCoupons);
+                map.put("productOverdueCoupons",productOverdueCoupons);
+
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null,map);
                 //logger.info("customerProductCoupon OUT,获取顾客可用产品券成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             } else if (identityType == 0) {
-                List<ProductCouponResponse> productCouponResponseList = customerService.
-                        findProductCouponBySellerIdAndCustomerId(userId, cusId);
+                List<ProductCouponResponse> productCouponResponseList = customerService.findProductCouponBySellerIdAndCustomerId(userId, cusId);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, productCouponResponseList);
                 //logger.info("customerProductCoupon OUT,获取顾客可用产品券成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;

@@ -106,6 +106,9 @@
                         <li class="list-group-item">
                             <b>转售给</b> <a class="pull-right" id="createTime"></a>
                         </li>
+                        <li class="list-group-item">
+                            <b>小型装饰公司名称</b> <a class="pull-right" id="storeNameForCash"></a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -175,17 +178,17 @@
             field: 'city',
             title: '所属城市',
             align: 'center'
-        }, {
-            field: 'seller',
-            title: '所属导购',
-            align: 'center'
-        }, {
+        },  {
             field: 'salesManager',
-            title: '所属经理',
+            title: '所属导购',
             align: 'center'
         },{
             field: 'company',
             title: '装饰公司类型',
+            align: 'center'
+        },{
+            field: 'storeNameForCash',
+            title: '小型装饰公司名称',
             align: 'center'
         },{
             field: 'enable',
@@ -269,6 +272,12 @@
                                 $('#salesManager').html(data.salesManager);
 
 
+                                if (null === data.storeNameForCash) {
+                                    data.storeNameForCash = '-';
+                                }
+                                $('#storeNameForCash').html(data.storeNameForCash);
+
+
                                 if (true === data.enable) {
                                     data.enable = '<span class="label label-primary">是</span>';
                                 } else if (false === data.enable) {
@@ -314,6 +323,7 @@
         var enabled = $("#enabled").val();
         var company = $("#company").val();
         var salesManager = $("#salesManager").val();
+        var storeNameForCash = $("#storeNameForCash").val();
         initDateGird('/rest/decorativeInfo/findDecorativeByCondition?enabled=' + enabled + '&cityId=' + cityId+ '&company=' + company);
     }
 
