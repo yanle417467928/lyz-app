@@ -105,7 +105,7 @@ public interface ReturnOrderService {
      * @param identityType 身份
      * @return 退货单列表
      */
-    PageInfo<ReturnOrderBaseInfo> findReturnOrderListByUserIdAndIdentityType(Long userId, Integer identityType, Integer page, Integer size);
+    PageInfo<ReturnOrderBaseInfo> findReturnOrderListByUserIdAndIdentityType(Long userId, Integer identityType, Integer page, Integer size, String keywords);
 
     /**
      * 查退货单商品信息

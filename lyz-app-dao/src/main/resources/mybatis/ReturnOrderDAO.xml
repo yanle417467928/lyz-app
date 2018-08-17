@@ -311,20 +311,26 @@
         orbi.return_status
         FROM ord_return_base_info orbi
         INNER JOIN ord_base_info obi ON obi.ord_no = orbi.ord_no
-        WHERE
+        WHERE 1=1
         <if test="null != identityType and identityType.toString() == 'CUSTOMER'">
-            ((obi.creator_id = #{userId} or orbi.creator_id = #{userId}) AND obi.creator_identity_type =
+            AND (((obi.creator_id = #{userId} or orbi.creator_id = #{userId}) AND obi.creator_identity_type =
             #{identityType})
-            OR (obi.customer_id = #{userId} or orbi.cus_id = #{userId})
+            OR (obi.customer_id = #{userId} or orbi.cus_id = #{userId}))
         </if>
         <if test="null != identityType and identityType.toString() == 'SELLER'">
-            obi.creator_id = #{userId} AND obi.creator_identity_type = #{identityType}
+            AND obi.creator_id = #{userId} AND obi.creator_identity_type = #{identityType}
             AND orbi.creator_id = #{userId} AND orbi.creator_identityType = #{identityType}
         </if>
         <if test="null != identityType and identityType.toString() == 'DECORATE_MANAGER'">
-            obi.creator_id = #{userId} AND obi.creator_identity_type = #{identityType}
+            AND obi.creator_id = #{userId} AND obi.creator_identity_type = #{identityType}
         </if>
         AND obi.`status` != 'CANCELED'
+        <if test="null != keywords and keywords != ''">
+            AND (orbi.ord_no LIKE concat(concat('%',#{keywords}),'%')
+            OR orbi.return_no LIKE concat(concat('%',#{keywords}),'%')
+            OR orbi.cus_name LIKE concat(concat('%',#{keywords}),'%')
+            OR orbi.cus_phone LIKE concat(concat('%',#{keywords}),'%'))
+        </if>
         ORDER BY orbi.return_time DESC
     </select>
 

@@ -997,9 +997,9 @@ public class ReturnOrderController {
      * @return 退货单列表
      */
     @PostMapping(value = "/list", produces = "application/json;charset=UTF-8")
-    public ResultDTO getReturnOrderList(Long userId, Integer identityType, Integer page, Integer size) {
+    public ResultDTO getReturnOrderList(Long userId, Integer identityType, Integer page, Integer size, String keywords) {
 
-        logger.info("getReturnOrderList CALLED,获取用户退货单列表，入参 userID:{}, identityType:{}, showStatus{},page:{},size:{}", userId, identityType, page, size);
+        logger.info("getReturnOrderList CALLED,获取用户退货单列表，入参 userID:{}, identityType:{}, page:{},size:{}, keywords{}", userId, identityType, page, size, keywords);
 
         ResultDTO<Object> resultDTO;
         if (null == userId) {
@@ -1026,7 +1026,7 @@ public class ReturnOrderController {
         }
         try {
             //查询所有退单表
-            PageInfo<ReturnOrderBaseInfo> baseInfo = returnOrderService.findReturnOrderListByUserIdAndIdentityType(userId, identityType, page, size);
+            PageInfo<ReturnOrderBaseInfo> baseInfo = returnOrderService.findReturnOrderListByUserIdAndIdentityType(userId, identityType, page, size, keywords);
             List<ReturnOrderBaseInfo> baseInfoList = baseInfo.getList();
             //创建一个返回对象list
             List<ReturnOrderListResponse> returnOrderListResponses = new ArrayList<>();
