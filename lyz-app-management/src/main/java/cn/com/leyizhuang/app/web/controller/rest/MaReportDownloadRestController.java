@@ -2729,7 +2729,7 @@ public class MaReportDownloadRestController extends BaseRestController {
                     WritableFont textFont = new WritableFont(WritableFont.createFont("微软雅黑"), 9, WritableFont.NO_BOLD, false,
                             UnderlineStyle.NO_UNDERLINE, Colour.BLACK);
                     //填写表体数据
-                    int k = 0;
+                    int k = -1;
                     for (int j = 0; j < maxRowNum; j++) {
                         k++;
                         if (j + i * maxRowNum >= maxSize) {
