@@ -294,7 +294,7 @@ public class MaOrderServiceImpl implements MaOrderService {
     }
 
     @Override
-    public PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderByCondition(Integer page, Integer size, MaOrderVORequest maOrderVORequest) {
+    public PageInfo<MaSelfTakeOrderVO> findSelfTakeOrderByCondition(Integer page, Integer size, MaOrderVORequest maOrderVORequest,List<Long> storeIds) {
         PageHelper.startPage(page, size);
         List<MaSelfTakeOrderVO> maSelfTakeOrderVOList = maOrderDAO.findSelfTakeOrderListByCondition(maOrderVORequest);
         return new PageInfo<>(maSelfTakeOrderVOList);
@@ -435,7 +435,9 @@ public class MaOrderServiceImpl implements MaOrderService {
                 this.saveAppToEbsOrderReceiveInf(maOrderReceiveInf);
                 this.ebsSenderService.sendOrderReceiveInfAndRecord(maOrderReceiveInf);
             }else{
-                this.ebsSenderService.sendOrderReceiveInfAndRecord(maOrderReceiveInfO);
+                if("N".equals(maOrderReceiveInfO.getSendFlag().getValue())){
+                    this.ebsSenderService.sendOrderReceiveInfAndRecord(maOrderReceiveInfO);
+                }
             }
         }else{
             throw new RuntimeException("发送接口失败,原订单不存在");
