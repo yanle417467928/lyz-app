@@ -441,6 +441,7 @@ public class MaOrderRestController extends BaseRestController {
             Integer page = getPage(offset, size);
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
             maOrderVORequest = MaOrderVORequest.transformTime(maOrderVORequest);
+            maOrderVORequest.setList(storeIds);
             PageInfo<MaSelfTakeOrderVO> maOrderVOList = this.maOrderService.findSelfTakeOrderByCondition(page, size, maOrderVORequest,storeIds);
             List<MaSelfTakeOrderVO> orderVOList = maOrderVOList.getList();
             logger.warn("findSelfTakeOrderPageGirdByCondition ,多条件分页查询订单列表成功", orderVOList.size());

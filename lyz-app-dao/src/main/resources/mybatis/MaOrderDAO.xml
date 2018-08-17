@@ -792,11 +792,13 @@
         <if test="receiverPhone != null and receiverPhone != ''">
             AND obi.receiver_phone LIKE concat(concat('%',#{receiverPhone}),'%')
         </if>
-        AND obi.store_id IN
-        <foreach collection="list" item="item" open="(" close=")" separator=",">
-            #{item}
-        </foreach>
-        ORDER BY
+        <if test="list != null">
+            AND s.store_id IN
+            <foreach collection="list" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        ORDER  BY
         obi.create_time DESC
     </select>
 

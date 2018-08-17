@@ -180,7 +180,7 @@ public interface MaOrderDAO {
 
     List<MaSelfTakeOrderVO> findSelfTakeOrderListByInfo(@Param("info") String info, @Param("list") List<Long> storeIds);
 
-    List<MaSelfTakeOrderVO> findSelfTakeOrderListByCondition(MaOrderVORequest maOrderVORequest, @Param("list") List<Long> storeIds);
+    List<MaSelfTakeOrderVO> findSelfTakeOrderListByCondition(MaOrderVORequest maOrderVORequest);
 
     MaOrderTempInfo getOrderInfoByOrderNo(String orderNo);
 
