@@ -338,21 +338,23 @@
     </select>
 
     <select id="findDecorativeByCondition" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.StoreDO">
+
         SELECT
         s.store_code,
         s.store_name,
-        s.enable,
+        s.ENABLE,
         s.store_id,
-        c.name AS city,
+        c.NAME AS city,
         s.create_time,
         s.fit_compay_type,
-        s.sales_manager_name as salesManager,
-        emp.name as seller,
+        s.sales_manager_name AS salesManager,
+        ss.store_name AS storeNameForCash,
         s.fit_compay_type AS company
         FROM
         st_store s
-        LEFT JOIN city c ON s.city_code = c.code
-        LEFT JOIN emp_employee emp ON s.store_id=emp.store_id
+        LEFT JOIN city c ON s.city_code = c.
+        CODE LEFT JOIN emp_employee emp ON emp.emp_id = s.sales_manager
+        LEFT JOIN st_store ss ON emp.store_id = ss.store_id
         WHERE
         1=1
         <if test="company == ''">
