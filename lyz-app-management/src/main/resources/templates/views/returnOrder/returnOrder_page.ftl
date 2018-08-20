@@ -12,6 +12,8 @@
     <link href="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/css/bootstrap-select.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/bootstrap-select.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap-select/2.0.0-beta1/js/i18n/defaults-zh_CN.js"></script>
+
+
 </head>
 <body>
 
@@ -31,34 +33,105 @@
 </section>
 
 <section class="content">
+    <div class="box box-primary" style="padding: 10px  2%">
+        <form id="">
+            <div class="form-inline">
+                <div class="row">
+                    <div class="col-xs-12" style="margin-top: 5px">
+                        <div class="col-xs-4">
+                            <div class="col-xs-11">
+                                <label class="col-xs-5" style="padding-right: 0px">开始时间:</label>
+                                <div class=" col-xs-6" style="padding-left: 0px">
+                                    <input name="beginTime" type="text" class="form-control datepicker" id="beginTime"
+                                           placeholder="开始时间">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="col-xs-11">
+                                <label class="col-xs-5" style="padding-right: 0px">结束时间：</label>
+                                <div class=" col-xs-6" style="padding-left: 0px">
+                                    <input name="endTime" type="text" class="form-control datepicker" id="endTime"
+                                           placeholder="开始时间">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="col-xs-11">
+                                <label class="col-xs-5" style="padding-right: 0px">会员姓名：</label>
+                                <div class=" col-xs-6" style="padding-left: 0px">
+                                    <input type="text" name="memberName" id="memberName" class="form-control" \>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12" style="margin-top: 5px">
+                        <div class="col-xs-4">
+                            <div class="col-xs-11">
+                                <label class="col-xs-5" style="padding-right: 0px">会员电话：</label>
+                                <div class=" col-xs-6" style="padding-left: 0px">
+                                    <input type="text" name="memberPhone" id="memberPhone" class="form-control" \>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="col-xs-11">
+                                <label class="col-xs-5" style="padding-right: 0px">建单人姓名：</label>
+                                <div class=" col-xs-6" style="padding-left: 0px">
+                                    <input type="text" name="creatorName" id="creatorName" class="form-control" \>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12" style="margin-top: 5px">
+
+                        <div class=" col-xs-3" style="margin-left: 2%">
+                            <select name="store" id="storeCode" class="selectpicker" style="padding: 2%"
+                                    onchange="findOrderByCondition()" data-live-search="true">
+                                <option value="-1">选择门店</option>
+                            </select>
+                        </div>
+                        <div class=" col-xs-2" style="margin-left: -3.5%">
+                            <select name="orderStatus" id="orderStatus" class="form-control" style="width:auto;"
+                                    onchange="findOrderByCondition()" data-live-search="true">
+                                <option value="-1">退单状态</option>
+                                <option value="PENDING_PICK_UP">已提交</option>
+                                <option value="CANCELING">取消中</option>
+                                <option value="CANCELED">已取消</option>
+                                <option value="PENDING_REFUND">待退款</option>
+                                <option value="FINISHED">已完成</option>
+                            </select>
+                        </div>
+
+                        <div class="col-xs-4" style="margin-left: -5%">
+                            <input type="text" name="queryOrderInfo" id="queryOrderInfo" class="form-control"
+                                   style="width:auto;"
+                                   placeholder="请输订单号" onkeypress="findBykey()">
+                            <span class="">
+                                <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
+                                        onclick="findOrderByCondition()">查找</button>
+                        </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
     <div class="row">
-        <div class=" col-xs-12">
+        <div class="col-xs-12">
             <div class="box box-primary">
                 <div id="toolbar" class="form-inline">
-                    <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px"
-                            onchange="findOrderByCondition()" data-live-search="true">
-                        <option value="-1">选择门店</option>
-                    </select>
-                    <select name="status" id="status" class="form-control" style="width:auto;"
-                            onchange="findOrderByCondition()" data-live-search="true">
-                        <option value="-1">退单状态</option>
-                        <option value="PENDING_PICK_UP">已提交</option>
-                        <option value="CANCELING">取消中</option>
-                        <option value="CANCELED">已取消</option>
-                        <option value="PENDING_REFUND">待退款</option>
-                        <option value="FINISHED">已完成</option>
-                    </select>
-                    <div class="input-group col-md-3" style="margin-top:0px positon:relative">
-                        <input type="text" name="queryOrderInfo" id="queryOrderInfo" class="form-control "
-                               style="width:auto;" placeholder="请输入退单号或原单号" onkeypress="findBykey()">
-                        <span class="input-group-btn">
-                            <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
-                                    onclick="findOrderByInfo()">查找</button>
-                        </span>
-                    </div>
+                <#--<button id="btn_edit" type="button" class="btn btn-default">-->
+                <#--<span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑-->
+                <#--</button>-->
                 </div>
                 <div class="box-body table-reponsive">
                     <table id="dataGrid" class="table table-bordered table-hover">
+
                     </table>
                 </div>
             </div>
@@ -204,18 +277,25 @@
 
 
     function findOrderByCondition() {
-        $("#queryOrderInfo").val('');
+        var queryOrderInfo = $("#queryOrderInfo").val();
         $("#dataGrid").bootstrapTable('destroy');
         var storeId = $("#storeCode").val();
-        var status = $("#status").val();
-        initDateGird('/rest/returnOrder/page/screenGrid?storeId=' + storeId + '&status=' + status);
+        var orderStatus = $("#orderStatus").val();
+        var beginTime = $("#beginTime").val();
+        var endTime = $("#endTime").val();
+        var memberName = $("#memberName").val();
+        var memberPhone = $("#memberPhone").val();
+        var creatorName = $("#creatorName").val();
+        initDateGird('/rest/returnOrder/page/screenGrid?storeId=' + storeId + '&orderStatus=' + orderStatus
+                + '&beginTime=' + beginTime+ '&endTime=' + endTime+ '&memberName='
+                + memberName+ '&memberPhone=' + memberPhone+ '&creatorName=' + creatorName+ '&queryOrderInfo=' + queryOrderInfo);
     }
 
 
     function findOrderByInfo() {
         var queryOrderInfo = $("#queryOrderInfo").val();
         $('#storeCode').val("-1");
-        $('#status').val("-1");
+        $('#orderStatus').val("-1");
         $("#dataGrid").bootstrapTable('destroy');
         if (null == queryOrderInfo || "" == queryOrderInfo) {
             initDateGird('/rest/returnOrder/page/grid');
@@ -223,8 +303,8 @@
             initDateGird('/rest/returnOrder/page/infoGrid?info=' + queryOrderInfo);
         }
     }
-    function findBykey(){
-        if(event.keyCode==13){
+    function findBykey() {
+        if (event.keyCode == 13) {
             findOrderByInfo();
         }
     }
@@ -250,6 +330,7 @@
         second = second < 10 ? ('0' + second) : second;
         return y + '-' + m + '-' + d + ' ' + h + ':' + minute + ':' + second;
     };
+
 
 
 </script>

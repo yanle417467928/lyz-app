@@ -14,7 +14,7 @@ public interface MaReturnOrderService {
     PageInfo<MaReturnOrderInfo> findMaReturnOrderList(Integer page, Integer size, List<Long> storeIds);
 
 
-    PageInfo<MaReturnOrderInfo> findMaReturnOrderListByScreen(Integer page, Integer size, Long storeId, String status, List<Long> storeIds);
+    PageInfo<MaReturnOrderInfo> findMaReturnOrderListByScreen(Integer page, Integer size, Long storeId, String status, List<Long> storeIds,String beginTime,String endTime,String memberName,String memberPhone,String creatorName,String queryOrderInfo);
 
     PageInfo<MaReturnOrderInfo> findMaReturnOrderPageGirdByInfo(Integer page, Integer size,String info, List<Long> storeIds);
 

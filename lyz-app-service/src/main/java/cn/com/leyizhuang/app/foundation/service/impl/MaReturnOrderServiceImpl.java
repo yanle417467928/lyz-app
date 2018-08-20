@@ -106,7 +106,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
 
 
     @Override
-    public PageInfo<MaReturnOrderInfo> findMaReturnOrderListByScreen(Integer page, Integer size, Long storeId, String status, List<Long> storeIds) {
+    public PageInfo<MaReturnOrderInfo> findMaReturnOrderListByScreen(Integer page, Integer size, Long storeId, String status, List<Long> storeIds,String beginTime,String endTime,String memberName,String memberPhone,String creatorName,String queryOrderInfo) {
         PageHelper.startPage(page, size);
         if (storeId == -1) {
             storeId = null;
@@ -114,7 +114,7 @@ public class MaReturnOrderServiceImpl implements MaReturnOrderService {
         if ("-1".equals(status)) {
             status = null;
         }
-        List<MaReturnOrderInfo> maReturnOrderList = maReturnOrderDAO.findMaReturnOrderListByScreen(storeId, status, storeIds);
+        List<MaReturnOrderInfo> maReturnOrderList = maReturnOrderDAO.findMaReturnOrderListByScreen(storeId, status, storeIds,beginTime,endTime,memberName,memberPhone,creatorName,queryOrderInfo);
         return new PageInfo<>(maReturnOrderList);
     }
 

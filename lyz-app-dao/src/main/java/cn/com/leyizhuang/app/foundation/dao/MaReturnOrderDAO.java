@@ -22,7 +22,8 @@ public interface MaReturnOrderDAO {
      */
     List<MaReturnOrderInfo> findMaReturnOrderList(@Param("list") List<Long> storeIds);
 
-    List<MaReturnOrderInfo> findMaReturnOrderListByScreen(@Param(value = "storeId") Long storeId, @Param(value = "status") String status,@Param("list") List<Long> storeIds);
+    List<MaReturnOrderInfo> findMaReturnOrderListByScreen(@Param(value = "storeId") Long storeId, @Param(value = "status") String status,@Param("list") List<Long> storeIds,
+                                                          @Param(value = "beginTime") String beginTime, @Param(value = "endTime") String endTime, @Param(value = "memberName") String memberName, @Param(value = "memberPhone") String memberPhone, @Param(value = "creatorName") String creatorName, @Param(value = "queryOrderInfo") String queryOrderInfo);
 
     List<MaReturnOrderInfo> findMaReturnOrderPageGirdByInfo(@Param("info")String info,@Param("list") List<Long> storeIds);
 
