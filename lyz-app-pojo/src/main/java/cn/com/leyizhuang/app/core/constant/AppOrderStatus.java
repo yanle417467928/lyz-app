@@ -83,4 +83,10 @@ public enum AppOrderStatus {
         return appOrderStatus;
     }
 
+    public static List<AppOrderStatus> getSelfTakeOrderStatusList() {
+        List<AppOrderStatus> appOrderStatus = new ArrayList<>();
+        appOrderStatus.add(AppOrderStatus.PENDING_RECEIVE);
+        appOrderStatus.add(AppOrderStatus.FINISHED);
+        return appOrderStatus;
+    }
 }

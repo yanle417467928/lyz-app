@@ -285,11 +285,11 @@ public class ReturnOrderServiceImpl implements ReturnOrderService {
     }
 
     @Override
-    public PageInfo<ReturnOrderBaseInfo> findReturnOrderListByUserIdAndIdentityType(Long userId, Integer identityType, Integer page, Integer size) {
+    public PageInfo<ReturnOrderBaseInfo> findReturnOrderListByUserIdAndIdentityType(Long userId, Integer identityType, Integer page, Integer size, String keywords) {
         if (userId != null && identityType != null) {
             PageHelper.startPage(page, size);
             List<ReturnOrderBaseInfo> returnOrderList = returnOrderDAO.findReturnOrderListByUserIdAndIdentityType(userId,
-                    AppIdentityType.getAppIdentityTypeByValue(identityType));
+                    AppIdentityType.getAppIdentityTypeByValue(identityType), keywords);
             return new PageInfo<>(returnOrderList);
         }
         return null;

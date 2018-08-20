@@ -97,8 +97,8 @@ public interface ReturnOrderDAO {
 
     void modifyReturnOrderBillingDetail(ReturnOrderBillingDetail returnOrderBillingDetail);
 
-    List<ReturnOrderBaseInfo> findReturnOrderListByUserIdAndIdentityType(@Param("userId") Long userId,
-                                                                         @Param("identityType") AppIdentityType identityType);
+    List<ReturnOrderBaseInfo> findReturnOrderListByUserIdAndIdentityType(@Param("userId") Long userId, @Param("identityType") AppIdentityType identityType,
+                                                                         @Param("keywords") String keywords);
 
     List<ReturnOrderGoodsInfo> findReturnOrderGoodsInfoByOrderNumber(String returnNo);
 

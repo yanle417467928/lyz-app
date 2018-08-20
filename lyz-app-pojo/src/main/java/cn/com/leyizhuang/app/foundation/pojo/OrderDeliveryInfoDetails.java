@@ -4,7 +4,9 @@ import cn.com.leyizhuang.app.core.constant.LogisticStatus;
 import cn.com.leyizhuang.app.foundation.pojo.remote.webservice.wms.WtaShippingOrderHeader;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by caiyu on 2017/11/20.
@@ -53,11 +55,26 @@ public class OrderDeliveryInfoDetails {
      * 图片
      */
     private String picture;
+    /**
+     * 图片
+     */
+    private List<String> pictures;
 
     /**
      * 是否已读
      */
     private Boolean isRead;
+
+    public void setPicture(String picture){
+        this.picture = picture;
+        this.pictures = new ArrayList<>();
+        if (null != picture && !"".equals(picture)) {
+            String uri[] = picture.split(",");
+            for (int i = 0; i < uri.length; i++) {
+                this.pictures.add(uri[i]);
+            }
+        }
+    }
 
     public void setDeliveryInfo(String orderNo,LogisticStatus logisticStatus,String description,
                                 String operationType,String operatorNo,String picture,String warehouseNo,String taskNo){

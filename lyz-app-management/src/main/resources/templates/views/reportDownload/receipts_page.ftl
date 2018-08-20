@@ -319,7 +319,7 @@
         var cusId = $('#customerId').val();
 
         var url = "/rest/reportDownload/receipts/download?keywords="+ keywords + "&storeId=" + storeId + "&startTime=" + startTime
-                + "&endTime=" + endTime + "&storeType=" + storeType + "&cityId=" + cityId + "&payType=" + payType + "&cusId" + cusId;
+                + "&endTime=" + endTime + "&storeType=" + storeType + "&cityId=" + cityId + "&payType=" + payType + "&cusId=" + cusId;
         var escapeUrl=url.replace(/\#/g,"%23");
         window.open(escapeUrl);
 
