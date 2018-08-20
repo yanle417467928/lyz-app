@@ -56,16 +56,16 @@ public class LogisticsInformationResponse {
                     rep.setLogisticsType("已接收");
                 }else if (rep.getLogisticsType().equals(LogisticStatus.ALREADY_POSITIONED.getDescription())){
                     // 已经定位
-                    rep.setDescribe("已领料");
-                    rep.setLogisticsType("已领料");
+                    rep.setDescribe("基检");
+                    rep.setLogisticsType("基检");
                 }else if (rep.getLogisticsType().equals(LogisticStatus.PICKING_GOODS.getDescription())){
                     // 已拣货
-                    rep.setDescribe("已派工");
-                    rep.setLogisticsType("已派工");
+                    rep.setDescribe("施工中");
+                    rep.setLogisticsType("施工中");
                 }else if (rep.getLogisticsType().equals(LogisticStatus.LOADING.getDescription())){
                     // 已装车
-                    rep.setDescribe("正在施工");
-                    rep.setLogisticsType("正在施工");
+                    rep.setDescribe("已完工");
+                    rep.setLogisticsType("已完工");
                 }else if (rep.getLogisticsType().equals(LogisticStatus.SEALED_CAR.getDescription())){
                     // 已封车
                     rep.setDescribe("服务已经结案");
