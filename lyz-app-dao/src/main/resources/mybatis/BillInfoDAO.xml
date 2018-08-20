@@ -151,6 +151,41 @@
         </if>
         )
 
+        UNION ALL
+
+        <!-- 产品卷 -->
+        (SELECT
+        ob.oid orderId,
+        ob.ord_no orderNo,
+        '' returnNo,
+        obd.st_credit_money orderCreditMoney,
+        ob.create_time orderTime,
+        os.shipping_time shipmentTime,
+        'order' orderType,
+        0 interestAmount
+        from ord_base_info ob
+        INNER JOIN ord_billing_details obd on ob.oid = obd.oid
+        left JOIN (SELECT a.is_paid,b.order_no from bill_repayment_info a
+        LEFT JOIN bill_repayment_goods_details b on a.id = b.repayment_id where is_paid = 1 and order_type = 'order'
+        ) bpi on bpi.order_no = ob.ord_no
+        LEFT  JOIN (SELECT * from ord_shipping GROUP BY ord_no) os on os.ord_no = ob.ord_no
+        where ob.delivery_type = 'PRODUCT_COUPON' and obd.st_credit_money > 0
+        and ob.`status` in ('FINISHED')
+        and ob.store_id = #{storeId}
+        <if test="startTime != null">
+            AND os.shipping_time &gt; #{startTime}
+        </if>
+        <if test="endTime != null">
+            and os.shipping_time &lt; #{endTime}
+        </if>
+        <if test="isPaid != null and isPaid == true">
+            and bpi.is_paid = 1
+        </if>
+        <if test="isPaid != null and isPaid == false">
+            and bpi.is_paid is null
+        </if>
+        )
+
         <!-- 退货 -->
         UNION ALL
 
