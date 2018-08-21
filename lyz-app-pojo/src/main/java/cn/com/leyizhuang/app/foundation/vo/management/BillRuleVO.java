@@ -34,4 +34,7 @@ public class BillRuleVO {
     //城市
     private String cityName;
 
+    @JsonFormat(pattern="yyyy-MM-dd hh:mm:ss",timezone = "GMT+8")
+    private Date updateTime;
+
 }

@@ -13,6 +13,7 @@ import cn.com.leyizhuang.app.foundation.pojo.request.BillorderDetailsRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillInfoResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentGoodsInfoResponse;
 import cn.com.leyizhuang.app.foundation.service.*;
+import cn.com.leyizhuang.app.foundation.vo.management.BillRuleLogVO;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.*;
 import cn.com.leyizhuang.common.core.constant.CommonGlobal;
 import cn.com.leyizhuang.common.foundation.pojo.dto.ResultDTO;
@@ -53,6 +54,9 @@ public class MaFitBillRestController extends BaseRestController {
 
     @Resource
     private MaStoreService maStoreService;
+
+    @Resource
+    private BillRuleService billRuleService;
 
     /**
      * 后台分页查询装饰公司未出账单
@@ -360,6 +364,62 @@ public class MaFitBillRestController extends BaseRestController {
         }
         logger.warn("账单收款信息为空！");
         return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "账单信息为空！", null);
+    }
+
+    /**
+     * 新增账单规则
+     **/
+    @PostMapping(value = "/addRule")
+    public ResultDTO<String> addBillRule(Long storeId,Integer billDate,Integer repaymentDeadlineDate,Double interestRate) {
+        logger.warn("addBillRule 后台添加装饰公司账单规则 ,入参storeId:{}, billDate:{}, repaymentDeadlineDate:{},interestRate:{}", storeId, billDate, repaymentDeadlineDate,interestRate);
+        try {
+            ShiroUser shiroUser = this.getShiroUser();
+             maFitBillService.addBillRule(storeId, billDate, repaymentDeadlineDate,interestRate,shiroUser);
+            logger.warn("addBillRule ,后台添加装饰公司账单规则成功");
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "添加装饰公司账单规则成功！", null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("addBillRule EXCEPTION,发生未知错误，后台添加装饰公司账单规则失败");
+            logger.warn("{}", e);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "添加装饰公司账单规则失败！", null);
+        }
+    }
+
+    /**
+     * 编辑账单规则
+     **/
+    @PutMapping(value = "/editRule")
+    public ResultDTO<String> editBillRule(Long storeId,Integer billDate,Integer repaymentDeadlineDate,Double interestRate,Long ruleId) {
+        logger.warn("editBillRule 后台编辑装饰公司账单规则 ,入参storeId:{}, billDate:{}, repaymentDeadlineDate:{},interestRate:{}", storeId, billDate, repaymentDeadlineDate,interestRate,ruleId);
+        try {
+            ShiroUser shiroUser = this.getShiroUser();
+            maFitBillService.editBillRule(storeId, billDate, repaymentDeadlineDate,interestRate,ruleId,shiroUser);
+            logger.warn("editBillRule ,后台编辑装饰公司账单规则成功");
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "编辑装饰公司账单规则成功！", null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("editBillRule EXCEPTION,发生未知错误，后台编辑装饰公司账单规则失败");
+            logger.warn("{}", e);
+            return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "编辑装饰公司账单规则失败！", null);
+        }
+    }
+
+
+    /**
+     * 账单变更查询
+     **/
+    @GetMapping(value = "/billRuleChangelog")
+    public GridDataVO<BillRuleLogVO> getBillRuleChanglogList(Long id,Integer offset,Integer size,String startTime,String endTime ,String changeUser) {
+        logger.warn("editBillRule 后台查询账单变更日志 ,入参id:{}, startTime:{}, endTime:{},changeUser:{},page:{},size:{}", id, startTime,endTime,changeUser,offset, size);
+        try {
+            PageInfo<BillRuleLogVO> billRuleLogVOList =  billRuleService.findBillRuleLogVOById(offset,size,id,startTime,endTime,changeUser);
+            return new GridDataVO<BillRuleLogVO>().transform(billRuleLogVOList.getList(), billRuleLogVOList.getTotal());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.warn("editBillRule EXCEPTION,发生未知错误，后台查询账单变更日志失败");
+            logger.warn("{}", e);
+            return null;
+        }
     }
 
 }
