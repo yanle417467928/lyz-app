@@ -4,6 +4,7 @@ import cn.com.leyizhuang.app.core.constant.BillStatusEnum;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
+import cn.com.leyizhuang.app.foundation.pojo.bill.BillRuleDO;
 import cn.com.leyizhuang.app.foundation.pojo.request.BillorderDetailsRequest;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillHistoryListResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentGoodsInfoResponse;
@@ -57,5 +58,7 @@ public interface BillInfoDAO {
                           @Param("afterStatus")BillStatusEnum afterStatus);
 
     BillInfoDO findBillInfoByBillStartDateAndStoreIdAndStatus(@Param("storeId") Long storeId, @Param("billStartDate")String billStartDate, @Param("status")BillStatusEnum status);
+
+    void saveBillRule(BillRuleDO billRuleDO);
 
 }

@@ -82,7 +82,7 @@
     function findStorelist() {
         var store = "";
         $.ajax({
-            url: '/rest/stores/findStoresListByStoreId',
+            url: '/rest/stores/findSmallFitStoresListByStoreId',
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);
@@ -103,6 +103,7 @@
     }
 
     function initDateGird(url,storeId) {
+        $("#dataGrid").bootstrapTable('destroy');
         $grid.init($('#dataGrid'), $('#toolbar'), url, 'get', false, function (params) {
             return {
                 offset: params.offset,
@@ -113,11 +114,11 @@
         }, [{
                 checkbox: true,
                 title: '选择'
-            }, /*{
+            }, {
                 field: 'id',
                 title: 'ID',
                 align: 'center'
-            }, */{
+            }, {
                 field: 'cityName',
                 title: '城市',
                 align: 'center'
@@ -146,13 +147,21 @@
                 title: '创建时间',
                 align: 'center'
             }
+            , {
+                title: '操作',
+                align: 'center',
+                formatter: function(value,row) {
+                    return '<button class="btn btn-primary btn-xs" onclick="showChangeLog('+row.id+')"> 查看变更日志</button>';
+                }
+            }
         ]);
-        <#--$('#btn_add').on('click', function () {-->
-            <#--$grid.add('/views/admin/customers/add?parentMenuId=${(parentMenuId!'0')}');-->
-        <#--});-->
-        <#--$('#btn_edit').on('click', function () {-->
-            <#--modify($('#dataGrid'), '/views/admin/customers/edit/{id}?parentMenuId=${parentMenuId!'0'}')-->
-        <#--});-->
+
+       $('#btn_add').on('click', function () {
+            $grid.add('/views/decorationCompany/billRule/add?parentMenuId=${(parentMenuId!'0')}');
+       })
+        $('#btn_edit').on('click', function () {
+            $grid.modify($('#dataGrid'), '/views/decorationCompany/billRule/edit/{id}?parentMenuId=${parentMenuId!'0'}')
+        });
         <#--$('#btn_update').on('click', function () {-->
             <#--modify($('#dataGrid'), '/views/admin/customers/update/{id}?parentMenuId=${parentMenuId!'0'}')-->
         <#--});-->
@@ -192,6 +201,10 @@
             ids.push(data.cusId);
         }
         return ids;
+    }
+
+    function showChangeLog(id){
+        window.location.href = '/views/decorationCompany/billRule/log/list/'+id;
     }
 </script>
 </body>

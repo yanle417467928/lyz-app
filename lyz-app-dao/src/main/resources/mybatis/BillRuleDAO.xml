@@ -8,6 +8,18 @@
         WHERE store_id = #{storeId}
     </select>
 
+    <select id="getBillRuleById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.management.BillRuleVO">
+        SELECT r.id, r.bill_date, r.repayment_deadline_date, r.interest_rate, r.store_id,
+        r.create_time, s.store_name, s.store_code, c.name cityName,r.update_time
+        FROM bill_rule r
+        INNER JOIN st_store s ON s.store_id = r.store_id
+        INNER JOIN city c ON c.city_id = s.city_id
+        WHERE 1 = 1
+        <if test="null != id ">
+            AND  r.id = #{id}
+        </if>
+    </select>
+
     <select id="findAllBillRule" resultType="cn.com.leyizhuang.app.foundation.pojo.bill.BillRuleDO">
         SELECT bill_date,repayment_deadline_date,interest_rate,store_id,create_time
         FROM bill_rule
@@ -24,6 +36,34 @@
         store_id = #{storeId}
     </select>
 
+    <select id="findBillRuleLogVOById" resultType="cn.com.leyizhuang.app.foundation.vo.management.BillRuleLogVO">
+        SELECT a.id, a.bill_date,a.repayment_deadline_date,a.interest_rate,a.store_id,a.update_time,s.store_name,c.name as updateUserName
+        FROM bill_rule_log a
+        INNER JOIN st_store s ON s.store_id = a.store_id
+        LEFT JOIN  admin_user c on a.update_user_id = c.uid
+        WHERE
+        1=1
+        AND
+        a.rule_id=#{id}
+        <if test="null != startTime and ''!= startTime">
+            AND a.update_time >=  #{startTime}
+        </if>
+        <if test="null != endTime and ''!= endTime">
+            AND a.update_time &lt;= #{endTime}
+        </if>
+        <if test="null != changeUser and ''!= changeUser">
+            AND c.name LIKE  concat ('%',#{changeUser},'%')
+        </if>
+    </select>
+
+    <select id="saveBillRuleLog" resultType="cn.com.leyizhuang.app.foundation.pojo.bill.BillRuleLogDO">
+        INSERT bill_rule_log (
+          rule_id,bill_date,repayment_deadline_date,interest_rate,store_id,update_time,update_user_id
+        ) VALUES (
+          #{ruleId},#{billDate},#{repaymentDeadlineDate},#{interestRate},#{storeId},#{updateTime},#{updateUserId}
+        )
+    </select>
+
     <select id="findAllBillRuleVO" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.vo.management.BillRuleVO">
         SELECT r.id, r.bill_date, r.repayment_deadline_date, r.interest_rate, r.store_id,
         r.create_time, s.store_name, s.store_code, c.name cityName
@@ -32,9 +72,32 @@
         INNER JOIN city c ON c.city_id = s.city_id
         WHERE 1 = 1
         <if test="null != storeId and storeId != -1">
-          r.store_id = #{storeId}
+            AND  r.store_id = #{storeId}
         </if>
     </select>
+
+    <update id="updateBillRule" parameterType="cn.com.leyizhuang.app.foundation.pojo.bill.BillRuleDO">
+      UPDATE bill_rule
+      <set>
+          <if test="null != billDate">
+              bill_date = #{billDate},
+          </if>
+          <if test="null != repaymentDeadlineDate">
+              repayment_deadline_date = #{repaymentDeadlineDate},
+          </if>
+          <if test="null != interestRate">
+              interest_rate = #{interestRate},
+          </if>
+          <if test="null != updateUserId">
+              update_user_id = #{updateUserId},
+          </if>
+          <if test="null != updateTime">
+              update_time = #{updateTime},
+          </if>
+      </set>
+        WHERE
+        store_id =#{storeId}
+    </update>
 
 
 </mapper>

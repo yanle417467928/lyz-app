@@ -3,6 +3,7 @@ package cn.com.leyizhuang.app.foundation.service.impl;
 import cn.com.leyizhuang.app.foundation.dao.BillRuleDAO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRuleDO;
 import cn.com.leyizhuang.app.foundation.service.BillRuleService;
+import cn.com.leyizhuang.app.foundation.vo.management.BillRuleLogVO;
 import cn.com.leyizhuang.app.foundation.vo.management.BillRuleVO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -27,6 +28,11 @@ public class BillRuleServiceImpl implements BillRuleService {
     }
 
     @Override
+    public BillRuleVO getBillRuleById(Long id) {
+        return this.billRuleDAO.getBillRuleById(id);
+    }
+
+    @Override
     public List<BillRuleDO> findAllBillRule() {
         return this.billRuleDAO.findAllBillRule();
     }
@@ -35,6 +41,19 @@ public class BillRuleServiceImpl implements BillRuleService {
     public PageInfo<BillRuleVO> findAllBillRuleVO(Long storeId,Integer page, Integer size) {
         PageHelper.startPage(page, size);
         List<BillRuleVO> list = this.billRuleDAO.findAllBillRuleVO(storeId);
+        return  new PageInfo<>(list);
+    }
+
+    @Override
+    public PageInfo<BillRuleLogVO> findBillRuleLogVOById(Integer page, Integer size,Long id,String startTime,String endTime ,String changeUser){
+        PageHelper.startPage(page, size);
+        if(null != startTime && !"".equals(startTime)){
+            startTime = startTime +" 00:00:00";
+        }
+        if(null != endTime && !"".equals(endTime)){
+            endTime = endTime +" 23:59:59";
+        }
+        List<BillRuleLogVO> list = this.billRuleDAO.findBillRuleLogVOById(id,startTime,endTime,changeUser);
         return  new PageInfo<>(list);
     }
 }
