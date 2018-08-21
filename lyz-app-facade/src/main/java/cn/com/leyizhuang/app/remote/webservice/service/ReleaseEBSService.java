@@ -5,6 +5,7 @@ import cn.com.leyizhuang.app.foundation.pojo.goods.EbsPriceInfo;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
+import java.util.List;
 
 /**
  * @author liuh
@@ -28,5 +29,7 @@ public interface ReleaseEBSService {
 
 
     @WebMethod
-    String GetEBSPriceInfo(@WebParam(name = "EbsPriceInfo") EbsPriceInfo ebsPriceInfo);
+    String GetEBSPriceInfo(@WebParam(name = "STRTABLE") String table,
+                           @WebParam(name = "STOREID") String storeId,
+                           @WebParam(name = "XML") List<String> xml);
 }
