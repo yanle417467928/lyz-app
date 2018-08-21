@@ -383,7 +383,7 @@ public class MaOnlinePayRefundService {
                         returnOrderBillingDetail.setIntoAmountTime(Calendar.getInstance().getTime());
                         returnOrderBillingDetail.setReplyCode(respCode);
                         returnOrderBillingDetail.setReturnMoney(money);
-                        returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.WE_CHAT);
+                        returnOrderBillingDetail.setReturnPayType(OrderBillingPaymentType.UNION_PAY);
                         returnOrderBillingDetail.setReturnSubjectId(dataDO.getUserId());
                         returnOrderService.saveReturnOrderBillingDetail(returnOrderBillingDetail);
                         map.put("code", "SUCCESS");

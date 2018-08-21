@@ -1400,9 +1400,17 @@ public class AppOrderServiceImpl implements AppOrderService {
         // 条件1: 出货日期超过3个月 不予退货;
         LocalDateTime sendTime = this.getOrderSendTime(orderNumer);
         if (sendTime == null){
-            flag  = 1 ;
-            log.info("》》》》》》》》》》》》》   订单："+orderNumer+"超过3个月退货期限制   》》》》》》》》》》》》》");
-            return flag;
+            AppStore store = storeService.findById(orderBaseInfo.getStoreId());
+            String deliverType = orderBaseInfo.getDeliveryType().getValue();
+
+            if (store.getStoreType().equals("JM") && deliverType.equals("SELF_TAKE")){
+                // 加盟自提不验证
+                return 0;
+            }else {
+                flag  = 1 ;
+                log.info("》》》》》》》》》》》》》   订单："+orderNumer+"超过3个月退货期限制   》》》》》》》》》》》》》");
+                return flag;
+            }
         }
 
         // 3个月后截至日期
