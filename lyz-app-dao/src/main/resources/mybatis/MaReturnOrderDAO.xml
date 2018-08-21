@@ -42,11 +42,32 @@
         orbi.ord_type orderType,
         orbi.return_status returnStatus,
         s.store_name storeName
+
+
         FROM ord_return_base_info orbi
         LEFT JOIN
         st_store AS s ON s.store_id = orbi.store_id
+        LEFT JOIN
+        ord_base_info AS obi ON orbi.ord_no=obi.ord_no
+        LEFT JOIN
+        ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
         WHERE
         1=1
+        <if test="shippingAddress != null and shippingAddress != ''">
+            AND oli.shipping_address LIKE concat(concat('%',#{shippingAddress}),'%')
+        </if>
+        <if test="receiverName != null and receiverName != ''">
+            AND oli.receiver LIKE concat(concat('%',#{receiverName}),'%')
+        </if>
+        <if test="receiverPhone != null and receiverPhone != ''">
+            AND oli.receiver_phone LIKE concat(concat('%',#{receiverPhone}),'%')
+        </if>
+        <if test="sellerName != null and sellerName != ''">
+            AND obi.sales_consult_name LIKE concat(concat('%',#{sellerName}),'%')
+        </if>
+        <if test="cityId != null and cityId != -1">
+            AND obi.city_id = #{cityId}
+        </if>
         <if test="null!=storeId and ''!= storeId">
             AND
             s.store_id =#{storeId}

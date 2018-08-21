@@ -33,101 +33,146 @@
 </section>
 
 <section class="content">
-    <div class="box box-primary" style="padding: 10px  2%">
-        <form id="">
-            <div class="form-inline">
-                <div class="row">
-                    <div class="col-xs-12" style="margin-top: 5px">
-                        <div class="col-xs-4">
-                            <div class="col-xs-11">
-                                <label class="col-xs-5" style="padding-right: 0px">开始时间:</label>
-                                <div class=" col-xs-6" style="padding-left: 0px">
-                                    <input name="beginTime" type="text" class="form-control datepicker" id="beginTime"
-                                           placeholder="开始时间">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xs-4">
-                            <div class="col-xs-11">
-                                <label class="col-xs-5" style="padding-right: 0px">结束时间：</label>
-                                <div class=" col-xs-6" style="padding-left: 0px">
-                                    <input name="endTime" type="text" class="form-control datepicker" id="endTime"
-                                           placeholder="开始时间">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xs-4">
-                            <div class="col-xs-11">
-                                <label class="col-xs-5" style="padding-right: 0px">会员姓名：</label>
-                                <div class=" col-xs-6" style="padding-left: 0px">
-                                    <input type="text" name="memberName" id="memberName" class="form-control" \>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-12" style="margin-top: 5px">
-                        <div class="col-xs-4">
-                            <div class="col-xs-11">
-                                <label class="col-xs-5" style="padding-right: 0px">会员电话：</label>
-                                <div class=" col-xs-6" style="padding-left: 0px">
-                                    <input type="text" name="memberPhone" id="memberPhone" class="form-control" \>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xs-4">
-                            <div class="col-xs-11">
-                                <label class="col-xs-5" style="padding-right: 0px">建单人姓名：</label>
-                                <div class=" col-xs-6" style="padding-left: 0px">
-                                    <input type="text" name="creatorName" id="creatorName" class="form-control" \>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-xs-12" style="margin-top: 5px">
-
-                        <div class=" col-xs-3" style="margin-left: 2%">
-                            <select name="store" id="storeCode" class="selectpicker" style="padding: 2%"
-                                    onchange="findOrderByCondition()" data-live-search="true">
-                                <option value="-1">选择门店</option>
-                            </select>
-                        </div>
-                        <div class=" col-xs-2" style="margin-left: -3.5%">
-                            <select name="orderStatus" id="orderStatus" class="form-control" style="width:auto;"
-                                    onchange="findOrderByCondition()" data-live-search="true">
-                                <option value="-1">退单状态</option>
-                                <option value="PENDING_PICK_UP">已提交</option>
-                                <option value="CANCELING">取消中</option>
-                                <option value="CANCELED">已取消</option>
-                                <option value="PENDING_REFUND">待退款</option>
-                                <option value="FINISHED">已完成</option>
-                            </select>
-                        </div>
-
-                        <div class="col-xs-4" style="margin-left: -5%">
-                            <input type="text" name="queryOrderInfo" id="queryOrderInfo" class="form-control"
-                                   style="width:auto;"
-                                   placeholder="请输订单号" onkeypress="findBykey()">
-                            <span class="">
-                                <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
-                                        onclick="findOrderByCondition()">查找</button>
-                        </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    </div>
     <div class="row">
-        <div class="col-xs-12">
+        <div class=" col-xs-12">
             <div class="box box-primary">
+                <div class="panel-group" id="accordion">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                                    高级查询
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseOne" class="panel-collapse collapse in">
+                            <div class="panel-body">
+                                <div class="form-inline">
+                                    <div class="row text-center">
+                                        <div class="col-xs-12" style="margin-top: 5px">
+                                            <div class="col-xs-4 ">
+                                                <div class="col-xs-12">
+                                                    <label class="col-xs-5" style="padding-right: 0px">开始时间:</label>
+                                                    <div class=" col-xs-7" style="padding-left: 0px">
+                                                        <input name="beginTime" type="text"
+                                                               class="form-control datepicker" id="beginTime"
+                                                               placeholder="开始时间">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-4">
+                                                <div class="col-xs-12">
+                                                    <label class="col-xs-5" style="padding-right: 0px">结束时间:</label>
+                                                    <div class=" col-xs-7" style="padding-left: 0px">
+                                                        <input name="endTime" type="text"
+                                                               class="form-control datepicker" id="endTime"
+                                                               placeholder="结束时间">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-4 ">
+                                                <div class="col-xs-12">
+                                                    <label class="col-xs-5" style="padding-right: 0px">会员姓名:</label>
+                                                    <div class=" col-xs-7" style="padding-left: 0px">
+                                                        <input type="text" name="memberName" id="memberName"
+                                                               class="form-control" \>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row text-center">
+                                        <div class="col-xs-12" style="margin-top: 5px">
+                                            <div class="col-xs-4 ">
+                                                <div class="col-xs-12">
+                                                    <label class="col-xs-5" style="padding-right: 0px">收货地址:</label>
+                                                    <div class=" col-xs-7" style="padding-left: 0px">
+                                                        <input type="text" name="shippingAddress" id="shippingAddress"
+                                                               class="form-control" \>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-4">
+                                                <div class="col-xs-12">
+                                                    <label class="col-xs-5" style="padding-right: 0px">收货人姓名:</label>
+                                                    <div class=" col-xs-7" style="padding-left: 0px">
+                                                        <input type="text" name="receiverName" id="receiverName"
+                                                               class="form-control" \>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-4">
+                                                <div class="col-xs-12">
+                                                    <label class="col-xs-5" style="padding-right: 0px">会员电话:</label>
+                                                    <div class=" col-xs-7" style="padding-left: 0px">
+                                                        <input type="text" name="memberPhone" id="memberPhone"
+                                                               class="form-control" \>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row text-center">
+                                        <div class="col-xs-12" style="margin-top: 5px">
+                                            <div class="col-xs-4">
+                                                <div class="col-xs-12">
+                                                    <label class="col-xs-5" style="padding-right: 0px">收货人电话:</label>
+                                                    <div class=" col-xs-7" style="padding-left: 0px">
+                                                        <input type="text" name="receiverPhone" id="receiverPhone"
+                                                               class="form-control" \>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-4">
+                                                <div class="col-xs-12">
+                                                    <label class="col-xs-5" style="padding-right: 0px">导购姓名:</label>
+                                                    <div class=" col-xs-7" style="padding-left: 0px">
+                                                        <input type="text" name="sellerName" id="sellerName"
+                                                               class="form-control" \>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-4">
+                                                <div class="col-xs-12">
+                                                    <label class="col-xs-5" style="padding-right: 0px">建单人姓名：</label>
+                                                    <div class=" col-xs-7" style="padding-left: 0px">
+                                                        <input type="text" name="creatorName" id="creatorName" class="form-control" \>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div id="toolbar" class="form-inline">
-                <#--<button id="btn_edit" type="button" class="btn btn-default">-->
-                <#--<span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑-->
-                <#--</button>-->
+                    <select name="city" id="cityCode" class="form-control select" style="width:auto;"
+                            data-live-search="true" onchange="findOrderByCity(this.value)">
+                        <option value="-1">选择城市</option>
+                    </select>
+                    <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px"
+                            onchange="findOrderByCondition()" data-live-search="true">
+                        <option value="-1">选择门店</option>
+                    </select>
+                    <select name="orderStatus" id="orderStatus" class="form-control" style="width:auto;"
+                            onchange="findOrderByCondition()" data-live-search="true">
+                        <option value="-1">退单状态</option>
+                        <option value="PENDING_PICK_UP">已提交</option>
+                        <option value="CANCELING">取消中</option>
+                        <option value="CANCELED">已取消</option>
+                        <option value="PENDING_REFUND">待退款</option>
+                        <option value="FINISHED">已完成</option>
+                    </select>
+                    <div class="input-group col-md-3" style="margin-top:0px positon:relative">
+                        <input type="text" name="queryOrderInfo" id="queryOrderInfo" class="form-control "
+                               style="width:auto;" placeholder="请输入单号" onkeypress="findBykey()">
+                        <span class="input-group-btn">
+                            <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
+                                    onclick="findOrderByCondition()">查找</button>
+                        </span>
+                    </div>
                 </div>
                 <div class="box-body table-reponsive">
                     <table id="dataGrid" class="table table-bordered table-hover">
@@ -138,12 +183,15 @@
         </div>
     </div>
 </section>
+
+
 <script>
 
 
     $(function () {
         initDateGird('/rest/returnOrder/page/grid');
         findStoreSelection();
+        findCitySelection();
         $('.datepicker').datepicker({
             format: 'yyyy-mm-dd',
             language: 'zh-CN',
@@ -151,7 +199,26 @@
         });
     });
 
-
+    function findCitySelection() {
+        var city = "";
+        $.ajax({
+            url: '/rest/citys/findCitylist',
+            method: 'GET',
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    city += "<option value=" + item.cityId + ">" + item.name + "</option>";
+                })
+                $("#cityCode").append(city);
+            }
+        });
+    }
     function findStoreSelection() {
         var store = "";
         $.ajax({
@@ -275,10 +342,41 @@
         }
     }
 
+    function findOrderByCity(cityId) {
+        initSelect("#storeCode", "选择门店");
+        findOrderByCondition();
+        if (cityId == -1) {
+            findStoreSelection();
+            return false;
+        };
+        var store;
+        $.ajax({
+            url: '/rest/stores/findStoresListByCityIdAndStoreIdList/' + cityId,
+            method: 'GET',
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    store += "<option value=" + item.storeId + ">" + item.storeName + "</option>";
+                })
+                $("#storeCode").append(store);
+                $('#storeCode').selectpicker('refresh');
+                $('#storeCode').selectpicker('render');
+            }
+        });
+    }
+
+
 
     function findOrderByCondition() {
-        var queryOrderInfo = $("#queryOrderInfo").val();
         $("#dataGrid").bootstrapTable('destroy');
+        var queryOrderInfo = $("#queryOrderInfo").val();
+        var cityId = $("#cityCode").val();
         var storeId = $("#storeCode").val();
         var orderStatus = $("#orderStatus").val();
         var beginTime = $("#beginTime").val();
@@ -286,9 +384,16 @@
         var memberName = $("#memberName").val();
         var memberPhone = $("#memberPhone").val();
         var creatorName = $("#creatorName").val();
+        var shippingAddress = $("#shippingAddress").val();
+        var receiverName = $("#receiverName").val();
+        var receiverPhone = $("#receiverPhone").val();
+        var sellerName = $("#sellerName").val();
         initDateGird('/rest/returnOrder/page/screenGrid?storeId=' + storeId + '&orderStatus=' + orderStatus
                 + '&beginTime=' + beginTime+ '&endTime=' + endTime+ '&memberName='
-                + memberName+ '&memberPhone=' + memberPhone+ '&creatorName=' + creatorName+ '&queryOrderInfo=' + queryOrderInfo);
+                + memberName+ '&memberPhone=' + memberPhone+ '&creatorName=' + creatorName+ '&queryOrderInfo=' + queryOrderInfo
+                + '&shippingAddress=' + shippingAddress+ '&receiverName=' + receiverName+ '&receiverPhone=' + receiverPhone
+                + '&sellerName=' + sellerName+ '&cityId=' + cityId);
+
     }
 
 
@@ -314,6 +419,8 @@
         var selectOption = "<option value=-1>" + optionName + "</option>";
         $(select).append(selectOption);
     }
+
+
 
     var formatDateTime = function (date) {
         var dt = new Date(date);
