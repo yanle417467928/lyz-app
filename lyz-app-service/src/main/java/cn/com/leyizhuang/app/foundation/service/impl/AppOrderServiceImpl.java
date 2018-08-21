@@ -1403,7 +1403,7 @@ public class AppOrderServiceImpl implements AppOrderService {
             AppStore store = storeService.findById(orderBaseInfo.getStoreId());
             String deliverType = orderBaseInfo.getDeliveryType().getValue();
 
-            if (store.getStoreType().equals("JM") && deliverType.equals("SELF_TAKE")){
+            if (store.getStoreType().getValue().equals("JM") && deliverType.equals("SELF_TAKE")){
                 // 加盟自提不验证
                 return 0;
             }else {
