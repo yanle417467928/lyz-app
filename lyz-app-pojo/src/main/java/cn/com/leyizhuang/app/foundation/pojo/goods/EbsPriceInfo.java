@@ -22,7 +22,8 @@ public class EbsPriceInfo {
 
     private String STRTABLE;
 
+    private String STOREID;
 
-    private List<EbsGoodsPrice> ERP;
+    private String ERP;
 
 }

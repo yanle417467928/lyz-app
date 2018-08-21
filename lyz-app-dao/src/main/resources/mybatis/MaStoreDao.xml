@@ -856,7 +856,6 @@
         bill_rule br ON  s.store_id = br.store_id
         WHERE
         s.store_type ='ZS'
-        AND  s.fit_compay_type ='CASH'
         AND br.id is NULL
         AND s.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
