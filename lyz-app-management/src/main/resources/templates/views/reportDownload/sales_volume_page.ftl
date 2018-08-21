@@ -66,6 +66,7 @@
                                 <option value="FXCK">分销仓库</option>
                                 <option value="ZS">装饰公司</option>
                                 <option value="CASH">小型装饰公司（不分公司）</option>
+                                <option value="GCORDER">工程单（不分公司）</option>
                             </select>
                             <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px"
                                     style="width:auto;"

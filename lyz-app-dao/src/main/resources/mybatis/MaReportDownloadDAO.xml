@@ -1882,6 +1882,9 @@
             <when test="'CASH' == storeType">
                 and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
             </when>
+            <when test="'GCORDER' == storeType">
+
+            </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
                     and s.store_type =#{storeType}
@@ -1998,6 +2001,9 @@
             </when>
             <when test="'CASH' == storeType">
                 and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
+            </when>
+            <when test="'GCORDER' == storeType">
+
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
@@ -2125,6 +2131,9 @@
             <when test="'CASH' == storeType">
                 and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
             </when>
+            <when test="'GCORDER' == storeType">
+
+            </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
                     and s.store_type =#{storeType}
@@ -2251,6 +2260,9 @@
             <when test="'CASH' == storeType">
                 and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
             </when>
+            <when test="'GCORDER' == storeType">
+
+            </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
                     and s.store_type =#{storeType} and s.store_type != 'JM'
@@ -2365,6 +2377,9 @@
             </when>
             <when test="'CASH' == storeType">
                 and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
+            </when>
+            <when test="'GCORDER' == storeType">
+
             </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
@@ -2481,6 +2496,9 @@
             <when test="'CASH' == storeType">
                 and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
             </when>
+            <when test="'GCORDER' == storeType">
+
+            </when>
             <otherwise>
                 <if test="null!=storeType and ''!=storeType">
                     and s.store_type =#{storeType} and s.store_type != 'JM'
@@ -2507,9 +2525,9 @@
         s.store_type as 'storeType',
         s.city as 'cityName',
         s.store_code as 'storeCode',
-        s.store_name as 'storeName',
+        st2.store_name as 'storeName',
         e2.`name` as 'name',
-        ob.customer_name as 'customerName',
+        s.store_name as 'customerName',
         ob.ord_no as 'ordNo',
         '配送' as 'orderType',
         CASE ob.`status` WHEN 'PENDING_RECEIVE' THEN '待收货' WHEN 'FINISHED' THEN '已完成' end as 'orderStatus',
@@ -2593,6 +2611,9 @@
             <when test="'CASH' == storeType">
                 and s.store_type = -1
             </when>
+            <when test="'GCORDER' == storeType">
+                and s.store_type = -1
+            </when>
             <otherwise>
                 and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
             </otherwise>
@@ -2616,9 +2637,9 @@
         s.store_type as 'storeType',
         s.city as 'cityName',
         s.store_code as 'storeCode',
-        s.store_name as 'storeName',
+        st2.store_name as 'storeName',
         e2.`name` as 'name',
-        ob.customer_name as 'customerName',
+        s.store_name as 'customerName',
         ob.ord_no as 'ordNo',
         '配送' as 'orderType',
         CASE ob.`status` WHEN 'PENDING_RECEIVE' THEN '待收货' WHEN 'FINISHED' THEN '已完成' end as 'orderStatus',
@@ -2702,6 +2723,9 @@
             <when test="'CASH' == storeType">
                 and s.store_type = -1
             </when>
+            <when test="'GCORDER' == storeType">
+                and s.store_type = -1
+            </when>
             <otherwise>
                 and s.store_type in ('ZS') and s.fit_compay_type = "CASH"
             </otherwise>
@@ -2728,9 +2752,9 @@
         s.store_type as 'storeType',
         s.city as 'cityName',
         s.store_code as 'storeCode',
-        s.store_name as 'storeName',
+        st2.store_name as 'storeName',
         e2.`name` as 'name',
-        ob.customer_name as 'customerName',
+        s.store_name as 'customerName',
         ob.ord_no as 'ordNo',
         CASE ob.delivery_type when 'HOUSE_DELIVERY' then '配送' WHEN 'SELF_TAKE' THEN '自提' end as 'orderType',
         CASE ob.`status` WHEN 'PENDING_RECEIVE' THEN '待收货' WHEN 'FINISHED' THEN '已完成' end as 'orderStatus',
@@ -2809,6 +2833,9 @@
                 and s.store_type = -1
             </when>
             <when test="'CASH' == storeType">
+                and s.store_type = -1
+            </when>
+            <when test="'GCORDER' == storeType">
                 and s.store_type = -1
             </when>
             <otherwise>

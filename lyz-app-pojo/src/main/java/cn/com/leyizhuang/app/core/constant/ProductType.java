@@ -9,7 +9,7 @@ package cn.com.leyizhuang.app.core.constant;
 public enum ProductType {
 
     HR("HR", "华润"), LYZ("LYZ", "乐易装"), YR("YR", "莹润"), YF("YF", "运费"),
-    XQ("XQ", "喜鹊");
+    XQ("XQ", "喜鹊"), BJ("BJ","毕加"),SRV("SRV","喷涂"),CVR("CVR","遮蔽"),ART("ART","艺术漆");
 
     private String value;
 
