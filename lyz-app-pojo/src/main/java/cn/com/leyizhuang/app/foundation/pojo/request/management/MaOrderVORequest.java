@@ -63,6 +63,10 @@ public class MaOrderVORequest {
      * 订单状态
      */
     private String orderStatus;
+    /**
+     * 是否付清
+     */
+    private Integer isPayUp;
 
     private List<Long> list;
 

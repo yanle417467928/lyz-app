@@ -123,6 +123,8 @@ public interface MaStoreService {
 
     List<SimpleStoreParam> findSmallFitAndStoresListByCityIdAndStoreId(Long cityId, List<Long> storeIds);
 
+    List<SimpleStoreParam> findStoresListByCityIdAndStoreIdList(Long cityId, List<Long> storeIds);
+
     List<SimpleStoreParam> findSmallFitStoresListByStoreIdNotBillRule(List<Long> storeIds);
 
     List<SimpleStoreParam> findStoresListByStoreId(List<Long> storeIds);

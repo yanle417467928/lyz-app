@@ -247,7 +247,7 @@ public class OrderGiftController {
                 while (orderGoodsSimpleResponseiterator.hasNext()) {
                     OrderGoodsSimpleResponse goods = orderGoodsSimpleResponseiterator.next();
                     for (GoodsSimpleInfo info : goodsList) {
-                        if (info.getId().equals(goods.getId())) {
+                        if (info.getId().equals(goods.getId()) && info.getGoodsLineType().equals("GOODS")) {
                             goods.setGoodsQty(info.getQty());
                             break;
                         }

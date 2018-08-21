@@ -756,6 +756,18 @@
         obi.status !='UNPAID'
         AND
         obi.status !='CANCELED'
+        <if test="cityId != null and cityId != -1">
+            AND obi.city_id = #{cityId}
+        </if>
+        <if test="storeId != null and storeId != -1">
+            AND obi.store_id = #{storeId}
+        </if>
+        <if test="orderStatus != null and orderStatus != '-1'">
+            AND obi.status = #{orderStatus}
+        </if>
+        <if test="isPayUp != null and isPayUp != '-1'">
+            AND obd.is_pay_up =#{isPayUp}
+        </if>
         <if test="beginTime != null and beginTime != ''">
             AND obi.create_time &gt;= #{beginTime}
         </if>
@@ -780,7 +792,13 @@
         <if test="receiverPhone != null and receiverPhone != ''">
             AND obi.receiver_phone LIKE concat(concat('%',#{receiverPhone}),'%')
         </if>
-        ORDER BY
+        <if test="list != null">
+            AND s.store_id IN
+            <foreach collection="list" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        ORDER  BY
         obi.create_time DESC
     </select>
 

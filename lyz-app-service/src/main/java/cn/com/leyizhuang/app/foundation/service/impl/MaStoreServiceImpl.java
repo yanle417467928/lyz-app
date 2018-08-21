@@ -306,6 +306,12 @@ public class MaStoreServiceImpl implements MaStoreService {
         return storeList;
     }
 
+    @Override
+    public List<SimpleStoreParam> findStoresListByCityIdAndStoreIdList(Long cityId, List<Long> storeIds) {
+        List<SimpleStoreParam> storeList = this.mastoreDAO.findStoresListByCityIdAndStoreIdList(cityId, storeIds);
+        return storeList;
+    }
+
 
     @Override
     public List<SimpleStoreParam> findSmallFitStoresListByStoreIdNotBillRule(List<Long> storeIds) {

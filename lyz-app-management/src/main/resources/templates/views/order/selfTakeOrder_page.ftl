@@ -130,14 +130,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-xs-4">
-                                                <div class="col-xs-12">
-                                                    <button type="button" name="search" id="search-btn"
-                                                            class="btn btn-primary btn-search"
-                                                            onclick="findOrderByFilterCondition()">查找
-                                                    </button>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -151,17 +143,20 @@
                         <option value="-1">选择城市</option>
                     </select>
                     <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px"
-                            onchange="findOrderByCondition()" data-live-search="true">
+                            onchange="findOrderByFilterCondition()" data-live-search="true">
                         <option value="-1">选择门店</option>
                     </select>
-                    <select name="status" id="status" class="form-control" style="width:auto;"
-                            onchange="findOrderByCondition()" data-live-search="true">
-                        <option value="-1">出货状态</option>
-                        <option value="1">已出货</option>
-                        <option value="0">未出货</option>
+                    <select name="orderStatus" id="orderStatus" class="form-control"  style="width:auto;"
+                            onchange="findOrderByFilterCondition()">
+                        <option value="-1">选择订单状态</option>
+                    <#if orderStatusList?? && orderStatusList?size gt 0 >
+                        <#list orderStatusList as orderStatus>
+                            <option value="${orderStatus.value!''}">${orderStatus.description!''}</option>
+                        </#list>
+                    </#if>
                     </select>
                     <select name="isPayUp" id="isPayUp" class="form-control" style="width:auto;"
-                            onchange="findOrderByCondition()" data-live-search="true">
+                            onchange="findOrderByFilterCondition()" data-live-search="true">
                         <option value="-1">收款状态</option>
                         <option value="1">已付清</option>
                         <option value="0">未付清</option>
@@ -171,7 +166,7 @@
                                style="width:auto;" placeholder="请输入单号" onkeypress="findBykey()">
                         <span class="input-group-btn">
                             <button type="button" name="search" id="search-btn" class="btn btn-info btn-search"
-                                    onclick="findOrderByInfo()">查找</button>
+                                    onclick="findOrderByFilterCondition()">查找</button>
                         </span>
                     </div>
                 </div>
@@ -223,8 +218,9 @@
 
     function findStoreSelection() {
         var store = "";
+        var cityCode = $("#cityCode").val();
         $.ajax({
-            url: '/rest/stores/findStoresListByStoreId',
+            url: '/rest/stores/findStoresListByCityIdAndStoreIdList/'+cityCode,
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);
@@ -356,15 +352,14 @@
 
     function findOrderByCity(cityId) {
         initSelect("#storeCode", "选择门店");
-        findOrderByCondition();
+        findOrderByFilterCondition();
         if (cityId == -1) {
             findStoreSelection();
             return false;
-        }
-        ;
+        };
         var store;
         $.ajax({
-            url: '/rest/stores/findStoresListByCityIdAndStoreId/' + cityId,
+            url: '/rest/stores/findStoresListByCityIdAndStoreIdList/' + cityId,
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);
@@ -385,21 +380,9 @@
     }
 
 
-    function findBykey(){
-        if(event.keyCode==13){
-            findOrderByInfo();
-        }
-    }
-
-    function findOrderByInfo() {
-        var queryOrderInfo = $("#queryOrderInfo").val();
-        $('#cityCode').val("-1");
-        $('#enabled').val("-1");
-        $("#dataGrid").bootstrapTable('destroy');
-        if (null == queryOrderInfo || "" == queryOrderInfo) {
-            initDateGird('/rest/order/selfTakeOrder/page/grid');
-        } else {
-            initDateGird('/rest/order/selfTakeOrder/page/infoGrid?info=' + queryOrderInfo);
+    function findBykey() {
+        if (event.keyCode == 13) {
+            findOrderByFilterCondition();
         }
     }
 
@@ -429,15 +412,26 @@
     function findOrderByFilterCondition() {
         var beginTime = $("#beginTime").val();
         var endTime = $("#endTime").val();
-        var memberName = $("#memberName").val();
-        var shippingAddress = $("#shippingAddress").val();
-        var sellerName = $("#sellerName").val();
-        var memberPhone = $("#memberPhone").val();
-        var receiverName = $("#receiverName").val();
-        var receiverPhone = $("#receiverPhone").val();
+        var memberName = $("#memberName").val().trim();
+        var shippingAddress = $("#shippingAddress").val().trim();
+        var sellerName = $("#sellerName").val().trim();
+        var memberPhone = $("#memberPhone").val().trim();
+        var receiverName = $("#receiverName").val().trim();
+        var receiverPhone = $("#receiverPhone").val().trim();
+        var cityId = $("#cityCode").val();
+        var storeId = $("#storeCode").val();
+        var orderStatus = $("#orderStatus").val();
+        var isPayUp = $("#isPayUp").val();
+        var queryOrderInfo = $("#queryOrderInfo").val().trim();
         $("#dataGrid").bootstrapTable('destroy');
-        initDateGird('/rest/order/selfTakeOrder/page/conditionGrid?beginTime=' + beginTime + '&endTime=' + endTime + '&memberName=' + memberName + '&shippingAddress=' + shippingAddress
-                + '&sellerName=' + sellerName + '&memberPhone=' + memberPhone + '&receiverName=' + receiverName + '&receiverPhone=' + receiverPhone)
+        if (null != queryOrderInfo && "" != queryOrderInfo) {
+            initDateGird('/rest/order/selfTakeOrder/page/infoGrid?info=' + queryOrderInfo);
+        }else{
+            initDateGird('/rest/order/selfTakeOrder/page/conditionGrid?beginTime=' + beginTime + '&endTime=' + endTime + '&memberName=' + memberName + '&shippingAddress=' + shippingAddress
+                    + '&sellerName=' + sellerName + '&memberPhone=' + memberPhone + '&receiverName=' + receiverName + '&receiverPhone=' + receiverPhone+'&cityId=' + cityId + '&storeId=' + storeId
+                    + '&isPayUp=' + isPayUp + '&orderStatus=' + orderStatus
+            )
+        }
     }
 
 
