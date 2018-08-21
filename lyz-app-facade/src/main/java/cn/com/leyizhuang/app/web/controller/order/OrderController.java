@@ -1684,8 +1684,8 @@ public class OrderController {
                             managerBillingDetailResponse.getSubvention()));
                     managerBillingDetailResponse.setIsPayUp(orderBillingDetails.getIsPayUp());
 
-                    managerBillingDetailResponse.setPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0 : orderBillingDetails.getStPreDeposit());
-                    managerBillingDetailResponse.setCreditMoney(orderBillingDetails.getStoreCreditMoney() == null ? 0 : orderBillingDetails.getStoreCreditMoney());
+//                    managerBillingDetailResponse.setPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0 : orderBillingDetails.getStPreDeposit());
+//                    managerBillingDetailResponse.setCreditMoney(orderBillingDetails.getStoreCreditMoney() == null ? 0 : orderBillingDetails.getStoreCreditMoney());
 
                     PayhelperOrder payhelperOrder = this.appOrderService.findPayhelperOrderByOrdNo(orderNumber);
                     if (null != payhelperOrder){
