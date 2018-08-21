@@ -54,4 +54,10 @@ public interface GoodsPriceService {
     List<GoodsPrice> findGoodsPriceListByStoreIdAndSkuList(Long storeId, List<String> internalCodeList);
 
     List<GoodsPrice> findGoodsPriceListByStoreIdAndPriceType(Long storeId, String priceType);
+
+    List<GoodsPrice> findGoodsPriceListByStoreIdAndSkuAndpriceType(Long storeId,String priceType,String sku);
+
+    void saveBackupsGoodsPrice(GoodsPrice goodsPrice);
+
+    void delGoodsPriceListByStoreIdAndSkuAndpriceType(Long storeId,String priceType,String sku);
 }

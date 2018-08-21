@@ -119,4 +119,19 @@ public class GoodsPriceServiceImpl implements GoodsPriceService {
     public List<GoodsPrice> findGoodsPriceListByStoreIdAndPriceType(Long storeId, String priceType) {
         return this.goodsPriceDAO.findGoodsPriceListByStoreIdAndPriceType(storeId, priceType);
     }
+
+    @Override
+    public List<GoodsPrice> findGoodsPriceListByStoreIdAndSkuAndpriceType(Long storeId,String priceType,String sku) {
+        return this.goodsPriceDAO.findGoodsPriceListByStoreIdAndSkuAndpriceType(storeId,priceType,sku);
+    }
+
+    @Override
+    public void saveBackupsGoodsPrice(GoodsPrice goodsPrice) {
+         goodsPriceDAO.saveBackupsGoodsPrice(goodsPrice);
+    }
+
+    @Override
+    public void delGoodsPriceListByStoreIdAndSkuAndpriceType(Long storeId,String priceType,String sku) {
+       goodsPriceDAO.delGoodsPriceListByStoreIdAndSkuAndpriceType(storeId,priceType,sku);
+    }
 }

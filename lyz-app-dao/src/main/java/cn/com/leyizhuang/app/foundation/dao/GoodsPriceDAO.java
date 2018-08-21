@@ -63,4 +63,10 @@ public interface GoodsPriceDAO {
                                                            @Param(value = "internalCodeList") List<String> internalCodeList);
 
     List<GoodsPrice> findGoodsPriceListByStoreIdAndPriceType(@Param(value = "storeId")Long storeId, @Param(value = "priceType")String priceType);
+
+    List<GoodsPrice> findGoodsPriceListByStoreIdAndSkuAndpriceType(@Param(value = "storeId")Long storeId,@Param(value = "priceType")String priceType,@Param(value = "sku")String sku);
+
+    void saveBackupsGoodsPrice(GoodsPrice goodsPrice);
+
+    void delGoodsPriceListByStoreIdAndSkuAndpriceType(@Param(value = "storeId")Long storeId,@Param(value = "priceType")String priceType,@Param(value = "sku")String sku);
 }
