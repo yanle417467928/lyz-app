@@ -1,16 +1,16 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.core.constant.AppConstant;
 import cn.com.leyizhuang.app.core.constant.BillStatusEnum;
+import cn.com.leyizhuang.app.core.exception.SystemBusyException;
 import cn.com.leyizhuang.app.core.utils.DateUtil;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
 import cn.com.leyizhuang.app.foundation.dao.BillInfoDAO;
+import cn.com.leyizhuang.app.foundation.dao.BillRuleDAO;
 import cn.com.leyizhuang.app.foundation.dao.MaFitBillDAO;
 import cn.com.leyizhuang.app.foundation.pojo.AppStore;
-import cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO;
-import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
-import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
-import cn.com.leyizhuang.app.foundation.pojo.bill.BillRuleDO;
+import cn.com.leyizhuang.app.foundation.pojo.bill.*;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillInfoResponse;
 import cn.com.leyizhuang.app.foundation.pojo.response.BillRepaymentGoodsInfoResponse;
 import cn.com.leyizhuang.app.foundation.service.*;
@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -62,6 +63,9 @@ public class MaFitBillServiceImpl implements MaFitBillService {
     @Autowired
     private AppStoreService appStoreService;
 
+    @Autowired
+    private BillRuleDAO billRuleDAO;
+
 
     @Override
     public PageInfo<MaFitBillVO> getFitNotOutBill(Integer page, Integer size, List<Long> storeIds, String keywords) {
@@ -74,7 +78,7 @@ public class MaFitBillServiceImpl implements MaFitBillService {
     public PageInfo<MaFitBillVO> getHistoryFitBill(Integer page, Integer size, List<Long> storeIds, String keywords) {
         PageHelper.startPage(page, size);
         List<MaFitBillVO> fitBillVOList = this.maFitBillDAO.getHistoryFitBill(storeIds, keywords);
-        List<MaFitBillVO> fitBillVOLists  =   MaFitBillVO.transform(fitBillVOList);
+        List<MaFitBillVO> fitBillVOLists = MaFitBillVO.transform(fitBillVOList);
         return new PageInfo<>(fitBillVOLists);
     }
 
@@ -85,10 +89,10 @@ public class MaFitBillServiceImpl implements MaFitBillService {
         startTime = startTime.trim();
         endTime = endTime.trim();
         if (null != startTime && !"".equals(startTime)) {
-            startTime +=" 00:00:00";
+            startTime += " 00:00:00";
         }
         if (null != endTime && !"".equals(endTime)) {
-            endTime +=" 23:59:59";
+            endTime += " 23:59:59";
         }
         DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime endTimeL = null;
@@ -126,11 +130,11 @@ public class MaFitBillServiceImpl implements MaFitBillService {
 
 
         List<BillRepaymentGoodsInfoResponse> currentNotPayOrderDetails = new ArrayList<>();
-        if(null!=billStartTime && null != billEndTime){
+        if (null != billStartTime && null != billEndTime) {
             currentNotPayOrderDetails = maFitBillDAO.getCurrentOrderDetails(billStartTime, billEndTime, false, storeId, orderNo);
-        }else if(null == billStartTime && null != billEndTime){
+        } else if (null == billStartTime && null != billEndTime) {
             currentNotPayOrderDetails = maFitBillDAO.getCurrentOrderDetails(null, billEndTime, false, storeId, orderNo);
-        }else{
+        } else {
             currentNotPayOrderDetails = maFitBillDAO.getCurrentOrderDetails(null, null, false, storeId, orderNo);
         }
 
@@ -491,4 +495,54 @@ public class MaFitBillServiceImpl implements MaFitBillService {
         return interestAmount;
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void addBillRule(Long storeId, Integer billDate, Integer repaymentDeadlineDate, Double interestRate, ShiroUser shiroUser) {
+        BillRuleDO billRuleDO = new BillRuleDO();
+        Date date = new Date();
+        billRuleDO.setBillDate(billDate);
+        billRuleDO.setCreateTime(new Date());
+        billRuleDO.setInterestRate(interestRate);
+        billRuleDO.setRepaymentDeadlineDate(repaymentDeadlineDate);
+        billRuleDO.setStoreId(storeId);
+        billRuleDO.setUpdateTime(date);
+        billRuleDO.setUpdateUserId(shiroUser.getId());
+        billInfoDAO.saveBillRule(billRuleDO);
+        if (null != billRuleDO.getId()) {
+            BillRuleLogDO billRuleLogDO = new BillRuleLogDO();
+            billRuleLogDO.setBillDate(billDate);
+            billRuleLogDO.setInterestRate(interestRate);
+            billRuleLogDO.setRepaymentDeadlineDate(repaymentDeadlineDate);
+            billRuleLogDO.setStoreId(storeId);
+            billRuleLogDO.setUpdateTime(date);
+            billRuleLogDO.setRuleId(billRuleDO.getId());
+            billRuleDAO.saveBillRuleLog(billRuleLogDO);
+        }
+    }
+
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void editBillRule(Long storeId, Integer billDate, Integer repaymentDeadlineDate, Double interestRate,Long ruleId, ShiroUser shiroUser){
+        BillRuleDO billRuleDO = new BillRuleDO();
+        Date date = new Date();
+        billRuleDO.setBillDate(billDate);
+        billRuleDO.setInterestRate(interestRate);
+        billRuleDO.setRepaymentDeadlineDate(repaymentDeadlineDate);
+        billRuleDO.setStoreId(storeId);
+        billRuleDO.setUpdateTime(date);
+        billRuleDO.setUpdateUserId(shiroUser.getId());
+        this.billRuleDAO.updateBillRule(billRuleDO);
+        BillRuleLogDO billRuleLogDO = new BillRuleLogDO();
+        billRuleLogDO.setBillDate(billDate);
+        billRuleLogDO.setInterestRate(interestRate);
+        billRuleLogDO.setRepaymentDeadlineDate(repaymentDeadlineDate);
+        billRuleLogDO.setStoreId(storeId);
+        billRuleLogDO.setUpdateTime(date);
+        billRuleLogDO.setRuleId(ruleId);
+        billRuleLogDO.setUpdateUserId(shiroUser.getId());
+        billRuleDAO.saveBillRuleLog(billRuleLogDO);
+    }
 }
+
+

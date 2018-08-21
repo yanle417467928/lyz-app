@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.service;
 
 
+import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillInfoDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentGoodsDetailsDO;
 import cn.com.leyizhuang.app.foundation.pojo.bill.BillRepaymentInfoDO;
@@ -13,6 +14,7 @@ import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.MaFitBil
 import com.github.pagehelper.PageInfo;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,4 +44,8 @@ public interface MaFitBillService {
     List<BillRepaymentGoodsInfoResponse> computeInterestAmount2(Long storeId, List<BillRepaymentGoodsInfoResponse> goodsDetailsDOList);
 
     BillInfoDO createBillInfo(Long storeId);
+
+    void addBillRule(Long storeId, Integer billDate, Integer repaymentDeadlineDate, Double interestRate,ShiroUser shiroUser);
+
+    void editBillRule(Long storeId, Integer billDate, Integer repaymentDeadlineDate, Double interestRate,Long ruleId,ShiroUser shiroUser);
 }

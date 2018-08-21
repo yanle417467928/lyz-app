@@ -351,4 +351,27 @@
         WHERE store_id = #{storeId} AND `status` = #{status} AND bill_start_date = #{billStartDate}
     </select>
 
+    <insert id="saveBillRule" useGeneratedKeys="true" keyProperty="id"
+            parameterType="cn.com.leyizhuang.app.foundation.pojo.bill.BillRuleDO">
+        INSERT  bill_rule (
+          bill_date,
+          repayment_deadline_date,
+          interest_rate,
+          store_id,
+          create_time,
+          update_time,
+          update_user_id
+        ) VALUES (
+          #{billDate},
+          #{repaymentDeadlineDate},
+          #{interestRate},
+          #{storeId},
+         #{createTime},
+         #{updateTime},
+         #{updateUserId}
+        )
+
+    </insert>
+
+
 </mapper>
