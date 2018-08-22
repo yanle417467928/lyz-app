@@ -1,5 +1,7 @@
 package cn.com.leyizhuang.app.core.constant;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -34,4 +36,10 @@ public enum FitCompayType {
         return description;
     }
 
+    public static List<FitCompayType> getFitCompayType(){
+        List<FitCompayType> fitCompayTypes = new ArrayList<>();
+        fitCompayTypes.add(FitCompayType.CASH);
+        fitCompayTypes.add(FitCompayType.MONTHLY);
+        return fitCompayTypes;
+    }
 }
