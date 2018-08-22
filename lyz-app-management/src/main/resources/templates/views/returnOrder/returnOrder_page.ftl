@@ -375,19 +375,19 @@
 
     function findOrderByCondition() {
         $("#dataGrid").bootstrapTable('destroy');
-        var queryOrderInfo = $("#queryOrderInfo").val();
-        var cityId = $("#cityCode").val();
-        var storeId = $("#storeCode").val();
-        var orderStatus = $("#orderStatus").val();
-        var beginTime = $("#beginTime").val();
-        var endTime = $("#endTime").val();
-        var memberName = $("#memberName").val();
-        var memberPhone = $("#memberPhone").val();
-        var creatorName = $("#creatorName").val();
-        var shippingAddress = $("#shippingAddress").val();
-        var receiverName = $("#receiverName").val();
-        var receiverPhone = $("#receiverPhone").val();
-        var sellerName = $("#sellerName").val();
+        var queryOrderInfo = $("#queryOrderInfo").val().trim();
+        var cityId = $("#cityCode").val().trim();
+        var storeId = $("#storeCode").val().trim();
+        var orderStatus = $("#orderStatus").val().trim();
+        var beginTime = $("#beginTime").val().trim();
+        var endTime = $("#endTime").val().trim();
+        var memberName = $("#memberName").val().trim();
+        var memberPhone = $("#memberPhone").val().trim();
+        var creatorName = $("#creatorName").val().trim();
+        var shippingAddress = $("#shippingAddress").val().trim();
+        var receiverName = $("#receiverName").val().trim();
+        var receiverPhone = $("#receiverPhone").val().trim();
+        var sellerName = $("#sellerName").val().trim();
         initDateGird('/rest/returnOrder/page/screenGrid?storeId=' + storeId + '&orderStatus=' + orderStatus
                 + '&beginTime=' + beginTime+ '&endTime=' + endTime+ '&memberName='
                 + memberName+ '&memberPhone=' + memberPhone+ '&creatorName=' + creatorName+ '&queryOrderInfo=' + queryOrderInfo
@@ -398,7 +398,7 @@
 
 
     function findOrderByInfo() {
-        var queryOrderInfo = $("#queryOrderInfo").val();
+        var queryOrderInfo = $("#queryOrderInfo").val().trim();
         $('#storeCode').val("-1");
         $('#orderStatus').val("-1");
         $("#dataGrid").bootstrapTable('destroy');
