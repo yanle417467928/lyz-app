@@ -455,20 +455,32 @@ public class CustomerController {
                 logger.info("customerProductCoupon OUT,获取顾客可用产品券失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
+//            if (identityType == 6) {
+//                Map<String, Object> map = new HashMap();
+//                List<ProductCouponResponse> productNotUsedCoupons = customerService.findAllNotUsedCouponsDetails(userId);
+//                List<ProductCouponResponse> productUsedCoupons = customerService.findAllUsedCouponsDetails(userId);
+//                List<ProductCouponResponse> productOverdueCoupons = customerService.findAllOverdueCouponsDetails(userId);
+//                map.put("未使用券明细", productNotUsedCoupons);
+//                map.put("已使用券明细", productUsedCoupons);
+//                map.put("过期未使用券明细", productOverdueCoupons);
+//
+//                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, map);
+//                //logger.info("customerProductCoupon OUT,获取顾客可用产品券成功，出参 resultDTO:{}", resultDTO);
+//                return resultDTO;
+//            } else if (identityType == 0) {
+//                List<ProductCouponResponse> productCouponResponseList = customerService.findProductCouponBySellerIdAndCustomerId(userId, cusId);
+//                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, productCouponResponseList);
+//                //logger.info("customerProductCoupon OUT,获取顾客可用产品券成功，出参 resultDTO:{}", resultDTO);
+//                return resultDTO;
+//            }
             if (identityType == 6) {
-                Map<String, Object> map = new HashMap();
-                List<ProductCouponResponse> productNotUsedCoupons = customerService.findAllNotUsedCouponsDetails(userId);
-                List<ProductCouponResponse> productUsedCoupons = customerService.findAllUsedCouponsDetails(userId);
-                List<ProductCouponResponse> productOverdueCoupons = customerService.findAllOverdueCouponsDetails(userId);
-                map.put("未使用券明细", productNotUsedCoupons);
-                map.put("已使用券明细", productUsedCoupons);
-                map.put("过期未使用券明细", productOverdueCoupons);
-
-                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, map);
+                List<ProductCouponResponse> productCouponList = customerService.findProductCouponByCustomerId(userId);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, productCouponList);
                 //logger.info("customerProductCoupon OUT,获取顾客可用产品券成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             } else if (identityType == 0) {
-                List<ProductCouponResponse> productCouponResponseList = customerService.findProductCouponBySellerIdAndCustomerId(userId, cusId);
+                List<ProductCouponResponse> productCouponResponseList = customerService.
+                        findProductCouponBySellerIdAndCustomerId(userId, cusId);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, productCouponResponseList);
                 //logger.info("customerProductCoupon OUT,获取顾客可用产品券成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
