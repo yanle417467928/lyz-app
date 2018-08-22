@@ -1870,7 +1870,7 @@
         SELECT DISTINCT ob.ord_no from ord_base_info ob
         LEFT JOIN st_store s on s.store_id = ob.store_id
         INNER JOIN ord_coupon_info oci on oci.ord_no = ob.ord_no
-        LEFT JOIN ord_jx_price_difference_return_details oj on oj.ord_no = ob.ord_no
+        LEFT JOIN ord_jx_price_difference_return_details oj on oj.ord_no = ob.ord_no and oj.goods_line_type = "PRODUCT_COUPON"
         where
         ob.delivery_type != "PRODUCT_COUPON"
          and s.store_type = 'JM'
