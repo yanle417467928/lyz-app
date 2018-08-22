@@ -767,49 +767,49 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                         int a = sb.length();
                         if (null == priceListName) {
                             logger.info("价目表名称为空");
-                            sb.append("|行ID为" + lineId + "的价目表名称为空,请检查"+"| ");
+                            sb.append("行ID为" + lineId + "的价目表名称为空,请检查"+"| ");
                         }
 
                         if (null == sku) {
                             logger.info("产品编码为空");
-                            sb.append("|行ID为" + lineId + "的产品编码为空,请检查,价目表名称:" + priceListName + "| ");
+                            sb.append("行ID为" + lineId + "的产品编码为空,请检查,价目表名称:" + priceListName + "| ");
                         }
 
                         if (null == priceType) {
                             logger.info("价目表类型为空");
-                            sb.append("|行ID为" + lineId + "的价目表类型为空,请检查,产品编码：" + sku + "| ");
-                        } else if (!priceType.equals("COMMON") && !priceType.equals("A") && !priceType.equals("C")) {
+                            sb.append("行ID为" + lineId + "的价目表类型为空,请检查,产品编码：" + sku + "| ");
+                        } else if (!priceType.equals("COMMON") && !priceType.equals("A") && !priceType.equals("C")&& !priceType.equals("DEL")) {
                             logger.info("价目表类型错误");
-                            sb.append("|行ID为" + lineId + "的价目表类型错误,请检查,产品编码：" + sku + "| ");
+                            sb.append("行ID为" + lineId + "的价目表类型错误,请检查,产品编码：" + sku + "| ");
                         }
 
                         if (null == storeCode) {
                             logger.info("门店编码为空");
-                            sb.append("|行ID为" + lineId + "的门店编码为空,请检查,产品编码：" + sku+ "| ");
+                            sb.append("行ID为" + lineId + "的门店编码为空,请检查,产品编码：" + sku+ "| ");
                         }
 
                         if (null == VIPPrice || 0.0D == Double.parseDouble(VIPPrice)) {
                             logger.info("会员价为空");
-                            sb.append("|行ID为" + lineId + "的会员价等于0或为空,请检查,产品编码：" + sku + "| ");
+                            sb.append("行ID为" + lineId + "的会员价等于0或为空,请检查,产品编码：" + sku + "| ");
                         }
 
                         if (null == retailPrice || 0.0D == Double.parseDouble(retailPrice)) {
                             logger.info("零售价为空");
-                            sb.append("|行ID为" + lineId + "的零售价等于0或为空,请检查,产品编码：" + sku + "| ");
+                            sb.append("行ID为" + lineId + "的零售价等于0或为空,请检查,产品编码：" + sku + "| ");
                         }
 
                         if (null == wholesalePrice || 0.0D == Double.parseDouble(wholesalePrice)) {
                             logger.info("经销价为空");
-                            sb.append("|行ID为" + lineId + "的经销价等于0或为空,请检查,产品编码：" + sku +  "| ");
+                            sb.append("行ID为" + lineId + "的经销价等于0或为空,请检查,产品编码：" + sku +  "| ");
                         }
 
                         if (null == startTime && !"".equals(startTime)) {
                             logger.info("生效时间为空");
-                            sb.append("|行ID为" + lineId + "的生效时间为空,请检查,产品编码：" + sku +  "| ");
+                            sb.append("行ID为" + lineId + "的生效时间为空,请检查,产品编码：" + sku +  "| ");
                         }
 
                         if (sb.length() > a) {
-                            sb = sb.insert(0,"价目表名称:"+priceListName+"|");
+                            sb = sb.insert(a,"价目表名称:"+priceListName+",");
                             continue;
                         }
 
@@ -820,34 +820,41 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                                 Date endT = bf.parse(endTime);
                                 Date startT = bf.parse(startTime);
                                 if (endT.before(startT)) {
-                                    sb.append("|行ID为" + lineId + "的失效时间小于生效时间,请检查,产品编码：" + sku + "| ");
+                                    sb.append("行ID为" + lineId + "的失效时间小于生效时间,请检查,产品编码：" + sku + "| ");
                                 }
                             }
 
                             if (Double.parseDouble(retailPrice) < Double.parseDouble(VIPPrice) || Double.parseDouble(VIPPrice) < Double.parseDouble(wholesalePrice) || Double.parseDouble(retailPrice) < Double.parseDouble(wholesalePrice)) {
                                 logger.info("价目表数据错误");
-                                sb.append("|行ID为" + lineId + "的价目表价格错误,价格必须为零售价>=会员价>=经销价,请检查价格,产品编码：" + sku +  "| ");
+                                sb.append("行ID为" + lineId + "的价目表价格错误,价格必须为零售价>=会员价>=经销价,请检查价格,产品编码：" + sku +  "| ");
                             }
 
                             AppStore appStore = this.appStoreService.findByStoreCode(storeCode);
                             if (null == appStore) {
                                 logger.info("门店编码错误");
-                                sb.append("|行ID为" + lineId + ",编码为" + storeCode + "的门店不存在,请检查,产品编码：" + sku + "| ");
+                                sb.append("行ID为" + lineId + ",编码为" + storeCode + "的门店不存在,请检查,产品编码：" + sku + "| ");
                             }
 
                             GoodsDO goodsDO = this.goodsService.findBySku(sku);
                             if (null == goodsDO) {
                                 logger.info("商品sku错误");
-                                sb.append("|行ID为" + lineId + ",sku为" + sku + "的商品不存在,请检查,产品编码：" + sku +  "| ");
+                                sb.append("行ID为" + lineId + ",sku为" + sku + "的商品不存在,请检查,产品编码：" + sku +  "| ");
                             }
 
                             if (sb.length() > a) {
-                                sb = sb.insert(0,"价目表名称:"+priceListName+"|");
+                                sb = sb.insert(a,"价目表名称:"+priceListName+",");
                                 continue;
                             }
 
                             if (sb.length() <= a) {
-                                GoodsPrice goodsPrice = new GoodsPrice();
+                                if(priceType.equals("DEL")){
+                                    GoodsPrice goodsPrice = goodsPriceService.finGoodsPriceByLineId(Long.parseLong(lineId));
+                                    if(null != goodsPrice){
+                                        goodsPriceService.saveBackupsGoodsPrice(goodsPrice);
+                                        goodsPriceService.delGoodsPriceListByLineId(Long.parseLong(lineId));
+                                    }
+                                }else{
+                                    GoodsPrice goodsPrice = new GoodsPrice();
                                     List<GoodsPrice> goodsPriceList = goodsPriceService.findGoodsPriceListByStoreIdAndSkuAndpriceType(appStore.getStoreId(),priceType ,sku );
                                     String pdpPrice =appStore.getStoreId()+priceType+sku;
                                     if(!priceList.contains(pdpPrice)){
@@ -857,19 +864,20 @@ public class ReleaseEBSServiceImpl implements ReleaseEBSService {
                                         goodsPriceService.delGoodsPriceListByStoreIdAndSkuAndpriceType(appStore.getStoreId(),priceType ,sku);
                                         priceList.add(pdpPrice);
                                     }
-                                if (null != endTime && !"".equals(endTime)) {
-                                    goodsPrice.setEndTime(LocalDateTime.parse(endTime, df));
+                                    if (null != endTime && !"".equals(endTime)) {
+                                        goodsPrice.setEndTime(LocalDateTime.parse(endTime, df));
+                                    }
+                                    goodsPrice.setStartTime(LocalDateTime.parse(startTime, df));
+                                    goodsPrice.setGid(goodsDO.getGid());
+                                    goodsPrice.setSku(sku);
+                                    goodsPrice.setPriceType(priceType);
+                                    goodsPrice.setRetailPrice(Double.parseDouble(retailPrice));
+                                    goodsPrice.setVIPPrice(Double.parseDouble(VIPPrice));
+                                    goodsPrice.setWholesalePrice(Double.parseDouble(wholesalePrice));
+                                    goodsPrice.setStoreId(appStore.getStoreId());
+                                    goodsPrice.setPriceLineId(Long.parseLong(lineId));
+                                    this.goodsPriceService.save(goodsPrice);
                                 }
-                                goodsPrice.setStartTime(LocalDateTime.parse(startTime, df));
-                                goodsPrice.setGid(goodsDO.getGid());
-                                goodsPrice.setSku(sku);
-                                goodsPrice.setPriceType(priceType);
-                                goodsPrice.setRetailPrice(Double.parseDouble(retailPrice));
-                                goodsPrice.setVIPPrice(Double.parseDouble(VIPPrice));
-                                goodsPrice.setWholesalePrice(Double.parseDouble(wholesalePrice));
-                                goodsPrice.setStoreId(appStore.getStoreId());
-                                goodsPrice.setPriceLineId(Long.parseLong(lineId));
-                                this.goodsPriceService.save(goodsPrice);
                             }
                         }
                     } catch (Exception e) {

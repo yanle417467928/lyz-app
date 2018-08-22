@@ -294,8 +294,18 @@
         FROM gds_goods_price WHERE store_id = #{storeId} and sku =#{sku} and price_type =#{priceType}
     </select>
 
+    <select id="finGoodsPriceByLineId" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
+        SELECT *
+        FROM gds_goods_price WHERE
+        price_line_id =#{lineId}
+    </select>
+
     <delete id="delGoodsPriceListByStoreIdAndSkuAndpriceType" >
         DELETE  FROM gds_goods_price WHERE store_id = #{storeId} and sku =#{sku} and price_type =#{priceType}
+    </delete>
+
+    <delete id="delGoodsPriceListByLineId" >
+        DELETE  FROM gds_goods_price WHERE  price_line_id =#{lineId}
     </delete>
 
     <insert id="saveBackupsGoodsPrice"  parameterType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">

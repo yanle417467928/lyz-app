@@ -126,12 +126,31 @@ public class GoodsPriceServiceImpl implements GoodsPriceService {
     }
 
     @Override
+    public GoodsPrice finGoodsPriceByLineId(Long lineId) {
+        if(null !=lineId){
+            return this.goodsPriceDAO.finGoodsPriceByLineId(lineId);
+        }else{
+            return null;
+        }
+    }
+
+    @Override
     public void saveBackupsGoodsPrice(GoodsPrice goodsPrice) {
          goodsPriceDAO.saveBackupsGoodsPrice(goodsPrice);
     }
 
     @Override
     public void delGoodsPriceListByStoreIdAndSkuAndpriceType(Long storeId,String priceType,String sku) {
-       goodsPriceDAO.delGoodsPriceListByStoreIdAndSkuAndpriceType(storeId,priceType,sku);
+        if(null!=storeId && null!=priceType && null!=sku){
+            goodsPriceDAO.delGoodsPriceListByStoreIdAndSkuAndpriceType(storeId,priceType,sku);
+        }
+
+    }
+
+    @Override
+    public void delGoodsPriceListByLineId(Long lineId) {
+        if(null != lineId){
+            goodsPriceDAO.delGoodsPriceListByLineId(lineId);
+        }
     }
 }
