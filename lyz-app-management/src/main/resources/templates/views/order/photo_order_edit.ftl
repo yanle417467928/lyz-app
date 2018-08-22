@@ -1285,13 +1285,14 @@
                         }
                     });
                 }else if('member'==memberType){
+                  var customerId = $('#customerId').val();
                     $.ajax({
                         url: '/rest/order/photo/findZGCategory/goods',
                         method: 'GET',
                         data: {
                             categoryCode: categoryCode,
                             identityType: identityType,
-                            guideId: cusId,
+                            guideId: customerId,
                             rankCode:rankCode,
                             categorySecond:null,
                             specification:null,

@@ -428,12 +428,10 @@ public class MaPhotoOrderRestController extends BaseRestController {
         Map<String, Object> returnMap = new HashMap(3);
         List<GoodsBrandResponse> brandList = goodsService.findGoodsBrandListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(categoryCode, guideId, appIdentityType, categorySecond, specification, goodType, rankCode);
         List<GoodsSpecificationResponse> specificationList = goodsService.findGoodsSpecificationListByCategoryCodeAndUserIdAndUserRank(categoryCode, guideId, appIdentityType, categorySecond, goodsBrand, goodType, rankCode);
-        List<UserGoodsResponse> goodsList ;
-        if(6==appIdentityType){
+        List<UserGoodsResponse> goodsList = null;
+        if(6==appIdentityType||2==appIdentityType || 3==appIdentityType){
             goodsList = goodsService.findGoodsListByCustomerIdAndIdentityTypeAndUserRankListMa(guideId,AppIdentityType.getAppIdentityTypeByDescription(identityType) , categoryCode,null, null,
                     null, null, null);
-        }else{
-            goodsList =null;
         }
         returnMap.put("specificationList", specificationList);
         returnMap.put("brandList", brandList);
@@ -559,7 +557,7 @@ public class MaPhotoOrderRestController extends BaseRestController {
         }
         Integer appIdentityType = AppIdentityType.getAppIdentityTypeByDescription(identityType).getValue();
         List<UserGoodsResponse> goodsList = null;
-        if(6==appIdentityType){
+        if(6==appIdentityType||2==appIdentityType || 3==appIdentityType){
             goodsList = goodsService.findGoodsListByCustomerIdAndIdentityTypeAndUserRankListMa(guideId,AppIdentityType.getAppIdentityTypeByDescription(identityType) ,categoryType,null, brandString,
                     null, specificationString, null);
         }else {

@@ -565,8 +565,13 @@ public class GoodsServiceImpl implements GoodsService {
                                                                                            String firstCategoryCode, Long secondCategoryId,
                                                                                            Long brandId, Long typeId, String specification,
                                                                                            String keywords) {
-        List<UserGoodsResponse> list = goodsDAO.findGoodsListByCustomerIdAndIdentityTypeAndUserRankMa(userId, identityType, keywords,firstCategoryCode, secondCategoryId,
-                brandId, typeId, specification);
+        List<UserGoodsResponse> list = new ArrayList<>();
+        if (identityType.equals(AppIdentityType.DECORATE_MANAGER) || identityType.equals(AppIdentityType.DECORATE_EMPLOYEE)){
+            list = this.findZsGoodsListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank(firstCategoryCode,userId,identityType.getValue(),secondCategoryId,specification,typeId,brandId,keywords);
+        }else {
+            list = goodsDAO.findGoodsListByCustomerIdAndIdentityTypeAndUserRankMa(userId, identityType, keywords,firstCategoryCode, secondCategoryId,
+                    brandId, typeId, specification);
+        }
         return list;
     }
 
