@@ -342,9 +342,9 @@
         SELECT
         s.store_code,
         s.store_name,
-        s.ENABLE,
+        s.enable,
         s.store_id,
-        c.NAME AS city,
+        c.name AS city,
         s.create_time,
         s.fit_compay_type,
         s.sales_manager_name AS salesManager,
@@ -860,7 +860,6 @@
         bill_rule br ON s.store_id = br.store_id
         WHERE
         s.store_type ='ZS'
-        AND s.fit_compay_type ='CASH'
         AND br.id is NULL
         AND s.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">
