@@ -82,7 +82,7 @@
     function findStorelist() {
         var store = "";
         $.ajax({
-            url: '/rest/stores/findSmallFitStoresListByStoreId',
+            url: '/rest/stores/findZSStoresListByStoreId',
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);

@@ -289,4 +289,21 @@
     </select>
 
 
+    <select id="findGoodsPriceListByStoreIdAndSkuAndpriceType" resultType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
+        SELECT *
+        FROM gds_goods_price WHERE store_id = #{storeId} and sku =#{sku} and price_type =#{priceType}
+    </select>
+
+    <delete id="delGoodsPriceListByStoreIdAndSkuAndpriceType" >
+        DELETE  FROM gds_goods_price WHERE store_id = #{storeId} and sku =#{sku} and price_type =#{priceType}
+    </delete>
+
+    <insert id="saveBackupsGoodsPrice"  parameterType="cn.com.leyizhuang.app.foundation.pojo.GoodsPrice">
+       insert into gds_goods_price_backups
+       (gid, store_id, sku, price_line_id, vip_price, retail_price, wholesale_price, start_time, end_time, price_type,backups_time)
+       VALUES
+       (#{gid}, #{storeId}, #{sku}, #{priceLineId}, #{VIPPrice}, #{retailPrice}, #{wholesalePrice}, #{startTime},
+        #{endTime},#{priceType},now())
+    </insert>
+
 </mapper>
