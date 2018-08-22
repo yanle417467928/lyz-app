@@ -84,6 +84,22 @@ public class AdminUserStoreServiceImpl implements AdminUserStoreService {
         return storeIds;
     }
 
+
+    @Override
+    public List<Long> findZYStoreIdList() {
+        //获取登录用户ID
+        ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
+        List<Long> storeIds = new ArrayList<>();
+        if (null != shiroUser) {
+            //查询登录用户门店权限的门店ID
+            storeIds = this.adminUserStoreDAO.findZYStoreIdByUid(shiroUser.getId());
+        }
+        if(null == storeIds || storeIds.size() == 0) {
+            storeIds.add(-1L);
+        }
+        return storeIds;
+    }
+
     private List<AdminUserStoreDO> statisticsAdminUserStore(List<AdminUserStoreDO> list1, List<AdminUserStoreDO> list2){
         List<AdminUserStoreDO> list = new ArrayList<>();
         for (int i = 0; i < list1.size(); i++) {
@@ -116,6 +132,18 @@ public class AdminUserStoreServiceImpl implements AdminUserStoreService {
             //查询登录用户门店权限的门店ID
             storeIds = this.adminUserStoreDAO.findStoreIdByUidAndStoreType(shiroUser.getId(), storeTypes);
         }
+        if(null == storeIds || storeIds.size() == 0) {
+            storeIds.add(-1L);
+        }
+        return storeIds;
+    }
+
+
+    @Override
+    public List<Long> findStoreIdByAdminAndStoreType(List<StoreType> storeTypes) {
+        List<Long> storeIds = new ArrayList<>();
+            //查询登录用户门店权限的门店ID
+         storeIds = this.adminUserStoreDAO.findStoreIdByUidAndStoreType(1L, storeTypes);
         if(null == storeIds || storeIds.size() == 0) {
             storeIds.add(-1L);
         }

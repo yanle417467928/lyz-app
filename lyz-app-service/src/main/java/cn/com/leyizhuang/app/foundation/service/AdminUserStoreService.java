@@ -51,6 +51,19 @@ public interface AdminUserStoreService {
      */
     List<Long> findStoreIdList();
 
+    /**
+     * @title   查询当前登录用户权限直营门店ID列表
+     * @descripe
+     * @param
+     * @return
+     * @throws
+     * @author GenerationRoad
+     * @date 2018/2/28
+     */
+    List<Long> findZYStoreIdList();
+
     List<Long> findStoreIdByUidAndStoreType(List<StoreType> storeTypes);
+
+    List<Long>  findStoreIdByAdminAndStoreType(List<StoreType> storeTypes);
 
 }

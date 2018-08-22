@@ -25,6 +25,8 @@ public interface AdminUserStoreDAO {
 
     List<Long> findStoreIdByUid(Long uid);
 
+    List<Long> findZYStoreIdByUid(Long uid);
+
     List<Long> findStoreIdByUidAndStoreType(@Param("uid") Long uid, @Param("list") List<StoreType> storeTypes);
 
 }
