@@ -22,7 +22,7 @@ public interface BillRuleDAO {
 
     List<BillRuleDO> findAllBillRule();
 
-    List<BillRuleVO> findAllBillRuleVO(@Param(value = "storeId")Long storeId);
+    List<BillRuleVO> findAllBillRuleVO(@Param(value = "storeId")Long storeId,@Param(value = "cityId")Long cityId,@Param(value = "storeType")String storeType,@Param(value = "list")List<Long> storeIds);
 
     void saveBillRuleLog(BillRuleLogDO billRuleLogDO);
 

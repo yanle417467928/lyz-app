@@ -516,6 +516,7 @@ public class MaFitBillServiceImpl implements MaFitBillService {
             billRuleLogDO.setStoreId(storeId);
             billRuleLogDO.setUpdateTime(date);
             billRuleLogDO.setRuleId(billRuleDO.getId());
+            billRuleLogDO.setUpdateUserId(shiroUser.getId());
             billRuleDAO.saveBillRuleLog(billRuleLogDO);
         }
     }

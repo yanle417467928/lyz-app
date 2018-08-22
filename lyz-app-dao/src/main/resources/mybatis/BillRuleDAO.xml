@@ -74,6 +74,17 @@
         <if test="null != storeId and storeId != -1">
             AND  r.store_id = #{storeId}
         </if>
+        <if test='null !=storeType and "-1" !=storeType and ""!= storeType'>
+            AND  s.fit_compay_type =#{storeType}
+        </if>
+        <if test='null !=cityId and -1 !=cityId'>
+            AND  s.city_id =#{cityId}
+        </if>
+        AND
+        s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
     </select>
 
     <update id="updateBillRule" parameterType="cn.com.leyizhuang.app.foundation.pojo.bill.BillRuleDO">

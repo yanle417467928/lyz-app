@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.web.controller.rest;
 
 import cn.com.leyizhuang.app.foundation.pojo.GridDataVO;
+import cn.com.leyizhuang.app.foundation.service.AdminUserStoreService;
 import cn.com.leyizhuang.app.foundation.service.BillRuleService;
 import cn.com.leyizhuang.app.foundation.vo.management.BillRuleVO;
 import cn.com.leyizhuang.app.foundation.vo.management.decorativeCompany.DecorationCompanyCreditBillingDetailsVO;
@@ -11,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * @author GenerationRoad
@@ -27,11 +30,15 @@ public class MaDecorativeCompanyBillRuleRestController extends BaseRestControlle
     @Autowired
     private BillRuleService billRuleService;
 
+    @Autowired
+    private AdminUserStoreService adminUserStoreService;
+
     @GetMapping(value = "/page/grid")
-    public GridDataVO<BillRuleVO> restCreditOrderPageGird(Integer offset, Integer size, Long storeId) {
+    public GridDataVO<BillRuleVO> restCreditOrderPageGird(Integer offset, Integer size, Long storeId,Long cityId,String storeType) {
         size = getSize(size);
         Integer page = getPage(offset, size);
-        PageInfo<BillRuleVO> pageInfo = this.billRuleService.findAllBillRuleVO(storeId, page, size);
+        List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
+        PageInfo<BillRuleVO> pageInfo = this.billRuleService.findAllBillRuleVO(storeId,cityId,storeType, storeIds,page, size);
         return new GridDataVO<BillRuleVO>().transform(pageInfo.getList(), pageInfo.getTotal());
     }
 
