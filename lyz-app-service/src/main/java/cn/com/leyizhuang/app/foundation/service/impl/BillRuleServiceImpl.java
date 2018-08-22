@@ -38,9 +38,9 @@ public class BillRuleServiceImpl implements BillRuleService {
     }
 
     @Override
-    public PageInfo<BillRuleVO> findAllBillRuleVO(Long storeId,Integer page, Integer size) {
+    public PageInfo<BillRuleVO> findAllBillRuleVO(Long storeId,Long cityId,String storeType,List<Long> storeIds,Integer page, Integer size) {
         PageHelper.startPage(page, size);
-        List<BillRuleVO> list = this.billRuleDAO.findAllBillRuleVO(storeId);
+        List<BillRuleVO> list = this.billRuleDAO.findAllBillRuleVO(storeId,cityId,storeType,storeIds);
         return  new PageInfo<>(list);
     }
 

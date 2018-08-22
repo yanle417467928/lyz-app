@@ -19,7 +19,7 @@ public interface BillRuleService {
 
     List<BillRuleDO> findAllBillRule();
 
-    PageInfo<BillRuleVO> findAllBillRuleVO(Long storeId, Integer page, Integer size);
+    PageInfo<BillRuleVO> findAllBillRuleVO(Long storeId,Long cityId,String storeType, List<Long> storeIds,Integer page, Integer size);
 
     PageInfo<BillRuleLogVO> findBillRuleLogVOById(Integer page, Integer size, Long id,String startTime,String endTime ,String changeUser);
 

@@ -44,13 +44,27 @@
                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 编辑
                     </button>
                 <#--</@shiro.hasPermission>-->
+                    <select name="cityCode" id="cityCode" class="form-control " data-width="120px"
+                            style="width:auto;"
+                            onchange="findListByCityId(this.value)" data-live-search="true">
+                        <option value="-1">选择城市</option>
+                    </select>
+                    <select name="storeType" id="storeType" class="form-control " data-width="120px"
+                            style="width:auto;"
+                            onchange="findListByStoreType()" data-live-search="true">
+                        <option value="-1">选择门店类型</option>
+                    <#if fitCompanyTyoes??>
+                        <#list fitCompanyTyoes as fitCompanyTyoe>
+                            <option value="${fitCompanyTyoe.value}">${fitCompanyTyoe.description}</option>
+                        </#list>
+                    </#if>
 
+                    </select>
                     <select name="store" id="storeCode" class="form-control selectpicker" data-width="120px"
                             style="width:auto;"
-                            onchange="findListByStoreId()" data-live-search="true">
+                            onchange="findListByCondition()" data-live-search="true">
                         <option value="-1">选择门店</option>
                     </select>
-
                     <#--<div class="input-group col-md-3" style="margin-top:0px positon:relative">
                         <input type="text" name="queryCusInfo" id="queryCusInfo" class="form-control"
                                style="width:auto;"
@@ -75,14 +89,66 @@
 <script>
 
     $(function () {
+        findCitylist();
         findStorelist();
-        initDateGird('/rest/decorationCompany/billRule/page/grid',null);
+        initDateGird('/rest/decorationCompany/billRule/page/grid',null,null,null);
     });
+    
+    
+    function findListByCityId(cityId) {
+        findStorelist();
+        var storeType = $('#storeType').val();
+        initDateGird('/rest/decorationCompany/billRule/page/grid',null,storeType,cityId);
+    }
+
+    function findCitylist() {
+        var city = "";
+        $.ajax({
+            url: '/rest/citys/findCitylist',
+            method: 'GET',
+            error: function () {
+                clearTimeout($global.timer);
+                $loading.close();
+                $global.timer = null;
+                $notify.danger('网络异常，请稍后重试或联系管理员');
+            },
+            success: function (result) {
+                clearTimeout($global.timer);
+                $.each(result, function (i, item) {
+                    city += "<option value='" + item.cityId + "'>" + item.name + "</option>";
+                });
+                $("#cityCode").append(city);
+                $("#cityCode").selectpicker('refresh');
+                $("#cityCode").selectpicker('render');
+            }
+        });
+    }
+
+    function  findListByStoreType() {
+        findStorelist();
+        var cityId = $('#cityCode').val();
+        var storeType = $('#storeType').val();
+        initDateGird('/rest/decorationCompany/billRule/page/grid',null,storeType,cityId);
+    }
+
+    function findListByCondition(){
+        var cityId = $('#cityCode').val();
+        var storeType = $('#storeType').val();
+        var storeId = $("#storeCode").val();
+        initDateGird('/rest/decorationCompany/billRule/page/grid',storeId,storeType,cityId);
+    }
 
     function findStorelist() {
-        var store = "";
+        var store = ""
+        var cityId = $('#cityCode').val();
+        var storeType = $('#storeType').val();
+        initSelect("#storeCode", "选择门店");
         $.ajax({
-            url: '/rest/stores/findZSStoresListByStoreId',
+            url: '/rest/stores/findZSStoresListByCityIdAndStoreType',
+            data:{
+                cityId:cityId,
+                storeType:storeType
+            },
             method: 'GET',
             error: function () {
                 clearTimeout($global.timer);
@@ -102,14 +168,16 @@
         });
     }
 
-    function initDateGird(url,storeId) {
+    function initDateGird(url,storeId,storeType,cityId) {
         $("#dataGrid").bootstrapTable('destroy');
         $grid.init($('#dataGrid'), $('#toolbar'), url, 'get', false, function (params) {
             return {
                 offset: params.offset,
                 size: params.limit,
                 keywords: params.search,
-                storeId:storeId
+                storeId:storeId,
+                storeType:storeType,
+                cityId:cityId
             }
         }, [{
                 checkbox: true,
@@ -199,7 +267,7 @@
         for (var i = 0; i < selected.length; i++) {
             var data = selected[i];
             ids.push(data.cusId);
-        }
+        }cityCode
         return ids;
     }
 

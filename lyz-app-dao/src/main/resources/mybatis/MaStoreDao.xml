@@ -930,6 +930,30 @@
         </foreach>
     </select>
 
+
+    <select id="findZSStoresListByCityIdAndStoreType"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
+        SELECT
+        s.store_id,
+        s.store_name
+        FROM
+        st_store s
+        WHERE
+        1=1
+        <if test='null !=cityId and -1 !=cityId'>
+          AND  s.city_id =#{cityId}
+        </if>
+        <if test='null !=storeType and "-1" !=storeType'>
+            AND  s.fit_compay_type =#{storeType}
+        </if>
+        AND
+        s.store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        AND s.store_type = 'ZS'
+    </select>
+
     <select id="findSmallFitStoresListByStoreId"
             resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.SimpleStoreParam">
         SELECT
