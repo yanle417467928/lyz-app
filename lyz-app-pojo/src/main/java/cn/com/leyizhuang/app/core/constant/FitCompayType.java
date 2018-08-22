@@ -9,7 +9,7 @@ import java.util.Objects;
  * @date 2018/5/24
  */
 public enum FitCompayType {
-    CASH("CASH", "现结"), MONTHLY("MONTHLY", "月结");
+    CASH("CASH", "小型装饰公司"), MONTHLY("MONTHLY", "大型装饰公司");
 
     private final String value;
     private final String description;
