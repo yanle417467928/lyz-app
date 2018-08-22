@@ -271,17 +271,17 @@ public class OrderController {
 
             //**********************************开始创建订单 **************************
             //******************* 根据商品确定订单表单号为 XN 或者 XNFW ********************
-//            List<Long> allGoodsList = new ArrayList<>();
-//            goodsList.forEach(g -> allGoodsList.add(g.getId()));
-//            productCouponList.forEach(p -> allGoodsList.add(p.getId()));
-//            String orderNumberType = appOrderService.returnType(allGoodsList,orderParam.getUserId(),identityType);
+            List<Long> allGoodsList = new ArrayList<>();
+            goodsList.forEach(g -> allGoodsList.add(g.getId()));
+            productCouponList.forEach(p -> allGoodsList.add(p.getId()));
+            String orderNumberType = appOrderService.returnType(allGoodsList,orderParam.getUserId(),identityType);
 
             //******************* 创建订单基础信息 *****************
             OrderBaseInfo orderBaseInfo = appOrderService.createOrderBaseInfo(orderParam.getCityId(), orderParam.getUserId(),
                     orderParam.getIdentityType(), orderParam.getCustomerId(), deliverySimpleInfo.getDeliveryType(), orderParam.getRemark(), orderParam.getSalesNumber());
-//            String oldOrderNumber = orderBaseInfo.getOrderNumber();
-//            oldOrderNumber = oldOrderNumber.replace("XN",orderNumberType);
-//            orderBaseInfo.setOrderNumber(oldOrderNumber);
+            String oldOrderNumber = orderBaseInfo.getOrderNumber();
+            oldOrderNumber = oldOrderNumber.replace("XN",orderNumberType);
+            orderBaseInfo.setOrderNumber(oldOrderNumber);
 
             //****************** 创建订单物流信息 ******************
             OrderLogisticsInfo orderLogisticsInfo = appOrderService.createOrderLogisticInfo(deliverySimpleInfo);
@@ -1684,8 +1684,8 @@ public class OrderController {
                             managerBillingDetailResponse.getSubvention()));
                     managerBillingDetailResponse.setIsPayUp(orderBillingDetails.getIsPayUp());
 
-                    managerBillingDetailResponse.setPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0 : orderBillingDetails.getStPreDeposit());
-                    managerBillingDetailResponse.setCreditMoney(orderBillingDetails.getStoreCreditMoney() == null ? 0 : orderBillingDetails.getStoreCreditMoney());
+                    managerBillingDetailResponse.setPreDeposit(0D);
+                    managerBillingDetailResponse.setCreditMoney(0D);
 
                     PayhelperOrder payhelperOrder = this.appOrderService.findPayhelperOrderByOrdNo(orderNumber);
                     if (null != payhelperOrder){
@@ -1708,7 +1708,7 @@ public class OrderController {
                     sellerBillingDetailResponse.setStoreCreditMoney(orderBillingDetails.getStoreCreditMoney() == null ? 0 : orderBillingDetails.getStoreCreditMoney());
                     sellerBillingDetailResponse.setTotalCreditMoney(CountUtil.add(sellerBillingDetailResponse.getCreditMoney(), sellerBillingDetailResponse.getStoreCreditMoney()));
 
-                    sellerBillingDetailResponse.setPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0 : orderBillingDetails.getStPreDeposit());
+                    sellerBillingDetailResponse.setPreDeposit(orderBillingDetails.getCusPreDeposit() == null ? 0 : orderBillingDetails.getCusPreDeposit());
                     sellerBillingDetailResponse.setStPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0 : orderBillingDetails.getStPreDeposit());
                     sellerBillingDetailResponse.setStoreOtherMoney(orderBillingDetails.getStoreOtherMoney());
                     sellerBillingDetailResponse.setStoreCash(orderBillingDetails.getStoreCash());
@@ -2383,7 +2383,7 @@ public class OrderController {
                     managerBillingDetailResponse.setStoreOtherMoney(orderBillingDetails.getStoreOtherMoney());
                     managerBillingDetailResponse.setPosMoney(orderBillingDetails.getStorePosMoney());
                     managerBillingDetailResponse.setDeliveryCash( orderBillingDetails.getDeliveryCash());
-                    managerBillingDetailResponse.setDeliveryPos(orderBillingDetails.getDeliveryPos());managerBillingDetailResponse.setSubvention(orderBillingDetails.getStoreSubvention() == null ? 0 : orderBillingDetails.getStoreSubvention());
+                    managerBillingDetailResponse.setDeliveryPos(orderBillingDetails.getDeliveryPos());
                     managerBillingDetailResponse.setSubvention(orderBillingDetails.getStoreSubvention() == null ? 0 : orderBillingDetails.getStoreSubvention());
                     managerBillingDetailResponse.setSellerStoreDeposit(orderBillingDetails.getSellerStoreDeposit());
                     managerBillingDetailResponse.setStPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0 : orderBillingDetails.getStPreDeposit());
@@ -2411,8 +2411,8 @@ public class OrderController {
                             managerBillingDetailResponse.getSubvention()));
                     managerBillingDetailResponse.setIsPayUp(orderBillingDetails.getIsPayUp());
 
-                    managerBillingDetailResponse.setPreDeposit(orderBillingDetails.getStPreDeposit() == null ? 0 : orderBillingDetails.getStPreDeposit());
-                    managerBillingDetailResponse.setCreditMoney(orderBillingDetails.getStoreCreditMoney() == null ? 0 : orderBillingDetails.getStoreCreditMoney());
+                    managerBillingDetailResponse.setPreDeposit(0D);
+                    managerBillingDetailResponse.setCreditMoney(0D);
 
                     if (null != payhelperOrder) {
                         managerBillingDetailResponse.setPayForAnotherMoney(null == payhelperOrder.getPayhelperAmount() ? 0 : payhelperOrder.getPayhelperAmount());

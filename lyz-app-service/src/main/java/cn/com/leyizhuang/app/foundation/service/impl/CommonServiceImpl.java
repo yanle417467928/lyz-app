@@ -1615,9 +1615,9 @@ public class CommonServiceImpl implements CommonService {
                     if (goodsInfo.getSku().equals(details.getSku()) && AppGoodsLineType.GOODS.equals(goodsInfo.getGoodsLineType())
                             && AppGoodsLineType.GOODS.equals(details.getGoodsLineType())) {
                         Double returnGoodsJxPriceAmount = CountUtil.mul(goodsInfo.getReturnQty(), details.getUnitPrice());
-                        if (returnGoodsJxPriceAmount > AppConstant.DOUBLE_ZERO){
-                            jxPrice = CountUtil.add(jxPrice, returnGoodsJxPriceAmount);
-                        }
+
+                        jxPrice = CountUtil.add(jxPrice, returnGoodsJxPriceAmount);
+
                         ReturnOrderJxPriceDifferenceRefundDetails returnDetails = new ReturnOrderJxPriceDifferenceRefundDetails();
                         returnDetails.setAmount(returnGoodsJxPriceAmount);
                         returnDetails.setCreateTime(new Date());
@@ -1637,9 +1637,9 @@ public class CommonServiceImpl implements CommonService {
                     }else if (goodsInfo.getSku().equals(details.getSku()) && AppGoodsLineType.PRODUCT_COUPON.equals(goodsInfo.getGoodsLineType())
                             && AppGoodsLineType.PRODUCT_COUPON.equals(details.getGoodsLineType())){
                         Double returnGoodsJxPriceAmount = CountUtil.mul(goodsInfo.getReturnQty(), details.getUnitPrice());
-                        if (returnGoodsJxPriceAmount > AppConstant.DOUBLE_ZERO){
-                            jxPrice = CountUtil.add(jxPrice, returnGoodsJxPriceAmount);
-                        }
+
+                        jxPrice = CountUtil.add(jxPrice, returnGoodsJxPriceAmount);
+
                         ReturnOrderJxPriceDifferenceRefundDetails returnDetails = new ReturnOrderJxPriceDifferenceRefundDetails();
                         returnDetails.setAmount(returnGoodsJxPriceAmount);
                         returnDetails.setCreateTime(new Date());
@@ -1663,26 +1663,28 @@ public class CommonServiceImpl implements CommonService {
             for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                 StorePreDeposit preDeposit = storeService.findStorePreDepositByStoreId(returnOrderBaseInfo.getStoreId());
                 if (null != preDeposit) {
-                    int affectLine = storeService.updateStoreDepositByStoreIdAndStoreDeposit(
-                            returnOrderBaseInfo.getStoreId(), jxPrice, preDeposit.getLastUpdateTime());
-                    if (affectLine > 0) {
-                        StPreDepositLogDO log = new StPreDepositLogDO();
-                        log.setStoreId(preDeposit.getStoreId());
-                        log.setChangeMoney(jxPrice);
-                        log.setBalance(preDeposit.getBalance() - jxPrice);
-                        log.setCreateTime(LocalDateTime.now());
-                        log.setOrderNumber(returnOrderBaseInfo.getReturnNo());
-                        log.setOperatorId(returnOrderBaseInfo.getCreatorId());
-                        log.setOperatorType(returnOrderBaseInfo.getCreatorIdentityType());
-                        //TODO 退单中是否加退单操作人Ip
-                        log.setOperatorIp("");
-                        log.setChangeType(StorePreDepositChangeType.JX_PRICE_DIFFERENCE_DEDUCTION);
-                        log.setChangeTypeDesc(StorePreDepositChangeType.JX_PRICE_DIFFERENCE_DEDUCTION.getDescription());
-                        storeService.addStPreDepositLog(log);
-                        break;
-                    } else {
-                        if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
-                            throw new SystemBusyException("系统繁忙，请稍后再试!");
+                    if (jxPrice > 0D) {
+                        int affectLine = storeService.updateStoreDepositByStoreIdAndStoreDeposit(
+                                returnOrderBaseInfo.getStoreId(), jxPrice, preDeposit.getLastUpdateTime());
+                        if (affectLine > 0) {
+                            StPreDepositLogDO log = new StPreDepositLogDO();
+                            log.setStoreId(preDeposit.getStoreId());
+                            log.setChangeMoney(jxPrice);
+                            log.setBalance(preDeposit.getBalance() - jxPrice);
+                            log.setCreateTime(LocalDateTime.now());
+                            log.setOrderNumber(returnOrderBaseInfo.getReturnNo());
+                            log.setOperatorId(returnOrderBaseInfo.getCreatorId());
+                            log.setOperatorType(returnOrderBaseInfo.getCreatorIdentityType());
+                            //TODO 退单中是否加退单操作人Ip
+                            log.setOperatorIp("");
+                            log.setChangeType(StorePreDepositChangeType.JX_PRICE_DIFFERENCE_DEDUCTION);
+                            log.setChangeTypeDesc(StorePreDepositChangeType.JX_PRICE_DIFFERENCE_DEDUCTION.getDescription());
+                            storeService.addStPreDepositLog(log);
+                            break;
+                        } else {
+                            if (i == AppConstant.OPTIMISTIC_LOCK_RETRY_TIME) {
+                                throw new SystemBusyException("系统繁忙，请稍后再试!");
+                            }
                         }
                     }
                 } else {

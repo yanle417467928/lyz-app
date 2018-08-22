@@ -131,4 +131,12 @@ public class testSellDetails {
         System.out.println(resultMap.get("return_code").toString());
         System.out.println(resultMap.get("result_code").toString());
     }
+
+    @Test
+    public void retunUnionPay(){
+        Map<String, String> resultMap = maOnlinePayRefundService.unionPayReturnMoney(2079L,0,0D,
+                "","",10915L);
+
+        System.out.println(resultMap.get("code")+"   "+resultMap.get("msg"));
+    }
 }

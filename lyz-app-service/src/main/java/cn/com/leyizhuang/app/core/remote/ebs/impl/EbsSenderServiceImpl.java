@@ -33,10 +33,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -426,6 +423,14 @@ public class EbsSenderServiceImpl implements EbsSenderService {
     public Map<String, Object> sendOrderAndGoodsToEbs(OrderBaseInf orderInf, List<OrderGoodsInf> goodsInfs) {
         log.info("sendOrderAndGoodsToEbs, orderInf=" + orderInf);
         log.info("sendOrderAndGoodsToEbs,goodsInfs=" + goodsInfs);
+
+        if (orderInf.getOrderNumber().contains("XQ") || orderInf.getMainOrderNumber().contains("FW")){
+            // 喜鹊分单 和 服务单都不穿 ebs
+            Map<String, Object> result = new HashMap<>();
+            result.put("success",false);
+            result.put("msg", "喜鹊和服务单不传ebs");
+            return result;
+        }
 
         OrderSecond orderSecond = new OrderSecond();
         orderSecond.setMainOrderNumber(toString(orderInf.getMainOrderNumber()));
@@ -858,6 +863,16 @@ public class EbsSenderServiceImpl implements EbsSenderService {
     private Map<String, Object> sendReturnOrderAndReturnGoodsToEbs(ReturnOrderBaseInf baseInf, List<ReturnOrderGoodsInf> returnOrderGoodsInfList) {
         log.info("sendReturnOrderAndReturnGoodsToEbs, returnOrderInf=" + baseInf);
         log.info("sendReturnOrderAndReturnGoodsToEbs,returnOrderGoodsInfList=" + returnOrderGoodsInfList);
+
+        if (baseInf.getOrderNumber().contains("XQ") || baseInf.getOrderNumber().contains("BJ")){
+            // 喜鹊分单 和 服务单都不穿 ebs
+            Map<String, Object> result = new HashMap<>();
+
+            result.put("success",false);
+            result.put("msg", "喜鹊和服务单不传ebs");
+
+            return  result;
+        }
 
         ReturnOrderSecond returnOrderSecond = new ReturnOrderSecond();
         returnOrderSecond.setDeliverTypeTitle(toString(baseInf.getDeliverTypeTitle()));
