@@ -197,4 +197,23 @@ public interface AppCustomerDAO {
 
 
     Integer findProductCouponAvailQtyByCustomerIdAndGid(@Param("userId") Long userId, @Param("gid")Long gid, @Param("sellerId")Long sellerId);
+
+    Integer findAllNotUsedCoupons(@Param(value = "userId") Long userId);
+
+    Integer findAllUsedCoupons(@Param(value = "userId") Long userId);
+
+    Integer findAllOverdueCoupons(@Param(value = "userId") Long userId);
+
+
+    List<ProductCouponResponse> findAllNotUsedCouponsDetails(
+            @Param(value = "userId") Long userId);
+
+
+    List<ProductCouponResponse> findAllUsedCouponsDetails(
+            @Param(value = "userId") Long userId);
+
+    List<ProductCouponResponse> findAllOverdueCouponsDetails(
+            @Param(value = "userId") Long userId);
+
+
 }

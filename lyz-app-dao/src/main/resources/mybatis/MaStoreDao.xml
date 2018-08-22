@@ -262,31 +262,32 @@
         WHERE store_id = #{storeId}
     </update>
 
-    <select id="queryDecorativeCompanyPageVO" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.StoreDO">
-        SELECT
-        s.store_code,
-        s.store_name,
-        s.enable,
-        s.store_id,
-        c.name AS city,
-        s.create_time,
-        s.fit_compay_type,
-		s.sales_manager_name as salesManager,
-	    emp.name as seller,
-	    s.fit_compay_type AS company
-        FROM
-        st_store s
-        LEFT JOIN city c ON s.city_code = c.code
-		LEFT JOIN emp_employee emp  ON s.store_id=emp.store_id
-        WHERE
-        s.store_type="ZS"
-        ORDER BY
-        s.create_time
-        DESC
+    <select id="queryDecorativeCompanyPageVO"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.StoreDO">
+                    SELECT
+                s.store_code,
+                s.store_name,
+                s.ENABLE,
+                s.store_id,
+                c.NAME AS city,
+                s.create_time,
+                s.fit_compay_type,
+                s.sales_manager_name AS salesManager,
+                ss.store_name AS storeNameForCash,
+                s.fit_compay_type AS company
+                FROM
+                st_store s
+                LEFT JOIN city c ON s.city_code = c.
+                CODE LEFT JOIN emp_employee emp ON emp.emp_id = s.sales_manager
+                LEFT JOIN st_store ss ON emp.store_id = ss.store_id
+                WHERE
+                s.store_type = "ZS"
+                ORDER BY
+                s.create_time DESC
     </select>
 
     <select id="queryDecorativeCompanyList" resultMap="storeDOResultMap">
-           SELECT
+        SELECT
         s.store_code,
         s.store_name,
         s.enable,
@@ -298,21 +299,21 @@
         FROM
         st_store s
         LEFT JOIN city c ON s.city_code = c.code
-        LEFT  JOIN emp_employee ee ON  ee.emp_id = s.sales_manager
+        LEFT JOIN emp_employee ee ON ee.emp_id = s.sales_manager
         WHERE
-         s.store_type="ZS"
+        s.store_type="ZS"
         <if test="fitCompayType !=null and ''!=fitCompayType">
-          AND s.fit_compay_type = #{fitCompayType}
+            AND s.fit_compay_type = #{fitCompayType}
         </if>
         <if test="keywords !=null and ''!=keywords">
-          AND (
+            AND (
             s.store_code like CONCAT('%', #{keywords}, '%')
             OR
             s.store_name like CONCAT('%', #{keywords}, '%')
             )
         </if>
         <if test="cityId !=null and -1!=cityId">
-            AND   s.city_id =#{cityId}
+            AND s.city_id =#{cityId}
         </if>
         AND
         s.store_id IN
@@ -337,21 +338,23 @@
     </select>
 
     <select id="findDecorativeByCondition" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.StoreDO">
+
         SELECT
         s.store_code,
         s.store_name,
-        s.enable,
+        s.ENABLE,
         s.store_id,
-        c.name AS city,
+        c.NAME AS city,
         s.create_time,
         s.fit_compay_type,
-        s.sales_manager_name as salesManager,
-        emp.name as seller,
+        s.sales_manager_name AS salesManager,
+        ss.store_name AS storeNameForCash,
         s.fit_compay_type AS company
         FROM
         st_store s
-        LEFT JOIN city c ON s.city_code = c.code
-        LEFT JOIN emp_employee emp  ON s.store_id=emp.store_id
+        LEFT JOIN city c ON s.city_code = c.
+        CODE LEFT JOIN emp_employee emp ON emp.emp_id = s.sales_manager
+        LEFT JOIN st_store ss ON emp.store_id = ss.store_id
         WHERE
         1=1
         <if test="company == ''">
@@ -400,7 +403,8 @@
          DESC
     </select>
 
-    <select id="findDecorativeById" parameterType="java.lang.Long" resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.StoreDO">
+    <select id="findDecorativeById" parameterType="java.lang.Long"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.management.store.StoreDO">
         SELECT
         s.store_code,
         s.store_name,
@@ -853,9 +857,10 @@
         FROM
         st_store s
         LEFT JOIN
-        bill_rule br ON  s.store_id = br.store_id
+        bill_rule br ON s.store_id = br.store_id
         WHERE
         s.store_type ='ZS'
+        AND s.fit_compay_type ='CASH'
         AND br.id is NULL
         AND s.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">

@@ -74,6 +74,7 @@ public class StoreDO {
     //销售员
     private  String seller;
 
-
+    //小型公司所在门店
+    private  String storeNameForCash;
 
 }

@@ -53,7 +53,7 @@ public class MaCashCouponRestController extends  BaseRestController{
     }
 
     @PostMapping("/save")
-    public ResultDTO<?> save(@Valid CashCoupon cashCoupon, String goodsDetails, String companys, String brands ,String stores , BindingResult result)throws IOException {
+    public ResultDTO<?> save(@Valid CashCoupon cashCoupon, String goodsDetails, String companys, String brands ,String stores , BindingResult result,Long optId)throws IOException {
         if (!result.hasErrors()) {
             ObjectMapper objectMapper = new ObjectMapper();
             JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, CashCouponGoods.class);
@@ -92,7 +92,8 @@ public class MaCashCouponRestController extends  BaseRestController{
             }
 
             /* 持久化数据 */
-            cashCouponService.saveCashCouponTemplate(cashCoupon,companyList,brandList,goodsList,storeList);
+            optId=this.getShiroUser().getId();
+            cashCouponService.saveCashCouponTemplate(cashCoupon,companyList,brandList,goodsList,storeList,optId);
 
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "新增现金券模版成功！", null);
         } else {
@@ -161,17 +162,17 @@ public class MaCashCouponRestController extends  BaseRestController{
     }
 
     @PostMapping(value = "/send")
-    public ResultDTO<?> send(Long customerId,Long cashCouponId,Integer qty) throws IOException {
-
+    public ResultDTO<?> send(Long customerId,Long cashCouponId,Integer qty,Long optId) throws IOException {
+        optId=this.getShiroUser().getId();
         if(customerId == null || cashCouponId == null || qty == 0){
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发送失败", null);
         }
 
-        return cashCouponSendService.send(customerId,cashCouponId,qty);
+        return cashCouponSendService.send(customerId,cashCouponId,qty,optId);
     }
 
     @PostMapping(value = "/sendBatch")
-    public ResultDTO<?> sendBatch(String customerIds,Long cashCouponId,Integer qty) throws IOException {
+    public ResultDTO<?> sendBatch(String customerIds,Long cashCouponId,Integer qty,Long optId) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
         JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, Long.class);
@@ -181,6 +182,6 @@ public class MaCashCouponRestController extends  BaseRestController{
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发送失败", null);
         }
 
-        return cashCouponSendService.sendBatch(idList,cashCouponId,qty);
+        return cashCouponSendService.sendBatch(idList,cashCouponId,qty,optId);
     }
 }

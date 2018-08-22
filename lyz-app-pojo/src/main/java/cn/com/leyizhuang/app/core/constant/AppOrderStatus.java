@@ -87,6 +87,7 @@ public enum AppOrderStatus {
         List<AppOrderStatus> appOrderStatus = new ArrayList<>();
         appOrderStatus.add(AppOrderStatus.PENDING_RECEIVE);
         appOrderStatus.add(AppOrderStatus.FINISHED);
+        appOrderStatus.add(AppOrderStatus.CANCELED);
         return appOrderStatus;
     }
 }

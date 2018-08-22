@@ -87,14 +87,21 @@ public class MaRetrunOrderRestController extends BaseRestController {
      * @return 订单列表
      */
     @GetMapping(value = "/page/screenGrid")
-    public GridDataVO<MaReturnOrderInfo> restReturnOrderPageGirdByScreen(Integer offset, Integer size, String keywords, @RequestParam(value = "storeId") Long storeId, @RequestParam(value = "status") String status) {
+    public GridDataVO<MaReturnOrderInfo> restReturnOrderPageGirdByScreen(Integer offset, Integer size, String keywords, @RequestParam(value = "storeId") Long storeId, @RequestParam(value = "orderStatus") String status
+            , @RequestParam(value = "beginTime") String beginTime, @RequestParam(value = "endTime") String endTime
+            , @RequestParam(value = "memberName") String memberName, @RequestParam(value = "memberPhone") String memberPhone
+            , @RequestParam(value = "creatorName") String creatorName,@RequestParam(value = "shippingAddress") String shippingAddress
+            ,@RequestParam(value = "receiverName") String receiverName,@RequestParam(value = "queryOrderInfo") String queryOrderInfo
+            ,@RequestParam(value = "receiverPhone") String receiverPhone,@RequestParam(value = "sellerName") String sellerName
+            ,@RequestParam(value = "cityId") String cityId) {
         logger.info("restReturnOrderPageGirdByScreen 后台根据筛选条件分页查询退货单列表 ,入参offset:{}, size:{}, kewords:{},storeId:{},status:{}", offset, size, keywords, storeId, status);
         try {
 
             size = getSize(size);
             Integer page = getPage(offset, size);
             List<Long> storeIds = this.adminUserStoreService.findStoreIdList();
-            PageInfo<MaReturnOrderInfo> ReturnOrderVOPageInfo = this.maReturnOrderService.findMaReturnOrderListByScreen(page, size, storeId, status, storeIds);
+            PageInfo<MaReturnOrderInfo> ReturnOrderVOPageInfo = this.maReturnOrderService.findMaReturnOrderListByScreen(page, size, storeId, status, storeIds,beginTime,endTime,memberName,memberPhone,creatorName,queryOrderInfo
+            ,shippingAddress,receiverName,receiverPhone,sellerName,cityId);
             List<MaReturnOrderInfo> ReturnOrderVOList = ReturnOrderVOPageInfo.getList();
             logger.info("restReturnOrderPageGirdByScreen ,后台根据筛选条件分页查询退货单列表成功", (ReturnOrderVOList == null) ? 0 : ReturnOrderVOList.size());
             return new GridDataVO<MaReturnOrderInfo>().transform(ReturnOrderVOList, ReturnOrderVOPageInfo.getTotal());

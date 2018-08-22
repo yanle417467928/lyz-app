@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface CashCouponSendService {
 
-    ResultDTO<String> send(Long customerId, Long cashCouponId, Integer qty);
+    ResultDTO<String> send(Long customerId, Long cashCouponId, Integer qty,Long optId);
 
-    ResultDTO<String> sendBatch(List<Long> customerIdList, Long cashCouponId, Integer qty);
+    ResultDTO<String> sendBatch(List<Long> customerIdList, Long cashCouponId, Integer qty,Long optId);
 }

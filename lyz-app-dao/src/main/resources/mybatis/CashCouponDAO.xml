@@ -34,19 +34,19 @@
             keyProperty="id">
     INSERT INTO cp_cash_coupon
     (create_time, `condition`, denomination, effective_start_time, effective_end_time, description, initial_quantity, remaining_quantity,
-    title, city_id , city_name , `type` ,is_specified_store,sort_id,`status`)
+    title, city_id , city_name , `type` ,is_specified_store,sort_id,`status`,opt_userid)
     VALUES
     (#{createTime}, #{condition}, #{denomination}, #{effectiveStartTime}, #{effectiveEndTime}, #{description}, #{initialQuantity}, #{remainingQuantity}, #{title}
-    ,#{cityId} ,#{cityName} ,#{type} , #{isSpecifiedStore} ,#{sortId},#{status})
+    ,#{cityId} ,#{cityName} ,#{type} , #{isSpecifiedStore} ,#{sortId},#{status},#{optUserid})
 </insert>
 
     <insert id="addCustomerCashCoupon" parameterType="cn.com.leyizhuang.app.foundation.pojo.CustomerCashCoupon">
         INSERT INTO cus_customer_cash_coupon
         (cus_id, ccid, qty, get_time, is_used, use_time, use_ord_no, down_time, status, `condition`, denomination,effective_start_time,
-         effective_end_time, descripttion, title,city_id , city_name , `type` ,is_specified_store,last_update_time)
+         effective_end_time, descripttion, title,city_id , city_name , `type` ,is_specified_store,last_update_time,opt_userid)
         VALUES
         (#{cusId}, #{ccid}, #{qty}, #{getTime}, #{isUsed}, #{useTime}, #{useOrderNumber}, #{downTime}, #{status}, #{condition},
-         #{denomination}, #{effectiveStartTime}, #{effectiveEndTime}, #{description}, #{title},#{cityId} ,#{cityName} ,#{type} , #{isSpecifiedStore}, #{lastUpdateTime})
+         #{denomination}, #{effectiveStartTime}, #{effectiveEndTime}, #{description}, #{title},#{cityId} ,#{cityName} ,#{type} , #{isSpecifiedStore}, #{lastUpdateTime},#{optUserid})
     </insert>
 
     <insert id="addCashCouponStores" parameterType="java.util.List">

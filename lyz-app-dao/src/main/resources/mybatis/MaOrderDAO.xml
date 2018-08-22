@@ -752,10 +752,7 @@
         obi.order_subject_type = 'STORE'
         AND
         obi.delivery_type= 'SELF_TAKE'
-        AND
-        obi.status !='UNPAID'
-        AND
-        obi.status !='CANCELED'
+
         <if test="cityId != null and cityId != -1">
             AND obi.city_id = #{cityId}
         </if>

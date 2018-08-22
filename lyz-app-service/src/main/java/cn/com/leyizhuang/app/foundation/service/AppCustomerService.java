@@ -179,4 +179,19 @@ public interface AppCustomerService {
     Integer findProductCouponAvailQtyByCustomerIdAndGid(Long userId, Long gid, Long sellerId);
 
 
+    Integer findAllNotUsedCoupons(Long userId);
+
+    Integer findAllUsedCoupons(Long userId);
+
+    Integer findAllOverdueCoupons(Long userId);
+
+
+
+    List<ProductCouponResponse> findAllNotUsedCouponsDetails(Long userId);
+
+    List<ProductCouponResponse> findAllUsedCouponsDetails(Long userId);
+
+    List<ProductCouponResponse> findAllOverdueCouponsDetails(Long userId);
+
+
 }

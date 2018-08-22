@@ -47,6 +47,9 @@ public class DecorativeCompanyVO {
     //所属城市
     private String city;
 
+    //小型公司所在门店
+    private  String storeNameForCash;
+
 
     public static final DecorativeCompanyVO transform(StoreDO storeDO) {
         if (null != storeDO) {
@@ -59,6 +62,7 @@ public class DecorativeCompanyVO {
             decorativeCompanyVO.setSalesManager(storeDO.getSalesManager());
             decorativeCompanyVO.setSeller(storeDO.getSeller());
             decorativeCompanyVO.setCity(storeDO.getCity());
+            decorativeCompanyVO.setStoreNameForCash(storeDO.getStoreNameForCash());
 
 
             if (storeDO.getCompany()!=null){

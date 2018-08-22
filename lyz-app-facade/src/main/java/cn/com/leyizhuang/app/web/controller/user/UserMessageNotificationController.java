@@ -84,7 +84,7 @@ public class UserMessageNotificationController {
      * @param
      * @return
      * @throws
-     * @title 消息通知列表
+     * @title 消息通知详情
      * @descripe
      * @author GenerationRoad
      * @date 2017/10/10
