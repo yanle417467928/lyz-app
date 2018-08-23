@@ -341,7 +341,8 @@
             ccpc.wholesale_price wholesalePrice
         FROM
             cus_customer_product_coupon ccpc
+        inner JOIN ord_goods_info og on og.id = ccpc.goods_line_id
         WHERE
-            ccpc.id = #{couponId}
+            ccpc.id = #{couponId} and og.goods_line_type = "GOODS"
     </select>
 </mapper>
