@@ -544,4 +544,9 @@ public class MaReportDownloadServiceImpl implements MaReportDownloadService {
         return this.maReportDownloadDAO.findStoreInventorySummaryList(cityId,storeId,storeIds,endTime,startTime);
     }
 
+    @Override
+    public List<AccountGoodsItemsDO> getAllJxPriceByStoreIds(Long storeId, List storeIds) {
+        return this.maReportDownloadDAO.getAllJxPriceByStoreIds(storeId, storeIds);
+    }
+
 }

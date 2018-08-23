@@ -128,6 +128,8 @@ public class AccountGoodsItemsDO {
 
     // 工程单
     private String isGcOrder;
+    //门店id
+    private Long storeId;
 
     public void setGoodsLineType(AppGoodsLineType goodsLineType){
         this.goodsLineType = goodsLineType.getDescription();

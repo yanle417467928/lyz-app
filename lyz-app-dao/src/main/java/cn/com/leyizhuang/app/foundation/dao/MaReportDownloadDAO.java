@@ -123,4 +123,7 @@ public interface MaReportDownloadDAO {
 
     List<StInventoryRealSummaryReportDO> findStoreInventorySummaryList(@Param("cityId")Long cityId,@Param("storeId")Long storeId,
                                                                            @Param("storeIds")List storeIds,@Param("endTime")String endTime,@Param("startTime")String startTime);
+
+    List<AccountGoodsItemsDO> getAllJxPriceByStoreIds(@Param("storeId")Long storeId, @Param("list")List storeIds);
+
 }
