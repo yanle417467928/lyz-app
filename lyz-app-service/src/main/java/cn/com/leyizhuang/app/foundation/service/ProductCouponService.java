@@ -97,4 +97,7 @@ public interface ProductCouponService {
     List<CusProductCouponMsgInfo> findExpiringSoonProductCoupon();
 
     void sendMsgForExpiringSoonProductCoupon();
+
+    // 查询退单产品券是否为 本品
+
 }

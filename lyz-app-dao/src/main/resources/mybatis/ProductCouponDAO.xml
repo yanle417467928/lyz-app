@@ -345,4 +345,6 @@
         WHERE
             ccpc.id = #{couponId} and og.goods_line_type = "GOODS"
     </select>
+
+
 </mapper>

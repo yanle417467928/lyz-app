@@ -6,6 +6,7 @@ import cn.com.leyizhuang.app.core.exception.*;
 import cn.com.leyizhuang.app.core.utils.*;
 import cn.com.leyizhuang.app.core.utils.csrf.EncryptUtils;
 import cn.com.leyizhuang.app.core.utils.order.OrderUtils;
+import cn.com.leyizhuang.app.foundation.dao.OrderDAO;
 import cn.com.leyizhuang.app.foundation.pojo.*;
 import cn.com.leyizhuang.app.foundation.pojo.city.City;
 import cn.com.leyizhuang.app.foundation.pojo.goods.GoodsDO;
@@ -124,6 +125,9 @@ public class CommonServiceImpl implements CommonService {
 
     @Autowired
     private AppActService actService;
+
+    @Autowired
+    private OrderDAO orderDAO;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -1516,6 +1520,8 @@ public class CommonServiceImpl implements CommonService {
                             details.setSku(orderGoodsInfo.getSku());
                             details.setStoreId(orderBaseInfo.getStoreId());
                             details.setStoreCode(orderBaseInfo.getStoreCode());
+                            details.setGoodsLineType(orderGoodsInfo.getGoodsLineType());
+
                             detailsList.add(details);
                         }
                     }
@@ -1527,7 +1533,8 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public List<OrderJxPriceDifferenceReturnDetails> createOrderJxPriceDifferenceReturnDetails(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList, List<PromotionSimpleInfo> promotionSimpleInfos, List<OrderCouponInfo> orderProductCouponInfoList ) {
+    public List<OrderJxPriceDifferenceReturnDetails> createOrderJxPriceDifferenceReturnDetails(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList,
+                                                                   List<PromotionSimpleInfo> promotionSimpleInfos, List<OrderCouponInfo> orderProductCouponInfoList ) {
         Map<Long, Double> map = actService.returnGcActIdAndJXDiscunt(promotionSimpleInfos);
 
         AppStore store = storeService.findById(orderBaseInfo.getStoreId());
@@ -1636,7 +1643,9 @@ public class CommonServiceImpl implements CommonService {
                         break;
                     }else if (goodsInfo.getSku().equals(details.getSku()) && AppGoodsLineType.PRODUCT_COUPON.equals(goodsInfo.getGoodsLineType())
                             && AppGoodsLineType.PRODUCT_COUPON.equals(details.getGoodsLineType())){
-                        Double returnGoodsJxPriceAmount = CountUtil.mul(goodsInfo.getReturnQty(), details.getUnitPrice());
+                        // 获取本品券数量
+                        Integer returnBpQty = orderDAO.getBpProductByReturnNo(returnOrderBaseInfo.getReturnNo(),goodsInfo.getSku());
+                        Double returnGoodsJxPriceAmount = CountUtil.mul(returnBpQty, details.getUnitPrice());
 
                         jxPrice = CountUtil.add(jxPrice, returnGoodsJxPriceAmount);
 
