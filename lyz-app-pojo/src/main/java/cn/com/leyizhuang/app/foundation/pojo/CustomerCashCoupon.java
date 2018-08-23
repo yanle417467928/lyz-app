@@ -131,4 +131,8 @@ public class CustomerCashCoupon implements Serializable {
      * 修改时间
      */
     private Date lastUpdateTime;
+
+
+    //操作人
+    private Long optUserid;
 }

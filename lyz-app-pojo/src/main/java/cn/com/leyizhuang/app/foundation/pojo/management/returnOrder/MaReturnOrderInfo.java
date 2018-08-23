@@ -1,6 +1,7 @@
 package cn.com.leyizhuang.app.foundation.pojo.management.returnOrder;
 
 import cn.com.leyizhuang.app.core.constant.*;
+import cn.com.leyizhuang.app.foundation.pojo.management.Customer;
 import lombok.*;
 
 import java.util.Date;
@@ -45,5 +46,21 @@ public class MaReturnOrderInfo {
      * 退单状态
      */
     private AppReturnOrderStatus returnStatus;
+
+    /**
+     * 顾客姓名
+     */
+    private String memberName;
+
+
+    /**
+     * 顾客电话
+     */
+    private  String memberPhone;
+
+
+
+
+
 
 }

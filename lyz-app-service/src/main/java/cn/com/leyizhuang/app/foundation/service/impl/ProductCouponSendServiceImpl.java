@@ -1,5 +1,6 @@
 package cn.com.leyizhuang.app.foundation.service.impl;
 
+import cn.com.leyizhuang.app.core.config.shiro.ShiroUser;
 import cn.com.leyizhuang.app.core.constant.CouponGetType;
 import cn.com.leyizhuang.app.foundation.dao.AppCustomerDAO;
 import cn.com.leyizhuang.app.foundation.dao.MaEmployeeDAO;
@@ -42,9 +43,13 @@ public class ProductCouponSendServiceImpl implements ProductCouponSendService {
     @Resource
     private ProductCouponService productCouponService;
 
+
+
+
+
     @Override
     @Transactional
-    public ResultDTO<String> send(Long customerId, Long productCouponId,Long sellerId, Integer qty){
+    public ResultDTO<String> send(Long customerId, Long productCouponId,Long sellerId, Integer qty,Long optId){
 
         AppCustomer appCustomer = cusertomerDAO.findById(customerId);
         EmployeeDO employeeDO = maEmployeeDAO.queryEmployeeById(sellerId);
@@ -74,6 +79,10 @@ public class ProductCouponSendServiceImpl implements ProductCouponSendService {
         customerProductCoupon.setSellerId(employeeDO.getEmpId());
         customerProductCoupon.setStatus(true);
         customerProductCoupon.setGoodsSign("COMMON");
+        customerProductCoupon.setOptUserid(optId);
+        //设置券的操作人
+
+
 
         for (int i = 0;i < qty ; i++){
             productCouponDAO.addCustomerProductCoupon(customerProductCoupon);
@@ -100,10 +109,10 @@ public class ProductCouponSendServiceImpl implements ProductCouponSendService {
      * @return
      */
     @Transactional
-    public ResultDTO<String> sendBatch(List<Long> customerIdList, Long productCouponId, Long sellerId, Integer qty){
+    public ResultDTO<String> sendBatch(List<Long> customerIdList, Long productCouponId, Long sellerId, Integer qty,Long optId){
         ResultDTO<String> result = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "未发送任何券", null);
         for (Long customerId : customerIdList) {
-            result = this.send(customerId,productCouponId,sellerId,qty);
+            result = this.send(customerId,productCouponId,sellerId,qty,optId);
             if (result.getCode().equals(-1)){
                 break;
             }

@@ -113,7 +113,7 @@ public class MaAllocationRestController extends BaseRestController{
         }
 
         Long storeId = null;
-        List<Long> storeIds = adminUserStoreService.findStoreIdList();
+        List<Long> storeIds = adminUserStoreService.findZYStoreIdList();
 
         if (storeIds != null && storeIds.size() == 1){
             storeId = storeIds.get(0);

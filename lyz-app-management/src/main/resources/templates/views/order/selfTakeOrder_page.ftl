@@ -342,10 +342,10 @@
     function findOrderByCondition() {
         $("#queryOrderInfo").val('');
         $("#dataGrid").bootstrapTable('destroy');
-        var cityId = $("#cityCode").val();
-        var storeId = $("#storeCode").val();
-        var status = $("#status").val();
-        var isPayUp = $("#isPayUp").val();
+        var cityId = $("#cityCode").val().trim();
+        var storeId = $("#storeCode").val().trim();
+        var status = $("#status").val().trim();
+        var isPayUp = $("#isPayUp").val().trim();
         initDateGird('/rest/order/selfTakeOrder/page/screenGrid?cityId=' + cityId + '&storeId=' + storeId + '&status=' + status + '&isPayUp=' + isPayUp);
     }
 
@@ -410,19 +410,19 @@
     };
 
     function findOrderByFilterCondition() {
-        var beginTime = $("#beginTime").val();
-        var endTime = $("#endTime").val();
+        var beginTime = $("#beginTime").val().trim();
+        var endTime = $("#endTime").val().trim();
         var memberName = $("#memberName").val().trim();
         var shippingAddress = $("#shippingAddress").val().trim();
         var sellerName = $("#sellerName").val().trim();
         var memberPhone = $("#memberPhone").val().trim();
         var receiverName = $("#receiverName").val().trim();
         var receiverPhone = $("#receiverPhone").val().trim();
-        var cityId = $("#cityCode").val();
-        var storeId = $("#storeCode").val();
-        var orderStatus = $("#orderStatus").val();
-        var isPayUp = $("#isPayUp").val();
-        var queryOrderInfo = $("#queryOrderInfo").val().trim();
+        var cityId = $("#cityCode").val().trim();
+        var storeId = $("#storeCode").val().trim();
+        var orderStatus = $("#orderStatus").val().trim();
+        var isPayUp = $("#isPayUp").val().trim();
+        var queryOrderInfo = $("#queryOrderInfo").val().trim().trim();
         $("#dataGrid").bootstrapTable('destroy');
         if (null != queryOrderInfo && "" != queryOrderInfo) {
             initDateGird('/rest/order/selfTakeOrder/page/infoGrid?info=' + queryOrderInfo);

@@ -97,4 +97,7 @@ public class ProductCoupon implements Serializable {
      * 排序号
      */
     private Integer sortId;
+
+    //操作人
+    private Long optUserid;
 }

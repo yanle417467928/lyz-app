@@ -137,4 +137,7 @@ public class CustomerProductCoupon implements Serializable {
      * 产品券主体类型
      */
     private ProductCouponSubjectType productCouponSubjectType;
+
+    //操作人
+    private Long optUserid;
 }

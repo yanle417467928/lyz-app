@@ -42,11 +42,32 @@
         orbi.ord_type orderType,
         orbi.return_status returnStatus,
         s.store_name storeName
+
+
         FROM ord_return_base_info orbi
         LEFT JOIN
         st_store AS s ON s.store_id = orbi.store_id
+        LEFT JOIN
+        ord_base_info AS obi ON orbi.ord_no=obi.ord_no
+        LEFT JOIN
+        ord_logistics_info AS oli ON obi.ord_no = oli.ord_no
         WHERE
         1=1
+        <if test="shippingAddress != null and shippingAddress != ''">
+            AND oli.shipping_address LIKE concat(concat('%',#{shippingAddress}),'%')
+        </if>
+        <if test="receiverName != null and receiverName != ''">
+            AND oli.receiver LIKE concat(concat('%',#{receiverName}),'%')
+        </if>
+        <if test="receiverPhone != null and receiverPhone != ''">
+            AND oli.receiver_phone LIKE concat(concat('%',#{receiverPhone}),'%')
+        </if>
+        <if test="sellerName != null and sellerName != ''">
+            AND obi.sales_consult_name LIKE concat(concat('%',#{sellerName}),'%')
+        </if>
+        <if test="cityId != null and cityId != -1">
+            AND obi.city_id = #{cityId}
+        </if>
         <if test="null!=storeId and ''!= storeId">
             AND
             s.store_id =#{storeId}
@@ -54,6 +75,27 @@
         <if test=" null!= status and '-1'!=status ">
             AND
             orbi.return_status =#{status}
+        </if>
+        <if test="beginTime != null and beginTime != ''">
+            AND orbi.return_time &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND orbi.return_time &lt;= #{endTime}
+        </if>
+        <if test="memberName != null and memberName != ''">
+            AND orbi.cus_name LIKE concat(concat('%',#{memberName}),'%')
+        </if>
+        <if test="memberPhone != null and memberPhone != ''">
+            AND orbi.cus_phone LIKE concat(concat('%',#{memberPhone}),'%')
+        </if>
+        <if test="creatorName != null and creatorName != ''">
+            AND orbi.creator_name LIKE concat(concat('%',#{creatorName}),'%')
+        </if>
+        <if test="queryOrderInfo != null and queryOrderInfo != ''">
+            AND
+            (orbi.ord_no LIKE CONCAT('%',#{queryOrderInfo},'%')
+            OR
+            orbi.return_no LIKE CONCAT('%',#{queryOrderInfo},'%'))
         </if>
         AND orbi.store_id IN
         <foreach collection="list" item="item" open="(" close=")" separator=",">

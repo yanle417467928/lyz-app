@@ -62,6 +62,8 @@ public class MaProductCouponRestController extends BaseRestController {
             }
             productCoupon.setCreateTime(new Date());
             productCoupon.setRemainingQuantity(productCoupon.getInitialQuantity());
+            //新增的时候设置操作人是谁
+            productCoupon.setOptUserid(this.getShiroUser().getId());
             productCouponService.addProductCoupon(productCoupon);
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "新增产品券模版成功！", null);
         } else {
@@ -96,18 +98,18 @@ public class MaProductCouponRestController extends BaseRestController {
     }
 
     @PostMapping(value = "/send")
-    public ResultDTO<?> send(Long customerId, Long productCouponId, Long sellerId, Integer qty) throws IOException {
+    public ResultDTO<?> send(Long customerId, Long productCouponId, Long sellerId, Integer qty,Long optId) throws IOException {
 
         if (customerId == null || productCouponId == null || sellerId == null || qty == 0) {
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发送失败,参数有误", null);
         }
 
-
-        return productCouponSendService.send(customerId, productCouponId, sellerId, qty);
+        optId=this.getShiroUser().getId();
+        return productCouponSendService.send(customerId, productCouponId, sellerId, qty,optId);
     }
 
     @PostMapping(value = "/sendBatch")
-    public ResultDTO<?> sendBatch(String customerIds, Long productCouponId, Long sellerId, Integer qty) throws IOException {
+    public ResultDTO<?> sendBatch(String customerIds, Long productCouponId, Long sellerId, Integer qty,Long optId) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
         JavaType javaType1 = objectMapper.getTypeFactory().constructParametricType(ArrayList.class, Long.class);
@@ -117,6 +119,6 @@ public class MaProductCouponRestController extends BaseRestController {
             return new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "发送失败", null);
         }
 
-        return productCouponSendService.sendBatch(idList, productCouponId, sellerId, qty);
+        return productCouponSendService.sendBatch(idList, productCouponId, sellerId, qty,optId);
     }
 }

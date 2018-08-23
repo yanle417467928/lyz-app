@@ -41,7 +41,6 @@ import java.util.Map;
  **/
 @Service
 public class AppCustomerServiceImpl implements AppCustomerService {
-
     @Resource
     private AppCustomerDAO customerDAO;
 
@@ -124,6 +123,8 @@ public class AppCustomerServiceImpl implements AppCustomerService {
         }
         return null;
     }
+
+
 
     @Override
     public List<ProductCouponResponse> findProductCouponByCustomerId(Long userId) {
@@ -707,5 +708,47 @@ public class AppCustomerServiceImpl implements AppCustomerService {
     @Override
     public Integer findProductCouponAvailQtyByCustomerIdAndGid(Long userId, Long gid, Long sellerId) {
         return this.customerDAO.findProductCouponAvailQtyByCustomerIdAndGid(userId, gid, sellerId);
+    }
+
+
+    @Override
+    public Integer findAllNotUsedCoupons(Long userId) {
+        return this.customerDAO.findAllNotUsedCoupons(userId);
+    }
+
+    @Override
+    public Integer findAllUsedCoupons(Long userId) {
+        return this.customerDAO.findAllUsedCoupons(userId);
+    }
+
+    @Override
+    public Integer findAllOverdueCoupons(Long userId) {
+        return this.customerDAO.findAllOverdueCoupons(userId);
+    }
+
+
+
+    @Override
+    public List<ProductCouponResponse> findAllNotUsedCouponsDetails(Long userId) {
+        if (null != userId) {
+            return customerDAO.findAllNotUsedCouponsDetails(userId);
+        }
+        return null;
+    }
+
+    @Override
+    public List<ProductCouponResponse> findAllUsedCouponsDetails(Long userId) {
+        if (null != userId) {
+            return customerDAO.findAllUsedCouponsDetails(userId);
+        }
+        return null;
+    }
+
+    @Override
+    public List<ProductCouponResponse> findAllOverdueCouponsDetails(Long userId) {
+        if (null != userId) {
+            return customerDAO.findAllOverdueCouponsDetails(userId);
+        }
+        return null;
     }
 }

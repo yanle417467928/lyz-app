@@ -66,7 +66,11 @@ public interface GoodsPriceDAO {
 
     List<GoodsPrice> findGoodsPriceListByStoreIdAndSkuAndpriceType(@Param(value = "storeId")Long storeId,@Param(value = "priceType")String priceType,@Param(value = "sku")String sku);
 
+    GoodsPrice finGoodsPriceByLineId(@Param("lineId") Long lineId);
+
     void saveBackupsGoodsPrice(GoodsPrice goodsPrice);
 
     void delGoodsPriceListByStoreIdAndSkuAndpriceType(@Param(value = "storeId")Long storeId,@Param(value = "priceType")String priceType,@Param(value = "sku")String sku);
+
+    void delGoodsPriceListByLineId(@Param(value = "lineId")Long lineId);
 }

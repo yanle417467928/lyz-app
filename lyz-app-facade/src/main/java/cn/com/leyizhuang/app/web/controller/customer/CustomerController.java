@@ -19,6 +19,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang.time.DateUtils;
+import org.apache.ibatis.jdbc.Null;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,7 +36,7 @@ import java.util.stream.Collectors;
  * Richard
  *
  * @author 顾客控制器
- * Created on 2017-09-21 12:59
+ *         Created on 2017-09-21 12:59
  **/
 @RestController
 @RequestMapping(value = "/app/customer")
@@ -431,7 +432,7 @@ public class CustomerController {
      * @param userId       用户id
      * @param identityType 用户身份类型
      * @param cusId        顾客id
-     * @return 顾客产品券列表
+     * @return 顾客产品券明细列表
      */
     @PostMapping(value = "/productCoupon/list", produces = "application/json;charset=UTF-8")
     public ResultDTO<Object> customerProductCoupon(Long userId, Integer identityType, Long cusId) {
@@ -454,6 +455,24 @@ public class CustomerController {
                 logger.info("customerProductCoupon OUT,获取顾客可用产品券失败，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
             }
+//            if (identityType == 6) {
+//                Map<String, Object> map = new HashMap();
+//                List<ProductCouponResponse> productNotUsedCoupons = customerService.findAllNotUsedCouponsDetails(userId);
+//                List<ProductCouponResponse> productUsedCoupons = customerService.findAllUsedCouponsDetails(userId);
+//                List<ProductCouponResponse> productOverdueCoupons = customerService.findAllOverdueCouponsDetails(userId);
+//                map.put("未使用券明细", productNotUsedCoupons);
+//                map.put("已使用券明细", productUsedCoupons);
+//                map.put("过期未使用券明细", productOverdueCoupons);
+//
+//                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, map);
+//                //logger.info("customerProductCoupon OUT,获取顾客可用产品券成功，出参 resultDTO:{}", resultDTO);
+//                return resultDTO;
+//            } else if (identityType == 0) {
+//                List<ProductCouponResponse> productCouponResponseList = customerService.findProductCouponBySellerIdAndCustomerId(userId, cusId);
+//                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, productCouponResponseList);
+//                //logger.info("customerProductCoupon OUT,获取顾客可用产品券成功，出参 resultDTO:{}", resultDTO);
+//                return resultDTO;
+//            }
             if (identityType == 6) {
                 List<ProductCouponResponse> productCouponList = customerService.findProductCouponByCustomerId(userId);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, productCouponList);
@@ -462,6 +481,63 @@ public class CustomerController {
             } else if (identityType == 0) {
                 List<ProductCouponResponse> productCouponResponseList = customerService.
                         findProductCouponBySellerIdAndCustomerId(userId, cusId);
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, productCouponResponseList);
+                //logger.info("customerProductCoupon OUT,获取顾客可用产品券成功，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            } else {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "用户身份类型不合法,获取产品券列表失败", null);
+                logger.info("customerProductCoupon OUT,获取顾客可用产品券失败,出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+        } catch (Exception e) {
+            resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "出现未知异常,获取顾客可用产品券失败", null);
+            logger.warn("customerProductCoupon EXCEPTION,获取顾客可用产品券失败，出参 resultDTO:{}", resultDTO);
+            logger.warn("{}", e);
+            return resultDTO;
+        }
+    }
+
+    /**
+     * @param userId       用户id
+     * @param identityType 用户身份类型
+     * @param cusId        顾客id
+     * @return 顾客产品券明细列表
+     */
+    @PostMapping(value = "/productCoupon/bycount", produces = "application/json;charset=UTF-8")
+    public ResultDTO<Object> customerProductCouponCount(Long userId, Integer identityType, Long cusId) {
+        logger.info("customerProductCoupon CALLED,获取顾客可用产品券，入参 userId {},identityType{}", userId, identityType);
+
+        ResultDTO<Object> resultDTO;
+        try {
+            if (null == userId) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "userId不能为空！", null);
+                logger.info("customerProductCoupon OUT,获取顾客可用产品券失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (null == identityType) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "身份类型不能为空！", null);
+                logger.info("customerProductCoupon OUT,获取顾客可用产品券失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (identityType == 0 && cusId == null) {
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, "顾客id不能为空！", null);
+                logger.info("customerProductCoupon OUT,获取顾客可用产品券失败，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            }
+            if (identityType == 6) {
+                Map<String, Object> map = new HashMap();
+                int findAllNotUsedCoupons = customerService.findAllNotUsedCoupons(userId);
+                int findAllUsedCoupons = customerService.findAllUsedCoupons(userId);
+                int findAllOverdueCoupons = customerService.findAllOverdueCoupons(userId);
+                map.put("未使用券总数", findAllNotUsedCoupons);
+                map.put("已使用券总数", findAllUsedCoupons);
+                map.put("过期未使用券总数", findAllOverdueCoupons);
+
+                resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, map);
+                //logger.info("customerProductCoupon OUT,获取顾客可用产品券成功，出参 resultDTO:{}", resultDTO);
+                return resultDTO;
+            } else if (identityType == 0) {
+                List<ProductCouponResponse> productCouponResponseList = customerService.findProductCouponBySellerIdAndCustomerId(userId, cusId);
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, productCouponResponseList);
                 //logger.info("customerProductCoupon OUT,获取顾客可用产品券成功，出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -890,7 +966,7 @@ public class CustomerController {
             return resultDTO;
         }
         try {
-            List<SupportHotlineResponse> supportHotline = customerService.getCustomerSupportHotline(userId,identityType);
+            List<SupportHotlineResponse> supportHotline = customerService.getCustomerSupportHotline(userId, identityType);
             resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, null, supportHotline);
             logger.info("getCustomerSupportHotline OUT顾客获取咨询电话成功，出参 resultDTO:{}", resultDTO);
             return resultDTO;
@@ -924,7 +1000,7 @@ public class CustomerController {
         try {
             appCustomer = customerService.findByMobile(phone);
 
-            if (appCustomer == null){
+            if (appCustomer == null) {
                 resultDTO = new ResultDTO<>(CommonGlobal.COMMON_CODE_FAILURE, null, null);
                 logger.info("getCustomerInfoByPhone OUT,顾客信息获取,出参 resultDTO:{}", resultDTO);
                 return resultDTO;
@@ -988,11 +1064,11 @@ public class CustomerController {
     }
 
     /**
-     * @title   注册新接口，注册+绑定导购
-     * @descripe
      * @param
      * @return
      * @throws
+     * @title 注册新接口，注册+绑定导购
+     * @descripe
      * @author GenerationRoad
      * @date 2018/5/2
      */

@@ -9,9 +9,9 @@ import java.util.List;
  */
 public interface ProductCouponSendService {
 
-    ResultDTO<String> send(Long customerId, Long productCouponId, Long sellerId, Integer qty);
+    ResultDTO<String> send(Long customerId, Long productCouponId, Long sellerId, Integer qty,Long optId);
 
-    ResultDTO<String> sendBatch(List<Long> customerIdList, Long productCouponId, Long sellerId, Integer qty);
+    ResultDTO<String> sendBatch(List<Long> customerIdList, Long productCouponId, Long sellerId, Integer qty,Long optId);
 
     void sendForPromotion(Long userId,Long gid,Integer qty,String ordNo,String sku);
 }

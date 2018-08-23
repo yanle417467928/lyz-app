@@ -35,7 +35,7 @@ public class CashCouponSendServiceImpl implements CashCouponSendService{
      * @param qty 优惠券数量
      */
     @Transactional
-    public ResultDTO<String> send(Long customerId, Long cashCouponId, Integer qty){
+    public ResultDTO<String> send(Long customerId, Long cashCouponId, Integer qty,Long optId){
 
         if(customerId != null && cashCouponId != null && qty > 0 ){
             AppCustomer appCustomer = cusertomerDAO.findById(customerId);
@@ -73,6 +73,8 @@ public class CashCouponSendServiceImpl implements CashCouponSendService{
                     customerCashCoupon.setCityName(cashCoupon.getCityName());
                     customerCashCoupon.setIsSpecifiedStore(cashCoupon.getIsSpecifiedStore());
                     customerCashCoupon.setType(cashCoupon.getType());
+                    customerCashCoupon.setOptUserid(optId);
+
 
                     for (int i = 0;i < qty ; i++){
                         cashCouponDAO.addCustomerCashCoupon(customerCashCoupon);
@@ -97,10 +99,10 @@ public class CashCouponSendServiceImpl implements CashCouponSendService{
      * @param qty
      */
     @Transactional
-    public ResultDTO<String> sendBatch(List<Long> customerIdList,Long cashCouponId,Integer qty){
+    public ResultDTO<String> sendBatch(List<Long> customerIdList,Long cashCouponId,Integer qty,Long optId){
         ResultDTO<String> result = new ResultDTO<>(CommonGlobal.COMMON_CODE_SUCCESS, "未发送任何券", null);
         for (Long customerId : customerIdList) {
-            result = this.send(customerId,cashCouponId,qty);
+            result = this.send(customerId,cashCouponId,qty,optId);
             if (result.getCode().equals(-1)){
                 break;
             }

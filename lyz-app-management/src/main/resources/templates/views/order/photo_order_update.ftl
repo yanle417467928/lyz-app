@@ -158,6 +158,7 @@
                         <input type="hidden" id="identityTypeValue" value="${photoOrderVO.identityTypeValue!''}">
                         <input type="hidden" id="userId" value="${photoOrderVO.userId?c}">
                         <input type="hidden" id="updatePhotoOrderNo" value="${photoOrderVO.photoOrderNo!''}">
+                        <input id="customerId" name="customerId" type="hidden" value="<#if photoOrderVO??>${photoOrderVO.userId?c}</#if>"/>
                         <input id="rankCode" name="rankCode" type="hidden" value="<#if cusRank??>${cusRank.rankCode!''}</#if>"/>
                         <input id="cusId" name="cusId" type="hidden" value="<#if cusRank??><#if cusRank.cusId??>${cusRank.cusId?c}</#if></#if>"/>
                         <br>
@@ -1221,13 +1222,14 @@
                         }
                     });
                 }else if('member'==memberType){
+                    var customerId = $('#customerId').val();
                     $.ajax({
                         url: '/rest/order/photo/findZGCategory/goods',
                         method: 'GET',
                         data: {
                             categoryCode: categoryCode,
                             identityType: identityType,
-                            guideId: cusId,
+                            guideId: customerId,
                             rankCode:rankCode,
                             categorySecond:null,
                             specification:null,

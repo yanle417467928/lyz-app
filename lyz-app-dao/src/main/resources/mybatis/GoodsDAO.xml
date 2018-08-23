@@ -1975,7 +1975,7 @@
 
     <select id="findZsGoodsCategoryByCategoryCodeAndUserIdAndIdentityTypeAndUserRank"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsCategoryResponse">
-        SELECT DISTINCT
+        SELECT
         DISTINCT
         gc.cid category_id,
         gc.category_name
@@ -2001,7 +2001,7 @@
 
     <select id="findZsGoodsSpecificationListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsSpecificationResponse">
-        SELECT DISTINCT
+        SELECT
         DISTINCT
         g.specification_type  specificationName
         from gds_goods g
@@ -2026,7 +2026,7 @@
 
     <select id="findZsGoodsTypeListByCategoryCodeAndUserIdAndIdentityTypeAndUserRank"
             resultType="cn.com.leyizhuang.app.foundation.pojo.response.GoodsTypeResponse">
-        SELECT DISTINCT
+        SELECT
         DISTINCT
         t.gtid type_id,
         t.type_name

@@ -20,8 +20,8 @@ function initDateGird(url) {
             offset: params.offset,
             size: params.limit,
             keywords: params.search,
-            company: $("#company").val(),
-            status: $("#status").val(),
+            company: $("#company").val().trim(),
+            status: $("#status").val().trim(),
         }
     }, [{
         checkbox: true,
@@ -221,18 +221,18 @@ function findBykey(){
 
 //根据订单号查询订单
 function findOrderByOrderNumber() {
-    var orderNumber = $("#orderNumber").val();
-    var beginTime = $("#beginTime").val();
-    var endTime = $("#endTime").val();
-    var creatorName = $("#creatorName").val();
-    var shippingAddress = $("#shippingAddress").val();
-    var creatorPhone = $("#creatorPhone").val();
-    var receiverName = $("#receiverName").val();
-    var receiverPhone = $("#receiverPhone").val();
-    var cityId = $('#cityCode').val();
-    var storeId = $('#storeCode').val();
-    var status = $('#status').val();
-    var company = $('#company').val();
+    var orderNumber = $("#orderNumber").val().trim();
+    var beginTime = $("#beginTime").val().trim();
+    var endTime = $("#endTime").val().trim();
+    var creatorName = $("#creatorName").val().trim();
+    var shippingAddress = $("#shippingAddress").val().trim();
+    var creatorPhone = $("#creatorPhone").val().trim();
+    var receiverName = $("#receiverName").val().trim();
+    var receiverPhone = $("#receiverPhone").val().trim();
+    var cityId = $('#cityCode').val().trim();
+    var storeId = $('#storeCode').val().trim();
+    var status = $('#status').val().trim();
+    var company = $('#company').val().trim();
     $("#dataGrid").bootstrapTable('destroy');
     if (orderNumber != null && orderNumber != "") {
         initDateGird('/rest/company/order/page/byOrderNumber/' + orderNumber);

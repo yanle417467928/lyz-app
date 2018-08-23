@@ -101,4 +101,7 @@ public class CashCoupon implements Serializable {
      */
     private Integer sortId;
 
+    //操作人
+    private Long optUserid;
+
 }

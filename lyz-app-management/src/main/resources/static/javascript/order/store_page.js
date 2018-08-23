@@ -150,7 +150,7 @@ function findCitylist() {
 //获取门店列表
 function findStorelist() {
     var store = "";
-    var cityCode = $("#cityCode").val();
+    var cityCode = $("#cityCode").val().trim();
     $.ajax({
         url: '/rest/stores/findSmallFitAndStoresListByCityIdAndStoreId/'+cityCode,
         method: 'GET',
@@ -232,18 +232,18 @@ function findBykey(){
 //根据订单号查询订单
 function findOrderByOrderNumber() {
     var orderNumber = $("#orderNumber").val().trim();
-    var beginTime = $("#beginTime").val();
-    var endTime = $("#endTime").val();
+    var beginTime = $("#beginTime").val().trim();
+    var endTime = $("#endTime").val().trim();
     var memberName = $("#memberName").val().trim();
     var shippingAddress = $("#shippingAddress").val().trim();
     var sellerName = $("#sellerName").val().trim();
     var memberPhone = $("#memberPhone").val().trim();
     var receiverName = $("#receiverName").val().trim();
     var receiverPhone = $("#receiverPhone").val().trim();
-    var cityId = $('#cityCode').val();
-    var storeId = $('#storeCode').val();
-    var deliveryType = $('#deliveryType').val();
-    var orderStatus = $('#orderStatus').val();
+    var cityId = $('#cityCode').val().trim();
+    var storeId = $('#storeCode').val().trim();
+    var deliveryType = $('#deliveryType').val().trim();
+    var orderStatus = $('#orderStatus').val().trim();
     $("#dataGrid").bootstrapTable('destroy');
     if (orderNumber != null && orderNumber != "") {
         initDateGird('/rest/order/page/byOrderNumber/' + orderNumber);
