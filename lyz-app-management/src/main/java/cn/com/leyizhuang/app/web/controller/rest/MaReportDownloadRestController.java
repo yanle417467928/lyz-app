@@ -1273,6 +1273,9 @@ public class MaReportDownloadRestController extends BaseRestController {
         List<Long> storeIds = this.adminUserStoreService.findStoreIdByUidAndStoreType(StoreType.getStoreTypeList());
         List<AccountGoodsItemsDO> accountGoodsItemsDOList = this.maReportDownloadService.downloadAccountGoodsItems(cityId, storeId, storeType, startTime,
                 endTime, keywords, storeIds);
+
+        List<AccountGoodsItemsDO> jxGoodsInfos = this.maReportDownloadService.getAllJxPriceByStoreIds(storeId, storeIds);
+
         ShiroUser shiroUser = (ShiroUser) SecurityUtils.getSubject().getPrincipal();
         String shiroName = "";
         if (null != shiroUser) {
@@ -1408,25 +1411,35 @@ public class MaReportDownloadRestController extends BaseRestController {
                     if (StoreType.JM == accountGoodsItemsDO.getStoreTypes() || StoreType.FX == accountGoodsItemsDO.getStoreTypes()) {
                         if (accountGoodsItemsDO.getGoodsLineType().equals("本品") ||
                                 (accountGoodsItemsDO.getGoodsLineType().equals("产品券") && accountGoodsItemsDO.getProductCouponType().equals("本品"))) {
-                            String goodsLineType = "";
+//                            String goodsLineType = "";
+//
+//                            if (accountGoodsItemsDO.getGoodsLineType().equals("本品")){
+//                                goodsLineType = "GOODS";
+//                            }else {
+//                                goodsLineType = "PRODUCT_COUPON";
+//                            }
 
-                            if (accountGoodsItemsDO.getGoodsLineType().equals("本品")){
-                                goodsLineType = "GOODS";
-                            }else {
-                                goodsLineType = "PRODUCT_COUPON";
+//                            String orderNumber = accountGoodsItemsDO.getOrderNumber();
+//
+//                            if (null != accountGoodsItemsDO.getReturnNumber()) {
+//                                orderNumber = accountGoodsItemsDO.getReturnNumber();
+//                            }
+
+//                            AccountGoodsItemsDO accountGoods = this.maReportDownloadService.getJxPriceByOrderNoAndSku(orderNumber, accountGoodsItemsDO.getSku(),goodsLineType);
+                            AccountGoodsItemsDO accountGoods = new AccountGoodsItemsDO();
+                            for (AccountGoodsItemsDO jxGoodsInfo: jxGoodsInfos) {
+                                if ((jxGoodsInfo.getOrderNumber().equals(accountGoodsItemsDO.getOrderNumber())
+                                        || jxGoodsInfo.getOrderNumber().equals(accountGoodsItemsDO.getReturnNumber()))
+                                        && accountGoodsItemsDO.getSku().equals(jxGoodsInfo.getSku())
+                                        && accountGoodsItemsDO.getGoodsLineType().equals(jxGoodsInfo.getGoodsLineType())) {
+                                    accountGoods = jxGoodsInfo;
+                                    break;
+                                }
                             }
 
-                            String orderNumber = accountGoodsItemsDO.getOrderNumber();
-
-                            if (null != accountGoodsItemsDO.getReturnNumber()) {
-                                orderNumber = accountGoodsItemsDO.getReturnNumber();
-                            }
-
-                            AccountGoodsItemsDO accountGoods = this.maReportDownloadService.getJxPriceByOrderNoAndSku(orderNumber, accountGoodsItemsDO.getSku(),goodsLineType);
-
-                            if (null == accountGoods) {
-                                accountGoods = new AccountGoodsItemsDO();
-                            }
+//                            if (null == accountGoods) {
+//                                accountGoods = new AccountGoodsItemsDO();
+//                            }
                             ws.addCell(new Number(29, j + row, null == accountGoods.getWholesalePrice() ? 0D : accountGoods.getWholesalePrice(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                             ws.addCell(new Number(30, j + row, null == accountGoods.getWholesalePrice() ? 0D : accountGoods.getWholesalePrice() * accountGoodsItemsDO.getQuantity(), new WritableCellFormat(textFont, new NumberFormat("0.00"))));
                         } else {

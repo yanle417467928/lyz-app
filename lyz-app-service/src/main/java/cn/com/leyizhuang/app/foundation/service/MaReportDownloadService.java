@@ -128,4 +128,8 @@ public interface MaReportDownloadService {
     PageInfo<StInventoryRealSummaryReportDO> findStInventoryRealSummaryPage(Long cityId, Long storeId, List<Long> storeIds, Integer page, Integer size,String endTime, String startTime);
 
     List<StInventoryRealSummaryReportDO> findStInventoryRealSummaryList(Long cityId, Long storeId, List<Long> storeIds,String endTime, String startTime);
+
+    List<AccountGoodsItemsDO> getAllJxPriceByStoreIds(Long storeId, List storeIds);
+
+
 }

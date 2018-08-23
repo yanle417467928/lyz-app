@@ -4126,4 +4126,37 @@
         x.store,
         x.sku
     </select>
+
+
+    <select id="getAllJxPriceByStoreIds"
+            resultType="cn.com.leyizhuang.app.foundation.pojo.reportDownload.AccountGoodsItemsDO">
+        SELECT
+        IFNULL(unit_price, 0) wholesalePrice, IFNULL(unit_price, 0) * IFNULL(quantity, 0) wholesaleTotlePrice, goods_line_type goodsLineType,
+        store_id storeId, ord_no orderNumber, sku
+        FROM
+        ord_jx_price_difference_return_details
+        WHERE 1 = 1
+        <if test="null != storeId and storeId != -1">
+            AND store_id = #{storeId}
+        </if>
+        AND store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        UNION
+        SELECT
+        IFNULL(unit_price, 0) wholesalePrice, IFNULL(unit_price, 0) * IFNULL(return_qty, 0) wholesaleTotlePrice, goods_line_type goodsLineType,
+        store_id storeId, return_no orderNumber, sku
+        FROM
+        ord_return_jx_price_difference_return_details
+        WHERE 1 = 1
+        <if test="null != storeId and storeId != -1">
+            AND store_id = #{storeId}
+        </if>
+        AND store_id IN
+        <foreach collection="list" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
 </mapper>
