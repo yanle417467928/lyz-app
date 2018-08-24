@@ -82,6 +82,9 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
     @Resource
     private ProductCouponDAO productCouponDAO;
 
+    @Resource
+    private AppStoreService storeService;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveOrderRelevantInfo(OrderBaseInfo orderBaseInfo, List<OrderGoodsInfo> orderGoodsInfoList, OrderBillingDetails orderBillingDetails,
@@ -295,12 +298,7 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
         SimpleCityParam cityParam = new SimpleCityParam();
         cityParam.setCityId(template.getCityId());
         customerDO.setCity(cityParam);
-
-        SimpleStoreParam storeParam = new SimpleStoreParam();
-        storeParam.setStoreId(template.getStoreId());
-        storeParam.setStoreName(template.getStoreName());
-        customerDO.setStore(storeParam);
-
+        
         customerDO.setMobile(template.getCusMobile());
         customerDO.setStatus(true);
         customerDO.setSex("SECRET");
@@ -308,16 +306,29 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
         customerDO.setCreateType(AppCustomerCreateType.IMPORT);
         customerDO.setCustomerType(AppCustomerType.MEMBER.getValue());
 
+        SimpleStoreParam storeParam = new SimpleStoreParam();
+
         AppEmployee employee = appEmployeeService.findByLoginName(template.getEmpCode());
 
-        if (employee == null) {
-            log.info("编码为 "+ template.getEmpCode() + "导购找不到");
-            return  0;
-        }
         SimpleEmployeeParam employeeParam = new SimpleEmployeeParam();
-        employeeParam.setId(employee.getEmpId());
-        employeeParam.setIdentityType(AppIdentityType.SELLER);
-        employeeParam.setName(employee.getName());
+        if (employee == null) {
+            // 归属默认门店 3L 重庆
+            AppStore appStore = storeService.findDefaultStoreByCityId(3L);
+
+            storeParam.setStoreId(appStore.getStoreId());
+            storeParam.setStoreName(appStore.getStoreName());
+            //log.info("编码为 "+ template.getEmpCode() + "导购找不到");
+            //return  0;
+        }else {
+
+            employeeParam.setId(employee.getEmpId());
+            employeeParam.setIdentityType(AppIdentityType.SELLER);
+            employeeParam.setName(employee.getName());
+            storeParam.setStoreId(template.getStoreId());
+            storeParam.setStoreName(template.getStoreName());
+
+        }
+        customerDO.setStore(storeParam);
         customerDO.setSalesConsultId(employeeParam);
 
         maCustomerService.saveCustomer(customerDO);

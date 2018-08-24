@@ -641,7 +641,7 @@ public class CommonServiceImpl implements CommonService {
             }
         }
         //经销差价返还
-        if (null != billingDetails.getJxPriceDifferenceAmount() && billingDetails.getJxPriceDifferenceAmount() > AppConstant.DOUBLE_ZERO) {
+        if (null != billingDetails.getJxPriceDifferenceAmount()) {
             for (int i = 1; i <= AppConstant.OPTIMISTIC_LOCK_RETRY_TIME; i++) {
                 StorePreDeposit preDeposit = storeService.findStorePreDepositByUserIdAndIdentityType(userId, identityType);
                 if (null != preDeposit) {
@@ -1545,9 +1545,11 @@ public class CommonServiceImpl implements CommonService {
                     for (OrderGoodsInfo orderGoodsInfo : orderGoodsInfoList) {
                         if (orderGoodsInfo.getGoodsLineType() == AppGoodsLineType.GOODS) {
                             OrderJxPriceDifferenceReturnDetails details = new OrderJxPriceDifferenceReturnDetails();
+
                             if (null != orderGoodsInfo.getPromotionId()) {
                                 Long actId = Long.valueOf(orderGoodsInfo.getPromotionId());
                                 if (map.containsKey(actId)) {
+                                    // 工程单
                                     Double gcDiscount = map.get(actId);
                                     details.setAmount((orderGoodsInfo.getSettlementPrice() - orderGoodsInfo.getWholesalePrice() - gcDiscount) * orderGoodsInfo.getOrderQuantity());
                                     details.setUnitPrice(orderGoodsInfo.getSettlementPrice() - orderGoodsInfo.getWholesalePrice() - gcDiscount);
@@ -1567,7 +1569,17 @@ public class CommonServiceImpl implements CommonService {
                             details.setStoreId(orderBaseInfo.getStoreId());
                             details.setStoreCode(orderBaseInfo.getStoreCode());
                             details.setGoodsLineType(AppGoodsLineType.GOODS);
-                            detailsList.add(details);
+                            if (details.getUnitPrice() < 0D){
+                                if (null != orderGoodsInfo.getPromotionId()){
+                                    Long actId = Long.valueOf(orderGoodsInfo.getPromotionId());
+                                    if (map.containsKey(actId)){
+                                        // 工程单
+                                        detailsList.add(details);
+                                    }
+                                }
+                            }else {
+                                detailsList.add(details);
+                            }
                         }
                     }
                     if (null != orderProductCouponInfoList && orderProductCouponInfoList.size() > 0){
