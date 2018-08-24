@@ -1269,6 +1269,30 @@
         </foreach>
     </select>
 
+    <select id="findOrderGoodsVOListByEmpIdAndGoodsIdsMinPrice" resultType="cn.com.leyizhuang.app.foundation.vo.OrderGoodsVO">
+        SELECT
+        g.gid,
+        g.sku,
+        g.sku_name,
+        MIN(gp.retail_price) retail_price,
+        MIN(gp.vip_price) vip_price,
+        gp.wholesale_price,
+        g.company_flag,
+        g.cover_image_uri,
+        gp.price_line_id price_item_id
+        FROM emp_employee e
+        INNER JOIN gds_goods_price gp ON e.store_id = gp.store_id
+        INNER JOIN gds_goods g ON gp.gid = g.gid
+        where e.emp_id = #{userId}
+        AND gp.start_time &lt; NOW()
+        AND (gp.end_time IS NULL OR gp.end_time &gt; NOW())
+        AND g.gid in
+        <foreach collection="goodsIdSet" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        GROUP BY g.gid
+    </select>
+
 
     <select id="isExistSkuName" resultType="boolean">
         SELECT EXISTS(SELECT 1

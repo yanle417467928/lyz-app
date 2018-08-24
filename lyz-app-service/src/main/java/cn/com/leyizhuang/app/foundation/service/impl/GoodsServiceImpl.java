@@ -372,6 +372,18 @@ public class GoodsServiceImpl implements GoodsService {
         return null;
     }
 
+    @Override
+    public List<OrderGoodsVO> findOrderGoodsVOListByUserIdAndIdentityTypeAndGoodsIdsMinPrice(Long userId, Integer identityType, Set<Long> goodsIdSet) {
+        if (null != userId && null != identityType && null != goodsIdSet && goodsIdSet.size() > 0) {
+            if (identityType == AppIdentityType.CUSTOMER.getValue()) {
+                return goodsDAO.findOrderGoodsVOListByCustomerIdAndGoodsIds(userId, goodsIdSet);
+            } else if (identityType == AppIdentityType.SELLER.getValue() || identityType == AppIdentityType.DECORATE_MANAGER.getValue()) {
+                return goodsDAO.findOrderGoodsVOListByEmpIdAndGoodsIdsMinPrice(userId, goodsIdSet);
+            }
+        }
+        return null;
+    }
+
     /**
      * @param
      * @return

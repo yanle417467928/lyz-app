@@ -155,6 +155,9 @@ public interface GoodsDAO {
     List<OrderGoodsVO> findOrderGoodsVOListByEmpIdAndGoodsIds(@Param(value = "userId") Long userId,
                                                               @Param(value = "goodsIdSet") Set<Long> goodsIdSet);
 
+    List<OrderGoodsVO> findOrderGoodsVOListByEmpIdAndGoodsIdsMinPrice(@Param(value = "userId") Long userId,
+                                                              @Param(value = "goodsIdSet") Set<Long> goodsIdSet);
+
     Boolean isExistSkuName(@Param(value = "skuName") String skuName, @Param(value = "id") Long id);
 
     Boolean isExistSortId(@Param(value = "sortId") Long sortId, @Param(value = "id") Long id);

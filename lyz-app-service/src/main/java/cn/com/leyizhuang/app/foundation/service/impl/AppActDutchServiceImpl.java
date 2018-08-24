@@ -241,7 +241,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                     }
 
                     // 根据用户身份 返回有价格信息的赠品集合
-                    List<OrderGoodsVO> giftGoodsVOList = goodsService.findOrderGoodsVOListByUserIdAndIdentityTypeAndGoodsIds(
+                    List<OrderGoodsVO> giftGoodsVOList = goodsService.findOrderGoodsVOListByUserIdAndIdentityTypeAndGoodsIdsMinPrice(
                             cusId, 6, giftIdsList);
 
                     // 设置数量 新增赠品明细
@@ -325,7 +325,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                     }
 
                     // 根据用户身份 返回有价格信息的赠品集合
-                    List<OrderGoodsVO> giftGoodsVOList = goodsService.findOrderGoodsVOListByUserIdAndIdentityTypeAndGoodsIds(
+                    List<OrderGoodsVO> giftGoodsVOList = goodsService.findOrderGoodsVOListByUserIdAndIdentityTypeAndGoodsIdsMinPrice(
                             userId, identityType.getValue(), goodsIdSet);
 
                     /** 根据用户所选赠品数量计算参与促销次数*/
@@ -621,7 +621,7 @@ public class AppActDutchServiceImpl implements AppActDutchService {
                     }
 
                     // 根据用户身份 返回有价格信息的赠品集合
-                    List<OrderGoodsVO> giftGoodsVOList = goodsService.findOrderGoodsVOListByUserIdAndIdentityTypeAndGoodsIds(
+                    List<OrderGoodsVO> giftGoodsVOList = goodsService.findOrderGoodsVOListByUserIdAndIdentityTypeAndGoodsIdsMinPrice(
                             userId, identityType.getValue(), goodsIdSet);
 
                     // 赠品总价

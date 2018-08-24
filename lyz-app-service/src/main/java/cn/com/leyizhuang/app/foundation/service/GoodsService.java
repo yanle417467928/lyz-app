@@ -97,6 +97,8 @@ public interface GoodsService {
 
     List<OrderGoodsVO> findOrderGoodsVOListByUserIdAndIdentityTypeAndGoodsIds(Long userId, Integer identityType, Set<Long> goodsIdSet);
 
+    List<OrderGoodsVO> findOrderGoodsVOListByUserIdAndIdentityTypeAndGoodsIdsMinPrice(Long userId, Integer identityType, Set<Long> goodsIdSet);
+
     PageInfo<GoodsDO> queryGoodsPageByInfo(Integer page, Integer size,String queryGoodsInfo);
 
     PageInfo<GoodsDO> screenGoodsGrid(Integer page, Integer size,Long brandCode,String categoryCode,String companyCode);
