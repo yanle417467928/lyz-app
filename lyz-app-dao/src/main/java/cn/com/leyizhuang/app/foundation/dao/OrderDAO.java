@@ -239,4 +239,6 @@ public interface OrderDAO {
                                                               @Param("endTime") LocalDateTime endTime);
 
     List<PromotionSimpleInfo> findOrderPromotionIdByOrdNo(@Param("ordNo")String ordNo);
+
+    List<OrderGoodsInfo> findGcGoodsLineByOrderNoAndGid(@Param("ordNo") String ordNo,@Param("gIds") List<Long> gIds);
 }

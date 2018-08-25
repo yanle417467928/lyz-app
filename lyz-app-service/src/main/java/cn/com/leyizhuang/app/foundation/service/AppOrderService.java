@@ -11,6 +11,7 @@ import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.BillingSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppEmployee;
@@ -211,7 +212,7 @@ public interface AppOrderService {
 
     PageInfo<OrderPageInfoVO> findSellerManagerPayForOrderList(Long userId, Integer page, Integer size,String keywords);
 
-    int checkOrderReturnCondition(String orderNumer);
+    int checkOrderReturnCondition(String orderNumer, List<GoodsSimpleInfo> goodsSimpleInfos);
 
     void updateOrderGoodsInfo(OrderGoodsInfo goodsInfo);
 

@@ -1927,4 +1927,14 @@
             ord_no = #{ordNo}
             AND promotion_id IS NOT NULL
     </select>
+    
+    <select id="findGcGoodsLineByOrderNoAndGid" resultType="cn.com.leyizhuang.app.foundation.pojo.order.OrderGoodsInfo">
+        SELECT og.* from ord_goods_info og
+        inner JOIN act_base ab on ab.id = og.promotion_id
+        where og.ord_no = #{ordNo}  and ab.is_gcorder = 1
+        and og.id in
+        <foreach collection="gIds" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
 </mapper>

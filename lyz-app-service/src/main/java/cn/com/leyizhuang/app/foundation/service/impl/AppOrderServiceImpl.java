@@ -18,6 +18,7 @@ import cn.com.leyizhuang.app.foundation.pojo.request.GoodsIdQtyParam;
 import cn.com.leyizhuang.app.foundation.pojo.request.OrderLockExpendRequest;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.BillingSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.DeliverySimpleInfo;
+import cn.com.leyizhuang.app.foundation.pojo.request.settlement.GoodsSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.request.settlement.PromotionSimpleInfo;
 import cn.com.leyizhuang.app.foundation.pojo.response.*;
 import cn.com.leyizhuang.app.foundation.pojo.user.AppCustomer;
@@ -1380,9 +1381,9 @@ public class AppOrderServiceImpl implements AppOrderService {
     /**
      * 校验订单是否满足退货条件
      * @param orderNumer
-     * @return flag : -1：订单号不存在；0：正确；1：超过3个月限制
+     * @return flag : -1：订单号不存在；0：正确；1：超过3个月限制 ; 2: 工程单不可退
      */
-    public int checkOrderReturnCondition(String orderNumer){
+    public int checkOrderReturnCondition(String orderNumer, List<GoodsSimpleInfo> goodsSimpleInfos){
         int flag = 0;
         if (StringUtils.isBlank(orderNumer)){
             return -1;
@@ -1419,6 +1420,18 @@ public class AppOrderServiceImpl implements AppOrderService {
             flag  = 1 ;
             log.info("》》》》》》》》》》》》》   订单："+orderNumer+"超过3个月退货期限制   》》》》》》》》》》》》》");
         }
+
+        // 判断是否为工程单
+        List<Long> gIds = new ArrayList<>();
+        goodsSimpleInfos.forEach((g) -> gIds.add(g.getId()));
+        if (gIds.size() > 0){
+            List<OrderGoodsInfo> goodsInfoList = orderDAO.findGcGoodsLineByOrderNoAndGid(orderNumer,gIds);
+            if (goodsInfoList != null && goodsInfoList.size() > 0){
+                flag = 2;
+                return  flag;
+            }
+        }
+
 
         return flag;
     }
