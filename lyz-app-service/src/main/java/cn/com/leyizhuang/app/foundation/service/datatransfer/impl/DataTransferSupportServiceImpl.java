@@ -262,7 +262,7 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
                 this.transferCustomerByTemplate(template);
             }catch (Exception e){
                 e.printStackTrace();
-                log.info(e.getMessage());
+                log.error(e.getMessage(),e);
                 log.info(template.getCusName()+" " + template.getCusMobile()+"转换出现异常");
             }
         }
@@ -281,7 +281,7 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
                 this.transferCusProduct(template);
             }catch (Exception e){
                 e.printStackTrace();
-                log.info(e.getMessage());
+                log.error(e.getMessage(),e);
                 log.info(template.getCusName()+" " + template.getSku()+"产品全转换出现异常");
             }
 
@@ -471,4 +471,6 @@ public class DataTransferSupportServiceImpl implements DataTransferSupportServic
         transferDAO.updateCusProductTemplate(template);
         return 1;
     }
+
+
 }
